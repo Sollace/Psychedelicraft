@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.5.2"
+version = "1.5.3"
 def ENV = System.getenv()
 if (ENV.DRONE_BUILD_NUMBER) {
     version += ".n" + ENV.DRONE_BUILD_NUMBER
@@ -27,8 +27,9 @@ group= "ivorius.psychedelicraft" // http://maven.apache.org/guides/mini/guide-na
 archivesBaseName = "Psychedelicraft"
 
 minecraft {
-    version = "1.7.10-10.13.2.1291"
+    version = "1.8-11.14.3.1491"
     runDir = "eclipse"
+    mappings = "snapshot_20150721"
 }
 
 jar {
@@ -51,22 +52,20 @@ configurations {
 sourceSets {
     main {
         compileClasspath += [configurations.provided]
-        output.resourcesDir = output.classesDir
     }
 }
 
 idea {
     module {
         scopes.PROVIDED.plus += [configurations.provided]
+		inheritOutputDirs = true
     }
 }
 
 // Provided - Stop
 
-idea.module.inheritOutputDirs = true
-
 dependencies {
-    provided 'ivorius.ivtoolkit:IvToolkit:1.2:dev'
+    provided 'ivorius.ivtoolkit:IvToolkit:1.2.1:dev'
 }
 
 processResources
