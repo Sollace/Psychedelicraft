@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 /**
  * Created by lukas on 03.11.14.
  */
-public interface ItemPouring {
+public interface Pourable {
     boolean canPour(ItemStack stack, ItemStack dst);
 
     boolean canReceivePour(ItemStack stack, ItemStack src);

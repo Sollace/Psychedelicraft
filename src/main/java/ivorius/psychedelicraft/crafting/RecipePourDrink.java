@@ -32,8 +32,8 @@ public class RecipePourDrink implements RecipeAction
             ItemStack src = pouringPair.getLeft();
             ItemStack dst = pouringPair.getRight().copy();
 
-            ItemPouring srcItem = (ItemPouring) src.getItem();
-            ItemPouring dstItem = (ItemPouring) dst.getItem();
+            Pourable srcItem = (Pourable) src.getItem();
+            Pourable dstItem = (Pourable) dst.getItem();
 
             if (srcItem.canPour(src, dst) && dstItem.canReceivePour(dst, src))
             {
@@ -61,8 +61,8 @@ public class RecipePourDrink implements RecipeAction
             ItemStack src = pouringPair.getLeft().copy();
             ItemStack dst = pouringPair.getRight().copy();
 
-            ItemPouring srcItem = (ItemPouring) src.getItem();
-            ItemPouring dstItem = (ItemPouring) dst.getItem();
+            Pourable srcItem = (Pourable) src.getItem();
+            Pourable dstItem = (Pourable) dst.getItem();
 
             FluidStack drainSim = srcItem.drain(src, dstItem.getCapacity(dst), false);
             int maxFill = dstItem.fill(dst, drainSim, true);
@@ -89,7 +89,7 @@ public class RecipePourDrink implements RecipeAction
             {
                 ItemStack rowStack = items.get(0);
 
-                if (!(rowStack.getItem() instanceof ItemPouring) || rowStack.stackSize != 1)
+                if (!(rowStack.getItem() instanceof Pourable) || rowStack.stackSize != 1)
                     return null;
 
                 if (first == null)

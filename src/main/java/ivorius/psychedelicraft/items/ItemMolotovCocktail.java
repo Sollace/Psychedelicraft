@@ -6,58 +6,65 @@
 package ivorius.psychedelicraft.items;
 
 import ivorius.psychedelicraft.entities.EntityMolotovCocktail;
+import ivorius.psychedelicraft.fluids.ConsumableFluid.ConsumptionType;
 import ivorius.psychedelicraft.fluids.ExplodingFluid;
 import ivorius.psychedelicraft.fluids.FluidHelper;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.*;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
 
 import java.util.List;
 
-public class ItemMolotovCocktail extends ItemBottle
-{
-    public static FluidStack getExplodingFluid(ItemStack stack)
-    {
-        if (stack.getItem() instanceof IFluidContainerItem)
-        {
-            FluidStack fluidStack = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
-            if (fluidStack != null && fluidStack.getFluid() instanceof ExplodingFluid)
-                return fluidStack;
+public class ItemMolotovCocktail extends DrinkableItem {
+    public static ExplodingFluid getExplodingFluid(ItemStack stack) {
+        if (stack.getItem() instanceof FluidContainerItem container
+            && container.getFluid(stack) instanceof ExplodingFluid exploder) {
+            return exploder;
         }
 
         return null;
     }
 
-    public ItemMolotovCocktail(int capacity)
-    {
-        super(capacity);
+    public ItemMolotovCocktail(Settings settings, int capacity) {
+        super(settings, capacity, 0, ConsumptionType.DRINK);
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack stack, World world, EntityPlayer player, int timeUsed)
-    {
-        stack.stackSize--;
-        if (stack.stackSize <= 0)
-            player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BOW;
+    }
 
-        world.playSoundAtEntity(player, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+    @Override
+    public int getMaxUseTime(ItemStack stack) {
+        return 7200;
+    }
+
+    @Override
+    public void onStoppedUsing(ItemStack stack, World world, PlayerEntity player, int timeUsed) {
+        stack.decrement(1);
+        if (stack.isEmpty()) {
+            player.getInventory().setStack(player.getInventory().selectedSlot, ItemStack.EMPTY);
+        }
+
+        world.playSoundAtEntity(player, "random.bow", 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (!world.isRemote)
         {
-            float partUsed = MathHelper.clamp_float((float) (getMaxItemUseDuration(stack) - timeUsed) / 30.0f, 0.0f, 1.0f);
+            float strength = MathHelper.clamp((getMaxUseTime(stack) - timeUsed) / 30F, 0, 1);
 
             EntityMolotovCocktail molotovCocktail = new EntityMolotovCocktail(world, player);
 
             molotovCocktail.molotovStack = stack.copy();
             molotovCocktail.molotovStack.stackSize = 1;
-
             molotovCocktail.motionX *= partUsed;
             molotovCocktail.motionY *= partUsed;
             molotovCocktail.motionZ *= partUsed;
@@ -66,24 +73,20 @@ public class ItemMolotovCocktail extends ItemBottle
         }
     }
 
-    @Override
-    public ItemStack onItemRightClick(ItemStack stack, World par2World, EntityPlayer player)
-    {
-        player.setItemInUse(stack, this.getMaxItemUseDuration(stack));
-
-        return stack;
-    }
-
-    @Override
-    public EnumAction getItemUseAction(ItemStack stack)
-    {
-        return EnumAction.bow;
-    }
-
-    @Override
-    public int getMaxItemUseDuration(ItemStack stack)
-    {
-        return 7200;
+    private TypedActionResult<ItemStack> launch(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getStackInHand(hand);
+        world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+        if (!world.isClient) {
+            EntityMolotovCocktail snowballEntity = new EntityMolotovCocktail(world, user);
+            snowballEntity.setItem(itemStack);
+            snowballEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0f, 1.5f, 1.0f);
+            world.spawnEntity(snowballEntity);
+        }
+        user.incrementStat(Stats.USED.getOrCreateStat(this));
+        if (!user.getAbilities().creativeMode) {
+            itemStack.decrement(1);
+        }
+        return TypedActionResult.success(itemStack, world.isClient());
     }
 
     @Override

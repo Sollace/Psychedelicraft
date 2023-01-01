@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by lukas on 22.10.14.
  */
-public class FluidDrug extends FluidSimple implements FluidWithTypes, DrinkableFluid, InjectableFluid, ExplodingFluid, TranslucentFluid
+public class FluidDrug extends FluidSimple implements FluidWithTypes, DrinkableFluid, ConsumableFluid, ExplodingFluid, TranslucentFluid
 {
     protected final List<DrugInfluence> drugInfluences = new ArrayList<>();
     protected Pair<Integer, Float> foodLevel;
@@ -95,7 +95,7 @@ public class FluidDrug extends FluidSimple implements FluidWithTypes, DrinkableF
         if ((DrinkableFluid.SUBTYPE.equals(listType) || FluidFermentable.SUBTYPE_CLOSED.equals(listType)) && canDrink(defaultStack, null))
             list.add(new FluidStack(this, 1));
 
-        if (InjectableFluid.SUBTYPE.equals(listType) && canInject(defaultStack, null))
+        if (ConsumableFluid.SUBTYPE.equals(listType) && canInject(defaultStack, null))
             list.add(new FluidStack(this, 1));
     }
 

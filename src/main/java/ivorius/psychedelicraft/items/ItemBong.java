@@ -19,6 +19,8 @@ import java.util.ArrayList;
 
 /**
  * Created by calebmanley on 4/05/2014.
+ *
+ * Updated by Sollace on Jan 1 2023
  */
 public class ItemBong extends Item {
     public final ArrayList<Consumable> consumables = new ArrayList<>();
@@ -27,8 +29,7 @@ public class ItemBong extends Item {
         super(settings);
     }
 
-    public void addConsumable(Consumable consumable)
-    {
+    public void addConsumable(Consumable consumable) {
         consumables.add(consumable);
     }
 

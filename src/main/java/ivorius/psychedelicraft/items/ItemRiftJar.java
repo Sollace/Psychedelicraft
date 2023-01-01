@@ -7,120 +7,65 @@ package ivorius.psychedelicraft.items;
 
 import ivorius.psychedelicraft.blocks.TileEntityRiftJar;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.*;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ItemRiftJar extends ItemBlock
-{
-    public ItemRiftJar(Block block)
-    {
-        super(block);
+import org.jetbrains.annotations.Nullable;
 
-        maxStackSize = 16;
+public class ItemRiftJar extends BlockItem {
+    public ItemRiftJar(Block block, Settings settings) {
+        super(block, settings);
     }
 
     @Override
-    public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
-    {
-        if (par3World.getBlock(par4, par5, par6) == Blocks.snow)
-        {
-            par5--;
+    protected boolean postPlacement(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
+        BlockEntity be = world.getBlockEntity(pos);
+        if (be instanceof TileEntityRiftJar jar) {
+            jar.currentRiftFraction = getRiftFraction(stack);
         }
-
-        if (par7 != 1)
-        {
-            return false;
-        }
-
-        par5++;
-
-        int i1 = MathHelper.floor_double((par2EntityPlayer.rotationYaw * 4F) / 360F + 0.5D) & 3;
-
-        par3World.setBlock(par4, par5, par6, field_150939_a, i1, 3);
-
-        TileEntity tileEntity = par3World.getTileEntity(par4, par5, par6);
-        if (tileEntity != null && tileEntity instanceof TileEntityRiftJar)
-        {
-            TileEntityRiftJar tileEntityJar = (TileEntityRiftJar) tileEntity;
-
-            tileEntityJar.currentRiftFraction = getRiftFraction(par1ItemStack);
-        }
-
-        par1ItemStack.stackSize--;
-
-        return true;
+        return super.postPlacement(pos, world, player, stack, state);
     }
 
     @Override
-    public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
-    {
-        par3List.add(createFilledRiftJar(0.0f, par1));
-        par3List.add(createFilledRiftJar(0.25f, par1));
-        par3List.add(createFilledRiftJar(0.55f, par1));
-        par3List.add(createFilledRiftJar(0.75f, par1));
-        par3List.add(createFilledRiftJar(0.9f, par1));
-    }
-
-    @Override
-    public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4)
-    {
-        super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
-
-        if (getRiftFraction(par1ItemStack) > 0.0f)
-        {
-            par3List.add(StatCollector.translateToLocal("item.riftJar." + getUnlocalizedFractionName(getRiftFraction(par1ItemStack))));
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        super.appendTooltip(stack, world, tooltip, context);
+        float fillAmount = getRiftFraction(stack);
+        if (fillAmount > 0) {
+            tooltip.add(Text.translatable(this.getTranslationKey() + "." + getUnlocalizedFractionName(fillAmount)));
         }
     }
 
-    public float getRiftFraction(ItemStack itemStack)
-    {
-        return itemStack.hasTagCompound() ? itemStack.getTagCompound().getFloat("riftFraction") : 0.0f;
+    public float getRiftFraction(ItemStack itemStack) {
+        return itemStack.hasNbt() ? itemStack.getNbt().getFloat("riftFraction") : 0;
     }
 
-    private String getUnlocalizedFractionName(float fraction)
-    {
-        if (fraction <= 0.0f)
-        {
+    private static String getUnlocalizedFractionName(float fraction) {
+        if (fraction <= 0.0f) {
             return "empty";
-        }
-        else if (fraction < 0.4f)
-        {
+        } else if (fraction < 0.4f) {
             return "slightlyFilled";
-        }
-        else if (fraction < 0.6f)
-        {
+        } else if (fraction < 0.6f) {
             return "halfFilled";
-        }
-        else if (fraction < 0.8f)
-        {
+        } else if (fraction < 0.8f) {
             return "full";
         }
-        else
-        {
-            return "overflowing";
-        }
+
+        return "overflowing";
     }
 
-    public static ItemStack createFilledRiftJar(float riftFraction, Item item)
-    {
-        ItemStack stack = new ItemStack(item);
-
-        if (riftFraction > 0.0f)
-        {
-            stack.setTagInfo("riftFraction", new NBTTagFloat(riftFraction));
+    public static ItemStack createFilledRiftJar(float riftFraction, Item item) {
+        ItemStack stack = item.getDefaultStack();
+        if (riftFraction > 0) {
+            stack.getOrCreateNbt().putFloat("riftFraction", riftFraction);
         }
-
         return stack;
     }
 }
