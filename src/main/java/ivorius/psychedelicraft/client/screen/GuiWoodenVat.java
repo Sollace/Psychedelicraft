@@ -1,7 +1,7 @@
-package ivorius.psychedelicraft.gui;
+package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityBarrel;
+import ivorius.psychedelicraft.blocks.TileEntityMashTub;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -14,35 +14,36 @@ import java.util.List;
 /**
  * Created by lukas on 13.11.14.
  */
-public class GuiBarrel extends GuiFluidHandler
+public class GuiWoodenVat extends GuiFluidHandler
 {
-    public static final ResourceLocation barrelTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "container_barrel.png");
+    public static final ResourceLocation woodenVatTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "container_woodenVat.png");
 
-    private TileEntityBarrel tileEntityBarrel;
+    private TileEntityMashTub tileEntityMashTub;
 
-    public GuiBarrel(InventoryPlayer inventoryPlayer, TileEntityBarrel tileEntity)
+    public GuiWoodenVat(InventoryPlayer inventoryPlayer, TileEntityMashTub tileEntity)
     {
         super(inventoryPlayer, tileEntity, tileEntity, ForgeDirection.DOWN);
-        this.tileEntityBarrel = tileEntity;
+        this.tileEntityMashTub = tileEntity;
     }
 
     @Override
     protected ResourceLocation getBackgroundTexture()
     {
-        return barrelTexture;
+        return woodenVatTexture;
     }
 
     @Override
     protected void drawAdditionalInfo(int baseX, int baseY)
     {
-        int timeLeftFermenting = tileEntityBarrel.getRemainingFermentationTimeScaled(24);
+        int timeLeftFermenting = tileEntityMashTub.getRemainingFermentationTimeScaled(24);
         if (timeLeftFermenting < 24)
             drawTexturedModalRect(baseX + 23, baseY + 14, 176, 0, 24 - timeLeftFermenting, 17);
     }
 
+
     @Override
     protected List<String> getAdditionalTankText()
     {
-        return tileEntityBarrel.isFermenting() ? Arrays.asList(EnumChatFormatting.GREEN + StatCollector.translateToLocalFormatted("fluid.status.maturing")) : null;
+        return tileEntityMashTub.isFermenting() ? Arrays.asList(EnumChatFormatting.GREEN + StatCollector.translateToLocalFormatted("fluid.status.fermenting")) : null;
     }
 }

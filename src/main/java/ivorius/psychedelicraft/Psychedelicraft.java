@@ -10,7 +10,7 @@ import ivorius.psychedelicraft.commands.*;
 import ivorius.psychedelicraft.config.Configuration;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.PSEntityList;
-import ivorius.psychedelicraft.gui.PSItemGroups;
+import ivorius.psychedelicraft.items.PSItemGroups;
 import ivorius.psychedelicraft.items.PSItems;
 import ivorius.psychedelicraft.worldgen.PSWorldGen;
 import net.fabricmc.api.ModInitializer;

@@ -3,7 +3,7 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.gui;
+package ivorius.psychedelicraft.client.screen;
 
 /**
  * Created by lukas on 26.10.14.

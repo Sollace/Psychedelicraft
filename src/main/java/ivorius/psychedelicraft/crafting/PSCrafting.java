@@ -27,6 +27,8 @@ public class PSCrafting
 {
     public static void initialize()
     {
+        // TODO: (Sollace) Move recipes to resources
+
         RecipeSorter.register("ConvertFluidContainer", RecipeConvertFluidContainer.class, RecipeSorter.Category.SHAPED, "");
         RecipeSorter.register("FillDrink", RecipeFillDrink.class, RecipeSorter.Category.SHAPELESS, "");
         RecipeSorter.register("RecipeAction", RecipeActionRepresentation.class, RecipeSorter.Category.SHAPELESS, "");

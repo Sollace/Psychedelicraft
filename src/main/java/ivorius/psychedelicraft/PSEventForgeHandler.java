@@ -3,11 +3,10 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.events;
+package ivorius.psychedelicraft;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.blocks.PSBlocks;
-import ivorius.psychedelicraft.client.audio.MovingSoundDrug;
+import ivorius.psychedelicraft.client.sound.MovingSoundDrug;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import ivorius.psychedelicraft.fluids.FluidAlcohol;
@@ -24,6 +23,7 @@ import java.util.Arrays;
 /**
  * Created by lukas on 18.02.14.
  */
+@Deprecated(forRemoval = true)
 public class PSEventForgeHandler
 {
     public static boolean containsAlcohol(FluidStack fluidStack, FluidAlcohol fluid, Boolean distilled, int minMatured)
@@ -34,12 +34,7 @@ public class PSEventForgeHandler
                 && fluid.getMaturation(fluidStack) >= minMatured;
     }
 
-    public void register()
-    {
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SubscribeEvent
+    //@SubscribeEvent
     public void onServerChat(ServerChatEvent event)
     {
         if (PSConfig.distortOutgoingMessages)
@@ -87,7 +82,7 @@ public class PSEventForgeHandler
 //        }
 //    }
 
-    @SubscribeEvent
+    //@SubscribeEvent
     public void onPlayerSleep(PlayerSleepInBedEvent event)
     {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(event.entityLiving);
@@ -101,7 +96,7 @@ public class PSEventForgeHandler
         }
     }
 
-    @SubscribeEvent
+    //@SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event)
     {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(event.entity); // Initialize drug helper
@@ -110,25 +105,14 @@ public class PSEventForgeHandler
             initializeMovingSoundDrug(event.entity, drugProperties);
     }
 
-    @SideOnly(Side.CLIENT)
-    public void initializeMovingSoundDrug(Entity entity, DrugProperties drugProperties)
-    {
-        SoundHandler soundHandler = Minecraft.getMinecraft().getSoundHandler();
-        for (String drugName : drugProperties.getAllDrugNames())
-        {
-            if (PSConfig.hasBGM(drugName))
-                soundHandler.playSound(new MovingSoundDrug(new ResourceLocation(Psychedelicraft.MODID, "drug." + drugName.toLowerCase()), entity, drugProperties, drugName));
-        }
-    }
-
-    @SubscribeEvent
+    //@SubscribeEvent
     public void onEntityConstruction(EntityEvent.EntityConstructing event)
     {
         if (event.entity instanceof EntityPlayer)
             DrugProperties.initInEntity(event.entity);
     }
 
-    @SubscribeEvent
+    //@SubscribeEvent
     public void getBreakSpeed(PlayerEvent.BreakSpeed event)
     {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(event.entity);
@@ -139,35 +123,7 @@ public class PSEventForgeHandler
         }
     }
 
-    @SubscribeEvent
-    public void onRenderOverlay(RenderGameOverlayEvent.Pre event)
-    {
-        if (event.type == RenderGameOverlayEvent.ElementType.PORTAL)
-        {
-            Minecraft mc = Minecraft.getMinecraft();
-            EntityLivingBase renderEntity = mc.renderViewEntity;
-            DrugProperties drugProperties = DrugProperties.getDrugProperties(renderEntity);
-
-            if (drugProperties != null && drugProperties.renderer != null)
-            {
-                drugProperties.renderer.renderOverlaysAfterShaders(event.partialTicks, renderEntity, renderEntity.ticksExisted, event.resolution.getScaledWidth(), event.resolution.getScaledHeight(), drugProperties);
-            }
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public void onTextureStitchPre(TextureStitchEvent.Pre event)
-    {
-        IIconRegister iconRegister = event.map;
-        for (Fluid fluid : FluidRegistry.getRegisteredFluids().values())
-        {
-            if (fluid instanceof FluidWithIconSymbolRegistering)
-                ((FluidWithIconSymbolRegistering) fluid).registerIcons(iconRegister, event.map.getTextureType());
-        }
-    }
-
-    @SubscribeEvent
+    //@SubscribeEvent
     public void wakeUpPlayer(PlayerWakeUpEvent event)
     {
         if (!event.wakeImmediatly)

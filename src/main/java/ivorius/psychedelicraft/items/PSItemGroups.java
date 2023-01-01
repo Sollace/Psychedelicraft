@@ -3,12 +3,10 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.gui;
+package ivorius.psychedelicraft.items;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.config.PSConfig;
-import ivorius.psychedelicraft.items.ItemRiftJar;
-import ivorius.psychedelicraft.items.PSItems;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;
 

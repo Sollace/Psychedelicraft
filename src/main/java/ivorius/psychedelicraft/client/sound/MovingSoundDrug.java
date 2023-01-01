@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.client.audio;
+package ivorius.psychedelicraft.client.sound;
 
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.client.sound.MovingSoundInstance;

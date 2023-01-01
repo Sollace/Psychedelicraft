@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.gui;
+package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.blocks.PSBlocks;
 import ivorius.psychedelicraft.blocks.SlotDryingTableResult;

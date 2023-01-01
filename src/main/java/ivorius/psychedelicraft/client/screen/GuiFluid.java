@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.gui;
+package ivorius.psychedelicraft.client.screen;
 
 import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.client.rendering.MCColorHelper;

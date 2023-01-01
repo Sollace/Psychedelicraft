@@ -5,37 +5,33 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
-import ivorius.ivtoolkit.network.PartialUpdateHandler;
 import ivorius.psychedelicraft.*;
 import ivorius.psychedelicraft.client.rendering.IDrugRenderer;
+import ivorius.psychedelicraft.client.screen.UpdatableContainer;
+import ivorius.psychedelicraft.config.PSConfig;
+import ivorius.psychedelicraft.entities.EntityRealityRift;
 import ivorius.psychedelicraft.entities.PSAccessHelperEntity;
 import ivorius.psychedelicraft.network.PSNetworkHelperServer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.entity.*;
+import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.*;
 import net.minecraft.particle.DustColorTransitionParticleEffect;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraftforge.common.IExtendedEntityProperties;
-import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Vector3f;
 
-import javax.annotation.Nullable;
 import java.util.*;
+import javax.annotation.Nullable;
+import java.util.stream.Collectors;
 
-public class DrugProperties implements IExtendedEntityProperties, PartialUpdateHandler
-{
+public class DrugProperties {
     public static final UUID drugUUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1"); // Randomly gen'd
     public static final String EEP_KEY = "DrugHelper";
     public static final String EEP_CMP_KEY = "drugData";
@@ -45,14 +41,14 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
     public static float[] digitalEffectPixelRescale;
 
     private Map<String, Drug> drugs;
-    public List<DrugInfluence> influences;
+    public List<DrugInfluence> influences = new ArrayList<>();
 
     public boolean hasChanges;
 
     public IDrugRenderer renderer;
-    public DrugMessageDistorter messageDistorter;
-    public DrugHallucinationManager hallucinationManager;
-    public DrugMusicManager musicManager;
+    public DrugMessageDistorter messageDistorter = new DrugMessageDistorter();
+    public DrugHallucinationManager hallucinationManager = new DrugHallucinationManager();
+    public DrugMusicManager musicManager = new DrugMusicManager();
 
     public int ticksExisted = 0;
 
@@ -63,17 +59,8 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
     public int delayUntilBreath;
     public boolean lastBreathWasIn;
 
-    public DrugProperties(LivingEntity entity)
-    {
-        drugs = new HashMap<>();
-        influences = new ArrayList<>();
-
-        messageDistorter = new DrugMessageDistorter();
-        hallucinationManager = new DrugHallucinationManager();
-        musicManager = new DrugMusicManager();
-
-        for (Pair<String, Drug> pair : DrugRegistry.createDrugs(entity))
-            drugs.put(pair.getKey(), pair.getValue());
+    public DrugProperties(LivingEntity entity) {
+        drugs = DrugRegistry.createDrugs(entity).stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
     @Nullable
@@ -85,38 +72,22 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
         return null;
     }
 
-    public static void initInEntity(Entity entity)
-    {
-        if (entity instanceof EntityLivingBase)
-        {
-            entity.registerExtendedProperties(EEP_KEY, new DrugProperties((EntityLivingBase) entity));
-            DrugProperties drugProperties = getDrugProperties(entity);
-
-            if (drugProperties != null)
-                PSProxy.getInstance().createDrugRenderer(drugProperties);
-        }
-    }
-
     public void addDrug(String drugName, Drug drug)
     {
         drugs.put(drugName, drug);
     }
 
     @Nullable
-    public Drug getDrug(String drugName)
-    {
+    public Drug getDrug(String drugName) {
         return drugs.get(drugName);
     }
 
-    public float getDrugValue(String drugName)
-    {
+    public float getDrugValue(String drugName) {
         return (float) drugs.get(drugName).getActiveValue();
     }
 
-    public void addToDrug(String drugName, double effect)
-    {
-        if (!drugs.containsKey(drugName))
-        {
+    public void addToDrug(String drugName, double effect) {
+        if (!drugs.containsKey(drugName)) {
             Psychedelicraft.logger.warn("Tried to add to drug " + drugName);
             return;
         }
@@ -125,10 +96,8 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
         drugs.get(drugName).addToDesiredValue(effect);
     }
 
-    public void setDrugValue(String drugName, double effect)
-    {
-        if (!drugs.containsKey(drugName))
-        {
+    public void setDrugValue(String drugName, double effect) {
+        if (!drugs.containsKey(drugName)) {
             Psychedelicraft.logger.warn("Tried to set drug value " + drugName);
             return;
         }
@@ -137,56 +106,35 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
         drugs.get(drugName).setDesiredValue(effect);
     }
 
-    public void addToDrug(DrugInfluence influence)
-    {
+    public void addToDrug(DrugInfluence influence) {
         hasChanges = true;
         influences.add(influence);
     }
 
-    public Collection<Drug> getAllDrugs()
-    {
+    public Collection<Drug> getAllDrugs() {
         return drugs.values();
     }
 
-    public Set<String> getAllDrugNames()
-    {
+    public Set<String> getAllDrugNames() {
         return drugs.keySet();
     }
 
-    public String[] getAllVisibleDrugNames()
-    {
-        List<String> visibleDrugs = new ArrayList<>();
-
-        for (String s : drugs.keySet())
-        {
-            if (drugs.get(s).isVisible())
-                visibleDrugs.add(s);
-        }
-
-        String[] returnArray = new String[visibleDrugs.size()];
-        visibleDrugs.toArray(returnArray);
-
-        return returnArray;
+    public String[] getAllVisibleDrugNames() {
+        return drugs.entrySet().stream().filter(e -> e.getValue().isVisible()).map(Map.Entry::getKey).toArray(String[]::new);
     }
 
-    public boolean doesDrugExist(String name)
-    {
+    public boolean doesDrugExist(String name) {
         return drugs.containsKey(name);
     }
 
-    public void startBreathingSmoke(int time, float[] color)
-    {
-        if (color != null)
-            this.breathSmokeColor = color;
-        else
-            this.breathSmokeColor = new float[]{1.0f, 1.0f, 1.0f};
-
+    public void startBreathingSmoke(int time, float[] color) {
+        this.breathSmokeColor = color == null ? new float[]{1.0f, 1.0f, 1.0f} : color;
         this.timeBreathingSmoke = time + 10; //10 is the time spent breathing in
     }
 
-    public void updateDrugEffects(EntityLivingBase entity)
+    public void updateDrugEffects(LivingEntity entity)
     {
-        Random random = entity.getRNG();
+        Random random = entity.getRandom();
 
         if (ticksExisted % 5 == 0) //4 times / sec is enough
         {
@@ -206,7 +154,7 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
             drug.update(entity, this);
         }
 
-        if (entity.worldObj.isRemote)
+        if (entity.world.isClient)
         {
             hallucinationManager.update(entity, this);
             musicManager.update(entity, this);
@@ -228,8 +176,10 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
                     for (Drug drug : getAllDrugs())
                         speed += drug.heartbeatSpeed();
 
-                    delayUntilHeartbeat = MathHelper.floor_float(35.0f / (speed - 1.0f));
-                    entity.worldObj.playSound(entity.posX, entity.posY, entity.posZ, Psychedelicraft.modBase + "heartBeat", heartbeatVolume, speed, false);
+                    delayUntilHeartbeat = MathHelper.floor(35.0f / (speed - 1.0f));
+
+                    // TODO: (Sollace) PSSoundEvents
+                    entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), Psychedelicraft.modBase + "heartBeat", heartbeatVolume, speed, false);
                 }
             }
 
@@ -246,30 +196,32 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
                     float speed = 1.0f;
                     for (Drug drug : getAllDrugs())
                         speed += drug.breathSpeed();
-                    delayUntilBreath = MathHelper.floor_float(30.0f / speed);
+                    delayUntilBreath = MathHelper.floor(30.0f / speed);
 
-                    entity.worldObj.playSound(entity.posX, entity.posY, entity.posZ, Psychedelicraft.modBase + "breath", breathVolume, speed * 0.1f + 0.9f + (lastBreathWasIn ? 0.15f : 0.0f), false);
+                    // TODO: (Sollace) PSSoundEvents
+                    entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), Psychedelicraft.modBase + "breath", breathVolume, speed * 0.1f + 0.9f + (lastBreathWasIn ? 0.15f : 0.0f), false);
                 }
             }
 
-            if (entity.onGround)
-            {
+            if (entity.isOnGround()) {
                 float jumpChance = 0.0f;
                 for (Drug drug : getAllDrugs())
                     jumpChance += drug.randomJumpChance();
 
-                if (random.nextFloat() < jumpChance)
+                if (random.nextFloat() < jumpChance) {
                     PSAccessHelperEntity.jump(entity);
+                }
             }
 
-            if (!entity.isSwingInProgress)
-            {
+            if (!entity.handSwinging) {
                 float punchChance = 0.0f;
-                for (Drug drug : getAllDrugs())
+                for (Drug drug : getAllDrugs()) {
                     punchChance += drug.randomPunchChance();
+                }
 
-                if (random.nextFloat() < punchChance)
-                    entity.swingItem();
+                if (random.nextFloat() < punchChance) {
+                    entity.swingHand(Hand.MAIN_HAND);
+                }
             }
         }
 
@@ -277,27 +229,27 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
         {
             timeBreathingSmoke--;
 
-            if (timeBreathingSmoke > 10 && entity.worldObj.isRemote)
+            if (timeBreathingSmoke > 10 && entity.world.isClient)
             {
-                Vec3f look = entity.getLookVec();
+                Vec3d look = entity.getCameraPosVec(1);
 
-                if (random.nextInt(2) == 0)
-                {
+                if (random.nextInt(2) == 0) {
                     float s = random.nextFloat() * 0.05f + 0.1f;
                     ParticleHelper.spawnColoredParticle(entity, breathSmokeColor, look, s, 1.0f);
                 }
-                if (random.nextInt(5) == 0)
-                {
+
+                if (random.nextInt(5) == 0) {
                     float s = random.nextFloat() * 0.05f + 0.1f;
                     ParticleHelper.spawnColoredParticle(entity, breathSmokeColor, look, s, 2.5f);
                 }
             }
         }
 
-        if (renderer != null && entity.worldObj.isRemote)
+        if (renderer != null && entity.world.isClient) {
             renderer.update(this, entity);
+        }
 
-        changeDrugModifierMultiply(entity, SharedMonsterAttributes.movementSpeed, getSpeedModifier(entity));
+        changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_MOVEMENT_SPEED, getSpeedModifier(entity));
 
         ticksExisted++;
 
@@ -305,24 +257,49 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
         {
             hasChanges = false;
 
-            if (!entity.worldObj.isRemote)
-                PSNetworkHelperServer.sendEEPUpdatePacket(entity, EEP_KEY, "DrugData", Psychedelicraft.network);
+            if (!entity.world.isClient) {
+                // TODO: (Sollace) Packet to send drug update data to the client
+                // PSNetworkHelperServer.sendEEPUpdatePacket(entity, EEP_KEY, "DrugData", Psychedelicraft.network);
+            }
+        }
+
+        if (entity instanceof PlayerEntity player) {
+            if (!entity.world.isClient && PSConfig.randomTicksUntilRiftSpawn > 0) {
+                if (random.nextInt(PSConfig.randomTicksUntilRiftSpawn) == 0) {
+                    spawnRiftAtPlayer(player);
+                }
+            }
+
+            if (player.currentScreenHandler instanceof UpdatableContainer updateable) {
+                updateable.updateAsCustomContainer();
+            }
         }
     }
 
-    public void readFromNBT(NBTTagCompound tagCompound, boolean fromPacket)
+    public static void spawnRiftAtPlayer(PlayerEntity player) {
+        EntityRealityRift rift = new EntityRealityRift(player.getEntityWorld());
+
+        double xP = (player.getRandom().nextDouble() - 0.5) * 100.0;
+        double yP = (player.getRandom().nextDouble() - 0.5) * 100.0;
+        double zP = (player.getRandom().nextDouble() - 0.5) * 100.0;
+
+        rift.setPosition(player.getX() + xP, player.getY() + yP, player.getZ() + zP);
+        player.getEntityWorld().spawnEntity(rift);
+    }
+
+    public void readFromNBT(NbtCompound tagCompound, boolean fromPacket)
     {
-        NBTTagCompound drugData = tagCompound.hasKey("Drugs", Constants.NBT.TAG_COMPOUND) ? tagCompound.getCompoundTag("Drugs")
-                : tagCompound; // legacy
+        NbtCompound drugData = tagCompound.getCompound("Drugs");
         for (String key : drugs.keySet())
-            drugs.get(key).readFromNBT(drugData.getCompoundTag(key));
+            drugs.get(key).readFromNBT(drugData.getCompound(key));
 
         influences.clear();
-        NBTTagList influenceTagList = tagCompound.getTagList("drugInfluences", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < influenceTagList.tagCount(); i++)
+        NbtList influenceTagList = tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE);
+        for (int i = 0; i < influenceTagList.size(); i++)
         {
-            NBTTagCompound compound = influenceTagList.getCompoundTagAt(i);
+            NbtCompound compound = influenceTagList.getCompound(i);
 
+            // TODO: (Sollace) Modernize this
             Class<? extends DrugInfluence> influenceClass = DrugRegistry.getClass(compound.getString("influenceClass"));
 
             if (influenceClass != null)
@@ -346,44 +323,41 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
             }
         }
 
-        this.ticksExisted = tagCompound.getInteger("drugsTicksExisted");
+        this.ticksExisted = tagCompound.getInt("drugsTicksExisted");
 
         if (fromPacket)
             hasChanges = true;
     }
 
-    public void writeToNBT(NBTTagCompound compound)
-    {
-        NBTTagCompound drugsComp = new NBTTagCompound();
+    public void writeToNBT(NbtCompound compound) {
+        NbtCompound drugsComp = new NbtCompound();
         for (String key : drugs.keySet())
         {
-            NBTTagCompound cmp = new NBTTagCompound();
+            NbtCompound cmp = new NbtCompound();
             drugs.get(key).writeToNBT(cmp);
-            drugsComp.setTag(key, cmp);
+            drugsComp.put(key, cmp);
         }
-        compound.setTag("Drugs", drugsComp);
+        compound.put("Drugs", drugsComp);
 
-        NBTTagList influenceTagList = new NBTTagList();
+        NbtList influenceTagList = new NbtList();
         for (DrugInfluence influence : influences)
         {
-            NBTTagCompound infCompound = new NBTTagCompound();
+            NbtCompound infCompound = new NbtCompound();
             influence.writeToNBT(infCompound);
-            infCompound.setString("influenceClass", DrugRegistry.getID(influence.getClass()));
-            influenceTagList.appendTag(infCompound);
+            infCompound.putString("influenceClass", DrugRegistry.getID(influence.getClass()));
+            influenceTagList.add(infCompound);
         }
-        compound.setTag("drugInfluences", influenceTagList);
-
-        compound.setInteger("drugsTicksExisted", ticksExisted);
+        compound.put("drugInfluences", influenceTagList);
+        compound.putInt("drugsTicksExisted", ticksExisted);
     }
 
-    public NBTTagCompound createNBTTagCompound()
-    {
-        NBTTagCompound tagCompound = new NBTTagCompound();
+    public NbtCompound createNBTTagCompound() {
+        NbtCompound tagCompound = new NbtCompound();
         writeToNBT(tagCompound);
         return tagCompound;
     }
 
-    public void wakeUp(EntityLivingBase entity)
+    public void wakeUp(LivingEntity entity)
     {
         for (String key : drugs.keySet())
             drugs.get(key).reset(entity, this);
@@ -392,12 +366,12 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
         hasChanges = true;
     }
 
-    public void receiveChatMessage(EntityLivingBase entity, String message)
+    public void receiveChatMessage(LivingEntity entity, String message)
     {
         hallucinationManager.receiveChatMessage(entity, message);
     }
 
-    public float getSpeedModifier(EntityLivingBase entity)
+    public float getSpeedModifier(LivingEntity entity)
     {
         float modifier = 1.0F;
         for (Drug drug : getAllDrugs())
@@ -406,7 +380,7 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
         return modifier;
     }
 
-    public float getDigSpeedModifier(EntityLivingBase entity)
+    public float getDigSpeedModifier(LivingEntity entity)
     {
         float modifier = 1.0F;
         for (Drug drug : getAllDrugs())
@@ -414,7 +388,7 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
 
         return modifier;
     }
-
+/*
     public EntityPlayer.EnumStatus getDrugSleepStatus()
     {
         for (Drug drug : getAllDrugs())
@@ -426,70 +400,32 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
 
         return null;
     }
-
-    public float getSoundMultiplier()
-    {
-        float modifier = 1.0F;
-        for (Drug drug : getAllDrugs())
+*/
+    public float getSoundMultiplier() {
+        float modifier = 1;
+        for (Drug drug : getAllDrugs()) {
             modifier *= drug.soundVolumeModifier();
-
+        }
         return modifier;
     }
 
-    public float[] getDigitalEffectPixelResize()
-    {
+    public float[] getDigitalEffectPixelResize() {
         return digitalEffectPixelRescale;
     }
 
-    public void changeDrugModifierMultiply(EntityLivingBase entity, IAttribute attribute, double value)
-    {
+    public void changeDrugModifierMultiply(LivingEntity entity, EntityAttribute attribute, double value) {
         // 2: ret *= 1.0 + value
-        changeDrugModifier(entity, attribute, value - 1.0, 2);
+        changeDrugModifier(entity, attribute, value - 1.0, Operation.MULTIPLY_TOTAL);
     }
 
-    public void changeDrugModifier(EntityLivingBase entity, IAttribute attribute, double value, int mode)
-    {
-        IAttributeInstance speedInstance = entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
-        AttributeModifier oldModifier = speedInstance.getModifier(DrugProperties.drugUUID);
+    public void changeDrugModifier(LivingEntity entity, EntityAttribute attribute, double value, Operation operation) {
+        EntityAttributeInstance speedInstance = entity.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);  // TODO: (Sollace) [sic] Should be using the passed attribute
+        EntityAttributeModifier oldModifier = speedInstance.getModifier(DrugProperties.drugUUID);
 
-        if (oldModifier != null)
+        if (oldModifier != null) {
             speedInstance.removeModifier(oldModifier);
+        }
 
-        AttributeModifier newModifier = new AttributeModifier(DrugProperties.drugUUID, "Drug Effects", value, mode);
-        speedInstance.applyModifier(newModifier);
-    }
-
-    // IExtendedEntityProperties
-
-    @Override
-    public void saveNBTData(NBTTagCompound compound)
-    {
-        compound.setTag(EEP_CMP_KEY, createNBTTagCompound());
-    }
-
-    @Override
-    public void loadNBTData(NBTTagCompound compound)
-    {
-        readFromNBT(compound.getCompoundTag(EEP_CMP_KEY), true);
-    }
-
-    @Override
-    public void init(Entity entity, World world)
-    {
-
-    }
-
-    @Override
-    public void writeUpdateData(ByteBuf buffer, String context, Object... params)
-    {
-        if ("DrugData".equals(context))
-            ByteBufUtils.writeTag(buffer, createNBTTagCompound());
-    }
-
-    @Override
-    public void readUpdateData(ByteBuf buffer, String context)
-    {
-        if ("DrugData".equals(context))
-            readFromNBT(ByteBufUtils.readTag(buffer), true);
+        speedInstance.addTemporaryModifier(new EntityAttributeModifier(DrugProperties.drugUUID, "Drug Effects", value, operation));
     }
 }

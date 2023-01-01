@@ -2,11 +2,16 @@
  *  Copyright (c) 2014, Lukas Tenbrink.
  *  * http://lukas.axxim.net
  */
-
-package ivorius.psychedelicraft.events;
+/*
+package ivorius.psychedelicraft.client;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import ivorius.pscoreutils.events.*;
+import ivorius.psychedelicraft.*;
+import ivorius.psychedelicraft.client.sound.MovingSoundDrug;
+import ivorius.psychedelicraft.config.PSConfig;
+import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.fluids.FluidWithIconSymbolRegistering;
+import net.minecraft.entity.Entity;
 import ivorius.psychedelicraft.client.rendering.DrugEffectInterpreter;
 import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 import ivorius.psychedelicraft.client.rendering.SmoothCameraHelper;
@@ -25,6 +30,8 @@ import org.lwjgl.opengl.GL11;
 /**
  * Created by lukas on 21.02.14.
  */
+/*
+TODO: (Sollace) A lot of these are hooks that need reimplementing
 public class PSCoreHandlerClient
 {
     // Taken from RenderHelper
@@ -34,6 +41,45 @@ public class PSCoreHandlerClient
     public void register()
     {
         PsycheCoreBusCommon.EVENT_BUS.register(this);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onTextureStitchPre(TextureStitchEvent.Pre event)
+    {
+        IIconRegister iconRegister = event.map;
+        for (Fluid fluid : FluidRegistry.getRegisteredFluids().values())
+        {
+            if (fluid instanceof FluidWithIconSymbolRegistering)
+                ((FluidWithIconSymbolRegistering) fluid).registerIcons(iconRegister, event.map.getTextureType());
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void initializeMovingSoundDrug(Entity entity, DrugProperties drugProperties)
+    {
+        SoundHandler soundHandler = Minecraft.getMinecraft().getSoundHandler();
+        for (String drugName : drugProperties.getAllDrugNames())
+        {
+            if (PSConfig.hasBGM(drugName))
+                soundHandler.playSound(new MovingSoundDrug(new ResourceLocation(Psychedelicraft.MODID, "drug." + drugName.toLowerCase()), entity, drugProperties, drugName));
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderOverlay(RenderGameOverlayEvent.Pre event)
+    {
+        if (event.type == RenderGameOverlayEvent.ElementType.PORTAL)
+        {
+            Minecraft mc = Minecraft.getMinecraft();
+            EntityLivingBase renderEntity = mc.renderViewEntity;
+            DrugProperties drugProperties = DrugProperties.getDrugProperties(renderEntity);
+
+            if (drugProperties != null && drugProperties.renderer != null)
+            {
+                drugProperties.renderer.renderOverlaysAfterShaders(event.partialTicks, renderEntity, renderEntity.ticksExisted, event.resolution.getScaledWidth(), event.resolution.getScaledHeight(), drugProperties);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -275,3 +321,4 @@ public class PSCoreHandlerClient
         PSRenderStates.preRenderSky(event.partialTicks);
     }
 }
+*/

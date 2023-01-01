@@ -3,7 +3,6 @@ package ivorius.psychedelicraft.crafting;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.*;
 
@@ -54,23 +53,13 @@ public class DryingRegistry
         return dryingRecipes.keySet();
     }
 
-    private static boolean matches(ItemStack stack, Object target)
-    {
+    private static boolean matches(ItemStack stack, Object target) {
         if (target instanceof ItemStack)
-            return OreDictionary.itemMatches(stack, (ItemStack) target, false) && ItemStack.areItemStackTagsEqual(stack, (ItemStack) target);
+            return ItemStack.areEqual(stack, (ItemStack) target);
         else if (target instanceof Item)
             return stack.getItem() == target;
         else if (target instanceof Block)
-            return stack.getItem() == Item.getItemFromBlock((Block) target);
-        else if (target instanceof String)
-        {
-            List<ItemStack> stacks = OreDictionary.getOres((String) target);
-            for (ItemStack targetStack : stacks)
-            {
-                if (OreDictionary.itemMatches(stack, targetStack, false) && ItemStack.areItemStackTagsEqual(stack, targetStack))
-                    return true;
-            }
-        }
+            return stack.getItem() == ((Block) target).asItem();
 
         return false;
     }

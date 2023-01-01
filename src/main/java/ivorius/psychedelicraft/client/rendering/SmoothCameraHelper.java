@@ -49,7 +49,7 @@ public class SmoothCameraHelper
         float nf3 = this.smoothCamFilterX * f5;
         float nf4 = this.smoothCamFilterY * f5;
 
-        return new float[]{nf3, nf4 * (float) b0};
+        return new float[]{nf3, nf4 * b0};
     }
 
     public float[] getOriginalAngles(float mouseSensitivity, float partialTicks, float deltaX, float deltaY, boolean invertMouse)
@@ -61,6 +61,6 @@ public class SmoothCameraHelper
         float f3 = deltaX * f2;
         float f4 = deltaY * f2;
 
-        return new float[]{f3, f4 * (float) b0};
+        return new float[]{f3, f4 * b0};
     }
 }

@@ -1,30 +1,15 @@
 package ivorius.psychedelicraft.entities;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
-import net.minecraft.entity.EntityLivingBase;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import net.minecraft.entity.LivingEntity;
 
 /**
  * Created by lukas on 12.12.14.
  */
+@Deprecated(forRemoval = true)
 public class PSAccessHelperEntity
 {
-    private static Method methodJump;
-
-    public static void jump(EntityLivingBase entityLivingBase)
+    public static void jump(LivingEntity entityLivingBase)
     {
-        if (methodJump == null)
-            methodJump = ReflectionHelper.findMethod(EntityLivingBase.class, entityLivingBase, new String[]{"jump", "func_70664_aZ"});
-
-        try
-        {
-            methodJump.invoke(entityLivingBase);
-        }
-        catch (IllegalAccessException | InvocationTargetException e)
-        {
-            e.printStackTrace();
-        }
+        // TODO: Invoker for LivingEntity#jump()
     }
 }

@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.gui;
+package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.blocks.TileEntityDistillery;

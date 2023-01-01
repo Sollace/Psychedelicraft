@@ -9,7 +9,7 @@ import ivorius.ivtoolkit.blocks.IvBlockMultiblock;
 import ivorius.ivtoolkit.blocks.IvTileEntityMultiBlock;
 import ivorius.psychedelicraft.PSMultiBlockHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.gui.PSGuiHandler;
+import ivorius.psychedelicraft.client.screen.PSGuiHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
