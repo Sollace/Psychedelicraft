@@ -149,25 +149,9 @@ public class Psychedelicraft
     }
 
     @EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-        PSOutboundCommunicationHandler.init();
-    }
-
-    @EventHandler
     public void serverStarting(FMLServerStartingEvent evt)
     {
         evt.registerServerCommand(new CommandDrug());
         evt.registerServerCommand(new CommandPsyche());
-    }
-
-    @EventHandler
-    public void onIMCEvent(FMLInterModComms.IMCEvent event)
-    {
-        // Could be fatal if we don't know the side
-//        for (FMLInterModComms.IMCMessage message : event.getMessages())
-//        {
-//            communicationHandler.onIMCMessage(message, false, false);
-//        }
     }
 }
