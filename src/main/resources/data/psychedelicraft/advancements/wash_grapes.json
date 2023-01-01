@@ -1,0 +1,29 @@
+{
+  "parent": "psychedelicraft:grapes",
+  "display": {
+    "icon": {
+      "item": "psychedelicraft:wine_grapes"
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.wash_grapes.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.wash_grapes.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_the_thing": {
+      "trigger": "psychedelicraft:custom",
+      "conditions": {
+        "action": "wash_grapes"
+      }
+    }
+  },
+  "requirements": [
+    [ "has_the_thing" ]
+  ]
+}

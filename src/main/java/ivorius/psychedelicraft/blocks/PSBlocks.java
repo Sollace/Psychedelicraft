@@ -31,7 +31,12 @@ public class PSBlocks {
     public static Block flask = register("flask", new BlockFlask().setHardness(1.0F));
     public static Block distillery = register("distillery", new BlockDistillery().setHardness(1.0F));
 
-    public static Block dryingTable = register("drying_table", new BlockDryingTable().setHardness(2.0f));
+    public static Block dryingTable = register("oak_drying_table", new BlockDryingTable().setHardness(2.0f));
+    public static Block spruceDryingTable = register("spruce_drying_table", new BlockDryingTable().setHardness(2.0f));
+    public static Block birchDryingTable = register("birch_drying_table", new BlockDryingTable().setHardness(2.0f));
+    public static Block jungleDryingTable = register("jungle_drying_table", new BlockDryingTable().setHardness(2.0f));
+    public static Block acaciaDryingTable = register("acacia_drying_table", new BlockDryingTable().setHardness(2.0f));
+    public static Block darkOakTable = register("dark_oak_drying_table", new BlockDryingTable().setHardness(2.0f));
     public static Block dryingTableIron = register("iron_drying_table", new BlockIronDryingTable().setHardness(5.0f));
 
     public static Block cannabisPlant = register("cannabis_plant", new BlockCannabisPlant().setHardness(0.5f));

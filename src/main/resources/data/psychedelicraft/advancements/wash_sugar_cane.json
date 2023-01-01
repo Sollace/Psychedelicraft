@@ -1,0 +1,31 @@
+{
+  "parent": "psychedelicraft:make_mash_tub",
+  "display": {
+    "icon": {
+      "item": "minecraft:sugar_cane"
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.wash_sugar_cane.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.wash_sugar_cane.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_the_thing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "psychedelicraft:hop_cones" ] }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_the_thing" ]
+  ]
+}

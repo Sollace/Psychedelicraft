@@ -1,0 +1,31 @@
+{
+  "parent": "psychedelicraft:root",
+  "display": {
+    "icon": {
+      "item": "psychedelicraft:mash_tub"
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.make_mash_tub.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.make_mash_tub.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_the_thing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "psychedelicraft:mash_tub" ] }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_the_thing" ]
+  ]
+}

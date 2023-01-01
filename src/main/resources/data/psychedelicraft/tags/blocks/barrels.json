@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "psychedelicraft:oak_barrel",
+    "psychedelicraft:spruce_barrel",
+    "psychedelicraft:birch_barrel",
+    "psychedelicraft:jungle_barrel",
+    "psychedelicraft:acacia_barrel",
+    "psychedelicraft:dark_oak_barrel"
+  ]
+}

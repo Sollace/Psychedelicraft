@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "psychedelicraft:oak_drying_table",
+    "psychedelicraft:spruce_drying_table",
+    "psychedelicraft:birch_drying_table",
+    "psychedelicraft:jungle_drying_table",
+    "psychedelicraft:acacia_drying_table",
+    "psychedelicraft:dark_oak_drying_table",
+    "psychedelicraft:iron_drying_table"
+  ]
+}

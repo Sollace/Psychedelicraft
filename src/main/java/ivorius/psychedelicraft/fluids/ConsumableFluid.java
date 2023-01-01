@@ -6,9 +6,11 @@
 package ivorius.psychedelicraft.fluids;
 
 import ivorius.psychedelicraft.items.FluidContainerItem;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  * A fluid that is possible to be consumed.
@@ -45,6 +47,9 @@ public interface ConsumableFluid {
                     ItemStack drained = container.drain(stack, maxConsumed);
                     if (consume) {
                         consumable.consume(drained, entity, type);
+                        if (entity instanceof ServerPlayerEntity player) {
+                            Criteria.CONSUME_ITEM.trigger(player, stack);
+                        }
                     }
                     return drained;
                 }

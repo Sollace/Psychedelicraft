@@ -1,0 +1,38 @@
+{
+  "parent": "psychedelicraft:wash_beer",
+  "display": {
+    "icon": {
+      "item": "psychedelicraft:wooden_mug",
+      "tag": {
+        "fluid": {
+          "id": "psychedelicraft:wheat_hop",
+          "fermentation": 0,
+          "maturation": 0
+        }
+      }
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.drink_beer.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.drink_beer.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "drank_weak_beer": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "nbt": "{\"fluid\": { \"id\": \"psychedelicraft:wheat_hop\" } }"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [ "drank_weak_beer" ]
+  ]
+}

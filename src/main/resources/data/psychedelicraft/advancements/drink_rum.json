@@ -1,0 +1,38 @@
+{
+  "parent": "psychedelicraft:wash_sugar_cane",
+  "display": {
+    "icon": {
+      "item": "psychedelicraft:wooden_mug",
+      "tag": {
+        "fluid": {
+          "id": "psychedelicraft:sugar_cane",
+          "fermentation": 1,
+          "maturation": 7
+        }
+      }
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.drink_rum.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.drink_rum.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "drank_rum": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "nbt": "{\"fluid\": { \"id\": \"psychedelicraft:sugar_cane\", \"fermentation\": 1, \"maturation\": 7 } }"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [ "drank_rum" ]
+  ]
+}

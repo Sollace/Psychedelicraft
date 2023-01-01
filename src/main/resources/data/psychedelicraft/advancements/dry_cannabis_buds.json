@@ -1,0 +1,31 @@
+{
+  "parent": "psychedelicraft:cannabis_buds",
+  "display": {
+    "icon": {
+      "item": "psychedelicraft:dried_cannabis_buds"
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.dry_cannabis_buds.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.dry_cannabis_buds.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "consumed_the_thing": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": [ "psychedelicraft:dried_cannabis_buds" ]
+        }
+      }
+    }
+  },
+  "requirements": [
+    [ "consumed_the_thing" ]
+  ]
+}

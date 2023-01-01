@@ -5,11 +5,7 @@
 
 package ivorius.psychedelicraft.events;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.achievements.PSAchievementList;
 import ivorius.psychedelicraft.blocks.PSBlocks;
 import ivorius.psychedelicraft.client.audio.MovingSoundDrug;
 import ivorius.psychedelicraft.config.PSConfig;
@@ -18,29 +14,10 @@ import ivorius.psychedelicraft.fluids.FluidAlcohol;
 import ivorius.psychedelicraft.fluids.FluidWithIconSymbolRegistering;
 import ivorius.psychedelicraft.fluids.PSFluids;
 import ivorius.psychedelicraft.items.PSItems;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
-import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Arrays;
 
@@ -187,59 +164,6 @@ public class PSEventForgeHandler
         {
             if (fluid instanceof FluidWithIconSymbolRegistering)
                 ((FluidWithIconSymbolRegistering) fluid).registerIcons(iconRegister, event.map.getTextureType());
-        }
-    }
-
-    @SubscribeEvent
-    public void fluidDrinkEvent(FluidDrinkEvent event)
-    {
-        if (event.entityLiving instanceof EntityPlayer)
-        {
-            EntityPlayer player = (EntityPlayer) event.entityLiving;
-
-            if (containsAlcohol(event.drunken, PSFluids.alcWheatHop, false, 0))
-            {
-                player.triggerAchievement(PSAchievementList.drankBeer);
-            }
-            if (containsAlcohol(event.drunken, PSFluids.alcWheatHop, false, 7))
-            {
-                player.triggerAchievement(PSAchievementList.drankMatureBeer);
-            }
-
-            if (containsAlcohol(event.drunken, PSFluids.alcRedGrapes, false, 0))
-            {
-                player.triggerAchievement(PSAchievementList.drankWine);
-            }
-            if (containsAlcohol(event.drunken, PSFluids.alcRedGrapes, true, 0))
-            {
-                player.triggerAchievement(PSAchievementList.drankWineBrandy);
-            }
-
-            if (containsAlcohol(event.drunken, PSFluids.alcSugarCane, false, 0))
-            {
-                player.triggerAchievement(PSAchievementList.drankBasi);
-            }
-            if (containsAlcohol(event.drunken, PSFluids.alcSugarCane, true, 0))
-            {
-                player.triggerAchievement(PSAchievementList.drankRum);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void fluidDrinkEvent(ItemDriedEvent event)
-    {
-        if (event.dried.isItemEqual(new ItemStack(PSItems.driedCannabisBuds)))
-        {
-            event.entityPlayer.triggerAchievement(PSAchievementList.driedCannabisBuds);
-        }
-        if (event.dried.isItemEqual(new ItemStack(PSItems.magicMushroomsRed)))
-        {
-            event.entityPlayer.triggerAchievement(PSAchievementList.driedRedShrooms);
-        }
-        if (event.dried.isItemEqual(new ItemStack(PSItems.magicMushroomsBrown)))
-        {
-            event.entityPlayer.triggerAchievement(PSAchievementList.driedBrownShrooms);
         }
     }
 

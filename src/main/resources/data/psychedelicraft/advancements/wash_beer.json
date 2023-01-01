@@ -1,0 +1,31 @@
+{
+  "parent": "psychedelicraft:hop_cones",
+  "display": {
+    "icon": {
+      "item": "minecraft:wheat"
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.wash_beer.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.wash_beer.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_the_thing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "psychedelicraft:hop_cones" ] }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_the_thing" ]
+  ]
+}

@@ -64,14 +64,6 @@ public class PSEventFMLHandler
     @SubscribeEvent
     public void onTick(TickEvent event)
     {
-        if ((event.type == TickEvent.Type.CLIENT || event.type == TickEvent.Type.SERVER) && event.phase == TickEvent.Phase.END)
-        {
-            for (FMLInterModComms.IMCMessage message : FMLInterModComms.fetchRuntimeMessages(Psychedelicraft.instance))
-            {
-                Psychedelicraft.communicationHandler.onIMCMessage(message, event.type == TickEvent.Type.SERVER, true);
-            }
-        }
-
         if (event.type == TickEvent.Type.CLIENT && event.phase == TickEvent.Phase.START)
         {
             PSRenderStates.update();
@@ -129,72 +121,9 @@ public class PSEventFMLHandler
     }
 
     @SubscribeEvent
-    public void onConfigChanged(ConfigChangedEvent event)
-    {
-        if (event instanceof ConfigChangedEvent.OnConfigChangedEvent && event.modID.equals(Psychedelicraft.MODID))
-        {
-            PSConfig.loadConfig(event.configID);
-
-            if (Psychedelicraft.config.hasChanged())
-                Psychedelicraft.config.save();
-        }
-    }
-
-    @SubscribeEvent
     public void onItemCrafted(PlayerEvent.ItemCraftedEvent event)
     {
         if (event.craftMatrix instanceof InventoryCrafting)
             RecipeActionRegistry.finalizeCrafting(event.crafting, (InventoryCrafting) event.craftMatrix, event.player);
-
-        if (event.crafting.isItemEqual(new ItemStack(PSBlocks.mashTub)))
-        {
-            event.player.triggerAchievement(PSAchievementList.madeMashTub);
-        }
-        if (event.crafting.isItemEqual(new ItemStack(PSBlocks.distillery)))
-        {
-            event.player.triggerAchievement(PSAchievementList.madeDistillery);
-        }
-        if (isFluidStack(event.crafting, new ItemStack(PSItems.itemMashTub, 1, OreDictionary.WILDCARD_VALUE), PSFluids.alcWheatHop))
-        {
-            event.player.triggerAchievement(PSAchievementList.beerWash);
-        }
-        if (isFluidStack(event.crafting, new ItemStack(PSItems.itemMashTub, 1, OreDictionary.WILDCARD_VALUE), PSFluids.alcRedGrapes))
-        {
-            event.player.triggerAchievement(PSAchievementList.grapeWash);
-        }
-        if (isFluidStack(event.crafting, new ItemStack(PSItems.itemMashTub, 1, OreDictionary.WILDCARD_VALUE), PSFluids.alcSugarCane))
-        {
-            event.player.triggerAchievement(PSAchievementList.sugarcaneWash);
-        }
-
-        if (event.crafting.isItemEqual(new ItemStack(PSBlocks.dryingTable)) || event.crafting.isItemEqual(new ItemStack(PSBlocks.dryingTableIron)))
-        {
-            event.player.triggerAchievement(PSAchievementList.madeDryingTable);
-        }
-        if (event.crafting.isItemEqual(new ItemStack(PSItems.joint)))
-        {
-            event.player.triggerAchievement(PSAchievementList.madeJoint);
-        }
-        if (event.crafting.isItemEqual(new ItemStack(PSItems.hashMuffin)))
-        {
-            event.player.triggerAchievement(PSAchievementList.madeHashMuffin);
-        }
-    }
-
-    @SubscribeEvent
-    public void onItemPickup(PlayerEvent.ItemPickupEvent event)
-    {
-        if (event.pickedUp.getEntityItem().isItemEqual(new ItemStack(PSItems.hopCones)))
-        {
-            event.player.triggerAchievement(PSAchievementList.hopCones);
-        }
-        else if (event.pickedUp.getEntityItem().isItemEqual(new ItemStack(PSItems.wineGrapes)))
-        {
-            event.player.triggerAchievement(PSAchievementList.grapes);
-        }
-        else if (event.pickedUp.getEntityItem().isItemEqual(new ItemStack(PSItems.cannabisBuds)))
-        {
-            event.player.triggerAchievement(PSAchievementList.cannabisBuds);
-        }
     }
 }

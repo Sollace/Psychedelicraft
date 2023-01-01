@@ -1,0 +1,31 @@
+{
+  "parent": "psychedelicraft:dry_cannabis_buds",
+  "display": {
+    "icon": {
+      "item": "psychedelicraft:joint"
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.roll_joint.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.roll_joint.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_the_thing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "psychedelicraft:joint" ] }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_the_thing" ]
+  ]
+}

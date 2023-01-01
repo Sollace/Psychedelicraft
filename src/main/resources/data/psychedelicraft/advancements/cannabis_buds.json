@@ -1,0 +1,31 @@
+{
+  "parent": "psychedelicraft:drying_table",
+  "display": {
+    "icon": {
+      "item": "psychedelicraft:cannabis_buds"
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.cannabis_buds.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.cannabis_buds.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_the_thing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "psychedelicraft:cannabis_buds" ] }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_the_thing" ]
+  ]
+}

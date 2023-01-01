@@ -1,0 +1,31 @@
+{
+  "parent": "psychedelicraft:make_drying_table",
+  "display": {
+    "icon": {
+      "item": "psychedelicraft:red_magic_mushroom"
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.dry_red_mushroom.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.dry_red_mushroom.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "consumed_the_thing": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": [ "psychedelicraft:red_magic_mushroom" ]
+        }
+      }
+    }
+  },
+  "requirements": [
+    [ "consumed_the_thing" ]
+  ]
+}
