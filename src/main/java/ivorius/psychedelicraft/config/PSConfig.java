@@ -6,7 +6,6 @@
 package ivorius.psychedelicraft.config;
 
 import ivorius.psychedelicraft.PSProxy;
-import ivorius.psychedelicraft.entities.PSEntityList;
 import ivorius.psychedelicraft.fluids.FluidAlcohol;
 
 import java.util.HashMap;
@@ -64,11 +63,13 @@ public class PSConfig
     public static boolean distortIncomingMessages;
     public static boolean distortOutgoingMessages;
 
+    public static boolean villagerDealer;
+
     public static void loadConfig(String configID, Configuration config)
     {
         if (configID == null || configID.equals(Configuration.CATEGORY_GENERAL))
         {
-            PSEntityList.villagerDealerProfessionID = config.get("General", "villagerDealerProfessionID", 87, "Internal ID for the drug dealer villager. Enter a negative number to disable.");
+            villagerDealer = config.get("General", "villagerDealerProfessionID", false, "Internal ID for the drug dealer villager. Enter a negative number to disable.");
         }
 
         if (configID == null || configID.equals(CATEGORY_BALANCING))

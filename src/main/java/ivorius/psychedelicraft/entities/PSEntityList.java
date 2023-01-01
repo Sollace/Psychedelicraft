@@ -13,11 +13,6 @@ import ivorius.psychedelicraft.config.PSConfig;
  */
 public class PSEntityList
 {
-    public static final int molotovCocktailID = 0;
-    public static final int realityRiftID = 1;
-
-    public static int villagerDealerProfessionID;
-
     public static void bootstrap() {
         int entityMolotovCocktailID = EntityRegistry.findGlobalUniqueEntityId();
         EntityRegistry.registerGlobalEntityID(EntityMolotovCocktail.class, "molotovCocktail", entityMolotovCocktailID);
@@ -25,14 +20,7 @@ public class PSEntityList
         EntityRegistry.registerModEntity(EntityRealityRift.class, "realityRift", realityRiftID, mod, 80, 3, false);
         EntityRegistry.registerModEntity(EntityMolotovCocktail.class, "molotovCocktail", molotovCocktailID, mod, 64, 10, true);
 
-        if (villagerDealerProfessionID >= 0) {
-            VillagerRegistry.instance().registerVillagerId(villagerDealerProfessionID);
-            VillagerRegistry.instance().registerVillageTradeHandler(villagerDealerProfessionID, new VillagerTradeHandlerDrugDealer());
-        }
-
-        if (PSConfig.farmerDrugDeals) {
-            VillagerRegistry.instance().registerVillageTradeHandler(0, new VillagerTradeHandlerFarmer());
-        }
+        PSTradeOffers.bootstrap();
 
         GameRegistry.registerTileEntityWithAlternatives(TileEntityDryingTable.class, "ygcDryingTable", "dryingTable");
         GameRegistry.registerTileEntityWithAlternatives(TileEntityMashTub.class, "ygcMashTub");
