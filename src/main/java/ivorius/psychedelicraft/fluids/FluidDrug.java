@@ -6,11 +6,10 @@
 package ivorius.psychedelicraft.fluids;
 
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -77,7 +76,7 @@ public class FluidDrug extends FluidSimple implements FluidWithTypes, DrinkableF
         for (DrugInfluence influence : influencesPerLiter)
         {
             DrugInfluence clone = influence.clone();
-            clone.setMaxInfluence(clone.getMaxInfluence() * (double) fluidStack.amount / (double) FluidHelper.MILLIBUCKETS_PER_LITER);
+            clone.setMaxInfluence(clone.getMaxInfluence() * (double) fluidStack.amount / FluidHelper.MILLIBUCKETS_PER_LITER);
             list.add(clone);
         }
     }
@@ -125,13 +124,13 @@ public class FluidDrug extends FluidSimple implements FluidWithTypes, DrinkableF
     }
 
     @Override
-    public boolean canInject(FluidStack fluidStack, EntityLivingBase entity)
+    public boolean canInject(FluidStack fluidStack, LivingEntity entity)
     {
         return isInjectable();
     }
 
     @Override
-    public void inject(FluidStack fluidStack, EntityLivingBase entity)
+    public void inject(ItemStack fluidStack, LivingEntity entity)
     {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(entity);
 
@@ -146,18 +145,18 @@ public class FluidDrug extends FluidSimple implements FluidWithTypes, DrinkableF
     }
 
     @Override
-    public float fireStrength(FluidStack fluidStack)
+    public float fireStrength(ItemStack fluidStack)
     {
-        return getAlcohol(fluidStack) * fluidStack.amount / FluidHelper.MILLIBUCKETS_PER_LITER * 2.0f;
+        return getAlcohol(fluidStack) * fluidStack.getCount() / FluidHelper.MILLIBUCKETS_PER_LITER * 2.0f;
     }
 
     @Override
-    public float explosionStrength(FluidStack fluidStack)
+    public float explosionStrength(ItemStack fluidStack)
     {
-        return getAlcohol(fluidStack) * fluidStack.amount / FluidHelper.MILLIBUCKETS_PER_LITER * 0.6f;
+        return getAlcohol(fluidStack) * fluidStack.getCount() / FluidHelper.MILLIBUCKETS_PER_LITER * 0.6f;
     }
 
-    public float getAlcohol(FluidStack fluidStack)
+    public float getAlcohol(ItemStack fluidStack)
     {
         float alcohol = 0.0f;
 
@@ -169,6 +168,6 @@ public class FluidDrug extends FluidSimple implements FluidWithTypes, DrinkableF
             if (drugInfluence.getDrugName().equals("Alcohol"))
                 alcohol += drugInfluence.getMaxInfluence();
         }
-        return MathHelper.clamp_float(alcohol, 0.0f, 1.0f);
+        return MathHelper.clamp(alcohol, 0.0f, 1.0f);
     }
 }

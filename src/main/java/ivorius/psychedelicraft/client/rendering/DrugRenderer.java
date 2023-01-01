@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.entities.drugs.DrugHallucination;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.entity.LivingEntity;

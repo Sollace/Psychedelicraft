@@ -14,6 +14,7 @@ import ivorius.ivtoolkit.network.PartialUpdateHandler;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entities.EntityRealityRift;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class TileEntityRiftJar extends TileEntity implements PartialUpdateHandler
+public class TileEntityRiftJar extends BlockEntity implements PartialUpdateHandler
 {
     public float currentRiftFraction;
     public int ticksAliveVisual;

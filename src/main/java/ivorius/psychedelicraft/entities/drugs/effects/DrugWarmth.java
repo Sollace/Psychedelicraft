@@ -14,8 +14,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 
-import org.lwjgl.opengl.GL11;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 
 /**

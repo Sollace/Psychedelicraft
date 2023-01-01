@@ -5,28 +5,22 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
-import io.netty.buffer.ByteBuf;
 import ivorius.psychedelicraft.*;
 import ivorius.psychedelicraft.client.rendering.IDrugRenderer;
 import ivorius.psychedelicraft.client.screen.UpdatableContainer;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.EntityRealityRift;
 import ivorius.psychedelicraft.entities.PSAccessHelperEntity;
-import ivorius.psychedelicraft.network.PSNetworkHelperServer;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
-import net.minecraft.particle.DustColorTransitionParticleEffect;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Vector3f;
-
 import java.util.*;
 import javax.annotation.Nullable;
 import java.util.stream.Collectors;
@@ -66,8 +60,9 @@ public class DrugProperties {
     @Nullable
     public static DrugProperties getDrugProperties(Entity entity)
     {
-        if (entity != null)
-            return (DrugProperties) entity.getExtendedProperties(EEP_KEY);
+        // TODO: (Sollace) Mixin hooks! Eventually...
+        //if (entity != null)
+          //  return (DrugProperties) entity.getExtendedProperties(EEP_KEY);
 
         return null;
     }
@@ -179,7 +174,7 @@ public class DrugProperties {
                     delayUntilHeartbeat = MathHelper.floor(35.0f / (speed - 1.0f));
 
                     // TODO: (Sollace) PSSoundEvents
-                    entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), Psychedelicraft.modBase + "heartBeat", heartbeatVolume, speed, false);
+                    // entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), Psychedelicraft.modBase + "heartBeat", heartbeatVolume, speed, false);
                 }
             }
 
@@ -199,7 +194,7 @@ public class DrugProperties {
                     delayUntilBreath = MathHelper.floor(30.0f / speed);
 
                     // TODO: (Sollace) PSSoundEvents
-                    entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), Psychedelicraft.modBase + "breath", breathVolume, speed * 0.1f + 0.9f + (lastBreathWasIn ? 0.15f : 0.0f), false);
+                    // entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), Psychedelicraft.modBase + "breath", breathVolume, speed * 0.1f + 0.9f + (lastBreathWasIn ? 0.15f : 0.0f), false);
                 }
             }
 

@@ -5,14 +5,14 @@
 
 package ivorius.psychedelicraft.fluids;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.item.ItemStack;
 
 /**
  * A fluid that can explode.
  */
 public interface ExplodingFluid
 {
-    public static final String SUBTYPE = "exploding";
+    String SUBTYPE = "exploding";
 
     /**
      * Determines the flame distance of the explosion.
@@ -20,7 +20,7 @@ public interface ExplodingFluid
      * @param fluidStack The fluid stack.
      * @return The flame distance in blocks.
      */
-    float fireStrength(FluidStack fluidStack);
+    float fireStrength(ItemStack fluidStack);
 
     /**
      * Determines the explosion size.
@@ -28,5 +28,5 @@ public interface ExplodingFluid
      * @param fluidStack The fluid stack.
      * @return The explosion size in blocks.
      */
-    float explosionStrength(FluidStack fluidStack);
+    float explosionStrength(ItemStack fluidStack);
 }

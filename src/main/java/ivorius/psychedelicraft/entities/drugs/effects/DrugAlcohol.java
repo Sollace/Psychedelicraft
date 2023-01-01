@@ -10,13 +10,14 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.DrugRenderer;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.MathHelper;
-
-import java.util.Random;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Created by lukas on 01.11.14.
@@ -49,7 +50,7 @@ public class DrugAlcohol extends DrugSimple
         if (getActiveValue() > 0.0)
         {
             int ticksExisted = drugProperties.ticksExisted;
-            Random random = entity.getRNG();
+            Random random = entity.getRandom();
 
             double activeValue = getActiveValue();
 
@@ -58,7 +59,7 @@ public class DrugAlcohol extends DrugSimple
                 double damageChance = (activeValue - 0.9f) * 2.0f;
 
                 if (ticksExisted % 20 == 0 && random.nextFloat() < damageChance) {
-                    entity.attackEntityFrom(PSDamageSources.ALCOHOL_POISONING, (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
+                    entity.damage(PSDamageSources.ALCOHOL_POISONING, (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
                 }
             }
 
