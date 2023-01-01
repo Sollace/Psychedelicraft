@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "psychedelicraft",
+  "version": "${version}",
+  "name": "Psychedelicraft",
+  "description": "Adds drugs into Minecraft. Psychedelicraft specializes on realism and effects. Shaders are being utilized, so keep that in mind.",
+  "authors": [
+    "Ivorius", "TripleHeadedSheep"
+  ],
+  "contact": {
+    "homepage": "http://www.minecraftforum.net/topic/563257-152",
+    "sources": "https://github.com/Sollace/Psychedelicraft",
+    "issues": "https://github.com/Sollace/Psychedelicraft/issues"
+  },
+  "license": "MIT",
+  "icon": "gfx/psychedelicraft/logo.png",
+  "accessWidener": "psychedelicraft.aw",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "ivorius.psychedelicraft.Main"
+    ],
+    "client": [
+      "ivorius.psychedelicraft.client.Main"
+    ]
+  },
+  "mixins": [
+    "psychedelicraft.mixin.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.12.0",
+    "java": ">=17",
+    "fabric-api-base": ">=0.1.0",
+    "fabric-lifecycle-events-v1": ">=0.1.0",
+    "fabric-resource-loader-v0": ">=0.1.0",
+    "kirin": "*"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

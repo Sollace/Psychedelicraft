@@ -1,202 +1,94 @@
 buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'com.github.dexman545:Outlet:1.3.10'
     }
 }
-
-apply plugin: 'forge'
-
-version = "1.5.3"
-def ENV = System.getenv()
-if (ENV.DRONE_BUILD_NUMBER) {
-    version += ".n" + ENV.DRONE_BUILD_NUMBER
+plugins {
+    id 'java-library'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'maven-publish'
+    id 'com.modrinth.minotaur' version '2.+'
+    id 'org.ajoberstar.reckon' version '0.13.0'
 }
+apply plugin: 'dex.plugins.outlet'
 
-group= "ivorius.psychedelicraft" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Psychedelicraft"
-
-minecraft {
-    version = "1.8-11.14.3.1491"
-    runDir = "eclipse"
-    mappings = "snapshot_20150721"
-}
-
-jar {
-    manifest {
-        attributes 'FMLCorePlugin': 'ivorius.psychedelicraftcore.PsychedelicraftLoadingPlugin',
-                'FMLCorePluginContainsFMLMod': 'true'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
+    withSourcesJar()
 }
 
-// Provided - Start
-// FML doesnt laod coremods and ATs from the classpath
+outlet.allowSnapshotsForProject = false
+outlet.mcVersionRange = project.minecraft_version_range
 
-apply plugin: 'idea'
+group = project.group
+description = project.displayname
+archivesBaseName = project.name
 
-configurations {
-    provided
-//    provided.extendsFrom(compile)
+loom {
+    mixin.defaultRefmapName = 'psychedelicraft.mixin.refmap.json'
+    accessWidenerPath = file('src/main/resources/psychedelicraft.aw')
 }
 
-sourceSets {
-    main {
-        compileClasspath += [configurations.provided]
-    }
+reckon {
+    scopeFromProp()
+    stageFromProp('beta', 'rc', 'final')
 }
 
-idea {
-    module {
-        scopes.PROVIDED.plus += [configurations.provided]
-		inheritOutputDirs = true
-    }
+repositories {
+    mavenLocal()
+    maven { name 'modmenu'; url 'https://maven.terraformersmc.com/releases' }
 }
-
-// Provided - Stop
 
 dependencies {
-    provided 'ivorius.ivtoolkit:IvToolkit:1.2.1:dev'
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modApi "net.fabricmc:fabric-loader:${project.loader_version}"
+    modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // provides networking and mod handshaking.
+    //   https://github.com/Sollace/Fabwork
+    // > gradlew build publishToMavenLocal
+    modApi "com.sollace:fabwork:${project.fabwork_version}"
+    include "com.sollace:fabwork:${project.fabwork_version}"
+
+    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
 }
 
-processResources
-        {
-            // this will ensure that this task is redone when the versions change.
-            inputs.property "version", project.version
-            inputs.property "mcversion", project.minecraft.version
+processResources {
+    inputs.property "version", project.version.toString()
 
-            // replace stuff in mcmod.info, nothing else
-            from(sourceSets.main.resources.srcDirs) {
-                include 'mcmod.info'
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version.toString()
+    }
 
-                // replace version and mcversion
-                expand 'version':project.version, 'mcversion':project.minecraft.version
-            }
-
-            // copy everything else, thats not the mcmod.info
-            from(sourceSets.main.resources.srcDirs) {
-                exclude 'mcmod.info'
-            }
-        }
-
-// FML doesnt laod coremods and ATs from the classpath
-task copyMods(type: Copy, dependsOn: "extractUserDev") {
-    from { configurations.provided }
-    include "**/*.jar"
-    into file(minecraft.runDir + "/mods")
-    mustRunAfter "deobfBinJar"
-    mustRunAfter "repackMinecraft"
-}
-tasks.setupDevWorkspace.dependsOn copyMods
-tasks.setupDecompWorkspace.dependsOn copyMods
-
-runClient {
-    jvmArgs '-Dfml.coreMods.load=ivorius.psychedelicraftcore.PsychedelicraftLoadingPlugin'
-}
-runServer {
-    jvmArgs '-Dfml.coreMods.load=ivorius.psychedelicraftcore.PsychedelicraftLoadingPlugin'
+    from 'LICENSE'
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
 
-task sourceJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-
-    manifest {
-        attributes 'FMLCorePlugin': 'ivorius.psychedelicraftcore.PsychedelicraftLoadingPlugin',
-                'FMLCorePluginContainsFMLMod': 'true'
+tasks.modrinth {
+    onlyIf {
+      def stage = version.version.stage.value
+      stage == null || stage.name != 'beta'
     }
 }
 
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    classifier = 'dev'
-
-    manifest {
-        attributes 'FMLCorePlugin': 'ivorius.psychedelicraftcore.PsychedelicraftLoadingPlugin',
-                'FMLCorePluginContainsFMLMod': 'true'
+modrinth {
+    token = System.env.MODRINTH_KEY
+    projectId = project.modrinth_project_id
+    //featured = true
+    versionNumber = version.toString()
+    versionName = archivesBaseName + '-' + version
+    changelog = "[Changelog](https://github.com/Sollace/Psychedelicraft/releases/tag/${version.toString()})"
+    uploadFile = remapJar
+    outlet.mcVersions().each{ver ->
+      gameVersions.add ver
     }
-}
-
-artifacts {
-    archives sourceJar
-    archives deobfJar
-}
-
-uploadArchives() {
-    dependsOn reobf
-
-    if (project.hasProperty("mavenUrl") && project.hasProperty("mavenUser") && project.hasProperty("mavenPassword")) {
-        repositories {
-            logger.info('Publishing to files server')
-
-            mavenDeployer {
-
-                repository(url: project."mavenUrl") {
-                    authentication(userName: project."mavenUser", password: project."mavenPassword")
-                }
-
-                addFilter('deobf') {artifact, file ->
-                    artifact.attributes['classifier'] == 'dev'
-                }
-                pom('deobf').version = project.version
-                addFilter('sources') {artifact, file ->
-                    artifact.attributes['classifier'] == 'sources'
-                }
-                pom('sources').version = project.version
-                addFilter('universal') {artifact, file ->
-                    artifact.attributes['classifier'] == null
-                }
-                pom('universal').version = project.version
-
-                pom {
-                    groupId = project.group
-                    version = project.version
-                    artifactId = project.archivesBaseName
-                    project {
-                        name project.archivesBaseName
-                        packaging 'jar'
-                        description 'Adds drugs to the game minecraft'
-                        url 'https://github.com/Ivorforce/Psychedelicraft'
-
-                        scm {
-                            url 'scm:git:git@github.com:Ivorforce/Psychedelicraft.git'
-                            connection 'scm:git:git@github.com:Ivorforce/Psychedelicraft.git'
-                            developerConnection 'scm:git:git@github.com:Ivorforce/Psychedelicraft.git'
-                        }
-
-                        issueManagement {
-                            system 'github'
-                            url 'https://github.com/Ivorforce/Psychedelicraft/issues'
-                        }
-
-                        developers {
-                            developer {
-                                id 'Ivorius'
-                                name 'Ivorius'
-                                roles { role 'developer' }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    else {
-        logger.log(LogLevel.ERROR, 'No upload variables defined!');
+    dependencies {
+       required.project 'P7dR8mSH'
     }
 }
