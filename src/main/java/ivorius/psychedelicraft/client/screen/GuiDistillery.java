@@ -3,9 +3,7 @@ package ivorius.psychedelicraft.client.screen;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.blocks.TileEntityDistillery;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.*;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Arrays;
@@ -16,7 +14,7 @@ import java.util.List;
  */
 public class GuiDistillery extends GuiFluidHandler
 {
-    public static final ResourceLocation distilleryTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "container_distillery.png");
+    public static final Identifier distilleryTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_distillery.png");
 
     private TileEntityDistillery tileEntityDistillery;
 
@@ -27,7 +25,7 @@ public class GuiDistillery extends GuiFluidHandler
     }
 
     @Override
-    protected ResourceLocation getBackgroundTexture()
+    protected Identifier getBackgroundTexture()
     {
         return distilleryTexture;
     }

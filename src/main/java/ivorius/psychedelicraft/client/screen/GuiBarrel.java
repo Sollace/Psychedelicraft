@@ -3,9 +3,7 @@ package ivorius.psychedelicraft.client.screen;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.blocks.TileEntityBarrel;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.*;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Arrays;
@@ -16,7 +14,7 @@ import java.util.List;
  */
 public class GuiBarrel extends GuiFluidHandler
 {
-    public static final ResourceLocation barrelTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "container_barrel.png");
+    public static final Identifier barrelTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_barrel.png");
 
     private TileEntityBarrel tileEntityBarrel;
 
@@ -27,7 +25,7 @@ public class GuiBarrel extends GuiFluidHandler
     }
 
     @Override
-    protected ResourceLocation getBackgroundTexture()
+    protected Identifier getBackgroundTexture()
     {
         return barrelTexture;
     }

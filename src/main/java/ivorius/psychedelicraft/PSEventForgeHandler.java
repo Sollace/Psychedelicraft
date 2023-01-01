@@ -16,7 +16,9 @@ import ivorius.psychedelicraft.items.PSItems;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Arrays;
 
@@ -81,7 +83,7 @@ public class PSEventForgeHandler
 //            }
 //        }
 //    }
-
+/*
     //@SubscribeEvent
     public void onPlayerSleep(PlayerSleepInBedEvent event)
     {
@@ -95,7 +97,7 @@ public class PSEventForgeHandler
                 event.result = status;
         }
     }
-
+*/
     //@SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event)
     {

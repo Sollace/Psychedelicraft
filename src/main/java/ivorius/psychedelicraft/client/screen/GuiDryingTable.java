@@ -9,14 +9,13 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.blocks.TileEntityDryingTable;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 public class GuiDryingTable extends GuiContainer
 {
-    public static ResourceLocation dryingTableBG = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "guiDryingTable.png");
+    public static Identifier dryingTableBG = Psychedelicraft.id(Psychedelicraft.filePathTextures + "guiDryingTable.png");
 
     public GuiDryingTable(InventoryPlayer par1InventoryPlayer, World par2World, TileEntityDryingTable tileEntityDryingTable)
     {

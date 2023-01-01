@@ -10,8 +10,7 @@ import ivorius.psychedelicraft.blocks.PSBlocks;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
@@ -27,13 +26,12 @@ public class EntityRealityRift extends Entity
 {
     public float visualRiftSize;
 
-    public EntityRealityRift(World par1World)
+    public EntityRealityRift(EntityType<EntityRealityRift> type, World par1World)
     {
-        super(par1World);
-
-        setSize(2.0f, 2.0f);
-        ignoreFrustumCheck = true; // Change this when MC supports a render bounding box...
-        this.yOffset = this.height / 2.0F;
+        super(type, par1World);
+        // TODO: (Sollace) Minecraft now supports a render bounding box
+        this.ignoreCameraFrustum = true; // Change this when MC supports a render bounding box...
+        //this.yOffset = this.height / 2.0F;
     }
 
     @Override

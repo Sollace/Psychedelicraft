@@ -9,6 +9,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 public class GuiFluidHandler extends GuiFluid
 {
-    public static final ResourceLocation bgTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "container_fluid.png");
+    public static final Identifier bgTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_fluid.png");
 
     public GuiButton changeTransferButton;
 
@@ -73,7 +74,7 @@ public class GuiFluidHandler extends GuiFluid
             drawTank(tankInfo, baseX + 60, baseY + 14 + 57, 108, 57, 4.0f, 2.1111f);
     }
 
-    protected ResourceLocation getBackgroundTexture()
+    protected Identifier getBackgroundTexture()
     {
         return bgTexture;
     }

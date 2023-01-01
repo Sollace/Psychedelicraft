@@ -8,7 +8,10 @@ package ivorius.psychedelicraft.entities;
 import ivorius.psychedelicraft.fluids.ExplodingFluid;
 import ivorius.psychedelicraft.items.ItemMolotovCocktail;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.entity.projectile.thrown.ThrownEntity;
+import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,13 +22,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
 
-public class EntityMolotovCocktail extends EntityThrowable
+public class EntityMolotovCocktail extends ThrownItemEntity
 {
     public ItemStack molotovStack;
 
-    public EntityMolotovCocktail(World par1World)
-    {
-        super(par1World);
+    public EntityMolotovCocktail(EntityType<EntityMolotovCocktail> type, World world) {
+        super(type, world);
     }
 
     public EntityMolotovCocktail(World par1World, EntityLivingBase par2EntityLiving)
