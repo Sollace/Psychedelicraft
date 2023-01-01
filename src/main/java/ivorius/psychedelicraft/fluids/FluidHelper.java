@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.fluids;
 
-import ivorius.psychedelicraft.events.FluidDrinkEvent;
 import ivorius.psychedelicraft.items.FluidContainerItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluid;

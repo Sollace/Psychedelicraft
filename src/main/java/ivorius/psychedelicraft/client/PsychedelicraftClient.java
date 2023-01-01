@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.client;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.item.PSModelPredicates;
+import ivorius.psychedelicraft.events.PSCoreHandlerClient;
 import net.fabricmc.api.ClientModInitializer;
 
 /**
@@ -9,9 +9,17 @@ import net.fabricmc.api.ClientModInitializer;
  * @since 1 Jan 2023
  */
 public class PsychedelicraftClient implements ClientModInitializer {
+
+
+    public static PSCoreHandlerClient coreHandlerClient;
+
+
     @Override
     public void onInitializeClient() {
-        Psychedelicraft.proxy = new ClientProxy();
+        new ClientProxy();
+        coreHandlerClient = new PSCoreHandlerClient();
+        coreHandlerClient.register();
+
         PSModelPredicates.bootstrap();
     }
 }

@@ -5,20 +5,29 @@
 
 package ivorius.psychedelicraft;
 
+import ivorius.psychedelicraft.config.Configuration;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
 
 /**
  * Created by lukas on 24.05.14.
  */
-public interface PSProxy
-{
-    void preInit();
+public class PSProxy {
 
-    void spawnColoredParticle(Entity entity, float[] color, Vec3d direction, float speed, float size);
+    private static PSProxy instance;
 
-    void createDrugRenderer(DrugProperties drugProperties);
+    public static PSProxy getInstance() {
+        return instance;
+    }
 
-    void loadConfig(String configID);
+    protected PSProxy() {
+        instance = this;
+    }
+
+    public void createDrugRenderer(DrugProperties drugProperties) {
+
+    }
+
+    public void loadConfig(Configuration config, String configID) {
+
+    }
 }

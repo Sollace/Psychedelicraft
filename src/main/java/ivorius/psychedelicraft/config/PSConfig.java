@@ -5,15 +5,12 @@
 
 package ivorius.psychedelicraft.config;
 
-import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.PSProxy;
 import ivorius.psychedelicraft.entities.PSEntityList;
 import ivorius.psychedelicraft.fluids.FluidAlcohol;
-import net.minecraftforge.common.config.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static ivorius.psychedelicraft.Psychedelicraft.config;
 
 /**
  * Created by lukas on 31.07.14.
@@ -67,35 +64,35 @@ public class PSConfig
     public static boolean distortIncomingMessages;
     public static boolean distortOutgoingMessages;
 
-    public static void loadConfig(String configID)
+    public static void loadConfig(String configID, Configuration config)
     {
         if (configID == null || configID.equals(Configuration.CATEGORY_GENERAL))
         {
-            PSEntityList.villagerDealerProfessionID = config.get("General", "villagerDealerProfessionID", 87, "Internal ID for the drug dealer villager. Enter a negative number to disable.").getInt();
+            PSEntityList.villagerDealerProfessionID = config.get("General", "villagerDealerProfessionID", 87, "Internal ID for the drug dealer villager. Enter a negative number to disable.");
         }
 
         if (configID == null || configID.equals(CATEGORY_BALANCING))
         {
-            randomTicksUntilRiftSpawn = config.get(CATEGORY_BALANCING, "randomTicksUntilRiftSpawn", MINUTE * 180, "Approximate number of ticks until a rift spawns. Enter a negative number to disable.").getInt();
+            randomTicksUntilRiftSpawn = config.get(CATEGORY_BALANCING, "randomTicksUntilRiftSpawn", MINUTE * 180, "Approximate number of ticks until a rift spawns. Enter a negative number to disable.");
 
-            enableHarmonium = config.get(CATEGORY_BALANCING, "enableHarmonium", false).getBoolean();
-            enableRiftJars = config.get(CATEGORY_BALANCING, "enableRiftJars", false).getBoolean();
+            enableHarmonium = config.get(CATEGORY_BALANCING, "enableHarmonium", false);
+            enableRiftJars = config.get(CATEGORY_BALANCING, "enableRiftJars", false);
 
-            genJuniper = config.get(CATEGORY_BALANCING, "generateJuniper", true).getBoolean();
-            genCannabis = config.get(CATEGORY_BALANCING, "generateCannabis", true).getBoolean();
-            genHop = config.get(CATEGORY_BALANCING, "genHop", true).getBoolean();
-            genTobacco = config.get(CATEGORY_BALANCING, "generateTobacco", true).getBoolean();
-            genCoffea = config.get(CATEGORY_BALANCING, "generateCoffea", true).getBoolean();
-            genCoca = config.get(CATEGORY_BALANCING, "generateCoca", true).getBoolean();
-            genPeyote = config.get(CATEGORY_BALANCING, "generatePeyote", true).getBoolean();
+            genJuniper = config.get(CATEGORY_BALANCING, "generateJuniper", true);
+            genCannabis = config.get(CATEGORY_BALANCING, "generateCannabis", true);
+            genHop = config.get(CATEGORY_BALANCING, "genHop", true);
+            genTobacco = config.get(CATEGORY_BALANCING, "generateTobacco", true);
+            genCoffea = config.get(CATEGORY_BALANCING, "generateCoffea", true);
+            genCoca = config.get(CATEGORY_BALANCING, "generateCoca", true);
+            genPeyote = config.get(CATEGORY_BALANCING, "generatePeyote", true);
 
-            dungeonChests = config.get(CATEGORY_BALANCING, "dungeonChests", true).getBoolean();
-            villageChests = config.get(CATEGORY_BALANCING, "villageChests", true).getBoolean();
+            dungeonChests = config.get(CATEGORY_BALANCING, "dungeonChests", true);
+            villageChests = config.get(CATEGORY_BALANCING, "villageChests", true);
 
-            farmerDrugDeals = config.get(CATEGORY_BALANCING, "farmerDrugDeals", true).getBoolean();
+            farmerDrugDeals = config.get(CATEGORY_BALANCING, "farmerDrugDeals", true);
 
-            dryingTableTickDuration = config.get(CATEGORY_BALANCING, "dryingTableTickDuration", MINUTE * 16, "Time until plants in the drying table finish the drying process.").getInt();
-            ironDryingTableTickDuration = config.get(CATEGORY_BALANCING, "ironDryingTableTickDuration", MINUTE * 12, "Time until plants in the iron drying table finish the drying process.").getInt();
+            dryingTableTickDuration = config.get(CATEGORY_BALANCING, "dryingTableTickDuration", MINUTE * 16, "Time until plants in the drying table finish the drying process.");
+            ironDryingTableTickDuration = config.get(CATEGORY_BALANCING, "ironDryingTableTickDuration", MINUTE * 12, "Time until plants in the iron drying table finish the drying process.");
 
             readTickInfo(alcInfoWheatHop, "wheatHop", MINUTE * 30, MINUTE * 60, MINUTE * 100, MINUTE * 30, config);
             readTickInfo(alcInfoWheat, "wheat", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
@@ -111,25 +108,25 @@ public class PSConfig
             readTickInfo(alcInfoBanana, "banana", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
             readTickInfo(alcInfoMilk, "milk", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
 
-            slurryHardeningTime = config.get(CATEGORY_BALANCING, "slurryHardeningTime", MINUTE * 30, "The amount of ticks slurry needs to sit in a vat to harden to dirt.").getInt();
+            slurryHardeningTime = config.get(CATEGORY_BALANCING, "slurryHardeningTime", MINUTE * 30, "The amount of ticks slurry needs to sit in a vat to harden to dirt.");
 
-            distortOutgoingMessages = config.getBoolean("distortOutgoingMessages", CATEGORY_BALANCING, true, "Whether the mod should distort chat messages when drugs have been consumed ('slurred speech').");
+            distortOutgoingMessages = config.get(CATEGORY_BALANCING, "distortOutgoingMessages", true, "Whether the mod should distort chat messages when drugs have been consumed ('slurred speech').");
         }
 
-        Psychedelicraft.proxy.loadConfig(configID);
+        PSProxy.getInstance().loadConfig(config, configID);
     }
 
     public static void readTickInfo(FluidAlcohol.TickInfo tickInfo, String fluidName, int defaultFermentation, int defaultDistillation, int defaultMaturation, int defaultAcetification, Configuration config)
     {
-        tickInfo.ticksPerFermentation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerFermentation", defaultFermentation, String.format("Time until %s wort ferments to the next step.", fluidName)).getInt();
-        tickInfo.ticksPerDistillation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerDistillation", defaultDistillation, String.format("Time until %s distills to the next step.", fluidName)).getInt();
-        tickInfo.ticksPerMaturation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerMaturation", defaultMaturation, String.format("Time until %s matures to the next step.", fluidName)).getInt();
-        tickInfo.ticksUntilAcetification = config.get(CATEGORY_BALANCING, fluidName + "_ticksUntilAcetification", defaultAcetification, String.format("Time until %s acetifies to form vinegar. Enter -1 to disable.", fluidName)).getInt();
+        tickInfo.ticksPerFermentation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerFermentation", defaultFermentation, String.format("Time until %s wort ferments to the next step.", fluidName));
+        tickInfo.ticksPerDistillation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerDistillation", defaultDistillation, String.format("Time until %s distills to the next step.", fluidName));
+        tickInfo.ticksPerMaturation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerMaturation", defaultMaturation, String.format("Time until %s matures to the next step.", fluidName));
+        tickInfo.ticksUntilAcetification = config.get(CATEGORY_BALANCING, fluidName + "_ticksUntilAcetification", defaultAcetification, String.format("Time until %s acetifies to form vinegar. Enter -1 to disable.", fluidName));
     }
 
     public static void readHasBGM(String drugName, Configuration config)
     {
-        drugBGM.put(drugName, config.get(CATEGORY_AUDIO, "bgm_" + drugName, false, "Indicates if the drug is supposed to have background music when active (refer to the wiki for instructions).").getBoolean());
+        drugBGM.put(drugName, config.get(CATEGORY_AUDIO, "bgm_" + drugName, false, "Indicates if the drug is supposed to have background music when active (refer to the wiki for instructions)."));
     }
 
     public static boolean hasBGM(String drugName)

@@ -7,12 +7,14 @@ package ivorius.psychedelicraft;
 
 import ivorius.psychedelicraft.blocks.PSBlocks;
 import ivorius.psychedelicraft.commands.*;
+import ivorius.psychedelicraft.config.Configuration;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.PSEntityList;
 import ivorius.psychedelicraft.gui.PSItemGroups;
 import ivorius.psychedelicraft.items.PSItems;
 import ivorius.psychedelicraft.worldgen.PSWorldGen;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 
 import org.apache.logging.log4j.LogManager;
@@ -41,10 +43,7 @@ public class Psychedelicraft implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        PSConfig.loadConfig(null);
-
-        proxy.preInit();
-
+        PSConfig.loadConfig(null, new Configuration(FabricLoader.getInstance().getConfigDir().resolve("psychedelicraft.json")));
         PSBlocks.bootstrap();
         PSItems.bootstrap();
         PSItemGroups.bootstrap();

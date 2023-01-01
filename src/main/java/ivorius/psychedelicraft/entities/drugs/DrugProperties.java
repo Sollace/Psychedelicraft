@@ -8,7 +8,7 @@ package ivorius.psychedelicraft.entities.drugs;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import ivorius.ivtoolkit.network.PartialUpdateHandler;
-import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.*;
 import ivorius.psychedelicraft.client.rendering.IDrugRenderer;
 import ivorius.psychedelicraft.entities.PSAccessHelperEntity;
 import ivorius.psychedelicraft.network.PSNetworkHelperServer;
@@ -21,12 +21,15 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.particle.DustColorTransitionParticleEffect;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -90,7 +93,7 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
             DrugProperties drugProperties = getDrugProperties(entity);
 
             if (drugProperties != null)
-                Psychedelicraft.proxy.createDrugRenderer(drugProperties);
+                PSProxy.getInstance().createDrugRenderer(drugProperties);
         }
     }
 
@@ -276,17 +279,17 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
 
             if (timeBreathingSmoke > 10 && entity.worldObj.isRemote)
             {
-                Vec3 look = entity.getLookVec();
+                Vec3f look = entity.getLookVec();
 
                 if (random.nextInt(2) == 0)
                 {
                     float s = random.nextFloat() * 0.05f + 0.1f;
-                    Psychedelicraft.proxy.spawnColoredParticle(entity, breathSmokeColor, look, s, 1.0f);
+                    ParticleHelper.spawnColoredParticle(entity, breathSmokeColor, look, s, 1.0f);
                 }
                 if (random.nextInt(5) == 0)
                 {
                     float s = random.nextFloat() * 0.05f + 0.1f;
-                    Psychedelicraft.proxy.spawnColoredParticle(entity, breathSmokeColor, look, s, 2.5f);
+                    ParticleHelper.spawnColoredParticle(entity, breathSmokeColor, look, s, 2.5f);
                 }
             }
         }
