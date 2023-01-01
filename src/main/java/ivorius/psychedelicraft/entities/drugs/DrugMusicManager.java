@@ -1,8 +1,8 @@
 package ivorius.psychedelicraft.entities.drugs;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.config.PSConfig;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 22.11.14.
@@ -14,7 +14,7 @@ public class DrugMusicManager
     private String activeDrug;
     private float volume;
 
-    public void update(EntityLivingBase entity, DrugProperties drugProperties)
+    public void update(LivingEntity entity, DrugProperties drugProperties)
     {
         if (activeDrug == null)
         {
@@ -31,7 +31,7 @@ public class DrugMusicManager
         {
             Drug drug = drugProperties.getDrug(activeDrug);
             if (drug != null)
-                destVolume = IvMathHelper.zeroToOne((float) drug.getActiveValue(), 0.0f, 0.2f);
+                destVolume = MathHelper.lerp((float) drug.getActiveValue(), 0.0f, 0.2f);
         }
 
         if ((double) destVolume >= PLAY_THRESHOLD)

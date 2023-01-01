@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.entities.drugs.effects;
 
 import ivorius.psychedelicraft.entities.drugs.DrugHallucinationManager;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NbtCompound;
 
 public class DrugHarmonium extends DrugSimple
 {
@@ -32,17 +32,17 @@ public class DrugHarmonium extends DrugSimple
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tagCompound)
+    public void writeToNBT(NbtCompound tagCompound)
     {
         super.writeToNBT(tagCompound);
 
-        tagCompound.setFloat("currentColor[0]", currentColor[0]);
-        tagCompound.setFloat("currentColor[1]", currentColor[1]);
-        tagCompound.setFloat("currentColor[2]", currentColor[2]);
+        tagCompound.putFloat("currentColor[0]", currentColor[0]);
+        tagCompound.putFloat("currentColor[1]", currentColor[1]);
+        tagCompound.putFloat("currentColor[2]", currentColor[2]);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tagCompound)
+    public void readFromNBT(NbtCompound tagCompound)
     {
         super.readFromNBT(tagCompound);
 

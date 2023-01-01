@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.entities.drugs.effects;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -55,12 +54,12 @@ public class DrugCaffeine extends DrugSimple {
     public float digSpeedModifier() {
         return 1 + (float) getActiveValue() * 0.2F;
     }
-
+/*
     @Override
     public EntityPlayer.EnumStatus getSleepStatus() {
         return getActiveValue() > 0.1 ? Psychedelicraft.sleepStatusDrugs : null;
     }
-
+*/
     @Override
     public float superSaturationHallucinationStrength() {
         return (float)getActiveValue() * 0.3f;

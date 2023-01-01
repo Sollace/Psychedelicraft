@@ -1,11 +1,11 @@
 package ivorius.psychedelicraft.entities.drugs;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
-
 import java.util.*;
+
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Created by lukas on 14.11.14.
@@ -34,9 +34,9 @@ public class DrugHallucinationManager
         if (alpha > 0.0f)
         {
             float max = alpha + colorBase[3];
-            colorBase[0] = (float) IvMathHelper.mix(colorBase[0], color[0], alpha / max);
-            colorBase[1] = (float) IvMathHelper.mix(colorBase[1], color[1], alpha / max);
-            colorBase[2] = (float) IvMathHelper.mix(colorBase[2], color[2], alpha / max);
+            colorBase[0] = MathHelper.lerp(alpha / max, colorBase[0], color[0]);
+            colorBase[1] = MathHelper.lerp(alpha / max, colorBase[1], color[1]);
+            colorBase[2] = MathHelper.lerp(alpha / max, colorBase[2], color[2]);
             colorBase[3] = max;
         }
     }
@@ -114,9 +114,9 @@ public class DrugHallucinationManager
         hallucinationValues.put(HALLUCATION_COLOR_CONTRAST, 0.0f);
     }
 
-    public void update(EntityLivingBase entity, DrugProperties drugProperties)
+    public void update(LivingEntity entity, DrugProperties drugProperties)
     {
-        Random random = entity.getRNG();
+        Random random = entity.getRandom();
 
         updateEntities(entity, drugProperties, random);
 
@@ -128,7 +128,7 @@ public class DrugHallucinationManager
             totalHallucinationValue += type.currentValue;
         }
 
-        int desiredHallucinations = MathHelper.floor_float(totalHallucinationValue * 4.0f + 0.9f);
+        int desiredHallucinations = MathHelper.floor(totalHallucinationValue * 4.0f + 0.9f);
 
         if (activeHallucinations.size() > 0)
         {
@@ -170,16 +170,16 @@ public class DrugHallucinationManager
         currentMindColor[2] = IvMathHelper.nearValue(currentMindColor[2], randomColor(random, drugProperties.ticksExisted, 0.5f, 0.5f, 0.0011541f, 0.0018682f), 0.002f, 0.002f);
     }
 
-    public void updateEntities(EntityLivingBase entity, DrugProperties drugProperties, Random random)
+    public void updateEntities(LivingEntity entity, DrugProperties drugProperties, Random random)
     {
         float hallucinationChance = getHallucinationStrength(drugProperties, 1.0f) * 0.05f;
         if (hallucinationChance > 0.0f)
         {
             if (random.nextInt((int) (1F / hallucinationChance)) == 0)
             {
-                if (entity instanceof EntityPlayer)
+                if (entity instanceof PlayerEntity)
                 {
-                    addRandomEntityHallucination((EntityPlayer) entity, drugProperties, random);
+                    addRandomEntityHallucination((PlayerEntity) entity, drugProperties, random);
                 }
             }
         }
@@ -194,9 +194,9 @@ public class DrugHallucinationManager
         }
     }
 
-    public void addRandomEntityHallucination(EntityPlayer player, DrugProperties drugProperties, Random random)
+    public void addRandomEntityHallucination(PlayerEntity player, DrugProperties drugProperties, Random random)
     {
-        if (!player.worldObj.isRemote)
+        if (!player.world.isClient)
         {
             return;
         }
@@ -254,16 +254,16 @@ public class DrugHallucinationManager
 
     public float getHallucinationMultiplier(int hallucination)
     {
-        float value = 1.0f;
-        for (HallucinationType type : hallucinationTypes)
-        {
-            if (type.hallucinations.contains(hallucination))
-                value *= IvMathHelper.zeroToOne(type.currentValue, 0.0f, 0.5f);
+        float value = 1;
+        for (HallucinationType type : hallucinationTypes) {
+            if (type.hallucinations.contains(hallucination)) {
+                value *= MathHelper.lerp(type.currentValue, 0, 0.5F);
+            }
         }
         return value;
     }
 
-    public void receiveChatMessage(EntityLivingBase entity, String message)
+    public void receiveChatMessage(LivingEntity entity, String message)
     {
         for (DrugHallucination h : entities)
         {
@@ -342,7 +342,7 @@ public class DrugHallucinationManager
             drug.applyColorBloom(bloomColor);
 
         float val = 1.5f * getHallucinationMultiplier(HALLUCATION_COLOR_BLOOM) * hallucinationValues.get(HALLUCATION_COLOR_BLOOM);
-        mixColorsDynamic(currentMindColor, bloomColor, IvMathHelper.clamp(0.0f, val, 1.0f));
+        mixColorsDynamic(currentMindColor, bloomColor, MathHelper.clamp(val, 0, 1));
     }
 
     public void applyContrastColorization(DrugProperties drugProperties, float[] contrastColor, float partialTicks)
@@ -351,7 +351,7 @@ public class DrugHallucinationManager
             drug.applyContrastColorization(contrastColor);
 
         float val = getHallucinationMultiplier(HALLUCATION_COLOR_CONTRAST) * hallucinationValues.get(HALLUCATION_COLOR_CONTRAST);
-        mixColorsDynamic(currentMindColor, contrastColor, IvMathHelper.clamp(0.0f, val, 1.0f));
+        mixColorsDynamic(currentMindColor, contrastColor, MathHelper.clamp(val, 0, 1));
     }
 
     public float getBloom(DrugProperties drugProperties, float partialTicks)

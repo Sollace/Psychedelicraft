@@ -6,26 +6,25 @@
 package ivorius.psychedelicraft.client.rendering;
 
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 
 /**
  * Created by lukas on 17.02.14.
  */
-public interface IDrugRenderer
-{
-    public void update(DrugProperties drugProperties, EntityLivingBase entity);
+public interface IDrugRenderer {
+    void update(DrugProperties drugProperties, LivingEntity entity);
 
-    public void distortScreen(float par1, EntityLivingBase entity, int rendererUpdateCount, DrugProperties drugProperties);
+    void distortScreen(float par1, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties);
 
-    public void renderOverlaysAfterShaders(float par1, EntityLivingBase entity, int updateCounter, int width, int height, DrugProperties drugProperties);
+    void renderOverlaysAfterShaders(float par1, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
 
-    public void renderOverlaysBeforeShaders(float par1, EntityLivingBase entity, int updateCounter, int width, int height, DrugProperties drugProperties);
+    void renderOverlaysBeforeShaders(float par1, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
 
-    public void renderAllHallucinations(float par1, DrugProperties drugProperties);
+    void renderAllHallucinations(float par1, DrugProperties drugProperties);
 
-    public float getCurrentHeatDistortion();
+    float getCurrentHeatDistortion();
 
-    public float getCurrentWaterDistortion();
+    float getCurrentWaterDistortion();
 
-    public float getCurrentWaterScreenDistortion();
+    float getCurrentWaterScreenDistortion();
 }

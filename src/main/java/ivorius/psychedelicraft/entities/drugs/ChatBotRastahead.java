@@ -2,11 +2,12 @@
  *  Copyright (c) 2014, Lukas Tenbrink.
  *  * http://lukas.axxim.net
  */
-
+/*
+TODO: (Sollace) Need to reimplement IvChatBot
 package ivorius.psychedelicraft.entities.drugs;
 
-import ivorius.ivtoolkit.logic.IvChatBot;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.Random;
 
@@ -30,11 +31,11 @@ public class ChatBotRastahead extends IvChatBot
                     new String[]{"<Reggie> Haha, he's so right."}
             };
 
-    public EntityPlayer playerEntity;
+    public PlayerEntity playerEntity;
 
-    public ChatBotRastahead(Random rand, EntityPlayer player)
+    public ChatBotRastahead(Random random, PlayerEntity player)
     {
-        super(rand);
+        super(random);
 
         this.playerEntity = player;
     }
@@ -81,3 +82,4 @@ public class ChatBotRastahead extends IvChatBot
         }
     }
 }
+*/

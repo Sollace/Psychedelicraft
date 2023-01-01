@@ -5,14 +5,11 @@
 
 package ivorius.psychedelicraft.entities.drugs.effects;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
-import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.PSDamageSources;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
-
-import java.util.Random;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Created by lukas on 01.11.14.
@@ -25,25 +22,26 @@ public class DrugCocaine extends DrugSimple
     }
 
     @Override
-    public void update(EntityLivingBase entity, DrugProperties drugProperties)
+    public void update(LivingEntity entity, DrugProperties drugProperties)
     {
         super.update(entity, drugProperties);
 
         if (getActiveValue() > 0.0)
         {
-            Random random = entity.getRNG();
+            Random random = entity.world.random;
             int ticksExisted = drugProperties.ticksExisted;
 
-            if (!entity.worldObj.isRemote)
+            if (!entity.world.isClient)
             {
                 double chance = (getActiveValue() - 0.8f) * 0.1f;
 
                 if (ticksExisted % 20 == 0 && random.nextFloat() < chance)
                 {
-                    DamageSource damageSource = random.nextFloat() < 0.4f ? Psychedelicraft.stroke
-                            : random.nextFloat() < 0.5f ? Psychedelicraft.heartFailure
-                            : Psychedelicraft.respiratoryFailure;
-                    entity.attackEntityFrom(damageSource, 1000);
+                    entity.damage(random.nextFloat() < 0.4f
+                            ? PSDamageSources.STROKE
+                            : random.nextFloat() < 0.5f
+                            ? PSDamageSources.HEART_FAILURE
+                            : PSDamageSources.RESPIRATORY_FAILURE, Integer.MAX_VALUE);
                 }
             }
         }
@@ -52,7 +50,7 @@ public class DrugCocaine extends DrugSimple
     @Override
     public float heartbeatVolume()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue(), 0.4f, 1.0f) * 1.2f;
+        return MathHelper.lerp((float) getActiveValue(), 0.4f, 1.0f) * 1.2f;
     }
 
     @Override
@@ -64,7 +62,7 @@ public class DrugCocaine extends DrugSimple
     @Override
     public float breathVolume()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue(), 0.4f, 1.0f) * 1.5f;
+        return MathHelper.lerp((float) getActiveValue(), 0.4f, 1.0f) * 1.5f;
     }
 
     @Override
@@ -76,13 +74,13 @@ public class DrugCocaine extends DrugSimple
     @Override
     public float randomJumpChance()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue(), 0.6f, 1.0f) * 0.03f;
+        return MathHelper.lerp((float) getActiveValue(), 0.6f, 1.0f) * 0.03f;
     }
 
     @Override
     public float randomPunchChance()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue(), 0.5f, 1.0f) * 0.02f;
+        return MathHelper.lerp((float) getActiveValue(), 0.5f, 1.0f) * 0.02f;
     }
 
     @Override
@@ -96,13 +94,13 @@ public class DrugCocaine extends DrugSimple
     {
         return 1.0F + (float) getActiveValue() * 0.15F;
     }
-
+/*
     @Override
     public EntityPlayer.EnumStatus getSleepStatus()
     {
         return getActiveValue() > 0.4 ? Psychedelicraft.sleepStatusDrugs : null;
     }
-
+*/
     @Override
     public float desaturationHallucinationStrength()
     {
@@ -112,13 +110,13 @@ public class DrugCocaine extends DrugSimple
     @Override
     public float handTrembleStrength()
     {
-        return IvMathHelper.zeroToOne((float)getActiveValue(), 0.6f, 1.0f);
+        return MathHelper.lerp((float)getActiveValue(), 0.6f, 1.0f);
     }
 
     @Override
     public float viewTrembleStrength()
     {
-        return IvMathHelper.zeroToOne((float)getActiveValue(), 0.8f, 1.0f);
+        return MathHelper.lerp((float)getActiveValue(), 0.8f, 1.0f);
     }
 
     @Override
@@ -130,24 +128,24 @@ public class DrugCocaine extends DrugSimple
     @Override
     public float bloomHallucinationStrength()
     {
-        return IvMathHelper.zeroToOne((float)getActiveValue(), 0.0f, 0.6f) * 1.5f;
+        return MathHelper.lerp((float)getActiveValue(), 0.0f, 0.6f) * 1.5f;
     }
 
     @Override
     public float colorHallucinationStrength()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
+        return MathHelper.lerp((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
     }
 
     @Override
     public float movementHallucinationStrength()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
+        return MathHelper.lerp((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
     }
 
     @Override
     public float contextualHallucinationStrength()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
+        return MathHelper.lerp((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
     }
 }

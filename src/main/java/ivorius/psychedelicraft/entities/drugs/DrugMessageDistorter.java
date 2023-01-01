@@ -5,8 +5,8 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
 
@@ -43,19 +43,19 @@ public class DrugMessageDistorter
     {
         StringBuilder builder = new StringBuilder();
 
-        float randomCaseChance = IvMathHelper.zeroToOne(alcohol, 0.3f, 1.0f) * 0.06f + IvMathHelper.zeroToOne(zero, 0.0f, 0.3f);
-        float randomLetterChance = IvMathHelper.zeroToOne(alcohol, 0.5f, 1.0f) * 0.015f;
-        float sToShChance = IvMathHelper.zeroToOne(alcohol, 0.2f, 0.6f);
+        float randomCaseChance = MathHelper.lerp(alcohol, 0.3f, 1.0f) * 0.06f + MathHelper.lerp(zero, 0.0f, 0.3f);
+        float randomLetterChance = MathHelper.lerp(alcohol, 0.5f, 1.0f) * 0.015f;
+        float sToShChance = MathHelper.lerp(alcohol, 0.2f, 0.6f);
         float longShChance = alcohol * 0.8f;
-        float hicChance = IvMathHelper.zeroToOne(alcohol, 0.5f, 1.0f) * 0.04f;
-        float rewindChance = IvMathHelper.zeroToOne(alcohol, 0.4f, 0.9f) * 0.03f;
-        float longCharChance = IvMathHelper.zeroToOne(alcohol, 0.3f, 1.0f) * 0.025f;
+        float hicChance = MathHelper.lerp(alcohol, 0.5f, 1.0f) * 0.04f;
+        float rewindChance = MathHelper.lerp(alcohol, 0.4f, 0.9f) * 0.03f;
+        float longCharChance = MathHelper.lerp(alcohol, 0.3f, 1.0f) * 0.025f;
 
-        float oneZeroChance = IvMathHelper.zeroToOne(zero, 0.6f, 0.95f);
-        float randomCharChance = IvMathHelper.zeroToOne(zero, 0.2f, 0.95f);
+        float oneZeroChance = MathHelper.lerp(zero, 0.6f, 0.95f);
+        float randomCharChance = MathHelper.lerp(zero, 0.2f, 0.95f);
 
-        float fillerWordChance = IvMathHelper.zeroToOne(cannabis, 0.2f, 0.95f) * 0.1f;
-        float startFillerWordChance = IvMathHelper.zeroToOne(cannabis, 0.2f, 0.95f) * 0.7f;
+        float fillerWordChance = MathHelper.lerp(cannabis, 0.2f, 0.95f) * 0.1f;
+        float startFillerWordChance = MathHelper.lerp(cannabis, 0.2f, 0.95f) * 0.7f;
 
         boolean wasPoint = true;
         for (int i = 0; i < message.length(); i++)

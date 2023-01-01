@@ -5,10 +5,10 @@
 
 package ivorius.psychedelicraft.entities.drugs.effects;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 01.11.14.
@@ -21,14 +21,14 @@ public class DrugCannabis extends DrugSimple
     }
 
     @Override
-    public void update(EntityLivingBase entity, DrugProperties drugProperties)
+    public void update(LivingEntity entity, DrugProperties drugProperties)
     {
         super.update(entity, drugProperties);
 
         if (getActiveValue() > 0.0)
         {
-            if (entity instanceof EntityPlayer)
-                ((EntityPlayer) entity).addExhaustion(0.03F * (float) getActiveValue());
+            if (entity instanceof PlayerEntity player)
+                player.addExhaustion(0.03F * (float) getActiveValue());
         }
     }
 
@@ -47,25 +47,25 @@ public class DrugCannabis extends DrugSimple
     @Override
     public float superSaturationHallucinationStrength()
     {
-        return IvMathHelper.zeroToOne((float)getActiveValue(), 0.0f, 0.5f) * 0.3f;
+        return MathHelper.lerp((float)getActiveValue(), 0.0f, 0.5f) * 0.3f;
     }
 
     @Override
     public float colorHallucinationStrength()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue() * 1.3f, 0.5f, 1.0f) * 0.1f;
+        return MathHelper.lerp((float) getActiveValue() * 1.3f, 0.5f, 1.0f) * 0.1f;
     }
 
     @Override
     public float movementHallucinationStrength()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue() * 1.3f, 0.5f, 1.0f) * 0.1f;
+        return MathHelper.lerp((float) getActiveValue() * 1.3f, 0.5f, 1.0f) * 0.1f;
     }
 
     @Override
     public float contextualHallucinationStrength()
     {
-        return IvMathHelper.zeroToOne((float) getActiveValue() * 1.3f, 0.5f, 1.0f) * 0.1f;
+        return MathHelper.lerp((float) getActiveValue() * 1.3f, 0.5f, 1.0f) * 0.1f;
     }
 
     @Override

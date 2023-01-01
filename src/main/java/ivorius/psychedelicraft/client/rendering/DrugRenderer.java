@@ -5,23 +5,23 @@
 
 package ivorius.psychedelicraft.client.rendering;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
-import ivorius.ivtoolkit.rendering.IvOpenGLHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.entities.drugs.Drug;
 import ivorius.psychedelicraft.entities.drugs.DrugHallucination;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+
 import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -30,26 +30,26 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 public class DrugRenderer implements IDrugRenderer
 {
-    public static void renderOverlay(float alpha, int width, int height, ResourceLocation texture, float x0, float y0, float x1, float y1, int offset)
+    public static void renderOverlay(float alpha, int width, int height, Identifier texture, float x0, float y0, float x1, float y1, int offset)
     {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, alpha);
+        RenderSystem.setShaderColor(1, 1, 1, alpha);
         bindTexture(texture);
-        Tessellator var8 = Tessellator.instance;
-        var8.startDrawingQuads();
-        var8.addVertexWithUV(-offset, height + offset, -90.0D, x0, y1);
-        var8.addVertexWithUV(width + offset, height + offset, -90.0D, x1, y1);
-        var8.addVertexWithUV(width + offset, -offset, -90.0D, x1, y0);
-        var8.addVertexWithUV(-offset, -offset, -90.0D, x0, y0);
+        Tessellator var8 = Tessellator.getInstance();
+        BufferBuilder buffer = var8.getBuffer();
+        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        buffer.vertex(-offset, height + offset, -90.0D).texture(x0, y1).next();
+        buffer.vertex(width + offset, height + offset, -90.0D).texture(x1, y1).next();
+        buffer.vertex(width + offset, -offset, -90.0D).texture(x1, y0).next();
+        buffer.vertex(-offset, -offset, -90.0D).texture(x0, y0).next();
         var8.draw();
-        GL11.glColor3f(1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
-    public static void bindTexture(ResourceLocation resourceLocation)
-    {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(resourceLocation);
+    public static void bindTexture(Identifier resourceLocation) {
+        MinecraftClient.getInstance().getTextureManager().bindTexture(resourceLocation);
     }
-    
-    public ResourceLocation hurtOverlay;
+
+    public Identifier hurtOverlay;
 
     public float experiencedHealth = 5F;
 
@@ -63,21 +63,21 @@ public class DrugRenderer implements IDrugRenderer
 
     public DrugRenderer()
     {
-        hurtOverlay = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "hurtOverlay.png");
+        hurtOverlay = Psychedelicraft.id(Psychedelicraft.filePathTextures + "hurtOverlay.png");
 
         effectLensFlare = new EffectLensFlare();
         effectLensFlare.sunFlareSizes = new float[]{0.15f, 0.24f, 0.12f, 0.036f, 0.06f, 0.048f, 0.006f, 0.012f, 0.5f, 0.09f, 0.036f, 0.09f, 0.06f, 0.05f, 0.6f};
         effectLensFlare.sunFlareInfluences = new float[]{-1.3f, -2.0f, 0.2f, 0.4f, 0.25f, -0.25f, -0.7f, -1.0f, 1.0f, 1.4f, -1.31f, -1.2f, -1.5f, -1.55f, -3.0f};
-        effectLensFlare.sunBlindnessTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "sunBlindness.png");
-        effectLensFlare.sunFlareTextures = new ResourceLocation[effectLensFlare.sunFlareSizes.length];
+        effectLensFlare.sunBlindnessTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "sunBlindness.png");
+        effectLensFlare.sunFlareTextures = new Identifier[effectLensFlare.sunFlareSizes.length];
         for (int i = 0; i < effectLensFlare.sunFlareTextures.length; i++)
         {
-            effectLensFlare.sunFlareTextures[i] = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "flare" + i + ".png");
+            effectLensFlare.sunFlareTextures[i] = Psychedelicraft.id(Psychedelicraft.filePathTextures + "flare" + i + ".png");
         }
     }
 
     @Override
-    public void update(DrugProperties drugProperties, EntityLivingBase entity)
+    public void update(DrugProperties drugProperties, LivingEntity entity)
     {
         if (DrugProperties.hurtOverlayEnabled)
         {
@@ -89,8 +89,8 @@ public class DrugRenderer implements IDrugRenderer
             effectLensFlare.updateLensFlares();
         }
 
-        Block bID = ActiveRenderInfo.getBlockAtEntityViewpoint(entity.worldObj, entity, 1.0F);
-        wasInWater = bID.getMaterial() == Material.water;
+        Block bID = ActiveRenderInfo.getBlockAtEntityViewpoint(entity.world, entity, 1.0F);
+        wasInWater = bID.getMaterial() == Material.WATER;
         //wasInRain = player.worldObj.getRainStrength(1.0f) > 0.0f && player.worldObj.getPrecipitationHeight(MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY)) <= player.posY; //Client can't handle rain
 
         if (DrugProperties.waterOverlayEnabled)
@@ -106,20 +106,18 @@ public class DrugRenderer implements IDrugRenderer
                 timeScreenWet += 4;
             }
 
-            timeScreenWet = MathHelper.clamp_int(timeScreenWet, 0, 100);
+            timeScreenWet = MathHelper.clamp(timeScreenWet, 0, 100);
         }
 
-        int playerX = MathHelper.floor_double(entity.posX);
-        int playerY = MathHelper.floor_double(entity.posY);
-        int playerZ = MathHelper.floor_double(entity.posZ);
-        float newHeat = entity.worldObj.getBiomeGenForCoordsBody(playerX, playerZ).getFloatTemperature(playerX, playerY, playerZ);
+        BlockPos pos = entity.getBlockPos();
+        float newHeat = entity.world.getBiome(pos).value().getTemperature();
 
         this.currentHeat = IvMathHelper.nearValue(currentHeat, newHeat, 0.01f, 0.01f);
     }
 
     @ParametersAreNonnullByDefault
     @Override
-    public void distortScreen(float partialTicks, EntityLivingBase entity, int rendererUpdateCount, DrugProperties drugProperties)
+    public void distortScreen(float partialTicks, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties)
     {
         float wobblyness = 0.0f;
         for (Drug drug : drugProperties.getAllDrugs())
@@ -142,15 +140,14 @@ public class DrugRenderer implements IDrugRenderer
             GL11.glRotatef(-(rendererUpdateCount + partialTicks) * 3F, 0.0F, 1.0F, 1.0F);
         }
 
-        float shiftX = DrugEffectInterpreter.getCameraShiftX(drugProperties, (float) rendererUpdateCount + partialTicks);
-        float shiftY = DrugEffectInterpreter.getCameraShiftY(drugProperties, (float) rendererUpdateCount + partialTicks);
+        float shiftX = DrugEffectInterpreter.getCameraShiftX(drugProperties, rendererUpdateCount + partialTicks);
+        float shiftY = DrugEffectInterpreter.getCameraShiftY(drugProperties, rendererUpdateCount + partialTicks);
         GL11.glTranslatef(shiftX, shiftY, 0.0f);
     }
 
-    public void renderOverlaysBeforeShaders(float partialTicks, EntityLivingBase entity, int updateCounter, int width, int height, DrugProperties drugProperties)
+    @Override
+    public void renderOverlaysBeforeShaders(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties)
     {
-        IvOpenGLHelper.setUpOpenGLStandard2D(width, height);
-
         effectLensFlare.sunFlareIntensity = PSRenderStates.sunFlareIntensity;
 
         if (effectLensFlare.shouldApply(updateCounter + partialTicks))
@@ -160,13 +157,12 @@ public class DrugRenderer implements IDrugRenderer
     }
 
     @Override
-    public void renderOverlaysAfterShaders(float partialTicks, EntityLivingBase entity, int updateCounter, int width, int height, DrugProperties drugProperties)
+    public void renderOverlaysAfterShaders(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties)
     {
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(false);
-        OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+        RenderSystem.enableBlend();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.defaultBlendFunc();
 
         for (Drug drug : drugProperties.getAllDrugs())
             drug.drawOverlays(partialTicks, entity, updateCounter, width, height, drugProperties);
@@ -183,9 +179,7 @@ public class DrugRenderer implements IDrugRenderer
             }
         }
 
-        GL11.glDepthMask(true);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        RenderSystem.enableDepthTest();
     }
 
     @Override
@@ -193,7 +187,7 @@ public class DrugRenderer implements IDrugRenderer
     {
         for (DrugHallucination h : drugProperties.hallucinationManager.entities)
         {
-            h.render(par1, MathHelper.clamp_float(0.0f, drugProperties.hallucinationManager.getHallucinationStrength(drugProperties, par1) * 15.0f, 1.0f));
+            h.render(par1, MathHelper.clamp(drugProperties.hallucinationManager.getHallucinationStrength(drugProperties, par1) * 15.0f, 0.0f, 1.0f));
         }
     }
 
@@ -203,7 +197,7 @@ public class DrugRenderer implements IDrugRenderer
         if (wasInWater)
             return 0.0f;
 
-        return IvMathHelper.clamp(0.0f, ((currentHeat - 1.0f) * 0.0015f), 0.01f);
+        return MathHelper.clamp(((currentHeat - 1.0f) * 0.0015f), 0.0f, 0.01f);
     }
 
     @Override

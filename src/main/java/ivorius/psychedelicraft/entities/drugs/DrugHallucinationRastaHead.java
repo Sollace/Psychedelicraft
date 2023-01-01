@@ -8,16 +8,14 @@ package ivorius.psychedelicraft.entities.drugs;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.ModelRastaHead;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.ai.EntityLookHelper;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+
 import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -26,23 +24,21 @@ public class DrugHallucinationRastaHead extends DrugHallucination
 {
     public int entityMaxTicks;
 
-    public EntityLiving dummyEntity;
-    public EntityLookHelper lookHelper;
+    public LivingEntity dummyEntity;
+    public LookHelper lookHelper;
 
-    public ModelBase modelRastaHead;
+    public Model modelRastaHead;
 
-    ResourceLocation rastaHeadTexture;
+    Identifier rastaHeadTexture;
 
-    public DrugHallucinationRastaHead(EntityPlayer playerEntity)
+    public DrugHallucinationRastaHead(PlayerEntity playerEntity)
     {
         super(playerEntity);
 
-        this.entityMaxTicks = (playerEntity.getRNG().nextInt(59) + 120) * 20;
+        this.entityMaxTicks = (playerEntity.getRandom().nextInt(59) + 120) * 20;
 
-        this.dummyEntity = new EntityPig(playerEntity.worldObj);
-        this.dummyEntity.posX = playerEntity.posX;
-        this.dummyEntity.posY = playerEntity.posY;
-        this.dummyEntity.posZ = playerEntity.posZ;
+        this.dummyEntity = EntityType.PIG.create(playerEntity.world);
+        this.dummyEntity.setPosition(playerEntity.getPos());
 
         this.lookHelper = new EntityLookHelper(dummyEntity);
 
@@ -50,7 +46,17 @@ public class DrugHallucinationRastaHead extends DrugHallucination
 
 //        this.chatBot = new ChatBotRastahead(playerEntity.getRNG(), playerEntity);
 
-        rastaHeadTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "rastaHeadTexture.png");
+        rastaHeadTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "rastaHeadTexture.png");
+    }
+
+    @Override
+    public int getMaxHallucinations() {
+        return UNLIMITED;
+    }
+
+    @Override
+    public boolean isDead() {
+        return this.entityTicksAlive >= this.entityMaxTicks;
     }
 
     @Override
@@ -58,44 +64,33 @@ public class DrugHallucinationRastaHead extends DrugHallucination
     {
         super.update();
 
-        this.dummyEntity.lastTickPosX = this.dummyEntity.posX;
-        this.dummyEntity.lastTickPosY = this.dummyEntity.posY;
-        this.dummyEntity.lastTickPosZ = this.dummyEntity.posZ;
+        this.dummyEntity.lastRenderX = this.dummyEntity.getX();
+        this.dummyEntity.lastRenderY = this.dummyEntity.getY();
+        this.dummyEntity.lastRenderZ = this.dummyEntity.getZ();
 
-        this.dummyEntity.prevRotationYawHead = this.dummyEntity.rotationYawHead;
-        this.dummyEntity.prevRotationPitch = this.dummyEntity.rotationPitch;
+        this.dummyEntity.prevHeadYaw = this.dummyEntity.headYaw;
+        this.dummyEntity.prevPitch = this.dummyEntity.getPitch();
 
-        this.lookHelper.setLookPositionWithEntity(playerEntity, 3.0f, 3.0f);
+        this.lookHelper.setLookPositionWithEntity(player, 3.0f, 3.0f);
         this.lookHelper.onUpdateLook();
 
-        double wantedX = playerEntity.posX + MathHelper.sin(playerEntity.ticksExisted / 50.0f) * 5.0f;
-        double wantedY = playerEntity.posY;
-        double wantedZ = playerEntity.posZ + MathHelper.cos(playerEntity.ticksExisted / 50.0f) * 5.0f;
+        Vec3d wanted = player.getPos().add(
+                MathHelper.sin(player.age / 50.0f) * 5.0f,
+                0,
+                MathHelper.cos(player.age / 50.0f) * 5.0f
+        );
 
-        double totalDist = MathHelper.sqrt_double((wantedX - dummyEntity.posX) * (wantedX - dummyEntity.posX) + (wantedX - dummyEntity.posX) * (wantedX - dummyEntity.posX) + (wantedX - dummyEntity.posX) * (wantedX - dummyEntity.posX));
+        double totalDist = wanted.distanceTo(dummyEntity.getPos());
 
-        if (totalDist > 3.0f)
-        {
-            double nX = (wantedX - dummyEntity.posX) / totalDist;
-            double nY = (wantedY - dummyEntity.posY) / totalDist;
-            double nZ = (wantedZ - dummyEntity.posZ) / totalDist;
-
-            dummyEntity.motionX = nX * 0.05;
-            dummyEntity.motionY = nY * 0.05;
-            dummyEntity.motionZ = nZ * 0.05;
-        }
-        else
-        {
-            dummyEntity.motionX *= 0.9;
-            dummyEntity.motionY *= 0.9;
-            dummyEntity.motionZ *= 0.9;
+        if (totalDist > 3) {
+            dummyEntity.setVelocity(wanted.subtract(dummyEntity.getPos()).multiply(0.05D / totalDist));
+        } else {
+            dummyEntity.setVelocity(dummyEntity.getVelocity().multiply(0.9D));
         }
 
-        this.dummyEntity.posX += this.dummyEntity.motionX;
-        this.dummyEntity.posY += this.dummyEntity.motionY;
-        this.dummyEntity.posZ += this.dummyEntity.motionZ;
+        this.dummyEntity.setPosition(this.dummyEntity.getPos().add(dummyEntity.getVelocity()));
 
-        if (this.dummyEntity instanceof EntityLiving)
+        if (this.dummyEntity instanceof LivingEntity)
         {
             EntityLiving entityliving = this.dummyEntity;
 
@@ -111,12 +106,6 @@ public class DrugHallucinationRastaHead extends DrugHallucination
             entityliving.limbSwingAmount += (var11 / 3f - entityliving.limbSwingAmount) * 0.4F;
             entityliving.limbSwing += entityliving.limbSwingAmount;
         }
-    }
-
-    @Override
-    public boolean isDead()
-    {
-        return this.entityTicksAlive >= this.entityMaxTicks;
     }
 
     @Override
@@ -154,11 +143,5 @@ public class DrugHallucinationRastaHead extends DrugHallucination
 
             GL11.glPopMatrix();
         }
-    }
-
-    @Override
-    public int getMaxHallucinations()
-    {
-        return -1;
     }
 }

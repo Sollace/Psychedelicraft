@@ -5,9 +5,8 @@
 
 package ivorius.psychedelicraft.crafting;
 
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -17,9 +16,9 @@ import java.util.List;
  */
 public interface RecipeAction
 {
-    ItemStack visualCraftingResult(InventoryCrafting inventoryCrafting);
+    ItemStack visualCraftingResult(CraftingInventory inventory);
 
-    Pair<ItemStack, List<ItemStack>> craftingResult(InventoryCrafting inventoryCrafting);
+    Pair<ItemStack, List<ItemStack>> craftingResult(CraftingInventory inventory);
 
     int getRecipeSize();
 

@@ -5,21 +5,20 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.NbtCompound;
 
 public interface Drug
 {
-    void update(EntityLivingBase entity, DrugProperties drugProperties);
+    void update(LivingEntity entity, DrugProperties drugProperties);
 
-    void reset(EntityLivingBase entity, DrugProperties drugProperties);
+    void reset(LivingEntity entity, DrugProperties drugProperties);
 
-    void writeToNBT(NBTTagCompound compound);
+    void writeToNBT(NbtCompound compound);
 
-    void readFromNBT(NBTTagCompound compound);
+    void readFromNBT(NbtCompound compound);
 
     double getActiveValue();
 
@@ -51,7 +50,7 @@ public interface Drug
 
     float soundVolumeModifier();
 
-    EntityPlayer.EnumStatus getSleepStatus();
+    //EntityPlayer.EnumStatus getSleepStatus();
 
     void applyContrastColorization(float[] rgba);
 
@@ -79,8 +78,8 @@ public interface Drug
 
     float doubleVision();
 
-    @SideOnly(Side.CLIENT)
-    void drawOverlays(float partialTicks, EntityLivingBase entity, int updateCounter, int width, int height, DrugProperties drugProperties);
-
     float motionBlur();
+
+    @Environment(EnvType.CLIENT)
+    void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
 }

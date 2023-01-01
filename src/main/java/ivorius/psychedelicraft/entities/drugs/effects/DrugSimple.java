@@ -5,12 +5,11 @@
 
 package ivorius.psychedelicraft.entities.drugs.effects;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.entities.drugs.Drug;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.MathHelper;
 
 public class DrugSimple implements Drug
 {
@@ -85,7 +84,7 @@ public class DrugSimple implements Drug
     }
 
     @Override
-    public void update(EntityLivingBase entity, DrugProperties drugProperties)
+    public void update(LivingEntity entity, DrugProperties drugProperties)
     {
         if (!locked)
         {
@@ -93,20 +92,20 @@ public class DrugSimple implements Drug
             effect -= decreaseSpeedPlus;
         }
 
-        effect = IvMathHelper.clamp(0.0, effect, 1.0);
+        effect = MathHelper.clamp(0.0, effect, 1.0);
 
         effectActive = IvMathHelper.nearValue(effectActive, effect, 0.05, 0.005);
     }
 
     @Override
-    public void reset(EntityLivingBase entity, DrugProperties drugProperties)
+    public void reset(LivingEntity entity, DrugProperties drugProperties)
     {
         if (!locked)
             effect = 0.0;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound par1NBTTagCompound)
+    public void readFromNBT(NbtCompound par1NBTTagCompound)
     {
         setDesiredValue(par1NBTTagCompound.getDouble("effect"));
         setActiveValue(par1NBTTagCompound.getDouble("effectActive"));
@@ -114,11 +113,11 @@ public class DrugSimple implements Drug
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound)
+    public void writeToNBT(NbtCompound compound)
     {
-        compound.setDouble("effect", getDesiredValue());
-        compound.setDouble("effectActive", getActiveValue());
-        compound.setBoolean("locked", isLocked());
+        compound.putDouble("effect", getDesiredValue());
+        compound.putDouble("effectActive", getActiveValue());
+        compound.putBoolean("locked", isLocked());
     }
 
     @Override
@@ -174,13 +173,13 @@ public class DrugSimple implements Drug
     {
         return 1;
     }
-
+/*
     @Override
     public EntityPlayer.EnumStatus getSleepStatus()
     {
         return null;
     }
-
+*/
     @Override
     public void applyContrastColorization(float[] rgba)
     {
@@ -260,7 +259,7 @@ public class DrugSimple implements Drug
     }
 
     @Override
-    public void drawOverlays(float partialTicks, EntityLivingBase entity, int updateCounter, int width, int height, DrugProperties drugProperties)
+    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties)
     {
 
     }

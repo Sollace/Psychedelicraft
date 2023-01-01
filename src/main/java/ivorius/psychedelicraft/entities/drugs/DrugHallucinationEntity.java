@@ -5,25 +5,32 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.*;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 
-import java.util.Random;
+import com.mojang.blaze3d.systems.RenderSystem;
 
-import static org.lwjgl.opengl.GL11.*;
-
-public class DrugHallucinationEntity extends DrugHallucination
-{
-    public static String[] hEntities = new String[]{"Creeper", "Zombie", "Blaze", "Enderman", "Cow", "Sheep", "Pig", "Ozelot", "Wolf", "Silverfish", "Villager", "VillagerGolem", "SnowMan", "EntityHorse"};
+public class DrugHallucinationEntity extends DrugHallucination {
+    public static final EntityType<?>[] ENTITIES = new EntityType<?>[] {
+        EntityType.CREEPER,
+        EntityType.ZOMBIE,
+        EntityType.BLAZE,
+        EntityType.ENDERMAN,
+        EntityType.COW,
+        EntityType.SHEEP,
+        EntityType.PIG,
+        EntityType.OCELOT,
+        EntityType.WOLF,
+        EntityType.SILVERFISH,
+        EntityType.VILLAGER,
+        EntityType.IRON_GOLEM,
+        EntityType.SNOW_GOLEM,
+        EntityType.HORSE
+    };
 
     public Entity entity;
 
@@ -34,40 +41,39 @@ public class DrugHallucinationEntity extends DrugHallucination
 
     public float scale;
 
-    public DrugHallucinationEntity(EntityPlayer playerEntity)
-    {
-        super(playerEntity);
+    public DrugHallucinationEntity(PlayerEntity player) {
+        super(player);
 
-        Random rand = playerEntity.getRNG();
+        Random rand = player.getRandom();
 
-        String entityName = hEntities[playerEntity.worldObj.rand.nextInt(hEntities.length)];
+        entity = ENTITIES[player.world.random.nextInt(ENTITIES.length)].create(player.world);
+        entity.setPosition(
+                player.getX() + rand.nextDouble() * 50D - 25D,
+                player.getY() + rand.nextDouble() * 10D - 5D,
+                player.getZ() + rand.nextDouble() * 50D - 25D
+        );
+        entity.setVelocity(
+                (rand.nextDouble() - 0.5D) / 10D,
+                (rand.nextDouble() - 0.5D) / 10D,
+                (rand.nextDouble() - 0.5D) / 10D
+        );
+        entity.setYaw(rand.nextInt(360));
+        entityMaxTicks = (rand.nextInt(59) + 3) * 20;
+        rotationYawPlus = rand.nextFloat() * 10 * (rand.nextBoolean() ? 0 : 1);
 
-        entity = EntityList.createEntityByName(entityName, playerEntity.worldObj);
-        entity.setPosition(playerEntity.posX + rand.nextDouble() * 50D - 25D, playerEntity.posY + rand.nextDouble() * 10D - 5D, playerEntity.posZ + rand.nextDouble() * 50D - 25D);
-        entity.motionX = (rand.nextDouble() - 0.5D) / 10D;
-        entity.motionY = (rand.nextDouble() - 0.5D) / 10D;
-        entity.motionZ = (rand.nextDouble() - 0.5D) / 10D;
-        entity.rotationYaw = rand.nextInt(360);
+        color = new float[]{
+                rand.nextFloat(),
+                rand.nextFloat(),
+                rand.nextFloat()
+        };
 
-        this.entityMaxTicks = (rand.nextInt(59) + 3) * 20;
-
-        this.rotationYawPlus = rand.nextFloat() * 10f;
-        if (rand.nextBoolean())
-        {
-            this.rotationYawPlus = 0;
+        scale = 1;
+        while (rand.nextFloat() < 0.3F) {
+            scale *= rand.nextFloat() * 2.7f + 0.3F;
         }
 
-        this.color = new float[]{rand.nextFloat(), rand.nextFloat(), rand.nextFloat()};
-
-        this.scale = 1.0f;
-        while (rand.nextFloat() < 0.3f)
-        {
-            scale *= rand.nextFloat() * 2.7f + 0.3f;
-        }
-
-        if (scale > 20.0f)
-        {
-            scale = 20.0f;
+        if (scale > 20) {
+            scale = 20;
         }
     }
 
@@ -76,99 +82,70 @@ public class DrugHallucinationEntity extends DrugHallucination
     {
         super.update();
 
-        this.entity.lastTickPosX = this.entity.posX;
-        this.entity.lastTickPosY = this.entity.posY;
-        this.entity.lastTickPosZ = this.entity.posZ;
+        entity.prevX = entity.getX();
+        entity.prevY = entity.getY();
+        entity.prevZ = entity.getZ();
 
-        this.entity.prevRotationYaw = this.entity.rotationYaw;
-        this.entity.prevRotationPitch = this.entity.rotationPitch;
+        entity.prevYaw = entity.getYaw();
+        entity.prevPitch = entity.getPitch();
 
-        this.entity.posX += this.entity.motionX;
-        this.entity.posY += this.entity.motionY;
-        this.entity.posZ += this.entity.motionZ;
+        entity.setPosition(entity.getPos().add(entity.getVelocity()));
+        entity.setYaw(MathHelper.wrapDegrees(entity.getYaw() + rotationYawPlus));
 
-        this.entity.rotationYaw += this.rotationYawPlus;
-        while (this.entity.rotationYaw > 360f)
+        if (entity instanceof LivingEntity living)
         {
-            this.entity.rotationYaw -= 360;
-            this.entity.prevRotationYaw -= 360;
-        }
-        while (this.entity.rotationYaw < 360f)
-        {
-            this.entity.rotationYaw += 360;
-            this.entity.prevRotationYaw += 360;
-        }
-
-        if (this.entity instanceof EntityLivingBase)
-        {
-            EntityLiving entityliving = (EntityLiving) this.entity;
-
-            double var9 = this.entity.posX - this.entity.prevPosX;
-            double var12 = this.entity.posZ - this.entity.prevPosZ;
-            float var11 = MathHelper.sqrt_double(var9 * var9 + var12 * var12) * 4.0F;
-
-            if (var11 > 1.0F)
-            {
-                var11 = 1.0F;
-            }
-
-            entityliving.limbSwingAmount += (var11 / 3f - entityliving.limbSwingAmount) * 0.4F;
-            entityliving.limbSwing += entityliving.limbSwingAmount;
+            double velocity = entity.getPos().subtract(entity.prevX, 0, entity.prevZ).horizontalLength() * 4;
+            living.limbAngle += (Math.min(velocity, 1) / 3F - living.limbAngle) * 0.4F;
+            living.limbDistance += living.limbAngle;
         }
     }
 
     @Override
-    public boolean isDead()
-    {
-        return this.entityTicksAlive >= this.entityMaxTicks;
+    public boolean isDead() {
+        return entityTicksAlive >= entityMaxTicks;
     }
 
     @Override
-    public void render(float par1, float dAlpha)
+    public void render(float tickDelta, float dAlpha)
     {
-        float alpha = MathHelper.sin((float) Math.min(this.entityTicksAlive, this.entityMaxTicks - 2) / (float) (this.entityMaxTicks - 2) * 3.1415f) * 18f;
+        float alpha = Math.min(1, MathHelper.sin((float) Math.min(entityTicksAlive, entityMaxTicks - 2) / (float) (entityMaxTicks - 2) * MathHelper.PI) * 18);
 
-        if (alpha > 1.0f)
-        {
-            alpha = 1.0f;
+        if (alpha <= 0) {
+            return;
         }
-        if (alpha > 0.0f)
-        {
-            double var3 = this.entity.lastTickPosX + (this.entity.posX - this.entity.lastTickPosX) * par1;
-            double var5 = this.entity.lastTickPosY + (this.entity.posY - this.entity.lastTickPosY) * par1;
-            double var7 = this.entity.lastTickPosZ + (this.entity.posZ - this.entity.lastTickPosZ) * par1;
-            float var9 = this.entity.prevRotationYaw + (this.entity.rotationYaw - this.entity.prevRotationYaw) * par1;
 
-            GL11.glPushMatrix();
+        MinecraftClient client = MinecraftClient.getInstance();
 
-            OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-            GL11.glEnable(GL11.GL_BLEND);
-            PSRenderStates.setOverrideColor(color[0], color[1], color[2], alpha * dAlpha);
-            PSRenderStates.setTexture2DEnabled(OpenGlHelper.lightmapTexUnit, false);
+        double x = MathHelper.lerp(tickDelta, entity.lastRenderX, entity.getX());
+        double y = MathHelper.lerp(tickDelta, entity.lastRenderY, entity.getY());
+        double z = MathHelper.lerp(tickDelta, entity.lastRenderZ, entity.getZ());
+        float yaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
 
-            Render var10 = RenderManager.instance.getEntityRenderObject(this.entity);
-            GL11.glTranslated(var3 - RenderManager.renderPosX, var5 - RenderManager.renderPosY, var7 - RenderManager.renderPosZ);
-            GL11.glRotatef(var9, 0, 1, 0);
+        MatrixStack matrices = new MatrixStack();
+        matrices.push();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableBlend();
+        RenderSystem.setShaderColor(color[0], color[1], color[2], alpha * dAlpha);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+        matrices.scale(scale, scale, scale);
+        Vec3d camera = client.gameRenderer.getCamera().getPos();
 
-            GL11.glScaled(scale, scale, scale);
-            var10.doRender(this.entity, 0.0F, 0.0F, 0.0F, 0.0F, 1.0f);
+        client.getEntityRenderDispatcher().render(
+                entity,
+                x - camera.x, y - camera.y, z - camera.z, yaw, tickDelta, matrices,
+                client.getBufferBuilders().getEntityVertexConsumers(),
+                0xF000F0
+        );
+        RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            PSRenderStates.setTexture2DEnabled(OpenGlHelper.lightmapTexUnit, true);
-            PSRenderStates.setOverrideColor((float[]) null);
-
-            GL11.glPopMatrix();
-        }
+        matrices.pop();
     }
 
     @Override
-    public int getMaxHallucinations()
-    {
-        return -1;
+    public int getMaxHallucinations() {
+        return UNLIMITED;
     }
 
     @Override
-    public void receiveChatMessage(String message, EntityLivingBase player)
-    {
-
-    }
+    public void receiveChatMessage(String message, LivingEntity entity) { }
 }

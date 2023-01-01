@@ -13,10 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
@@ -28,9 +25,9 @@ public class EffectLensFlare implements Iv2DScreenEffect
 {
     public float[] sunFlareSizes;
     public float[] sunFlareInfluences;
-    public ResourceLocation[] sunFlareTextures;
+    public Identifier[] sunFlareTextures;
 
-    public ResourceLocation sunBlindnessTexture;
+    public Identifier sunBlindnessTexture;
     public float sunFlareIntensity;
 
     public float actualSunAlpha = 0.0f;

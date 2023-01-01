@@ -5,43 +5,38 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
-import ivorius.ivtoolkit.logic.IvChatBot;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 
-public abstract class DrugHallucination
-{
-    public EntityPlayer playerEntity;
+public abstract class DrugHallucination {
+
+    public static final int UNLIMITED = -1;
+
+    public PlayerEntity player;
 
     public int entityTicksAlive;
 
     public IvChatBot chatBot;
 
-    public DrugHallucination(EntityPlayer playerEntity)
-    {
-        this.playerEntity = playerEntity;
+    public DrugHallucination(PlayerEntity player) {
+        this.player = player;
     }
 
-    public void update()
-    {
+    public void update() {
         entityTicksAlive++;
 
-        if (this.chatBot != null)
-        {
-            String sendString = this.chatBot.update();
+        if (chatBot != null) {
+            String sendString = chatBot.update();
 
-            if (sendString != null)
-            {
-                playerEntity.addChatMessage(new ChatComponentText(sendString));
+            if (sendString != null) {
+                player.sendMessage(Text.literal(sendString));
             }
         }
     }
 
-    public void receiveChatMessage(String message, EntityLivingBase entity)
-    {
-        if (this.chatBot != null)
-        {
+    public void receiveChatMessage(String message, LivingEntity entity) {
+        if (this.chatBot != null) {
             this.chatBot.receiveChatMessage(message);
         }
     }
@@ -51,4 +46,10 @@ public abstract class DrugHallucination
     public abstract boolean isDead();
 
     public abstract int getMaxHallucinations();
+
+    public interface IvChatBot {
+        String update();
+
+        void receiveChatMessage(String message);
+    }
 }

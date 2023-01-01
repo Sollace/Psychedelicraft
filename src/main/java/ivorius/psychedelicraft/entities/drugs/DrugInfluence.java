@@ -5,8 +5,7 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
-
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NbtCompound;
 
 public class DrugInfluence
 {
@@ -108,8 +107,10 @@ public class DrugInfluence
         return maxInfluence <= 0.0;
     }
 
+    @Override
     public DrugInfluence clone()
     {
+        // TODO: (Sollace) Modernize
         DrugInfluence inf = null;
         try
         {
@@ -122,7 +123,7 @@ public class DrugInfluence
 
         if (inf != null)
         {
-            NBTTagCompound cmp = new NBTTagCompound();
+            NbtCompound cmp = new NbtCompound();
             writeToNBT(cmp);
 
             inf.readFromNBT(cmp);
@@ -131,11 +132,11 @@ public class DrugInfluence
         return inf;
     }
 
-    public void readFromNBT(NBTTagCompound compound)
+    public void readFromNBT(NbtCompound compound)
     {
         drugName = compound.getString("drugName");
 
-        delay = compound.getInteger("delay");
+        delay = compound.getInt("delay");
 
         influenceSpeed = compound.getDouble("influenceSpeed");
         influenceSpeedPlus = compound.getDouble("influenceSpeedPlus");
@@ -143,15 +144,15 @@ public class DrugInfluence
         maxInfluence = compound.getDouble("maxInfluence");
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public void writeToNBT(NbtCompound compound)
     {
-        compound.setString("drugName", drugName);
+        compound.putString("drugName", drugName);
 
-        compound.setInteger("delay", delay);
+        compound.putInt("delay", delay);
 
-        compound.setDouble("influenceSpeed", influenceSpeed);
-        compound.setDouble("influenceSpeedPlus", influenceSpeedPlus);
+        compound.putDouble("influenceSpeed", influenceSpeed);
+        compound.putDouble("influenceSpeedPlus", influenceSpeedPlus);
 
-        compound.setDouble("maxInfluence", maxInfluence);
+        compound.putDouble("maxInfluence", maxInfluence);
     }
 }

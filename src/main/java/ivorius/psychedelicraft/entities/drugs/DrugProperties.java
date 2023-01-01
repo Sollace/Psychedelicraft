@@ -60,7 +60,7 @@ public class DrugProperties implements IExtendedEntityProperties, PartialUpdateH
     public int delayUntilBreath;
     public boolean lastBreathWasIn;
 
-    public DrugProperties(EntityLivingBase entity)
+    public DrugProperties(LivingEntity entity)
     {
         drugs = new HashMap<>();
         influences = new ArrayList<>();

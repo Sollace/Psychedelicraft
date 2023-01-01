@@ -8,23 +8,25 @@ package ivorius.psychedelicraft.entities.drugs.effects;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.DrugRenderer;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.*;
+import net.minecraft.util.math.MathHelper;
+
 import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.systems.RenderSystem;
 
 /**
  * Created by lukas on 01.11.14.
  */
 public class DrugWarmth extends DrugSimple
 {
-    public ResourceLocation coffeeOverlay;
+    public Identifier coffeeOverlay = Psychedelicraft.id(Psychedelicraft.filePathTextures + "coffeeOverlayBlend.png");
 
-    public DrugWarmth(double decSpeed, double decSpeedPlus)
-    {
+    public DrugWarmth(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus, true);
-        coffeeOverlay = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "coffeeOverlayBlend.png");
     }
 
     @Override
@@ -40,20 +42,20 @@ public class DrugWarmth extends DrugSimple
     }
 
     @Override
-    public void drawOverlays(float partialTicks, EntityLivingBase entity, int updateCounter, int width, int height, DrugProperties drugProperties)
-    {
+    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
         float warmth = (float)getActiveValue();
-        if (warmth > 0)
+        if (warmth > 0) {
             renderWarmthOverlay(warmth * 0.5f, width, height, updateCounter);
+        }
     }
 
     private void renderWarmthOverlay(float alpha, int width, int height, int ticks)
     {
         DrugRenderer.bindTexture(coffeeOverlay);
-        Tessellator var8 = Tessellator.instance;
+        Tessellator var8 = Tessellator.getInstance();
+        BufferBuilder buffer = var8.getBuffer();
 
-        for (int i = 0; i < 3; i++)
-        {
+        for (int i = 0; i < 3; i++) {
             int steps = 30;
 
             float prevXL = -1;
@@ -61,11 +63,10 @@ public class DrugWarmth extends DrugSimple
             float prevY = -1;
             boolean init = false;
 
-            for (int y = 0; y < steps; y++)
-            {
+            for (int y = 0; y < steps; y++) {
                 float prog = (float) (steps - y) / (float) steps;
 
-                GL11.glColor4f(1.0f, 0.5f + prog * 0.3f, 0.35f + prog * 0.1f, alpha - prog * 0.4f);
+                RenderSystem.setShaderColor(1.0f, 0.5f + prog * 0.3f, 0.35f + prog * 0.1f, alpha - prog * 0.4f);
 
                 int segWidth = width / 9;
 
@@ -76,17 +77,14 @@ public class DrugWarmth extends DrugSimple
                 float mXR = xM + segWidth + xShift * segWidth * 0.25f;
                 float mY = (float) y / (float) steps * height / 7 * 5 + height / 7;
 
-                if (init)
-                {
-                    var8.startDrawingQuads();
-                    var8.addVertexWithUV(mXL, mY, -90.0D, 0, (float) y / (float) steps);
-                    var8.addVertexWithUV(mXR, mY, -90.0D, 1, (float) y / (float) steps);
-                    var8.addVertexWithUV(prevXR, prevY, -90.0D, 1, (float) (y - 1) / (float) steps);
-                    var8.addVertexWithUV(prevXL, prevY, -90.0D, 0, (float) (y - 1) / (float) steps);
+                if (init) {
+                    buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+                    buffer.vertex(mXL, mY, -90.0D).texture(0, (float) y / (float) steps).next();
+                    buffer.vertex(mXR, mY, -90.0D).texture(1, (float) y / (float) steps).next();
+                    buffer.vertex(prevXR, prevY, -90.0D).texture(1, (float) (y - 1) / (float) steps).next();
+                    buffer.vertex(prevXL, prevY, -90.0D).texture(0, (float) (y - 1) / (float) steps).next();
                     var8.draw();
-                }
-                else
-                {
+                } else {
                     init = true;
                 }
 
@@ -96,6 +94,6 @@ public class DrugWarmth extends DrugSimple
             }
         }
 
-        GL11.glColor3f(1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 }

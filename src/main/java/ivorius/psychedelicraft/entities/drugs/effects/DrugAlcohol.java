@@ -5,17 +5,16 @@
 
 package ivorius.psychedelicraft.entities.drugs.effects;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
+import ivorius.psychedelicraft.PSDamageSources;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.DrugRenderer;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
 
@@ -36,17 +35,15 @@ public class DrugAlcohol extends DrugSimple
 
     public static void rotateEntityYaw(Entity entity, double amount)
     {
-        entity.rotationYaw += amount;
+        entity.setYaw(entity.getYaw() + (float)amount);
     }
 
-    public DrugAlcohol(double decSpeed, double decSpeedPlus)
-    {
+    public DrugAlcohol(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus);
     }
 
     @Override
-    public void update(EntityLivingBase entity, DrugProperties drugProperties)
-    {
+    public void update(LivingEntity entity, DrugProperties drugProperties) {
         super.update(entity, drugProperties);
 
         if (getActiveValue() > 0.0)
@@ -60,10 +57,8 @@ public class DrugAlcohol extends DrugSimple
             {
                 double damageChance = (activeValue - 0.9f) * 2.0f;
 
-                if (ticksExisted % 20 == 0 && random.nextFloat() < damageChance)
-                {
-                    DamageSource damageSource = Psychedelicraft.alcoholPoisoning;
-                    entity.attackEntityFrom(damageSource, (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
+                if (ticksExisted % 20 == 0 && random.nextFloat() < damageChance) {
+                    entity.attackEntityFrom(PSDamageSources.ALCOHOL_POISONING, (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
                 }
             }
 
@@ -90,29 +85,32 @@ public class DrugAlcohol extends DrugSimple
     }
 
     @Override
-    public void drawOverlays(float partialTicks, EntityLivingBase entity, int updateCounter, int width, int height, DrugProperties drugProperties)
+    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties)
     {
         float alcohol = (float)getActiveValue();
         if (alcohol > 0)
         {
             float overlayAlpha = (MathHelper.sin(updateCounter / 80F) * alcohol * 0.5F + alcohol);
-            if (overlayAlpha > 0.8F)
+            if (overlayAlpha > 0.8F) {
                 overlayAlpha = 0.8F;
+            }
 
-            IIcon portalIcon = Blocks.portal.getIcon(0, 0);
-            DrugRenderer.renderOverlay(overlayAlpha * 0.25f, width, height, TextureMap.locationBlocksTexture, portalIcon.getMinU(), portalIcon.getMinV(), portalIcon.getMaxU(), portalIcon.getMaxV(), 0);
+            IIcon portalIcon = Blocks.NETHER_PORTAL.getIcon(0, 0);
+            DrugRenderer.renderOverlay(overlayAlpha * 0.25f, width, height, TextureMap.locationBlocksTexture,
+                    portalIcon.getMinU(),
+                    portalIcon.getMinV(),
+                    portalIcon.getMaxU(),
+                    portalIcon.getMaxV(), 0);
         }
     }
 
     @Override
-    public float doubleVision()
-    {
-        return IvMathHelper.zeroToOne((float)getActiveValue(), 0.25f, 1.0f);
+    public float doubleVision() {
+        return MathHelper.lerp((float)getActiveValue(), 0.25f, 1.0f);
     }
 
     @Override
-    public float motionBlur()
-    {
-        return IvMathHelper.zeroToOne((float)getActiveValue(), 0.5f, 1.0f) * 0.3f;
+    public float motionBlur() {
+        return MathHelper.lerp((float)getActiveValue(), 0.5f, 1.0f) * 0.3f;
     }
 }
