@@ -5,25 +5,22 @@
 
 package ivorius.psychedelicraft.items;
 
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 
 /**
  * Created by lukas on 18.10.14.
  */
-public class ItemFoodSpecial extends ItemFood
-{
+public class ItemFoodSpecial extends Item {
     public int eatSpeed;
 
-    public ItemFoodSpecial(int healAmount, float saturation, boolean canFeedWolves, int eatSpeed)
+    public ItemFoodSpecial(Settings settings, int eatSpeed)
     {
-        super(healAmount, saturation, canFeedWolves);
+        super(settings);
         this.eatSpeed = eatSpeed;
     }
 
     @Override
-    public int getMaxItemUseDuration(ItemStack p_77626_1_)
-    {
+    public int getMaxUseTime(ItemStack stack) {
         return eatSpeed;
     }
 }

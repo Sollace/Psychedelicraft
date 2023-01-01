@@ -6,37 +6,28 @@
 package ivorius.psychedelicraft.items;
 
 import ivorius.psychedelicraft.blocks.PSBlocks;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 
-public class ItemWineGrapes extends ItemFoodSpecial
-{
-    public ItemWineGrapes(int healAmount, float saturation, boolean canFeedWolves, int eatSpeed)
-    {
-        super(healAmount, saturation, canFeedWolves, eatSpeed);
+public class ItemWineGrapes extends ItemFoodSpecial {
+    public ItemWineGrapes(Settings settings, int eatSpeed) {
+        super(settings, eatSpeed);
     }
 
     @Override
-    public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
-    {
-        if (!par2EntityPlayer.canPlayerEdit(par4, par5, par6, par7, par1ItemStack))
-        {
-            return false;
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        if (!context.shouldCancelInteraction() || context.getPlayer().canModifyAt(context.getWorld(), context.getBlockPos())) {
+            return ActionResult.PASS;
         }
-        else
-        {
-            if (par3World.getBlock(par4, par5, par6) == PSBlocks.wineGrapeLattice && (par3World.getBlockMetadata(par4, par5, par6) >> 1) == 0)
-            {
-                int m = par3World.getBlockMetadata(par4, par5, par6);
-                par3World.setBlockMetadataWithNotify(par4, par5, par6, m | 1 << 1, 3);
 
-                par1ItemStack.stackSize--;
+        BlockPos pos = context.getBlockPos();
 
-                return true;
-            }
-
-            return super.onItemUse(par1ItemStack, par2EntityPlayer, par3World, par4, par5, par6, par7, par8, par9, par10);
+        if (context.getWorld().getBlockState(pos).isOf(PSBlocks.emptyLattice)) {
+            context.getWorld().setBlockState(pos, PSBlocks.wineGrapeLattice.getDefaultState());
+            return ActionResult.SUCCESS;
         }
+
+        return ActionResult.PASS;
     }
 }

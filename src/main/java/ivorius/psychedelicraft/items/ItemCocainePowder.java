@@ -1,49 +1,24 @@
 package ivorius.psychedelicraft.items;
 
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.util.UseAction;
 
 /**
  * Created by lukas on 14.11.14.
  */
-public class ItemCocainePowder extends Item
-{
-    @Override
-    public EnumAction getItemUseAction(ItemStack par1ItemStack)
-    {
-        return EnumAction.bow;
+public class ItemCocainePowder extends EdibleItem {
+    public ItemCocainePowder(Settings settings, DrugInfluence influence) {
+        super(settings, influence);
     }
 
     @Override
-    public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player)
-    {
-        if (!player.capabilities.isCreativeMode)
-            stack.stackSize--;
-
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(player);
-
-        if (drugProperties != null)
-            drugProperties.addToDrug(new DrugInfluence("Cocaine", 0, 0.002, 0.003, 0.35f));
-
-        return super.onEaten(stack, world, player);
+    public UseAction getUseAction(ItemStack par1ItemStack) {
+        return UseAction.BOW;
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
-    {
-        player.setItemInUse(stack, getMaxItemUseDuration(stack));
-
-        return stack;
-    }
-
-    @Override
-    public int getMaxItemUseDuration(ItemStack par1ItemStack)
-    {
+    public int getMaxUseTime(ItemStack stack) {
         return 32;
     }
 }

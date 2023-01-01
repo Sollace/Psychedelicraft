@@ -26,32 +26,8 @@ import java.util.Random;
 
 public class BlockWineGrapeLattice extends Block implements IGrowable
 {
-    public IIcon currentIcon;
-
-    public IIcon leavesIcons[] = new IIcon[4];
-
-    public BlockWineGrapeLattice()
-    {
-        super(Material.wood);
-        setTickRandomly(true);
-    }
-
-    @Override
-    public int getRenderType()
-    {
-        return Psychedelicraft.blockWineGrapeLatticeRenderType;
-    }
-
-    @Override
-    public boolean isOpaqueCube()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean renderAsNormalBlock()
-    {
-        return false;
+    public BlockWineGrapeLattice(Settings settings) {
+        super(settings);
     }
 
     @Override
@@ -142,30 +118,6 @@ public class BlockWineGrapeLattice extends Block implements IGrowable
         {
             super.harvestBlock(world, entityplayer, x, y, z, meta);
         }
-    }
-
-    @Override
-    public void registerBlockIcons(IIconRegister par1IconRegister)
-    {
-        super.registerBlockIcons(par1IconRegister);
-
-        leavesIcons[0] = par1IconRegister.registerIcon(Psychedelicraft.modBase + "grapeLeaves0");
-        leavesIcons[1] = par1IconRegister.registerIcon(Psychedelicraft.modBase + "grapeLeaves1");
-        leavesIcons[2] = par1IconRegister.registerIcon(Psychedelicraft.modBase + "grapeLeaves2");
-        leavesIcons[3] = par1IconRegister.registerIcon(Psychedelicraft.modBase + "grapeLeaves3");
-
-        currentIcon = getDefaultBlockIcon();
-    }
-
-    @Override
-    public IIcon getIcon(int par1, int par2)
-    {
-        return currentIcon;
-    }
-
-    public IIcon getDefaultBlockIcon()
-    {
-        return blockIcon;
     }
 
     @Override

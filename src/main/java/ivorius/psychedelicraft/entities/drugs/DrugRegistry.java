@@ -7,7 +7,8 @@ package ivorius.psychedelicraft.entities.drugs;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -18,10 +19,9 @@ import java.util.List;
 /**
  * Created by lukas on 22.10.14.
  */
-public class DrugRegistry
-{
-    private static List<DrugFactory> drugFactories = new ArrayList<>();
-    private static BiMap<String, Class<? extends DrugInfluence>> drugMap = HashBiMap.create();
+public class DrugRegistry {
+    private static final List<DrugFactory> drugFactories = new ArrayList<>();
+    private static final BiMap<String, Class<? extends DrugInfluence>> drugMap = HashBiMap.create();
 
     public static void registerFactory(DrugFactory factory)
     {
@@ -33,7 +33,7 @@ public class DrugRegistry
         return Collections.unmodifiableCollection(drugFactories);
     }
 
-    public static List<Pair<String, Drug>> createDrugs(EntityLivingBase entity)
+    public static List<Pair<String, Drug>> createDrugs(LivingEntity entity)
     {
         List<Pair<String, Drug>> list = new ArrayList<>();
         for (DrugFactory drugFactory : drugFactories)
@@ -54,5 +54,11 @@ public class DrugRegistry
     public static String getID(Class<? extends DrugInfluence> clazz)
     {
         return drugMap.inverse().get(clazz);
+    }
+
+    static {
+        registerInfluence(DrugInfluence.class, "default");
+        registerInfluence(DrugInfluenceHarmonium.class, "harmonium");
+        registerFactory(new DrugFactoryPsychedelicraft());
     }
 }

@@ -9,8 +9,7 @@ import ivorius.psychedelicraft.client.rendering.RenderPassesCustom;
 import ivorius.psychedelicraft.fluids.FluidHelper;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.item.ItemDye;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidStack;
@@ -19,7 +18,7 @@ import net.minecraftforge.fluids.ItemFluidContainer;
 /**
  * Created by lukas on 21.10.14.
  */
-public class ItemBottle extends ItemFluidContainer implements RenderPassesCustom
+public class ItemBottle extends BucketItem implements RenderPassesCustom
 {
     private IIcon liquidIcon;
     private IIcon overlayIcon;

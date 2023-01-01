@@ -6,14 +6,7 @@
 package ivorius.psychedelicraft.fluids;
 
 import ivorius.psychedelicraft.events.FluidDrinkEvent;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
 
 import java.util.ArrayList;
 import java.util.List;

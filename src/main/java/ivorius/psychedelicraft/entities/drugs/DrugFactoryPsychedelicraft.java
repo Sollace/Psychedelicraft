@@ -6,7 +6,8 @@
 package ivorius.psychedelicraft.entities.drugs;
 
 import ivorius.psychedelicraft.entities.drugs.effects.*;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -19,8 +20,7 @@ import java.util.List;
 public class DrugFactoryPsychedelicraft implements DrugFactory
 {
     @Override
-    public void createDrugs(EntityLivingBase entity, List<Pair<String, Drug>> drugs)
-    {
+    public void createDrugs(LivingEntity entity, List<Pair<String, Drug>> drugs) {
         addDrug("Alcohol", new DrugAlcohol(1, 0.0002d), drugs);
         addDrug("Cannabis", new DrugCannabis(1, 0.0002d), drugs);
         addDrug("BrownShrooms", new DrugBrownShrooms(1, 0.0002d), drugs);
@@ -36,14 +36,12 @@ public class DrugFactoryPsychedelicraft implements DrugFactory
     }
 
     @Override
-    public void addManagedDrugNames(List<String> drugNames)
-    {
+    public void addManagedDrugNames(List<String> drugNames) {
         Collections.addAll(drugNames, "Alcohol", "Cannabis", "BrownShrooms", "RedShrooms",
                 "Tobacco", "Cocaine", "Caffeine", "Warmth", "Peyote", "Zero", "Power", "Harmonium");
     }
 
-    public void addDrug(String key, Drug drug, List<Pair<String, Drug>> drugs)
-    {
+    public void addDrug(String key, Drug drug, List<Pair<String, Drug>> drugs) {
         drugs.add(new ImmutablePair<>(key, drug));
     }
 }

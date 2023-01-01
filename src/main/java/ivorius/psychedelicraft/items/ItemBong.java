@@ -5,15 +5,14 @@
 
 package ivorius.psychedelicraft.items;
 
-import ivorius.ivtoolkit.tools.IvInventoryHelper;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -21,81 +20,65 @@ import java.util.ArrayList;
 /**
  * Created by calebmanley on 4/05/2014.
  */
-public class ItemBong extends Item
-{
-    public ArrayList<ItemBongConsumable> consumables = new ArrayList<>();
+public class ItemBong extends Item {
+    public final ArrayList<Consumable> consumables = new ArrayList<>();
 
-    private IIcon empty;
-
-    public ItemBong()
-    {
-        super();
-
-        setMaxDamage(128);
-        setMaxStackSize(1);
+    public ItemBong(Settings settings) {
+        super(settings);
     }
 
-    public void addConsumable(ItemBongConsumable consumable)
+    public void addConsumable(Consumable consumable)
     {
         consumables.add(consumable);
     }
 
     @Override
-    public EnumAction getItemUseAction(ItemStack stack)
-    {
-        return EnumAction.block;
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BLOCK;
     }
 
     @Override
-    public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player)
-    {
-        ItemBongConsumable usedConsumable = getUsedConsumable(player);
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+        if (entity instanceof PlayerEntity player) {
+            Consumable usedConsumable = getUsedConsumable(player);
+            if (usedConsumable != null && player.getInventory().contains(usedConsumable.consumedItem)) {
+                // TODO: (Sollace) check for possible client desync
+                player.getInventory().removeOne(usedConsumable.consumedItem);
+                DrugProperties drugProperties = DrugProperties.getDrugProperties(entity);
 
-        if (usedConsumable != null)
-        {
-            if (IvInventoryHelper.consumeInventoryItem(player.inventory, usedConsumable.consumedItem))
-            {
-                DrugProperties drugProperties = DrugProperties.getDrugProperties(player);
-
-                if (drugProperties != null)
-                {
-                    for (DrugInfluence influence : usedConsumable.drugInfluences)
-                    {
+                if (drugProperties != null) {
+                    for (DrugInfluence influence : usedConsumable.drugInfluences) {
                         drugProperties.addToDrug(influence.clone());
                     }
 
-                    stack.damageItem(1, player);
-
-                    drugProperties.startBreathingSmoke(10 + world.rand.nextInt(10), usedConsumable.smokeColor);
+                    stack.damage(1, player, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+                    drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), usedConsumable.smokeColor);
                 }
             }
         }
 
-        return super.onEaten(stack, world, player);
+        return super.finishUsing(stack, world, entity);
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
-    {
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
         DrugProperties drugProperties = DrugProperties.getDrugProperties(player);
 
-        if (drugProperties != null && drugProperties.timeBreathingSmoke <= 0)
-        {
-            if (getUsedConsumable(player) != null)
-            {
-                player.setItemInUse(stack, getMaxItemUseDuration(stack));
-            }
+        if (drugProperties != null && drugProperties.timeBreathingSmoke <= 0 && getUsedConsumable(player) != null) {
+            return TypedActionResult.consume(stack);
         }
 
-        return stack;
+        return TypedActionResult.fail(null);
     }
 
-    public ItemBongConsumable getUsedConsumable(EntityPlayer player)
-    {
-        for (ItemBongConsumable consumable : consumables)
-        {
-            if (player.inventory.hasItemStack(consumable.consumedItem))
-            {
+    public Consumable getUsedConsumable(LivingEntity entity) {
+        if (!(entity instanceof PlayerEntity)) {
+            return null;
+        }
+
+        for (Consumable consumable : consumables) {
+            if (((PlayerEntity)entity).getInventory().contains(consumable.consumedItem)) {
                 return consumable;
             }
         }
@@ -104,60 +87,17 @@ public class ItemBong extends Item
     }
 
     @Override
-    public int getMaxItemUseDuration(ItemStack stack)
-    {
+    public int getMaxUseTime(ItemStack stack) {
         return 30;
     }
 
-    @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        super.registerIcons(iconRegister);
-        empty = iconRegister.registerIcon(getIconString() + "_empty");
-    }
-
-    @Override
-    public IIcon getIcon(ItemStack stack, int renderPass, EntityPlayer player, ItemStack usingItem, int useRemaining)
-    {
-        int damage = stack.getItemDamage();
-
-        if (damage == 3)
-        {
-            return empty;
-        }
-
-        return super.getIcon(stack, renderPass, player, usingItem, useRemaining);
-    }
-
-    @Override
-    public IIcon getIconFromDamage(int damage)
-    {
-        if (damage == 3)
-        {
-            return empty;
-        }
-
-        return itemIcon;
-    }
-
-    public static class ItemBongConsumable
-    {
-        public ItemStack consumedItem;
-
-        public DrugInfluence[] drugInfluences;
-        public float[] smokeColor;
-
-        public ItemBongConsumable(ItemStack consumedItem, DrugInfluence[] drugInfluences)
-        {
-            this(consumedItem, drugInfluences, new float[]{1.0f, 1.0f, 1.0f});
-        }
-
-        public ItemBongConsumable(ItemStack consumedItem, DrugInfluence[] drugInfluences, float[] smokeColor)
-        {
-            this.consumedItem = consumedItem;
-
-            this.drugInfluences = drugInfluences;
-            this.smokeColor = smokeColor;
+    public record Consumable (
+            ItemStack consumedItem,
+            DrugInfluence[] drugInfluences,
+            float[] smokeColor
+    ) {
+        public Consumable(ItemStack consumedItem, DrugInfluence...drugInfluences) {
+            this(consumedItem, drugInfluences, new float[]{ 1, 1, 1 });
         }
     }
 }

@@ -8,30 +8,20 @@ package ivorius.psychedelicraft.items;
 import ivorius.psychedelicraft.client.rendering.RenderPassesCustom;
 import ivorius.psychedelicraft.fluids.FluidHelper;
 import ivorius.psychedelicraft.fluids.InjectableFluid;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.item.*;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.ItemFluidContainer;
 
 import java.util.List;
 
-public class ItemInjectable extends ItemFluidContainer implements RenderPassesCustom
+public class InjectableItem extends BucketItem implements RenderPassesCustom
 {
     public static final int FLUID_PER_INJECTION = 10;
 
     public IIcon iconLiquid;
 
-    public ItemInjectable(int capacity)
+    public InjectableItem(Settings settings, int capacity)
     {
-        super(0, capacity);
+        super(settings, 0, capacity);
 
         this.setHasSubtypes(true);
         setMaxDamage(0);

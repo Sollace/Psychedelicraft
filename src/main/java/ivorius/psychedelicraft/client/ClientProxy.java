@@ -5,10 +5,6 @@
 
 package ivorius.psychedelicraft.client;
 
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.registry.VillagerRegistry;
-import ivorius.ivtoolkit.rendering.IvParticleHelper;
 import ivorius.psychedelicraft.PSProxy;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.blocks.*;
@@ -26,14 +22,8 @@ import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import ivorius.psychedelicraft.entities.drugs.DrugRegistry;
 import ivorius.psychedelicraft.events.PSCoreHandlerClient;
 import ivorius.psychedelicraft.items.PSItems;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.particle.EntitySmokeFX;
-import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,49 +40,13 @@ public class ClientProxy implements PSProxy
 
     public static double pauseMenuBlur;
 
+    public static PSCoreHandlerClient coreHandlerClient;
+
     @Override
     public void preInit()
     {
-        Psychedelicraft.coreHandlerClient = new PSCoreHandlerClient();
-        Psychedelicraft.coreHandlerClient.register();
-    }
-
-    @Override
-    public void registerRenderers()
-    {
-        Psychedelicraft.blockWineGrapeLatticeRenderType = RenderingRegistry.getNextAvailableRenderId();
-        RenderingRegistry.registerBlockHandler(Psychedelicraft.blockWineGrapeLatticeRenderType, new RenderWineGrapeLattice());
-
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDistillery.class, new TileEntityRendererDistillery());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFlask.class, new TileEntityRendererFlask());
-
-        MinecraftForgeClient.registerItemRenderer(PSItems.bottle, new ItemRendererThatMakesFuckingSense());
-        MinecraftForgeClient.registerItemRenderer(PSItems.molotovCocktail, new ItemRendererThatMakesFuckingSense());
-        MinecraftForgeClient.registerItemRenderer(PSItems.woodenMug, new ItemRendererThatMakesFuckingSense());
-        MinecraftForgeClient.registerItemRenderer(PSItems.stoneCup, new ItemRendererThatMakesFuckingSense());
-        MinecraftForgeClient.registerItemRenderer(PSItems.glassChalice, new ItemRendererThatMakesFuckingSense());
-        MinecraftForgeClient.registerItemRenderer(PSItems.syringe, new ItemRendererThatMakesFuckingSense());
-
-        MinecraftForgeClient.registerItemRenderer(PSItems.itemMashTub, new ItemRendererModelCustom(new ItemRendererModelCustom.ItemModelRendererSimple(TileEntityRendererMashTub.modelWoodenVat), new ResourceLocation(MODID, filePathTextures + "woodenVat.png"), 2.0f, new float[]{0f, -1.5f, 0f}, new float[]{0.0f, 0.0f, 0.0f}));
-        MinecraftForgeClient.registerItemRenderer(PSItems.itemDistillery, new ItemRendererModelCustom(new ItemRendererModelCustom.ItemModelRendererSimple(TileEntityRendererDistillery.modelDistillery), new ResourceLocation(MODID, filePathTextures + "distillery.png"), 0.75f, new float[]{-.5f, -1.8f, .5f}, new float[]{0.0f, 0.0f, 0.0f}));
-        MinecraftForgeClient.registerItemRenderer(PSItems.itemFlask, new ItemRendererModelCustom(new ItemRendererModelCustom.ItemModelRendererSimple(TileEntityRendererFlask.modelFlask), new ResourceLocation(MODID, filePathTextures + "flask.png"), 0.75f, new float[]{0f, -1.8f, 0f}, new float[]{0.0f, 0.0f, 0.0f}));
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(PSBlocks.bottleRack), new ItemRendererModelCustom(new ItemRendererModelCustom.ItemModelRendererSimple(TileEntityRendererBottleRack.modelBottleRack), new ResourceLocation(MODID, filePathTextures + "wineRack.png"), 1f, new float[]{0f, -1.8f, 0.3f}, new float[]{0.0f, 0.0f, 0.0f}));
-
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMashTub.class, new TileEntityRendererMashTub());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBarrel.class, new TileEntityRendererBarrel());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDryingTable.class, new TileEntityRendererDryingTable());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPeyote.class, new TileEntityRendererPeyote());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRiftJar.class, new TileEntityRendererRiftJar());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBottleRack.class, new TileEntityRendererBottleRack());
-
-        RenderingRegistry.registerEntityRenderingHandler(EntityMolotovCocktail.class, new RenderSnowball(PSItems.molotovCocktail));
-        RenderingRegistry.registerEntityRenderingHandler(EntityRealityRift.class, new RenderRealityRift());
-
-        if (PSEntityList.villagerDealerProfessionID >= 0)
-            VillagerRegistry.instance().registerVillagerSkin(PSEntityList.villagerDealerProfessionID, new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "villagerDealer.png"));
-
-        PSRenderStates.allocate();
-        PSRenderStates.outputShaderInfo();
+        coreHandlerClient = new PSCoreHandlerClient();
+        coreHandlerClient.register();
     }
 
     @Override

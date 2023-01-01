@@ -12,21 +12,17 @@ import net.minecraft.nbt.NBTTagCompound;
 /**
  * Created by lukas on 10.03.14.
  */
-public class DrugInfluenceHarmonium extends DrugInfluence
-{
+public class DrugInfluenceHarmonium extends DrugInfluence {
     public float[] color;
 
-    public DrugInfluenceHarmonium(String drugName, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color)
-    {
+    public DrugInfluenceHarmonium(String drugName, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color) {
         super(drugName, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
 
         this.color = color;
     }
 
-    public DrugInfluenceHarmonium()
-    {
+    public DrugInfluenceHarmonium() {
         super();
-
         color = new float[3];
     }
 
@@ -37,8 +33,7 @@ public class DrugInfluenceHarmonium extends DrugInfluence
 
         Drug drug = drugProperties.getDrug(getDrugName());
 
-        if (drug instanceof DrugHarmonium)
-        {
+        if (drug instanceof DrugHarmonium) {
             DrugHarmonium harmonium = (DrugHarmonium) drug;
 
             double inf = value + (1.0f - value) * (1.0f - harmonium.getActiveValue());

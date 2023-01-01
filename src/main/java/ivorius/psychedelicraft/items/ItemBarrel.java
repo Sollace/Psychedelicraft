@@ -23,12 +23,6 @@ import java.util.List;
 
 public class ItemBarrel extends ItemBlockFluidContainer
 {
-    private IIcon spruceIcon;
-    private IIcon birchIcon;
-    private IIcon jungleIcon;
-    private IIcon acaciaIcon;
-    private IIcon darkOakIcon;
-
     public ItemBarrel(Block block)
     {
         super(block, TileEntityBarrel.BARREL_CAPACITY);
@@ -58,18 +52,6 @@ public class ItemBarrel extends ItemBlockFluidContainer
     }
 
     @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        super.registerIcons(iconRegister);
-
-        spruceIcon = iconRegister.registerIcon(this.field_150939_a.getItemIconName() + "_spruce");
-        birchIcon = iconRegister.registerIcon(this.field_150939_a.getItemIconName() + "_birch");
-        jungleIcon = iconRegister.registerIcon(this.field_150939_a.getItemIconName() + "_jungle");
-        acaciaIcon = iconRegister.registerIcon(this.field_150939_a.getItemIconName() + "_acacia");
-        darkOakIcon = iconRegister.registerIcon(this.field_150939_a.getItemIconName() + "_darkOak");
-    }
-
-    @Override
     public boolean requiresMultipleRenderPasses()
     {
         return true;
@@ -95,44 +77,7 @@ public class ItemBarrel extends ItemBlockFluidContainer
             }
         }
 
-        switch (stack.getItemDamage())
-        {
-            case 1:
-                return spruceIcon;
-            case 2:
-                return birchIcon;
-            case 3:
-                return jungleIcon;
-            case 4:
-                return acaciaIcon;
-            case 5:
-                return darkOakIcon;
-        }
-
         return super.getIcon(stack, pass);
-    }
-
-    @Override
-    public void getSubItems(Item item, CreativeTabs tab, List list)
-    {
-        getSubItems(item, tab, list, 0); // Oak
-        getSubItems(item, tab, list, 1); // Spruce
-        getSubItems(item, tab, list, 2); // Birch
-        getSubItems(item, tab, list, 3); // Jungle
-        getSubItems(item, tab, list, 4); // Acacia
-        getSubItems(item, tab, list, 5); // Dark oak
-    }
-
-    public void getSubItems(Item item, CreativeTabs tab, List list, int woodType)
-    {
-        list.add(new ItemStack(item, 1, woodType));
-
-        for (FluidStack fluidStack : FluidHelper.allFluids(FluidFermentable.SUBTYPE_CLOSED, capacity))
-        {
-            ItemStack stack = new ItemStack(item, 1, woodType);
-            fill(stack, fluidStack, true);
-            list.add(stack);
-        }
     }
 
     @Override
@@ -146,6 +91,6 @@ public class ItemBarrel extends ItemBlockFluidContainer
     public double getDurabilityForDisplay(ItemStack stack)
     {
         FluidStack fluidStack = getFluid(stack);
-        return fluidStack != null ? 1.0 - ((double) fluidStack.amount / (double) capacity) : 0.0;
+        return fluidStack != null ? 1.0 - ((double) fluidStack.amount / capacity) : 0.0;
     }
 }

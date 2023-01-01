@@ -5,24 +5,12 @@
 
 package ivorius.psychedelicraft.crafting;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluenceHarmonium;
 import ivorius.psychedelicraft.fluids.FluidHelper;
 import ivorius.psychedelicraft.items.ItemBong;
-import ivorius.psychedelicraft.items.ItemSmokingPipe;
-import ivorius.psychedelicraft.mods.YeGamolChattels;
-import net.minecraft.block.BlockWood;
-import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.RecipeSorter;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import java.util.List;
 
@@ -31,8 +19,6 @@ import static ivorius.psychedelicraft.blocks.TileEntityMashTub.MASH_TUB_CAPACITY
 import static ivorius.psychedelicraft.crafting.OreDictionaryConstants.*;
 import static ivorius.psychedelicraft.fluids.PSFluids.*;
 import static ivorius.psychedelicraft.items.PSItems.*;
-import static net.minecraft.init.Blocks.*;
-import static net.minecraft.init.Items.*;
 
 /**
  * Created by lukas on 18.10.14.
@@ -82,8 +68,6 @@ public class PSCrafting
 
         addRecipe(new ItemStack(wineGrapeLattice), "III", "IOI", "OIO", 'I', DC_STICK_WOOD, 'O', DC_PLANK_WOOD);
 
-        if (!YeGamolChattels.isLoaded())
-            addRecipe(new ItemStack(bottleRack), "I#I", "I#I", "LIL", '#', DC_PLANK_WOOD, 'I', DC_STICK_WOOD, 'L', DC_LOG_WOOD);
         addRecipe(new ItemStack(bottleRack), "I#I", "#I#", "I#I", '#', DC_SINGLE_PLANK_WOOD_REFINED, 'I', DC_STICK_WOOD);
 
 //        for (int color = 0; color < ItemDye.field_150922_c.length; color++)
@@ -103,8 +87,7 @@ public class PSCrafting
         DryingRegistry.addDryingResult(DC_BUD_CANNABIS, new ItemStack(driedCannabisBuds, 3));
         addRecipe(new ItemStack(hashMuffin), "LLL", "#X#", "LLL", 'X', new ItemStack(dye, 1, 3), '#', DC_CROP_WHEAT, 'L', DC_DRIED_CANNABIS_LEAVES);
         addRecipe(new ItemStack(joint), "P", "C", "P", 'P', paper, 'C', driedCannabisBuds);
-        pipe.addConsumable(new ItemSmokingPipe.ItemSmokingPipeConsumable(new ItemStack(driedCannabisBuds), new DrugInfluence[]{new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.25f)}));
-        bong.addConsumable(new ItemBong.ItemBongConsumable(new ItemStack(driedCannabisBuds), new DrugInfluence[]{new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.2f)})); //TODO: Play around with the bongs benefits
+
 
         DryingRegistry.addDryingResult(brown_mushroom, new ItemStack(magicMushroomsBrown, 3));
         DryingRegistry.addDryingResult(red_mushroom, new ItemStack(magicMushroomsRed, 3));
@@ -114,8 +97,6 @@ public class PSCrafting
         addRecipe(new ItemStack(cigarette, 4), "P", "T", "P", 'P', paper, 'T', DC_DRIED_TOBACCO);
         addRecipe(new ItemStack(cigar), "TTT", "TTT", "PPP", 'P', paper, 'T', DC_DRIED_TOBACCO);
         DryingRegistry.addDryingResult(DC_LEAF_TOBACCO, new ItemStack(driedTobacco, 3));
-        pipe.addConsumable(new ItemSmokingPipe.ItemSmokingPipeConsumable(new ItemStack(driedTobacco), new DrugInfluence[]{new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.8f)}));
-        bong.addConsumable(new ItemBong.ItemBongConsumable(new ItemStack(driedTobacco), new DrugInfluence[]{new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.6f)})); //TODO: Play around with the bongs benefits
 
         DryingRegistry.addDryingResult(DC_LEAF_COCA, new ItemStack(driedCocaLeaves, 3));
 
@@ -128,8 +109,6 @@ public class PSCrafting
 
         for (int i = 0; i < 16; i++)
         {
-            pipe.addConsumable(new ItemSmokingPipe.ItemSmokingPipeConsumable(new ItemStack(harmonium, 1, 15 - i), new DrugInfluence[]{new DrugInfluenceHarmonium("Harmonium", 0, 0.04, 0.01, 0.65f, EntitySheep.fleeceColorTable[i])}, EntitySheep.fleeceColorTable[i]));
-
             if (PSConfig.enableHarmonium)
                 addShapelessRecipe(new ItemStack(harmonium, 1, i), new ItemStack(dye, 1, i), DC_GLOWSTONE_DUST, DC_DRIED_TOBACCO);
         }
