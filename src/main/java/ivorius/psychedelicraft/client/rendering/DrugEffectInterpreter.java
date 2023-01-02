@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.client.rendering;
 
 import ivorius.psychedelicraft.entities.drugs.Drug;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Random;

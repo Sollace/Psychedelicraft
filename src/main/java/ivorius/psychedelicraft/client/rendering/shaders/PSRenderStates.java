@@ -13,14 +13,12 @@ import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 import ivorius.psychedelicraft.client.rendering.PSAccessHelperClient;
 import ivorius.psychedelicraft.client.rendering.PsycheShadowHelper;
 import ivorius.psychedelicraft.client.rendering.effectWrappers.*;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.client.shader.Framebuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.TextureManager;
+import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -101,7 +99,7 @@ public class PSRenderStates
 
     public static boolean startRenderPass(String pass, float partialTicks, float ticks)
     {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = MinecraftClient.getInstance();
 
         if (currentRenderPass != null)
             endRenderPass();
@@ -123,7 +121,7 @@ public class PSRenderStates
 
                 return useShader(partialTicks, ticks, shaderInstanceDepth);
             case "Shadows":
-                Minecraft.getMinecraft().renderViewEntity = new EntityFakeSun(mc.renderViewEntity);
+                MinecraftClient.getInstance().renderViewEntity = new EntityFakeSun(mc.renderViewEntity);
                 return useShader(partialTicks, ticks, shaderInstanceShadows);
         }
 
@@ -142,7 +140,7 @@ public class PSRenderStates
                 depthBuffer.unbind();
                 break;
             case "Shadows":
-                Minecraft mc = Minecraft.getMinecraft();
+                Minecraft mc = MinecraftClient.getInstance();
                 if (mc.renderViewEntity instanceof EntityFakeSun)
                     mc.renderViewEntity = ((EntityFakeSun) mc.renderViewEntity).prevViewEntity;
                 break;
@@ -160,7 +158,7 @@ public class PSRenderStates
 
     public static boolean setupCameraTransform()
     {
-        if ("Shadows".equals(currentRenderPass)/* || (Minecraft.getMinecraft().ingameGUI.getUpdateCounter() % 100 > 2)*/)
+        if ("Shadows".equals(currentRenderPass)/* || (MinecraftClient.getInstance().ingameGUI.getUpdateCounter() % 100 > 2)*/)
         {
             PsycheShadowHelper.setupSunGLTransform();
 
@@ -184,14 +182,14 @@ public class PSRenderStates
     {
         IvOpenGLHelper.checkGLError(Psychedelicraft.logger, "Pre-Allocation");
 
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = MinecraftClient.getInstance();
         deallocate();
 
         String utils = null;
 
         try
         {
-            IResource utilsResource = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + "shaderUtils.frag"));
+            IResource utilsResource = MinecraftClient.getInstance().getResourceManager().getResource(new Identifier(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + "shaderUtils.frag"));
             utils = IOUtils.toString(utilsResource.getInputStream(), Charsets.UTF_8);
         }
         catch (Exception ex)
@@ -240,7 +238,7 @@ public class PSRenderStates
 
     public static void setUpShader(IvShaderInstance shader, String vertexFile, String fragmentFile, String utils)
     {
-        IvShaderInstanceMC.trySettingUpShader(shader, new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + vertexFile), new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + fragmentFile), utils);
+        IvShaderInstanceMC.trySettingUpShader(shader, new Identifier(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + vertexFile), new Identifier(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + fragmentFile), utils);
     }
 
     public static void setUpRealtimeCacheTexture()
@@ -248,13 +246,13 @@ public class PSRenderStates
         deleteRealtimeCacheTexture();
 
         realtimePingPong = new IvOpenGLTexturePingPong(Psychedelicraft.logger);
-        realtimePingPong.setScreenSize(Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
+        realtimePingPong.setScreenSize(MinecraftClient.getInstance().displayWidth, MinecraftClient.getInstance().displayHeight);
         realtimePingPong.initialize(!bypassPingPongBuffer);
     }
 
     public static void update()
     {
-        if (Minecraft.getMinecraft().theWorld != null)
+        if (MinecraftClient.getInstance().theWorld != null)
         {
             for (EffectWrapper effectWrapper : effectWrappers)
                 effectWrapper.update();
@@ -285,7 +283,7 @@ public class PSRenderStates
         if (renderFakeSkybox)
         {
             setForceColorSafeMode(true);
-            float boxSize = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16 * 0.75f;
+            float boxSize = MinecraftClient.getInstance().gameSettings.renderDistanceChunks * 16 * 0.75f;
             float[] fogColor = PSAccessHelperClient.getFogColor();
 
             GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -387,7 +385,7 @@ public class PSRenderStates
 
     public static void setScreenSizeDefault()
     {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = MinecraftClient.getInstance();
         setScreenSize(mc.displayWidth, mc.displayHeight);
     }
 
@@ -426,7 +424,7 @@ public class PSRenderStates
 
     public static int getMCFBO()
     {
-        Minecraft mc = Minecraft.getMinecraft();
+        MinecraftClient mc = MinecraftClient.getInstance();
         Framebuffer framebuffer = mc.getFramebuffer();
 
         return (OpenGlHelper.isFramebufferEnabled() && framebuffer != null && framebuffer.framebufferObject >= 0) ? framebuffer.framebufferObject : 0;
@@ -439,7 +437,7 @@ public class PSRenderStates
 
     public static void apply2DShaders(float ticks, float partialTicks)
     {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = MinecraftClient.getInstance();
 
         int screenWidth = mc.displayWidth;
         int screenHeight = mc.displayHeight;
@@ -458,12 +456,12 @@ public class PSRenderStates
         IvOpenGLHelper.checkGLError(Psychedelicraft.logger, "2D Shaders");
     }
 
-    public static int getTextureIndex(ResourceLocation loc)
+    public static int getTextureIndex(Identifier loc)
     {
-        TextureManager tm = Minecraft.getMinecraft().renderEngine;
+        TextureManager tm = MinecraftClient.getInstance().getTextureManager();
         tm.bindTexture(loc); // Allocate texture. MOJANG!
-        ITextureObject texture = tm.getTexture(loc);
-        return texture.getGlTextureId();
+        AbstractTexture texture = tm.getTexture(loc);
+        return texture.getGlId();
     }
 
     public static void delete3DShaders()

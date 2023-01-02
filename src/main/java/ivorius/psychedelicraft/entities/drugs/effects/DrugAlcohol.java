@@ -37,6 +37,21 @@ public class DrugAlcohol extends DrugSimple
     }
 
     @Override
+    public float viewWobblyness() {
+        return (float)getActiveValue() * 0.5f;
+    }
+
+    @Override
+    public float doubleVision() {
+        return MathHelper.lerp((float)getActiveValue(), 0.25f, 1.0f);
+    }
+
+    @Override
+    public float motionBlur() {
+        return MathHelper.lerp((float)getActiveValue(), 0.5f, 1.0f) * 0.3f;
+    }
+
+    @Override
     public void update(LivingEntity entity, DrugProperties drugProperties) {
         super.update(entity, drugProperties);
 
@@ -73,11 +88,6 @@ public class DrugAlcohol extends DrugSimple
     }
 
     @Override
-    public float viewWobblyness() {
-        return (float)getActiveValue() * 0.5f;
-    }
-
-    @Override
     public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties)
     {
         float alcohol = (float)getActiveValue();
@@ -97,13 +107,4 @@ public class DrugAlcohol extends DrugSimple
         }
     }
 
-    @Override
-    public float doubleVision() {
-        return MathHelper.lerp((float)getActiveValue(), 0.25f, 1.0f);
-    }
-
-    @Override
-    public float motionBlur() {
-        return MathHelper.lerp((float)getActiveValue(), 0.5f, 1.0f) * 0.3f;
-    }
 }

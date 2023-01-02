@@ -25,43 +25,33 @@ import java.util.Random;
  */
 public class DrugPower extends DrugSimple
 {
-    public Identifier powerParticle;
-    public Identifier[] lightningTextures;
+    public Identifier powerParticle = Psychedelicraft.id(Psychedelicraft.filePathTextures + "powerParticle.png");
+    public Identifier[] lightningTextures = new Identifier[4];
 
-    public DrugPower(double decSpeed, double decSpeedPlus)
-    {
+    public DrugPower(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus, true);
-
-        powerParticle = Psychedelicraft.id(Psychedelicraft.filePathTextures + "powerParticle.png");
-
-        lightningTextures = new Identifier[4];
-        for (int i = 0; i < lightningTextures.length; i++)
-        {
+        for (int i = 0; i < lightningTextures.length; i++) {
             lightningTextures[i] = Psychedelicraft.id(Psychedelicraft.filePathTextures + "lightning" + i + ".png");
         }
     }
 
     @Override
-    public float soundVolumeModifier()
-    {
-        return 1.0f - (float) getActiveValue();
+    public float soundVolumeModifier() {
+        return 1 - (float) getActiveValue();
     }
 
     @Override
-    public float desaturationHallucinationStrength()
-    {
+    public float desaturationHallucinationStrength() {
         return (float)getActiveValue() * 0.75f;
     }
 
     @Override
-    public float motionBlur()
-    {
+    public float motionBlur() {
         return (float) getActiveValue() * 0.3f;
     }
 
     @Override
-    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties)
-    {
+    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
         Tessellator tessellator = Tessellator.getInstance();
 
         float power = (float)getActiveValue();

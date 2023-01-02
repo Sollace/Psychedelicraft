@@ -11,80 +11,42 @@
 
 package ivorius.psychedelicraft.client.rendering;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.model.*;
+import net.minecraft.client.render.entity.model.*;
+import net.minecraft.entity.passive.PigEntity;
 
-public class ModelRastaHead extends ModelBase
-{
-    //fields
-    ModelRenderer head;
-    ModelRenderer nose;
-    ModelRenderer nostrils;
-    ModelRenderer hair;
-    ModelRenderer hat;
-    ModelRenderer joint;
+public class ModelRastaHead extends SinglePartEntityModel<PigEntity> {
+    private final ModelPart root;
 
-    public ModelRastaHead()
-    {
-        textureWidth = 128;
-        textureHeight = 64;
+    public ModelRastaHead() {
+        this.root = TexturedModelData.of(getModelData(Dilation.NONE), 128, 64).createModel();
+    }
 
-        head = new ModelRenderer(this, 0, 0);
-        head.addBox(-4F, -8F, -4F, 8, 8, 8);
-        head.setRotationPoint(0F, 0F, 0F);
-        head.setTextureSize(128, 64);
-        head.mirror = true;
-        setRotation(head, 0F, 0F, 0F);
-        nose = new ModelRenderer(this, 33, 0);
-        nose.addBox(-0.5F, -4.8F, -5F, 1, 2, 1);
-        nose.setRotationPoint(0F, 0F, 0F);
-        nose.setTextureSize(128, 64);
-        nose.mirror = true;
-        setRotation(nose, -0.0743572F, 0F, 0F);
-        nostrils = new ModelRenderer(this, 38, 0);
-        nostrils.addBox(-1F, -4.2F, -4.5F, 2, 1, 1);
-        nostrils.setRotationPoint(0F, 0F, 0F);
-        nostrils.setTextureSize(128, 64);
-        nostrils.mirror = true;
-        setRotation(nostrils, 0F, 0F, 0F);
-        hair = new ModelRenderer(this, 0, 17);
-        hair.addBox(-4.5F, -7.5F, -4.5F, 9, 11, 9);
-        hair.setRotationPoint(0F, 0F, 0F);
-        hair.setTextureSize(128, 64);
-        hair.mirror = true;
-        setRotation(hair, 0F, 0F, 0F);
-        hat = new ModelRenderer(this, 0, 38);
-        hat.addBox(-5F, -10F, -8.5F, 10, 7, 12);
-        hat.setRotationPoint(0F, 0F, 0F);
-        hat.setTextureSize(128, 64);
-        hat.mirror = true;
-        setRotation(hat, -0.669215F, 0F, 0F);
-        joint = new ModelRenderer(this, 0, 0);
-        joint.addBox(-0.5F, -3.5F, -5F, 1, 1, 2);
-        joint.setRotationPoint(0F, 0F, 0F);
-        joint.setTextureSize(128, 64);
-        joint.mirror = true;
-        setRotation(joint, 0.4089647F, -0.2602503F, 0F);
+    public static ModelData getModelData(Dilation dilation) {
+        ModelData data = new ModelData();
+        ModelPartData root = data.getRoot();
+        ModelPartData head = root.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create()
+                .uv(0, 0).cuboid(-4, -8, -4, 8, 8, 8, dilation).mirrored(), ModelTransform.NONE);
+        head.addChild("nose", ModelPartBuilder.create()
+                .uv(33, 0).cuboid(-0.5F, -4.8F, -5F, 1, 2, 1, dilation).mirrored(), ModelTransform.rotation(-0.0743572F, 0, 0));
+        head.addChild("nostrils", ModelPartBuilder.create()
+                .uv(38, 0).cuboid(-1F, -4.2F, -4.5F, 2, 1, 1, dilation).mirrored(), ModelTransform.NONE);
+        head.addChild("hair", ModelPartBuilder.create()
+                .uv(0, 17).cuboid(-4.5F, -7.5F, -4.5F, 9, 11, 9, dilation).mirrored(), ModelTransform.NONE);
+        root.addChild(EntityModelPartNames.HAT, ModelPartBuilder.create()
+                .uv(0, 38).cuboid(-5F, -10F, -8.5F, 10, 7, 12, dilation).mirrored(), ModelTransform.rotation(-0.669215F, 0, 0));
+        root.addChild("joint", ModelPartBuilder.create()
+                .uv(0, 0).cuboid(-0.5F, -3.5F, -5F, 1, 1, 2, dilation).mirrored(), ModelTransform.rotation(0.4089647F, -0.2602503F, 0));
+        return data;
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
-    {
-        super.render(entity, f, f1, f2, f3, f4, f5);
-        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        head.render(f5);
-        nose.render(f5);
-        nostrils.render(f5);
-        hair.render(f5);
-        hat.render(f5);
-        joint.render(f5);
+    public void setAngles(PigEntity var1, float var2, float var3, float var4, float var5, float var6) {
+
     }
 
-    private void setRotation(ModelRenderer model, float x, float y, float z)
-    {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
+    @Override
+    public ModelPart getPart() {
+        return root;
     }
 }

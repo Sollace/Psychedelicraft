@@ -87,6 +87,11 @@ public class DrugSimple implements Drug {
     }
 
     @Override
+    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
+        // TODO: Rendering needs to be separated
+    }
+
+    @Override
     public void reset(LivingEntity entity, DrugProperties drugProperties) {
         if (!locked) {
             effect = 0;
@@ -220,11 +225,6 @@ public class DrugSimple implements Drug {
     @Override
     public float doubleVision() {
         return 0;
-    }
-
-    @Override
-    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
-
     }
 
     @Override
