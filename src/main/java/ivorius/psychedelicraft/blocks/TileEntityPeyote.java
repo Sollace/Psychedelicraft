@@ -5,9 +5,15 @@
 
 package ivorius.psychedelicraft.blocks;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.util.math.BlockPos;
 
-public class TileEntityPeyote extends TileEntity
-{
+// TODO: (Sollace)
+public class TileEntityPeyote extends BlockEntity {
+    public TileEntityPeyote(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
 }

@@ -7,13 +7,16 @@ package ivorius.psychedelicraft.blocks;
 
 import ivorius.ivtoolkit.blocks.IvTileEntityHelper;
 import ivorius.psychedelicraft.fluids.FluidDistillable;
-import ivorius.psychedelicraft.fluids.FluidFermentable;
+import ivorius.psychedelicraft.fluids.Fermentable;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -23,15 +26,16 @@ import net.minecraftforge.fluids.TileFluidHandler;
 /**
  * Created by lukas on 25.10.14.
  */
-public class TileEntityDistillery extends TileFluidHandler
+public class TileEntityDistillery extends BlockEntity
 {
     public static final int DISTILLERY_CAPACITY = TileEntityFlask.FLASK_CAPACITY;
 
     public int direction;
     public int timeDistilled;
 
-    public TileEntityDistillery()
+    public TileEntityDistillery(BlockPos pos, BlockState state)
     {
+        super(PSBlockEntities.DISTILLERY, pos, state);
         tank = new FluidTank(DISTILLERY_CAPACITY);
     }
 
@@ -101,7 +105,7 @@ public class TileEntityDistillery extends TileFluidHandler
 
         if (doFill)
         {
-            double amountFilled = (double) fill / (double) tank.getFluidAmount();
+            double amountFilled = fill / (double) tank.getFluidAmount();
             timeDistilled = MathHelper.floor_double(timeDistilled * (1.0 - amountFilled));
 
             worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -159,7 +163,7 @@ public class TileEntityDistillery extends TileFluidHandler
                 return neededDistillationTime;
         }
 
-        return FluidFermentable.UNFERMENTABLE;
+        return Fermentable.UNFERMENTABLE;
     }
 
     public int getRemainingDistillationTimeScaled(int scale)

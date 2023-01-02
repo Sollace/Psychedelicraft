@@ -5,27 +5,23 @@
 
 package ivorius.psychedelicraft.blocks;
 
-import ivorius.ivtoolkit.blocks.IvTileEntityHelper;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.TileFluidHandler;
+import net.minecraft.util.math.BlockPos;
 
 import static ivorius.psychedelicraft.fluids.FluidHelper.MILLIBUCKETS_PER_LITER;
 
 /**
  * Created by lukas on 25.10.14.
  */
-public class TileEntityFlask extends TileFluidHandler
+public class TileEntityFlask extends BlockEntity
 {
     public static final int FLASK_CAPACITY = MILLIBUCKETS_PER_LITER * 8;
 
-    public TileEntityFlask()
+    public TileEntityFlask(BlockPos pos, BlockState state)
     {
+        super(PSBlockEntities.FLASK, pos, state);
         tank = new FluidTank(FLASK_CAPACITY);
     }
 

@@ -14,6 +14,8 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.screen.ContainerDryingTable;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.crafting.DryingRegistry;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.InventoryCrafting;
@@ -25,6 +27,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.Constants;
 
@@ -32,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TileEntityDryingTable extends TileEntity implements ISidedInventory, PartialUpdateHandler
+public class TileEntityDryingTable extends BlockEntity implements ISidedInventory, PartialUpdateHandler
 {
     public float heatRatio;
     public float dryingProgress;
@@ -41,6 +44,10 @@ public class TileEntityDryingTable extends TileEntity implements ISidedInventory
     public ItemStack[] dryingTableItems = new ItemStack[10];
 
     public int ticksAlive;
+
+    public TileEntityDryingTable(BlockPos pos, BlockState state) {
+        super(PSBlockEntities.DRYING_TABLE, pos, state);
+    }
 
     @Override
     public void updateEntity()

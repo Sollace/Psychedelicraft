@@ -7,13 +7,16 @@ package ivorius.psychedelicraft.blocks;
 
 import ivorius.ivtoolkit.blocks.IvTileEntityHelper;
 import ivorius.psychedelicraft.client.rendering.blocks.TileEntityMultiblockFluidHandler;
-import ivorius.psychedelicraft.fluids.FluidFermentable;
+import ivorius.psychedelicraft.fluids.Fermentable;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
@@ -24,7 +27,7 @@ import static ivorius.psychedelicraft.fluids.FluidHelper.MILLIBUCKETS_PER_LITER;
 /**
  * Created by lukas on 27.10.14.
  */
-public class TileEntityMashTub extends TileEntityMultiblockFluidHandler
+public class TileEntityMashTub extends BlockEntity
 {
     public static final int MASH_TUB_CAPACITY = MILLIBUCKETS_PER_LITER * 16;
 
@@ -32,8 +35,8 @@ public class TileEntityMashTub extends TileEntityMultiblockFluidHandler
 
     public ItemStack solidContents;
 
-    public TileEntityMashTub()
-    {
+    public TileEntityMashTub(BlockPos pos, BlockState state) {
+        super(PSBlockEntities.MASH_TUB, pos, state);
         tank = new FluidTank(MASH_TUB_CAPACITY);
     }
 
@@ -41,10 +44,10 @@ public class TileEntityMashTub extends TileEntityMultiblockFluidHandler
     public void updateEntityParent()
     {
         FluidStack fluidStack = tank.getFluid();
-        if (fluidStack != null && fluidStack.getFluid() instanceof FluidFermentable)
+        if (fluidStack != null && fluidStack.getFluid() instanceof Fermentable)
         {
-            FluidFermentable fluidFermentable = (FluidFermentable) fluidStack.getFluid();
-            int neededFermentationTime = fluidFermentable.fermentationTime(fluidStack, true);
+            Fermentable fluidFermentable = (Fermentable) fluidStack.getFluid();
+            int neededFermentationTime = fluidFermentable.getFermentationTime(fluidStack, true);
 
             if (neededFermentationTime >= 0)
             {
@@ -52,7 +55,7 @@ public class TileEntityMashTub extends TileEntityMultiblockFluidHandler
                 {
                     if (!worldObj.isRemote)
                     {
-                        ItemStack solid = fluidFermentable.fermentStep(fluidStack, true);
+                        ItemStack solid = fluidFermentable.ferment(fluidStack, true);
                         timeFermented = 0;
 
                         if (solid != null)
@@ -81,7 +84,7 @@ public class TileEntityMashTub extends TileEntityMultiblockFluidHandler
 
         if (isParent() && doFill)
         {
-            double amountFilled = (double) fill / (double) tank.getFluidAmount();
+            double amountFilled = fill / (double) tank.getFluidAmount();
             timeFermented = MathHelper.floor_double(timeFermented * (1.0 - amountFilled));
 
             worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -134,13 +137,13 @@ public class TileEntityMashTub extends TileEntityMultiblockFluidHandler
     public int getNeededFermentationTime()
     {
         FluidStack fluidStack = tank.getFluid();
-        if (fluidStack != null && fluidStack.getFluid() instanceof FluidFermentable)
+        if (fluidStack != null && fluidStack.getFluid() instanceof Fermentable)
         {
-            FluidFermentable fluidFermentable = (FluidFermentable) fluidStack.getFluid();
-            return fluidFermentable.fermentationTime(fluidStack, true);
+            Fermentable fluidFermentable = (Fermentable) fluidStack.getFluid();
+            return fluidFermentable.getFermentationTime(fluidStack, true);
         }
 
-        return FluidFermentable.UNFERMENTABLE;
+        return Fermentable.UNFERMENTABLE;
     }
 
     public int getRemainingFermentationTimeScaled(int scale)

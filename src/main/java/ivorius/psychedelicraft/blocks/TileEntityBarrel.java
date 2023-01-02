@@ -5,23 +5,16 @@
 
 package ivorius.psychedelicraft.blocks;
 
-import ivorius.ivtoolkit.blocks.IvTileEntityHelper;
-import ivorius.psychedelicraft.fluids.FluidFermentable;
+import ivorius.psychedelicraft.fluids.Fermentable;
 import ivorius.psychedelicraft.fluids.PSFluids;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.TileFluidHandler;
+import net.minecraft.util.math.BlockPos;
 
 import static ivorius.psychedelicraft.fluids.FluidHelper.MILLIBUCKETS_PER_LITER;
 
-public class TileEntityBarrel extends TileFluidHandler
+public class TileEntityBarrel extends BlockEntity
 {
     public static final int BARREL_CAPACITY = MILLIBUCKETS_PER_LITER * 16;
 
@@ -32,8 +25,9 @@ public class TileEntityBarrel extends TileFluidHandler
     public float tapRotation = 0.0f;
     public int timeLeftTapOpen = 0;
 
-    public TileEntityBarrel()
+    public TileEntityBarrel(BlockPos pos, BlockState state)
     {
+        super(PSBlockEntities.BARREL, pos, state);
         tank = new FluidTank(BARREL_CAPACITY);
     }
 
@@ -41,10 +35,10 @@ public class TileEntityBarrel extends TileFluidHandler
     public void updateEntity()
     {
         FluidStack fluidStack = tank.getFluid();
-        if (fluidStack != null && fluidStack.getFluid() instanceof FluidFermentable)
+        if (fluidStack != null && fluidStack.getFluid() instanceof Fermentable)
         {
-            FluidFermentable fluidFermentable = (FluidFermentable) fluidStack.getFluid();
-            int neededFermentationTime = fluidFermentable.fermentationTime(fluidStack, false);
+            Fermentable fluidFermentable = (Fermentable) fluidStack.getFluid();
+            int neededFermentationTime = fluidFermentable.getFermentationTime(fluidStack, false);
 
             if (neededFermentationTime >= 0)
             {
@@ -52,7 +46,7 @@ public class TileEntityBarrel extends TileFluidHandler
                 {
                     if (!worldObj.isRemote)
                     {
-                        fluidFermentable.fermentStep(fluidStack, false);
+                        fluidFermentable.ferment(fluidStack, false);
                         timeFermented = 0;
 
                         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -86,7 +80,7 @@ public class TileEntityBarrel extends TileFluidHandler
 
         if (doFill)
         {
-            double amountFilled = (double) fill / (double) tank.getFluidAmount();
+            double amountFilled = fill / (double) tank.getFluidAmount();
             timeFermented = MathHelper.floor_double(timeFermented * (1.0 - amountFilled));
 
             worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -204,13 +198,13 @@ public class TileEntityBarrel extends TileFluidHandler
     public int getNeededFermentationTime()
     {
         FluidStack fluidStack = tank.getFluid();
-        if (fluidStack != null && fluidStack.getFluid() instanceof FluidFermentable)
+        if (fluidStack != null && fluidStack.getFluid() instanceof Fermentable)
         {
-            FluidFermentable fluidFermentable = (FluidFermentable) fluidStack.getFluid();
-            return fluidFermentable.fermentationTime(fluidStack, false);
+            Fermentable fluidFermentable = (Fermentable) fluidStack.getFluid();
+            return fluidFermentable.getFermentationTime(fluidStack, false);
         }
 
-        return FluidFermentable.UNFERMENTABLE;
+        return Fermentable.UNFERMENTABLE;
     }
 
     public int getRemainingFermentationTimeScaled(int scale)

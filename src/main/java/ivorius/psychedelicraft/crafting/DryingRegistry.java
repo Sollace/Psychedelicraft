@@ -9,6 +9,7 @@ import java.util.*;
 /**
  * Created by lukas on 07.11.14.
  */
+@Deprecated
 public class DryingRegistry
 {
     private static Map<Object, ItemStack> dryingRecipes = new HashMap<>();

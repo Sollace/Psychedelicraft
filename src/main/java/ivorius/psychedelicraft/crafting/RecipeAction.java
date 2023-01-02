@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Created by lukas on 03.11.14.
  */
+@Deprecated
 public interface RecipeAction
 {
     ItemStack visualCraftingResult(CraftingInventory inventory);

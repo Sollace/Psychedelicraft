@@ -15,26 +15,22 @@ import net.minecraft.world.World;
 /**
  * Created by lukas on 03.11.14.
  */
-public class RecipeActionRepresentation implements IRecipe
-{
+public class RecipeActionRepresentation implements IRecipe {
     public static final String ACTION_TAG_ID = "PS_ACTION_RECIPE_ID";
 
     public RecipeAction recipeAction;
 
-    public RecipeActionRepresentation(RecipeAction recipeAction)
-    {
+    public RecipeActionRepresentation(RecipeAction recipeAction) {
         this.recipeAction = recipeAction;
     }
 
     @Override
-    public boolean matches(InventoryCrafting inventoryCrafting, World world)
-    {
+    public boolean matches(InventoryCrafting inventoryCrafting, World world) {
         return recipeAction.visualCraftingResult(inventoryCrafting) != null;
     }
 
     @Override
-    public ItemStack getCraftingResult(InventoryCrafting inventoryCrafting)
-    {
+    public ItemStack getCraftingResult(InventoryCrafting inventoryCrafting) {
         ItemStack result = recipeAction.visualCraftingResult(inventoryCrafting);
         if (result != null)
         {
@@ -47,14 +43,12 @@ public class RecipeActionRepresentation implements IRecipe
     }
 
     @Override
-    public int getRecipeSize()
-    {
+    public int getRecipeSize() {
         return recipeAction.getRecipeSize();
     }
 
     @Override
-    public ItemStack getRecipeOutput()
-    {
+    public ItemStack getRecipeOutput() {
         return recipeAction.getRecipeOutput();
     }
 }
