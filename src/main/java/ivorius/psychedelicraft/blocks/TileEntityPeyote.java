@@ -10,10 +10,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 
-// TODO: (Sollace)
+// TODO: (Sollace) What is this for?
 public class TileEntityPeyote extends BlockEntity {
     public TileEntityPeyote(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
-
 }
