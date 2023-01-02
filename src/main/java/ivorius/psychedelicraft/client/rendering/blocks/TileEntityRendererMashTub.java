@@ -8,7 +8,7 @@ package ivorius.psychedelicraft.client.rendering.blocks;
 import ivorius.ivtoolkit.blocks.IvMultiBlockRenderHelper;
 import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityMashTub;
+import ivorius.psychedelicraft.block.entity.TileEntityMashTub;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

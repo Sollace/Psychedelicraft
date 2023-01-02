@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityBarrel;
+import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.*;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -16,9 +16,9 @@ public class GuiBarrel extends GuiFluidHandler
 {
     public static final Identifier barrelTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_barrel.png");
 
-    private TileEntityBarrel tileEntityBarrel;
+    private BarrelBlockEntity tileEntityBarrel;
 
-    public GuiBarrel(InventoryPlayer inventoryPlayer, TileEntityBarrel tileEntity)
+    public GuiBarrel(InventoryPlayer inventoryPlayer, BarrelBlockEntity tileEntity)
     {
         super(inventoryPlayer, tileEntity, tileEntity, ForgeDirection.DOWN);
         this.tileEntityBarrel = tileEntity;

@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.blocks;
 
 import ivorius.ivtoolkit.blocks.IvMultiBlockHelper;
+import ivorius.psychedelicraft.block.entity.TileEntityBottleRack;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -18,9 +19,8 @@ import net.minecraft.world.World;
  */
 public class BlockBottleRack extends Block
 {
-    public BlockBottleRack()
-    {
-        super(Material.wood);
+    public BlockBottleRack(Settings settings) {
+        super(settings);
     }
 
     @Override

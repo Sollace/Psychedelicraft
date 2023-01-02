@@ -14,8 +14,8 @@ import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
+import static ivorius.psychedelicraft.block.entity.TileEntityMashTub.MASH_TUB_CAPACITY;
 import static ivorius.psychedelicraft.blocks.PSBlocks.*;
-import static ivorius.psychedelicraft.blocks.TileEntityMashTub.MASH_TUB_CAPACITY;
 import static ivorius.psychedelicraft.crafting.OreDictionaryConstants.*;
 import static ivorius.psychedelicraft.fluids.PSFluids.*;
 import static ivorius.psychedelicraft.items.PSItems.*;

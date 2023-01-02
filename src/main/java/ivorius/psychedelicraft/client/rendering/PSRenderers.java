@@ -4,7 +4,7 @@ import static ivorius.psychedelicraft.Psychedelicraft.MODID;
 import static ivorius.psychedelicraft.Psychedelicraft.filePathTextures;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
+import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.blocks.*;
 import ivorius.psychedelicraft.client.rendering.blocks.*;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
@@ -21,9 +21,9 @@ public interface PSRenderers {
         Psychedelicraft.blockWineGrapeLatticeRenderType = RenderingRegistry.getNextAvailableRenderId();
         RenderingRegistry.registerBlockHandler(Psychedelicraft.blockWineGrapeLatticeRenderType, new RenderWineGrapeLattice());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDistillery.class, new TileEntityRendererDistillery());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFlask.class, new TileEntityRendererFlask());
+        ClientRegistry.bindTileEntitySpecialRenderer(FlaskBlockEntity.class, new TileEntityRendererFlask());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMashTub.class, new TileEntityRendererMashTub());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBarrel.class, new TileEntityRendererBarrel());
+        ClientRegistry.bindTileEntitySpecialRenderer(BarrelBlockEntity.class, new TileEntityRendererBarrel());
         ClientRegistry.bindTileEntitySpecialRenderer(DryingTableBlockEntity.class, new TileEntityRendererDryingTable());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPeyote.class, new TileEntityRendererPeyote());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRiftJar.class, new TileEntityRendererRiftJar());

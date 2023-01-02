@@ -6,8 +6,10 @@
 package ivorius.psychedelicraft.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.entity.TileEntityDistillery;
 import ivorius.psychedelicraft.client.screen.PSGuiHandler;
 import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,11 +29,10 @@ import net.minecraftforge.fluids.IFluidContainerItem;
  */
 public class BlockDistillery extends Block
 {
-    public BlockDistillery()
-    {
-        super(Material.glass);
-        setBlockBounds(0.25f, 0.0f, 0.25f, 0.75f, 0.9f, 0.75f);
+    public BlockDistillery(Settings settings) {
+        super(settings);
     }
+     //   setBlockBounds(0.25f, 0.0f, 0.25f, 0.75f, 0.9f, 0.75f);
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ)

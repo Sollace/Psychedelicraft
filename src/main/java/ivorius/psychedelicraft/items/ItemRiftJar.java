@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.items;
 
-import ivorius.psychedelicraft.blocks.TileEntityRiftJar;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,6 +18,8 @@ import net.minecraft.world.World;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
+
+import ivorius.psychedelicraft.block.entity.TileEntityRiftJar;
 
 public class ItemRiftJar extends BlockItem {
     public ItemRiftJar(Block block, Settings settings) {

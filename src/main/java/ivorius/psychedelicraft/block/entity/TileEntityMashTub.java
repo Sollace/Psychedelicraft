@@ -3,25 +3,14 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.blocks;
+package ivorius.psychedelicraft.block.entity;
 
-import ivorius.ivtoolkit.blocks.IvTileEntityHelper;
-import ivorius.psychedelicraft.block.entity.PSBlockEntities;
-import ivorius.psychedelicraft.client.rendering.blocks.TileEntityMultiblockFluidHandler;
 import ivorius.psychedelicraft.fluids.Fermentable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 
 import static ivorius.psychedelicraft.fluids.FluidHelper.MILLIBUCKETS_PER_LITER;
 

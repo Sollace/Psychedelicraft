@@ -3,7 +3,7 @@ package ivorius.psychedelicraft.client.rendering.blocks;
 import ivorius.ivtoolkit.blocks.IvRotatableBlockRenderHelper;
 import ivorius.ivtoolkit.raytracing.IvRaytracer;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityBottleRack;
+import ivorius.psychedelicraft.block.entity.TileEntityBottleRack;
 import ivorius.psychedelicraft.items.ItemBottle;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

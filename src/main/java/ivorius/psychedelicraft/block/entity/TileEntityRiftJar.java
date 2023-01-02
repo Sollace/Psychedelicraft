@@ -3,7 +3,7 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.blocks;
+package ivorius.psychedelicraft.block.entity;
 
 import io.netty.buffer.ByteBuf;
 import ivorius.ivtoolkit.bezier.IvBezierPath3D;

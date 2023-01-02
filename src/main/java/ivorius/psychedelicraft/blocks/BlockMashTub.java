@@ -9,7 +9,9 @@ import ivorius.ivtoolkit.blocks.IvBlockMultiblock;
 import ivorius.ivtoolkit.blocks.IvTileEntityMultiBlock;
 import ivorius.psychedelicraft.PSMultiBlockHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.entity.TileEntityMashTub;
 import ivorius.psychedelicraft.client.screen.PSGuiHandler;
+import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -31,13 +33,10 @@ import java.util.List;
 /**
  * Created by lukas on 27.10.14.
  */
-public class BlockMashTub extends IvBlockMultiblock
+public class BlockMashTub extends Block//IvBlockMultiblock
 {
-    public BlockMashTub()
-    {
-        super(Material.wood);
-
-        setStepSound(soundTypeWood);
+    public BlockMashTub(Settings settings) {
+        super(settings);
     }
 
     @Override

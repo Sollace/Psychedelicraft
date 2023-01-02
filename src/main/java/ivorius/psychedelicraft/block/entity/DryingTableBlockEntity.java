@@ -9,24 +9,17 @@ import ivorius.psychedelicraft.blocks.PSBlocks;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.crafting.DryingRegistry;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
-import net.minecraft.network.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Heightmap.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DryingTableBlockEntity extends BlockEntity implements SidedInventory {
-
-    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(10, ItemStack.EMPTY);
+public class DryingTableBlockEntity extends BlockEntityWithInventory {
+    private static final int[] INPUT_SLOTS = new int[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    private static final int[] OUTPUT_SLOTS = new int[]{ 0 };
 
     public int ticksAlive;
 
@@ -36,7 +29,7 @@ public class DryingTableBlockEntity extends BlockEntity implements SidedInventor
     public ItemStack plannedResult = ItemStack.EMPTY;
 
     public DryingTableBlockEntity(BlockPos pos, BlockState state) {
-        super(PSBlockEntities.DRYING_TABLE, pos, state);
+        super(PSBlockEntities.DRYING_TABLE, pos, state, 10);
     }
 
     public static void serverTick(ServerWorld world, BlockPos pos, BlockState state, DryingTableBlockEntity entity) {
@@ -95,14 +88,16 @@ public class DryingTableBlockEntity extends BlockEntity implements SidedInventor
     public void endDryingProcess() {
         dryingProgress = 0;
 
+        ItemStack result = getResult();
+
         for (int i = 1; i < size(); i++) {
-            inventory.set(i, ItemStack.EMPTY);
+            setStack(i, ItemStack.EMPTY);
         }
 
         if (getStack(0).isEmpty()) {
-            setStack(0, plannedResult);
+            setStack(0, result);
         } else {
-            getStack(0).increment(plannedResult.getCount());
+            getStack(0).increment(result.getCount());
         }
         onInventoryChanged();
     }
@@ -110,7 +105,6 @@ public class DryingTableBlockEntity extends BlockEntity implements SidedInventor
     @Override
     public void writeNbt(NbtCompound compound) {
         super.writeNbt(compound);
-        Inventories.writeNbt(compound, inventory);
         compound.put("plannedResult", plannedResult.writeNbt(new NbtCompound()));
         compound.putFloat("heatRatio", heatRatio);
         compound.putFloat("dryingProgress", dryingProgress);
@@ -119,46 +113,9 @@ public class DryingTableBlockEntity extends BlockEntity implements SidedInventor
     @Override
     public void readNbt(NbtCompound compound) {
         super.readNbt(compound);
-        Inventories.readNbt(compound, inventory);
         plannedResult = ItemStack.fromNbt(compound.getCompound("plannedResult"));
         heatRatio = compound.getFloat("heatRatio");
         dryingProgress = compound.getFloat("dryingProgress");
-    }
-
-    @Override
-    public int size() {
-        return inventory.size();
-    }
-
-    @Override
-    public ItemStack getStack(int slot) {
-        return inventory.get(slot);
-    }
-
-    @Override
-    public void clear() {
-        inventory.clear();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return inventory.stream().allMatch(ItemStack::isEmpty);
-    }
-
-    @Override
-    public ItemStack removeStack(int slot) {
-        return Inventories.removeStack(inventory, slot);
-    }
-
-    @Override
-    public ItemStack removeStack(int slot, int amount) {
-        return Inventories.splitStack(inventory, slot, amount);
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
-        inventory.set(slot, stack);
-        onInventoryChanged();
     }
 
     @Override
@@ -166,38 +123,16 @@ public class DryingTableBlockEntity extends BlockEntity implements SidedInventor
         return 1;
     }
 
+    @Override
     public void onInventoryChanged() {
         plannedResult = getResult();
         dryingProgress = 0;
 
-        markDirty();
-    }
-
-    @Override
-    public boolean canPlayerUse(PlayerEntity player) {
-        return (getCachedState().equals(player.world.getBlockState(pos)))
-                && player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) <= 64;
+        super.onInventoryChanged();
     }
 
     @Override
     public int[] getAvailableSlots(Direction direction) {
-        return direction == Direction.UP ? new int[]{ 0 } : new int[]{
-                1, 2, 3, 4, 5, 6, 7, 8, 9
-        };
-    }
-
-    @Override
-    public boolean canInsert(int slot, ItemStack stack, Direction direction) {
-        return isValid(slot, stack);
-    }
-
-    @Override
-    public boolean canExtract(int var1, ItemStack stack, Direction direction) {
-        return true;
-    }
-
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+        return direction == Direction.UP ? OUTPUT_SLOTS : INPUT_SLOTS;
     }
 }

@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.blocks;
+package ivorius.psychedelicraft.block.entity;
 
 import ivorius.ivtoolkit.blocks.IvTileEntityRotatable;
 import ivorius.ivtoolkit.raytracing.IvRaytraceableObject;

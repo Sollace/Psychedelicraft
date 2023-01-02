@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityDistillery;
+import ivorius.psychedelicraft.block.entity.TileEntityDistillery;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.*;
 import net.minecraftforge.common.util.ForgeDirection;

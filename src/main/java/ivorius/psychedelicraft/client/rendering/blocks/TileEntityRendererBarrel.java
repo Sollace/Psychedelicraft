@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityBarrel;
+import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.fluids.FluidWithIconSymbol;
 import ivorius.psychedelicraft.fluids.FluidWithIconSymbolRegistering;
 import net.minecraft.client.renderer.Tessellator;
@@ -47,10 +47,10 @@ public class TileEntityRendererBarrel extends TileEntitySpecialRenderer
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f)
     {
-        renderTileEntityStatueAt((TileEntityBarrel) tileentity, d, d1, d2, f);
+        renderTileEntityStatueAt((BarrelBlockEntity) tileentity, d, d1, d2, f);
     }
 
-    public void renderTileEntityStatueAt(TileEntityBarrel tileEntity, double d, double d1, double d2, float f)
+    public void renderTileEntityStatueAt(BarrelBlockEntity tileEntity, double d, double d1, double d2, float f)
     {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) d + 0.5F, (float) d1 + 0.5f, (float) d2 + 0.5F);
@@ -96,7 +96,7 @@ public class TileEntityRendererBarrel extends TileEntitySpecialRenderer
         GL11.glPopMatrix();
     }
 
-    public ResourceLocation getBarrelTexture(TileEntityBarrel barrel)
+    public ResourceLocation getBarrelTexture(BarrelBlockEntity barrel)
     {
         switch (barrel.barrelWoodType)
         {

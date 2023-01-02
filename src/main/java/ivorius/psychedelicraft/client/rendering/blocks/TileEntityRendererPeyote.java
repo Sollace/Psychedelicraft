@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityPeyote;
+import ivorius.psychedelicraft.block.entity.TileEntityPeyote;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.blocks;
 
+import ivorius.psychedelicraft.block.entity.TileEntityRiftJar;
 import ivorius.psychedelicraft.items.ItemRiftJar;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

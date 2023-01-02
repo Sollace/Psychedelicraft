@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.client.screen.PSGuiHandler;
 import ivorius.psychedelicraft.fluids.FluidHelper;
 import net.minecraft.block.Block;
@@ -28,11 +29,8 @@ public class BlockBarrel extends Block
 {
     public static final int MAX_TAP_AMOUNT = FluidHelper.MILLIBUCKETS_PER_LITER;
 
-    public BlockBarrel()
-    {
-        super(Material.wood);
-
-        setStepSound(soundTypeWood);
+    public BlockBarrel(Settings settings) {
+        super(settings);
     }
 
     @Override
@@ -66,9 +64,9 @@ public class BlockBarrel extends Block
         world.setBlockMetadataWithNotify(x, y, z, direction, 3);
 
         TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if (tileEntity instanceof TileEntityBarrel)
+        if (tileEntity instanceof BarrelBlockEntity)
         {
-            TileEntityBarrel tileEntityBarrel = (TileEntityBarrel) tileEntity;
+            BarrelBlockEntity tileEntityBarrel = (BarrelBlockEntity) tileEntity;
 
             FluidStack fluidStack = stack.getItem() instanceof IFluidContainerItem ? ((IFluidContainerItem) stack.getItem()).getFluid(stack) : null;
             if (fluidStack != null)
@@ -84,10 +82,10 @@ public class BlockBarrel extends Block
         if (willHarvest)
         {
             TileEntity tileEntity = world.getTileEntity(x, y, z);
-            if (tileEntity instanceof TileEntityBarrel)
+            if (tileEntity instanceof BarrelBlockEntity)
             {
-                TileEntityBarrel tileEntityBarrel = (TileEntityBarrel) tileEntity;
-                FluidStack fluidStack = tileEntityBarrel.drain(ForgeDirection.DOWN, TileEntityBarrel.BARREL_CAPACITY, true);
+                BarrelBlockEntity tileEntityBarrel = (BarrelBlockEntity) tileEntity;
+                FluidStack fluidStack = tileEntityBarrel.drain(ForgeDirection.DOWN, BarrelBlockEntity.BARREL_CAPACITY, true);
                 ItemStack stack = new ItemStack(this, 1, tileEntityBarrel.barrelWoodType);
 
                 if (fluidStack != null && fluidStack.amount > 0)
@@ -110,9 +108,9 @@ public class BlockBarrel extends Block
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float par7, float par8, float par9)
     {
         TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if (tileEntity instanceof TileEntityBarrel)
+        if (tileEntity instanceof BarrelBlockEntity)
         {
-            TileEntityBarrel tileEntityBarrel = (TileEntityBarrel) tileEntity;
+            BarrelBlockEntity tileEntityBarrel = (BarrelBlockEntity) tileEntity;
 
             ItemStack heldItem = player.getHeldItem();
 
@@ -175,6 +173,6 @@ public class BlockBarrel extends Block
     @Override
     public TileEntity createTileEntity(World var1, int var2)
     {
-        return new TileEntityBarrel();
+        return new BarrelBlockEntity();
     }
 }

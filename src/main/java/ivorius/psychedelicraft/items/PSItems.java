@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.items;
 import static ivorius.psychedelicraft.fluids.FluidHelper.MILLIBUCKETS_PER_LITER;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.blocks.*;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluenceHarmonium;
@@ -29,14 +30,14 @@ public class PSItems {
     public static DrinkableItem stoneCup = register("stone_cup", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER / 20, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
     public static DrinkableItem glassChalice = register("glass_chalace", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER / 5, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
 
-    public static FlaskItem itemBarrel = register("oak_barrel", new FlaskItem(PSBlocks.oak_barrel, new Settings().maxCount(16), TileEntityBarrel.BARREL_CAPACITY));
-    public static FlaskItem itemSpruceBarrel = register("spruce_barrel", new FlaskItem(PSBlocks.spruce_barrel, new Settings().maxCount(16), TileEntityBarrel.BARREL_CAPACITY));
-    public static FlaskItem itemBirchBarrel = register("birch_barrel", new FlaskItem(PSBlocks.birch_barrel, new Settings().maxCount(16), TileEntityBarrel.BARREL_CAPACITY));
-    public static FlaskItem itemJungleBarrel = register("jungle_barrel", new FlaskItem(PSBlocks.jungle_barrel, new Settings().maxCount(16), TileEntityBarrel.BARREL_CAPACITY));
-    public static FlaskItem itemAcaciaBarrel = register("acacia_barrel", new FlaskItem(PSBlocks.acacia_barrel, new Settings().maxCount(16), TileEntityBarrel.BARREL_CAPACITY));
-    public static FlaskItem itemDarkOakBarrel = register("dark_oak_barrel", new FlaskItem(PSBlocks.dark_oak_barrel, new Settings().maxCount(16), TileEntityBarrel.BARREL_CAPACITY));
+    public static FlaskItem itemBarrel = register("oak_barrel", new FlaskItem(PSBlocks.oak_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
+    public static FlaskItem itemSpruceBarrel = register("spruce_barrel", new FlaskItem(PSBlocks.spruce_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
+    public static FlaskItem itemBirchBarrel = register("birch_barrel", new FlaskItem(PSBlocks.birch_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
+    public static FlaskItem itemJungleBarrel = register("jungle_barrel", new FlaskItem(PSBlocks.jungle_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
+    public static FlaskItem itemAcaciaBarrel = register("acacia_barrel", new FlaskItem(PSBlocks.acacia_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
+    public static FlaskItem itemDarkOakBarrel = register("dark_oak_barrel", new FlaskItem(PSBlocks.dark_oak_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
     public static FlaskItem itemMashTub = register("mash_rub", new ItemMashTub(PSBlocks.mashTub, new Settings().maxCount(16)));
-    public static FlaskItem itemFlask = register("flask", new FlaskItem(PSBlocks.flask, new Settings().maxCount(16), TileEntityFlask.FLASK_CAPACITY));
+    public static FlaskItem itemFlask = register("flask", new FlaskItem(PSBlocks.flask, new Settings().maxCount(16), FlaskBlockEntity.FLASK_CAPACITY));
     public static FlaskItem itemDistillery = register("distillery", new FlaskItem(PSBlocks.distillery, new Settings().maxCount(16), TileEntityDistillery.DISTILLERY_CAPACITY));
     public static ItemRiftJar itemRiftJar = register("rift_jar", new ItemRiftJar(PSBlocks.riftJar, new Settings()));
 

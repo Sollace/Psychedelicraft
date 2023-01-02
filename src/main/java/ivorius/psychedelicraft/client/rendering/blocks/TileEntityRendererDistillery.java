@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityDistillery;
+import ivorius.psychedelicraft.block.entity.TileEntityDistillery;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;

@@ -11,7 +11,7 @@ import ivorius.ivtoolkit.bezier.IvBezierPath3DRendererText;
 import ivorius.ivtoolkit.rendering.IvRenderHelper;
 import ivorius.ivtoolkit.tools.IvStringHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityRiftJar;
+import ivorius.psychedelicraft.block.entity.TileEntityRiftJar;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;

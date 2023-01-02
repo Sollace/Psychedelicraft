@@ -21,17 +21,17 @@ public class PSBlocks {
             Block.Settings.of(Material.WOOD).hardness(0.3F).ticksRandomly().nonOpaque()
     ));
 
-    public static Block mashTub = register("mash_tub", new BlockMashTub().setHardness(2.0F));
+    public static Block mashTub = register("mash_tub", new BlockMashTub(Settings.of(Material.WOOD).hardness(2)));
 
-    public static Block oak_barrel = register("oak_barrel", new BlockBarrel().setHardness(2.0F));
-    public static Block spruce_barrel = register("spruce_barrel", new BlockBarrel().setHardness(2.0F));
-    public static Block birch_barrel = register("birch_barrel", new BlockBarrel().setHardness(2.0F));
-    public static Block jungle_barrel = register("jungle_barrel", new BlockBarrel().setHardness(2.0F));
-    public static Block acacia_barrel = register("acacia_barrel", new BlockBarrel().setHardness(2.0F));
-    public static Block dark_oak_barrel = register("dark_oak_barrel", new BlockBarrel().setHardness(2.0F));
+    public static Block oak_barrel = register("oak_barrel", new BlockBarrel(Settings.of(Material.WOOD).hardness(2)));
+    public static Block spruce_barrel = register("spruce_barrel", new BlockBarrel(Settings.of(Material.WOOD).hardness(2)));
+    public static Block birch_barrel = register("birch_barrel", new BlockBarrel(Settings.of(Material.WOOD).hardness(2)));
+    public static Block jungle_barrel = register("jungle_barrel", new BlockBarrel(Settings.of(Material.WOOD).hardness(2)));
+    public static Block acacia_barrel = register("acacia_barrel", new BlockBarrel(Settings.of(Material.WOOD).hardness(2)));
+    public static Block dark_oak_barrel = register("dark_oak_barrel", new BlockBarrel(Settings.of(Material.WOOD).hardness(2)));
 
-    public static Block flask = register("flask", new BlockFlask().setHardness(1.0F));
-    public static Block distillery = register("distillery", new BlockDistillery().setHardness(1.0F));
+    public static Block flask = register("flask", new BlockFlask(Settings.of(Material.GLASS).hardness(1)));
+    public static Block distillery = register("distillery", new BlockDistillery(Settings.of(Material.GLASS).hardness(1)));
 
     public static Block dryingTable = register("oak_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
     public static Block spruceDryingTable = register("spruce_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
@@ -58,7 +58,7 @@ public class PSBlocks {
     public static Block riftJar = register("rift_jar", new BlockRiftJar().setHardness(0.5f).setBlockName("riftJar"));
     public static Block glitched = register("glitched", new BlockGlitched().setBlockName("glitched"));
 
-    public static Block bottleRack = register("bottle_rack", new BlockBottleRack().setHardness(0.5f));
+    public static Block bottleRack = register("bottle_rack", new BlockBottleRack(Settings.of(Material.WOOD).hardness(0.5F)));
 
     static <T extends Block> T register(String name, T block) {
         return Registry.register(Registries.BLOCK, Psychedelicraft.id(name), block);

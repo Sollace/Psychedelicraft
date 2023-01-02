@@ -12,10 +12,16 @@ import net.minecraft.util.math.MathHelper;
  * @since 1 Jan 2023
  */
 public interface FluidContainerItem extends Pourable {
+    FluidContainerItem FLUID = () -> Integer.MAX_VALUE;
+
+    static FluidContainerItem of(ItemStack stack) {
+        return stack.getItem() instanceof FluidContainerItem c ? c : FLUID;
+    }
+
     int getMaxCapacity();
 
     default int getMaxCapacity(ItemStack stack) {
-        return stack.getItem() instanceof FluidContainerItem f ? f.getMaxCapacity() : 0;
+        return getMaxCapacity();
     }
 
     default SimpleFluid getFluid(ItemStack stack) {

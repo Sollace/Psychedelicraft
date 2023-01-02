@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityFlask;
+import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
@@ -37,7 +37,7 @@ public class TileEntityRendererFlask extends TileEntitySpecialRenderer
     @Override
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks)
     {
-        TileEntityFlask flask = (TileEntityFlask) tileEntity;
+        FlaskBlockEntity flask = (FlaskBlockEntity) tileEntity;
 
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5f, y + 0.502f, z + 0.5f);

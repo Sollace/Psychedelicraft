@@ -5,66 +5,43 @@
 
 package ivorius.psychedelicraft.client.screen;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.inventory.Slot;
+import ivorius.psychedelicraft.fluids.Resovoir;
+import net.minecraft.entity.player.*;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
-import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.screen.slot.Slot;
 
 /**
  * Created by lukas on 26.10.14.
  */
-public class ContainerFluidHandler extends Container implements UpdatableContainer
-{
-    public IInventory fluidIOInventory = new InventoryBasic("FluidIO", true, 1)
-    {
-        public int getInventoryStackLimit()
-        {
-            return 1;
-        }
-
-        public void markDirty()
-        {
-            super.markDirty();
-            ContainerFluidHandler.this.onCraftMatrixChanged(this);
-        }
-    };
-
-    public InventoryPlayer inventoryPlayer;
-
-    public TileEntity tileEntity;
-    public IFluidHandler fluidHandler;
-    public ForgeDirection side;
+public class ContainerFluidHandler extends ScreenHandler implements UpdatableContainer {
 
     public int drainSpeedPerTick = 100;
     public boolean currentlyDrainingItem;
 
-    public ContainerFluidHandler(InventoryPlayer inventoryPlayer, TileEntity tileEntity, IFluidHandler fluidHandler, ForgeDirection side)
-    {
-        this.inventoryPlayer = inventoryPlayer;
-        this.tileEntity = tileEntity;
-        this.fluidHandler = fluidHandler;
-        this.side = side;
+    private final Resovoir tank;
 
-        this.addSlotToContainer(new Slot(this.fluidIOInventory, 0, 25, 40));
-        for (int y = 0; y < 3; ++y)
-        {
-            for (int x = 0; x < 9; ++x)
-            {
-                this.addSlotToContainer(new Slot(inventoryPlayer, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
+    public ContainerFluidHandler(ScreenHandlerType<? extends ContainerFluidHandler> type, int syncId, PlayerInventory inventoryPlayer, Resovoir tank) {
+        super(type, syncId);
+        this.tank = tank;
+        addSlot(new Slot(tank, 0, 25, 40) {
+            @Override
+            public void markDirty() {
+                super.markDirty();
+                ContainerFluidHandler.this.onContentChanged(inventory);
+            }
+        });
+        for (int y = 0; y < 3; ++y) {
+            for (int x = 0; x < 9; ++x) {
+                addSlot(new Slot(inventoryPlayer, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
             }
         }
 
-        for (int x = 0; x < 9; ++x)
-        {
-            this.addSlotToContainer(new Slot(inventoryPlayer, x, 8 + x * 18, 142));
+        for (int x = 0; x < 9; ++x) {
+            addSlot(new Slot(inventoryPlayer, x, 8 + x * 18, 142));
         }
     }
 
@@ -76,7 +53,7 @@ public class ContainerFluidHandler extends Container implements UpdatableContain
 
     public int transferLiquid(boolean drainItem, int drainSpeed)
     {
-        ItemStack ioStack = fluidIOInventory.getStackInSlot(0);
+        ItemStack ioStack = tank.getStack();
         if (ioStack != null && ioStack.getItem() instanceof IFluidContainerItem)
         {
             IFluidContainerItem fluidContainerItem = (IFluidContainerItem) ioStack.getItem();
@@ -102,7 +79,7 @@ public class ContainerFluidHandler extends Container implements UpdatableContain
     }
 
     @Override
-    public boolean enchantItem(EntityPlayer player, int action)
+    public boolean enchantItem(PlayerEntity player, int action)
     {
         if (action == 1 || action == 0)
         {
@@ -113,26 +90,14 @@ public class ContainerFluidHandler extends Container implements UpdatableContain
         return super.enchantItem(player, action);
     }
 
-    public void onContainerClosed(EntityPlayer p_75134_1_)
-    {
-        super.onContainerClosed(p_75134_1_);
-
-        if (!this.tileEntity.getWorldObj().isRemote)
-        {
-            ItemStack itemstack = this.fluidIOInventory.getStackInSlotOnClosing(0);
-
-            if (itemstack != null)
-                p_75134_1_.dropPlayerItemWithRandomChoice(itemstack, false);
-        }
+    @Override
+    public boolean canUse(PlayerEntity player) {
+        return tileEntity.getWorldObj().getBlock(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord) == tileEntity.getBlockType()
+            && player.getDistanceSq((double) tileEntity.xCoord + 0.5D, (double) tileEntity.yCoord + 0.5D, (double) tileEntity.zCoord + 0.5D) <= 64.0D;
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer player)
-    {
-        return tileEntity.getWorldObj().getBlock(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord) == tileEntity.getBlockType() && player.getDistanceSq((double) tileEntity.xCoord + 0.5D, (double) tileEntity.yCoord + 0.5D, (double) tileEntity.zCoord + 0.5D) <= 64.0D;
-    }
-
-    public ItemStack transferStackInSlot(EntityPlayer p_82846_1_, int p_82846_2_)
+    public ItemStack quickMove(PlayerEntity p_82846_1_, int p_82846_2_)
     {
         ItemStack itemstack = null;
         Slot slot = (Slot) this.inventorySlots.get(p_82846_2_);

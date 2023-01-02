@@ -2,7 +2,9 @@ package ivorius.psychedelicraft.fluids;
 
 import ivorius.psychedelicraft.client.rendering.MCColorHelper;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
+import ivorius.psychedelicraft.items.FluidContainerItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -90,7 +92,7 @@ public class AlcoholicFluid extends FluidDrug implements Fermentable, FluidDisti
         int fermentation = getFermentation(stack);
 
         if (fermentation < settings.fermentationSteps) {
-            return null;
+            return ItemStack.EMPTY;
         }
 
         int distillation = getDistillation(stack);
@@ -98,12 +100,11 @@ public class AlcoholicFluid extends FluidDrug implements Fermentable, FluidDisti
         setDistillation(stack, distillation + 1);
         int distilledAmount = MathHelper.floor(stack.getCount() * (1.0f - 0.5f / (distillation + 1.0f)));
 
-        ItemStack result = stack.copy();
-        result.decrement(distilledAmount);
-        stack.setCount(distilledAmount);
+        stack.split(distilledAmount);
 
-       // FluidStack slurry = new FluidStack(PSFluids.slurry, stack.getCount() - distilledAmount);
-       // stack.amount = distilledAmount;
+        ItemStack result = new ItemStack(Items.AIR, stack.getCount() - distilledAmount);
+        FluidContainerItem.of(result).setFluid(result, PSFluids.slurry);
+        FluidContainerItem.of(result).setLevel(result, 1);
         return result;
     }
 

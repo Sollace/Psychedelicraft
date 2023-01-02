@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.items;
 
-import ivorius.psychedelicraft.blocks.TileEntityMashTub;
+import ivorius.psychedelicraft.block.entity.TileEntityMashTub;
 import net.minecraft.block.Block;
 
 public class ItemMashTub extends FlaskItem {

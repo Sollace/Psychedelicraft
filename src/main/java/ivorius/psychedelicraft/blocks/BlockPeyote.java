@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.blocks;
 
+import ivorius.psychedelicraft.block.entity.TileEntityPeyote;
 import ivorius.psychedelicraft.items.PSItems;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
