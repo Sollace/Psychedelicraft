@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.crafting;
 
+import ivorius.psychedelicraft.items.FluidContainerItem;
 import ivorius.psychedelicraft.items.PSItems;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
@@ -24,6 +25,7 @@ import java.util.List;
 /**
  * Created by lukas on 21.10.14.
  */
+@Deprecated
 public class RecipeFillDrink implements IRecipe
 {
     public static ItemStack getFirstFillableDrinkHolder(InventoryCrafting inventoryCrafting, FluidStack fluidStack)
@@ -34,7 +36,7 @@ public class RecipeFillDrink implements IRecipe
             {
                 ItemStack itemstack = inventoryCrafting.getStackInRowAndColumn(j, i);
 
-                if (itemstack != null && (itemstack.getItem() instanceof IFluidContainerItem && ((IFluidContainerItem) itemstack.getItem()).fill(itemstack, fluidStack, false) >= fluidStack.amount))
+                if (itemstack != null && (itemstack.getItem() instanceof FluidContainerItem container && container.fill(itemstack, fluidStack, false) >= fluidStack.amount))
                     return itemstack;
             }
         }

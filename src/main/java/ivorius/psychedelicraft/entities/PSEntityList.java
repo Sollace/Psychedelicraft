@@ -6,8 +6,6 @@
 package ivorius.psychedelicraft.entities;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.*;
-import ivorius.psychedelicraft.config.PSConfig;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.*;
 import net.minecraft.registry.Registries;
@@ -33,12 +31,5 @@ public interface PSEntityList {
 
     static void bootstrap() {
         PSTradeOffers.bootstrap();
-
-        GameRegistry.registerTileEntityWithAlternatives(TileEntityDryingTable.class, "ygcDryingTable", "dryingTable");
-        GameRegistry.registerTileEntityWithAlternatives(TileEntityMashTub.class, "ygcMashTub");
-        GameRegistry.registerTileEntity(TileEntityDistillery.class, "psDistillery");
-        GameRegistry.registerTileEntity(TileEntityFlask.class, "psFlask");
-        GameRegistry.registerTileEntityWithAlternatives(TileEntityBarrel.class, "ygcBarrel", "barrel");
-        GameRegistry.registerTileEntityWithAlternatives(TileEntityDryingTable.class, "ygcIronDryingTable", "ironDryingTable");
     }
 }

@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.config;
 
 import ivorius.psychedelicraft.PSProxy;
-import ivorius.psychedelicraft.fluids.FluidAlcohol;
+import ivorius.psychedelicraft.fluids.AlcoholicFluid;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,19 +44,19 @@ public class PSConfig
 
     public static final Map<String, Boolean> drugBGM = new HashMap<>();
 
-    public static final FluidAlcohol.TickInfo alcInfoWheatHop = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoWheat = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoCorn = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoPotato = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoRedGrapes = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoRice = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoJuniper = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoSugarCane = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoHoney = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoApple = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoPineapple = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoBanana = new FluidAlcohol.TickInfo();
-    public static final FluidAlcohol.TickInfo alcInfoMilk = new FluidAlcohol.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoWheatHop = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoWheat = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoCorn = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoPotato = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoRedGrapes = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoRice = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoJuniper = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoSugarCane = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoHoney = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoApple = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoPineapple = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoBanana = new AlcoholicFluid.TickInfo();
+    public static final AlcoholicFluid.TickInfo alcInfoMilk = new AlcoholicFluid.TickInfo();
 
     public static int slurryHardeningTime;
 
@@ -117,7 +117,7 @@ public class PSConfig
         PSProxy.getInstance().loadConfig(config, configID);
     }
 
-    public static void readTickInfo(FluidAlcohol.TickInfo tickInfo, String fluidName, int defaultFermentation, int defaultDistillation, int defaultMaturation, int defaultAcetification, Configuration config)
+    public static void readTickInfo(AlcoholicFluid.TickInfo tickInfo, String fluidName, int defaultFermentation, int defaultDistillation, int defaultMaturation, int defaultAcetification, Configuration config)
     {
         tickInfo.ticksPerFermentation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerFermentation", defaultFermentation, String.format("Time until %s wort ferments to the next step.", fluidName));
         tickInfo.ticksPerDistillation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerDistillation", defaultDistillation, String.format("Time until %s distills to the next step.", fluidName));

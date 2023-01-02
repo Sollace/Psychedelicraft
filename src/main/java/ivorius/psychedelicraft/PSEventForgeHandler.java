@@ -5,22 +5,9 @@
 
 package ivorius.psychedelicraft;
 
-import ivorius.psychedelicraft.blocks.PSBlocks;
-import ivorius.psychedelicraft.client.sound.MovingSoundDrug;
-import ivorius.psychedelicraft.config.PSConfig;
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import ivorius.psychedelicraft.fluids.FluidAlcohol;
-import ivorius.psychedelicraft.fluids.FluidWithIconSymbolRegistering;
-import ivorius.psychedelicraft.fluids.PSFluids;
-import ivorius.psychedelicraft.items.PSItems;
-import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.advancement.criterion.Criterion;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import ivorius.psychedelicraft.fluids.AlcoholicFluid;
+import ivorius.psychedelicraft.items.FluidContainerItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-
-import java.util.Arrays;
 
 /**
  * Created by lukas on 18.02.14.
@@ -28,15 +15,18 @@ import java.util.Arrays;
 @Deprecated(forRemoval = true)
 public class PSEventForgeHandler
 {
-    public static boolean containsAlcohol(FluidStack fluidStack, FluidAlcohol fluid, Boolean distilled, int minMatured)
+    public static boolean containsAlcohol(ItemStack stack, AlcoholicFluid fluid, Boolean distilled, int minMatured)
     {
-        return fluidStack != null
-                && fluidStack.getFluid() == fluid
-                && (distilled == null || (fluid.getDistillation(fluidStack) > 0) == distilled)
-                && fluid.getMaturation(fluidStack) >= minMatured;
+        return stack.getItem() instanceof FluidContainerItem container
+                && container.getFluid(stack) == fluid
+                && (distilled == null || (fluid.getDistillation(stack) > 0) == distilled)
+                && fluid.getMaturation(stack) >= minMatured;
     }
 
+    // TODO: (Sollace) reimplement chat distortion
+
     //@SubscribeEvent
+    /*
     public void onServerChat(ServerChatEvent event)
     {
         if (PSConfig.distortOutgoingMessages)
@@ -60,7 +50,7 @@ public class PSEventForgeHandler
                 Psychedelicraft.logger.warn("Failed distorting outgoing text message! Args: " + Arrays.toString(args));
             }
         }
-    }
+    }*/
 
 //    @SubscribeEvent
 //    public void onClientChatReceived(ClientChatReceivedEvent event)

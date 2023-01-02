@@ -10,18 +10,11 @@ import net.minecraft.item.ItemStack;
 /**
  * A fluid that can distill in the correct container, e.g. distillery.
  */
-public interface FluidDistillable
-{
+public interface FluidDistillable {
     /**
      * Tick value indicating that the fluid is currently not distillable.
      */
     int UNDISTILLABLE = -1;
-
-    /**
-     * The creative subtype for FluidWithTypes.
-     */
-    String SUBTYPE = "distillable";
-
     /**
      * Returns the ticks needed for the fluid to distill. Return {@link #UNDISTILLABLE} if the fluid is curently not distillable.
      *

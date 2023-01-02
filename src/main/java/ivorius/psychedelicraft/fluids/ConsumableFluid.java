@@ -8,7 +8,6 @@ package ivorius.psychedelicraft.fluids;
 import ivorius.psychedelicraft.items.FluidContainerItem;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -42,8 +41,7 @@ public interface ConsumableFluid {
     static ItemStack consume(ItemStack stack, LivingEntity entity, int maxConsumed, boolean consume, ConsumptionType type) {
         if (stack.getItem() instanceof FluidContainerItem container) {
             if (container.getFluidLevel(stack) >= maxConsumed) {
-                Fluid fluid = container.getFluid(stack);
-                if (fluid instanceof ConsumableFluid consumable && consumable.canConsume(stack, entity, type)) {
+                if (container.getFluid(stack) instanceof ConsumableFluid consumable && consumable.canConsume(stack, entity, type)) {
                     ItemStack drained = container.drain(stack, maxConsumed);
                     if (consume) {
                         consumable.consume(drained, entity, type);

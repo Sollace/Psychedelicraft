@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.item.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -33,14 +32,13 @@ public class FlaskItem extends BlockItem implements FluidContainerItem {
 
     @Override
     protected boolean postPlacement(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
-        FluidState fluid = this.getFluidState(stack);
         if (state.getBlock() instanceof FluidContainer container) {
-            container.fill(pos, world, state, fluid);
+            container.fill(pos, world, state, stack);
         }
         return super.postPlacement(pos, world, player, stack, state);
     }
 
     public interface FluidContainer {
-        void fill(BlockPos pos, World world, BlockState state, FluidState fluid);
+        void fill(BlockPos pos, World world, BlockState state, ItemStack fluid);
     }
 }

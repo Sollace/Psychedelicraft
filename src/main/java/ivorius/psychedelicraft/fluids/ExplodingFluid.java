@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.fluids;
 
+import ivorius.psychedelicraft.items.FluidContainerItem;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -29,4 +30,13 @@ public interface ExplodingFluid
      * @return The explosion size in blocks.
      */
     float explosionStrength(ItemStack fluidStack);
+
+    static ExplodingFluid fromStack(ItemStack stack) {
+        if (stack.getItem() instanceof FluidContainerItem container
+            && container.getFluid(stack) instanceof ExplodingFluid exploder) {
+            return exploder;
+        }
+
+        return null;
+    }
 }

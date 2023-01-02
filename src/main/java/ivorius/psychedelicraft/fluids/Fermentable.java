@@ -10,8 +10,7 @@ import net.minecraft.item.ItemStack;
 /**
  * A fluid that can ferment in the correct container, e.g. fermentation barrels.
  */
-public interface FluidFermentable
-{
+public interface Fermentable {
     /**
      * Tick value indicating that the fluid is currently unfermentable.
      */
@@ -34,7 +33,7 @@ public interface FluidFermentable
      * @param openContainer True if the fluid is exposed to oxygen.
      * @return The time it needs to ferment, in ticks.
      */
-    int fermentationTime(ItemStack stack, boolean openContainer);
+    int getFermentationTime(ItemStack stack, boolean openContainer);
 
     /**
      * Notifies the fluid that the stack has fermented, and is expected to apply this change to the stack.
@@ -43,5 +42,5 @@ public interface FluidFermentable
      * @param openContainer True if the fluid is exposed to oxygen.
      * @return A stack if the fluid should be replaced with a solid.
      */
-    ItemStack fermentStep(ItemStack stack, boolean openContainer);
+    ItemStack ferment(ItemStack stack, boolean openContainer);
 }

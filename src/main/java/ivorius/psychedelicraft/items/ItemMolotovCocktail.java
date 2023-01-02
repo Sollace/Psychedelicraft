@@ -8,9 +8,8 @@ package ivorius.psychedelicraft.items;
 import ivorius.psychedelicraft.entities.EntityMolotovCocktail;
 import ivorius.psychedelicraft.fluids.ConsumableFluid.ConsumptionType;
 import ivorius.psychedelicraft.fluids.ExplodingFluid;
+import ivorius.psychedelicraft.fluids.SimpleFluid;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -21,15 +20,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class ItemMolotovCocktail extends DrinkableItem {
-    public static ExplodingFluid getExplodingFluid(ItemStack stack) {
-        if (stack.getItem() instanceof FluidContainerItem container
-            && container.getFluid(stack) instanceof ExplodingFluid exploder) {
-            return exploder;
-        }
-
-        return null;
-    }
-
     public ItemMolotovCocktail(Settings settings, int capacity) {
         super(settings, capacity, 0, ConsumptionType.DRINK);
     }
@@ -71,9 +61,9 @@ public class ItemMolotovCocktail extends DrinkableItem {
 
     @Override
     public Text getName(ItemStack stack) {
-        Fluid fluid = getFluid(stack);
+        SimpleFluid fluid = getFluid(stack);
 
-        if (fluid != Fluids.EMPTY) {
+        if (!fluid.isEmpty()) {
             int quality = 0;
 
             if (fluid instanceof ExplodingFluid exploding) {

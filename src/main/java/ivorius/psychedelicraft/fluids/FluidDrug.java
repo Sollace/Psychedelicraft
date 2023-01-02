@@ -7,167 +7,140 @@ package ivorius.psychedelicraft.fluids;
 
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
-import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by lukas on 22.10.14.
  */
-public class FluidDrug extends FluidSimple implements FluidWithTypes, DrinkableFluid, ConsumableFluid, ExplodingFluid, TranslucentFluid
-{
-    protected final List<DrugInfluence> drugInfluences = new ArrayList<>();
-    protected Pair<Integer, Float> foodLevel;
+public class FluidDrug extends SimpleFluid implements ConsumableFluid, ExplodingFluid {
+    protected final List<DrugInfluence> drugInfluences;
+    protected final FoodComponent foodLevel;
 
-    protected boolean drinkable;
-    protected boolean injectable;
+    private final boolean drinkable;
+    private final boolean injectable;
 
-    public FluidDrug(String fluidName)
-    {
-        super(fluidName);
+    public FluidDrug(Identifier id, Settings settings) {
+        super(id, settings);
+        drinkable = settings.drinkable;
+        injectable = settings.injectable;
+        drugInfluences = settings.drugInfluences;
+        foodLevel = settings.foodLevel;
     }
 
-    public FluidDrug(String fluidName, DrugInfluence... influences)
-    {
-        super(fluidName);
-        Collections.addAll(drugInfluences, influences);
-    }
-
-    public boolean isDrinkable()
-    {
+    public boolean isDrinkable() {
         return drinkable;
     }
 
-    public void setDrinkable(boolean drinkable)
-    {
-        this.drinkable = drinkable;
-    }
-
-    public boolean isInjectable()
-    {
+    public boolean isInjectable() {
         return injectable;
     }
 
-    public void setInjectable(boolean injectable)
-    {
-        this.injectable = injectable;
-    }
-
-    public Pair<Integer, Float> getFoodLevel(FluidStack fluidStack)
-    {
+    @Nullable
+    public FoodComponent getFoodLevel(ItemStack fluidStack) {
         return foodLevel;
     }
 
-    public void setFoodLevel(Pair<Integer, Float> foodLevel)
-    {
-        this.foodLevel = foodLevel;
-    }
-
-    public void getDrugInfluences(FluidStack fluidStack, List<DrugInfluence> list)
-    {
+    public void getDrugInfluences(ItemStack fluidStack, List<DrugInfluence> list) {
         List<DrugInfluence> influencesPerLiter = new ArrayList<>();
         getDrugInfluencesPerLiter(fluidStack, influencesPerLiter);
 
-        for (DrugInfluence influence : influencesPerLiter)
-        {
+        for (DrugInfluence influence : influencesPerLiter) {
             DrugInfluence clone = influence.clone();
-            clone.setMaxInfluence(clone.getMaxInfluence() * (double) fluidStack.amount / FluidHelper.MILLIBUCKETS_PER_LITER);
+            clone.setMaxInfluence(clone.getMaxInfluence() * fluidStack.getCount() / FluidHelper.MILLIBUCKETS_PER_LITER);
             list.add(clone);
         }
     }
 
-    public void getDrugInfluencesPerLiter(FluidStack fluidStack, List<DrugInfluence> list)
-    {
+    public void getDrugInfluencesPerLiter(ItemStack fluidStack, List<DrugInfluence> list) {
         list.addAll(drugInfluences);
     }
 
     @Override
-    public void addCreativeSubtypes(String listType, List<FluidStack> list)
-    {
-        FluidStack defaultStack = new FluidStack(this, 1);
-
-        if ((DrinkableFluid.SUBTYPE.equals(listType) || FluidFermentable.SUBTYPE_CLOSED.equals(listType)) && canDrink(defaultStack, null))
-            list.add(new FluidStack(this, 1));
-
-        if (ConsumableFluid.SUBTYPE.equals(listType) && canInject(defaultStack, null))
-            list.add(new FluidStack(this, 1));
-    }
-
-    @Override
-    public boolean canDrink(FluidStack fluidStack, EntityLivingBase entity)
-    {
-        boolean foodLevelOkay = !(entity instanceof EntityPlayer) || getFoodLevel(fluidStack) == null || ((EntityPlayer) entity).getFoodStats().needFood();
-        return isDrinkable() && foodLevelOkay;
-    }
-
-    @Override
-    public void drink(FluidStack fluidStack, EntityLivingBase entity)
-    {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(entity);
-
-        if (drugProperties != null)
-        {
-            List<DrugInfluence> drugInfluences = new ArrayList<>();
-            getDrugInfluences(fluidStack, drugInfluences);
-
-            for (DrugInfluence influence : drugInfluences)
-                drugProperties.addToDrug(influence);
+    public boolean canConsume(ItemStack fluidStack, LivingEntity entity, ConsumptionType type) {
+        if (type == ConsumptionType.DRINK) {
+            return isDrinkable() && (
+                    !(entity instanceof PlayerEntity)
+                    || getFoodLevel(fluidStack) == null
+                    || ((PlayerEntity) entity).getHungerManager().isNotFull()
+                );
         }
 
-        if (foodLevel != null && entity instanceof EntityPlayer)
-            ((EntityPlayer) entity).getFoodStats().addStats(foodLevel.getLeft(), foodLevel.getRight());
-    }
-
-    @Override
-    public boolean canInject(FluidStack fluidStack, LivingEntity entity)
-    {
         return isInjectable();
     }
 
     @Override
-    public void inject(ItemStack fluidStack, LivingEntity entity)
-    {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(entity);
-
-        if (drugProperties != null)
-        {
+    public void consume(ItemStack fluidStack, LivingEntity entity, ConsumptionType type) {
+        DrugProperties.of(entity).ifPresent(drugProperties -> {
             List<DrugInfluence> drugInfluences = new ArrayList<>();
             getDrugInfluences(fluidStack, drugInfluences);
+            drugProperties.addAll(drugInfluences);
+        });
 
-            for (DrugInfluence influence : drugInfluences)
-                drugProperties.addToDrug(influence);
+        if (type == ConsumptionType.DRINK) {
+            if (foodLevel != null && entity instanceof PlayerEntity player) {
+                player.getHungerManager().add(foodLevel.getHunger(), foodLevel.getSaturationModifier());
+            }
         }
     }
 
     @Override
-    public float fireStrength(ItemStack fluidStack)
-    {
+    public float fireStrength(ItemStack fluidStack) {
         return getAlcohol(fluidStack) * fluidStack.getCount() / FluidHelper.MILLIBUCKETS_PER_LITER * 2.0f;
     }
 
     @Override
-    public float explosionStrength(ItemStack fluidStack)
-    {
+    public float explosionStrength(ItemStack fluidStack) {
         return getAlcohol(fluidStack) * fluidStack.getCount() / FluidHelper.MILLIBUCKETS_PER_LITER * 0.6f;
     }
 
-    public float getAlcohol(ItemStack fluidStack)
-    {
+    private float getAlcohol(ItemStack fluidStack) {
         float alcohol = 0.0f;
 
         List<DrugInfluence> drugInfluences = new ArrayList<>();
         getDrugInfluences(fluidStack, drugInfluences);
 
-        for (DrugInfluence drugInfluence : drugInfluences)
-        {
-            if (drugInfluence.getDrugName().equals("Alcohol"))
+        for (DrugInfluence drugInfluence : drugInfluences) {
+            if (drugInfluence.getDrugName().equals("Alcohol")) {
                 alcohol += drugInfluence.getMaxInfluence();
+            }
         }
         return MathHelper.clamp(alcohol, 0.0f, 1.0f);
+    }
+
+    public static class Settings extends SimpleFluid.Settings {
+        private boolean drinkable;
+        private boolean injectable;
+
+        private List<DrugInfluence> drugInfluences = new ArrayList<>();
+        private FoodComponent foodLevel;
+
+        public Settings drinkable() {
+            drinkable = true;
+            return this;
+        }
+
+        public Settings injectable() {
+            injectable = true;
+            return this;
+        }
+
+        public Settings influence(DrugInfluence... influences) {
+            drugInfluences.addAll(List.of(influences));
+            return this;
+        }
+
+        public Settings food(FoodComponent food) {
+            this.foodLevel = food;
+            return this;
+        }
     }
 }

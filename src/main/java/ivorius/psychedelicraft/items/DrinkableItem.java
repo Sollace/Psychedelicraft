@@ -5,14 +5,10 @@
 
 package ivorius.psychedelicraft.items;
 
-import ivorius.psychedelicraft.fluids.ConsumableFluid;
-import ivorius.psychedelicraft.fluids.FluidHelper;
+import ivorius.psychedelicraft.fluids.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -42,7 +38,7 @@ public class DrinkableItem extends Item implements FluidContainerItem {
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return getFluid(stack) == Fluids.EMPTY ? UseAction.NONE
+        return getFluid(stack).isEmpty() ? UseAction.NONE
                 : consumptionType == ConsumableFluid.ConsumptionType.DRINK
                 ? UseAction.DRINK
                 : UseAction.BOW;
@@ -70,11 +66,10 @@ public class DrinkableItem extends Item implements FluidContainerItem {
 
     @Override
     public Text getName(ItemStack stack) {
-        Fluid fluid = getFluid(stack);
+        SimpleFluid fluid = getFluid(stack);
 
-        if (fluid != Fluids.EMPTY) {
-            Identifier fluidId = Registries.FLUID.getId(fluid);
-            return Text.translatable(getTranslationKey() + ".filled", Text.translatable(Util.createTranslationKey("fluid", fluidId)));
+        if (!fluid.isEmpty()) {
+            return Text.translatable(getTranslationKey() + ".filled", fluid.getName(stack));
         }
 
         return super.getName(stack);
@@ -82,7 +77,7 @@ public class DrinkableItem extends Item implements FluidContainerItem {
 
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
-        return getFluid(stack) != Fluids.EMPTY;
+        return !getFluid(stack).isEmpty();
     }
 
     @Override

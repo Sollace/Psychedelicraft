@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import ivorius.psychedelicraft.items.FluidContainerItem;
+
 /**
  * Created by lukas on 10.11.14.
  */
@@ -25,7 +27,7 @@ public class RecipeConvertFluidContainer implements IRecipe
             {
                 ItemStack itemstack = inventoryCrafting.getStackInRowAndColumn(j, i);
 
-                if (itemstack != null && (itemstack.getItem() instanceof IFluidContainerItem))
+                if (itemstack != null && (itemstack.getItem() instanceof FluidContainerItem))
                     return itemstack;
             }
         }
