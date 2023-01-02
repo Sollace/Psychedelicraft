@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.client.rendering.blocks;
 
-import ivorius.psychedelicraft.blocks.TileEntityDryingTable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -13,6 +12,8 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
+
+import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 
 import java.util.Random;
 
@@ -26,10 +27,10 @@ public class TileEntityRendererDryingTable extends TileEntitySpecialRenderer
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f)
     {
-        renderTileEntityDryingTableAt((TileEntityDryingTable) tileentity, d, d1, d2, f);
+        renderTileEntityDryingTableAt((DryingTableBlockEntity) tileentity, d, d1, d2, f);
     }
 
-    public void renderTileEntityDryingTableAt(TileEntityDryingTable tileEntity, double d, double d1, double d2, float f)
+    public void renderTileEntityDryingTableAt(DryingTableBlockEntity tileEntity, double d, double d1, double d2, float f)
     {
         Tessellator tessellator = Tessellator.instance;
 

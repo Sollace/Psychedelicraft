@@ -1,5 +1,6 @@
-package ivorius.psychedelicraft.blocks;
+package ivorius.psychedelicraft.block.entity;
 
+import ivorius.psychedelicraft.blocks.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.BlockEntityType.Builder;
@@ -7,7 +8,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
 public interface PSBlockEntities {
-    BlockEntityType<TileEntityDryingTable> DRYING_TABLE = create("drying_table", BlockEntityType.Builder.create(TileEntityDryingTable::new,
+    BlockEntityType<DryingTableBlockEntity> DRYING_TABLE = create("drying_table", BlockEntityType.Builder.create(DryingTableBlockEntity::new,
             PSBlocks.dryingTable, PSBlocks.spruceDryingTable,
             PSBlocks.birchDryingTable, PSBlocks.jungleDryingTable,
             PSBlocks.acaciaDryingTable, PSBlocks.darkOakDryingTable, PSBlocks.dryingTableIron));

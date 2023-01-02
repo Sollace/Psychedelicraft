@@ -6,7 +6,8 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.TileEntityDryingTable;
+import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
+import ivorius.psychedelicraft.screen.DryingTableScreenHandler;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.*;
@@ -17,9 +18,9 @@ public class GuiDryingTable extends GuiContainer
 {
     public static Identifier dryingTableBG = Psychedelicraft.id(Psychedelicraft.filePathTextures + "guiDryingTable.png");
 
-    public GuiDryingTable(InventoryPlayer par1InventoryPlayer, World par2World, TileEntityDryingTable tileEntityDryingTable)
+    public GuiDryingTable(InventoryPlayer par1InventoryPlayer, World par2World, DryingTableBlockEntity tileEntityDryingTable)
     {
-        super(new ContainerDryingTable(par1InventoryPlayer, par2World, tileEntityDryingTable));
+        super(new DryingTableScreenHandler(par1InventoryPlayer, par2World, tileEntityDryingTable));
     }
 
     /**
@@ -45,15 +46,15 @@ public class GuiDryingTable extends GuiContainer
         int var6 = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(var5, var6, 0, 0, this.xSize, this.ySize);
 
-        if (((ContainerDryingTable) this.inventorySlots).tileEntityDryingTable.dryingProgress > 0.0f)
+        if (((DryingTableScreenHandler) this.inventorySlots).tileEntityDryingTable.dryingProgress > 0.0f)
         {
             this.drawTexturedModalRect(var5 + 88, var6 + 34, 176, 59, 25, 16);
         }
 
-        int var7 = (int) (((ContainerDryingTable) this.inventorySlots).tileEntityDryingTable.dryingProgress * 24f); //Max 24, progress
+        int var7 = (int) (((DryingTableScreenHandler) this.inventorySlots).tileEntityDryingTable.dryingProgress * 24f); //Max 24, progress
         this.drawTexturedModalRect(var5 + 88, var6 + 34, 176, 42, var7 + 1, 16);
 
-        int var8 = (int) (((ContainerDryingTable) this.inventorySlots).tileEntityDryingTable.heatRatio * 20f); //Max 20, sun
+        int var8 = (int) (((DryingTableScreenHandler) this.inventorySlots).tileEntityDryingTable.heatRatio * 20f); //Max 20, sun
         this.drawTexturedModalRect(var5 + 148, var6 + 6 + (20 - var8), 176, 21 + (20 - var8), 20, var8);
     }
 

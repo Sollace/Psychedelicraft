@@ -6,10 +6,9 @@
 package ivorius.psychedelicraft.client.screen;
 
 import cpw.mods.fml.common.network.IGuiHandler;
-import ivorius.psychedelicraft.blocks.TileEntityBarrel;
-import ivorius.psychedelicraft.blocks.TileEntityDistillery;
-import ivorius.psychedelicraft.blocks.TileEntityDryingTable;
-import ivorius.psychedelicraft.blocks.TileEntityMashTub;
+import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
+import ivorius.psychedelicraft.blocks.*;
+import ivorius.psychedelicraft.screen.DryingTableScreenHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -38,7 +37,7 @@ public class PSGuiHandler implements IGuiHandler
     public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
     {
         if (id == dryingTableContainerID)
-            return new ContainerDryingTable(player.inventory, world, (TileEntityDryingTable) world.getTileEntity(x, y, z));
+            return new DryingTableScreenHandler(player.inventory, world, (DryingTableBlockEntity) world.getTileEntity(x, y, z));
         else if (id >= fluidHandlerContainerID_DOWN && id <= fluidHandlerContainerID_EAST)
         {
             ForgeDirection forgeDirection = ForgeDirection.getOrientation(id - fluidHandlerContainerID_DOWN);
@@ -73,7 +72,7 @@ public class PSGuiHandler implements IGuiHandler
     public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
     {
         if (id == dryingTableContainerID)
-            return new GuiDryingTable(player.inventory, world, (TileEntityDryingTable) world.getTileEntity(x, y, z));
+            return new GuiDryingTable(player.inventory, world, (DryingTableBlockEntity) world.getTileEntity(x, y, z));
         else if (id >= fluidHandlerContainerID_DOWN && id <= fluidHandlerContainerID_EAST)
         {
             ForgeDirection forgeDirection = ForgeDirection.getOrientation(id - fluidHandlerContainerID_DOWN);

@@ -14,6 +14,8 @@ import net.minecraft.util.math.BlockPos;
 
 import static ivorius.psychedelicraft.fluids.FluidHelper.MILLIBUCKETS_PER_LITER;
 
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
+
 public class TileEntityBarrel extends BlockEntity
 {
     public static final int BARREL_CAPACITY = MILLIBUCKETS_PER_LITER * 16;

@@ -6,7 +6,9 @@
 package ivorius.psychedelicraft.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
@@ -31,13 +33,13 @@ public class PSBlocks {
     public static Block flask = register("flask", new BlockFlask().setHardness(1.0F));
     public static Block distillery = register("distillery", new BlockDistillery().setHardness(1.0F));
 
-    public static Block dryingTable = register("oak_drying_table", new BlockDryingTable().setHardness(2.0f));
-    public static Block spruceDryingTable = register("spruce_drying_table", new BlockDryingTable().setHardness(2.0f));
-    public static Block birchDryingTable = register("birch_drying_table", new BlockDryingTable().setHardness(2.0f));
-    public static Block jungleDryingTable = register("jungle_drying_table", new BlockDryingTable().setHardness(2.0f));
-    public static Block acaciaDryingTable = register("acacia_drying_table", new BlockDryingTable().setHardness(2.0f));
-    public static Block darkOakDryingTable = register("dark_oak_drying_table", new BlockDryingTable().setHardness(2.0f));
-    public static Block dryingTableIron = register("iron_drying_table", new BlockIronDryingTable().setHardness(5.0f));
+    public static Block dryingTable = register("oak_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
+    public static Block spruceDryingTable = register("spruce_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
+    public static Block birchDryingTable = register("birch_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
+    public static Block jungleDryingTable = register("jungle_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
+    public static Block acaciaDryingTable = register("acacia_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
+    public static Block darkOakDryingTable = register("dark_oak_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
+    public static Block dryingTableIron = register("iron_drying_table", new BlockDryingTable(Settings.of(Material.METAL).hardness(5)));
 
     public static Block cannabisPlant = register("cannabis_plant", new BlockCannabisPlant().setHardness(0.5f));
     public static Block hopPlant = register("hop_plant", new BlockHopPlant().setHardness(0.5f));

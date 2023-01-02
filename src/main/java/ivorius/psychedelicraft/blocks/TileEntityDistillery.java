@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.blocks;
 
 import ivorius.ivtoolkit.blocks.IvTileEntityHelper;
 import ivorius.psychedelicraft.fluids.FluidDistillable;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.fluids.Fermentable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
