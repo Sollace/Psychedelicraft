@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.entities.drugs;
 
 import java.util.*;
 
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
@@ -124,7 +125,7 @@ public class DrugHallucinationManager
         for (HallucinationType type : hallucinationTypes)
         {
             float desiredValue = type.getDesiredValue(drugProperties);
-            type.currentValue = IvMathHelper.nearValue(type.currentValue, desiredValue, 0.01f, 0.01f);
+            type.currentValue = MathUtils.nearValue(type.currentValue, desiredValue, 0.01f, 0.01f);
             totalHallucinationValue += type.currentValue;
         }
 
@@ -155,19 +156,19 @@ public class DrugHallucinationManager
             {
                 float desiredValue = randomColor(random, drugProperties.ticksExisted, getHallucinationMultiplier(hKey), 0.5f, 0.00121f, 0.0019318f);
 
-                val = IvMathHelper.nearValue(val, desiredValue, 0.002f, 0.002f);
+                val = MathUtils.nearValue(val, desiredValue, 0.002f, 0.002f);
                 hallucinationValues.put(hKey, val);
             }
             else
             {
-                val = IvMathHelper.nearValue(val, 0.0f, 0.002f, 0.002f);
+                val = MathUtils.nearValue(val, 0.0f, 0.002f, 0.002f);
                 hallucinationValues.put(hKey, val);
             }
         }
 
-        currentMindColor[0] = IvMathHelper.nearValue(currentMindColor[0], randomColor(random, drugProperties.ticksExisted, 0.5f, 0.5f, 0.0012371f, 0.0017412f), 0.002f, 0.002f);
-        currentMindColor[1] = IvMathHelper.nearValue(currentMindColor[1], randomColor(random, drugProperties.ticksExisted, 0.5f, 0.5f, 0.0011239f, 0.0019321f), 0.002f, 0.002f);
-        currentMindColor[2] = IvMathHelper.nearValue(currentMindColor[2], randomColor(random, drugProperties.ticksExisted, 0.5f, 0.5f, 0.0011541f, 0.0018682f), 0.002f, 0.002f);
+        currentMindColor[0] = MathUtils.nearValue(currentMindColor[0], randomColor(random, drugProperties.ticksExisted, 0.5f, 0.5f, 0.0012371f, 0.0017412f), 0.002f, 0.002f);
+        currentMindColor[1] = MathUtils.nearValue(currentMindColor[1], randomColor(random, drugProperties.ticksExisted, 0.5f, 0.5f, 0.0011239f, 0.0019321f), 0.002f, 0.002f);
+        currentMindColor[2] = MathUtils.nearValue(currentMindColor[2], randomColor(random, drugProperties.ticksExisted, 0.5f, 0.5f, 0.0011541f, 0.0018682f), 0.002f, 0.002f);
     }
 
     public void updateEntities(LivingEntity entity, DrugProperties drugProperties, Random random)

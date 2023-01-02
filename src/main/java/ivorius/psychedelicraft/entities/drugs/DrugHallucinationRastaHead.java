@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.entities.drugs;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.ModelRastaHead;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
+import net.minecraft.client.model.Model;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.PigEntity;

@@ -31,10 +31,9 @@ public class EdibleItem extends Item {
             remainder.decrement(1);
         }
 
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(user);
-        if (drugProperties != null) {
+        DrugProperties.of(user).ifPresent(drugProperties -> {
             drugProperties.addToDrug(influence.clone());
-        }
+        });
         return remainder;
     }
 }

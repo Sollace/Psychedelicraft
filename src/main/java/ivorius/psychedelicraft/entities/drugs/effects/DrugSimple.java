@@ -7,12 +7,12 @@ package ivorius.psychedelicraft.entities.drugs.effects;
 
 import ivorius.psychedelicraft.entities.drugs.Drug;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
-public class DrugSimple implements Drug
-{
+public class DrugSimple implements Drug {
     protected double effect;
     protected double effectActive;
     protected boolean locked = false;
@@ -21,65 +21,54 @@ public class DrugSimple implements Drug
     private final double decreaseSpeedPlus;
     private final boolean invisible;
 
-    public DrugSimple(double decSpeed, double decSpeedPlus)
-    {
+    public DrugSimple(double decSpeed, double decSpeedPlus) {
         this(decSpeed, decSpeedPlus, false);
     }
 
-    public DrugSimple(double decSpeed, double decSpeedPlus, boolean invisible)
-    {
+    public DrugSimple(double decSpeed, double decSpeedPlus, boolean invisible) {
         decreaseSpeed = decSpeed;
         decreaseSpeedPlus = decSpeedPlus;
 
         this.invisible = invisible;
     }
 
-    public void setActiveValue(double value)
-    {
+    public void setActiveValue(double value) {
         effectActive = value;
     }
 
     @Override
-    public double getActiveValue()
-    {
+    public double getActiveValue() {
         return effectActive;
     }
 
-    public double getDesiredValue()
-    {
+    public double getDesiredValue() {
         return effect;
     }
 
     @Override
-    public void setDesiredValue(double value)
-    {
+    public void setDesiredValue(double value) {
         effect = value;
     }
 
     @Override
-    public void addToDesiredValue(double value)
-    {
-        if (!locked)
-        {
+    public void addToDesiredValue(double value) {
+        if (!locked) {
             effect += value;
         }
     }
 
     @Override
-    public void setLocked(boolean locked)
-    {
+    public void setLocked(boolean locked) {
         this.locked = locked;
     }
 
     @Override
-    public boolean isLocked()
-    {
+    public boolean isLocked() {
         return locked;
     }
 
     @Override
-    public boolean isVisible()
-    {
+    public boolean isVisible() {
         return !invisible;
     }
 
@@ -94,179 +83,152 @@ public class DrugSimple implements Drug
 
         effect = MathHelper.clamp(0.0, effect, 1.0);
 
-        effectActive = IvMathHelper.nearValue(effectActive, effect, 0.05, 0.005);
+        effectActive = MathUtils.nearValue(effectActive, effect, 0.05, 0.005);
     }
 
     @Override
-    public void reset(LivingEntity entity, DrugProperties drugProperties)
-    {
-        if (!locked)
-            effect = 0.0;
+    public void reset(LivingEntity entity, DrugProperties drugProperties) {
+        if (!locked) {
+            effect = 0;
+        }
     }
 
     @Override
-    public void readFromNBT(NbtCompound par1NBTTagCompound)
-    {
+    public void fromNbt(NbtCompound par1NBTTagCompound) {
         setDesiredValue(par1NBTTagCompound.getDouble("effect"));
         setActiveValue(par1NBTTagCompound.getDouble("effectActive"));
         setLocked(par1NBTTagCompound.getBoolean("locked"));
     }
 
     @Override
-    public void writeToNBT(NbtCompound compound)
-    {
+    public void toNbt(NbtCompound compound) {
         compound.putDouble("effect", getDesiredValue());
         compound.putDouble("effectActive", getActiveValue());
         compound.putBoolean("locked", isLocked());
     }
 
     @Override
-    public float heartbeatVolume()
-    {
+    public float heartbeatVolume() {
         return 0;
     }
 
     @Override
-    public float heartbeatSpeed()
-    {
+    public float heartbeatSpeed() {
         return 0;
     }
 
     @Override
-    public float breathVolume()
-    {
+    public float breathVolume() {
         return 0;
     }
 
     @Override
-    public float breathSpeed()
-    {
+    public float breathSpeed() {
         return 0;
     }
 
     @Override
-    public float randomJumpChance()
-    {
+    public float randomJumpChance() {
         return 0;
     }
 
     @Override
-    public float randomPunchChance()
-    {
+    public float randomPunchChance() {
         return 0;
     }
 
     @Override
-    public float digSpeedModifier()
-    {
+    public float digSpeedModifier() {
         return 1;
     }
 
     @Override
-    public float speedModifier()
-    {
+    public float speedModifier() {
         return 1;
     }
 
     @Override
-    public float soundVolumeModifier()
-    {
+    public float soundVolumeModifier() {
         return 1;
     }
 /*
     @Override
-    public EntityPlayer.EnumStatus getSleepStatus()
-    {
+    public EntityPlayer.EnumStatus getSleepStatus() {
         return null;
     }
 */
     @Override
-    public void applyContrastColorization(float[] rgba)
-    {
+    public void applyContrastColorization(float[] rgba) {
 
     }
 
     @Override
-    public void applyColorBloom(float[] rgba)
-    {
+    public void applyColorBloom(float[] rgba) {
 
     }
 
     @Override
-    public float desaturationHallucinationStrength()
-    {
+    public float desaturationHallucinationStrength() {
         return 0;
     }
 
     @Override
-    public float superSaturationHallucinationStrength()
-    {
+    public float superSaturationHallucinationStrength() {
         return 0;
     }
 
     @Override
-    public float contextualHallucinationStrength()
-    {
+    public float contextualHallucinationStrength() {
         return 0;
     }
 
     @Override
-    public float colorHallucinationStrength()
-    {
+    public float colorHallucinationStrength() {
         return 0;
     }
 
     @Override
-    public float movementHallucinationStrength()
-    {
+    public float movementHallucinationStrength() {
         return 0;
     }
 
     @Override
-    public float handTrembleStrength()
-    {
+    public float handTrembleStrength() {
         return 0;
     }
 
     @Override
-    public float viewTrembleStrength()
-    {
+    public float viewTrembleStrength() {
         return 0;
     }
 
     @Override
-    public float headMotionInertness()
-    {
+    public float headMotionInertness() {
         return 0;
     }
 
     @Override
-    public float bloomHallucinationStrength()
-    {
+    public float bloomHallucinationStrength() {
         return 0;
     }
 
     @Override
-    public float viewWobblyness()
-    {
+    public float viewWobblyness() {
         return 0;
     }
 
     @Override
-    public float doubleVision()
-    {
+    public float doubleVision() {
         return 0;
     }
 
     @Override
-    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties)
-    {
+    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
 
     }
 
     @Override
-    public float motionBlur()
-    {
+    public float motionBlur() {
         return 0;
     }
 }

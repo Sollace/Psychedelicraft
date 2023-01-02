@@ -74,7 +74,7 @@ public class DrinkableItem extends Item implements FluidContainerItem {
 
         if (fluid != Fluids.EMPTY) {
             Identifier fluidId = Registries.FLUID.getId(fluid);
-            return Text.translatable(this.getTranslationKey() + ".filled", Text.translatable(Util.createTranslationKey("fluid", fluidId)));
+            return Text.translatable(getTranslationKey() + ".filled", Text.translatable(Util.createTranslationKey("fluid", fluidId)));
         }
 
         return super.getName(stack);

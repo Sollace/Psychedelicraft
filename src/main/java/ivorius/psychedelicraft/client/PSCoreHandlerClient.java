@@ -38,11 +38,6 @@ public class PSCoreHandlerClient
     private final Vec3 field_82884_b = Vec3.createVectorHelper(0.20000000298023224D, 1.0D, -0.699999988079071D).normalize();
     private final Vec3 field_82885_c = Vec3.createVectorHelper(-0.20000000298023224D, 1.0D, 0.699999988079071D).normalize();
 
-    public void register()
-    {
-        PsycheCoreBusCommon.EVENT_BUS.register(this);
-    }
-
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onTextureStitchPre(TextureStitchEvent.Pre event)
@@ -64,6 +59,15 @@ public class PSCoreHandlerClient
             if (PSConfig.hasBGM(drugName))
                 soundHandler.playSound(new MovingSoundDrug(new ResourceLocation(Psychedelicraft.MODID, "drug." + drugName.toLowerCase()), entity, drugProperties, drugName));
         }
+    }
+
+    //@SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent event)
+    {
+        DrugProperties drugProperties = DrugProperties.getDrugProperties(event.entity); // Initialize drug helper
+
+        if (event.world.isRemote && drugProperties != null)
+            initializeMovingSoundDrug(event.entity, drugProperties);
     }
 
     @SubscribeEvent

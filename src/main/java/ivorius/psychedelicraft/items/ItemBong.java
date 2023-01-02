@@ -45,16 +45,14 @@ public class ItemBong extends Item {
             if (usedConsumable != null && player.getInventory().contains(usedConsumable.consumedItem)) {
                 // TODO: (Sollace) check for possible client desync
                 player.getInventory().removeOne(usedConsumable.consumedItem);
-                DrugProperties drugProperties = DrugProperties.getDrugProperties(entity);
-
-                if (drugProperties != null) {
+                DrugProperties.of(entity).ifPresent(drugProperties -> {
                     for (DrugInfluence influence : usedConsumable.drugInfluences) {
                         drugProperties.addToDrug(influence.clone());
                     }
 
                     stack.damage(1, player, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
                     drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), usedConsumable.smokeColor);
-                }
+                });
             }
         }
 
@@ -63,14 +61,11 @@ public class ItemBong extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        ItemStack stack = player.getStackInHand(hand);
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(player);
-
-        if (drugProperties != null && drugProperties.timeBreathingSmoke <= 0 && getUsedConsumable(player) != null) {
-            return TypedActionResult.consume(stack);
+        if (DrugProperties.of(player).timeBreathingSmoke <= 0 && getUsedConsumable(player) != null) {
+            return TypedActionResult.consume(player.getStackInHand(hand));
         }
 
-        return TypedActionResult.fail(null);
+        return TypedActionResult.fail(ItemStack.EMPTY);
     }
 
     public Consumable getUsedConsumable(LivingEntity entity) {

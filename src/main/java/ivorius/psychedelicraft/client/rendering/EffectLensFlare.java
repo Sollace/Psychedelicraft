@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;

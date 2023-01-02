@@ -5,20 +5,16 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
+import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
 
-public interface Drug
+public interface Drug extends NbtSerialisable
 {
     void update(LivingEntity entity, DrugProperties drugProperties);
 
     void reset(LivingEntity entity, DrugProperties drugProperties);
-
-    void writeToNBT(NbtCompound compound);
-
-    void readFromNBT(NbtCompound compound);
 
     double getActiveValue();
 

@@ -98,42 +98,4 @@ public class PSEventForgeHandler
         }
     }
 */
-    //@SubscribeEvent
-    public void onEntityJoinWorld(EntityJoinWorldEvent event)
-    {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(event.entity); // Initialize drug helper
-
-        if (event.world.isRemote && drugProperties != null)
-            initializeMovingSoundDrug(event.entity, drugProperties);
-    }
-
-    //@SubscribeEvent
-    public void onEntityConstruction(EntityEvent.EntityConstructing event)
-    {
-        if (event.entity instanceof EntityPlayer)
-            DrugProperties.initInEntity(event.entity);
-    }
-
-    //@SubscribeEvent
-    public void getBreakSpeed(PlayerEvent.BreakSpeed event)
-    {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(event.entity);
-
-        if (drugProperties != null)
-        {
-            event.newSpeed = event.newSpeed * drugProperties.getDigSpeedModifier(event.entityLiving);
-        }
-    }
-
-    //@SubscribeEvent
-    public void wakeUpPlayer(PlayerWakeUpEvent event)
-    {
-        if (!event.wakeImmediatly)
-        {
-            DrugProperties drugProperties = DrugProperties.getDrugProperties(event.entityPlayer);
-
-            if (drugProperties != null)
-                drugProperties.wakeUp(event.entityPlayer);
-        }
-    }
 }

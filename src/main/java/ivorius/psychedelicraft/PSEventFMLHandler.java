@@ -5,27 +5,11 @@
 
 package ivorius.psychedelicraft;
 
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.entity.player.PlayerEntity;
-
 /**
  * Created by lukas on 18.02.14.
  */
 @Deprecated(forRemoval = true)
 public class PSEventFMLHandler {
-    // TODO: (Sollace) need to hook a tick event.
-    //@SubscribeEvent
-    public void onPlayerTick(/*TickEvent.PlayerTickEvent event*/ PlayerEntity player) {
-        //if (event.phase == TickEvent.Phase.END)
-        //{
-            DrugProperties drugProperties = DrugProperties.getDrugProperties(player);
-
-            if (drugProperties != null) {
-                drugProperties.updateDrugEffects(player);
-            }
-        //}
-    }
-
  // TODO: (Sollace) Probably not needed any more
     /*
     @SubscribeEvent

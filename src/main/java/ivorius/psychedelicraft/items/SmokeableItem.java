@@ -51,15 +51,10 @@ public class SmokeableItem extends Item {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(entity);
-
-        if (drugProperties != null) {
-            for (DrugInfluence drugInfluence : drugEffects) {
-                drugProperties.addToDrug(drugInfluence.clone());
-            }
-
+        DrugProperties.of(entity).ifPresent(drugProperties -> {
+            drugProperties.addAll(drugEffects);
             drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), smokeColor);
-        }
+        });
 
         if (stack.getDamage() < stack.getMaxDamage() - 1) {
             stack.damage(1, entity, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
@@ -74,7 +69,7 @@ public class SmokeableItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (DrugProperties.getDrugProperties(player).timeBreathingSmoke == 0) {
+        if (DrugProperties.of(player).timeBreathingSmoke == 0) {
             return TypedActionResult.success(stack, world.isClient());
         }
 

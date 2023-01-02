@@ -24,18 +24,11 @@ import net.minecraft.util.math.random.Random;
  */
 public class DrugAlcohol extends DrugSimple
 {
-    public static void rotateEntityPitch(Entity entity, double amount)
-    {
-        entity.rotationPitch += amount;
-        if (entity.rotationPitch < -90.0F)
-            entity.rotationPitch = -90.0F;
-
-        if (entity.rotationPitch > 90.0F)
-            entity.rotationPitch = 90.0F;
+    public static void rotateEntityPitch(Entity entity, double amount) {
+        entity.setPitch((float)MathHelper.clamp(entity.getPitch() + amount, -90F, 90F));
     }
 
-    public static void rotateEntityYaw(Entity entity, double amount)
-    {
+    public static void rotateEntityYaw(Entity entity, double amount) {
         entity.setYaw(entity.getYaw() + (float)amount);
     }
 
@@ -80,8 +73,7 @@ public class DrugAlcohol extends DrugSimple
     }
 
     @Override
-    public float viewWobblyness()
-    {
+    public float viewWobblyness() {
         return (float)getActiveValue() * 0.5f;
     }
 
