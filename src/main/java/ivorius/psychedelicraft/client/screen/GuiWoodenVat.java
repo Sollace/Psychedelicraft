@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.TileEntityMashTub;
+import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -18,9 +18,9 @@ public class GuiWoodenVat extends GuiFluidHandler
 {
     public static final ResourceLocation woodenVatTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "container_woodenVat.png");
 
-    private TileEntityMashTub tileEntityMashTub;
+    private MashTubBlockEntity tileEntityMashTub;
 
-    public GuiWoodenVat(InventoryPlayer inventoryPlayer, TileEntityMashTub tileEntity)
+    public GuiWoodenVat(InventoryPlayer inventoryPlayer, MashTubBlockEntity tileEntity)
     {
         super(inventoryPlayer, tileEntity, tileEntity, ForgeDirection.DOWN);
         this.tileEntityMashTub = tileEntity;

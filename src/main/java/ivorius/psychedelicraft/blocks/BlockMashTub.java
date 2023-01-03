@@ -9,10 +9,11 @@ import ivorius.ivtoolkit.blocks.IvBlockMultiblock;
 import ivorius.ivtoolkit.blocks.IvTileEntityMultiBlock;
 import ivorius.psychedelicraft.PSMultiBlockHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.TileEntityMashTub;
+import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
 import ivorius.psychedelicraft.client.screen.PSGuiHandler;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -33,43 +34,24 @@ import java.util.List;
 /**
  * Created by lukas on 27.10.14.
  */
-public class BlockMashTub extends Block//IvBlockMultiblock
-{
+public class BlockMashTub extends BlockWithEntity {
     public BlockMashTub(Settings settings) {
-        super(settings);
+        super(settings.nonOpaque());
     }
-
-    @Override
-    public boolean isOpaqueCube()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean renderAsNormalBlock()
-    {
-        return false;
-    }
-
-    @Override
-    public int getRenderType()
-    {
-        return -1;
-    }
-
+/*
     @Override
     public IIcon getIcon(int par1, int par2)
     {
         return Blocks.planks.getIcon(0, 0);
     }
-
+*/
     @Override
     public void parentBlockHarvestItem(World world, IvTileEntityMultiBlock tileEntity, int x, int y, int z, Block block, int metadata)
     {
-        if (tileEntity instanceof TileEntityMashTub)
+        if (tileEntity instanceof MashTubBlockEntity)
         {
-            TileEntityMashTub tileEntityMashTub = (TileEntityMashTub) tileEntity;
-            FluidStack fluidStack = tileEntityMashTub.drain(ForgeDirection.DOWN, TileEntityMashTub.MASH_TUB_CAPACITY, true);
+            MashTubBlockEntity tileEntityMashTub = (MashTubBlockEntity) tileEntity;
+            FluidStack fluidStack = tileEntityMashTub.drain(ForgeDirection.DOWN, MashTubBlockEntity.MASH_TUB_CAPACITY, true);
             ItemStack stack = new ItemStack(this);
 
             if (fluidStack != null && fluidStack.amount > 0)
@@ -83,11 +65,11 @@ public class BlockMashTub extends Block//IvBlockMultiblock
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float par7, float par8, float par9)
     {
         TileEntity tileEntity = getValidatedTotalParent(this, world, x, y, z);
-        if (tileEntity instanceof TileEntityMashTub)
+        if (tileEntity instanceof MashTubBlockEntity)
         {
             if (!world.isRemote)
             {
-                TileEntityMashTub tileEntityMashTub = (TileEntityMashTub) tileEntity;
+                MashTubBlockEntity tileEntityMashTub = (MashTubBlockEntity) tileEntity;
                 if (tileEntityMashTub.solidContents != null)
                 {
                     dropBlockAsItem(world, x, y, z, tileEntityMashTub.solidContents);
@@ -105,7 +87,7 @@ public class BlockMashTub extends Block//IvBlockMultiblock
 
         return false;
     }
-
+/*
     @Override
     public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB entityBB, List list, Entity entity)
     {
@@ -132,16 +114,10 @@ public class BlockMashTub extends Block//IvBlockMultiblock
         if (entityBB.intersectsWith(bb))
             list.add(bb);
     }
-
-    @Override
-    public void registerBlockIcons(IIconRegister iconRegister)
-    {
-
-    }
-
+*/
     @Override
     public TileEntity createNewTileEntity(World var1, int var2)
     {
-        return new TileEntityMashTub();
+        return new MashTubBlockEntity();
     }
 }

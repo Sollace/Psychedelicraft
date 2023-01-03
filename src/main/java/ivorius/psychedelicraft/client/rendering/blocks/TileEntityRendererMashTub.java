@@ -8,7 +8,7 @@ package ivorius.psychedelicraft.client.rendering.blocks;
 import ivorius.ivtoolkit.blocks.IvMultiBlockRenderHelper;
 import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.TileEntityMashTub;
+import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -42,10 +42,10 @@ public class TileEntityRendererMashTub extends TileEntitySpecialRenderer
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f)
     {
-        renderTileEntityMashTub((TileEntityMashTub) tileentity, d, d1, d2, f);
+        renderTileEntityMashTub((MashTubBlockEntity) tileentity, d, d1, d2, f);
     }
 
-    public void renderTileEntityMashTub(TileEntityMashTub tileEntity, double x, double y, double z, float partialTicks)
+    public void renderTileEntityMashTub(MashTubBlockEntity tileEntity, double x, double y, double z, float partialTicks)
     {
         if (tileEntity.isParent())
         {

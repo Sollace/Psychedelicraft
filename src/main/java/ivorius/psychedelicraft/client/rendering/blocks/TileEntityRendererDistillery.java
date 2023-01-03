@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.TileEntityDistillery;
+import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
@@ -36,7 +36,7 @@ public class TileEntityRendererDistillery extends TileEntitySpecialRenderer
 
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks)
     {
-        TileEntityDistillery distillery = (TileEntityDistillery) tileEntity;
+        DistilleryBlockEntity distillery = (DistilleryBlockEntity) tileEntity;
 
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5f, y + 0.502f, z + 0.5f);

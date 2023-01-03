@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.TileEntityPeyote;
+import ivorius.psychedelicraft.block.entity.PeyoteBlockEntity;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -37,10 +37,10 @@ public class TileEntityRendererPeyote extends TileEntitySpecialRenderer
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f)
     {
-        renderTileEntityPeyoteAt((TileEntityPeyote) tileentity, d, d1, d2, f);
+        renderTileEntityPeyoteAt((PeyoteBlockEntity) tileentity, d, d1, d2, f);
     }
 
-    public void renderTileEntityPeyoteAt(TileEntityPeyote tileEntity, double d, double d1, double d2, float f)
+    public void renderTileEntityPeyoteAt(PeyoteBlockEntity tileEntity, double d, double d1, double d2, float f)
     {
         Tessellator tessellator = Tessellator.instance;
 

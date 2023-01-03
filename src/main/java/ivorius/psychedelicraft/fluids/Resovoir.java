@@ -24,11 +24,11 @@ public class Resovoir implements Inventory, NbtSerialisable {
     }
 
     public SimpleFluid getFluidType() {
-        return FluidContainerItem.of(stack).getFluid(stack);
+        return FluidContainerItem.FLUID.getFluid(stack);
     }
 
     public int getLevel() {
-        return FluidContainerItem.of(stack).getFluidLevel(stack);
+        return FluidContainerItem.FLUID.getFluidLevel(stack);
     }
 
     public ItemStack getStack() {
@@ -52,8 +52,8 @@ public class Resovoir implements Inventory, NbtSerialisable {
         if (level > capacity) {
             int expunged = level - capacity;
             ItemStack clone = stack.copy();
-            FluidContainerItem.of(stack).setLevel(clone, expunged);
-            stack = FluidContainerItem.of(stack).setLevel(stack, capacity);
+            FluidContainerItem.FLUID.setLevel(clone, expunged);
+            stack = FluidContainerItem.FLUID.setLevel(stack, capacity);
             changeCallback.onDrain(this);
             return clone;
         }
@@ -68,7 +68,6 @@ public class Resovoir implements Inventory, NbtSerialisable {
 
     public ItemStack deposit(ItemStack stack) {
         var incoming = FluidContainerItem.of(stack);
-        var existing = FluidContainerItem.of(this.stack);
         SimpleFluid fluid = incoming.getFluid(stack);
 
         if (fluid.isEmpty() || (!isEmpty() && getFluidType() != fluid)) {
@@ -83,7 +82,7 @@ public class Resovoir implements Inventory, NbtSerialisable {
         }
         ItemStack copy = stack.copy();
         incoming.setLevel(copy, Math.max(0, available - getCapacity()));
-        existing.setLevel(this.stack, newLevel);
+        FluidContainerItem.FLUID.setLevel(this.stack, newLevel);
 
         return copy;
     }
@@ -91,8 +90,17 @@ public class Resovoir implements Inventory, NbtSerialisable {
     public ItemStack drain(int levels) {
         ItemStack stack = this.stack.copy();
         int withdrawn = Math.min(levels, getLevel());
+        FluidContainerItem.FLUID.setLevel(stack, withdrawn);
+        FluidContainerItem.FLUID.setLevel(this.stack, getLevel() - withdrawn);
+        changeCallback.onDrain(this);
+        return stack;
+    }
+
+    public ItemStack drain(int levels, ItemStack container) {
+        ItemStack stack = container.copy();
+        int withdrawn = Math.min(FluidContainerItem.of(stack).getMaxCapacity(stack), Math.min(levels, getLevel()));
         FluidContainerItem.of(stack).setLevel(stack, withdrawn);
-        FluidContainerItem.of(stack).setLevel(this.stack, getLevel() - withdrawn);
+        FluidContainerItem.FLUID.setLevel(this.stack, getLevel() - withdrawn);
         changeCallback.onDrain(this);
         return stack;
     }

@@ -76,10 +76,6 @@ public class FlaskBlockEntity extends BlockEntity implements Resovoir.ChangeList
         tank.fromNbt(compound.getCompound("tank"));
     }
 
-    public int getCapacity() {
-        return FLASK_CAPACITY;
-    }
-
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);

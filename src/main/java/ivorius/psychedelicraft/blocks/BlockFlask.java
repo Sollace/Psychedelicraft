@@ -9,10 +9,15 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.client.screen.ContainerFluidHandler;
+import ivorius.psychedelicraft.fluids.Resovoir;
+import ivorius.psychedelicraft.items.FluidContainerItem;
+import ivorius.psychedelicraft.items.PSItems;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,69 +26,51 @@ import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 /**
  * Created by lukas on 25.10.14.
  */
-public class BlockFlask extends BlockWithEntity
-{
+public class BlockFlask extends BlockWithEntity {
+    private static final VoxelShape SHAPE = Block.createCuboidShape(4, 0, 4, 12, 11.5, 12);
+
     public BlockFlask(Settings settings) {
         super(settings);
-        //setBlockBounds(0.25f, 0.0f, 0.25f, 0.75f, 0.7f, 0.75f);
-    }
-/*
-    @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ)
-    {
-        TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if (tileEntity instanceof FlaskBlockEntity)
-        {
-            if (!world.isRemote)
-                player.openGui(Psychedelicraft.instance, PSGuiHandler.fluidHandlerContainerID_UP, world, x, y, z);
-
-            return true;
-        }
-
-        return false;
     }
 
     @Override
-    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLivingBase, ItemStack stack)
-    {
-        TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if (tileEntity instanceof FlaskBlockEntity)
-        {
-            FlaskBlockEntity tileEntityFlask = (FlaskBlockEntity) tileEntity;
-
-            FluidStack fluidStack = stack.getItem() instanceof IFluidContainerItem ? ((IFluidContainerItem) stack.getItem()).getFluid(stack) : null;
-            if (fluidStack != null)
-                tileEntityFlask.fill(ForgeDirection.UP, fluidStack, true);
-        }
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
     }
 
     @Override
-    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest)
-    {
-        if (willHarvest)
-        {
-            TileEntity tileEntity = world.getTileEntity(x, y, z);
-            if (tileEntity instanceof FlaskBlockEntity)
-            {
-                FlaskBlockEntity tileEntityFlask = (FlaskBlockEntity) tileEntity;
-                FluidStack fluidStack = tileEntityFlask.drain(ForgeDirection.DOWN, FlaskBlockEntity.FLASK_CAPACITY, true);
-                ItemStack stack = new ItemStack(this);
-
-                if (fluidStack != null && fluidStack.amount > 0)
-                    ((IFluidContainerItem) stack.getItem()).fill(stack, fluidStack, true);
-
-                dropBlockAsItem(world, x, y, z, stack);
-            }
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        if (!world.isClient && stack.getItem() instanceof FluidContainerItem container) {
+            world.getBlockEntity(pos, PSBlockEntities.FLASK).ifPresent(be -> {
+                be.getTank(Direction.UP).deposit(stack);
+            });
         }
-
-        return super.removedByPlayer(world, player, x, y, z, willHarvest);
     }
-*/
+
+    @Deprecated
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock())) {
+            world.getBlockEntity(pos, PSBlockEntities.FLASK).ifPresent(be -> {
+                Resovoir tank = be.getTank(Direction.DOWN);
+                ItemStack flaskStack = PSItems.itemFlask.getDefaultStack();
+                int maxCapacity = PSItems.itemFlask.getMaxCapacity(flaskStack);
+                while (!tank.isEmpty()) {
+                    Block.dropStack(world, pos, tank.drain(maxCapacity, flaskStack));
+                }
+            });
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.FLASK).map(be -> {
@@ -113,6 +100,6 @@ public class BlockFlask extends BlockWithEntity
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new DryingTableBlockEntity(pos, state);
+        return new FlaskBlockEntity(pos, state);
     }
 }

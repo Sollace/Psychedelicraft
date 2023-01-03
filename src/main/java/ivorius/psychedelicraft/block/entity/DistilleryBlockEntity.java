@@ -15,13 +15,13 @@ import net.minecraft.util.math.*;
 /**
  * Created by lukas on 25.10.14.
  */
-public class TileEntityDistillery extends FlaskBlockEntity {
+public class DistilleryBlockEntity extends FlaskBlockEntity {
     public static final int DISTILLERY_CAPACITY = FlaskBlockEntity.FLASK_CAPACITY;
 
     public int direction;
     public int timeDistilled;
 
-    public TileEntityDistillery(BlockPos pos, BlockState state) {
+    public DistilleryBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.DISTILLERY, pos, state, DISTILLERY_CAPACITY);
     }
 

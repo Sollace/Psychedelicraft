@@ -20,12 +20,12 @@ public interface PSRenderers {
     static void bootstrap() {
         Psychedelicraft.blockWineGrapeLatticeRenderType = RenderingRegistry.getNextAvailableRenderId();
         RenderingRegistry.registerBlockHandler(Psychedelicraft.blockWineGrapeLatticeRenderType, new RenderWineGrapeLattice());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDistillery.class, new TileEntityRendererDistillery());
+        ClientRegistry.bindTileEntitySpecialRenderer(DistilleryBlockEntity.class, new TileEntityRendererDistillery());
         ClientRegistry.bindTileEntitySpecialRenderer(FlaskBlockEntity.class, new TileEntityRendererFlask());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMashTub.class, new TileEntityRendererMashTub());
+        ClientRegistry.bindTileEntitySpecialRenderer(MashTubBlockEntity.class, new TileEntityRendererMashTub());
         ClientRegistry.bindTileEntitySpecialRenderer(BarrelBlockEntity.class, new TileEntityRendererBarrel());
         ClientRegistry.bindTileEntitySpecialRenderer(DryingTableBlockEntity.class, new TileEntityRendererDryingTable());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPeyote.class, new TileEntityRendererPeyote());
+        ClientRegistry.bindTileEntitySpecialRenderer(PeyoteBlockEntity.class, new TileEntityRendererPeyote());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRiftJar.class, new TileEntityRendererRiftJar());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBottleRack.class, new TileEntityRendererBottleRack());
 

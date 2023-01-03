@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.blocks;
 
-import ivorius.psychedelicraft.block.entity.TileEntityPeyote;
+import ivorius.psychedelicraft.block.entity.PeyoteBlockEntity;
 import ivorius.psychedelicraft.items.PSItems;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -63,7 +63,7 @@ public class BlockPeyote extends BlockBush implements IGrowable
     @Override
     public TileEntity createTileEntity(World var1, int var2)
     {
-        return new TileEntityPeyote();
+        return new PeyoteBlockEntity();
     }
 
     @Override

@@ -5,12 +5,12 @@
 
 package ivorius.psychedelicraft.items;
 
-import ivorius.psychedelicraft.block.entity.TileEntityMashTub;
+import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
 import net.minecraft.block.Block;
 
 public class ItemMashTub extends FlaskItem {
     public ItemMashTub(Block block, Settings settings) {
-        super(block, settings, TileEntityMashTub.MASH_TUB_CAPACITY);
+        super(block, settings, MashTubBlockEntity.MASH_TUB_CAPACITY);
     }
 
     // TODO:

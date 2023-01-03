@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.TileEntityDistillery;
+import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.client.screen.PSGuiHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.AbstractBlock.Settings;
@@ -38,7 +38,7 @@ public class BlockDistillery extends Block
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ)
     {
         TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if (tileEntity instanceof TileEntityDistillery)
+        if (tileEntity instanceof DistilleryBlockEntity)
         {
             if (!world.isRemote)
                 player.openGui(Psychedelicraft.instance, PSGuiHandler.distilleryContainerID, world, x, y, z);
@@ -55,9 +55,9 @@ public class BlockDistillery extends Block
         int direction = (MathHelper.floor_double((entityLivingBase.rotationYaw * 4F) / 360F + 0.5D) + 1) & 3;
 
         TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if (tileEntity instanceof TileEntityDistillery)
+        if (tileEntity instanceof DistilleryBlockEntity)
         {
-            TileEntityDistillery tileEntityDistillery = (TileEntityDistillery) tileEntity;
+            DistilleryBlockEntity tileEntityDistillery = (DistilleryBlockEntity) tileEntity;
 
             tileEntityDistillery.direction = direction;
 
@@ -73,10 +73,10 @@ public class BlockDistillery extends Block
         if (willHarvest)
         {
             TileEntity tileEntity = world.getTileEntity(x, y, z);
-            if (tileEntity instanceof TileEntityDistillery)
+            if (tileEntity instanceof DistilleryBlockEntity)
             {
-                TileEntityDistillery tileEntityDistillery = (TileEntityDistillery) tileEntity;
-                FluidStack fluidStack = tileEntityDistillery.drain(ForgeDirection.DOWN, TileEntityDistillery.DISTILLERY_CAPACITY, true);
+                DistilleryBlockEntity tileEntityDistillery = (DistilleryBlockEntity) tileEntity;
+                FluidStack fluidStack = tileEntityDistillery.drain(ForgeDirection.DOWN, DistilleryBlockEntity.DISTILLERY_CAPACITY, true);
                 ItemStack stack = new ItemStack(this);
 
                 if (fluidStack != null && fluidStack.amount > 0)
@@ -134,6 +134,6 @@ public class BlockDistillery extends Block
     @Override
     public TileEntity createTileEntity(World world, int meta)
     {
-        return new TileEntityDistillery();
+        return new DistilleryBlockEntity();
     }
 }

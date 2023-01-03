@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.TileEntityDistillery;
+import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.*;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -16,9 +16,9 @@ public class GuiDistillery extends GuiFluidHandler
 {
     public static final Identifier distilleryTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_distillery.png");
 
-    private TileEntityDistillery tileEntityDistillery;
+    private DistilleryBlockEntity tileEntityDistillery;
 
-    public GuiDistillery(InventoryPlayer inventoryPlayer, TileEntityDistillery tileEntity)
+    public GuiDistillery(InventoryPlayer inventoryPlayer, DistilleryBlockEntity tileEntity)
     {
         super(inventoryPlayer, tileEntity, tileEntity, ForgeDirection.DOWN);
         this.tileEntityDistillery = tileEntity;

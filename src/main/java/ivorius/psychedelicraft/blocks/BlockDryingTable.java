@@ -29,7 +29,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BlockDryingTable extends BlockWithEntity {
-
     private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 12, 16);
 
     public BlockDryingTable(Settings settings) {

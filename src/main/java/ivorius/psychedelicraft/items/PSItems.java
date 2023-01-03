@@ -38,7 +38,7 @@ public class PSItems {
     public static FlaskItem itemDarkOakBarrel = register("dark_oak_barrel", new FlaskItem(PSBlocks.dark_oak_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
     public static FlaskItem itemMashTub = register("mash_rub", new ItemMashTub(PSBlocks.mashTub, new Settings().maxCount(16)));
     public static FlaskItem itemFlask = register("flask", new FlaskItem(PSBlocks.flask, new Settings().maxCount(16), FlaskBlockEntity.FLASK_CAPACITY));
-    public static FlaskItem itemDistillery = register("distillery", new FlaskItem(PSBlocks.distillery, new Settings().maxCount(16), TileEntityDistillery.DISTILLERY_CAPACITY));
+    public static FlaskItem itemDistillery = register("distillery", new FlaskItem(PSBlocks.distillery, new Settings().maxCount(16), DistilleryBlockEntity.DISTILLERY_CAPACITY));
     public static ItemRiftJar itemRiftJar = register("rift_jar", new ItemRiftJar(PSBlocks.riftJar, new Settings()));
 
     public static Item wineGrapes = register("wine_grapes", new ItemWineGrapes(new Settings().food(
