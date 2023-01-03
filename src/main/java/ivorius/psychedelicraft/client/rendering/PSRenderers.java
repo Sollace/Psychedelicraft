@@ -10,6 +10,10 @@ import ivorius.psychedelicraft.client.rendering.blocks.*;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.entities.*;
 import ivorius.psychedelicraft.items.PSItems;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.render.entity.EntityRenderers;
+import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 
 /**
@@ -18,8 +22,6 @@ import net.minecraft.item.Item;
  */
 public interface PSRenderers {
     static void bootstrap() {
-        Psychedelicraft.blockWineGrapeLatticeRenderType = RenderingRegistry.getNextAvailableRenderId();
-        RenderingRegistry.registerBlockHandler(Psychedelicraft.blockWineGrapeLatticeRenderType, new RenderWineGrapeLattice());
         ClientRegistry.bindTileEntitySpecialRenderer(DistilleryBlockEntity.class, new TileEntityRendererDistillery());
         ClientRegistry.bindTileEntitySpecialRenderer(FlaskBlockEntity.class, new TileEntityRendererFlask());
         ClientRegistry.bindTileEntitySpecialRenderer(MashTubBlockEntity.class, new TileEntityRendererMashTub());
@@ -29,10 +31,9 @@ public interface PSRenderers {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRiftJar.class, new TileEntityRendererRiftJar());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBottleRack.class, new TileEntityRendererBottleRack());
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityMolotovCocktail.class, new RenderSnowball(PSItems.molotovCocktail));
-        RenderingRegistry.registerEntityRenderingHandler(EntityRealityRift.class, new RenderRealityRift());
-
-        PSRenderStates.allocate();
-        PSRenderStates.outputShaderInfo();
+        EntityRendererRegistry.register(PSEntityList.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
+        EntityRendererRegistry.register(PSEntityList.REALITY_RIFT, RenderRealityRift::new);
+        //PSRenderStates.allocate();
+        //PSRenderStates.outputShaderInfo();
     }
 }

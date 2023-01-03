@@ -5,17 +5,14 @@
 
 package ivorius.psychedelicraft.client.rendering.blocks;
 
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
-import ivorius.ivtoolkit.rendering.IvRenderHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.blocks.BlockWineGrapeLattice;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.world.IBlockAccess;
 
 /**
  * Created by lukas on 17.02.14.
  */
+@Deprecated
 public class RenderWineGrapeLattice implements ISimpleBlockRenderingHandler
 {
     @Override

@@ -35,8 +35,6 @@ public class Psychedelicraft implements ModInitializer {
     public static final String filePathShaders = "shaders/";
     public static final String modBase = "psychedelicraft:";
 
-    public static int blockWineGrapeLatticeRenderType;
-
     public static Identifier id(String name) {
         return new Identifier(MODID, name);
     }
