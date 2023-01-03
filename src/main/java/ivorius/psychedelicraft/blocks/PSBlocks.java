@@ -50,10 +50,15 @@ public class PSBlocks {
     public static Block peyote = register("peyote_plant", new BlockPeyote(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
 
     public static Block emptyLattice = register("empty_lattice", new LatticeBlock(Block.Settings.of(Material.WOOD).hardness(0.3F).nonOpaque()));
-    public static Block wineGrapeLattice = register("wine_grape_lattice", new BlockWineGrapeLattice(Block.Settings.of(Material.WOOD).hardness(0.3F).ticksRandomly().nonOpaque()));
+    public static Block wineGrapeLattice = register("wine_grape_lattice", new BlockWineGrapeLattice(Block.Settings.of(Material.WOOD)
+            .hardness(0.3F).ticksRandomly().nonOpaque()
+    ));
 
-    public static Block riftJar = register("rift_jar", new BlockRiftJar(Settings.of(Material.ORGANIC_PRODUCT).hardness(0.5F).sounds(BlockSoundGroup.STONE)));
-    public static Block glitched = register("glitch", new BlockGlitched());
+    public static Block riftJar = register("rift_jar", new BlockRiftJar(Settings.of(Material.ORGANIC_PRODUCT).hardness(0.5F).sounds(BlockSoundGroup.STONE).nonOpaque()));
+    public static Block glitched = register("glitch", new BlockGlitched(Settings.of(Material.DECORATION).breakInstantly().hardness(0)
+            .emissiveLighting(BlockConstructionUtils::always)
+            .air().nonOpaque().noBlockBreakParticles().dropsNothing()
+    ));
 
     static <T extends Block> T register(String name, T block) {
         return Registry.register(Registries.BLOCK, Psychedelicraft.id(name), block);

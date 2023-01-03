@@ -1,123 +1,92 @@
 package ivorius.psychedelicraft.blocks;
 
-import ivorius.ivtoolkit.blocks.IvMultiBlockHelper;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.TileEntityBottleRack;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.*;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.*;
 
 /**
  * Created by lukas on 16.11.14.
  */
-public class BlockBottleRack extends Block
-{
+public class BlockBottleRack extends BlockWithEntity {
+    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+
+    // TODO: rotations
+    private static final VoxelShape[] SHAPES = new VoxelShape[] {
+            Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6),
+            Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6),
+            Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6),
+            Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6)
+    };
+
     public BlockBottleRack(Settings settings) {
-        super(settings);
+        super(settings.nonOpaque());
     }
 
     @Override
-    public int getRenderType()
-    {
-        return -1;
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(FACING);
     }
 
     @Override
-    public boolean isOpaqueCube()
-    {
-        return false;
+    @Deprecated
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPES[state.get(FACING).getHorizontal()];
     }
 
     @Override
-    public boolean renderAsNormalBlock()
-    {
-        return false;
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public void registerBlockIcons(IIconRegister par1IconRegister)
-    {
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override
-    public IIcon getIcon(int side, int meta)
-    {
-        return Blocks.planks.getIcon(side, 0);
-    }
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).map(be -> {
 
-    @Override
-    public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9)
-    {
-        TileEntity tileEntity = par1World.getTileEntity(par2, par3, par4);
+            ItemStack heldStack = player.getStackInHand(hand);
 
-        if (tileEntity instanceof TileEntityBottleRack)
-        {
-            TileEntityBottleRack tileEntityBottleRack = (TileEntityBottleRack) tileEntity;
-
-            ItemStack heldItem = par5EntityPlayer.getHeldItem();
-            if (heldItem != null && tileEntityBottleRack.tryStoringItem(heldItem, par5EntityPlayer))
-                return true;
-            else
-                return tileEntityBottleRack.pickUpItem(par5EntityPlayer);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void breakBlock(World world, int x, int y, int z, Block par5, int par6)
-    {
-        if (!world.isRemote)
-        {
-            TileEntity tileEntity = world.getTileEntity(x, y, z);
-
-            if (tileEntity instanceof TileEntityBottleRack)
-            {
-                TileEntityBottleRack tileEntityBottleRack = (TileEntityBottleRack) tileEntity;
-                for (int slot = 0; slot < tileEntityBottleRack.getSizeInventory(); slot++)
-                {
-                    ItemStack stackInSlotOnClosing = tileEntityBottleRack.getStackInSlotOnClosing(slot);
-                    if (stackInSlotOnClosing != null)
-                        dropBlockAsItem(world, x, y, z, stackInSlotOnClosing);
+            if (heldStack.isEmpty()) {
+                TypedActionResult<ItemStack> extracted = be.extractItem(hit, state.get(FACING));
+                if (extracted.getResult().isAccepted()) {
+                    player.setStackInHand(hand, extracted.getValue());
                 }
+                return extracted.getResult();
             }
+
+            return be.insertItem(player.getStackInHand(hand), hit, state.get(FACING));
+        }).orElse(ActionResult.FAIL);
+    }
+
+    @Deprecated
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock()) && !world.isClient) {
+            world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).ifPresent(be -> {
+                ItemScatterer.spawn(world, pos, be);
+                world.updateComparators(pos, this);
+            });
         }
-
-        super.breakBlock(world, x, y, z, par5, par6);
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
-    public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z)
-    {
-        TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
-
-        if (tileEntity instanceof TileEntityBottleRack)
-            setBlockBounds(IvMultiBlockHelper.getRotatedBB(-0.5f, -0.5f, -0.1f, 1.0f, 1.0f, 0.6f, ((TileEntityBottleRack) tileEntity).getDirection(), new double[]{0.5, 0.5, 0.5}));
-        else
-            setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
-    }
-
-    public void setBlockBounds(AxisAlignedBB bb)
-    {
-        setBlockBounds((float) bb.minX, (float) bb.minY, (float) bb.minZ, (float) bb.maxX, (float) bb.maxY, (float) bb.maxZ);
-    }
-
-    @Override
-    public boolean hasTileEntity(int metadata)
-    {
-        return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(World var1, int i)
-    {
-        return new TileEntityBottleRack();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new TileEntityBottleRack(pos, state);
     }
 }

@@ -5,31 +5,25 @@
 
 package ivorius.psychedelicraft.block.entity;
 
-import io.netty.buffer.ByteBuf;
-import ivorius.ivtoolkit.bezier.IvBezierPath3D;
-import ivorius.ivtoolkit.blocks.IvTileEntityHelper;
-import ivorius.ivtoolkit.math.IvMathHelper;
-import ivorius.ivtoolkit.network.IvNetworkHelperServer;
-import ivorius.ivtoolkit.network.PartialUpdateHandler;
-import ivorius.psychedelicraft.Psychedelicraft;
+import java.util.*;
+
 import ivorius.psychedelicraft.entities.EntityRealityRift;
+import ivorius.psychedelicraft.entities.PSEntityList;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.*;
+import net.minecraft.world.World.ExplosionSourceType;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-public class TileEntityRiftJar extends BlockEntity implements PartialUpdateHandler
-{
+public class TileEntityRiftJar extends BlockEntity {
     public float currentRiftFraction;
     public int ticksAliveVisual;
 
@@ -40,263 +34,162 @@ public class TileEntityRiftJar extends BlockEntity implements PartialUpdateHandl
     public boolean suckingRifts = true;
     public float fractionHandleUp;
 
-    public ArrayList<JarRiftConnection> riftConnections = new ArrayList<>();
+    private final Map<UUID, JarRiftConnection> riftConnections = new HashMap<>();
 
-    @Override
-    public void updateEntity()
-    {
-        fractionOpen = IvMathHelper.nearValue(fractionOpen, isOpening ? 1.0f : 0.0f, 0.0f, 0.02f);
-        fractionHandleUp = IvMathHelper.nearValue(fractionHandleUp, isSuckingRifts() ? 0.0f : 1.0f, 0.0f, 0.04f);
+    public TileEntityRiftJar(BlockPos pos, BlockState state) {
+        super(PSBlockEntities.RIFT_JAR, pos, state);
+    }
 
-//        if (!worldObj.isRemote)
+    public void tick(ServerWorld world) {
+        fractionOpen = MathUtils.nearValue(fractionOpen, isOpening ? 1 : 0, 0, 0.02F);
+        fractionHandleUp = MathUtils.nearValue(fractionHandleUp, isSuckingRifts() ? 0 : 1, 0, 0.04F);
+
+//        if (!world.isClient)
 //        {
 //            boolean before = suckingRifts;
-//            suckingRifts = !worldObj.isDaytime() && worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord);
+//            suckingRifts = !world.isDaytime() && world.canBlockSeeTheSky(xCoord, yCoord, zCoord);
 //
 //            if (before != suckingRifts)
 //            {
 //                markDirty();
-//                worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+//                world.markBlockForUpdate(xCoord, yCoord, zCoord);
 //            }
 //        }
 
-        if (isSuckingRifts())
-        {
-            if (fractionOpen > 0.0f)
-            {
+        if (isSuckingRifts()) {
+            if (fractionOpen > 0) {
                 List<EntityRealityRift> rifts = getAffectedRifts();
 
-                if (rifts.size() > 0)
-                {
-                    float minus = (1.0f / rifts.size()) * 0.001f * fractionOpen;
-                    for (EntityRealityRift rift : rifts)
-                    {
+                if (rifts.size() > 0) {
+                    float minus = (1F / rifts.size()) * 0.001f * fractionOpen;
+                    rifts.forEach(rift -> {
                         currentRiftFraction += rift.takeFromRift(minus);
 
                         JarRiftConnection connection = createAndGetRiftConnection(rift);
-                        connection.fractionUp += 0.02f * fractionOpen;
-                        if (connection.fractionUp > 1.0f)
-                        {
-                            connection.fractionUp = 1.0f;
-                        }
-                    }
+                        connection.fractionUp = Math.min(1, connection.fractionUp + 0.02f * fractionOpen);
+                    });
                 }
             }
-        }
-        else
-        {
-            if (fractionOpen > 0.0f)
-            {
+        } else {
+            if (fractionOpen > 0) {
                 float minus = Math.min(0.0004f * fractionOpen * currentRiftFraction + 0.0004f, currentRiftFraction);
 
-                List<EntityLivingBase> entities = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(xCoord - 5.0f, yCoord - 5.0f, zCoord - 2.0f, xCoord + 6.0f, yCoord + 6.0f, zCoord + 6.0f));
-
-                for (EntityLivingBase entity : entities)
-                {
-                    double effect = (5.0f - entity.getDistance(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5)) * 0.2f * minus;
-                    DrugProperties drugProperties = DrugProperties.getDrugProperties(entity);
-
-                    if (drugProperties != null)
-                    {
-                        drugProperties.addToDrug("Zero", effect * 5.0f);
-                        drugProperties.addToDrug("Power", effect * 35.0f);
-                    }
-                }
+                BlockPos pos = getPos();
+                Vec3d center = pos.toCenterPos();
+                world.getEntitiesByClass(LivingEntity.class, new Box(
+                        pos.getX() - 5, pos.getY() - 5, pos.getZ() - 2,
+                        pos.getX() + 6, pos.getY() + 6, pos.getZ() + 6
+                    ), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR
+                ).stream().flatMap(DrugProperties::stream).forEach(drugProperties -> {
+                    double effect = (5 - drugProperties.asEntity().getPos().distanceTo(center)) * 0.2F * minus;
+                    drugProperties.addToDrug("Zero", effect * 5);
+                    drugProperties.addToDrug("Power", effect * 35);
+                });
 
                 currentRiftFraction -= minus;
             }
         }
 
-        Iterator<JarRiftConnection> jarRiftConnectionIterator = riftConnections.iterator();
-        while (jarRiftConnectionIterator.hasNext())
-        {
-            JarRiftConnection connection = jarRiftConnectionIterator.next();
-            connection.fractionUp -= 0.01f;
+        riftConnections.values().removeIf(connection -> (connection.fractionUp -= 0.01F) <= 0);
 
-            if (connection.fractionUp <= 0.0f)
-            {
-                jarRiftConnectionIterator.remove();
-            }
-        }
-
-        if (currentRiftFraction > 1.0f)
-        {
+        if (currentRiftFraction > 1.0f) {
             jarBroken = true;
 
             releaseRift();
-            worldObj.setBlock(xCoord, yCoord, zCoord, Blocks.air);
-            worldObj.createExplosion(null, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, 1.0f, false);
+            world.breakBlock(pos, false);
+            Vec3d explosionPosition = getPos().toCenterPos();
+            world.createExplosion(null, explosionPosition.x, explosionPosition.y, explosionPosition.z, 1, false, ExplosionSourceType.BLOCK);
         }
 
         ticksAliveVisual++;
     }
 
-    public JarRiftConnection createAndGetRiftConnection(EntityRealityRift rift)
-    {
-        for (JarRiftConnection connection : riftConnections)
-        {
-            if (connection.riftID == rift.getEntityId())
-            {
-                return connection;
-            }
-        }
-
-        JarRiftConnection newConnection = new JarRiftConnection();
-        newConnection.riftID = rift.getEntityId();
-        newConnection.fractionUp = 0.0f;
-        newConnection.entityX = rift.posX;
-        newConnection.entityY = rift.posY + rift.height * 0.5;
-        newConnection.entityZ = rift.posZ;
-        riftConnections.add(newConnection);
-
-        return newConnection;
+    public JarRiftConnection createAndGetRiftConnection(EntityRealityRift rift) {
+        return riftConnections.computeIfAbsent(rift.getUuid(), id -> new JarRiftConnection(rift));
     }
 
-    @Override
-    public void writeToNBT(NBTTagCompound nbttagcompound)
-    {
-        super.writeToNBT(nbttagcompound);
 
-        nbttagcompound.setFloat("currentRiftFraction", currentRiftFraction);
-
-        nbttagcompound.setBoolean("isOpening", isOpening);
-        nbttagcompound.setFloat("fractionOpen", fractionOpen);
-
-        nbttagcompound.setBoolean("jarBroken", jarBroken);
-        nbttagcompound.setBoolean("suckingRifts", suckingRifts);
-        nbttagcompound.setFloat("fractionHandleUp", fractionHandleUp);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound nbttagcompound)
-    {
-        super.readFromNBT(nbttagcompound);
-
-        currentRiftFraction = nbttagcompound.getFloat("currentRiftFraction");
-
-        isOpening = nbttagcompound.getBoolean("isOpening");
-        fractionOpen = nbttagcompound.getFloat("fractionOpen");
-
-        jarBroken = nbttagcompound.getBoolean("jarBroken");
-        suckingRifts = nbttagcompound.getBoolean("suckingRifts");
-        fractionHandleUp = nbttagcompound.getFloat("fractionHandleUp");
-    }
-
-    public int getBlockRotation()
-    {
-        return getBlockMetadata();
-    }
-
-    public void toggleRiftJarOpen()
-    {
-        if (!worldObj.isRemote)
-        {
+    public void toggleRiftJarOpen() {
+        if (!world.isClient) {
             isOpening = !isOpening;
 
             markDirty();
-            IvNetworkHelperServer.sendTileEntityUpdatePacket(this, "isOpening", Psychedelicraft.network);
         }
     }
 
-    public void toggleSuckingRifts()
-    {
-        if (!worldObj.isRemote)
-        {
+    public void toggleSuckingRifts() {
+        if (!world.isClient) {
             suckingRifts = !suckingRifts;
 
             markDirty();
-            IvNetworkHelperServer.sendTileEntityUpdatePacket(this, "suckingRifts", Psychedelicraft.network);
         }
     }
 
-
-    public boolean isSuckingRifts()
-    {
+    public boolean isSuckingRifts() {
         return suckingRifts;
     }
 
-    public void releaseRift()
-    {
-        if (currentRiftFraction > 0.0f)
-        {
+    public void releaseRift() {
+        if (currentRiftFraction > 0) {
             List<EntityRealityRift> rifts = getAffectedRifts();
 
-            if (rifts.size() > 0)
-            {
+            if (rifts.size() > 0) {
                 rifts.get(0).addToRift(currentRiftFraction);
-            }
-            else
-            {
-                if (!worldObj.isRemote)
-                {
-                    EntityRealityRift rift = new EntityRealityRift(worldObj);
-                    rift.setPosition(xCoord + 0.5f, yCoord + 3.0f, zCoord + 0.5f);
-                    rift.setRiftSize(currentRiftFraction);
-                    worldObj.spawnEntityInWorld(rift);
-                }
+            } else if (!world.isClient) {
+                EntityRealityRift rift = PSEntityList.REALITY_RIFT.create(world);
+                rift.setPosition(getPos().toCenterPos().add(5, 3, 0.5));
+                rift.setRiftSize(currentRiftFraction);
+                world.spawnEntity(rift);
             }
 
             currentRiftFraction = 0.0f;
         }
     }
 
-    @Override
-    public AxisAlignedBB getRenderBoundingBox()
-    {
-        return AxisAlignedBB.getBoundingBox(xCoord - 10.0f, yCoord - 5.0f, zCoord - 10.0f, xCoord + 11.0f, yCoord + 11.0f, zCoord + 11.0f);
-    }
-
-    public List<EntityRealityRift> getAffectedRifts()
-    {
-        return worldObj.getEntitiesWithinAABB(EntityRealityRift.class, AxisAlignedBB.getBoundingBox(xCoord - 2.0f, yCoord + 0.0f, zCoord - 2.0f, xCoord + 3.0f, yCoord + 10.0f, zCoord + 3.0f));
-    }
-
-    @Override
-    public Packet getDescriptionPacket()
-    {
-        return IvTileEntityHelper.getStandardDescriptionPacket(this);
+    public List<EntityRealityRift> getAffectedRifts() {
+        BlockPos pos = getPos();
+        return world.getEntitiesByClass(EntityRealityRift.class, new Box(
+                pos.getX() - 2.0f, pos.getY() + 0.0f, pos.getZ() - 2.0f,
+                pos.getX() + 3.0f, pos.getY() + 10, pos.getZ() + 3
+            ), EntityPredicates.VALID_ENTITY
+        );
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt)
-    {
-        readFromNBT(pkt.func_148857_g());
+    public void writeNbt(NbtCompound compound) {
+        compound.putFloat("currentRiftFraction", currentRiftFraction);
+        compound.putBoolean("isOpening", isOpening);
+        compound.putFloat("fractionOpen", fractionOpen);
+        compound.putBoolean("jarBroken", jarBroken);
+        compound.putBoolean("suckingRifts", suckingRifts);
+        compound.putFloat("fractionHandleUp", fractionHandleUp);
     }
 
     @Override
-    public void writeUpdateData(ByteBuf buffer, String context, Object... params)
-    {
-        if ("isOpening".equals(context))
-        {
-            buffer.writeBoolean(isOpening);
-        }
-        else if ("suckingRifts".equals(context))
-        {
-            buffer.writeBoolean(suckingRifts);
-        }
+    public void readNbt(NbtCompound compound) {
+        currentRiftFraction = compound.getFloat("currentRiftFraction");
+        isOpening = compound.getBoolean("isOpening");
+        fractionOpen = compound.getFloat("fractionOpen");
+        jarBroken = compound.getBoolean("jarBroken");
+        suckingRifts = compound.getBoolean("suckingRifts");
+        fractionHandleUp = compound.getFloat("fractionHandleUp");
     }
 
     @Override
-    public void readUpdateData(ByteBuf buffer, String context)
-    {
-        if ("isOpening".equals(context))
-        {
-            isOpening = buffer.readBoolean();
-        }
-        else if ("suckingRifts".equals(context))
-        {
-            suckingRifts = buffer.readBoolean();
-        }
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
-    public static class JarRiftConnection
-    {
-        public int riftID;
-        public double entityX;
-        public double entityY;
-        public double entityZ;
+    public static class JarRiftConnection {
+        public final UUID riftID;
+        public final Vec3d position;
 
-        public IvBezierPath3D bezierPath3D;
+        //public IvBezierPath3D bezierPath3D;
         public float fractionUp;
+
+        public JarRiftConnection(EntityRealityRift rift) {
+            riftID = rift.getUuid();
+            position = rift.getEyePos();
+        }
     }
 }

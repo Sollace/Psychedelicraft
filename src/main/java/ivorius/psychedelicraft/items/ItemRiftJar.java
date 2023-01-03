@@ -22,6 +22,14 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.block.entity.TileEntityRiftJar;
 
 public class ItemRiftJar extends BlockItem {
+    public static ItemStack createFilledRiftJar(float riftFraction, Item item) {
+        ItemStack stack = item.getDefaultStack();
+        if (riftFraction > 0) {
+            stack.getOrCreateNbt().putFloat("riftFraction", riftFraction);
+        }
+        return stack;
+    }
+
     public ItemRiftJar(Block block, Settings settings) {
         super(block, settings);
     }
@@ -60,13 +68,5 @@ public class ItemRiftJar extends BlockItem {
         }
 
         return "overflowing";
-    }
-
-    public static ItemStack createFilledRiftJar(float riftFraction, Item item) {
-        ItemStack stack = item.getDefaultStack();
-        if (riftFraction > 0) {
-            stack.getOrCreateNbt().putFloat("riftFraction", riftFraction);
-        }
-        return stack;
     }
 }

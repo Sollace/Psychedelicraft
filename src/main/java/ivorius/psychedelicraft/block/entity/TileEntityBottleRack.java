@@ -38,7 +38,7 @@ public class TileEntityBottleRack extends BlockEntityWithInventory {
     public ActionResult insertItem(ItemStack stack, BlockHitResult hit, Direction facing) {
         return getHitPos(hit, facing).map(pos -> {
             int slot = getSlot(pos);
-            if (getStack(slot).isEmpty()) {
+            if (getStack(slot).isEmpty() && isValid(slot, stack)) {
                 setStack(slot, stack);
                 return ActionResult.SUCCESS;
             }

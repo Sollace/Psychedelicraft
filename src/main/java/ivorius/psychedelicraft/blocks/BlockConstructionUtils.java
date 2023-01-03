@@ -37,6 +37,13 @@ public interface BlockConstructionUtils {
         return false;
     }
 
+    static Boolean always(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
+        return true;
+    }
+    static boolean always(BlockState state, BlockView world, BlockPos pos) {
+        return true;
+    }
+
     static Boolean canSpawnOnLeaves(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
         return type == EntityType.OCELOT || type == EntityType.PARROT;
     }

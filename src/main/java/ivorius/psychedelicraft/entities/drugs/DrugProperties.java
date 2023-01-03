@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DrugProperties implements NbtSerialisable {
     public static final UUID drugUUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1"); // Randomly gen'd
@@ -72,6 +73,13 @@ public class DrugProperties implements NbtSerialisable {
 
     public static DrugProperties of(PlayerEntity player) {
         return ((DrugPropertiesContainer)player).getDrugProperties();
+    }
+
+    public static Stream<DrugProperties> stream(Entity entity) {
+        if (entity instanceof DrugPropertiesContainer c) {
+            return Stream.of(c.getDrugProperties());
+        }
+        return Stream.empty();
     }
 
     public static Optional<DrugProperties> of(Entity entity) {

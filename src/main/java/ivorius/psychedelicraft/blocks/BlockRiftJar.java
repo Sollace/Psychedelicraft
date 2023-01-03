@@ -5,104 +5,61 @@
 
 package ivorius.psychedelicraft.blocks;
 
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.TileEntityRiftJar;
 import ivorius.psychedelicraft.items.ItemRiftJar;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
+import ivorius.psychedelicraft.items.PSItems;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.*;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-import java.util.Random;
+class BlockRiftJar extends BlockWithEntity {
+    private static final VoxelShape SHAPE = Block.createCuboidShape(1.6, 1.6, 1.6, 14.4, 12.8, 14.4);
 
-public class BlockRiftJar extends Block
-{
-    public BlockRiftJar(Settings settings)
-    {
+    public BlockRiftJar(Settings settings) {
         super(settings);
-
-        setStepSound(soundTypeStone);
-        setBlockBounds(0.1f, 0.1f, 0.1f, 0.9f, 0.8f, 0.9f);
     }
 
     @Override
-    public boolean isOpaqueCube()
-    {
-        return false;
+    @Deprecated
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
     }
 
     @Override
-    public boolean renderAsNormalBlock()
-    {
-        return false;
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return world.getBlockEntity(pos, PSBlockEntities.RIFT_JAR).map(be -> {
+            if (player.isSneaking()) {
+                be.toggleSuckingRifts();
+            } else {
+                be.toggleRiftJarOpen();
+            }
+            return ActionResult.SUCCESS;
+        }).orElse(ActionResult.FAIL);
     }
 
+    @Deprecated
     @Override
-    public int getRenderType()
-    {
-        return -1;
-    }
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock()) && !world.isClient) {
+            world.getBlockEntity(pos, PSBlockEntities.RIFT_JAR).ifPresent(be -> {
 
-    @Override
-    public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_)
-    {
-        return null;
-    }
-
-    @Override
-    public void breakBlock(World par1World, int par2, int par3, int par4, Block p_149749_5_, int p_149749_6_)
-    {
-        if (!par1World.isRemote)
-        {
-            TileEntity tileEntity = par1World.getTileEntity(par2, par3, par4);
-
-            if (tileEntity != null && tileEntity instanceof TileEntityRiftJar)
-            {
-                TileEntityRiftJar tileEntityRiftJar = (TileEntityRiftJar) tileEntity;
-
-                if (!tileEntityRiftJar.jarBroken)
-                {
-                    this.dropBlockAsItem(par1World, par2, par3, par4, ItemRiftJar.createFilledRiftJar(tileEntityRiftJar.currentRiftFraction, Item.getItemFromBlock(this)));
+                if (!be.jarBroken) {
+                    Block.dropStack(world, pos, ItemRiftJar.createFilledRiftJar(be.currentRiftFraction, PSItems.itemRiftJar));
                 }
-            }
+            });
         }
-
-        super.breakBlock(par1World, par2, par3, par4, p_149749_5_, p_149749_6_);
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
-    public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9)
-    {
-        TileEntity tileEntity = par1World.getTileEntity(par2, par3, par4);
-        if (tileEntity != null && tileEntity instanceof TileEntityRiftJar)
-        {
-            TileEntityRiftJar tileEntityRiftJar = (TileEntityRiftJar) tileEntity;
-
-            if (par5EntityPlayer.isSneaking())
-            {
-                tileEntityRiftJar.toggleSuckingRifts();
-            }
-            else
-            {
-                tileEntityRiftJar.toggleRiftJarOpen();
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean hasTileEntity(int metadata)
-    {
-        return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(World var1, int var2)
-    {
-        return new TileEntityRiftJar();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new TileEntityRiftJar(pos, state);
     }
 }

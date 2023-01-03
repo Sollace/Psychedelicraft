@@ -13,6 +13,7 @@ public interface PSBlockEntities {
             PSBlocks.birchDryingTable, PSBlocks.jungleDryingTable,
             PSBlocks.acaciaDryingTable, PSBlocks.darkOakDryingTable, PSBlocks.dryingTableIron));
     BlockEntityType<MashTubBlockEntity> MASH_TUB = create("mash_tub", BlockEntityType.Builder.create(MashTubBlockEntity::new, PSBlocks.mashTub));
+    BlockEntityType<TileEntityRiftJar> RIFT_JAR = create("rift_jar", BlockEntityType.Builder.create(TileEntityRiftJar::new, PSBlocks.riftJar));
     BlockEntityType<DistilleryBlockEntity> DISTILLERY = create("distillery", BlockEntityType.Builder.create(DistilleryBlockEntity::new, PSBlocks.distillery));
     BlockEntityType<TileEntityBottleRack> BOTTLE_RACK = create("bottle_rack", BlockEntityType.Builder.create(TileEntityBottleRack::new, PSBlocks.bottleRack));
     BlockEntityType<FlaskBlockEntity> FLASK = create("flask", BlockEntityType.Builder.create(FlaskBlockEntity::new, PSBlocks.flask));
