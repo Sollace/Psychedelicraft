@@ -67,6 +67,10 @@ public class Resovoir implements Inventory, NbtSerialisable {
     }
 
     public ItemStack deposit(ItemStack stack) {
+        return deposit(FluidContainerItem.of(stack).getMaxCapacity(stack), stack);
+    }
+
+    public ItemStack deposit(int levels, ItemStack stack) {
         var incoming = FluidContainerItem.of(stack);
         SimpleFluid fluid = incoming.getFluid(stack);
 
@@ -74,8 +78,7 @@ public class Resovoir implements Inventory, NbtSerialisable {
             return stack;
         }
 
-        int available = incoming.getFluidLevel(stack);
-
+        int available = Math.min(levels, incoming.getFluidLevel(stack));
         int newLevel = Math.min(getCapacity(), getLevel() + available);
         if (newLevel > getLevel()) {
             changeCallback.onFill(this, getLevel() - newLevel);
