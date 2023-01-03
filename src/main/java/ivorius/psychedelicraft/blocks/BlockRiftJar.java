@@ -18,9 +18,9 @@ import java.util.Random;
 
 public class BlockRiftJar extends Block
 {
-    public BlockRiftJar()
+    public BlockRiftJar(Settings settings)
     {
-        super(Material.clay);
+        super(settings);
 
         setStepSound(soundTypeStone);
         setBlockBounds(0.1f, 0.1f, 0.1f, 0.9f, 0.8f, 0.9f);

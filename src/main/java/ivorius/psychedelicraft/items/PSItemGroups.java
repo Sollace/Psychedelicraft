@@ -78,5 +78,14 @@ public interface PSItemGroups {
             })
             .build();
 
-    static void bootstrap() { }
+    static void bootstrap() {
+       /* dryingTableIron.setCreativeTab(Psychedelicraft.creativeTab);
+        psycheLeaves.setCreativeTab(Psychedelicraft.creativeTab);
+        psycheLog.setCreativeTab(Psychedelicraft.creativeTab);
+        psycheSapling.setCreativeTab(Psychedelicraft.creativeTab);
+        bottleRack.setCreativeTab(creativeTab);
+        wineGrapeLattice.setCreativeTab(Psychedelicraft.creativeTab);
+        dryingTable.setCreativeTab(Psychedelicraft.creativeTab);*/
+
+    }
 }

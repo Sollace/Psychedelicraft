@@ -49,14 +49,10 @@ public class PSBlocks {
     public static Block coffea = register("coffea_plant", new BlockCoffea(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     public static Block peyote = register("peyote_plant", new BlockPeyote(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
 
-    public static Block emptyLattice = register("empty_lattice", new Block(
-            Block.Settings.of(Material.WOOD).hardness(0.3F)
-    ));
-    public static Block wineGrapeLattice = register("wine_grape_lattice", new BlockWineGrapeLattice(
-            Block.Settings.of(Material.WOOD).hardness(0.3F).ticksRandomly().nonOpaque()
-    ));
+    public static Block emptyLattice = register("empty_lattice", new LatticeBlock(Block.Settings.of(Material.WOOD).hardness(0.3F).nonOpaque()));
+    public static Block wineGrapeLattice = register("wine_grape_lattice", new BlockWineGrapeLattice(Block.Settings.of(Material.WOOD).hardness(0.3F).ticksRandomly().nonOpaque()));
 
-    public static Block riftJar = register("rift_jar", new BlockRiftJar().setHardness(0.5f));
+    public static Block riftJar = register("rift_jar", new BlockRiftJar(Settings.of(Material.ORGANIC_PRODUCT).hardness(0.5F).sounds(BlockSoundGroup.STONE)));
     public static Block glitched = register("glitch", new BlockGlitched());
 
     static <T extends Block> T register(String name, T block) {
@@ -64,14 +60,6 @@ public class PSBlocks {
     }
 
     public static void bootstrap() {
-        dryingTableIron.setCreativeTab(Psychedelicraft.creativeTab);
-        psycheLeaves.setCreativeTab(Psychedelicraft.creativeTab);
-        psycheLog.setCreativeTab(Psychedelicraft.creativeTab);
-        psycheSapling.setCreativeTab(Psychedelicraft.creativeTab);
-        bottleRack.setCreativeTab(creativeTab);
-        wineGrapeLattice.setCreativeTab(Psychedelicraft.creativeTab);
-        dryingTable.setCreativeTab(Psychedelicraft.creativeTab);
-
         PSBlockEntities.bootstrap();
     }
 }
