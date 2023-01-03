@@ -7,15 +7,13 @@ package ivorius.psychedelicraft.worldgen;
 
 import ivorius.psychedelicraft.blocks.PSBlocks;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockSapling;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.sapling.SaplingGenerator;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.WorldGenAbstractTree;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 
-import java.util.Random;
-
-public class WorldGenJuniperTrees extends WorldGenAbstractTree
+public class WorldGenJuniperTrees extends SaplingGenerator
 {
     public boolean field_150531_a;
 
@@ -24,6 +22,11 @@ public class WorldGenJuniperTrees extends WorldGenAbstractTree
         super(par1);
 
         field_150531_a = false;
+    }
+
+    @Override
+    protected RegistryKey<ConfiguredFeature<?, ?>> getTreeFeature(Random random, boolean bees) {
+        return null;
     }
 
     @Override

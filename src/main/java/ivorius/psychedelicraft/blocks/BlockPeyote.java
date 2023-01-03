@@ -5,67 +5,45 @@
 
 package ivorius.psychedelicraft.blocks;
 
-import ivorius.psychedelicraft.block.entity.PeyoteBlockEntity;
-import ivorius.psychedelicraft.items.PSItems;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.common.EnumPlantType;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.IntProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.*;
 
-import java.util.ArrayList;
-import java.util.Random;
+public class BlockPeyote extends PlantBlock implements Fertilizable {
+    public static final IntProperty AGE = Properties.AGE_3;
+    public static final int MAX_AGE = 3;
 
-public class BlockPeyote extends BlockBush implements IGrowable
-{
-    public BlockPeyote()
-    {
-        super(Material.plants);
-        float var3 = 0.2F;
-        this.setBlockBounds(0.5F - var3, 0.0F, 0.5F - var3, 0.5F + var3, var3 * 2.0F, 0.5F + var3);
-        this.setStepSound(soundTypeGrass);
+    private static final VoxelShape SHAPE = Block.createCuboidShape(4.8, 0, 4.8, 11.2, 6.4, 11.2);
+
+    public BlockPeyote(Settings settings) {
+        super(settings);
     }
 
     @Override
-    public int getRenderType()
-    {
-        return -1;
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
     }
 
     @Override
-    public void updateTick(World world, int x, int y, int z, Random random)
-    {
-        super.updateTick(world, x, y, z, random); // Ticks about every minute
+    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+        return floor.isSideSolid(world, pos, Direction.UP, SideShapeType.CENTER);
+    }
 
-        int meta = world.getBlockMetadata(x, y, z);
-
-        if (meta < 3)
-        {
-            if (func_149851_a(world, x, y, z, world.isRemote) && random.nextInt(20) == 0)
-                this.growStep(world, random, x, y, z, false);
-        }
-        else
-        {
-            if (func_149851_a(world, x, y, z, world.isRemote) && random.nextInt(120) == 0)
-                this.growStep(world, random, x, y, z, false);
+    @Override
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (isFertilizable(world, pos, state, false)) {
+            if (world.random.nextInt(state.get(AGE) < MAX_AGE ? 20 : 120) == 0) {
+                applyGrowth(world, random, pos, state, false);
+            }
         }
     }
-
-    @Override
-    public boolean hasTileEntity(int metadata)
-    {
-        return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(World var1, int var2)
-    {
-        return new PeyoteBlockEntity();
-    }
-
+/*
     @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune)
     {
@@ -76,76 +54,39 @@ public class BlockPeyote extends BlockBush implements IGrowable
 
         return drops;
     }
+*/
 
-    public void growStep(World world, Random random, int x, int y, int z, boolean bonemeal)
-    {
-        int meta = world.getBlockMetadata(x, y, z);
-
-        if (meta >= 3)
-        {
-            byte var6 = 4;
-            int var8;
-            int var9;
-            int var10;
-
-            var8 = x + random.nextInt(3) - 1;
-            var9 = y + random.nextInt(2) - random.nextInt(2);
-            var10 = z + random.nextInt(3) - 1;
-
-            for (int var11 = 0; var11 < 4; ++var11)
-            {
-                if (world.isAirBlock(var8, var9, var10) && this.canBlockStay(world, var8, var9, var10))
-                {
-                    x = var8;
-                    y = var9;
-                    z = var10;
-                }
-
-                var8 = x + random.nextInt(3) - 1;
-                var9 = y + random.nextInt(2) - random.nextInt(2);
-                var10 = z + random.nextInt(3) - 1;
-            }
-
-            if (world.isAirBlock(var8, var9, var10) && this.canBlockStay(world, var8, var9, var10))
-            {
-                world.setBlock(var8, var9, var10, this, 0, 3);
-            }
+    public void applyGrowth(World world, Random random, BlockPos pos, BlockState state, boolean bonemeal) {
+        if (state.get(AGE) < MAX_AGE) {
+            world.setBlockState(pos, state.cycle(AGE), Block.NOTIFY_ALL);
+            return;
         }
-        else
-        {
-            world.setBlockMetadataWithNotify(x, y, z, meta + 1, 3);
-        }
+
+        BlockPos.Mutable plantingPos = new BlockPos.Mutable();
+        int i = 0;
+        do {
+            plantingPos.set(pos);
+            plantingPos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
+
+            if (world.isAir(plantingPos) && canPlaceAt(state, world, pos)) {
+                world.setBlockState(plantingPos, getDefaultState(), Block.NOTIFY_ALL);
+                return;
+            }
+        } while (++i < 4);
     }
 
     @Override
-    public boolean func_149851_a(World world, int x, int y, int z, boolean isRemote)
-    {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
         return true;
     }
 
     @Override
-    public boolean func_149852_a(World world, Random random, int x, int y, int z)
-    {
-        // shouldGrow
+    public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
         return true;
     }
 
     @Override
-    public void func_149853_b(World world, Random random, int x, int y, int z)
-    {
-        // grow
-        growStep(world, random, x, y, z, true);
-    }
-
-    @Override
-    protected boolean canPlaceBlockOn(Block block)
-    {
-        return block.isNormalCube();
-    }
-
-    @Override
-    public EnumPlantType getPlantType(IBlockAccess world, int x, int y, int z)
-    {
-        return EnumPlantType.Desert;
+    public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+        applyGrowth(world, random, pos, state, true);
     }
 }

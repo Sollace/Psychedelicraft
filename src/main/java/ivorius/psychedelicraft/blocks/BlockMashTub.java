@@ -5,39 +5,45 @@
 
 package ivorius.psychedelicraft.blocks;
 
-import ivorius.ivtoolkit.blocks.IvBlockMultiblock;
-import ivorius.ivtoolkit.blocks.IvTileEntityMultiBlock;
-import ivorius.psychedelicraft.PSMultiBlockHelper;
-import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
-import ivorius.psychedelicraft.client.screen.PSGuiHandler;
-import net.minecraft.block.AbstractBlock.Settings;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import ivorius.psychedelicraft.block.entity.*;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.*;
+import net.minecraft.entity.player.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
-
-import java.util.List;
 
 /**
  * Created by lukas on 27.10.14.
  */
-public class BlockMashTub extends BlockWithEntity {
+public class BlockMashTub extends BlockWithFluid<MashTubBlockEntity> {
+    private static final int SIZE = 15;
+    private static final int BORDER_SIZE = 1;
+    private static final int HEIGHT = 16;
+    private static final int WIDTH = SIZE * 2 + BORDER_SIZE * 2;
+
+    // TODO: (Sollace) MushTub is a 3x3 multi-block and this voxel shape reflects that
+    //           x from -15 to +30
+    private static final VoxelShape SHAPE = VoxelShapes.union(
+            createShape(-SIZE - BORDER_SIZE, -0.5F, -SIZE - BORDER_SIZE, WIDTH,       HEIGHT,      BORDER_SIZE),
+            createShape(-SIZE - BORDER_SIZE, -0.5F,  SIZE,               WIDTH,       HEIGHT,      BORDER_SIZE),
+            createShape(-SIZE - BORDER_SIZE, -0.5F, -SIZE - BORDER_SIZE, BORDER_SIZE, HEIGHT,      WIDTH),
+            createShape( SIZE,               -0.5F, -SIZE - BORDER_SIZE, BORDER_SIZE, HEIGHT,      WIDTH),
+            createShape(-SIZE - BORDER_SIZE, -0.5F, -SIZE - BORDER_SIZE, WIDTH,       BORDER_SIZE, WIDTH)
+    );
+    private static VoxelShape createShape(double x, double y, double z, double width, double height, double depth) {
+        return Block.createCuboidShape(x, y, z, width - x, height - y, depth - z);
+    }
+
     public BlockMashTub(Settings settings) {
         super(settings.nonOpaque());
     }
+
 /*
     @Override
     public IIcon getIcon(int par1, int par2)
@@ -46,78 +52,27 @@ public class BlockMashTub extends BlockWithEntity {
     }
 */
     @Override
-    public void parentBlockHarvestItem(World world, IvTileEntityMultiBlock tileEntity, int x, int y, int z, Block block, int metadata)
-    {
-        if (tileEntity instanceof MashTubBlockEntity)
-        {
-            MashTubBlockEntity tileEntityMashTub = (MashTubBlockEntity) tileEntity;
-            FluidStack fluidStack = tileEntityMashTub.drain(ForgeDirection.DOWN, MashTubBlockEntity.MASH_TUB_CAPACITY, true);
-            ItemStack stack = new ItemStack(this);
-
-            if (fluidStack != null && fluidStack.amount > 0)
-                ((IFluidContainerItem) stack.getItem()).fill(stack, fluidStack, true);
-
-            dropBlockAsItem(world, x, y, z, stack);
-        }
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float par7, float par8, float par9)
-    {
-        TileEntity tileEntity = getValidatedTotalParent(this, world, x, y, z);
-        if (tileEntity instanceof MashTubBlockEntity)
-        {
-            if (!world.isRemote)
-            {
-                MashTubBlockEntity tileEntityMashTub = (MashTubBlockEntity) tileEntity;
-                if (tileEntityMashTub.solidContents != null)
-                {
-                    dropBlockAsItem(world, x, y, z, tileEntityMashTub.solidContents);
-                    tileEntityMashTub.solidContents = null;
+    protected BlockEntityType<MashTubBlockEntity> getBlockEntityType() {
+        return PSBlockEntities.MASH_TUB;
+    }
 
-                    world.markBlockForUpdate(tileEntityMashTub.xCoord, tileEntityMashTub.yCoord, tileEntityMashTub.zCoord);
-                    tileEntity.markDirty();
-                }
-                else
-                    player.openGui(Psychedelicraft.instance, PSGuiHandler.woodenVatContainerID, world, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
+    @Override
+    protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
+        if (!blockEntity.solidContents.isEmpty()) {
+            Block.dropStack(world, pos, blockEntity.solidContents);
+            blockEntity.solidContents = ItemStack.EMPTY;
+            blockEntity.markDirty();
+            if (!world.isClient) {
+                ((ServerWorld)world).getChunkManager().markForUpdate(pos);
             }
-
-            return true;
+            return ActionResult.SUCCESS;
         }
 
-        return false;
-    }
-/*
-    @Override
-    public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB entityBB, List list, Entity entity)
-    {
-        IvTileEntityMultiBlock tileEntity = getValidatedTotalParent(this, world, x, y, z);
-        if (tileEntity instanceof TileEntityMashTub)
-        {
-            float size = 15.0f / 16.0f;
-            float borderSize = 1.0f / 16.0f;
-            float height = 16.0f / 16.0f;
-
-            addIntersectingCollisionBox(-size - borderSize, -.5f, -size - borderSize, size * 2 + borderSize * 2, height, borderSize, tileEntity, entityBB, list, x, y, z);
-            addIntersectingCollisionBox(-size - borderSize, -.5f, size, size * 2 + borderSize * 2, height, borderSize, tileEntity, entityBB, list, x, y, z);
-
-            addIntersectingCollisionBox(-size - borderSize, -.5f, -size - borderSize, borderSize, height, size * 2 + borderSize * 2, tileEntity, entityBB, list, x, y, z);
-            addIntersectingCollisionBox(size, -.5f, -size - borderSize, borderSize, height, size * 2 + borderSize * 2, tileEntity, entityBB, list, x, y, z);
-
-            addIntersectingCollisionBox(-size - borderSize, -.5f, -size - borderSize, size * 2 + borderSize * 2, borderSize, size * 2 + borderSize * 2, tileEntity, entityBB, list, x, y, z);
-        }
-    }
-
-    private void addIntersectingCollisionBox(double bbX, double bbY, double bbZ, double width, double height, double depth, IvTileEntityMultiBlock te, AxisAlignedBB entityBB, List list, int x, int y, int z)
-    {
-        AxisAlignedBB bb = PSMultiBlockHelper.intersection(te.getRotatedBB(bbX, bbY, bbZ, width, height, depth), x, y, z);
-        if (entityBB.intersectsWith(bb))
-            list.add(bb);
-    }
-*/
-    @Override
-    public TileEntity createNewTileEntity(World var1, int var2)
-    {
-        return new MashTubBlockEntity();
+        return ActionResult.PASS;
     }
 }

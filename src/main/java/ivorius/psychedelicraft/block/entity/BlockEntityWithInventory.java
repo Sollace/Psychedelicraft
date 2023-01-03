@@ -19,6 +19,8 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 
 public abstract class BlockEntityWithInventory extends BlockEntity implements SidedInventory {
+    protected static final int[] NO_SLOTS = new int[0];
+
     private final DefaultedList<ItemStack> inventory;
 
     public BlockEntityWithInventory(BlockEntityType<? extends BlockEntityWithInventory> type, BlockPos pos, BlockState state, int size) {

@@ -29,6 +29,7 @@ import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.EQUIPPE
 /**
  * Created by lukas on 23.10.14.
  */
+@Deprecated
 public class ItemRendererThatMakesFuckingSense implements IItemRenderer
 {
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");

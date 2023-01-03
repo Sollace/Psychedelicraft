@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -12,15 +13,13 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 
-import static ivorius.psychedelicraft.fluids.FluidHelper.MILLIBUCKETS_PER_LITER;
-
 import ivorius.psychedelicraft.fluids.*;
 
 /**
  * Created by lukas on 27.10.14.
  */
 public class MashTubBlockEntity extends FlaskBlockEntity {
-    public static final int MASH_TUB_CAPACITY = MILLIBUCKETS_PER_LITER * 16;
+    public static final int MASH_TUB_CAPACITY = FluidHelper.MILLIBUCKETS_PER_LITER * 16;
 
     public int timeFermented;
 
@@ -55,6 +54,13 @@ public class MashTubBlockEntity extends FlaskBlockEntity {
         }
     }
 
+    @Override
+    public void onDestroyed(ServerWorld world) {
+        super.onDestroyed(world);
+        if (!solidContents.isEmpty()) {
+            Block.dropStack(world, pos, solidContents);
+        }
+    }
 
     @Override
     public void onDrain(Resovoir resovoir) {

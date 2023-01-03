@@ -32,10 +32,6 @@ public interface PSRenderers {
         RenderingRegistry.registerEntityRenderingHandler(EntityMolotovCocktail.class, new RenderSnowball(PSItems.molotovCocktail));
         RenderingRegistry.registerEntityRenderingHandler(EntityRealityRift.class, new RenderRealityRift());
 
-        if (PSEntityList.villagerDealerProfessionID >= 0) {
-            VillagerRegistry.instance().registerVillagerSkin(PSEntityList.villagerDealerProfessionID, Psychedelicraft.id(Psychedelicraft.filePathTextures + "villagerDealer.png"));
-        }
-
         PSRenderStates.allocate();
         PSRenderStates.outputShaderInfo();
     }
