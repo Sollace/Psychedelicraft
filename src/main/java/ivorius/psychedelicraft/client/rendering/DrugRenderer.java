@@ -10,12 +10,13 @@ import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.entities.drugs.Drug;
 import ivorius.psychedelicraft.entities.drugs.DrugHallucination;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.block.Block;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -30,16 +31,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * Created by lukas on 17.02.14.
  */
 public class DrugRenderer implements IDrugRenderer {
-    public static void renderOverlay(float alpha, int width, int height, Identifier texture, float x0, float y0, float x1, float y1, int offset) {
+
+    public static void renderOverlay(float alpha, int width, int height, Identifier texture, float u0, float v0, float u1, float v1, int offset) {
         RenderSystem.setShaderColor(1, 1, 1, alpha);
-        bindTexture(texture);
+        RenderSystem.setShaderTexture(0, texture);
         Tessellator var8 = Tessellator.getInstance();
         BufferBuilder buffer = var8.getBuffer();
         buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        buffer.vertex(-offset, height + offset, -90.0D).texture(x0, y1).next();
-        buffer.vertex(width + offset, height + offset, -90.0D).texture(x1, y1).next();
-        buffer.vertex(width + offset, -offset, -90.0D).texture(x1, y0).next();
-        buffer.vertex(-offset, -offset, -90.0D).texture(x0, y0).next();
+        buffer.vertex(-offset, height + offset, -90.0D).texture(u0, v1).next();
+        buffer.vertex(width + offset, height + offset, -90.0D).texture(u1, v1).next();
+        buffer.vertex(width + offset, -offset, -90.0D).texture(u1, v0).next();
+        buffer.vertex(-offset, -offset, -90.0D).texture(u0, v0).next();
         var8.draw();
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
@@ -75,15 +77,15 @@ public class DrugRenderer implements IDrugRenderer {
     public void update(DrugProperties drugProperties, LivingEntity entity)
     {
         if (DrugProperties.hurtOverlayEnabled) {
-            experiencedHealth = IvMathHelper.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
+            experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
         }
 
         if (PSRenderStates.sunFlareIntensity > 0.0f) {
             effectLensFlare.updateLensFlares();
         }
 
-        Block bID = ActiveRenderInfo.getBlockAtEntityViewpoint(entity.world, entity, 1.0F);
-        wasInWater = bID.getMaterial() == Material.WATER;
+        wasInWater = entity.world.getFluidState(new BlockPos(entity.getEyePos())).isIn(FluidTags.WATER);
+        // TODO: (Sollace) The year is 2023. Can the client handle rain? I think it can now
         //wasInRain = player.worldObj.getRainStrength(1.0f) > 0.0f && player.worldObj.getPrecipitationHeight(MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY)) <= player.posY; //Client can't handle rain
 
         if (DrugProperties.waterOverlayEnabled) {
@@ -102,7 +104,7 @@ public class DrugRenderer implements IDrugRenderer {
         BlockPos pos = entity.getBlockPos();
         float newHeat = entity.world.getBiome(pos).value().getTemperature();
 
-        this.currentHeat = IvMathHelper.nearValue(currentHeat, newHeat, 0.01f, 0.01f);
+        this.currentHeat = MathUtils.nearValue(currentHeat, newHeat, 0.01f, 0.01f);
     }
 
     @ParametersAreNonnullByDefault
@@ -136,7 +138,7 @@ public class DrugRenderer implements IDrugRenderer {
     }
 
     @Override
-    public void renderOverlaysBeforeShaders(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
+    public void renderOverlaysBeforeShaders(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
         effectLensFlare.sunFlareIntensity = PSRenderStates.sunFlareIntensity;
 
         if (effectLensFlare.shouldApply(updateCounter + partialTicks)) {
@@ -145,14 +147,14 @@ public class DrugRenderer implements IDrugRenderer {
     }
 
     @Override
-    public void renderOverlaysAfterShaders(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
+    public void renderOverlaysAfterShaders(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.defaultBlendFunc();
 
         for (Drug drug : drugProperties.getAllDrugs()) {
-            drug.drawOverlays(partialTicks, entity, updateCounter, width, height, drugProperties);
+            drug.drawOverlays(matrices, partialTicks, entity, updateCounter, width, height, drugProperties);
         }
 
         if (DrugProperties.hurtOverlayEnabled && entity.hurtTime > 0 || experiencedHealth < 5F) {

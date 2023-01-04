@@ -6,16 +6,15 @@
 package ivorius.psychedelicraft.entities.drugs.effects;
 
 import ivorius.psychedelicraft.PSDamageSources;
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.DrugRenderer;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.texture.*;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -88,23 +87,19 @@ public class DrugAlcohol extends DrugSimple
     }
 
     @Override
-    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties)
-    {
+    public void drawOverlays(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
         float alcohol = (float)getActiveValue();
-        if (alcohol > 0)
-        {
-            float overlayAlpha = (MathHelper.sin(updateCounter / 80F) * alcohol * 0.5F + alcohol);
-            if (overlayAlpha > 0.8F) {
-                overlayAlpha = 0.8F;
-            }
-
-            IIcon portalIcon = Blocks.NETHER_PORTAL.getIcon(0, 0);
-            DrugRenderer.renderOverlay(overlayAlpha * 0.25f, width, height, TextureMap.locationBlocksTexture,
-                    portalIcon.getMinU(),
-                    portalIcon.getMinV(),
-                    portalIcon.getMaxU(),
-                    portalIcon.getMaxV(), 0);
+        if (alcohol <= 0) {
+            return;
         }
+
+        float overlayAlpha = Math.min(0.8F, (MathHelper.sin(updateCounter / 80F) * alcohol * 0.5F + alcohol));
+        Sprite sprite = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
+        DrugRenderer.renderOverlay(overlayAlpha * 0.25f, width, height, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                sprite.getMinU(),
+                sprite.getMinV(),
+                sprite.getMaxU(),
+                sprite.getMaxV(), 0);
     }
 
 }

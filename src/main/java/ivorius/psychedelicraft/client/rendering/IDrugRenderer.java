@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.client.rendering;
 
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 
 /**
@@ -16,9 +17,9 @@ public interface IDrugRenderer {
 
     void distortScreen(float par1, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties);
 
-    void renderOverlaysAfterShaders(float par1, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
+    void renderOverlaysAfterShaders(MatrixStack matrices, float par1, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
 
-    void renderOverlaysBeforeShaders(float par1, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
+    void renderOverlaysBeforeShaders(MatrixStack matrices, float par1, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
 
     void renderAllHallucinations(float par1, DrugProperties drugProperties);
 

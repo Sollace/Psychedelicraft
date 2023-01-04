@@ -293,9 +293,9 @@ public class DrugProperties implements NbtSerialisable {
     private void spawnRiftAtPlayer() {
         EntityRealityRift rift = PSEntityList.REALITY_RIFT.create(entity.world);
 
-        double xP = (entity.getRandom().nextDouble() - 0.5) * 100.0;
-        double yP = (entity.getRandom().nextDouble() - 0.5) * 100.0;
-        double zP = (entity.getRandom().nextDouble() - 0.5) * 100.0;
+        double xP = (entity.getRandom().nextDouble() - 0.5) * 100;
+        double yP = (entity.getRandom().nextDouble() - 0.5) * 100;
+        double zP = (entity.getRandom().nextDouble() - 0.5) * 100;
 
         rift.setPosition(entity.getX() + xP, entity.getY() + yP, entity.getZ() + zP);
         entity.world.spawnEntity(rift);
@@ -325,7 +325,7 @@ public class DrugProperties implements NbtSerialisable {
                 }
 
                 if (inf != null) {
-                    inf.readFromNBT(compound);
+                    inf.fromNbt(compound);
                     addToDrug(inf);
                 }
             }
@@ -343,8 +343,7 @@ public class DrugProperties implements NbtSerialisable {
 
         NbtList influenceTagList = new NbtList();
         for (DrugInfluence influence : influences) {
-            NbtCompound infCompound = new NbtCompound();
-            influence.writeToNBT(infCompound);
+            NbtCompound infCompound = influence.toNbt();
             infCompound.putString("influenceClass", DrugRegistry.getID(influence.getClass()));
             influenceTagList.add(infCompound);
         }

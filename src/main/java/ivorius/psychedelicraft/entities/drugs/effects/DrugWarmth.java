@@ -6,10 +6,10 @@
 package ivorius.psychedelicraft.entities.drugs.effects;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.rendering.DrugRenderer;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
@@ -19,37 +19,33 @@ import com.mojang.blaze3d.systems.RenderSystem;
 /**
  * Created by lukas on 01.11.14.
  */
-public class DrugWarmth extends DrugSimple
-{
-    public Identifier coffeeOverlay = Psychedelicraft.id(Psychedelicraft.filePathTextures + "coffeeOverlayBlend.png");
+public class DrugWarmth extends DrugSimple {
+    private static final Identifier COFFEE_OVERLAY = Psychedelicraft.id(Psychedelicraft.filePathTextures + "coffeeOverlayBlend.png");
 
     public DrugWarmth(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus, true);
     }
 
     @Override
-    public float bloomHallucinationStrength()
-    {
-        return (float)getActiveValue() * 0.5f;
+    public float bloomHallucinationStrength() {
+        return (float)getActiveValue() * 0.5F;
     }
 
     @Override
-    public float superSaturationHallucinationStrength()
-    {
-        return (float)getActiveValue() * 0.1f;
+    public float superSaturationHallucinationStrength() {
+        return (float)getActiveValue() * 0.1F;
     }
 
     @Override
-    public void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
+    public void drawOverlays(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
         float warmth = (float)getActiveValue();
         if (warmth > 0) {
-            renderWarmthOverlay(warmth * 0.5f, width, height, updateCounter);
+            renderWarmthOverlay(matrices, warmth * 0.5F, width, height, updateCounter);
         }
     }
 
-    private void renderWarmthOverlay(float alpha, int width, int height, int ticks)
-    {
-        DrugRenderer.bindTexture(coffeeOverlay);
+    private void renderWarmthOverlay(MatrixStack matrices, float alpha, int width, int height, int ticks) {
+        RenderSystem.setShaderTexture(0, COFFEE_OVERLAY);
         Tessellator var8 = Tessellator.getInstance();
         BufferBuilder buffer = var8.getBuffer();
 

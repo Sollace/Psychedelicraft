@@ -17,7 +17,6 @@ public class DrugInfluenceHarmonium extends DrugInfluence {
 
     public DrugInfluenceHarmonium(String drugName, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color) {
         super(drugName, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
-
         this.color = color;
     }
 
@@ -27,8 +26,7 @@ public class DrugInfluenceHarmonium extends DrugInfluence {
     }
 
     @Override
-    public void addToDrug(DrugProperties drugProperties, double value)
-    {
+    public void addToDrug(DrugProperties drugProperties, double value) {
         super.addToDrug(drugProperties, value);
 
         Drug drug = drugProperties.getDrug(getDrugName());
@@ -44,22 +42,18 @@ public class DrugInfluenceHarmonium extends DrugInfluence {
     }
 
     @Override
-    public void writeToNBT(NbtCompound compound)
-    {
-        super.writeToNBT(compound);
-
-        compound.putFloat("color[0]", color[0]);
-        compound.putFloat("color[1]", color[1]);
-        compound.putFloat("color[2]", color[2]);
-    }
-
-    @Override
-    public void readFromNBT(NbtCompound compound)
-    {
-        super.readFromNBT(compound);
-
+    public void fromNbt(NbtCompound compound) {
+        super.fromNbt(compound);
         color[0] = compound.getFloat("color[0]");
         color[1] = compound.getFloat("color[1]");
         color[2] = compound.getFloat("color[2]");
+    }
+
+    @Override
+    public void toNbt(NbtCompound compound) {
+        super.toNbt(compound);
+        compound.putFloat("color[0]", color[0]);
+        compound.putFloat("color[1]", color[1]);
+        compound.putFloat("color[2]", color[2]);
     }
 }

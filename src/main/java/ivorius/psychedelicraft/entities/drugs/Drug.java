@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.entities.drugs;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 
 public interface Drug extends NbtSerialisable
@@ -77,5 +78,5 @@ public interface Drug extends NbtSerialisable
     float motionBlur();
 
     @Environment(EnvType.CLIENT)
-    void drawOverlays(float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
+    void drawOverlays(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
 }
