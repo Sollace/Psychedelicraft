@@ -32,7 +32,5 @@ public interface PSRenderers {
 
         EntityRendererRegistry.register(PSEntityList.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
         EntityRendererRegistry.register(PSEntityList.REALITY_RIFT, RenderRealityRift::new);
-        //PSRenderStates.allocate();
-        //PSRenderStates.outputShaderInfo();
     }
 }

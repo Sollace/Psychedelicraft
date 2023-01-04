@@ -5,62 +5,64 @@
 
 package ivorius.psychedelicraft.client.rendering;
 
-import net.minecraft.util.MouseFilter;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.SmoothUtil;
 
 /**
  * Created by lukas on 23.02.14.
+ * Updated by Sollace on 4 Jan 2023
  */
-public class SmoothCameraHelper
-{
-    public static SmoothCameraHelper instance = new SmoothCameraHelper();
+public class SmoothCameraHelper {
+    public static final SmoothCameraHelper INSTANCE = new SmoothCameraHelper();
 
-    public float smoothCamFilterX;
-    public float smoothCamFilterY;
-    public float smoothCamPartialTicks;
-    public float smoothCamYaw;
-    public float smoothCamPitch;
-    public MouseFilter mouseFilterXAxis = new MouseFilter();
-    public MouseFilter mouseFilterYAxis = new MouseFilter();
+    private final SmoothUtil xSmoother = new SmoothUtil();
+    private final SmoothUtil ySmoother = new SmoothUtil();
 
-    public void update(float mouseSensitivity, float multiplier)
-    {
-        float f = mouseSensitivity * 0.6F + 0.2F;
-        float f1 = f * f * f * 8.0F;
-        this.smoothCamFilterX = this.mouseFilterXAxis.smooth(this.smoothCamYaw, multiplier * f1);
-        this.smoothCamFilterY = this.mouseFilterYAxis.smooth(this.smoothCamPitch, multiplier * f1);
-        this.smoothCamPartialTicks = 0.0F;
-        this.smoothCamYaw = 0.0F;
-        this.smoothCamPitch = 0.0F;
+    private float lastTickDelta;
+
+    private float cursorDeltaX;
+    private float cursorDeltaY;
+
+    private float smoothedCursorX;
+    private float smoothedCursorY;
+
+    public void update(float multiplier) {
+        float speed = getSpeed();
+        smoothedCursorX = (float)this.xSmoother.smooth(cursorDeltaX, multiplier * speed);
+        smoothedCursorY = (float)this.ySmoother.smooth(cursorDeltaY, multiplier * speed);
+        lastTickDelta = 0;
+        cursorDeltaX = 0;
+        cursorDeltaY = 0;
     }
 
-    public float[] getAngles(float mouseSensitivity, float partialTicks, float deltaX, float deltaY, boolean invertMouse)
-    {
-        int b0 = invertMouse ? -1 : 1;
+    public float[] getAngles(float deltaX, float deltaY) {
+        float speed = getSpeed();
+        this.cursorDeltaX += (deltaX * speed);
+        this.cursorDeltaY += (deltaY * speed);
 
-        float f1 = mouseSensitivity * 0.6F + 0.2F;
-        float f2 = f1 * f1 * f1 * 8.0F;
-        float f3 = deltaX * f2;
-        float f4 = deltaY * f2;
-
-        this.smoothCamYaw += f3;
-        this.smoothCamPitch += f4;
-        float f5 = partialTicks - this.smoothCamPartialTicks;
-        this.smoothCamPartialTicks = partialTicks;
-        float nf3 = this.smoothCamFilterX * f5;
-        float nf4 = this.smoothCamFilterY * f5;
-
-        return new float[]{nf3, nf4 * b0};
+        float tickDelta = MinecraftClient.getInstance().getTickDelta();
+        float progress = tickDelta - lastTickDelta;
+        lastTickDelta = tickDelta;
+        return new float[]{
+            smoothedCursorX * progress,
+            smoothedCursorY * progress * getYSignum()
+        };
     }
 
-    public float[] getOriginalAngles(float mouseSensitivity, float partialTicks, float deltaX, float deltaY, boolean invertMouse)
-    {
-        int b0 = invertMouse ? -1 : 1;
+    public float[] getOriginalAngles(float deltaX, float deltaY) {
+        float speed = getSpeed();
+        return new float[] {
+            deltaX * speed,
+            deltaY * speed * getYSignum()
+        };
+    }
 
-        float f1 = mouseSensitivity * 0.6F + 0.2F;
-        float f2 = f1 * f1 * f1 * 8.0F;
-        float f3 = deltaX * f2;
-        float f4 = deltaY * f2;
+    private float getYSignum() {
+        return MinecraftClient.getInstance().options.getInvertYMouse().getValue() ? -1 : 1;
+    }
 
-        return new float[]{f3, f4 * b0};
+    private float getSpeed() {
+        float sensitivity = MinecraftClient.getInstance().options.getMouseSensitivity().getValue().floatValue() * 0.6F + 0.2F;
+        return sensitivity * sensitivity * sensitivity * 8;
     }
 }

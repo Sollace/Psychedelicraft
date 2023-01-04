@@ -15,7 +15,7 @@ import net.minecraft.entity.LivingEntity;
 public interface IDrugRenderer {
     void update(DrugProperties drugProperties, LivingEntity entity);
 
-    void distortScreen(float par1, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties);
+    void distortScreen(float tickDelta, LivingEntity entity, int age, DrugProperties drugProperties);
 
     void renderOverlaysAfterShaders(MatrixStack matrices, float par1, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties);
 

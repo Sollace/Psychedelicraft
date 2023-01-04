@@ -21,7 +21,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
 
             if (!client.isPaused()) {
                 DrugProperties.of(client.cameraEntity).ifPresent(drugProperties -> {
-                    SmoothCameraHelper.instance.update(client.options.getMouseSensitivity().getValue().floatValue(), DrugEffectInterpreter.getSmoothVision(drugProperties));
+                    SmoothCameraHelper.INSTANCE.update(DrugEffectInterpreter.getSmoothVision(drugProperties));
                 });
             }
         });

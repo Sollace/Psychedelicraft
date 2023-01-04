@@ -24,8 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 public class DrugProperties implements NbtSerialisable {
     public static final UUID drugUUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1"); // Randomly gen'd
@@ -95,6 +94,14 @@ public class DrugProperties implements NbtSerialisable {
 
     public void addDrug(String drugName, Drug drug) {
         drugs.put(drugName, drug);
+    }
+
+    /**
+     * TODO: Client separation
+     * @return
+     */
+    public Optional<IDrugRenderer> getDrugRenderer() {
+        return Optional.ofNullable(renderer);
     }
 
     @Nullable

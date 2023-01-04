@@ -87,7 +87,6 @@ public class PSRenderStates {
         currentRenderPass = null;
     }
 
-    @Deprecated(since = "hook")
     public static boolean setupCameraTransform() {
         if ("Shadows".equals(currentRenderPass)/* || (MinecraftClient.getInstance().ingameGUI.getUpdateCounter() % 100 > 2)*/) {
             PsycheShadowHelper.setupSunGLTransform();
