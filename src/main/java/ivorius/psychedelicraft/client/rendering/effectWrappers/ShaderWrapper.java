@@ -5,71 +5,49 @@
 
 package ivorius.psychedelicraft.client.rendering.effectWrappers;
 
-import ivorius.ivtoolkit.rendering.IvDepthBuffer;
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
-import ivorius.ivtoolkit.rendering.IvShaderInstance2D;
-import ivorius.ivtoolkit.rendering.IvShaderInstanceMC;
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.rendering.ScreenEffect;
+import ivorius.psychedelicraft.client.rendering.shaders.IvShaderInstance2D;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.util.Identifier;
 
 /**
  * Created by lukas on 26.04.14.
  */
 @Deprecated(since = "Needs replacement")
-public abstract class ShaderWrapper<ShaderInstance extends IvShaderInstance2D> implements EffectWrapper
-{
-    public ShaderInstance shaderInstance;
+public abstract class ShaderWrapper<ShaderInstance extends IvShaderInstance2D> implements EffectWrapper {
+    public final ShaderInstance shaderInstance;
 
-    public ResourceLocation vertexShaderFile;
-    public ResourceLocation fragmentShaderFile;
+    public final Identifier vertexShaderFile;
+    public final Identifier fragmentShaderFile;
 
-    public String utils;
+    public final String utils;
 
-    public ShaderWrapper(ShaderInstance shaderInstance, ResourceLocation vertexShaderFile, ResourceLocation fragmentShaderFile, String utils)
-    {
+    public ShaderWrapper(ShaderInstance shaderInstance, Identifier vertexShaderFile, Identifier fragmentShaderFile, String utils) {
         this.shaderInstance = shaderInstance;
         this.vertexShaderFile = vertexShaderFile;
         this.fragmentShaderFile = fragmentShaderFile;
         this.utils = utils;
     }
 
-    public static ResourceLocation getRL(String shaderFile)
-    {
-        return new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + shaderFile);
+    public static Identifier getRL(String shaderFile) {
+        return Psychedelicraft.id(Psychedelicraft.filePathShaders + shaderFile);
     }
 
     @Override
-    public void alloc()
-    {
-        if (PSRenderStates.shader2DEnabled)
-        {
-            IvShaderInstanceMC.trySettingUpShader(shaderInstance, vertexShaderFile, fragmentShaderFile, utils);
-        }
-    }
-
-    @Override
-    public void dealloc()
-    {
-        shaderInstance.deleteShader();
-    }
-
-    @Override
-    public void apply(float partialTicks, IvOpenGLTexturePingPong pingPong, IvDepthBuffer depthBuffer)
-    {
-        if (PSRenderStates.shader2DEnabled)
-        {
-            Minecraft mc = Minecraft.getMinecraft();
-            int ticks = mc.renderViewEntity.ticksExisted;
+    public void apply(float partialTicks, ScreenEffect.PingPong pingPong, Framebuffer depthBuffer) {
+        if (PSRenderStates.shader2DEnabled) {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            int ticks = mc.cameraEntity.age;
             setShaderValues(partialTicks, ticks, depthBuffer);
 
-            if (shaderInstance.shouldApply(ticks + partialTicks))
-            {
-                shaderInstance.apply(mc.displayWidth, mc.displayHeight, ticks + partialTicks, pingPong);
+            if (shaderInstance.shouldApply(ticks + partialTicks)) {
+                shaderInstance.apply(mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight(), ticks + partialTicks, pingPong);
             }
         }
     }
 
-    public abstract void setShaderValues(float partialTicks, int ticks, IvDepthBuffer depthBuffer);
+    public abstract void setShaderValues(float partialTicks, int ticks, Framebuffer depthBuffer);
 }

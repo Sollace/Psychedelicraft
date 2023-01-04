@@ -5,21 +5,18 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
-import ivorius.ivtoolkit.rendering.IvShaderInstance2D;
-import net.minecraft.client.renderer.OpenGlHelper;
 import org.apache.logging.log4j.Logger;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBindTexture;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 
 /**
  * Created by lukas on 18.02.14.
  */
-public class ShaderDistortionMap extends IvShaderInstance2D
-{
+public class ShaderDistortionMap extends IvShaderInstance2D {
     public float strength;
-    public float alpha = 1.0f;
+    public float alpha = 1;
 
     public int noiseTextureIndex0;
     public int noiseTextureIndex1;
@@ -27,41 +24,34 @@ public class ShaderDistortionMap extends IvShaderInstance2D
     public float[] texTranslation0;
     public float[] texTranslation1;
 
-    public ShaderDistortionMap(Logger logger)
-    {
+    public ShaderDistortionMap(Logger logger) {
         super(logger);
     }
 
     @Override
-    public boolean shouldApply(float ticks)
-    {
-        return strength > 0.0f && alpha > 0.0f && noiseTextureIndex0 > 0 && noiseTextureIndex1 > 0 && super.shouldApply(ticks);
+    public boolean shouldApply(float ticks) {
+        return strength > 0
+                && alpha > 0
+                && noiseTextureIndex0 > 0
+                && noiseTextureIndex1 > 0;
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, IvOpenGLTexturePingPong pingPong)
-    {
+    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
         useShader();
+        RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE + 1, noiseTextureIndex0);
+        RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE + 2, noiseTextureIndex1);
+        RenderSystem.activeTexture(GLStateProxy.DEFAULT_TEXTURE);
 
-        OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit + 1);
-        glBindTexture(GL_TEXTURE_2D, noiseTextureIndex0);
-        OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
-        OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit + 2);
-        glBindTexture(GL_TEXTURE_2D, noiseTextureIndex1);
-        OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
-
-        for (int i = 0; i < 2; i++)
-        {
+        for (int i = 0; i < 2; i++) {
             setUniformInts("tex" + i, i);
         }
         setUniformInts("noiseTex0", 2);
         setUniformInts("noiseTex1", 3);
-
         setUniformFloats("totalAlpha", alpha);
         setUniformFloats("strength", strength);
         setUniformFloats("texTranslation0", texTranslation0);
         setUniformFloats("texTranslation1", texTranslation1);
-
         drawFullScreen(screenWidth, screenHeight, pingPong);
 
         stopUsingShader();

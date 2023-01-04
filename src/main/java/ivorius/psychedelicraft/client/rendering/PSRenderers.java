@@ -7,7 +7,6 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.blocks.*;
 import ivorius.psychedelicraft.client.rendering.blocks.*;
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.entities.*;
 import ivorius.psychedelicraft.items.PSItems;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;

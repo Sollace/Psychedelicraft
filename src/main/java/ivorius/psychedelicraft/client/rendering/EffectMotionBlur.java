@@ -5,11 +5,6 @@
 
 package ivorius.psychedelicraft.client.rendering;
 
-import ivorius.ivtoolkit.rendering.Iv2DScreenEffect;
-import ivorius.ivtoolkit.rendering.IvOpenGLHelper;
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
-import ivorius.ivtoolkit.rendering.IvRenderHelper;
-import net.minecraft.client.renderer.OpenGlHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;
@@ -19,7 +14,7 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * Created by lukas on 21.02.14.
  */
-public class EffectMotionBlur implements Iv2DScreenEffect
+public class EffectMotionBlur implements ScreenEffect
 {
     public int[] motionBlurCacheTextures;
     public boolean[] motionBlurCacheTexturesInitialized;
@@ -40,7 +35,7 @@ public class EffectMotionBlur implements Iv2DScreenEffect
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, IvOpenGLTexturePingPong pingPong)
+    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong)
     {
         if (motionBlur > 0.0f)
         {

@@ -56,4 +56,28 @@ public interface MathUtils {
             | (MathHelper.floor(green * 255 + 0.5F) << 8)
             | MathHelper.floor(blue * 255 + 0.5F);
     }
+
+    static float mixEaseInOut(float v1, float v2, float delta) {
+        return cubicMix(v1, v1, v2, v2, delta);
+    }
+
+    static double mixEaseInOut(double v1, double v2, double delta) {
+        return cubicMix(v1, v1, v2, v2, delta);
+    }
+
+    static double easeZeroToOne(double delta) {
+        return cubicMix(0, 0, 1, 1, MathHelper.clamp(delta, 0, 1));
+    }
+
+    static float easeZeroToOne(float delta) {
+        return cubicMix(0, 0, 1, 1, MathHelper.clamp(delta, 0, 1));
+    }
+
+    static float cubicMix(float v1, float v2, float v3, float v4, float delta) {
+        return (float)MathHelper.lerp3(delta, delta, delta, v1, v2, v2, v3, v2, v3, v3, v4);
+    }
+
+    static double cubicMix(double v1, double v2, double v3, double v4, double delta) {
+        return MathHelper.lerp3(delta, delta, delta, v1, v2, v2, v3, v2, v3, v3, v4);
+    }
 }

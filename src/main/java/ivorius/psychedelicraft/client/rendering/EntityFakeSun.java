@@ -5,55 +5,44 @@
 
 package ivorius.psychedelicraft.client.rendering;
 
-import net.minecraft.entity.EntityLivingBase;
+import java.util.List;
+
+import net.minecraft.entity.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Arm;
 
 /**
  * Created by lukas on 25.03.14.
  */
-public class EntityFakeSun extends EntityLivingBase
-{
-    public EntityLivingBase prevViewEntity;
+public class EntityFakeSun extends LivingEntity {
+    public Entity prevViewEntity;
 
-    public EntityFakeSun(World par1World)
-    {
-        super(par1World);
-    }
-
-    public EntityFakeSun(EntityLivingBase prevViewEntity)
-    {
-        super(prevViewEntity.worldObj);
-
+    public EntityFakeSun(Entity prevViewEntity) {
+        super(EntityType.PLAYER, prevViewEntity.world);
         this.prevViewEntity = prevViewEntity;
 
-        NBTTagCompound cmp = new NBTTagCompound();
-        prevViewEntity.writeToNBT(cmp);
-        readFromNBT(cmp);
+        NbtCompound cmp = new NbtCompound();
+        prevViewEntity.writeNbt(cmp);
+        readNbt(cmp);
     }
 
     @Override
-    public ItemStack getHeldItem()
-    {
-        return null;
+    public Iterable<ItemStack> getArmorItems() {
+        return List.of();
     }
 
     @Override
-    public ItemStack getEquipmentInSlot(int var1)
-    {
-        return null;
+    public ItemStack getEquippedStack(EquipmentSlot var1) {
+        return ItemStack.EMPTY;
     }
 
     @Override
-    public void setCurrentItemOrArmor(int var1, ItemStack var2)
-    {
-
+    public void equipStack(EquipmentSlot var1, ItemStack var2) {
     }
 
     @Override
-    public ItemStack[] getLastActiveItems()
-    {
-        return new ItemStack[0];
+    public Arm getMainArm() {
+        return Arm.LEFT;
     }
 }

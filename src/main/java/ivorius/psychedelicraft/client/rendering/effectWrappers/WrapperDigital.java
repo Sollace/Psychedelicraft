@@ -5,56 +5,40 @@
 
 package ivorius.psychedelicraft.client.rendering.effectWrappers;
 
-import ivorius.ivtoolkit.rendering.IvDepthBuffer;
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
+import org.jetbrains.annotations.Nullable;
+
+import ivorius.psychedelicraft.client.rendering.ScreenEffect;
+import net.minecraft.client.gl.Framebuffer;
 
 /**
  * Created by lukas on 26.04.14.
  */
-public class WrapperDigital implements EffectWrapper
-{
-    public WrapperDigitalMD digitalMD;
-    public WrapperDigitalPD digitalPD;
+public class WrapperDigital implements EffectWrapper {
+    private final WrapperDigitalMD digitalMD;
+    private final WrapperDigitalPD digitalPD;
 
-    public WrapperDigital(String utils)
-    {
+    public WrapperDigital(String utils) {
         digitalMD = new WrapperDigitalMD(utils);
         digitalPD = new WrapperDigitalPD(utils);
     }
 
     @Override
-    public void alloc()
-    {
-        digitalMD.alloc();
-        digitalPD.alloc();
-    }
-
-    @Override
-    public void dealloc()
-    {
-        digitalMD.dealloc();
-        digitalPD.dealloc();
-    }
-
-    @Override
-    public void update()
-    {
+    public void update() {
         digitalMD.update();
         digitalPD.update();
     }
 
     @Override
-    public void apply(float partialTicks, IvOpenGLTexturePingPong pingPong, IvDepthBuffer depthBuffer)
-    {
-        if (depthBuffer != null)
+    public void apply(float partialTicks, ScreenEffect.PingPong pingPong, @Nullable Framebuffer depthBuffer) {
+        if (depthBuffer != null) {
             digitalPD.apply(partialTicks, pingPong, depthBuffer);
-        else
+        } else {
             digitalMD.apply(partialTicks, pingPong, depthBuffer);
+        }
     }
 
     @Override
-    public boolean wantsDepthBuffer(float partialTicks)
-    {
+    public boolean wantsDepthBuffer(float partialTicks) {
         return digitalPD.wantsDepthBuffer(partialTicks) || digitalMD.wantsDepthBuffer(partialTicks);
     }
 }

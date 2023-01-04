@@ -16,18 +16,15 @@ import java.util.Random;
  * Created by lukas on 25.02.14.
  */
 @ParametersAreNonnullByDefault
-public class DrugEffectInterpreter
-{
-    public static float getSmoothVision(DrugProperties drugProperties)
-    {
+public interface DrugEffectInterpreter {
+    static float getSmoothVision(DrugProperties drugProperties) {
         float smoothVision = 0.0f;
         for (Drug drug : drugProperties.getAllDrugs())
             smoothVision += drug.headMotionInertness();
         return  1.0f / (1.0f + smoothVision);
     }
 
-    public static float getCameraShiftY(DrugProperties drugProperties, float ticks)
-    {
+    static float getCameraShiftY(DrugProperties drugProperties, float ticks) {
         float amplitude = 0.0f;
 
         for (Drug drug : drugProperties.getAllDrugs())
@@ -39,8 +36,7 @@ public class DrugEffectInterpreter
         return 0.0f;
     }
 
-    public static float getCameraShiftX(DrugProperties drugProperties, float ticks)
-    {
+    static float getCameraShiftX(DrugProperties drugProperties, float ticks) {
         float amplitude = 0.0f;
 
         for (Drug drug : drugProperties.getAllDrugs())
@@ -52,13 +48,11 @@ public class DrugEffectInterpreter
         return 0.0f;
     }
 
-    public static float getHandShiftY(DrugProperties drugProperties, float ticks)
-    {
+    static float getHandShiftY(DrugProperties drugProperties, float ticks) {
         return getCameraShiftY(drugProperties, ticks) * 0.3f;
     }
 
-    public static float getHandShiftX(DrugProperties drugProperties, float ticks)
-    {
+    static float getHandShiftX(DrugProperties drugProperties, float ticks) {
         float amplitude = 0.0f;
 
         for (Drug drug : drugProperties.getAllDrugs())

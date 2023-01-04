@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
-import ivorius.ivtoolkit.rendering.IvShaderInstance2D;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -29,7 +27,7 @@ public class ShaderDoubleVision extends IvShaderInstance2D
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, IvOpenGLTexturePingPong pingPong)
+    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong)
     {
         useShader();
 

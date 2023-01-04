@@ -5,58 +5,40 @@
 
 package ivorius.psychedelicraft.client.rendering.effectWrappers;
 
-import ivorius.ivtoolkit.rendering.IvDepthBuffer;
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.client.rendering.shaders.ShaderDistortionMap;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.util.Identifier;
 
 /**
  * Created by lukas on 26.04.14.
  */
-public class WrapperWaterOverlay extends ShaderWrapper<ShaderDistortionMap>
-{
-    public ResourceLocation waterDropletsDistortionTexture;
+public class WrapperWaterOverlay extends ShaderWrapper<ShaderDistortionMap> {
+    public Identifier waterDropletsDistortionTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "waterDistortion.png");
 
-    public WrapperWaterOverlay(String utils)
-    {
+    public WrapperWaterOverlay(String utils) {
         super(new ShaderDistortionMap(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderDistortionMap.frag"), utils);
-
-        waterDropletsDistortionTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "waterDistortion.png");
     }
 
     @Override
-    public void setShaderValues(float partialTicks, int ticks, IvDepthBuffer depthBuffer)
-    {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(Minecraft.getMinecraft().renderViewEntity);
+    public void setShaderValues(float tickDelta, int ticks, @Nullable Framebuffer buffer) {
+        DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
-        if (drugProperties != null && DrugProperties.waterOverlayEnabled)
-        {
+        if (drugProperties != null && DrugProperties.waterOverlayEnabled) {
             float waterScreenDistortion = drugProperties.renderer.getCurrentWaterScreenDistortion();
-            shaderInstance.strength = waterScreenDistortion * 0.2f;
+            shaderInstance.strength = waterScreenDistortion * 0.2F;
             shaderInstance.alpha = waterScreenDistortion;
             shaderInstance.noiseTextureIndex0 = PSRenderStates.getTextureIndex(waterDropletsDistortionTexture);
             shaderInstance.noiseTextureIndex1 = PSRenderStates.getTextureIndex(waterDropletsDistortionTexture);
-            shaderInstance.texTranslation0 = new float[]{0.0f, ticks * 0.005f};
-            shaderInstance.texTranslation1 = new float[]{0.5f, ticks * 0.007f};
-        }
-        else
-        {
+            shaderInstance.texTranslation0 = new float[]{0, ticks * 0.005F};
+            shaderInstance.texTranslation1 = new float[]{0.5F, ticks * 0.007F};
+        } else {
             shaderInstance.strength = 0.0f;
         }
-    }
-
-    @Override
-    public void update()
-    {
-
-    }
-
-    @Override
-    public boolean wantsDepthBuffer(float partialTicks)
-    {
-        return false;
     }
 }

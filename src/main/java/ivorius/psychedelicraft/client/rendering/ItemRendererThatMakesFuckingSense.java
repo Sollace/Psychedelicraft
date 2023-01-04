@@ -2,9 +2,8 @@
  *  Copyright (c) 2014, Lukas Tenbrink.
  *  * http://lukas.axxim.net
  */
-
 package ivorius.psychedelicraft.client.rendering;
-
+/*
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -29,9 +28,9 @@ import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.EQUIPPE
 /**
  * Created by lukas on 23.10.14.
  */
-@Deprecated
-public class ItemRendererThatMakesFuckingSense implements IItemRenderer
-{
+@Deprecated(forRemoval = true)
+public class ItemRendererThatMakesFuckingSense// implements IItemRenderer
+{/*
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
     private boolean renderWithColor = true;
@@ -222,5 +221,5 @@ public class ItemRendererThatMakesFuckingSense implements IItemRenderer
         }
 
         GL11.glEnable(GL11.GL_LIGHTING);
-    }
+    }*/
 }

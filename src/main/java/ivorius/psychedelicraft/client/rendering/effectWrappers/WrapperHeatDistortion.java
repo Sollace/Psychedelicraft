@@ -5,62 +5,46 @@
 
 package ivorius.psychedelicraft.client.rendering.effectWrappers;
 
-import ivorius.ivtoolkit.rendering.IvDepthBuffer;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.client.rendering.shaders.ShaderHeatDistortions;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.util.Identifier;
 
 /**
  * Created by lukas on 26.04.14.
  */
-public class WrapperHeatDistortion extends ShaderWrapper<ShaderHeatDistortions>
-{
-    public ResourceLocation heatDistortionNoiseTexture;
+public class WrapperHeatDistortion extends ShaderWrapper<ShaderHeatDistortions> {
+    public Identifier heatDistortionNoiseTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "heatDistortionNoise.png");
 
-    public WrapperHeatDistortion(String utils)
-    {
+    public WrapperHeatDistortion(String utils) {
         super(new ShaderHeatDistortions(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderHeatDistortion.frag"), utils);
-
-        heatDistortionNoiseTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "heatDistortionNoise.png");
     }
 
     @Override
-    public void setShaderValues(float partialTicks, int ticks, IvDepthBuffer depthBuffer)
-    {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(Minecraft.getMinecraft().renderViewEntity);
+    public void setShaderValues(float partialTicks, int ticks, Framebuffer depthBuffer) {
+        DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
-        if (PSRenderStates.doHeatDistortion && drugProperties != null && depthBuffer != null)
-        {
+        if (PSRenderStates.doHeatDistortion && drugProperties != null && depthBuffer != null) {
             float heatDistortion = drugProperties.renderer.getCurrentHeatDistortion();
 
-            shaderInstance.depthTextureIndex = depthBuffer.getDepthTextureIndex();
+            shaderInstance.depthTextureIndex = depthBuffer.getDepthAttachment();
             shaderInstance.noiseTextureIndex = PSRenderStates.getTextureIndex(heatDistortionNoiseTexture);
 
             shaderInstance.strength = heatDistortion;
             shaderInstance.wobbleSpeed = 0.15f;
-        }
-        else
-        {
+        } else {
             shaderInstance.strength = 0.0f;
         }
     }
 
     @Override
-    public void update()
-    {
+    public boolean wantsDepthBuffer(float partialTicks) {
+        DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
-    }
-
-    @Override
-    public boolean wantsDepthBuffer(float partialTicks)
-    {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(Minecraft.getMinecraft().renderViewEntity);
-
-        if (drugProperties != null)
-        {
+        if (drugProperties != null) {
             float heatDistortion = PSRenderStates.doHeatDistortion ? drugProperties.renderer.getCurrentHeatDistortion() : 0.0f;
 
             return heatDistortion > 0.0f;

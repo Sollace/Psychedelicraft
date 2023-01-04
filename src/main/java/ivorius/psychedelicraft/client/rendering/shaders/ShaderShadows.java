@@ -5,13 +5,13 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
-import ivorius.ivtoolkit.rendering.IvDepthBuffer;
-import ivorius.ivtoolkit.rendering.IvShaderInstance3D;
 import ivorius.psychedelicraft.client.rendering.GLStateProxy;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.SimpleFramebuffer;
+import net.minecraft.client.render.Camera;
+import net.minecraft.util.math.Vec3d;
+
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -19,46 +19,44 @@ import org.apache.logging.log4j.Logger;
  */
 @Deprecated(forRemoval = true, since = "Not necessary: the game implements shaders for us already")
 public class ShaderShadows extends IvShaderInstance3D implements ShaderWorld {
-    public IvDepthBuffer depthBuffer;
+    public Framebuffer depthBuffer;
 
     public ShaderShadows(Logger logger) {
         super(logger);
 
         int pixels = getShadowPixels();
-        depthBuffer = new IvDepthBuffer(pixels, pixels, logger);
+        depthBuffer = new SimpleFramebuffer(pixels, pixels, true, true);
     }
 
     @Override
     public void trySettingUpShader(String vertexShaderFile, String fragmentShaderFile) {
-        super.trySettingUpShader(vertexShaderFile, fragmentShaderFile);
-        depthBuffer.allocate();
+        int pixels = getShadowPixels();
+        depthBuffer.initFbo(pixels, pixels, false);
     }
 
     @Override
     public boolean activate(float partialTicks, float ticks) {
-        if (!depthBuffer.isAllocated() || !useShader()) {
+        if (depthBuffer.fbo == -1 || !useShader()) {
             return false;
         }
 
         int pixels = getShadowPixels();
-        depthBuffer.setSize(pixels, pixels);
+        depthBuffer.resize(pixels, pixels, true);
 
-        Minecraft mc = Minecraft.getMinecraft();
+        MinecraftClient mc = MinecraftClient.getInstance();
 
-        EntityLivingBase renderEntity = mc.renderViewEntity;
+        Camera camera = mc.gameRenderer.getCamera();
+        Vec3d pos = camera.getPos();
 
         setUniformFloats("ticks", ticks);
-        setUniformInts("worldTime", (int) mc.theWorld.getWorldTime());
+        setUniformInts("worldTime", (int) mc.world.getTime());
 
-        setTexture2DEnabled(GLStateProxy.isTextureEnabled(OpenGlHelper.defaultTexUnit));
-        setUniformFloats("playerPos", (float) renderEntity.posX, (float) renderEntity.posY, (float) renderEntity.posZ);
+        setTexture2DEnabled(GLStateProxy.isTextureEnabled(GLStateProxy.DEFAULT_TEXTURE));
+        setUniformFloats("playerPos", (float) pos.x, (float) pos.y, (float) pos.z);
         setUniformFloats("depthMultiplier", 1.0f);
-        setUniformFloats("pixelSize", 1.0f / depthBuffer.getTextureWidth(), 1.0f / depthBuffer.getTextureHeight());
+        setUniformFloats("pixelSize", 1F / depthBuffer.textureWidth, 1F / depthBuffer.textureHeight);
         setUniformInts("useScreenTexCoords", 0);
         setOverrideColor(null);
-
-        depthBuffer.setParentFB(PSRenderStates.getMCFBO());
-        depthBuffer.bind();
 
         return true;
     }
@@ -66,7 +64,7 @@ public class ShaderShadows extends IvShaderInstance3D implements ShaderWorld {
     @Override
     public void deactivate() {
         if (isShaderActive()) {
-            depthBuffer.unbind();
+            depthBuffer.delete();
         }
 
         stopUsingShader();

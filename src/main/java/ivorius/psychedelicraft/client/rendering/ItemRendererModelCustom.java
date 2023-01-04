@@ -4,7 +4,7 @@
  */
 
 package ivorius.psychedelicraft.client.rendering;
-
+/*
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -15,9 +15,9 @@ import org.lwjgl.opengl.GL11;
 /**
  * Created by lukas on 31.10.14.
  */
-@Deprecated
-public class ItemRendererModelCustom implements IItemRenderer
-{
+@Deprecated(forRemoval = true)
+public class ItemRendererModelCustom// implements IItemRenderer
+{/*
     public ItemModelRenderer model;
     public ResourceLocation texture;
     public float modelSize;
@@ -100,5 +100,5 @@ public class ItemRendererModelCustom implements IItemRenderer
         {
             model.renderAll();
         }
-    }
+    }*/
 }

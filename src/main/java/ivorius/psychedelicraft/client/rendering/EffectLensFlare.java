@@ -8,12 +8,17 @@ package ivorius.psychedelicraft.client.rendering;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
+import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.texture.NativeImage;
 import net.minecraft.entity.*;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.*;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -36,7 +41,7 @@ public class EffectLensFlare implements ScreenEffect {
 
     public float actualSunAlpha = 0.0f;
 
-    private final MinecraftClient mc = MinecraftClient.getInstance();
+    private final MinecraftClient client = MinecraftClient.getInstance();
 
     @Override
     public boolean shouldApply(float ticks) {
@@ -44,116 +49,106 @@ public class EffectLensFlare implements ScreenEffect {
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float partialTicks, @Nullable PingPong pingPong) {
+    public void apply(int screenWidth, int screenHeight, float tickDelta, @Nullable PingPong pingPong) {
         if (pingPong != null) {
             pingPong.pingPong();
         }
         //IvRenderHelper.drawRectFullScreen(screenWidth, screenHeight);
 
-        World world = mc.world;
-        Entity renderEntity = mc.renderViewEntity;
+        if (actualSunAlpha <= 0) {
+            return;
+        }
 
-        float sunRadians = world.getCelestialAngleRadians(partialTicks);
+        World world = client.world;
+        Entity renderEntity = client.getCameraEntity();
 
-        Vector3f sunVecCenter = new Vector3f(-MathHelper.sin(sunRadians) * 120.0f, MathHelper.cos(sunRadians) * 120.0f, 0.0f);
+        float genSize = screenWidth > screenHeight ? screenWidth : screenHeight;
+        float sunRadians = world.getSkyAngleRadians(tickDelta);
+        Vector3f sunVecCenter = new Vector3f(
+                -MathHelper.sin(sunRadians) * 120,
+                MathHelper.cos(sunRadians) * 120,
+                0
+        );
+        Vector3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(sunVecCenter, tickDelta);
 
-        if (actualSunAlpha > 0.0f)
-        {
-            float genSize = screenWidth > screenHeight ? screenWidth : screenHeight;
+        Vector3f normSunPos = new Vector3f();
+        sunPositionOnScreen.normalize(normSunPos);
+        float xDist = normSunPos.x * screenWidth;
+        float yDist = normSunPos.y * screenHeight;
 
-            Vector3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(sunVecCenter, partialTicks);
+        int colorValue = world.getBiome(renderEntity.getBlockPos()).value().getFogColor();
+        int fogRed = NativeImage.getRed(colorValue);
+        int fogGreen = NativeImage.getGreen(colorValue);
+        int fogBlue = NativeImage.getBlue(colorValue);
 
-            Vector3f normSunPos = new Vector3f();
-            sunPositionOnScreen.normalise(normSunPos);
-            float xDist = normSunPos.x * screenWidth;
-            float yDist = normSunPos.y * screenHeight;
+        if (sunPositionOnScreen.z > 0) {
+            float alpha = Math.min(1, sunPositionOnScreen.z);
 
-            Vec3d color = world.getFogColor(1.0f);
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
 
-            if (sunPositionOnScreen.z > 0.0f)
-            {
-                float alpha = sunPositionOnScreen.z;
-                if (alpha > 1.0f)
-                {
-                    alpha = 1.0f;
-                }
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder buffer = tessellator.getBuffer();
 
-                GL11.glDisable(GL11.GL_DEPTH_TEST);
-                GL11.glDepthMask(false);
-                GL11.glEnable(GL11.GL_BLEND);
-                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO);
-                GL11.glDisable(GL11.GL_ALPHA_TEST);
-                Tessellator var3 = Tessellator.instance;
+            float screenCenterX = screenWidth * 0.5f;
+            float screenCenterY = screenHeight * 0.5f;
 
-                float screenCenterX = screenWidth * 0.5f;
-                float screenCenterY = screenHeight * 0.5f;
+            for (int i = 0; i < sunFlareSizes.length; i++) {
+                float flareSizeHalf = sunFlareSizes[i] * genSize * 0.5f;
+                float flareCenterX = screenCenterX + xDist * sunFlareInfluences[i];
+                float flareCenterY = screenCenterY + yDist * sunFlareInfluences[i];
 
-                for (int i = 0; i < sunFlareSizes.length; i++)
-                {
-                    float flareSizeHalf = sunFlareSizes[i] * genSize * 0.5f;
-                    float flareCenterX = screenCenterX + xDist * sunFlareInfluences[i];
-                    float flareCenterY = screenCenterY + yDist * sunFlareInfluences[i];
+                RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, (alpha * i == 8 ? 1F : 0.5F) * actualSunAlpha * sunFlareIntensity);
+                RenderSystem.setShaderTexture(0, sunFlareTextures[i]);
 
-                    GL11.glColor4f((float) color.x - 0.1f, (float) color.y - 0.1f, (float) color.z - 0.1f, (alpha * i == 8 ? 1.0f : 0.5f) * actualSunAlpha * sunFlareIntensity);
-
-                    mc.renderEngine.bindTexture(sunFlareTextures[i]);
-                    var3.startDrawingQuads();
-                    var3.addVertexWithUV(flareCenterX - flareSizeHalf, flareCenterY + flareSizeHalf, -90.0D, 0.0D, 1.0D);
-                    var3.addVertexWithUV(flareCenterX + flareSizeHalf, flareCenterY + flareSizeHalf, -90.0D, 1.0D, 1.0D);
-                    var3.addVertexWithUV(flareCenterX + flareSizeHalf, flareCenterY - flareSizeHalf, -90.0D, 1.0D, 0.0D);
-                    var3.addVertexWithUV(flareCenterX - flareSizeHalf, flareCenterY - flareSizeHalf, -90.0D, 0.0D, 0.0D);
-                    var3.draw();
-                }
-
-                // Looks weird because of a hard edge... :|
-                float genDist = 1.0f - (normSunPos.x * normSunPos.x + normSunPos.y * normSunPos.y);
-                float blendingSize = (genDist - 0.1f) * sunFlareIntensity * 250.0f * genSize;
-
-                if (blendingSize > 0.0f)
-                {
-                    float blendingSizeHalf = blendingSize * 0.5f;
-                    float blendCenterX = screenCenterX + xDist;
-                    float blendCenterY = screenCenterY + yDist;
-
-                    float blendAlpha = blendingSize / genSize / 150f;
-                    if (blendAlpha > 1.0f)
-                    {
-                        blendAlpha = 1.0f;
-                    }
-
-                    GL11.glColor4f((float) color.x - 0.1f, (float) color.y - 0.1f, (float) color.z - 0.1f, blendAlpha * actualSunAlpha);
-                    GL11.glEnable(GL11.GL_BLEND);
-                    OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO);
-
-                    mc.renderEngine.bindTexture(sunBlindnessTexture);
-                    var3.startDrawingQuads();
-                    var3.addVertexWithUV(blendCenterX - blendingSizeHalf, blendCenterY + blendingSizeHalf, -90.0D, 0.0D, 1.0D);
-                    var3.addVertexWithUV(blendCenterX + blendingSizeHalf, blendCenterY + blendingSizeHalf, -90.0D, 1.0D, 1.0D);
-                    var3.addVertexWithUV(blendCenterX + blendingSizeHalf, blendCenterY - blendingSizeHalf, -90.0D, 1.0D, 0.0D);
-                    var3.addVertexWithUV(blendCenterX - blendingSizeHalf, blendCenterY - blendingSizeHalf, -90.0D, 0.0D, 0.0D);
-                    var3.draw();
-                }
-
-                GL11.glDepthMask(true);
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
-                GL11.glEnable(GL11.GL_ALPHA_TEST);
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+                buffer.vertex(flareCenterX - flareSizeHalf, flareCenterY + flareSizeHalf, -90.0D).texture(0, 1).next();
+                buffer.vertex(flareCenterX + flareSizeHalf, flareCenterY + flareSizeHalf, -90.0D).texture(1, 1).next();
+                buffer.vertex(flareCenterX + flareSizeHalf, flareCenterY - flareSizeHalf, -90.0D).texture(1, 0).next();
+                buffer.vertex(flareCenterX - flareSizeHalf, flareCenterY - flareSizeHalf, -90.0D).texture(0, 0).next();
+                tessellator.draw();
             }
+
+            // Looks weird because of a hard edge... :|
+            float genDist = 1.0f - (normSunPos.x * normSunPos.x + normSunPos.y * normSunPos.y);
+            float blendingSize = (genDist - 0.1f) * sunFlareIntensity * 250.0f * genSize;
+
+            if (blendingSize > 0.0f) {
+                float blendingSizeHalf = blendingSize * 0.5f;
+                float blendCenterX = screenCenterX + xDist;
+                float blendCenterY = screenCenterY + yDist;
+                float blendAlpha = Math.min(1, blendingSize / genSize / 150f);
+
+                RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, blendAlpha * actualSunAlpha);
+                RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
+                RenderSystem.setShaderTexture(0, sunBlindnessTexture);
+                buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+                buffer.vertex(blendCenterX - blendingSizeHalf, blendCenterY + blendingSizeHalf, -90).texture(0, 1).next();
+                buffer.vertex(blendCenterX + blendingSizeHalf, blendCenterY + blendingSizeHalf, -90).texture(1, 1).next();
+                buffer.vertex(blendCenterX + blendingSizeHalf, blendCenterY - blendingSizeHalf, -90).texture(1, 0).next();
+                buffer.vertex(blendCenterX - blendingSizeHalf, blendCenterY - blendingSizeHalf, -90).texture(0, 0).next();
+                tessellator.draw();
+            }
+
+            RenderSystem.depthMask(true);
+            RenderSystem.enableDepthTest();
+            RenderSystem.setShaderColor(1, 1, 1, 1);
         }
 
         // Reset
-        GL11.glDisable(GL11.GL_BLEND);
+        RenderSystem.disableBlend();
     }
 
     public void updateLensFlares() {
-
-        World world = mc.world;
-        Entity renderEntity = mc.cameraEntity;
+        World world = client.world;
+        Entity renderEntity = client.getCameraEntity();
 
         float tickDelta = 1;
 
         if (renderEntity != null && world != null) {
-
             float sunRadians = world.getSkyAngleRadians(tickDelta);
 
             float sunMinX = MathHelper.sin(sunRadians + SUN_RADIANS) * 120;

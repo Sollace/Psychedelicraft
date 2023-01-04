@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
-import ivorius.ivtoolkit.rendering.IvShaderInstance2D;
 import org.apache.logging.log4j.Logger;
 
 import static org.lwjgl.opengl.GL11.glColor3f;
@@ -34,7 +32,7 @@ public class ShaderSimpleEffects extends IvShaderInstance2D
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, IvOpenGLTexturePingPong pingPong)
+    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong)
     {
         useShader();
 

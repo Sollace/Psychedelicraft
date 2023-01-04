@@ -5,48 +5,39 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
-import ivorius.ivtoolkit.rendering.IvDepthBuffer;
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
-import ivorius.ivtoolkit.rendering.IvShaderInstance2D;
-import net.minecraft.client.renderer.OpenGlHelper;
 import org.apache.logging.log4j.Logger;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBindTexture;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 
 /**
  * Created by lukas on 18.02.14.
  */
-public class ShaderHeatDistortions extends IvShaderInstance2D
-{
+public class ShaderHeatDistortions extends IvShaderInstance2D {
     public float strength;
     public float wobbleSpeed;
     public int depthTextureIndex;
     public int noiseTextureIndex;
 
-    public ShaderHeatDistortions(Logger logger)
-    {
+    public ShaderHeatDistortions(Logger logger) {
         super(logger);
     }
 
     @Override
-    public boolean shouldApply(float ticks)
-    {
-        return strength > 0.0f && depthTextureIndex > 0 && noiseTextureIndex > 0 && super.shouldApply(ticks);
+    public boolean shouldApply(float ticks) {
+        return strength > 0 && depthTextureIndex > 0 && noiseTextureIndex > 0;
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, IvOpenGLTexturePingPong pingPong)
-    {
+    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
         useShader();
 
-        OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit + 2);
-        glBindTexture(GL_TEXTURE_2D, noiseTextureIndex);
-        OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
-        IvDepthBuffer.bindTextureForSource(OpenGlHelper.lightmapTexUnit + 1, depthTextureIndex);
+        RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE + 2, noiseTextureIndex);
+        RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE + 1, depthTextureIndex);
+        RenderSystem.activeTexture(GLStateProxy.DEFAULT_TEXTURE);
 
-        for (int i = 0; i < 3; i++)
-        {
+        for (int i = 0; i < 3; i++) {
             setUniformInts("tex" + i, i);
         }
         setUniformInts("noiseTex", 3);

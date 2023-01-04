@@ -5,10 +5,9 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
-import ivorius.ivtoolkit.rendering.IvShaderInstance2D;
-import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.Logger;
+
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 18.02.14.
@@ -29,7 +28,7 @@ public class ShaderRadialBlur extends IvShaderInstance2D
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, IvOpenGLTexturePingPong pingPong)
+    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong)
     {
         useShader();
 
@@ -40,7 +39,7 @@ public class ShaderRadialBlur extends IvShaderInstance2D
 
         setUniformFloats("pixelSize", 1.0f / screenWidth * (radialBlur * 1.5f + 1.0f), 1.0f / screenHeight * (radialBlur * 1.5f + 1.0f));
 
-        for (int n = 0; n < MathHelper.floor_double(radialBlur) + 1; n++)
+        for (int n = 0; n < MathHelper.floor(radialBlur) + 1; n++)
         {
             float activeBlur = radialBlur - n;
             if (activeBlur > 1.0f)

@@ -5,10 +5,10 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
-import ivorius.ivtoolkit.rendering.IvShaderInstance2D;
-import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.Logger;
+
+import ivorius.psychedelicraft.client.rendering.ScreenEffect;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 18.02.14.
@@ -29,7 +29,7 @@ public class ShaderBloom extends IvShaderInstance2D
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, IvOpenGLTexturePingPong pingPong)
+    public void apply(int screenWidth, int screenHeight, float ticks, ScreenEffect.PingPong pingPong)
     {
         useShader();
 
@@ -40,7 +40,7 @@ public class ShaderBloom extends IvShaderInstance2D
 
         setUniformFloats("pixelSize", 1.0f / screenWidth * 2.0f, 1.0f / screenHeight * 2.0f);
 
-        for (int n = 0; n < MathHelper.ceiling_double_int(bloom); n++)
+        for (int n = 0; n < MathHelper.ceil(bloom); n++)
         {
             float activeBloom = bloom - n;
             if (activeBloom > 1.0f)
