@@ -9,6 +9,8 @@ import ivorius.ivtoolkit.rendering.IvRenderHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.entities.EntityRealityRift;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -25,13 +27,13 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * Created by lukas on 03.03.14.
  */
-public class RenderRealityRift extends Render
-{
+public class RenderRealityRift extends EntityRenderer<EntityRealityRift> {
     public ResourceLocation[] zeroScreenTexture;
     public ResourceLocation zeroCenterTexture;
 
-    public RenderRealityRift()
+    public RenderRealityRift(EntityRendererFactory.Context ctx)
     {
+        super(ctx);
         zeroScreenTexture = new ResourceLocation[8];
         for (int i = 0; i < zeroScreenTexture.length; i++)
         {

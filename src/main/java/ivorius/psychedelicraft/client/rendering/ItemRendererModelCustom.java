@@ -15,6 +15,7 @@ import org.lwjgl.opengl.GL11;
 /**
  * Created by lukas on 31.10.14.
  */
+@Deprecated
 public class ItemRendererModelCustom implements IItemRenderer
 {
     public ItemModelRenderer model;
@@ -80,7 +81,7 @@ public class ItemRendererModelCustom implements IItemRenderer
         GL11.glPopMatrix();
     }
 
-    public static interface ItemModelRenderer
+    public interface ItemModelRenderer
     {
         void render(ItemStack stack);
     }

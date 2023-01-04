@@ -5,25 +5,28 @@
 
 package ivorius.psychedelicraft.client.rendering;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
-import ivorius.ivtoolkit.rendering.Iv2DScreenEffect;
-import ivorius.ivtoolkit.rendering.IvOpenGLTexturePingPong;
-import ivorius.ivtoolkit.rendering.IvRenderHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.EntityLivingBase;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+
+import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.*;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.*;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector3f;
 
 /**
  * Created by lukas on 26.02.14.
  */
-public class EffectLensFlare implements Iv2DScreenEffect
-{
+public class EffectLensFlare implements ScreenEffect {
+    private static final float SUN_RADIANS = 5F * MathHelper.RADIANS_PER_DEGREE;
+    private static final float SUN_WIDTH = 20;
+
     public float[] sunFlareSizes;
     public float[] sunFlareInfluences;
     public Identifier[] sunFlareTextures;
@@ -33,56 +36,22 @@ public class EffectLensFlare implements Iv2DScreenEffect
 
     public float actualSunAlpha = 0.0f;
 
-    public void updateLensFlares()
-    {
-        Minecraft mc = Minecraft.getMinecraft();
-        World world = mc.theWorld;
-        EntityLivingBase renderEntity = mc.renderViewEntity;
+    private final MinecraftClient mc = MinecraftClient.getInstance();
 
-        if (renderEntity != null && world != null)
-        {
-            float sunSizeRadians = -5.0f / 180.0f * 3.1315926f;
-            float sunWidth = 20.0f;
-            float sunRadians = world.getCelestialAngleRadians(1.0f);
-
-            Vec3 sunVecTopLeft = Vec3.createVectorHelper(-MathHelper.sin(sunRadians - sunSizeRadians) * 120.0f, MathHelper.cos(sunRadians - sunSizeRadians) * 120.0f, -sunWidth);
-            Vec3 sunVecTopRight = Vec3.createVectorHelper(-MathHelper.sin(sunRadians - sunSizeRadians) * 120.0f, MathHelper.cos(sunRadians - sunSizeRadians) * 120.0f, sunWidth);
-            Vec3 sunVecBottomLeft = Vec3.createVectorHelper(-MathHelper.sin(sunRadians + sunSizeRadians) * 120.0f, MathHelper.cos(sunRadians + sunSizeRadians) * 120.0f, -sunWidth);
-            Vec3 sunVecBottomRight = Vec3.createVectorHelper(-MathHelper.sin(sunRadians + sunSizeRadians) * 120.0f, MathHelper.cos(sunRadians + sunSizeRadians) * 120.0f, sunWidth);
-
-            Vec3 playerPos = renderEntity.getPosition(1.0f);
-
-            //Need copies, because the raytracer edits these
-            Vec3 playerPositionLT = Vec3.createVectorHelper(playerPos.xCoord, playerPos.yCoord, playerPos.zCoord);
-            Vec3 playerPositionLB = Vec3.createVectorHelper(playerPos.xCoord, playerPos.yCoord, playerPos.zCoord);
-            Vec3 playerPositionRT = Vec3.createVectorHelper(playerPos.xCoord, playerPos.yCoord, playerPos.zCoord);
-            Vec3 playerPositionRB = Vec3.createVectorHelper(playerPos.xCoord, playerPos.yCoord, playerPos.zCoord);
-
-            Vec3 sunPosTopLeft = playerPositionLT.addVector(sunVecTopLeft.xCoord, sunVecTopLeft.yCoord, sunVecTopLeft.zCoord);
-            Vec3 sunPosTopRight = playerPositionRT.addVector(sunVecTopRight.xCoord, sunVecTopRight.yCoord, sunVecTopRight.zCoord);
-            Vec3 sunPosBottomLeft = playerPositionLB.addVector(sunVecBottomLeft.xCoord, sunVecBottomLeft.yCoord, sunVecBottomLeft.zCoord);
-            Vec3 sunPosBottomRight = playerPositionRB.addVector(sunVecBottomRight.xCoord, sunVecBottomRight.yCoord, sunVecBottomRight.zCoord);
-
-            // Raytraceblocks
-            MovingObjectPosition sunTopLeft = world.func_147447_a(playerPositionLT, sunPosTopLeft, true, true, true);
-            MovingObjectPosition sunTopRight = world.func_147447_a(playerPositionRT, sunPosTopRight, true, true, true);
-            MovingObjectPosition sunBottomLeft = world.func_147447_a(playerPositionLB, sunPosBottomLeft, true, true, true);
-            MovingObjectPosition sunBottomRight = world.func_147447_a(playerPositionRB, sunPosBottomRight, true, true, true);
-
-            float newSunAlpha = (1.0F - world.getRainStrength(1.0f)) * ((sunTopLeft == null ? 0.25f : 0.0f) + (sunTopRight == null ? 0.25f : 0.0f) + (sunBottomLeft == null ? 0.25f : 0.0f) + (sunBottomRight == null ? 0.25f : 0.0f));
-            actualSunAlpha = IvMathHelper.nearValue(actualSunAlpha, newSunAlpha, 0.1f, 0.01f);
-            if (actualSunAlpha > 1.0f)
-            {
-                actualSunAlpha = 1.0f;
-            }
-        }
+    @Override
+    public boolean shouldApply(float ticks) {
+        return sunFlareIntensity > 0;
     }
 
-    public void renderLensFlares(int screenWidth, int screenHeight, float partialTicks)
-    {
-        Minecraft mc = Minecraft.getMinecraft();
-        World world = mc.theWorld;
-        EntityLivingBase renderEntity = mc.renderViewEntity;
+    @Override
+    public void apply(int screenWidth, int screenHeight, float partialTicks, @Nullable PingPong pingPong) {
+        if (pingPong != null) {
+            pingPong.pingPong();
+        }
+        //IvRenderHelper.drawRectFullScreen(screenWidth, screenHeight);
+
+        World world = mc.world;
+        Entity renderEntity = mc.renderViewEntity;
 
         float sunRadians = world.getCelestialAngleRadians(partialTicks);
 
@@ -99,7 +68,7 @@ public class EffectLensFlare implements Iv2DScreenEffect
             float xDist = normSunPos.x * screenWidth;
             float yDist = normSunPos.y * screenHeight;
 
-            Vec3 color = world.getFogColor(1.0f);
+            Vec3d color = world.getFogColor(1.0f);
 
             if (sunPositionOnScreen.z > 0.0f)
             {
@@ -125,7 +94,7 @@ public class EffectLensFlare implements Iv2DScreenEffect
                     float flareCenterX = screenCenterX + xDist * sunFlareInfluences[i];
                     float flareCenterY = screenCenterY + yDist * sunFlareInfluences[i];
 
-                    GL11.glColor4f((float) color.xCoord - 0.1f, (float) color.yCoord - 0.1f, (float) color.zCoord - 0.1f, (alpha * i == 8 ? 1.0f : 0.5f) * actualSunAlpha * sunFlareIntensity);
+                    GL11.glColor4f((float) color.x - 0.1f, (float) color.y - 0.1f, (float) color.z - 0.1f, (alpha * i == 8 ? 1.0f : 0.5f) * actualSunAlpha * sunFlareIntensity);
 
                     mc.renderEngine.bindTexture(sunFlareTextures[i]);
                     var3.startDrawingQuads();
@@ -152,7 +121,7 @@ public class EffectLensFlare implements Iv2DScreenEffect
                         blendAlpha = 1.0f;
                     }
 
-                    GL11.glColor4f((float) color.xCoord - 0.1f, (float) color.yCoord - 0.1f, (float) color.zCoord - 0.1f, blendAlpha * actualSunAlpha);
+                    GL11.glColor4f((float) color.x - 0.1f, (float) color.y - 0.1f, (float) color.z - 0.1f, blendAlpha * actualSunAlpha);
                     GL11.glEnable(GL11.GL_BLEND);
                     OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO);
 
@@ -176,24 +145,38 @@ public class EffectLensFlare implements Iv2DScreenEffect
         GL11.glDisable(GL11.GL_BLEND);
     }
 
-    @Override
-    public boolean shouldApply(float ticks)
-    {
-        return sunFlareIntensity > 0.0f;
+    public void updateLensFlares() {
+
+        World world = mc.world;
+        Entity renderEntity = mc.cameraEntity;
+
+        float tickDelta = 1;
+
+        if (renderEntity != null && world != null) {
+
+            float sunRadians = world.getSkyAngleRadians(tickDelta);
+
+            float sunMinX = MathHelper.sin(sunRadians + SUN_RADIANS) * 120;
+            float sunMinY = MathHelper.cos(sunRadians + SUN_RADIANS) * 120;
+
+            float sunMaxX = MathHelper.sin(sunRadians - SUN_RADIANS) * 120;
+            float sunMaxY = MathHelper.cos(sunRadians - SUN_RADIANS) * 120;
+
+            float newSunAlpha = (1 - world.getRainGradient(tickDelta)) * (
+                      (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-sunMinX, sunMinY, -SUN_WIDTH)) ? 0.25F : 0)
+                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-sunMinX, sunMinY, SUN_WIDTH)) ? 0.25F : 0)
+                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-sunMaxX, sunMaxY, -SUN_WIDTH)) ? 0.25F : 0)
+                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-sunMaxX, sunMaxY, SUN_WIDTH)) ? 0.25F : 0)
+            );
+            actualSunAlpha = Math.min(1, MathUtils.nearValue(actualSunAlpha, newSunAlpha, 0.1f, 0.01f));
+        }
     }
 
-    @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, IvOpenGLTexturePingPong pingPong)
-    {
-        pingPong.pingPong();
-        IvRenderHelper.drawRectFullScreen(screenWidth, screenHeight);
-
-        renderLensFlares(screenWidth, screenHeight, 1.0f);
-    }
-
-    @Override
-    public void destruct()
-    {
-
+    private boolean checkIntersection(World world, Entity entity, float tickDelta, Vec3d offset) {
+        Vec3d start = entity.getCameraPosVec(tickDelta);
+        return world.raycast(new RaycastContext(start, start.add(offset),
+                RaycastContext.ShapeType.OUTLINE,
+                RaycastContext.FluidHandling.ANY, entity))
+                .getType() != Type.MISS;
     }
 }

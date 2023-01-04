@@ -1,13 +1,15 @@
 package ivorius.psychedelicraft.client.rendering;
 
-import net.minecraft.client.renderer.OpenGlHelper;
 import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.platform.GlStateManager;
 
 import java.util.Arrays;
 
 /**
  * Created by lukas on 16.11.14.
  */
+@Deprecated
 public class GLStateProxy
 {
     private static int activeTextureUnit = OpenGlHelper.defaultTexUnit;
@@ -58,14 +60,14 @@ public class GLStateProxy
 
     public static boolean isTextureEnabled(int textureUnit)
     {
-        textureUnit -= OpenGlHelper.defaultTexUnit;
+        textureUnit -= GlStateManager.TEXTURE_COUNT;
 
         return textureUnit >= 0 && textureUnit < enabledTextures.length && enabledTextures[textureUnit];
     }
 
     public static void setTextureEnabled(int textureUnit, boolean enabled)
     {
-        textureUnit -= OpenGlHelper.defaultTexUnit;
+        textureUnit -= GlStateManager.TEXTURE_COUNT;
 
         if (textureUnit >= 0 && textureUnit < enabledTextures.length)
             enabledTextures[textureUnit] = enabled;

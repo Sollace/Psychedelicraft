@@ -17,6 +17,7 @@ import net.minecraft.util.ResourceLocation;
 /**
  * Created by lukas on 26.04.14.
  */
+@Deprecated(since = "Needs replacement")
 public abstract class ShaderWrapper<ShaderInstance extends IvShaderInstance2D> implements EffectWrapper
 {
     public ShaderInstance shaderInstance;

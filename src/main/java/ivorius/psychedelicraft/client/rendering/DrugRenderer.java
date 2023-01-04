@@ -142,7 +142,7 @@ public class DrugRenderer implements IDrugRenderer {
         effectLensFlare.sunFlareIntensity = PSRenderStates.sunFlareIntensity;
 
         if (effectLensFlare.shouldApply(updateCounter + partialTicks)) {
-            effectLensFlare.renderLensFlares(width, height, partialTicks);
+            effectLensFlare.apply(width, height, partialTicks, null);
         }
     }
 

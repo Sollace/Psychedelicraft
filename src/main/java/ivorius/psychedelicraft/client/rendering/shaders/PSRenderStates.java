@@ -6,18 +6,17 @@
 package ivorius.psychedelicraft.client.rendering.shaders;
 
 import com.google.common.base.Charsets;
-import ivorius.ivtoolkit.rendering.*;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.rendering.EntityFakeSun;
-import ivorius.psychedelicraft.client.rendering.GLStateProxy;
-import ivorius.psychedelicraft.client.rendering.PSAccessHelperClient;
-import ivorius.psychedelicraft.client.rendering.PsycheShadowHelper;
+import ivorius.psychedelicraft.client.rendering.*;
 import ivorius.psychedelicraft.client.rendering.effectWrappers.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.Window;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11;
@@ -25,8 +24,8 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PSRenderStates
-{
+@Deprecated
+public class PSRenderStates {
     public static ShaderWorld currentShader;
     public static ShaderMain shaderInstance;
     public static ShaderMainDepth shaderInstanceDepth;
@@ -34,9 +33,8 @@ public class PSRenderStates
 
     public static List<EffectWrapper> effectWrappers = new ArrayList<>();
 
-    public static IvOpenGLTexturePingPong realtimePingPong;
+    public static ScreenEffect.PingPong realtimePingPong;
 
-    public static IvDepthBuffer depthBuffer;
     public static boolean didDepthPass = false;
 
     public static boolean disableDepthBuffer = false;
@@ -56,11 +54,13 @@ public class PSRenderStates
 
     public static boolean renderFakeSkybox = true;
 
+    @Deprecated(since = "hook")
     public static void preRender(float ticks)
     {
         didDepthPass = false;
     }
 
+    @Deprecated(since = "unused")
     public static void preRender3D(float ticks)
     {
 
@@ -97,6 +97,7 @@ public class PSRenderStates
         return passes;
     }
 
+    @Deprecated(since = "hook")
     public static boolean startRenderPass(String pass, float partialTicks, float ticks)
     {
         Minecraft mc = MinecraftClient.getInstance();
@@ -128,6 +129,7 @@ public class PSRenderStates
         return true;
     }
 
+    @Deprecated(since = "hook")
     public static void endRenderPass()
     {
         switch (currentRenderPass)
@@ -156,10 +158,9 @@ public class PSRenderStates
         currentRenderPass = null;
     }
 
-    public static boolean setupCameraTransform()
-    {
-        if ("Shadows".equals(currentRenderPass)/* || (MinecraftClient.getInstance().ingameGUI.getUpdateCounter() % 100 > 2)*/)
-        {
+    @Deprecated(since = "hook")
+    public static boolean setupCameraTransform() {
+        if ("Shadows".equals(currentRenderPass)/* || (MinecraftClient.getInstance().ingameGUI.getUpdateCounter() % 100 > 2)*/) {
             PsycheShadowHelper.setupSunGLTransform();
 
             return true;
@@ -168,18 +169,15 @@ public class PSRenderStates
         return false;
     }
 
-    public static void setShader3DEnabled(boolean enabled)
-    {
-        shader3DEnabled = enabled;
+    @Deprecated
+    public static void setShader3DEnabled(boolean enabled) {
     }
 
-    public static void setShader2DEnabled(boolean enabled)
-    {
-        shader2DEnabled = enabled;
+    @Deprecated
+    public static void setShader2DEnabled(boolean enabled) {
     }
 
-    public static void allocate()
-    {
+    public static void allocate() {
         IvOpenGLHelper.checkGLError(Psychedelicraft.logger, "Pre-Allocation");
 
         Minecraft mc = MinecraftClient.getInstance();
@@ -187,9 +185,9 @@ public class PSRenderStates
 
         String utils = null;
 
-        try
-        {
-            IResource utilsResource = MinecraftClient.getInstance().getResourceManager().getResource(new Identifier(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + "shaderUtils.frag"));
+        try {
+            IResource utilsResource = MinecraftClient.getInstance().getResourceManager()
+                    .getResource(new Identifier(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + "shaderUtils.frag"));
             utils = IOUtils.toString(utilsResource.getInputStream(), Charsets.UTF_8);
         }
         catch (Exception ex)
@@ -236,26 +234,12 @@ public class PSRenderStates
         IvOpenGLHelper.checkGLError(Psychedelicraft.logger, "Allocation");
     }
 
-    public static void setUpShader(IvShaderInstance shader, String vertexFile, String fragmentFile, String utils)
-    {
-        IvShaderInstanceMC.trySettingUpShader(shader, new Identifier(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + vertexFile), new Identifier(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + fragmentFile), utils);
+    public static void setUpRealtimeCacheTexture() {
     }
 
-    public static void setUpRealtimeCacheTexture()
-    {
-        deleteRealtimeCacheTexture();
-
-        realtimePingPong = new IvOpenGLTexturePingPong(Psychedelicraft.logger);
-        realtimePingPong.setScreenSize(MinecraftClient.getInstance().displayWidth, MinecraftClient.getInstance().displayHeight);
-        realtimePingPong.initialize(!bypassPingPongBuffer);
-    }
-
-    public static void update()
-    {
-        if (MinecraftClient.getInstance().theWorld != null)
-        {
-            for (EffectWrapper effectWrapper : effectWrappers)
-                effectWrapper.update();
+    public static void update() {
+        if (MinecraftClient.getInstance().world != null) {
+            effectWrappers.forEach(EffectWrapper::update);
         }
     }
 
@@ -278,9 +262,10 @@ public class PSRenderStates
         return false;
     }
 
+    @Deprecated(since = "unused")
     public static void preRenderSky(float partialTicks)
     {
-        if (renderFakeSkybox)
+        /*if (renderFakeSkybox)
         {
             setForceColorSafeMode(true);
             float boxSize = MinecraftClient.getInstance().gameSettings.renderDistanceChunks * 16 * 0.75f;
@@ -294,9 +279,10 @@ public class PSRenderStates
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             setForceColorSafeMode(false);
-        }
+        }*/
     }
 
+    @Deprecated(since = "unused")
     public static void setEnabled(int cap, boolean enabled)
     {
         if (cap == GL11.GL_TEXTURE_2D)
@@ -331,26 +317,21 @@ public class PSRenderStates
             currentShader.setLightmapEnabled(enabled);
     }
 
-    public static void setBlendFunc(int sFactor, int dFactor, int sFactorAlpha, int dFactorAlpha)
-    {
-        GLStateProxy.glBlendFunc(sFactor, dFactor, sFactorAlpha, dFactorAlpha);
-        if (currentShader != null)
-            currentShader.setBlendFunc(sFactor, dFactor, sFactorAlpha, dFactorAlpha);
+    @Deprecated
+    public static void setBlendFunc(int sFactor, int dFactor, int sFactorAlpha, int dFactorAlpha) {
+        RenderSystem.blendFuncSeparate(sFactor, dFactor, sFactorAlpha, dFactorAlpha);
     }
 
+    @Deprecated
     public static void setOverrideColor(float... color)
     {
-        if (color != null && color.length != 4)
-            throw new IllegalArgumentException("Color must be a length-4 float array");
-
-        if (currentShader != null)
-            currentShader.setOverrideColor(color);
+        RenderSystem.setShaderColor(color[0], color[1], color[2], color.length > 3 ? color[3] : 1);
     }
 
+    @Deprecated
     public static void setGLLightEnabled(boolean enabled)
     {
-        if (currentShader != null)
-            currentShader.setGLLightEnabled(enabled);
+
     }
 
     public static void setGLLight(int number, float x, float y, float z, float strength, float specular)
@@ -377,25 +358,21 @@ public class PSRenderStates
             currentShader.setDepthMultiplier(depthMultiplier);
     }
 
-    public static void setUseScreenTexCoords(boolean enabled)
-    {
+    public static void setUseScreenTexCoords(boolean enabled) {
         if (currentShader != null)
             currentShader.setUseScreenTexCoords(enabled);
     }
 
-    public static void setScreenSizeDefault()
-    {
-        Minecraft mc = MinecraftClient.getInstance();
-        setScreenSize(mc.displayWidth, mc.displayHeight);
+    public static void setScreenSizeDefault() {
+        Window mc = MinecraftClient.getInstance().getWindow();
+        setScreenSize(mc.getWidth(), mc.getHeight());
     }
 
-    public static void setScreenSize(float screenWidth, float screenHeight)
-    {
+    public static void setScreenSize(float screenWidth, float screenHeight) {
         setPixelSize(1.0f / screenWidth, 1.0f / screenHeight);
     }
 
-    public static void setPixelSize(float pixelWidth, float pixelHeight)
-    {
+    public static void setPixelSize(float pixelWidth, float pixelHeight) {
         if (currentShader != null)
             currentShader.setPixelSize(pixelWidth, pixelHeight);
     }
@@ -412,8 +389,7 @@ public class PSRenderStates
             currentShader.setProjectShadows(projectShadows);
     }
 
-    public static int getCurrentAllowedGLDataMask()
-    {
+    public static int getCurrentAllowedGLDataMask() {
         if ("Depth".equals(currentRenderPass))
             return GL11.GL_DEPTH_BUFFER_BIT;
         else if ("Shadows".equals(currentRenderPass))
@@ -430,74 +406,29 @@ public class PSRenderStates
         return (OpenGlHelper.isFramebufferEnabled() && framebuffer != null && framebuffer.framebufferObject >= 0) ? framebuffer.framebufferObject : 0;
     }
 
-    public static void postRender(float ticks, float partialTicks)
-    {
+    public static void postRender(float ticks, float partialTicks) {
         apply2DShaders(ticks, partialTicks);
     }
 
-    public static void apply2DShaders(float ticks, float partialTicks)
-    {
-        Minecraft mc = MinecraftClient.getInstance();
-
-        int screenWidth = mc.displayWidth;
-        int screenHeight = mc.displayHeight;
-
-        IvOpenGLHelper.setUpOpenGLStandard2D(screenWidth, screenHeight);
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);
-
-        realtimePingPong.setParentFrameBuffer(getMCFBO());
-        realtimePingPong.preTick(screenWidth, screenHeight);
-
-        for (EffectWrapper effectWrapper : effectWrappers)
-            effectWrapper.apply(partialTicks, realtimePingPong, didDepthPass ? depthBuffer : null);
-
-        realtimePingPong.postTick();
-
-        IvOpenGLHelper.checkGLError(Psychedelicraft.logger, "2D Shaders");
+    public static void apply2DShaders(float ticks, float partialTicks) {
     }
 
-    public static int getTextureIndex(Identifier loc)
-    {
+    public static int getTextureIndex(Identifier loc) {
         TextureManager tm = MinecraftClient.getInstance().getTextureManager();
         tm.bindTexture(loc); // Allocate texture. MOJANG!
-        AbstractTexture texture = tm.getTexture(loc);
-        return texture.getGlId();
+        return tm.getTexture(loc).getGlId();
     }
 
     public static void delete3DShaders()
     {
-        if (shaderInstance != null)
-            shaderInstance.deleteShader();
-        shaderInstance = null;
-
-        if (shaderInstanceDepth != null)
-            shaderInstanceDepth.deleteShader();
-        shaderInstanceDepth = null;
-
-        if (shaderInstanceShadows != null)
-            shaderInstanceShadows.deleteShader();
-        shaderInstanceShadows = null;
     }
 
     public static void deleteRealtimeCacheTexture()
     {
-        if (realtimePingPong != null)
-            realtimePingPong.destroy();
-        realtimePingPong = null;
     }
 
     public static void deallocate()
     {
-        delete3DShaders();
-        deleteRealtimeCacheTexture();
-
-        for (EffectWrapper effectWrapper : effectWrappers)
-            effectWrapper.dealloc();
-        effectWrappers.clear();
-
-        if (depthBuffer != null)
-            depthBuffer.deallocate();
-        depthBuffer = null;
     }
 
     public static void outputShaderInfo()
