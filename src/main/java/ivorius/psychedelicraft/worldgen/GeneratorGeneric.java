@@ -5,18 +5,14 @@
 
 package ivorius.psychedelicraft.worldgen;
 
-import cpw.mods.fml.common.IWorldGenerator;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.feature.WorldGenerator;
-import net.minecraftforge.common.BiomeDictionary;
 
 import java.util.*;
 
 /**
  * Created by lukas on 11.03.14.
  */
+@Deprecated
 public class GeneratorGeneric implements IWorldGenerator
 {
     public WorldGenerator generator;
@@ -65,11 +61,12 @@ public class GeneratorGeneric implements IWorldGenerator
         return list;
     }
 
-    public static interface Entry
+    public interface Entry
     {
-        public int numberGenerated(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider, BiomeGenBase biomeGen);
+        int numberGenerated(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider, BiomeGenBase biomeGen);
     }
 
+    @Deprecated
     public static class EntryBiome implements Entry
     {
         private BiomeGenBase biome;
@@ -107,6 +104,7 @@ public class GeneratorGeneric implements IWorldGenerator
         }
     }
 
+    @Deprecated
     public static class EntryBiomeTypes implements Entry
     {
         private final List<BiomeDictionary.Type> biomeTypes = new ArrayList<>();

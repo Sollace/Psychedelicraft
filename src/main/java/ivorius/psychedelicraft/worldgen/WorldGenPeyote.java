@@ -7,7 +7,6 @@ package ivorius.psychedelicraft.worldgen;
 
 import ivorius.psychedelicraft.blocks.PSBlocks;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.WorldGenerator;
 
 import java.util.Random;
 

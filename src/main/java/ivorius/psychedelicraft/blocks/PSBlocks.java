@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
-import ivorius.psychedelicraft.worldgen.WorldGenJuniperTrees;
+import ivorius.psychedelicraft.worldgen.JuniperTreeSaplingGenerator;
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.registry.Registries;
@@ -40,7 +40,7 @@ public class PSBlocks {
     public static JuniperLeavesBlock juniper_berries = register("juniper_berries", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
     public static JuniperLeavesBlock psycheLeaves = register("psyche_leaves", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
     public static Block psycheLog = register("juniper_log", BlockConstructionUtils.log(MapColor.CYAN, MapColor.BLUE));
-    public static Block psycheSapling = register("juniper_sapling", new SaplingBlock(new WorldGenJuniperTrees(true), BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
+    public static Block psycheSapling = register("juniper_sapling", new SaplingBlock(new JuniperTreeSaplingGenerator(), BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
 
     public static Block cannabisPlant = register("cannabis_plant", new BlockCannabisPlant(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     public static Block hopPlant = register("hop_plant", new BlockHopPlant(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));

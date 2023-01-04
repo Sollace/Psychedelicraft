@@ -8,28 +8,21 @@ package ivorius.psychedelicraft.worldgen;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.fluids.PSFluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.WeightedRandomChestContent;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.fluids.FluidStack;
 
-import static cpw.mods.fml.common.registry.GameRegistry.registerWorldGenerator;
 import static ivorius.psychedelicraft.blocks.PSBlocks.*;
 import static ivorius.psychedelicraft.items.PSItems.*;
 import static ivorius.psychedelicraft.worldgen.GeneratorGeneric.*;
 import static ivorius.psychedelicraft.worldgen.GeneratorGeneric.EntryBiome;
-import static net.minecraftforge.common.BiomeDictionary.Type.*;
-import static net.minecraftforge.common.ChestGenHooks.*;
 
 /**
  * Created by lukas on 25.04.14.
  */
-public class PSWorldGen
-{
-    public static void initWorldGen()
-    {
+public class PSWorldGen {
+    public static void bootstrap() {
+        JuniperTreeGenerationConfigs.bootstrap();
+
         if (PSConfig.genJuniper)
-            registerWorldGenerator(new GeneratorGeneric(new WorldGenJuniperTrees(false),
+            registerWorldGenerator(new GeneratorGeneric(new JuniperTreeSaplingGenerator(false),
                     new EntryBiomeTypes(0.1f, 1, HILLS, COLD),
                     new EntryBiomeTypes(0.05f, 1, FOREST, COLD),
                     new EntryBiomeTypes(0.05f, 1, SNOWY, WASTELAND)
