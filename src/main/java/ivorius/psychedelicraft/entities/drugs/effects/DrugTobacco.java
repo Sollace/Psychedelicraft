@@ -15,6 +15,6 @@ public class DrugTobacco extends DrugSimple {
 
     @Override
     public float desaturationHallucinationStrength() {
-        return (float)getActiveValue() * 0.2f;
+        return (float)getActiveValue() * 0.2F;
     }
 }

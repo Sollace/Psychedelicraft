@@ -22,7 +22,7 @@ public class DrugHarmonium extends DrugSimple {
 
     @Override
     public void applyColorBloom(float[] rgba) {
-        DrugHallucinationManager.mixColorsDynamic(currentColor, rgba, (float) getActiveValue() * 3.0f);
+        DrugHallucinationManager.mixColorsDynamic(currentColor, rgba, (float) getActiveValue() * 3);
     }
 
     @Override

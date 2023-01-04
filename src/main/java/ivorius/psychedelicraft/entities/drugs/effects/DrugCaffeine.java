@@ -17,7 +17,7 @@ public class DrugCaffeine extends DrugSimple {
 
     @Override
     public float heartbeatVolume() {
-        return MathHelper.lerp((float) getActiveValue(), 0.6F, 1.0F);
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class DrugCaffeine extends DrugSimple {
 
     @Override
     public float breathVolume() {
-        return MathHelper.lerp((float) getActiveValue(), 0.4F, 1) * 0.5f;
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1) * 0.5f;
     }
 
     @Override
@@ -37,12 +37,12 @@ public class DrugCaffeine extends DrugSimple {
 
     @Override
     public float randomJumpChance() {
-        return MathHelper.lerp((float) getActiveValue(), 0.6F, 1) * 0.07f;
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1) * 0.07f;
     }
 
     @Override
     public float randomPunchChance() {
-        return MathHelper.lerp((float) getActiveValue(), 0.3F, 1) * 0.05f;
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.3F, 1) * 0.05f;
     }
 
     @Override
@@ -67,27 +67,26 @@ public class DrugCaffeine extends DrugSimple {
 
     @Override
     public float handTrembleStrength() {
-        return MathHelper.lerp((float) getActiveValue(), 0.6F, 1.0F);
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1.0F);
     }
 
     @Override
-    public float viewTrembleStrength()
-    {
-        return MathHelper.lerp((float) getActiveValue(), 0.8F, 1.0F);
+    public float viewTrembleStrength() {
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.8F, 1.0F);
     }
 
     @Override
     public float colorHallucinationStrength() {
-        return MathHelper.lerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.03F;
+        return MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.03F;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return MathHelper.lerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.03F;
+        return MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.03F;
     }
 
     @Override
     public float contextualHallucinationStrength() {
-        return MathHelper.lerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
+        return MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
     }
 }

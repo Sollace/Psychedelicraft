@@ -21,8 +21,7 @@ import net.minecraft.util.math.random.Random;
 /**
  * Created by lukas on 01.11.14.
  */
-public class DrugAlcohol extends DrugSimple
-{
+public class DrugAlcohol extends DrugSimple {
     public static void rotateEntityPitch(Entity entity, double amount) {
         entity.setPitch((float)MathHelper.clamp(entity.getPitch() + amount, -90F, 90F));
     }
@@ -54,15 +53,13 @@ public class DrugAlcohol extends DrugSimple
     public void update(LivingEntity entity, DrugProperties drugProperties) {
         super.update(entity, drugProperties);
 
-        if (getActiveValue() > 0.0)
-        {
+        if (getActiveValue() > 0) {
             int ticksExisted = drugProperties.ticksExisted;
             Random random = entity.getRandom();
 
             double activeValue = getActiveValue();
 
-            if ((ticksExisted % 20) == 0)
-            {
+            if ((ticksExisted % 20) == 0) {
                 double damageChance = (activeValue - 0.9f) * 2.0f;
 
                 if (ticksExisted % 20 == 0 && random.nextFloat() < damageChance) {
@@ -101,5 +98,4 @@ public class DrugAlcohol extends DrugSimple
                 sprite.getMaxU(),
                 sprite.getMaxV(), 0);
     }
-
 }

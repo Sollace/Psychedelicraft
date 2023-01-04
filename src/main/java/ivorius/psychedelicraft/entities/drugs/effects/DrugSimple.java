@@ -74,16 +74,13 @@ public class DrugSimple implements Drug {
     }
 
     @Override
-    public void update(LivingEntity entity, DrugProperties drugProperties)
-    {
-        if (!locked)
-        {
+    public void update(LivingEntity entity, DrugProperties drugProperties) {
+        if (!locked) {
             effect *= decreaseSpeed;
             effect -= decreaseSpeedPlus;
         }
 
-        effect = MathHelper.clamp(0.0, effect, 1.0);
-
+        effect = MathHelper.clamp(effect, 0, 1);
         effectActive = MathUtils.nearValue(effectActive, effect, 0.05, 0.005);
     }
 

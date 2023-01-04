@@ -8,10 +8,8 @@ package ivorius.psychedelicraft.entities.drugs.effects;
 /**
  * Created by lukas on 01.11.14.
  */
-public class DrugZero extends DrugSimple
-{
-    public DrugZero(double decSpeed, double decSpeedPlus)
-    {
+public class DrugZero extends DrugSimple {
+    public DrugZero(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus);
     }
 }

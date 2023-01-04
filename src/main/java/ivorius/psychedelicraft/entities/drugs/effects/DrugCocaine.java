@@ -14,29 +14,23 @@ import net.minecraft.util.math.random.Random;
 /**
  * Created by lukas on 01.11.14.
  */
-public class DrugCocaine extends DrugSimple
-{
-    public DrugCocaine(double decSpeed, double decSpeedPlus)
-    {
+public class DrugCocaine extends DrugSimple {
+    public DrugCocaine(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus);
     }
 
     @Override
-    public void update(LivingEntity entity, DrugProperties drugProperties)
-    {
+    public void update(LivingEntity entity, DrugProperties drugProperties) {
         super.update(entity, drugProperties);
 
-        if (getActiveValue() > 0.0)
-        {
+        if (getActiveValue() > 0.0) {
             Random random = entity.world.random;
             int ticksExisted = drugProperties.ticksExisted;
 
-            if (!entity.world.isClient)
-            {
+            if (!entity.world.isClient) {
                 double chance = (getActiveValue() - 0.8f) * 0.1f;
 
-                if (ticksExisted % 20 == 0 && random.nextFloat() < chance)
-                {
+                if (ticksExisted % 20 == 0 && random.nextFloat() < chance) {
                     entity.damage(random.nextFloat() < 0.4f
                             ? PSDamageSources.STROKE
                             : random.nextFloat() < 0.5f
@@ -48,50 +42,42 @@ public class DrugCocaine extends DrugSimple
     }
 
     @Override
-    public float heartbeatVolume()
-    {
-        return MathHelper.lerp((float) getActiveValue(), 0.4f, 1.0f) * 1.2f;
+    public float heartbeatVolume() {
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.4f, 1.0f) * 1.2f;
     }
 
     @Override
-    public float heartbeatSpeed()
-    {
+    public float heartbeatSpeed() {
         return (float) getActiveValue() * 0.1f;
     }
 
     @Override
-    public float breathVolume()
-    {
-        return MathHelper.lerp((float) getActiveValue(), 0.4f, 1.0f) * 1.5f;
+    public float breathVolume() {
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.4f, 1.0f) * 1.5f;
     }
 
     @Override
-    public float breathSpeed()
-    {
+    public float breathSpeed() {
         return (float) getActiveValue() * 0.8f;
     }
 
     @Override
-    public float randomJumpChance()
-    {
-        return MathHelper.lerp((float) getActiveValue(), 0.6f, 1.0f) * 0.03f;
+    public float randomJumpChance() {
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.6f, 1.0f) * 0.03f;
     }
 
     @Override
-    public float randomPunchChance()
-    {
-        return MathHelper.lerp((float) getActiveValue(), 0.5f, 1.0f) * 0.02f;
+    public float randomPunchChance() {
+        return MathHelper.getLerpProgress((float) getActiveValue(), 0.5f, 1.0f) * 0.02f;
     }
 
     @Override
-    public float speedModifier()
-    {
+    public float speedModifier() {
         return 1.0F + (float) getActiveValue() * 0.15F;
     }
 
     @Override
-    public float digSpeedModifier()
-    {
+    public float digSpeedModifier() {
         return 1.0F + (float) getActiveValue() * 0.15F;
     }
 /*
@@ -102,50 +88,42 @@ public class DrugCocaine extends DrugSimple
     }
 */
     @Override
-    public float desaturationHallucinationStrength()
-    {
+    public float desaturationHallucinationStrength() {
         return (float)getActiveValue() * 0.75f;
     }
 
     @Override
-    public float handTrembleStrength()
-    {
-        return MathHelper.lerp((float)getActiveValue(), 0.6f, 1.0f);
+    public float handTrembleStrength() {
+        return MathHelper.getLerpProgress((float)getActiveValue(), 0.6f, 1.0f);
     }
 
     @Override
-    public float viewTrembleStrength()
-    {
-        return MathHelper.lerp((float)getActiveValue(), 0.8f, 1.0f);
+    public float viewTrembleStrength() {
+        return MathHelper.getLerpProgress((float)getActiveValue(), 0.8f, 1.0f);
     }
 
     @Override
-    public float headMotionInertness()
-    {
+    public float headMotionInertness() {
         return (float)getActiveValue() * 10.0f;
     }
 
     @Override
-    public float bloomHallucinationStrength()
-    {
-        return MathHelper.lerp((float)getActiveValue(), 0.0f, 0.6f) * 1.5f;
+    public float bloomHallucinationStrength() {
+        return MathHelper.getLerpProgress((float)getActiveValue(), 0.0f, 0.6f) * 1.5f;
     }
 
     @Override
-    public float colorHallucinationStrength()
-    {
-        return MathHelper.lerp((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
+    public float colorHallucinationStrength() {
+        return MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
     }
 
     @Override
-    public float movementHallucinationStrength()
-    {
-        return MathHelper.lerp((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
+    public float movementHallucinationStrength() {
+        return MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
     }
 
     @Override
-    public float contextualHallucinationStrength()
-    {
-        return MathHelper.lerp((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
+    public float contextualHallucinationStrength() {
+        return MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.7f, 1.0f) * 0.05f;
     }
 }
