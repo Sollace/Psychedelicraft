@@ -71,7 +71,7 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
 
                 @Override
                 public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new ContainerFluidHandler(null, syncId, inv, be.getTank(hit.getSide()));
+                    return new ContainerFluidHandler<>(null, syncId, inv, be.getTank(hit.getSide()), be);
                 }
             });
             return ActionResult.SUCCESS;

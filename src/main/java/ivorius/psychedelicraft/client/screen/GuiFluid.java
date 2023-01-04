@@ -1,96 +1,85 @@
 package ivorius.psychedelicraft.client.screen;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
-import ivorius.psychedelicraft.client.rendering.MCColorHelper;
-import ivorius.psychedelicraft.fluids.TranslucentFluid;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.inventory.Container;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import org.lwjgl.opengl.GL11;
+import ivorius.psychedelicraft.fluids.Resovoir;
+import ivorius.psychedelicraft.fluids.SimpleFluid;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+
+import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
+import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by lukas on 13.11.14.
+ * Updated by Sollace on 4 Jan 2023
  */
-public class GuiFluid extends GuiContainer
-{
-    public ContainerFluidHandler containerFluidHandler;
+public abstract class GuiFluid<T extends ContainerFluidHandler<?>> extends HandledScreen<T> {
 
-    public GuiFluid(ContainerFluidHandler container)
-    {
-        super(container);
-        containerFluidHandler = container;
+    protected GuiFluid(T handler, PlayerInventory inventory, Text title) {
+        super(handler, inventory, title);
     }
 
-    public void drawTank(FluidTankInfo tankInfo, int x, int y, int width, int height, float repeatTextureX, float repeatTextureY)
-    {
-        FluidStack containedFluidStack = containerFluidHandler.fluidHandler.drain(containerFluidHandler.side, tankInfo.capacity, false);
-        if (containedFluidStack != null)
-        {
-            Fluid containedFluid = containedFluidStack.getFluid();
-            IIcon icon = containedFluid.getIcon(containedFluidStack);
-            float fluidHeight = IvMathHelper.clamp(0.0f, (float) containedFluidStack.amount / (float) tankInfo.capacity, 1.0f);
-            int fluidHeightPixels = MathHelper.floor_float(fluidHeight * height + 0.5f);
-
-            float texX0, texX1, texY0, texY1;
-
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glAlphaFunc(GL11.GL_GREATER, 0.001f);
-            OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
-
-            if (icon == null)
-            {
-                MCColorHelper.setColor(containedFluid.getColor(containedFluidStack), containedFluid instanceof TranslucentFluid);
-                texX0 = texX1 = texY0 = texY1 = 0.0f;
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
-            }
-            else
-            {
-                GL11.glColor3f(1.0f, 1.0f, 1.0f);
-                texX0 = icon.getMinU();
-                texX1 = icon.getMaxU();
-                texY0 = icon.getMinV();
-                texY1 = icon.getMaxV();
-                mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-            }
-
-            drawRepeatingTexture(x, y, width, fluidHeightPixels, texX0, texX1, texY0, texY1, repeatTextureX, repeatTextureY * fluidHeight, true);
-
-            if (icon == null)
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-            GL11.glDisable(GL11.GL_BLEND);
-        }
+    protected Resovoir getTank() {
+        return handler.getTank();
     }
 
-    public void drawRepeatingTexture(int x, int y, int width, int height, float texX0, float texX1, float texY0, float texY1, float repeatX, float repeatY, boolean fromBelow)
-    {
-        Tessellator tessellator = Tessellator.instance;
+    public void drawTank(Resovoir tank, int x, int y, int width, int height, float repeatTextureX, float repeatTextureY) {
+        SimpleFluid fluid = tank.getFluidType();
 
-        if (fromBelow)
-        {
+        float fluidHeight = MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
+        int fluidHeightPixels = MathHelper.floor(fluidHeight * height + 0.5f);
+
+        RenderSystem.enableBlend();
+        // GL11.glAlphaFunc(GL11.GL_GREATER, 0.001f);
+        RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA, SrcFactor.ONE, DstFactor.ZERO);
+
+        Identifier id = fluid.getId();
+        Identifier texture = new Identifier(id.getNamespace(), "textures/fluids/" + id.getPath() + ".png");
+
+        int color = fluid.getTranslucentColor(tank.getStack());
+
+        RenderSystem.setShaderColor(NativeImage.getRed(color), NativeImage.getGreen(color), NativeImage.getBlue(color), NativeImage.getAlpha(color));
+        RenderSystem.setShaderTexture(0, texture);
+
+        drawRepeatingTexture(x, y, width, fluidHeightPixels, 0, 0, 16, 16, repeatTextureX, repeatTextureY * fluidHeight, true);
+
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    }
+
+    public void drawRepeatingTexture(int x, int y, int width, int height, float u0, float u1, float v0, float v1, float repeatX, float repeatY, boolean fromBelow) {
+        drawRepeatingTexture(x, y, getZOffset(), height, u0, u1, v0, v1, repeatX, repeatY, fromBelow);
+    }
+
+    public static void drawRepeatingTexture(int x, int y, int z, int width, int height,
+            float u0, float u1, float v0, float v1, float repeatX, float repeatY, boolean fromBelow) {
+        Tessellator tessellator = Tessellator.getInstance();
+
+        if (fromBelow) {
             height = -height;
             // Flip for correct vertex order
             x = x + width;
             width = -width;
         }
 
-        tessellator.startDrawingQuads();
-        for (int curX = 0; curX < MathHelper.ceiling_float_int(repeatX); curX++)
-            for (int curY = 0; curY < MathHelper.ceiling_float_int(repeatY); curY++)
-            {
-                float curWidthPartial = IvMathHelper.clamp(0.0f, repeatX - curX, 1.0f);
-                float curHeightPartial = IvMathHelper.clamp(0.0f, repeatY - curY, 1.0f);
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+        for (int curX = 0; curX < MathHelper.ceil(repeatX); curX++) {
+            for (int curY = 0; curY < MathHelper.ceil(repeatY); curY++) {
+                float curWidthPartial = MathHelper.clamp(repeatX - curX, 0, 1);
+                float curHeightPartial = MathHelper.clamp(repeatY - curY, 0, 1);
 
                 float curWidth = curWidthPartial * width / repeatX;
                 float curHeight = curHeightPartial * height / repeatY;
@@ -98,56 +87,36 @@ public class GuiFluid extends GuiContainer
                 float origX = curX * width / repeatX + x;
                 float origY = curY * height / repeatY + y;
 
-                float curTexX1 = texX0 + (texX1 - texX0) * curWidthPartial;
-                float curTexY1 = texY0 + (texY1 - texY0) * curHeightPartial;
+                float curTexX1 = u0 + (u1 - u0) * curWidthPartial;
+                float curTexY1 = v0 + (v1 - v0) * curHeightPartial;
 
-                tessellator.addVertexWithUV(origX, origY, zLevel, texX0, texY0);
-                tessellator.addVertexWithUV(origX, origY + curHeight, zLevel, texX0, curTexY1);
-                tessellator.addVertexWithUV(origX + curWidth, origY + curHeight, zLevel, curTexX1, curTexY1);
-                tessellator.addVertexWithUV(origX + curWidth, origY, zLevel, curTexX1, texY0);
+                buffer.vertex(origX, origY, z).texture(u0, v0).next();
+                buffer.vertex(origX, origY + curHeight, z).texture(u0, curTexY1).next();
+                buffer.vertex(origX + curWidth, origY + curHeight, z).texture(curTexX1, curTexY1).next();
+                buffer.vertex(origX + curWidth, origY, z).texture(curTexX1, v0).next();
             }
+        }
 
         tessellator.draw();
     }
 
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_, int p_146976_3_)
-    {
+    public void drawTankTooltip(MatrixStack matrices, Resovoir tank, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
+        if (rectContains(mouseX, mouseY, x, y, width, height)) {
+            SimpleFluid fluid = tank.getFluidType();
+            int level = tank.getLevel();
 
-    }
-
-    public void drawTankTooltip(FluidTankInfo tankInfo, int x, int y, int width, int height, int mouseX, int mouseY, List<String> additionalText)
-    {
-        if (rectContains(mouseX, mouseY, x, y, width, height))
-        {
-            FluidStack containedFluidStack = containerFluidHandler.fluidHandler.drain(containerFluidHandler.side, tankInfo.capacity, false);
-
-            if (containedFluidStack != null)
-            {
-                List<String> tooltipList = new ArrayList<>();
-                tooltipList.add(containedFluidStack.getLocalizedName());
-                tooltipList.add(EnumChatFormatting.GRAY + "Amount: " + containedFluidStack.amount);
-
-                if (additionalText != null)
-                    tooltipList.addAll(additionalText);
-
-                drawHoveringText(tooltipList, mouseX, mouseY, fontRendererObj);
-            }
+            List<Text> tooltip = new ArrayList<>();
+            tooltip.add(fluid.getName(tank.getStack()));
+            tooltip.add(Text.literal("Amount: " + level).formatted(Formatting.GRAY));
+            tooltip.addAll(details);
+            renderTooltip(matrices, tooltip, mouseX, mouseY);
         }
     }
 
-    public FluidTankInfo getTankInfo(int index)
-    {
-        FluidTankInfo[] tankInfos = containerFluidHandler.fluidHandler.getTankInfo(containerFluidHandler.side);
-
-        if (tankInfos != null && tankInfos.length >= index)
-            return tankInfos[index];
-
-        return null;
-    }
-
-    public boolean rectContains(int x, int y, int rectX, int rectY, int rectWidth, int rectHeight)
-    {
-        return x >= rectX && y >= rectY && x < rectX + rectWidth && y < rectY + rectHeight;
+    public static boolean rectContains(int x, int y, int rectX, int rectY, int width, int height) {
+        return x >= rectX
+            && y >= rectY
+            && x < rectX + width
+            && y < rectY + height;
     }
 }

@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.screen;
 
+import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -11,10 +12,12 @@ import net.minecraft.screen.slot.Slot;
 */
 public class DryingTableScreenHandler extends ScreenHandler {
     private final Inventory inventory;
+    public final DryingTableBlockEntity entity;
 
-    public DryingTableScreenHandler(int syncId, PlayerInventory inventory, Inventory container) {
+    public DryingTableScreenHandler(int syncId, PlayerInventory inventory, DryingTableBlockEntity container) {
         super(null, syncId);
         this.inventory = inventory;
+        this.entity = container;
 
         addSlot(new SlotDryingTableResult(inventory.player, container, 0, 124, 35));
 

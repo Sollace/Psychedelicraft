@@ -47,6 +47,14 @@ public class SimpleFluid {
         return color;
     }
 
+    public final int getTranslucentColor(ItemStack stack) {
+        int color = getColor(stack);
+        if (!isTranslucent()) {
+            return color | 0xff000000;
+        }
+        return 0xFFFFFFFF;
+    }
+
     public boolean isTranslucent() {
         return translucent;
     }

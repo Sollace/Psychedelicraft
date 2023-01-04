@@ -8,7 +8,6 @@ package ivorius.psychedelicraft.client.screen;
 /**
  * Created by lukas on 26.10.14.
  */
-public interface UpdatableContainer
-{
+public interface UpdatableContainer {
     void updateAsCustomContainer();
 }

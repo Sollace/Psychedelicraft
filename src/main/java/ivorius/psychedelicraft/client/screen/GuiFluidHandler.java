@@ -6,116 +6,91 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
-import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.List;
 
 /**
  * Created by lukas on 26.10.14.
+ * Updated by Sollace on 4 Jan 2023
  */
-public class GuiFluidHandler extends GuiFluid
-{
-    public static final Identifier bgTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_fluid.png");
+public class GuiFluidHandler<T extends BlockEntity> extends GuiFluid<ContainerFluidHandler<T>> {
+    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_fluid.png");
 
-    public GuiButton changeTransferButton;
+    public ButtonWidget changeTransferButton;
 
-    public GuiFluidHandler(InventoryPlayer inventoryPlayer, TileEntity tileEntity, IFluidHandler fluidHandler, ForgeDirection side)
-    {
-        super(new ContainerFluidHandler(inventoryPlayer, tileEntity, fluidHandler, side));
-        containerFluidHandler = (ContainerFluidHandler) inventorySlots;
+    public GuiFluidHandler(ContainerFluidHandler<T> handler, PlayerInventory inventory, Text title) {
+        super(handler, inventory, title);
     }
 
     @Override
-    public void initGui()
-    {
-        super.initGui();
+    public void init() {
+        super.init();
         initTransferButton();
     }
 
-    protected void initTransferButton()
-    {
-        int baseX = (this.width - this.xSize) / 2;
-        int baseY = (this.height - this.ySize) / 2;
-
-        buttonList.add(changeTransferButton = new GuiButton(0, baseX + 7, baseY + 60, 50, 20, ""));
+    protected void initTransferButton() {
+        int baseX = (width - x) / 2;
+        int baseY = (height - y) / 2;
+        addDrawableChild(changeTransferButton = ButtonWidget.builder(Text.empty(), this::toggleTransfer).dimensions(baseX + 7, baseY + 60, 50, 20).build());
         updateTransferButtonTitle();
     }
 
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
-    {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(getBackgroundTexture());
-        int baseX = (this.width - this.xSize) / 2;
-        int baseY = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(baseX, baseY, 0, 0, this.xSize, this.ySize);
+    protected void toggleTransfer(ButtonWidget sender) {
+        handler.currentlyDrainingItem = !handler.currentlyDrainingItem;
+        updateTransferButtonTitle();
 
-        drawAdditionalInfo(baseX, baseY);
-        drawTanks(baseX, baseY);
-    }
-
-    protected void drawAdditionalInfo(int baseX, int baseY)
-    {
-
-    }
-
-    protected void drawTanks(int baseX, int baseY)
-    {
-        FluidTankInfo tankInfo = getTankInfo(0);
-        if (tankInfo != null)
-            drawTank(tankInfo, baseX + 60, baseY + 14 + 57, 108, 57, 4.0f, 2.1111f);
-    }
-
-    protected Identifier getBackgroundTexture()
-    {
-        return bgTexture;
+        handler.sendContentUpdates();
+        //this.mc.playerController.sendEnchantPacket(handler.syncId, handler.currentlyDrainingItem ? 1 : 0);
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-
-        int baseX = (this.width - this.xSize) / 2;
-        int baseY = (this.height - this.ySize) / 2;
-
-        drawTankTooltips(mouseX, mouseY, baseX, baseY);
+    protected void drawBackground(MatrixStack matrices, float partialTicks, int mouseX, int mouseY) {
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.setShaderTexture(0, getBackgroundTexture());
+        int baseX = (width - x) / 2;
+        int baseY = (height - y) / 2;
+        drawTexture(matrices, baseX, baseY, 0, 0, x, y);
+        drawAdditionalInfo(matrices, baseX, baseY);
+        drawTanks(matrices, baseX, baseY);
     }
 
-    protected void drawTankTooltips(int mouseX, int mouseY, int baseX, int baseY)
-    {
-        FluidTankInfo tankInfo = getTankInfo(0);
-        if (tankInfo != null)
-            drawTankTooltip(tankInfo, baseX + 60, baseY + 14, 108, 57, mouseX, mouseY, getAdditionalTankText());
+    protected void drawAdditionalInfo(MatrixStack matrices, int baseX, int baseY) {
+
     }
 
-    protected List<String> getAdditionalTankText()
-    {
-        return null;
+    protected void drawTanks(MatrixStack matrices, int baseX, int baseY) {
+        drawTank(getTank(), baseX + 60, baseY + 14 + 57, 108, 57, 4.0f, 2.1111f);
+    }
+
+    protected Identifier getBackgroundTexture() {
+        return BACKGROUND;
     }
 
     @Override
-    protected void actionPerformed(GuiButton button)
-    {
-        if (button == changeTransferButton)
-        {
-            containerFluidHandler.currentlyDrainingItem = !containerFluidHandler.currentlyDrainingItem;
-            updateTransferButtonTitle();
-
-            this.mc.playerController.sendEnchantPacket(this.containerFluidHandler.windowId, containerFluidHandler.currentlyDrainingItem ? 1 : 0);
-        }
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+        super.render(matrices, mouseX, mouseY, tickDelta);
+        int baseX = (width - x) / 2;
+        int baseY = (height - y) / 2;
+        drawTankTooltips(matrices, mouseX, mouseY, baseX, baseY);
     }
 
-    public void updateTransferButtonTitle()
-    {
-        changeTransferButton.displayString = containerFluidHandler.currentlyDrainingItem ? "Drain" : "Fill";
+    protected void drawTankTooltips(MatrixStack matrices, int mouseX, int mouseY, int baseX, int baseY) {
+        drawTankTooltip(matrices, getTank(), baseX + 60, baseY + 14, 108, 57, mouseX, mouseY, getAdditionalTankText());
+    }
+
+    protected List<Text> getAdditionalTankText() {
+        return List.of();
+    }
+
+    public void updateTransferButtonTitle() {
+        changeTransferButton.setMessage(handler.currentlyDrainingItem ? Text.literal("Drain") : Text.literal("Fill"));
     }
 }

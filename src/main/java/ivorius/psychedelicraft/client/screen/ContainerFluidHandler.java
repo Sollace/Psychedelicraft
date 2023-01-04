@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.fluids.Resovoir;
 import ivorius.psychedelicraft.items.FluidContainerItem;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -18,16 +19,18 @@ import net.minecraft.screen.slot.Slot;
  * Created by lukas on 26.10.14.
  * Updated by Sollace on 3 Jan 2023
  */
-public class ContainerFluidHandler extends ScreenHandler implements UpdatableContainer {
+public class ContainerFluidHandler<T extends BlockEntity> extends ScreenHandler implements UpdatableContainer {
     public int drainSpeedPerTick = 100;
     public boolean currentlyDrainingItem;
 
     private final Inventory inputInventory = new SimpleInventory(1);
     private final Resovoir tank;
+    private final T blockEntity;
 
-    public ContainerFluidHandler(ScreenHandlerType<? extends ContainerFluidHandler> type, int syncId, PlayerInventory inventoryPlayer, Resovoir tank) {
+    public ContainerFluidHandler(ScreenHandlerType<? extends ContainerFluidHandler<T>> type, int syncId, PlayerInventory inventoryPlayer, Resovoir tank, T blockEntity) {
         super(type, syncId);
         this.tank = tank;
+        this.blockEntity = blockEntity;
         addSlot(new Slot(inputInventory, 0, 25, 40) {
             @Override
             public void markDirty() {
@@ -44,6 +47,14 @@ public class ContainerFluidHandler extends ScreenHandler implements UpdatableCon
         for (int x = 0; x < 9; ++x) {
             addSlot(new Slot(inventoryPlayer, x, 8 + x * 18, 142));
         }
+    }
+
+    public Resovoir getTank() {
+        return tank;
+    }
+
+    public T getBlockEntity() {
+        return blockEntity;
     }
 
     @Override

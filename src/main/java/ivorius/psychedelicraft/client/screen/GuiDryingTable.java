@@ -6,62 +6,50 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 import ivorius.psychedelicraft.screen.DryingTableScreenHandler;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.text.Text;
 import net.minecraft.util.*;
-import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
 
-public class GuiDryingTable extends GuiContainer
-{
-    public static Identifier dryingTableBG = Psychedelicraft.id(Psychedelicraft.filePathTextures + "guiDryingTable.png");
+import com.mojang.blaze3d.systems.RenderSystem;
 
-    public GuiDryingTable(InventoryPlayer par1InventoryPlayer, World par2World, DryingTableBlockEntity tileEntityDryingTable)
-    {
-        super(new DryingTableScreenHandler(par1InventoryPlayer, par2World, tileEntityDryingTable));
+/**
+ * Updated by Sollace on 3 Jan 2023
+ */
+public class GuiDryingTable extends HandledScreen<DryingTableScreenHandler> {
+    public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.filePathTextures + "guiDryingTable.png");
+
+    public GuiDryingTable(DryingTableScreenHandler handler, PlayerInventory inventory, Text title) {
+        super(handler, inventory, title);
     }
 
-    /**
-     * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     */
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
-    {
-        this.fontRendererObj.drawString("Drying Table", 28, 6, 4210752);
-        this.fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 96 + 2, 4210752);
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        drawTextWithShadow(matrices, textRenderer, Text.literal("Drying Table"), 28, 6, 4210752);
+        drawTextWithShadow(matrices, textRenderer, title, 8, y - 96 + 2, 4210752);
     }
 
-    /**
-     * Draw the background layer for the GuiContainer (everything behind the items)
-     */
     @Override
-    protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3)
-    {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.renderEngine.bindTexture(dryingTableBG);
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.setShaderTexture(0, TEXTURE);
 
-        int var5 = (this.width - this.xSize) / 2;
-        int var6 = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(var5, var6, 0, 0, this.xSize, this.ySize);
+        int var5 = (width - x) / 2;
+        int var6 = (height - y) / 2;
+        drawTexture(matrices, var5, var6, 0, 0, x, y);
 
-        if (((DryingTableScreenHandler) this.inventorySlots).tileEntityDryingTable.dryingProgress > 0.0f)
-        {
-            this.drawTexturedModalRect(var5 + 88, var6 + 34, 176, 59, 25, 16);
+        if (handler.entity.dryingProgress > 0) {
+            drawTexture(matrices, var5 + 88, var6 + 34, 176, 59, 25, 16);
         }
 
-        int var7 = (int) (((DryingTableScreenHandler) this.inventorySlots).tileEntityDryingTable.dryingProgress * 24f); //Max 24, progress
-        this.drawTexturedModalRect(var5 + 88, var6 + 34, 176, 42, var7 + 1, 16);
+        int var7 = (int)handler.entity.dryingProgress * 24; //Max 24, progress
+        drawTexture(matrices, var5 + 88, var6 + 34, 176, 42, var7 + 1, 16);
 
-        int var8 = (int) (((DryingTableScreenHandler) this.inventorySlots).tileEntityDryingTable.heatRatio * 20f); //Max 20, sun
-        this.drawTexturedModalRect(var5 + 148, var6 + 6 + (20 - var8), 176, 21 + (20 - var8), 20, var8);
+        int var8 = (int) handler.entity.heatRatio * 20; //Max 20, sun
+        drawTexture(matrices, var5 + 148, var6 + 6 + (20 - var8), 176, 21 + (20 - var8), 20, var8);
     }
-
-    @Override
-    public boolean doesGuiPauseGame()
-    {
-        return false;
-    }
-
 }
