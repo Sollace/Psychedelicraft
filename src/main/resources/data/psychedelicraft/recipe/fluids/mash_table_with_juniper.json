@@ -1,0 +1,17 @@
+{
+  "type": "psychedelicraft:fill_drink_container",
+  "ingredients": [
+    { "item": "psychedelicraft:mash_table" },
+    { "item": "psychedelicraft:juniper_berries" },
+    { "item": "psychedelicraft:juniper_berries" },
+    { "item": "psychedelicraft:juniper_berries" },
+    { "item": "psychedelicraft:juniper_berries" },
+    { "item": "minecraft:sugar" },
+    { "tag": "psychedelicraft:grapes" },
+    { "tag": "psychedelicraft:grapes" },
+    { "item": "minecraft:wheat" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:juniper"
+  }
+}

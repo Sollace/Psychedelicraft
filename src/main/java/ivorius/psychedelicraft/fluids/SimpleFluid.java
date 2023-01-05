@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.fluids;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.items.FluidContainerItem;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -61,6 +62,22 @@ public class SimpleFluid {
 
     protected String getTranslationKey() {
         return Util.createTranslationKey("fluid", id);
+    }
+
+    public final ItemStack getDefaultStack(FluidContainerItem container) {
+        return getDefaultStack(container, container.getMaxCapacity());
+    }
+
+    public final ItemStack getDefaultStack() {
+        return getDefaultStack(FluidContainerItem.FLUID);
+    }
+
+    public final ItemStack getDefaultStack(int level) {
+        return getDefaultStack(FluidContainerItem.FLUID, level);
+    }
+
+    public ItemStack getDefaultStack(FluidContainerItem container, int level) {
+        return container.setLevel(container.getDefaultStack(this), level);
     }
 
     public Text getName(ItemStack stack) {

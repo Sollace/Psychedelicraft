@@ -1,0 +1,17 @@
+{
+  "type": "psychedelicraft:fill_drink_container",
+  "ingredients": [
+    { "item": "psychedelicraft:mash_table" },
+    { "item": "minecraft:water_bucket" },
+    { "item": "minecraft:sugar_cane" },
+    { "item": "minecraft:sugar_cane" },
+    { "item": "minecraft:sugar_cane" },
+    { "item": "minecraft:sugar_cane" },
+    { "item": "minecraft:sugar_cane" },
+    { "item": "minecraft:sugar_cane" },
+    { "item": "minecraft:sugar_cane" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:sugar_cane"
+  }
+}

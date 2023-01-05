@@ -92,7 +92,7 @@ public class CommandDrug extends CommandBase
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] arguments)
+    public List<String> addTabCompletionOptions(ICommandSender par1ICommandSender, String[] arguments)
     {
         if (arguments.length == 1)
             return getListOfStringsMatchingLastWord(arguments, getPlayers());

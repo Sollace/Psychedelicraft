@@ -12,7 +12,7 @@ import net.minecraft.block.Block;
 /**
  * Created by lukas on 17.02.14.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class RenderWineGrapeLattice implements ISimpleBlockRenderingHandler
 {
     @Override

@@ -59,14 +59,15 @@ public class CommandPsyche extends CommandBase
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
+    public List<String> addTabCompletionOptions(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
     {
         if (par2ArrayOfStr.length == 1)
         {
             String[] values = new String[]{"spawnRift"};
 
-            List list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             Collections.addAll(list, values);
 
             return list;

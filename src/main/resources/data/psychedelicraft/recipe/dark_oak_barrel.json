@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    "# #",
+    "S#S"
+  ],
+  "key": {
+    "#": { "item": "minecraft:dark_oak_planks" },
+    "I": { "item": "minecraft:iron_ingot" },
+    "S": { "item": "minecraft:stick" }
+  },
+  "result": {
+    "item": "psychedelicraft:dark_oak_barrel"
+  }
+}

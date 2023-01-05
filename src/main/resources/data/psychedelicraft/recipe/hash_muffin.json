@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LLL",
+    "#X#",
+    "LLL"
+  ],
+  "key": {
+    "X": { "item": "minecraft:light_blue_dye" },
+    "#": { "item": "minecraft:wheat" },
+    "L": { "item": "psychedelicraft:dried_cannabis" }
+  },
+  "result": {
+    "item": "psychedelicraft:hash_muffin"
+  }
+}

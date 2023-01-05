@@ -107,7 +107,7 @@ public record AlcoholicDrinkTypes (List<NamedAlcohol> names, List<AlcoholIcon> a
         }
     }
 
-    private static class NamedAlcohol extends AlcoholMatcher {
+    public static class NamedAlcohol extends AlcoholMatcher {
         public String iconName;
 
         public NamedAlcohol(String iconName, IntRange maturationRange, IntRange distillationRange) {
@@ -116,7 +116,7 @@ public record AlcoholicDrinkTypes (List<NamedAlcohol> names, List<AlcoholIcon> a
         }
     }
 
-    private static class AlcoholIcon extends AlcoholMatcher {
+    public static class AlcoholIcon extends AlcoholMatcher {
         public String stillIconName;
 
         public String flowingIconName;

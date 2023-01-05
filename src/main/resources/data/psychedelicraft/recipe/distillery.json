@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##",
+    "D "
+  ],
+  "key": {
+    "#": { "item": "minecraft:copper_ingot" },
+    "D": { "item": "psychedelicraft:flask" }
+  },
+  "result": {
+    "item": "psychedelicraft:distillery"
+  }
+}

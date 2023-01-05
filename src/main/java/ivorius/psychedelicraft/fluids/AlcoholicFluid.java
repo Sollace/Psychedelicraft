@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.fluids;
 import ivorius.psychedelicraft.client.rendering.MCColorHelper;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
 import ivorius.psychedelicraft.items.FluidContainerItem;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
@@ -179,9 +180,8 @@ public class AlcoholicFluid extends FluidDrug implements Fermentable, FluidDisti
         int distillation = getDistillation(stack);
         int maturation = getMaturation(stack);
 
-        // TODO: (Sollace) Client code reference
-        int baseFluidColor = MCColorHelper.mixColors(slurryColor, clearColor, (1.0f - 1.0f / (1.0f + distillation)));
-        return MCColorHelper.mixColors(baseFluidColor, matureColor, (1.0f - 1.0f / (1.0f + maturation * 0.2f)));
+        int baseFluidColor = MathUtils.mixColors(slurryColor, clearColor, (1.0f - 1.0f / (1.0f + distillation)));
+        return MathUtils.mixColors(baseFluidColor, matureColor, (1.0f - 1.0f / (1.0f + maturation * 0.2f)));
     }
 
     public static class Settings extends FluidDrug.Settings {

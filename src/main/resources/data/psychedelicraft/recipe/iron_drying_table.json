@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#I#",
+    "IRI"
+  ],
+  "key": {
+    "#": { "tag": "minecraft:planks" },
+    "R": { "item": "minecraft:redstone_dust" },
+    "I": { "item": "minecraft:iron_ingot" }
+  },
+  "result": {
+    "item": "psychedelicraft:iron_drying_table"
+  }
+}

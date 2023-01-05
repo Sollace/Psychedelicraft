@@ -28,12 +28,7 @@ public class PSBlocks {
     public static Block distillery = register("distillery", new BlockDistillery(Settings.of(Material.GLASS).hardness(1)));
     public static Block bottleRack = register("bottle_rack", new BlockBottleRack(Settings.of(Material.WOOD).hardness(0.5F)));
 
-    public static Block dryingTable = register("oak_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
-    public static Block spruceDryingTable = register("spruce_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
-    public static Block birchDryingTable = register("birch_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
-    public static Block jungleDryingTable = register("jungle_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
-    public static Block acaciaDryingTable = register("acacia_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
-    public static Block darkOakDryingTable = register("dark_oak_drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
+    public static Block dryingTable = register("drying_table", new BlockDryingTable(Settings.of(Material.WOOD).hardness(2)));
     public static Block dryingTableIron = register("iron_drying_table", new BlockDryingTable(Settings.of(Material.METAL).hardness(5)));
 
     public static JuniperLeavesBlock juniper_leaves = register("juniper_leaves", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
@@ -49,7 +44,7 @@ public class PSBlocks {
     public static Block coffea = register("coffea_plant", new BlockCoffea(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     public static Block peyote = register("peyote_plant", new BlockPeyote(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
 
-    public static Block emptyLattice = register("empty_lattice", new LatticeBlock(Block.Settings.of(Material.WOOD).hardness(0.3F).nonOpaque()));
+    public static Block emptyLattice = register("lattice", new LatticeBlock(Block.Settings.of(Material.WOOD).hardness(0.3F).nonOpaque()));
     public static Block wineGrapeLattice = register("wine_grape_lattice", new BlockWineGrapeLattice(Block.Settings.of(Material.WOOD)
             .hardness(0.3F).ticksRandomly().nonOpaque()
     ));

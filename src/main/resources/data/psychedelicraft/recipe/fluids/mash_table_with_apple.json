@@ -1,0 +1,17 @@
+{
+  "type": "psychedelicraft:fill_drink_container",
+  "ingredients": [
+    { "item": "psychedelicraft:mash_table" },
+    { "tag": "psychedelicraft:apples" },
+    { "tag": "psychedelicraft:apples" },
+    { "tag": "psychedelicraft:apples" },
+    { "tag": "psychedelicraft:apples" },
+    { "tag": "psychedelicraft:apples" },
+    { "tag": "psychedelicraft:apples" },
+    { "tag": "psychedelicraft:apples" },
+    { "tag": "psychedelicraft:apples" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:apple"
+  }
+}

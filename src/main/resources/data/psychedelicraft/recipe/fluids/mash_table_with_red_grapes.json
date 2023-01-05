@@ -1,0 +1,17 @@
+{
+  "type": "psychedelicraft:fill_drink_container",
+  "ingredients": [
+    { "item": "psychedelicraft:mash_table" },
+    { "tag": "psychedelicraft:grapes" },
+    { "tag": "psychedelicraft:grapes" },
+    { "tag": "psychedelicraft:grapes" },
+    { "tag": "psychedelicraft:grapes" },
+    { "tag": "psychedelicraft:grapes" },
+    { "tag": "psychedelicraft:grapes" },
+    { "tag": "psychedelicraft:grapes" },
+    { "tag": "psychedelicraft:grapes" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:red_grapes"
+  }
+}

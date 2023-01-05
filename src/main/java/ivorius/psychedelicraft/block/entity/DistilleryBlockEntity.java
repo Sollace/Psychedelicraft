@@ -38,6 +38,7 @@ public class DistilleryBlockEntity extends FlaskBlockEntity {
                 if (timeDistilled >= neededDistillationTime)
                 {
                     ItemStack leftover = distillable.distillStep(tank.getStack());
+                    @SuppressWarnings("unused")
                     ItemStack overflow = destination.getTank(Direction.WEST).deposit(leftover);
                     // TODO: (Sollace) Overflow needs to go somewhere. Original didn't do anything with it either.
                     timeDistilled = 0;

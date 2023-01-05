@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "O-O",
+    "GO ",
+    "OIO"
+  ],
+  "key": {
+    "O": { "item": "minecraft:glass_block" },
+    "-": { "item": "minecraft:planks" },
+    "G": { "item": "minecraft:golden_ingot" },
+    "I": { "item": "minecraft:iron_ingot" }
+  },
+  "result": {
+    "item": "psychedelicraft:peyote_joint"
+  }
+}

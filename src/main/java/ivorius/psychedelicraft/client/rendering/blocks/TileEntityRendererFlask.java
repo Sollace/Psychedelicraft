@@ -5,17 +5,9 @@
 
 package ivorius.psychedelicraft.client.rendering.blocks;
 
-import ivorius.ivtoolkit.math.IvMathHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.client.model.IModelCustom;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
 /**

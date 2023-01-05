@@ -1,10 +1,11 @@
 package ivorius.psychedelicraft.crafting;
 
 import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 
 import java.util.*;
+
+import ivorius.psychedelicraft.items.PSItems;
 
 /**
  * Created by lukas on 07.11.14.
@@ -12,24 +13,31 @@ import java.util.*;
 @Deprecated
 public class DryingRegistry
 {
-    private static Map<Object, ItemStack> dryingRecipes = new HashMap<>();
+    private static Map<Object, ItemStack> dryingRecipes;
 
-    public static void addDryingResult(Object src, ItemStack result)
-    {
+    static {
+        dryingRecipes = new HashMap<>();
+        addDryingResult(PSItems.cannabisLeaf, new ItemStack(PSItems.driedCannabisLeaves, 3));
+        addDryingResult(PSItems.cannabisBuds, new ItemStack(PSItems.driedCannabisBuds, 3));
+        addDryingResult(Items.BROWN_MUSHROOM, new ItemStack(PSItems.magicMushroomsBrown, 3));
+        addDryingResult(Items.RED_MUSHROOM, new ItemStack(PSItems.magicMushroomsRed, 3));
+        addDryingResult(PSItems.tobaccoLeaf, new ItemStack(PSItems.driedTobacco, 3));
+        addDryingResult(PSItems.cocaLeaf, new ItemStack(PSItems.driedCocaLeaves, 3));
+        addDryingResult(PSItems.peyote, new ItemStack(PSItems.driedPeyote, 3));
+    }
+
+    public static void addDryingResult(Object src, ItemStack result) {
         dryingRecipes.put(src, result);
     }
 
-    public static ItemStack dryingResult(Collection<ItemStack> sources)
-    {
+    public static ItemStack dryingResult(Collection<ItemStack> sources) {
         if (sources.size() != 9)
             return null;
 
-        for (Object target : allDryingSources())
-        {
+        for (Object target : allDryingSources()) {
             boolean allSame = true;
 
-            for (ItemStack src : sources)
-            {
+            for (ItemStack src : sources) {
                 if (!matches(src, target))
                 {
                     allSame = false;
@@ -44,13 +52,11 @@ public class DryingRegistry
         return null;
     }
 
-    public static ItemStack dryingResult(Object source)
-    {
+    public static ItemStack dryingResult(Object source) {
         return dryingRecipes.get(source).copy();
     }
 
-    public static Set<Object> allDryingSources()
-    {
+    public static Set<Object> allDryingSources() {
         return dryingRecipes.keySet();
     }
 

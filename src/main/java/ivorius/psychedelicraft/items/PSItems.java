@@ -28,7 +28,7 @@ import net.minecraft.util.DyeColor;
 public class PSItems {
     public static DrinkableItem woodenMug = register("wooden_mug", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER / 2, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
     public static DrinkableItem stoneCup = register("stone_cup", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER / 20, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    public static DrinkableItem glassChalice = register("glass_chalace", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER / 5, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    public static DrinkableItem glassChalice = register("glass_chalice", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER / 5, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
 
     public static FlaskItem itemBarrel = register("oak_barrel", new FlaskItem(PSBlocks.oak_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
     public static FlaskItem itemSpruceBarrel = register("spruce_barrel", new FlaskItem(PSBlocks.spruce_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
@@ -36,6 +36,7 @@ public class PSItems {
     public static FlaskItem itemJungleBarrel = register("jungle_barrel", new FlaskItem(PSBlocks.jungle_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
     public static FlaskItem itemAcaciaBarrel = register("acacia_barrel", new FlaskItem(PSBlocks.acacia_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
     public static FlaskItem itemDarkOakBarrel = register("dark_oak_barrel", new FlaskItem(PSBlocks.dark_oak_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
+
     public static FlaskItem itemMashTub = register("mash_rub", new ItemMashTub(PSBlocks.mashTub, new Settings().maxCount(16)));
     public static FlaskItem itemFlask = register("flask", new FlaskItem(PSBlocks.flask, new Settings().maxCount(16), FlaskBlockEntity.FLASK_CAPACITY));
     public static FlaskItem itemDistillery = register("distillery", new FlaskItem(PSBlocks.distillery, new Settings().maxCount(16), DistilleryBlockEntity.DISTILLERY_CAPACITY));
@@ -110,6 +111,11 @@ public class PSItems {
             new DrugInfluence("Peyote", 20, 0.003, 0.0015, 0.4f),
             new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.1f)
     ));
+
+    public static Item lattice = register("lattice", PSBlocks.emptyLattice);
+    public static Item bottle_rack = register("bottle_rack", PSBlocks.bottleRack);
+    public static Item drying_table = register("drying_table", PSBlocks.dryingTable);
+    public static Item iron_drying_table = register("iron_drying_table", PSBlocks.dryingTableIron);
 
     public static Item harmonium = register("harmonium", new ItemHarmonium(new Settings()));
 

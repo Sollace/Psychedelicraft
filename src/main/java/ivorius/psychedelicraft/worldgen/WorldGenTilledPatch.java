@@ -30,10 +30,6 @@ public class WorldGenTilledPatch extends WorldGenerator
     @Override
     public boolean generate(World par1World, Random par2Random, int par3, int par4, int par5)
     {
-        if (block == null)
-        {
-            return false;
-        }
 
         if (par1World.isAirBlock(par3, par4, par5) && par1World.getBlock(par3, par4 - 1, par5) == Blocks.grass && (!needsWater || isWaterNearby(par1World, par3, par4, par5)))
         {

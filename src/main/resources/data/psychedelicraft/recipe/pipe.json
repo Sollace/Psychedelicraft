@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  I",
+    " S ",
+    "WS "
+  ],
+  "key": {
+    "W": { "tag": "minecraft:planks" },
+    "S": { "item": "minecraft:stick" },
+    "I": { "item": "minecraft:iron_ingot" }
+  },
+  "result": {
+    "item": "psychedelicraft:pipe"
+  }
+}

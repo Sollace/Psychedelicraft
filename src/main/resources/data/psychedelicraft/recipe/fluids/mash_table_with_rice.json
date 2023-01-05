@@ -1,0 +1,17 @@
+{
+  "type": "psychedelicraft:fill_drink_container",
+  "ingredients": [
+    { "item": "psychedelicraft:mash_table" },
+    { "item": "minecraft:water_bucket" },
+    { "tag": "psychedelicraft:rice" },
+    { "tag": "psychedelicraft:rice" },
+    { "tag": "psychedelicraft:rice" },
+    { "tag": "psychedelicraft:rice" },
+    { "tag": "psychedelicraft:rice" },
+    { "tag": "psychedelicraft:rice" },
+    { "tag": "psychedelicraft:rice" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:rice"
+  }
+}

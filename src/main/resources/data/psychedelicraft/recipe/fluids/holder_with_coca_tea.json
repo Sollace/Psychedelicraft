@@ -1,0 +1,13 @@
+{
+  "type": "psychedelicraft:fill_drink_container",
+  "ingredients": [
+    { "tag": "psychedelicraft:drink_holder" },
+    { "item": "minecraft:water_bucket" },
+    { "item": "psychedelicraft:coca_leaf" },
+    { "item": "psychedelicraft:coca_leaf" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:coca_tea",
+    "level": 500
+  }
+}

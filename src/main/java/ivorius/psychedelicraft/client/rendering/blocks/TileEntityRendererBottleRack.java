@@ -1,18 +1,8 @@
 package ivorius.psychedelicraft.client.rendering.blocks;
 
-import ivorius.ivtoolkit.blocks.IvRotatableBlockRenderHelper;
-import ivorius.ivtoolkit.raytracing.IvRaytracer;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.TileEntityBottleRack;
-import ivorius.psychedelicraft.items.ItemBottle;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
