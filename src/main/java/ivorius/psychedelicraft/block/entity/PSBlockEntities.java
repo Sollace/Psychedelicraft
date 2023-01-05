@@ -8,10 +8,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
 public interface PSBlockEntities {
-    BlockEntityType<DryingTableBlockEntity> DRYING_TABLE = create("drying_table", BlockEntityType.Builder.create(DryingTableBlockEntity::new,
-            PSBlocks.dryingTable, PSBlocks.spruceDryingTable,
-            PSBlocks.birchDryingTable, PSBlocks.jungleDryingTable,
-            PSBlocks.acaciaDryingTable, PSBlocks.darkOakDryingTable, PSBlocks.dryingTableIron));
+    BlockEntityType<DryingTableBlockEntity> DRYING_TABLE = create("drying_table", BlockEntityType.Builder.create(DryingTableBlockEntity::new, PSBlocks.dryingTable, PSBlocks.dryingTableIron));
     BlockEntityType<MashTubBlockEntity> MASH_TUB = create("mash_tub", BlockEntityType.Builder.create(MashTubBlockEntity::new, PSBlocks.mashTub));
     BlockEntityType<TileEntityRiftJar> RIFT_JAR = create("rift_jar", BlockEntityType.Builder.create(TileEntityRiftJar::new, PSBlocks.riftJar));
     BlockEntityType<DistilleryBlockEntity> DISTILLERY = create("distillery", BlockEntityType.Builder.create(DistilleryBlockEntity::new, PSBlocks.distillery));

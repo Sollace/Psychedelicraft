@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.fluids;
 
-import ivorius.psychedelicraft.client.rendering.MCColorHelper;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
 import ivorius.psychedelicraft.items.FluidContainerItem;
 import ivorius.psychedelicraft.util.MathUtils;
