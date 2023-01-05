@@ -37,13 +37,12 @@ and you may use this mod in modpacks.
 Contributing
 ============
 
-Quick guide:
+1. JDK 17 is required. Install it using https://adoptium.net/?variant=openjdk17&jvmVariant=hotspot
 
-Requires: [Gradle](https://gradle.org), [Java 16 JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-* gradle setupDecompWorkspace
-* Depending on your IDE:
-  * IntelliJ idea: Import gradle project, then: gradle genIntellijRuns
-  * Eclipse: gradle eclipse
-* And you're done!
+2. Open a terminal window in the same directory as the sources (git clone or extracted from zip). Run the following command (windows).
 
-This mod is written with [Minecraft Forge](http://www.minecraftforge.net/). Visit [its repo](https://github.com/MinecraftForge/MinecraftForge) for detailed setup instructions.
+```
+gradlew build
+```
+
+3. After some time, the built mod will be in `/build/libs`.
