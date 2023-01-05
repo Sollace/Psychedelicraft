@@ -12,7 +12,6 @@ public interface PSCommands {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> {
             evt.registerServerCommand(new CommandDrug());
-            evt.registerServerCommand(new CommandPsyche());
         });
     }
 }
