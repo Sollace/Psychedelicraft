@@ -5,16 +5,12 @@
 
 package ivorius.psychedelicraft.items;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.block.*;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 /**
  * Created by lukas on 25.10.14.
+ * Updated by Sollace on 1 Jan 2023
  */
 public class FlaskItem extends BlockItem implements FluidContainerItem {
 
@@ -28,17 +24,5 @@ public class FlaskItem extends BlockItem implements FluidContainerItem {
     @Override
     public int getMaxCapacity() {
         return capacity;
-    }
-
-    @Override
-    protected boolean postPlacement(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
-        if (state.getBlock() instanceof FluidContainer container) {
-            container.fill(pos, world, state, stack);
-        }
-        return super.postPlacement(pos, world, player, stack, state);
-    }
-
-    public interface FluidContainer {
-        void fill(BlockPos pos, World world, BlockState state, ItemStack fluid);
     }
 }
