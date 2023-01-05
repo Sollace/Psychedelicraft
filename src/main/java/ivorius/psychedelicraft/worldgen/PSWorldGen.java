@@ -5,22 +5,14 @@
 
 package ivorius.psychedelicraft.worldgen;
 
-import ivorius.psychedelicraft.config.PSConfig;
-import ivorius.psychedelicraft.fluids.PSFluids;
-import net.minecraft.item.ItemStack;
-
-import static ivorius.psychedelicraft.blocks.PSBlocks.*;
-import static ivorius.psychedelicraft.items.PSItems.*;
-import static ivorius.psychedelicraft.worldgen.GeneratorGeneric.*;
-import static ivorius.psychedelicraft.worldgen.GeneratorGeneric.EntryBiome;
-
 /**
  * Created by lukas on 25.04.14.
  */
 public class PSWorldGen {
     public static void bootstrap() {
         JuniperTreeGenerationConfigs.bootstrap();
-
+/*
+        // TODO: Tree generator
         if (PSConfig.genJuniper)
             registerWorldGenerator(new GeneratorGeneric(new JuniperTreeSaplingGenerator(false),
                     new EntryBiomeTypes(0.1f, 1, HILLS, COLD),
@@ -78,6 +70,7 @@ public class PSWorldGen {
 
         if (PSConfig.dungeonChests)
         {
+            // TODO: Loot tables
             addItem(DUNGEON_CHEST, new WeightedRandomChestContent(wineGrapes, 0, 1, 8, 10));
             addItem(DUNGEON_CHEST, new WeightedRandomChestContent(glassChalice, 0, 1, 4, 5));
             addItem(DUNGEON_CHEST, new WeightedRandomChestContent(woodenMug, 0, 1, 16, 5));
@@ -94,6 +87,7 @@ public class PSWorldGen {
 
         if (PSConfig.villageChests)
         {
+            // TODO: Loot tables
             addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(wineGrapes, 0, 1, 8, 10));
             addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(juniperBerries, 0, 1, 8, 10));
             addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(woodenMug, 0, 1, 16, 5));
@@ -118,6 +112,6 @@ public class PSWorldGen {
             addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(caffeineStack, 1, 1, 1));
 
             addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(hashMuffin, 0, 1, 8, 1));
-        }
+        }*/
     }
 }

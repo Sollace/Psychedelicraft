@@ -5,15 +5,11 @@
 
 package ivorius.psychedelicraft.worldgen;
 
-import net.minecraft.world.World;
-
-import java.util.*;
-
 /**
  * Created by lukas on 11.03.14.
  */
 @Deprecated
-public class GeneratorGeneric implements IWorldGenerator
+public class GeneratorGeneric {/* implements IWorldGenerator
 {
     public WorldGenerator generator;
     public List<Entry> biomeEntries;
@@ -133,5 +129,5 @@ public class GeneratorGeneric implements IWorldGenerator
         {
             return chance;
         }
-    }
+    }*/
 }

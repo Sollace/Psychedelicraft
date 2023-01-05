@@ -5,12 +5,12 @@
 
 package ivorius.psychedelicraft.worldgen;
 
-import ivorius.psychedelicraft.blocks.PSBlocks;
-import net.minecraft.world.World;
-
-import java.util.Random;
-
-public class WorldGenPeyote extends WorldGenerator
+/**
+ *
+ *  TODO: (Sollace) Need to use a decorator for this
+ */
+@Deprecated
+public class WorldGenPeyote {/* extends WorldGenerator
 {
     public WorldGenPeyote(boolean notify)
     {
@@ -31,5 +31,5 @@ public class WorldGenPeyote extends WorldGenerator
         }
 
         return true;
-    }
+    }*/
 }

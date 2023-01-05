@@ -16,7 +16,7 @@ import net.minecraft.world.gen.foliage.*;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.trunk.BendingTrunkPlacer;
 
-public class JuniperTreeGenerationConfigs {
+class JuniperTreeGenerationConfigs {
     public static final RegistryKey<ConfiguredFeature<?, ?>> JUNIPER_TREE_CONFIG = config("juniper_tree");
     public static final RegistryKey<PlacedFeature> JUNIPER_TREE_PLACEMENT = placement("juniper_tree_checked");
 

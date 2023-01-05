@@ -5,16 +5,11 @@
 
 package ivorius.psychedelicraft.worldgen;
 
-import ivorius.psychedelicraft.blocks.IvTilledFieldPlant;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.init.Blocks;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.WorldGenerator;
-
-import java.util.Random;
-
-public class WorldGenTilledPatch extends WorldGenerator
+/**
+ * TODO: (Sollace) generates patches of tilled dirt with our plants growing on them
+ */
+@Deprecated
+public class WorldGenTilledPatch {/*extends WorldGenerator
 {
     public boolean needsWater;
     public Block block;
@@ -96,5 +91,5 @@ public class WorldGenTilledPatch extends WorldGenerator
         }
 
         return false;
-    }
+    }*/
 }
