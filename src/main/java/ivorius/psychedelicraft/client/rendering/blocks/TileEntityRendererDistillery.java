@@ -5,62 +5,49 @@
 
 package ivorius.psychedelicraft.client.rendering.blocks;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
-import org.lwjgl.opengl.GL11;
+import ivorius.psychedelicraft.fluids.Resovoir;
+import ivorius.psychedelicraft.fluids.SimpleFluid;
+import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.*;
 
 /**
  * Created by lukas on 25.10.14.
  */
-public class TileEntityRendererDistillery extends TileEntitySpecialRenderer
-{
-    public static IModelCustom modelDistillery = AdvancedModelLoader.loadModel(new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathModels + "distillery.obj"));
+public class TileEntityRendererDistillery implements BlockEntityRenderer<DistilleryBlockEntity> {
 
-    private IModelCustom model;
-    private ResourceLocation texture;
+    public TileEntityRendererDistillery(BlockEntityRendererFactory.Context context) {
 
-    public TileEntityRendererDistillery()
-    {
-        model = modelDistillery;
-        texture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "distillery.png");
     }
 
-    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks)
-    {
-        DistilleryBlockEntity distillery = (DistilleryBlockEntity) tileEntity;
+    @Override
+    public void render(DistilleryBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        matrices.push();
+        matrices.translate(0.5F, 0.502F, 0.5F);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getCachedState().get(HorizontalFacingBlock.FACING).asRotation() + 180));
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(x + 0.5f, y + 0.502f, z + 0.5f);
-        GL11.glRotatef(-90.0f * distillery.direction + 180.0f, 0.0f, 1.0f, 0.0f);
+        Resovoir tank = entity.getTank(Direction.UP);
+        SimpleFluid fluid = tank.getFluidType();
 
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glPushMatrix();
-        GL11.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-        GL11.glTranslatef(-.5f, -.5f, .5f);
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);
-        this.bindTexture(texture);
-        model.renderAll();
-        GL11.glPopMatrix();
-        GL11.glEnable(GL11.GL_CULL_FACE);
+        if (!fluid.isEmpty()) {
+            float fluidHeight = 2.8f * MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
 
-        FluidStack fluidStack = distillery.containedFluid();
-        if (fluidStack != null)
-        {
-            float fluidHeight = 2.8f * IvMathHelper.clamp(0.0f, (float) fluidStack.amount / (float) distillery.tankCapacity(), 1.0f);
-
-            FluidBoxRenderer fluidBoxRenderer = new FluidBoxRenderer(1.0f / 16.0f);
-            fluidBoxRenderer.prepare(fluidStack);
-
-            fluidBoxRenderer.renderFluid(-1.9f, -8.0f, -3.9f, 3.8f, fluidHeight, 0.9f, ForgeDirection.NORTH, ForgeDirection.UP);
-            fluidBoxRenderer.renderFluid(-1.9f, -8.0f, 3.0f, 3.8f, fluidHeight, 0.9f, ForgeDirection.SOUTH, ForgeDirection.UP);
-            fluidBoxRenderer.renderFluid(-3.9f, -8.0f, -1.9f, 0.9f, fluidHeight, 3.8f, ForgeDirection.WEST, ForgeDirection.UP);
-            fluidBoxRenderer.renderFluid(3.0f, -8.0f, -1.9f, 0.9f, fluidHeight, 3.8f, ForgeDirection.EAST, ForgeDirection.UP);
-            fluidBoxRenderer.renderFluid(-3.0f, -8.0f, -3.0f, 6.0f, fluidHeight, 6.0f, ForgeDirection.UP);
-
-            fluidBoxRenderer.cleanUp();
+            FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance();
+            fluidRenderer.setScale(1F / 16F);
+            fluidRenderer.prepare(tank);
+            fluidRenderer.renderFluid(-1.9F, -8, -3.9F, 3.8F, fluidHeight, 0.9F, Direction.NORTH, Direction.UP);
+            fluidRenderer.renderFluid(-1.9F, -8,     3, 3.8F, fluidHeight, 0.9F, Direction.SOUTH, Direction.UP);
+            fluidRenderer.renderFluid(-3.9F, -8, -1.9F, 0.9F, fluidHeight, 3.8F, Direction.WEST, Direction.UP);
+            fluidRenderer.renderFluid(    3, -8, -1.9F, 0.9F, fluidHeight, 3.8F, Direction.EAST, Direction.UP);
+            fluidRenderer.renderFluid(   -3, -8, -3, 6,       fluidHeight, 6,    Direction.UP);
+            fluidRenderer.cleanUp();
         }
 
-        GL11.glPopMatrix();
+        matrices.pop();
     }
 }

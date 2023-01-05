@@ -9,6 +9,8 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.fluids.FluidWithIconSymbol;
 import ivorius.psychedelicraft.fluids.FluidWithIconSymbolRegistering;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -20,7 +22,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
-public class TileEntityRendererBarrel extends TileEntitySpecialRenderer
+public class TileEntityRendererBarrel implements BlockEntityRenderer<BarrelBlockEntity>
 {
     private ModelBarrel barrelModel;
 
@@ -31,10 +33,8 @@ public class TileEntityRendererBarrel extends TileEntitySpecialRenderer
     private ResourceLocation barrelTextureAcacia;
     private ResourceLocation barrelTextureDarkOak;
 
-    public TileEntityRendererBarrel()
+    public TileEntityRendererBarrel(BlockEntityRendererFactory.Context context)
     {
-        super();
-
         this.barrelModel = new ModelBarrel();
         this.barrelTexture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "barrelTexture.png");
         this.barrelTextureSpruce = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "barrelTextureSpruce.png");

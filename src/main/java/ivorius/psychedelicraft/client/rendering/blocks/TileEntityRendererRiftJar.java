@@ -15,6 +15,8 @@ import ivorius.psychedelicraft.block.entity.TileEntityRiftJar;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -27,7 +29,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
 
-public class TileEntityRendererRiftJar extends TileEntitySpecialRenderer
+public class TileEntityRendererRiftJar implements BlockEntityRenderer<TileEntityRiftJar>
 {
     public ModelBase model;
     public ResourceLocation texture;
@@ -40,7 +42,7 @@ public class TileEntityRendererRiftJar extends TileEntitySpecialRenderer
 
     public IvBezierPath3DRendererText bezierPath3DRendererText;
 
-    public TileEntityRendererRiftJar()
+    public TileEntityRendererRiftJar(BlockEntityRendererFactory.Context context)
     {
         super();
 

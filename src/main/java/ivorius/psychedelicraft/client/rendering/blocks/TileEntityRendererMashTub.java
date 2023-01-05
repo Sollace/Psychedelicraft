@@ -5,77 +5,58 @@
 
 package ivorius.psychedelicraft.client.rendering.blocks;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
+import ivorius.psychedelicraft.blocks.BlockMashTub;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
-import net.minecraft.block.Block;
-import org.lwjgl.opengl.GL11;
+import ivorius.psychedelicraft.fluids.Resovoir;
+import ivorius.psychedelicraft.fluids.SimpleFluid;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.BlockItem;
+import net.minecraft.util.math.*;
 
-public class TileEntityRendererMashTub extends TileEntitySpecialRenderer
-{
-    public static IModelCustom modelWoodenVat = AdvancedModelLoader.loadModel(new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathModels + "woodenVat.obj"));
-    public static ResourceLocation textureMashTub = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "woodenVat.png");
+/**
+ * Renders fluid in the mash tub, or the solid contents
+ */
+public class TileEntityRendererMashTub implements BlockEntityRenderer<MashTubBlockEntity> {
+    public static final float MODEL_SIZE = BlockMashTub.SIZE / 16F;
+    public static final float MODEL_BORDER_WIDTH = BlockMashTub.BORDER_SIZE / 16F;
+    public static final float MODEL_HEIGHT = (BlockMashTub.HEIGHT - 4) / 16F;
 
-    public static final float MODEL_SIZE = 15.0f / 16.0f;
-    public static final float MODEL_BORDER_WIDTH = 1.0f / 16.0f;
-    public static final float MODEL_HEIGHT = 12.0f / 16.0f;
+    public TileEntityRendererMashTub(BlockEntityRendererFactory.Context context) {
 
-    private IModelCustom model;
-    private ResourceLocation texture;
-
-    public TileEntityRendererMashTub()
-    {
-        model = modelWoodenVat;
-        texture = textureMashTub;
     }
 
     @Override
-    public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f)
-    {
-        renderTileEntityMashTub((MashTubBlockEntity) tileentity, d, d1, d2, f);
-    }
+    public void render(MashTubBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        //if (!tileEntity.isParent()) return;
 
-    public void renderTileEntityMashTub(MashTubBlockEntity tileEntity, double x, double y, double z, float partialTicks)
-    {
-        if (tileEntity.isParent())
-        {
-            GL11.glPushMatrix();
-            IvMultiBlockRenderHelper.transformFor(tileEntity, x, y, z);
-            GL11.glTranslated(0.0f, 0.002f, 0.0f);
+        matrices.push();
+        //IvMultiBlockRenderHelper.transformFor(tileEntity, x, y, z);
+        matrices.translate(0, 0.002F, 0);
 
-            GL11.glPushMatrix();
-            GL11.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-            GL11.glTranslatef(0f, -.5f, 0f);
-            GL11.glColor3f(1.0f, 1.0f, 1.0f);
-            this.bindTexture(texture);
-            model.renderAll();
-            GL11.glPopMatrix();
+        Resovoir tank = entity.getTank(Direction.UP);
+        SimpleFluid fluid = tank.getFluidType();
+        FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance();
 
-            FluidStack fluidStack = tileEntity.tank.getFluid();
-            if (fluidStack != null)
-            {
-                float fluidHeight = (MODEL_HEIGHT - MODEL_BORDER_WIDTH - 1.0f / 16.0f) * IvMathHelper.clamp(0.0f, (float) fluidStack.amount / (float) tileEntity.tank.getCapacity(), 1.0f);
+        if (!fluid.isEmpty()) {
+            float fluidHeight = (MODEL_HEIGHT - MODEL_BORDER_WIDTH - 1F / 16F) * MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
 
-                FluidBoxRenderer fluidBoxRenderer = new FluidBoxRenderer(1.0f);
-                fluidBoxRenderer.prepare(fluidStack);
+            fluidRenderer.setScale(1);
+            fluidRenderer.prepare(tank);
+            fluidRenderer.renderFluid(-MODEL_SIZE, -.5f + MODEL_BORDER_WIDTH, -MODEL_SIZE, MODEL_SIZE * 2, fluidHeight, MODEL_SIZE * 2, Direction.UP);
+            fluidRenderer.cleanUp();
+        } else if (!entity.solidContents.isEmpty() && entity.solidContents.getItem() instanceof BlockItem) {
+            float fluidHeight = (MODEL_HEIGHT - MODEL_BORDER_WIDTH - 1.0f / 16.0f);
 
-                fluidBoxRenderer.renderFluid(-MODEL_SIZE, -.5f + MODEL_BORDER_WIDTH, -MODEL_SIZE, MODEL_SIZE * 2, fluidHeight, MODEL_SIZE * 2, ForgeDirection.UP);
-
-                fluidBoxRenderer.cleanUp();
-            }
-            else if (tileEntity.solidContents != null && tileEntity.solidContents.getItem() instanceof ItemBlock)
-            {
-                float fluidHeight = (MODEL_HEIGHT - MODEL_BORDER_WIDTH - 1.0f / 16.0f);
-
-                FluidBoxRenderer fluidBoxRenderer = new FluidBoxRenderer(1.0f);
-                fluidBoxRenderer.prepare(tileEntity.solidContents);
-
-                fluidBoxRenderer.renderFluid(-MODEL_SIZE, -.5f + MODEL_BORDER_WIDTH, -MODEL_SIZE, MODEL_SIZE * 2, fluidHeight, MODEL_SIZE * 2, ForgeDirection.UP);
-
-                fluidBoxRenderer.cleanUp();
-            }
-
-            GL11.glPopMatrix();
+            fluidRenderer.setScale(1);
+            fluidRenderer.prepare(entity.solidContents);
+            fluidRenderer.renderFluid(-MODEL_SIZE, -.5f + MODEL_BORDER_WIDTH, -MODEL_SIZE, MODEL_SIZE * 2, fluidHeight, MODEL_SIZE * 2, Direction.UP);
+            fluidRenderer.cleanUp();
         }
+
+        matrices.pop();
     }
 }

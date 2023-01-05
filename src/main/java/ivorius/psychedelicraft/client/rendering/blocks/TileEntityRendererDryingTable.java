@@ -5,81 +5,69 @@
 
 package ivorius.psychedelicraft.client.rendering.blocks;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.model.json.ModelTransformation.Mode;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.util.math.RotationAxis;
 
 import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 
 import java.util.Random;
 
-public class TileEntityRendererDryingTable extends TileEntitySpecialRenderer
-{
-    public TileEntityRendererDryingTable()
-    {
+/**
+ * Renders items on top of the drying table
+ *
+ * Updated by Sollace on 5 Jan 2023
+ */
+public class TileEntityRendererDryingTable implements BlockEntityRenderer<DryingTableBlockEntity> {
+    public TileEntityRendererDryingTable(BlockEntityRendererFactory.Context context) {
 
     }
 
     @Override
-    public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f)
-    {
-        renderTileEntityDryingTableAt((DryingTableBlockEntity) tileentity, d, d1, d2, f);
-    }
+    public void render(DryingTableBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        matrices.push();
+        matrices.translate(0, 0.75f, 0);
 
-    public void renderTileEntityDryingTableAt(DryingTableBlockEntity tileEntity, double d, double d1, double d2, float f)
-    {
-        Tessellator tessellator = Tessellator.instance;
+        long seed = entity.getPos().asLong() + 1;
+        Random random = new Random(seed);
 
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float) d, (float) d1 + 0.75f, (float) d2);
-
-        Random random = new Random(tileEntity.xCoord * 100L + tileEntity.yCoord * 10L + tileEntity.zCoord);
-
-        for (int i = 0; i < tileEntity.getSizeInventory(); i++)
-        {
+        for (int i = 0; i < entity.size(); i++) {
             boolean result = i == 0;
-            ItemStack stack = tileEntity.getStackInSlot(i);
+            ItemStack stack = entity.getStack(i);
 
-            if (stack != null)
-            {
-                float positionX = result ? 0.5f : (0.35f + random.nextFloat() * 0.3f);
-                float positionZ = result ? 0.5f : (0.35f + random.nextFloat() * 0.3f);
-                float rotation = random.nextFloat() * 360.0f;
+            if (stack.isEmpty()) {
+                continue;
+            }
 
-                GL11.glPushMatrix();
+            float positionX = result ? 0.5F : (0.35F + random.nextFloat() * 0.3F);
+            float positionZ = result ? 0.5F : (0.35F + random.nextFloat() * 0.3F);
+            float rotation = random.nextFloat() * 360.0f;
 
-                GL11.glTranslatef(positionX, i / 500.0f, positionZ);
+            matrices.push();
+            matrices.translate(positionX, i / 500F, positionZ);
 
-                GL11.glRotatef(rotation, 0.0f, 1.0f, 0.0f);
-                GL11.glScalef(0.25f, 0.25f, 0.25f);
-                if (result)
-                {
-                    GL11.glScalef(1.5f, 1.5f, 1.5f);
-                }
-                GL11.glTranslatef(0.0f, 0.0f, -0.2f);
-                GL11.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
+            matrices.scale(0.25f, 0.25f, 0.25f);
+            if (result) {
+                matrices.scale(1.5F, 1.5F, 1.5F);
+            }
+            matrices.translate(0, 0, -0.2F);
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
 
 //				Srsly Mojang
-                GL11.glRotatef(-335.0F, 0.0F, 0.0F, 1.0F);
-                GL11.glRotatef(-50.0F, 0.0F, 1.0F, 0.0F);
-                RenderManager.instance.itemRenderer.renderItem(Minecraft.getMinecraft().thePlayer, stack, 0);
+            // Sollace: ...What?
+            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(335));
+            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(50));
+            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, Mode.GROUND, light, overlay, matrices, vertices, (int)seed);
 
-//				EntityItem var3 = new EntityItem(PsychedelicraftMCPH.tileEntityGetWorldObj(tileEntity), 0.0D, 0.0D, 0.0D, stack);
-//				var3.getEntityItem().stackSize = 1;
-//				var3.hoverStart = 0.0F;
-//
-//				RenderItem.renderInFrame = true;
-//				RenderManager.instance.renderEntityWithPosYaw(var3, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
-//				RenderItem.renderInFrame = false;
-
-                GL11.glPopMatrix();
-            }
+            matrices.pop();
         }
 
-        GL11.glPopMatrix();
+        matrices.pop();
     }
 }

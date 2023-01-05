@@ -17,16 +17,12 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class MCColorHelper {
     public static void setColor(int color, boolean hasAlpha) {
-        float red = (color >> 16 & 255) / 255.0F;
-        float green = (color >> 8 & 255) / 255.0F;
-        float blue = (color & 255) / 255.0F;
-
-        if (hasAlpha) {
-            float alpha = (color >> 24 & 255) / 255.0F;
-            RenderSystem.setShaderColor(1.0F * red, 1.0F * green, 1.0F * blue, alpha);
-        } else {
-            RenderSystem.setShaderColor(1.0F * red, 1.0F * green, 1.0F * blue, 1);
-        }
+        RenderSystem.setShaderColor(
+                MathUtils.r(color),
+                MathUtils.g(color),
+                MathUtils.b(color),
+                hasAlpha ? MathUtils.a(color) : 1
+        );
     }
 
     @Deprecated

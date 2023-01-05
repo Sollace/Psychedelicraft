@@ -5,160 +5,155 @@
 
 package ivorius.psychedelicraft.client.rendering;
 
-import ivorius.psychedelicraft.fluids.TranslucentFluid;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.math.Direction;
 
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
+import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import ivorius.psychedelicraft.fluids.Resovoir;
+import ivorius.psychedelicraft.fluids.SimpleFluid;
+
+import org.joml.Vector3f;
 
 /**
  * Created by lukas on 27.10.14.
+ * Updated by Sollace on 5 Jan 2023
  */
-public class FluidBoxRenderer
-{
-    public static void renderFluid(float x, float y, float z, float width, float height, float length, float texX0, float texX1, float texY0, float texY1, ForgeDirection... directions)
-    {
-        Tessellator tessellator = Tessellator.instance;
+public class FluidBoxRenderer {
+    private static final TextureBounds DEFAULT_BOUNDS = new TextureBounds(0, 0, 1, 1);
+    private static final FluidBoxRenderer INSTANCE = new FluidBoxRenderer();
 
-        for (ForgeDirection direction : directions)
-        {
-            tessellator.setNormal(direction.offsetX, direction.offsetY, direction.offsetZ);
+    public static FluidBoxRenderer getInstance() {
+        return INSTANCE;
+    }
 
-            switch (direction)
-            {
+    private static void renderFluid(float x, float y, float z, float width, float height, float length, float texX0, float texX1, float texY0, float texY1, Direction... directions) {
+        Tessellator tessellator = Tessellator.getInstance();
+
+        BufferBuilder buffer = tessellator.getBuffer();
+
+        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
+
+        for (Direction direction : directions) {
+            Vector3f normal = direction.getUnitVector();
+            tessellator.getBuffer().normal(normal.x, normal.y, normal.z);
+
+            switch (direction) {
                 case DOWN:
-                    tessellator.addVertexWithUV(x, y, z, texX0, texY0);
-                    tessellator.addVertexWithUV(x + width, y, z, texX1, texY0);
-                    tessellator.addVertexWithUV(x + width, y, z + length, texX1, texY1);
-                    tessellator.addVertexWithUV(x, y, z + length, texX0, texY1);
+                    buffer.vertex(x, y, z).texture(texX0, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y, z).texture(texX1, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y, z + length).texture(texX1, texY1).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x, y, z + length).texture(texX0, texY1).normal(normal.x, normal.y, normal.z).next();
                     break;
                 case UP:
-                    tessellator.addVertexWithUV(x, y + height, z, texX0, texY0);
-                    tessellator.addVertexWithUV(x, y + height, z + length, texX0, texY1);
-                    tessellator.addVertexWithUV(x + width, y + height, z + length, texX1, texY1);
-                    tessellator.addVertexWithUV(x + width, y + height, z, texX1, texY0);
+                    buffer.vertex(x, y + height, z).texture(texX0, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x, y + height, z + length).texture(texX0, texY1).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y + height, z + length).texture(texX1, texY1).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y + height, z).texture(texX1, texY0).normal(normal.x, normal.y, normal.z).next();
                     break;
                 case EAST:
-                    tessellator.addVertexWithUV(x + width, y, z, texX0, texY0);
-                    tessellator.addVertexWithUV(x + width, y + height, z, texX1, texY0);
-                    tessellator.addVertexWithUV(x + width, y + height, z + length, texX1, texY1);
-                    tessellator.addVertexWithUV(x + width, y, z + length, texX0, texY1);
+                    buffer.vertex(x + width, y, z).texture(texX0, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y + height, z).texture(texX1, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y + height, z + length).texture(texX1, texY1).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y, z + length).texture(texX0, texY1).normal(normal.x, normal.y, normal.z).next();
                     break;
                 case WEST:
-                    tessellator.addVertexWithUV(x, y, z, texX0, texY0);
-                    tessellator.addVertexWithUV(x, y, z + length, texX1, texY0);
-                    tessellator.addVertexWithUV(x, y + height, z + length, texX1, texY1);
-                    tessellator.addVertexWithUV(x, y + height, z, texX0, texY1);
+                    buffer.vertex(x, y, z).texture(texX0, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x, y, z + length).texture(texX1, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x, y + height, z + length).texture(texX1, texY1).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x, y + height, z).texture(texX0, texY1).normal(normal.x, normal.y, normal.z).next();
                     break;
                 case NORTH:
-                    tessellator.addVertexWithUV(x, y, z, texX0, texY0);
-                    tessellator.addVertexWithUV(x, y + height, z, texX0, texY1);
-                    tessellator.addVertexWithUV(x + width, y + height, z, texX1, texY1);
-                    tessellator.addVertexWithUV(x + width, y, z, texX1, texY0);
+                    buffer.vertex(x, y, z).texture(texX0, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x, y + height, z).texture(texX0, texY1).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y + height, z).texture(texX1, texY1).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y, z).texture(texX1, texY0).normal(normal.x, normal.y, normal.z).next();
                     break;
                 case SOUTH:
-                    tessellator.addVertexWithUV(x, y, z + length, texX0, texY0);
-                    tessellator.addVertexWithUV(x + width, y, z + length, texX1, texY0);
-                    tessellator.addVertexWithUV(x + width, y + height, z + length, texX1, texY1);
-                    tessellator.addVertexWithUV(x, y + height, z + length, texX0, texY1);
+                    buffer.vertex(x, y, z + length).texture(texX0, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y, z + length).texture(texX1, texY0).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x + width, y + height, z + length).texture(texX1, texY1).normal(normal.x, normal.y, normal.z).next();
+                    buffer.vertex(x, y + height, z + length).texture(texX0, texY1).normal(normal.x, normal.y, normal.z).next();
                     break;
             }
         }
+
+        tessellator.draw();
     }
 
     public float scale;
 
-    public FluidBoxRenderer(float scale)
-    {
-        this.scale = scale;
-    }
-
-    private float texX0, texX1, texY0, texY1;
+    private TextureBounds sprite = DEFAULT_BOUNDS;
     private boolean preparedTranslucency;
     private boolean disabledTextures;
 
-    public void prepare(FluidStack fluidStack)
-    {
-        Fluid fluid = fluidStack.getFluid();
-        IIcon icon = fluid.getIcon(fluidStack);
+    private FluidBoxRenderer() { }
 
-        if (icon == null)
-        {
-            boolean translucent = fluid instanceof TranslucentFluid;
-            MCColorHelper.setColor(fluid.getColor(fluidStack), translucent);
-            texX0 = texX1 = texY0 = texY1 = 0.0f;
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
+
+    public void prepare(Resovoir tank) {
+        SimpleFluid fluid = tank.getFluidType();
+
+        if (fluid.isEmpty()) {
+            prepare(tank.getStack());
+        } else {
+            sprite = DEFAULT_BOUNDS;
+            // TODO: fluids probably use their own texture rather than just a color
+            MCColorHelper.setColor(fluid.getColor(tank.getStack()), fluid.isTranslucent());
             disableTexture();
 
-            if (translucent)
+            if (fluid.isTranslucent()) {
                 prepareTranslucency();
+            }
         }
-        else
-        {
-            GL11.glColor3f(1.0f, 1.0f, 1.0f);
-            texX0 = icon.getMinU();
-            texX1 = icon.getMaxU();
-            texY0 = icon.getMinV();
-            texY1 = icon.getMaxV();
-            Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-            prepareTranslucency();
-        }
-
-        Tessellator.instance.startDrawingQuads();
     }
 
-    public void prepare(ItemStack itemStack)
-    {
-        Block block = ((ItemBlock) itemStack.getItem()).field_150939_a;
-        IIcon icon = block.getIcon(ForgeDirection.UP.ordinal(), itemStack.getItemDamage() % 16);
-
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);
-        texX0 = icon.getMinU();
-        texX1 = icon.getMaxU();
-        texY0 = icon.getMinV();
-        texY1 = icon.getMaxV();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+    public void prepare(ItemStack stack) {
+        sprite = new TextureBounds(MinecraftClient.getInstance().getItemRenderer().getModels().getModel(stack).getParticleSprite());
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
         prepareTranslucency();
-
-        Tessellator.instance.startDrawingQuads();
     }
 
-    private void disableTexture()
-    {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+    private void disableTexture() {
+        RenderSystem.disableTexture();
         disabledTextures = true;
     }
 
-    private void prepareTranslucency()
-    {
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glAlphaFunc(GL11.GL_GREATER, 0.001f);
-        GL11.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    private void prepareTranslucency() {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
         preparedTranslucency = true;
     }
 
-    public void renderFluid(float x, float y, float z, float width, float height, float length, ForgeDirection... directions)
-    {
-        renderFluid(x * scale, y * scale, z * scale, width * scale, height * scale, length * scale, texX0, texX1, texY0, texY1, directions);
+    public void renderFluid(float x, float y, float z, float width, float height, float length, Direction... directions) {
+        renderFluid(x * scale, y * scale, z * scale, width * scale, height * scale, length * scale, sprite.x0, sprite.x1, sprite.y0, sprite.y1, directions);
     }
 
-    public void cleanUp()
-    {
-        Tessellator.instance.draw();
+    public void cleanUp() {
+        Tessellator.getInstance().draw();
 
-        if (preparedTranslucency)
-            GL11.glDisable(GL11.GL_BLEND);
-        if (disabledTextures)
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+        if (preparedTranslucency) {
+            RenderSystem.disableBlend();
+        }
+        if (disabledTextures) {
+            RenderSystem.enableTexture();
+        }
     }
+
+    record TextureBounds(float x0, float x1, float y0, float y1) {
+        TextureBounds(Sprite sprite) {
+            this(sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
+        }
+    }
+
 }

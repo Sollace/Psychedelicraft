@@ -2,6 +2,8 @@ package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.TileEntityBottleRack;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
@@ -10,14 +12,14 @@ import java.util.Random;
 /**
  * Created by lukas on 16.11.14.
  */
-public class TileEntityRendererBottleRack extends TileEntitySpecialRenderer
+public class TileEntityRendererBottleRack implements BlockEntityRenderer<TileEntityBottleRack>
 {
     public static IModelCustom modelBottleRack = AdvancedModelLoader.loadModel(new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathModels + "wineRack.obj"));
 
     public IModelCustom model;
     public ResourceLocation texture;
 
-    public TileEntityRendererBottleRack()
+    public TileEntityRendererBottleRack(BlockEntityRendererFactory.Context context)
     {
         model = modelBottleRack;
         texture = new ResourceLocation(Psychedelicraft.MODID, Psychedelicraft.filePathTextures + "wineRack.png");

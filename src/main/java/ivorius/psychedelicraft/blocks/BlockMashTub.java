@@ -22,9 +22,9 @@ import net.minecraft.world.World;
  * Created by lukas on 27.10.14.
  */
 public class BlockMashTub extends BlockWithFluid<MashTubBlockEntity> {
-    private static final int SIZE = 15;
-    private static final int BORDER_SIZE = 1;
-    private static final int HEIGHT = 16;
+    public static final int SIZE = 15;
+    public static final int BORDER_SIZE = 1;
+    public static final int HEIGHT = 16;
     private static final int WIDTH = SIZE * 2 + BORDER_SIZE * 2;
 
     // TODO: (Sollace) MushTub is a 3x3 multi-block and this voxel shape reflects that
@@ -44,13 +44,6 @@ public class BlockMashTub extends BlockWithFluid<MashTubBlockEntity> {
         super(settings.nonOpaque());
     }
 
-/*
-    @Override
-    public IIcon getIcon(int par1, int par2)
-    {
-        return Blocks.planks.getIcon(0, 0);
-    }
-*/
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
