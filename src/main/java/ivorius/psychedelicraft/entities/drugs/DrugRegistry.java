@@ -33,6 +33,13 @@ public class DrugRegistry {
         return Collections.unmodifiableCollection(drugFactories);
     }
 
+    public static List<String> getAllDrugNames() {
+        List<String> names = new ArrayList<>();
+        for (DrugFactory factory : DrugRegistry.allFactories())
+            factory.addManagedDrugNames(names);
+        return names;
+    }
+
     public static List<Pair<String, Drug>> createDrugs(LivingEntity entity)
     {
         List<Pair<String, Drug>> list = new ArrayList<>();

@@ -61,11 +61,7 @@ public class ClientProxy extends PSProxy
 
         if (configID == null || configID.equals(PSConfig.CATEGORY_AUDIO))
         {
-            List<String> names = new ArrayList<>();
-            for (DrugFactory factory : DrugRegistry.allFactories())
-                factory.addManagedDrugNames(names);
-
-            for (String s : names)
+            for (String s : DrugRegistry.getAllDrugNames())
                 PSConfig.readHasBGM(s, config);
         }
     }
