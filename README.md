@@ -11,7 +11,7 @@ The One And Only, accept no substitutes!
 
  [Wiki](http://minecraft-psychedelicraft.wikia.com) | [Forum](http://www.minecraftforum.net/topic/563257-172-ivorius-mods-drugs-statues-flags-boxes-of-doom-hamsters/) 
 
-============
+----------
 
 Did you ever want to get Steve (or Alex) blackout drunk, stoned, high on crack
 or perhaps tripping on shrooms? No? Well, I've got the perfect mod fo... Wait a minute...
