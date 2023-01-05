@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.crafting;
 
 import ivorius.psychedelicraft.items.FluidContainerItem;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.collection.DefaultedList;
@@ -17,14 +17,14 @@ import java.util.stream.Stream;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
 
-interface RecipeUtils {
-    static Stream<Map.Entry<FluidContainerItem, ItemStack>> recepticals(CraftingInventory inventory) {
+public interface RecipeUtils {
+    static Stream<Map.Entry<FluidContainerItem, ItemStack>> recepticals(Inventory inventory) {
         return stacks(inventory)
             .filter(stack -> stack.getItem() instanceof FluidContainerItem)
             .map(stack -> Map.entry(FluidContainerItem.of(stack), stack));
     }
 
-    static Stream<ItemStack> stacks(CraftingInventory inventory) {
+    static Stream<ItemStack> stacks(Inventory inventory) {
         return Stream.iterate(0, i -> i < inventory.size(), i -> i + 1)
                 .map(inventory::getStack)
                 .filter(s -> !s.isEmpty());

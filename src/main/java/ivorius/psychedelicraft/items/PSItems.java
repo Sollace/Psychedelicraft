@@ -13,13 +13,12 @@ import ivorius.psychedelicraft.blocks.*;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluenceHarmonium;
 import ivorius.psychedelicraft.fluids.ConsumableFluid;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.Block;
-import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.util.DyeColor;
 
 /**
  * Created by lukas on 25.04.14.
@@ -53,8 +52,7 @@ public class PSItems {
     public static Item cannabisBuds = register("cannabis_buds");
     public static Item driedCannabisBuds = register("dried_cannabis_buds");
     public static Item driedCannabisLeaves = register("dried_cannabis_leaves");
-    public static ItemBong pipe = register("smoking_pipe", new ItemBong(new Settings().maxDamage(50).maxCount(1)));
-    public static ItemBong bong = register("bong", new ItemBong(new Settings().maxDamage(128).maxCount(1)));
+
     public static Item hashMuffin = register("hash_muffin", new EdibleItem(
             new Settings().food(EdibleItem.HAS_MUFFIN),
             new DrugInfluence("Cannabis", 60, 0.004, 0.002, 0.7f)
@@ -117,7 +115,16 @@ public class PSItems {
     public static Item drying_table = register("drying_table", PSBlocks.dryingTable);
     public static Item iron_drying_table = register("iron_drying_table", PSBlocks.dryingTableIron);
 
-    public static Item harmonium = register("harmonium", new ItemHarmonium(new Settings()));
+    public static ItemHarmonium harmonium = register("harmonium", new ItemHarmonium(new Settings()));
+
+    public static ItemBong pipe = register("smoking_pipe", new ItemBong(new Settings().maxDamage(50).maxCount(1)))
+            .consumes(new ItemBong.Consumable(driedCannabisBuds.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.25F)))
+            .consumes(new ItemBong.Consumable(driedTobacco.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.8f)))
+            .consumes(new ItemBong.Consumable(harmonium.getDefaultStack(), stack -> new DrugInfluenceHarmonium("Harmonium", 0, 0.04, 0.01, 0.65f, MathUtils.unpackRgb(harmonium.getColor(stack)))));
+    // TODO: Play around with the bongs benefits
+    public static ItemBong bong = register("bong", new ItemBong(new Settings().maxDamage(128).maxCount(1)))
+            .consumes(new ItemBong.Consumable(driedCannabisBuds.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.2F)))
+            .consumes(new ItemBong.Consumable(driedTobacco.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.6F)));
 
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Item.Settings()));
@@ -131,18 +138,5 @@ public class PSItems {
         return Registry.register(Registries.ITEM, Psychedelicraft.id(name), item);
     }
 
-    public static void bootstrap() {
-        pipe.addConsumable(new ItemBong.Consumable(new ItemStack(driedCannabisBuds), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.25f)));
-        pipe.addConsumable(new ItemBong.Consumable(new ItemStack(driedTobacco), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.8f)));
-
-        // TODO: Play around with the bongs benefits
-        bong.addConsumable(new ItemBong.Consumable(new ItemStack(driedCannabisBuds), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.2f)));
-        bong.addConsumable(new ItemBong.Consumable(new ItemStack(driedTobacco), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.6f)));
-
-        for (int i = 0; i < 16; i++) {
-            // TODO: (Sollace) colour should be gotten from the item NBT
-            float[] color = SheepEntity.getRgbColor(DyeColor.values()[i]);
-            pipe.addConsumable(new ItemBong.Consumable(new ItemStack(harmonium), new DrugInfluenceHarmonium("Harmonium", 0, 0.04, 0.01, 0.65f, color)));
-        }
-    }
+    public static void bootstrap() { }
 }

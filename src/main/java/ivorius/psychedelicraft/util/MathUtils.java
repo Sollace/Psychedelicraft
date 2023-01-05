@@ -35,26 +35,51 @@ public interface MathUtils {
         return value;
     }
 
+
+    static float[] unpackRgb(int left) {
+        return new float[] {r(left), g(left), b(left)};
+    }
+
+    static float[] unpackArgb(int left) {
+        return new float[] {a(left), r(left), g(left), b(left)};
+    }
+
+    static float a(int left) {
+        return (left >> 24 & 255) / 255F;
+    }
+
+    static float r(int left) {
+        return (left >> 16 & 255) / 255F;
+    }
+
+    static float g(int left) {
+        return (left >> 8 & 255) / 255F;
+    }
+
+    static float b(int left) {
+        return (left & 255) / 255F;
+    }
+
     static int mixColors(int left, int right, float progress) {
-        float alphaL = (left >> 24 & 255) / 255F;
-        float redL = (left >> 16 & 255) / 255F;
-        float greenL = (left >> 8 & 255) / 255F;
-        float blueL = (left & 255) / 255F;
+        return packArgb(
+                MathHelper.lerp(a(left), a(right), progress),
+                MathHelper.lerp(r(left), r(right), progress),
+                MathHelper.lerp(g(left), g(right), progress),
+                MathHelper.lerp(b(left), b(right), progress)
+        );
+    }
 
-        float alphaR = (right >> 24 & 255) / 255F;
-        float redR = (right >> 16 & 255) / 255F;
-        float greenR = (right >> 8 & 255) / 255F;
-        float blueR = (right & 255) / 255F;
+    static int packArgb(float a, float r, float g, float b) {
+        return packArgb(
+                MathHelper.floor(a * 255 + 0.5F),
+                MathHelper.floor(r * 255 + 0.5F),
+                MathHelper.floor(g * 255 + 0.5F),
+                MathHelper.floor(b * 255 + 0.5F)
+        );
+    }
 
-        float alpha = alphaL * (1.0f - progress) + alphaR * progress;
-        float red = redL * (1.0f - progress) + redR * progress;
-        float green = greenL * (1.0f - progress) + greenR * progress;
-        float blue = blueL * (1.0f - progress) + blueR * progress;
-
-        return (MathHelper.floor(alpha * 255 + 0.5F) << 24)
-            | (MathHelper.floor(red * 255 + 0.5F) << 16)
-            | (MathHelper.floor(green * 255 + 0.5F) << 8)
-            | MathHelper.floor(blue * 255 + 0.5F);
+    static int packArgb(int a, int r, int g, int b) {
+        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
     static float mixEaseInOut(float v1, float v2, float delta) {

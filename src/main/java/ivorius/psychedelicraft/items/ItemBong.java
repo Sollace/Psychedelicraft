@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.items;
 
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.crafting.RecipeUtils;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -15,7 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * Created by calebmanley on 4/05/2014.
@@ -29,8 +31,9 @@ public class ItemBong extends Item {
         super(settings);
     }
 
-    public void addConsumable(Consumable consumable) {
+    public ItemBong consumes(Consumable consumable) {
         consumables.add(consumable);
+        return this;
     }
 
     @Override
@@ -40,46 +43,40 @@ public class ItemBong extends Item {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        if (entity instanceof PlayerEntity player) {
-            Consumable usedConsumable = getUsedConsumable(player);
-            if (usedConsumable != null && player.getInventory().contains(usedConsumable.consumedItem)) {
+        DrugProperties.of(entity).ifPresent(drugProperties -> {
+            getUsedConsumable(drugProperties.asEntity()).ifPresent(consumable -> {
                 // TODO: (Sollace) check for possible client desync
-                player.getInventory().removeOne(usedConsumable.consumedItem);
-                DrugProperties.of(entity).ifPresent(drugProperties -> {
-                    for (DrugInfluence influence : usedConsumable.drugInfluences) {
-                        drugProperties.addToDrug(influence.clone());
-                    }
-
-                    stack.damage(1, player, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
-                    drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), usedConsumable.smokeColor);
-                });
-            }
-        }
+                drugProperties.asEntity().getInventory().removeOne(consumable.getKey());
+                drugProperties.addAll(consumable.getValue().drugInfluences().apply(consumable.getKey()));
+                stack.damage(1, drugProperties.asEntity(), p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+                drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), consumable.getValue().smokeColor);
+            });
+        });
 
         return super.finishUsing(stack, world, entity);
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (DrugProperties.of(player).timeBreathingSmoke <= 0 && getUsedConsumable(player) != null) {
+        if (DrugProperties.of(player).timeBreathingSmoke <= 0 && getUsedConsumable(player).isPresent()) {
             return TypedActionResult.consume(player.getStackInHand(hand));
         }
 
         return TypedActionResult.fail(ItemStack.EMPTY);
     }
 
-    public Consumable getUsedConsumable(LivingEntity entity) {
+    public Optional<Map.Entry<ItemStack, Consumable>> getUsedConsumable(LivingEntity entity) {
         if (!(entity instanceof PlayerEntity)) {
-            return null;
+            return Optional.empty();
         }
 
-        for (Consumable consumable : consumables) {
-            if (((PlayerEntity)entity).getInventory().contains(consumable.consumedItem)) {
-                return consumable;
-            }
-        }
-
-        return null;
+        return RecipeUtils.stacks(((PlayerEntity)entity)
+                .getInventory())
+                .flatMap(stack -> consumables.stream()
+                    .filter(consumable -> ItemStack.areItemsEqual(stack, consumable.consumedItem))
+                    .limit(1)
+                    .map(c -> Map.entry(stack, c)))
+                .findFirst();
     }
 
     @Override
@@ -89,11 +86,15 @@ public class ItemBong extends Item {
 
     public record Consumable (
             ItemStack consumedItem,
-            DrugInfluence[] drugInfluences,
+            Function<ItemStack, List<DrugInfluence>> drugInfluences,
             float[] smokeColor
     ) {
         public Consumable(ItemStack consumedItem, DrugInfluence...drugInfluences) {
-            this(consumedItem, drugInfluences, new float[]{ 1, 1, 1 });
+            this(consumedItem, stack -> List.of(drugInfluences), new float[]{ 1, 1, 1 });
+        }
+
+        public Consumable(ItemStack consumedItem, Function<ItemStack, DrugInfluence> drugInfluences) {
+            this(consumedItem, stack -> List.of(drugInfluences.apply(stack)), new float[]{ 1, 1, 1 });
         }
     }
 }
