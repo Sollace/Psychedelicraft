@@ -19,6 +19,10 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
+/**
+ * @author Sollace
+ * @since 5 Jan 2023
+ */
 public class DrugCommand {
     public static final SimpleCommandExceptionType INVALID_DRUG_NAME = new SimpleCommandExceptionType(Text.translatable("commands.drug.nodrug"));
     private static final SuggestionProvider<ServerCommandSource> DRUG_NAME_SUGGESTIONS = (context, builder) -> CommandSource.suggestMatching(DrugRegistry.getAllDrugNames(), builder);
