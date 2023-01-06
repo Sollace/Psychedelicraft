@@ -40,6 +40,10 @@ public class TileEntityRiftJar extends BlockEntity {
         super(PSBlockEntities.RIFT_JAR, pos, state);
     }
 
+    public Collection<JarRiftConnection> getConnections() {
+        return riftConnections.values();
+    }
+
     public void tick(ServerWorld world) {
         fractionOpen = MathUtils.nearValue(fractionOpen, isOpening ? 1 : 0, 0, 0.02F);
         fractionHandleUp = MathUtils.nearValue(fractionHandleUp, isSuckingRifts() ? 0 : 1, 0, 0.04F);
@@ -107,7 +111,6 @@ public class TileEntityRiftJar extends BlockEntity {
     public JarRiftConnection createAndGetRiftConnection(EntityRealityRift rift) {
         return riftConnections.computeIfAbsent(rift.getUuid(), id -> new JarRiftConnection(rift));
     }
-
 
     public void toggleRiftJarOpen() {
         if (!world.isClient) {
@@ -184,7 +187,7 @@ public class TileEntityRiftJar extends BlockEntity {
         public final UUID riftID;
         public final Vec3d position;
 
-        //public IvBezierPath3D bezierPath3D;
+        public IvBezierPath3D bezierPath3D;
         public float fractionUp;
 
         public JarRiftConnection(EntityRealityRift rift) {

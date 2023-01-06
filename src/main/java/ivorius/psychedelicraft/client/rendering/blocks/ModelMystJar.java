@@ -11,11 +11,14 @@
 
 package ivorius.psychedelicraft.client.rendering.blocks;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
+import ivorius.psychedelicraft.block.entity.TileEntityRiftJar;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
-public class ModelMystJar extends ModelBase
+public class ModelMystJar extends Model
 {
     //fields
     ModelRenderer glass1;
@@ -68,33 +71,19 @@ public class ModelMystJar extends ModelBase
         setRotation(glass3, 0F, 0F, 0F);
     }
 
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
-    {
-        super.render(entity, f, f1, f2, f3, f4, f5);
-        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+    public void setAngles(TileEntityRiftJar entity, float tickDelta) {
+        cork.rotationPointX = entity.fractionOpen * 2;
+        cork.rotateAngleY = entity.fractionOpen * 0.1F;
+        knot.rotateAngleZ = -0.2602503F - (entity.fractionHandleUp * (1 + MathHelper.sin(entity.ticksAliveVisual * 0.1f) * 0.1f)) * 0.5f;
+    }
+
+    @Override
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g, float b, float a) {
         glass1.render(f5);
         rope.render(f5);
         glass2.render(f5);
         knot.render(f5);
         cork.render(f5);
         glass3.render(f5);
-    }
-
-    private void setRotation(ModelRenderer model, float x, float y, float z)
-    {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
-    }
-
-    @Override
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity)
-    {
-        super.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity);
-
-        cork.rotationPointX = par7Entity.rotationYaw * 2.0f;
-        cork.rotateAngleY = par7Entity.rotationYaw * 0.1f;
-
-        knot.rotateAngleZ = -0.2602503F - par7Entity.rotationPitch * 0.5f;
     }
 }

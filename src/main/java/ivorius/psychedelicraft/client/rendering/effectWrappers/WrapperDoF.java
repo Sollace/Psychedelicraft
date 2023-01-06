@@ -22,8 +22,8 @@ public class WrapperDoF extends ShaderWrapper<ShaderDoF> {
     }
 
     public boolean isActive() {
-        return (ClientProxy.dofFocalBlurFar > 0.0f || ClientProxy.dofFocalBlurNear > 0.0f)
-                && (ClientProxy.dofFocalPointNear > 0.0f || ClientProxy.dofFocalPointFar < getCurrentZFar());
+        return (ClientProxy.dofFocalBlurFar > 0 || ClientProxy.dofFocalBlurNear > 0)
+            && (ClientProxy.dofFocalPointNear > 0 || ClientProxy.dofFocalPointFar < getCurrentZFar());
     }
 
     protected float getCurrentZFar() {

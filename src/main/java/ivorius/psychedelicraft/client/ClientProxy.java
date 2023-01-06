@@ -10,14 +10,10 @@ import ivorius.psychedelicraft.client.rendering.DrugRenderer;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.config.Configuration;
 import ivorius.psychedelicraft.config.PSConfig;
-import ivorius.psychedelicraft.entities.drugs.DrugFactory;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import ivorius.psychedelicraft.entities.drugs.DrugRegistry;
-import java.util.ArrayList;
-import java.util.List;
 
-public class ClientProxy extends PSProxy
-{
+public class ClientProxy extends PSProxy {
     public static float dofFocalPointNear;
     public static float dofFocalBlurNear;
     public static float dofFocalPointFar;
@@ -31,15 +27,12 @@ public class ClientProxy extends PSProxy
     }
 
     @Override
-    public void loadConfig(Configuration config, String configID)
-    {
-        if (configID == null || configID.equals(PSConfig.CATEGORY_BALANCING))
-        {
+    public void loadConfig(Configuration config, String configID) {
+        if (configID == null || configID.equals(PSConfig.CATEGORY_BALANCING)) {
             PSConfig.distortIncomingMessages = config.get("distortIncomingMessages", PSConfig.CATEGORY_BALANCING, true, "Whether the mod should distort received chat messages when drugs have been consumed ('confusion').");
         }
 
-        if (configID == null || configID.equals(PSConfig.CATEGORY_VISUAL))
-        {
+        if (configID == null || configID.equals(PSConfig.CATEGORY_VISUAL)) {
             PSRenderStates.sunFlareIntensity = config.get(PSConfig.CATEGORY_VISUAL, "sunFlareIntensity", 0.25F);
             PSRenderStates.doHeatDistortion = config.get(PSConfig.CATEGORY_VISUAL, "biomeHeatDistortion", true);
             PSRenderStates.doWaterDistortion = config.get(PSConfig.CATEGORY_VISUAL, "waterDistortion", true);
@@ -53,14 +46,15 @@ public class ClientProxy extends PSProxy
 
             DrugProperties.waterOverlayEnabled = config.get(PSConfig.CATEGORY_VISUAL, "waterOverlayEnabled", true);
             DrugProperties.hurtOverlayEnabled = config.get(PSConfig.CATEGORY_VISUAL, "hurtOverlayEnabled", true);
-            DrugProperties.digitalEffectPixelRescale = new float[]{config.get(PSConfig.CATEGORY_VISUAL, "digitalEffectPixelRescaleX", 0.05F),
-                    config.get(PSConfig.CATEGORY_VISUAL, "digitalEffectPixelRescaleY", 0.05F)};
+            DrugProperties.digitalEffectPixelRescale = new float[] {
+                    config.get(PSConfig.CATEGORY_VISUAL, "digitalEffectPixelRescaleX", 0.05F),
+                    config.get(PSConfig.CATEGORY_VISUAL, "digitalEffectPixelRescaleY", 0.05F)
+            };
 
             pauseMenuBlur = config.get(PSConfig.CATEGORY_VISUAL, "pauseMenuBlur", 0f, "Amount of blur that should be applied to the game screen on pause.");
         }
 
-        if (configID == null || configID.equals(PSConfig.CATEGORY_AUDIO))
-        {
+        if (configID == null || configID.equals(PSConfig.CATEGORY_AUDIO)) {
             for (String s : DrugRegistry.getAllDrugNames())
                 PSConfig.readHasBGM(s, config);
         }
