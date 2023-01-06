@@ -10,7 +10,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
@@ -44,13 +43,10 @@ public abstract class GuiFluid<T extends ContainerFluidHandler<?>> extends Handl
         // GL11.glAlphaFunc(GL11.GL_GREATER, 0.001f);
         RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA, SrcFactor.ONE, DstFactor.ZERO);
 
-        Identifier id = fluid.getId();
-        Identifier texture = new Identifier(id.getNamespace(), "textures/fluids/" + id.getPath() + ".png");
-
         int color = fluid.getTranslucentColor(tank.getStack());
 
         RenderSystem.setShaderColor(NativeImage.getRed(color), NativeImage.getGreen(color), NativeImage.getBlue(color), NativeImage.getAlpha(color));
-        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShaderTexture(0, fluid.getSymbol());
 
         drawRepeatingTexture(x, y, width, fluidHeightPixels, 0, 0, 16, 16, repeatTextureX, repeatTextureY * fluidHeight, true);
 

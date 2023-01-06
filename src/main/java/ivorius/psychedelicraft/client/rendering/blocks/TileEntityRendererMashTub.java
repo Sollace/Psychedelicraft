@@ -41,6 +41,7 @@ public class TileEntityRendererMashTub implements BlockEntityRenderer<MashTubBlo
         SimpleFluid fluid = tank.getFluidType();
         FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance();
 
+        // TODO: Use the available MatrixStack for positioning
         if (!fluid.isEmpty()) {
             float fluidHeight = (MODEL_HEIGHT - MODEL_BORDER_WIDTH - 1F / 16F) * MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
 

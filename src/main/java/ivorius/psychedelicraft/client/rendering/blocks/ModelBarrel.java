@@ -11,160 +11,52 @@
 
 package ivorius.psychedelicraft.client.rendering.blocks;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
+import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
+import net.minecraft.client.model.*;
+import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
 
-public class ModelBarrel extends ModelBase
-{
-    //fields
-    ModelRenderer base;
-    ModelRenderer top;
-    ModelRenderer bottom;
-    ModelRenderer right;
-    ModelRenderer left;
-    ModelRenderer corner1;
-    ModelRenderer corner2;
-    ModelRenderer corner3;
-    ModelRenderer corner4;
-    ModelRenderer rack1;
-    ModelRenderer rack2;
-    ModelRenderer rack3;
-    ModelRenderer tap1;
-    ModelRenderer tap2;
-    ModelRenderer tap3;
+/**
+ * Updated by Sollace on 6 Jan 2023
+ */
+public class ModelBarrel extends Model {
+    private final ModelPart tree;
+    private final ModelPart tap3;
 
-    public ModelBarrel()
-    {
-        textureWidth = 128;
-        textureHeight = 64;
+    public ModelBarrel(ModelPart tree) {
+        super(RenderLayer::getEntityCutout);
+        this.tree = tree;
+        this.tap3 = tree.getChild("tap_3");
+    }
+    public static TexturedModelData getTexturedModelData() {
+        ModelData data = new ModelData();
+        ModelPartData root = data.getRoot();
+        root.addChild("base", ModelPartBuilder.create().uv(0, 0).mirrored().cuboid(-4, -4, 0, 8, 8, 14), ModelTransform.pivot(0, 15, -7));
+        root.addChild("top", ModelPartBuilder.create().uv(45, 0).mirrored().cuboid(-4, -6, -1, 8, 2, 16), ModelTransform.pivot(0, 15, -7));
+        root.addChild("bottom", ModelPartBuilder.create().uv(45, 19).mirrored().cuboid(-4, 4, -1, 8, 2, 16), ModelTransform.pivot(0, 15, -7));
+        root.addChild("right", ModelPartBuilder.create().uv(45, 38).mirrored().cuboid(-6, -4, -1, 2, 8, 16), ModelTransform.pivot(0, 15, -7));
+        root.addChild("left", ModelPartBuilder.create().uv(82, 38).mirrored().cuboid(4, -4, -1, 2, 8, 16), ModelTransform.pivot(0, 15, -7));
+        root.addChild("corner_1", ModelPartBuilder.create().uv(0, 23).mirrored().cuboid(-4, -4, -1, 1, 1, 16), ModelTransform.pivot(0, 15, -7));
+        root.addChild("corner_2", ModelPartBuilder.create().uv(0, 26).mirrored().cuboid(3, -4, -1, 1, 1, 16), ModelTransform.pivot(0, 15, -7));
+        root.addChild("corner_3", ModelPartBuilder.create().uv(0, 28).mirrored().cuboid(-4, 3, -1, 1, 1, 16), ModelTransform.pivot(0, 15, -7));
+        root.addChild("corner_4", ModelPartBuilder.create().uv(0, 30).mirrored().cuboid(3, 3, -1, 1, 1, 16), ModelTransform.pivot(0, 15, -7));
 
-        base = new ModelRenderer(this, 0, 0);
-        base.addBox(-4F, -4F, 0F, 8, 8, 14);
-        base.setRotationPoint(0F, 15F, -7F);
-        base.setTextureSize(128, 64);
-        base.mirror = true;
-        setRotation(base, 0F, 0F, 0F);
-        top = new ModelRenderer(this, 45, 0);
-        top.addBox(-4F, -6F, -1F, 8, 2, 16);
-        top.setRotationPoint(0F, 15F, -7F);
-        top.setTextureSize(128, 64);
-        top.mirror = true;
-        setRotation(top, 0F, 0F, 0F);
-        bottom = new ModelRenderer(this, 45, 19);
-        bottom.addBox(-4F, 4F, -1F, 8, 2, 16);
-        bottom.setRotationPoint(0F, 15F, -7F);
-        bottom.setTextureSize(128, 64);
-        bottom.mirror = true;
-        setRotation(bottom, 0F, 0F, 0F);
-        right = new ModelRenderer(this, 45, 38);
-        right.addBox(-6F, -4F, -1F, 2, 8, 16);
-        right.setRotationPoint(0F, 15F, -7F);
-        right.setTextureSize(128, 64);
-        right.mirror = true;
-        setRotation(right, 0F, 0F, 0F);
-        left = new ModelRenderer(this, 82, 38);
-        left.addBox(4F, -4F, -1F, 2, 8, 16);
-        left.setRotationPoint(0F, 15F, -7F);
-        left.setTextureSize(128, 64);
-        left.mirror = true;
-        setRotation(left, 0F, 0F, 0F);
-        corner1 = new ModelRenderer(this, 0, 23);
-        corner1.addBox(-4F, -4F, -1F, 1, 1, 16);
-        corner1.setRotationPoint(0F, 15F, -7F);
-        corner1.setTextureSize(128, 64);
-        corner1.mirror = true;
-        setRotation(corner1, 0F, 0F, 0F);
-        corner2 = new ModelRenderer(this, 0, 26);
-        corner2.addBox(3F, -4F, -1F, 1, 1, 16);
-        corner2.setRotationPoint(0F, 15F, -7F);
-        corner2.setTextureSize(128, 64);
-        corner2.mirror = true;
-        setRotation(corner2, 0F, 0F, 0F);
-        corner3 = new ModelRenderer(this, 0, 28);
-        corner3.addBox(-4F, 3F, -1F, 1, 1, 16);
-        corner3.setRotationPoint(0F, 15F, -7F);
-        corner3.setTextureSize(128, 64);
-        corner3.mirror = true;
-        setRotation(corner3, 0F, 0F, 0F);
-        corner4 = new ModelRenderer(this, 0, 30);
-        corner4.addBox(3F, 3F, -1F, 1, 1, 16);
-        corner4.setRotationPoint(0F, 15F, -7F);
-        corner4.setTextureSize(128, 64);
-        corner4.mirror = true;
-        setRotation(corner4, 0F, 0F, 0F);
-        rack1 = new ModelRenderer(this, 94, 12);
-        rack1.addBox(-5F, 0F, -1F, 10, 4, 2);
-        rack1.setRotationPoint(0F, 20.5F, -5F);
-        rack1.setTextureSize(128, 64);
-        rack1.mirror = true;
-        setRotation(rack1, -0.1487144F, 0F, 0F);
-        rack2 = new ModelRenderer(this, 94, 19);
-        rack2.addBox(-5F, 0F, 0F, 10, 4, 2);
-        rack2.setRotationPoint(0F, 20.5F, 4F);
-        rack2.setTextureSize(128, 64);
-        rack2.mirror = true;
-        setRotation(rack2, 0.1487195F, 0F, 0F);
-        rack3 = new ModelRenderer(this, 94, 0);
-        rack3.addBox(-1F, 7F, 2F, 2, 1, 10);
-        rack3.setRotationPoint(0F, 15F, -7F);
-        rack3.setTextureSize(128, 64);
-        rack3.mirror = true;
-        setRotation(rack3, 0F, 0F, 0F);
-        tap1 = new ModelRenderer(this, 0, 50);
-        tap1.addBox(-0.5F, 2F, -1.5F, 1, 1, 2);
-        tap1.setRotationPoint(0F, 15F, -7F);
-        tap1.setTextureSize(128, 64);
-        tap1.mirror = true;
-        setRotation(tap1, 0F, 0F, 0F);
-        tap2 = new ModelRenderer(this, 7, 50);
-        tap2.addBox(-0.5F, 1.8F, -2.5F, 1, 2, 1);
-        tap2.setRotationPoint(0F, 15F, -7F);
-        tap2.setTextureSize(128, 64);
-        tap2.mirror = true;
-        setRotation(tap2, 0F, 0F, 0F);
-        tap3 = new ModelRenderer(this, 12, 50);
-        tap3.addBox(-1.5F, -0.21F, -0.5F, 3, 0, 1);
-        tap3.setRotationPoint(0F, 17F, -9F);
-        tap3.setTextureSize(128, 64);
-        tap3.mirror = true;
-        setRotation(tap3, 0F, 0F, 0F);
+        root.addChild("rack_1", ModelPartBuilder.create().uv(94, 12).mirrored().cuboid(-5, 0, -1, 10, 4, 2), ModelTransform.of(0, 20.5F, -5, -0.1487144F, 0, 0));
+        root.addChild("rack_2", ModelPartBuilder.create().uv(94, 19).mirrored().cuboid(-5, 0, 0, 10, 4, 2), ModelTransform.of(0, 20.5F, 4, 0.1487144F, 0, 0));
+
+        root.addChild("rack_3", ModelPartBuilder.create().uv(94, 0).mirrored().cuboid(-1, 7, 2, 2, 1, 10), ModelTransform.pivot(0, 15, -7));
+        root.addChild("tap_1", ModelPartBuilder.create().uv(0, 50).mirrored().cuboid(-0.5F, 2, -1.5F, 1, 1, 2), ModelTransform.pivot(0, 15, -7));
+        root.addChild("tap_2", ModelPartBuilder.create().uv(7, 50).mirrored().cuboid(-0.5F, 1.8F, -2.5F, 1, 2, 1), ModelTransform.pivot(0, 15, -7));
+        root.addChild("tap_3", ModelPartBuilder.create().uv(12, 50).mirrored().cuboid(-1.5F, -0.21F, -0.5F, 3, 0, 1), ModelTransform.pivot(0, 17, -9));
+        return TexturedModelData.of(data, 128, 64);
+    }
+
+    public void setRotationAngles(BarrelBlockEntity entity) {
+        tap3.yaw = entity.tapRotation;
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
-    {
-        super.render(entity, f, f1, f2, f3, f4, f5);
-        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        base.render(f5);
-        top.render(f5);
-        bottom.render(f5);
-        right.render(f5);
-        left.render(f5);
-        corner1.render(f5);
-        corner2.render(f5);
-        corner3.render(f5);
-        corner4.render(f5);
-        rack1.render(f5);
-        rack2.render(f5);
-        rack3.render(f5);
-        tap1.render(f5);
-        tap2.render(f5);
-        tap3.render(f5);
-    }
-
-    private void setRotation(ModelRenderer model, float x, float y, float z)
-    {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
-    }
-
-    @Override
-    public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity)
-    {
-        super.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity);
-
-        tap3.rotateAngleY = par7Entity.ticksExisted / 100.0f;
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g, float b, float a) {
+        tree.render(matrices, vertices, light, overlay);
     }
 }
