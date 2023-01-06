@@ -1,0 +1,14 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "psychedelicraft:item/bong_empty"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:filled": 1
+            },
+            "model": "psychedelicraft:item/bong_filled"
+        }
+    ]
+}

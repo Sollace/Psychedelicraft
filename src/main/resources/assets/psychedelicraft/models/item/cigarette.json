@@ -1,0 +1,14 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "psychedelicraft:item/cigarette"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:using": 1
+            },
+            "model": "psychedelicraft:item/cigarette_using"
+        }
+    ]
+}

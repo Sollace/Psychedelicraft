@@ -56,11 +56,7 @@ public class SmokeableItem extends Item {
             drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), smokeColor);
         });
 
-        if (stack.getDamage() < stack.getMaxDamage() - 1) {
-            stack.damage(1, entity, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
-        } else {
-            stack.decrement(1);
-        }
+        stack.damage(1, entity, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 
         return super.finishUsing(stack, world, entity);
     }

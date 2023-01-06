@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
@@ -77,6 +78,22 @@ public class ItemBong extends Item {
                     .limit(1)
                     .map(c -> Map.entry(stack, c)))
                 .findFirst();
+    }
+
+    public boolean hasUsableConsumable(LivingEntity entity) {
+        if (!(entity instanceof PlayerEntity)) {
+            return false;
+        }
+
+        PlayerInventory inventory = ((PlayerEntity)entity).getInventory();
+        for (int i = 0; i < inventory.size(); i++) {
+            for (Consumable consumable : consumables) {
+                if (ItemStack.areItemsEqual(inventory.getStack(i), consumable.consumedItem)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

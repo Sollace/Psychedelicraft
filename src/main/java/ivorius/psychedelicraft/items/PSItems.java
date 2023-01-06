@@ -36,7 +36,7 @@ public class PSItems {
     public static FlaskItem itemAcaciaBarrel = register("acacia_barrel", new FlaskItem(PSBlocks.acacia_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
     public static FlaskItem itemDarkOakBarrel = register("dark_oak_barrel", new FlaskItem(PSBlocks.dark_oak_barrel, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
 
-    public static FlaskItem itemMashTub = register("mash_rub", new ItemMashTub(PSBlocks.mashTub, new Settings().maxCount(16)));
+    public static FlaskItem itemMashTub = register("mash_tub", new ItemMashTub(PSBlocks.mashTub, new Settings().maxCount(16)));
     public static FlaskItem itemFlask = register("flask", new FlaskItem(PSBlocks.flask, new Settings().maxCount(16), FlaskBlockEntity.FLASK_CAPACITY));
     public static FlaskItem itemDistillery = register("distillery", new FlaskItem(PSBlocks.distillery, new Settings().maxCount(16), DistilleryBlockEntity.DISTILLERY_CAPACITY));
     public static ItemRiftJar itemRiftJar = register("rift_jar", new ItemRiftJar(PSBlocks.riftJar, new Settings()));
@@ -50,8 +50,8 @@ public class PSItems {
     public static Item cannabisSeeds = register("cannabis_seeds", new AliasedBlockItem(PSBlocks.cannabisPlant, new Settings()));
     public static Item cannabisLeaf = register("cannabis_leaf");
     public static Item cannabisBuds = register("cannabis_buds");
+    public static Item driedCannabisLeaves = register("dried_cannabis_leaf");
     public static Item driedCannabisBuds = register("dried_cannabis_buds");
-    public static Item driedCannabisLeaves = register("dried_cannabis_leaves");
 
     public static Item hashMuffin = register("hash_muffin", new EdibleItem(
             new Settings().food(EdibleItem.HAS_MUFFIN),
@@ -70,7 +70,7 @@ public class PSItems {
             new DrugInfluence("RedShrooms", 15, 0.005, 0.003, 0.5f)
     ));
 
-    public static Item tobaccoLeaf = register("tobacco_leaf");
+    public static Item tobaccoLeaf = register("tobacco");
     public static Item tobaccoSeeds = register("tobacco_seeds", new AliasedBlockItem(PSBlocks.tobaccoPlant, new Settings()));
     public static Item driedTobacco = register("dried_tobacco");
     public static SmokeableItem cigarette = register("cigarette", new SmokeableItem(
@@ -78,18 +78,18 @@ public class PSItems {
             new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.7f)
     ));
     public static SmokeableItem cigar = register("cigar", new SmokeableItem(
-            new Settings().maxCount(1), 4,
+            new Settings().maxCount(1).maxDamage(3), 4,
             new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.7f)
     ));
     public static SmokeableItem joint = register("join", new SmokeableItem(
-            new Settings().maxCount(1), 2,
+            new Settings().maxCount(1).maxDamage(2), 2,
             new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.20f)
     ));
 
     public static Item cocaSeeds = register("coca_seeds", new AliasedBlockItem(PSBlocks.cocaPlant, new Settings()));
-    public static Item cocaLeaf = register("coca_leaf");
-    public static Item cocainePowder = register("cocaine_powder", new ItemCocainePowder(new Settings(), new DrugInfluence("Cocaine", 0, 0.002, 0.003, 0.35f)));
+    public static Item cocaLeaf = register("coca_leaves");
     public static Item driedCocaLeaves = register("dried_coca_leaves");
+    public static Item cocainePowder = register("cocaine_powder", new ItemCocainePowder(new Settings(), new DrugInfluence("Cocaine", 0, 0.002, 0.003, 0.35f)));
 
     public static InjectableItem syringe = register("syringe", new InjectableItem(new Settings(), MILLIBUCKETS_PER_LITER / 100));
 
@@ -105,7 +105,7 @@ public class PSItems {
             new DrugInfluence("Peyote", 15, 0.005, 0.003, 0.5f)
     ));
     public static Item peyoteJoint = register("peyote_joint", new SmokeableItem(
-            new Settings().maxCount(1), 2,
+            new Settings().maxCount(1).maxDamage(2), 2,
             new DrugInfluence("Peyote", 20, 0.003, 0.0015, 0.4f),
             new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.1f)
     ));
