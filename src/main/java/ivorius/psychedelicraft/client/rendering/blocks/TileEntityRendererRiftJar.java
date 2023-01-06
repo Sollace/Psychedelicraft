@@ -36,7 +36,7 @@ public class TileEntityRendererRiftJar implements BlockEntityRenderer<TileEntity
     public static final IvBezierPath3D sphereBezierPath = IvBezierPath3DCreator.createSpiraledSphere(3.0, 8.0, 0.2);
     public static final IvBezierPath3D outgoingBezierPath = IvBezierPath3DCreator.createSpiraledBezierPath(0.06, 6.0, 6.0, 1.0, 0.2, 0.0, false);
 
-    public ModelMystJar model = new ModelMystJar();
+    private final ModelMystJar model = new ModelMystJar(ModelMystJar.getTexturedModelData().createModel());
 
     public TileEntityRendererRiftJar(BlockEntityRendererFactory.Context context) {
 
@@ -150,33 +150,11 @@ public class TileEntityRendererRiftJar implements BlockEntityRenderer<TileEntity
 
         PSRenderStates.setUseScreenTexCoords(true);
         PSRenderStates.setPixelSize(1F / pixelsX, -1F / pixelsY);
-
-        VertexConsumer buffer = vertices.getBuffer(model.getLayer(zeroScreenTexture[textureChosen % 8]));
-
-        /*
-        Dilation dilation = new Dilation(0.001f)
-        ModelPartBuilder.create()
-            .cuboid(-4, 0, -4, 8, 5, 8, dilation)
-            .cuboid(-3, 5, -3, 6, 2, 6, new Dilation(0.001f, -0.001f, 0.001f))
-            .cuboid(-4, 7, -4, 8, 2, 8, dilation);
-        */
-
-        final float VER_INSET = 0.001f;
-        final float HOR_INSET = VER_INSET * 2;
-
-        drawModelCuboid(matrices, buffer, -4 + VER_INSET, 0 + VER_INSET, -4 + VER_INSET, 8 - HOR_INSET, 5 - HOR_INSET, 8 - HOR_INSET);
-        drawModelCuboid(matrices, buffer, -3 + VER_INSET, 5 - VER_INSET, -3 + VER_INSET, 6 - HOR_INSET, 2 + HOR_INSET, 6 - HOR_INSET);
-        drawModelCuboid(matrices, buffer, -4 + VER_INSET, 7 + VER_INSET, -4 + VER_INSET, 8 - HOR_INSET, 5 - HOR_INSET, 8 - HOR_INSET);
-
+        model.renderInterior(matrices, vertices.getBuffer(model.getLayer(zeroScreenTexture[textureChosen % 8])), 0, 0, 1, 1, 1, alpha);
         RenderSystem.disableBlend();
 
         PSRenderStates.setScreenSizeDefault();
         PSRenderStates.setUseScreenTexCoords(false);
-    }
-
-    private void drawModelCuboid(MatrixStack matrices, VertexConsumer buffer, float x, float y, float z, float width, float height, float depth) {
-        // TODO: (Sollace) They're manually re-rendering the same cubes found in the jar model
-
     }
 
     public static String cheeseString(String string, float effect, Random rand) {

@@ -28,6 +28,7 @@ public class ModelBarrel extends Model {
         this.tree = tree;
         this.tap3 = tree.getChild("tap_3");
     }
+
     public static TexturedModelData getTexturedModelData() {
         ModelData data = new ModelData();
         ModelPartData root = data.getRoot();

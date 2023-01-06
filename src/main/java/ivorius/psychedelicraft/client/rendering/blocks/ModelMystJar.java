@@ -12,78 +12,65 @@
 package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.psychedelicraft.block.entity.TileEntityRiftJar;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.model.*;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
-public class ModelMystJar extends Model
-{
-    //fields
-    ModelRenderer glass1;
-    ModelRenderer rope;
-    ModelRenderer glass2;
-    ModelRenderer knot;
-    ModelRenderer cork;
-    ModelRenderer glass3;
+/**
+ * Updated by Sollace on 5 Jan 2023
+ */
+public class ModelMystJar extends Model {
+    private final ModelPart tree;
 
-    public ModelMystJar()
-    {
-        textureWidth = 64;
-        textureHeight = 32;
+    private final ModelPart cork;
+    private final ModelPart knot;
 
-        glass1 = new ModelRenderer(this, 0, 0);
-        glass1.addBox(-4F, 0F, -4F, 8, 5, 8);
-        glass1.setRotationPoint(0F, 19F, 0F);
-        glass1.setTextureSize(64, 32);
-        glass1.mirror = true;
-        setRotation(glass1, 0F, 0F, 0F);
-        rope = new ModelRenderer(this, 33, 0);
-        rope.addBox(-3.5F, 0F, -3.5F, 7, 2, 7);
-        rope.setRotationPoint(0F, 17F, 0F);
-        rope.setTextureSize(64, 32);
-        rope.mirror = true;
-        setRotation(rope, 0F, 0F, 0F);
-        glass2 = new ModelRenderer(this, 0, 14);
-        glass2.addBox(-4F, 0F, -4F, 8, 5, 8);
-        glass2.setRotationPoint(0F, 12F, 0F);
-        glass2.setTextureSize(64, 32);
-        glass2.mirror = true;
-        setRotation(glass2, 0F, 0F, 0F);
-        knot = new ModelRenderer(this, 33, 2);
-        knot.addBox(0F, 0F, -4F, 0, 5, 8);
-        knot.setRotationPoint(3.5F, 17F, 0F);
-        knot.setTextureSize(64, 32);
-        knot.mirror = true;
-        setRotation(knot, 0F, 0F, -0.2602503F);
-        cork = new ModelRenderer(this, 33, 16);
-        cork.addBox(-3F, 0F, -3F, 6, 2, 6);
-        cork.setRotationPoint(0F, 10F, 0F);
-        cork.setTextureSize(64, 32);
-        cork.mirror = true;
-        setRotation(cork, 0F, 0F, 0F);
-        glass3 = new ModelRenderer(this, 33, 24);
-        glass3.addBox(-3F, 0F, -3F, 6, 2, 6);
-        glass3.setRotationPoint(0F, 17F, 0F);
-        glass3.setTextureSize(64, 32);
-        glass3.mirror = true;
-        setRotation(glass3, 0F, 0F, 0F);
+    private final ModelPart interior;
+
+    public ModelMystJar(ModelPart tree) {
+        super(RenderLayer::getEntityTranslucent);
+        this.tree = tree;
+        this.cork = tree.getChild("cork");
+        this.knot = tree.getChild("knot");
+        this.interior = tree.getChild("interior");
+    }
+
+    public static TexturedModelData getTexturedModelData() {
+        ModelData data = new ModelData();
+        ModelPartData root = data.getRoot();
+        root.addChild("glass_1", ModelPartBuilder.create().uv(0, 0).mirrored().cuboid(-4F, 0F, -4F, 8, 5, 8), ModelTransform.pivot(0F, 19F, 0F));
+        root.addChild("glass_2", ModelPartBuilder.create().uv(0, 14).mirrored().cuboid(-4F, 0F, -4F, 8, 5, 8), ModelTransform.pivot(0F, 12F, 0F));
+        root.addChild("glass_3", ModelPartBuilder.create().uv(33, 24).mirrored().cuboid(-3F, 0F, -3F, 6, 2, 6), ModelTransform.pivot(0F, 17F, 0F));
+
+        root.addChild("rope", ModelPartBuilder.create().uv(33, 0).mirrored().cuboid(-3.5F, 0F, -3.5F, 7, 2, 7), ModelTransform.pivot(0F, 17F, 0F));
+        root.addChild("knot", ModelPartBuilder.create().uv(33, 2).mirrored().cuboid(0F, 0F, -4F, 0, 5, 8), ModelTransform.of(3.5F, 17F, 0F, 0F, 0F, -0.2602503F));
+        root.addChild("cork", ModelPartBuilder.create().uv(33, 16).mirrored().cuboid(-3F, 0F, -3F, 6, 2, 6), ModelTransform.pivot(0F, 10F, 0F));
+
+        Dilation dilation = new Dilation(0.001f);
+        root.addChild("interior", ModelPartBuilder.create()
+            .cuboid(-4, 0, -4, 8, 5, 8, dilation)
+            .cuboid(-3, 5, -3, 6, 2, 6, new Dilation(0.001f, -0.001f, 0.001f))
+            .cuboid(-4, 7, -4, 8, 2, 8, dilation), ModelTransform.NONE);
+
+        return TexturedModelData.of(data, 64, 32);
     }
 
     public void setAngles(TileEntityRiftJar entity, float tickDelta) {
-        cork.rotationPointX = entity.fractionOpen * 2;
-        cork.rotateAngleY = entity.fractionOpen * 0.1F;
-        knot.rotateAngleZ = -0.2602503F - (entity.fractionHandleUp * (1 + MathHelper.sin(entity.ticksAliveVisual * 0.1f) * 0.1f)) * 0.5f;
+        cork.pivotX = entity.fractionOpen * 2;
+        cork.yaw = entity.fractionOpen * 0.1F;
+        knot.roll = -0.2602503F - (entity.fractionHandleUp * (1 + MathHelper.sin(entity.ticksAliveVisual * 0.1f) * 0.1f)) * 0.5f;
     }
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g, float b, float a) {
-        glass1.render(f5);
-        rope.render(f5);
-        glass2.render(f5);
-        knot.render(f5);
-        cork.render(f5);
-        glass3.render(f5);
+        interior.hidden = true;
+        tree.render(matrices, vertices, light, overlay, r, g, b, a);
+        interior.hidden = false;
+    }
+
+    public void renderInterior(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g, float b, float a) {
+        interior.render(matrices, vertices, light, overlay, r, g, b, a);
     }
 }
