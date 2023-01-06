@@ -4,12 +4,9 @@
  */
 
 package ivorius.psychedelicraft.crafting;
-
+/*
 import ivorius.psychedelicraft.items.PSItems;
-import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -22,7 +19,7 @@ import java.util.List;
  * Created by lukas on 03.11.14.
  */
 @Deprecated
-public class RecipePourDrink implements RecipeAction
+public class RecipePourDrink {/*implements RecipeAction
 {
     @Override
     public ItemStack visualCraftingResult(InventoryCrafting inventoryCrafting)
@@ -133,4 +130,4 @@ public class RecipePourDrink implements RecipeAction
     {
         return new ItemStack(PSItems.woodenMug);
     }
-}
+*/}

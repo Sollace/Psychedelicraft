@@ -7,15 +7,13 @@ package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.TileEntityRiftJar;
+import ivorius.psychedelicraft.client.rendering.bezier.*;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
@@ -24,31 +22,24 @@ import org.lwjgl.opengl.GL11;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.Random;
+import java.util.stream.Stream;
 
 public class TileEntityRendererRiftJar implements BlockEntityRenderer<TileEntityRiftJar> {
-    public ModelMystJar model = new ModelMystJar();
+    private static final IvBezierPath3DRendererText bezierPath3DRendererText = new IvBezierPath3DRendererText().setFont(new Identifier("alt"));
     public static final Identifier texture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "riftJar.png");
     public static final Identifier crackedTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "riftJarCracked.png");
+    public static final Identifier[] zeroScreenTexture = Stream.iterate(0, i -> i + 1)
+            .map(i -> Psychedelicraft.id(Psychedelicraft.filePathTextures + "zeroScreen" + i + ".png"))
+            .limit(8)
+            .toArray(Identifier[]::new);
 
-    public static final Identifier[] zeroScreenTexture;
+    public static final IvBezierPath3D sphereBezierPath = IvBezierPath3DCreator.createSpiraledSphere(3.0, 8.0, 0.2);
+    public static final IvBezierPath3D outgoingBezierPath = IvBezierPath3DCreator.createSpiraledBezierPath(0.06, 6.0, 6.0, 1.0, 0.2, 0.0, false);
 
-    private static final Identifier GALACTIC_FONT_ID = new Identifier("minecraft", "alt");
-    private static final Style GALACTIC_STYLE = Style.EMPTY.withFont(GALACTIC_FONT_ID);
-
-    static {
-        zeroScreenTexture = new Identifier[8];
-        for (int i = 0; i < zeroScreenTexture.length; i++) {
-            zeroScreenTexture[i] = Psychedelicraft.id(Psychedelicraft.filePathTextures + "zeroScreen" + i + ".png");
-        }
-    }
-
-    public IvBezierPath3D sphereBezierPath = IvBezierPath3DCreator.createSpiraledSphere(3.0, 8.0, 0.2);
-    public IvBezierPath3D outgoingBezierPath = IvBezierPath3DCreator.createSpiraledBezierPath(0.06, 6.0, 6.0, 1.0, 0.2, 0.0, false);
-
-    public IvBezierPath3DRendererText bezierPath3DRendererText = new IvBezierPath3DRendererText();
+    public ModelMystJar model = new ModelMystJar();
 
     public TileEntityRendererRiftJar(BlockEntityRendererFactory.Context context) {
-        bezierPath3DRendererText.setFontRenderer(MinecraftClient.getInstance().textRenderer);
+
     }
 
     @Override
@@ -62,10 +53,7 @@ public class TileEntityRendererRiftJar implements BlockEntityRenderer<TileEntity
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getCachedState().get(HorizontalFacingBlock.FACING).asRotation() + 180));
 
         if (entity.currentRiftFraction > 0) {
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            renderZeroInsides(tickDelta, ticks, Math.min(entity.currentRiftFraction * 2.0f, 1.0f));
-            RenderSystem.disableBlend();
+            renderZeroInsides(matrices, vertices, tickDelta, ticks, Math.min(entity.currentRiftFraction * 2.0f, 1.0f));
         }
 
         matrices.translate(0, 1, 0);
@@ -114,7 +102,7 @@ public class TileEntityRendererRiftJar implements BlockEntityRenderer<TileEntity
 
                 matrices.translate(connection.position.x - jarPosition.x, connection.position.y - (jarPosition.y + 0.1), connection.position.z - jarPosition.z);
 
-                bezierPath3DRendererText.setText(IvStringHelper.cheeseString("This is a small circle.", 1.0f - connection.fractionUp, 42));
+                bezierPath3DRendererText.setText(cheeseString("This is a small circle.", 1.0f - connection.fractionUp, new Random(42)));
                 bezierPath3DRendererText.setSpreadToFill(true);
                 bezierPath3DRendererText.setShift(ticks * -0.002F);
                 bezierPath3DRendererText.setInwards(false);
@@ -143,31 +131,69 @@ public class TileEntityRendererRiftJar implements BlockEntityRenderer<TileEntity
         matrices.pop();
     }
 
-    public void renderZeroInsides(float partialTicks, float ticks, float alpha) {
-        int textureChosen = MathHelper.floor_double(ticks * 0.5f);
+
+
+    public void renderZeroInsides(MatrixStack matrices, VertexConsumerProvider vertices, float partialTicks, float ticks, float alpha) {
+        int textureChosen = MathHelper.floor(ticks * 0.5f);
         Random thisTextureMov = new Random(textureChosen);
-        bindTexture(zeroScreenTexture[textureChosen % 8]);
+
+        float pixelsX = 70F;//140F / 2F;
+        float pixelsY = 112F;//224F / 2F;
+
+        GL11.glTexCoord2f(
+                thisTextureMov.nextInt(10) * 0.1F * pixelsX,
+                thisTextureMov.nextInt(8) * 0.125f * pixelsY
+        );
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1, 1, 1, alpha);
+
         PSRenderStates.setUseScreenTexCoords(true);
-        float pixelsX = 140.0f / 2.0f;
-        float pixelsY = 224.0f / 2.0f;
-        PSRenderStates.setPixelSize(1.0f / pixelsX, -1.0f / pixelsY);
-        GL11.glTexCoord2f(thisTextureMov.nextInt(10) * 0.1f * pixelsX, thisTextureMov.nextInt(8) * 0.125f * pixelsY);
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, alpha);
-        renderJarInside(partialTicks, alpha);
+        PSRenderStates.setPixelSize(1F / pixelsX, -1F / pixelsY);
+
+        VertexConsumer buffer = vertices.getBuffer(model.getLayer(zeroScreenTexture[textureChosen % 8]));
+
+        /*
+        Dilation dilation = new Dilation(0.001f)
+        ModelPartBuilder.create()
+            .cuboid(-4, 0, -4, 8, 5, 8, dilation)
+            .cuboid(-3, 5, -3, 6, 2, 6, new Dilation(0.001f, -0.001f, 0.001f))
+            .cuboid(-4, 7, -4, 8, 2, 8, dilation);
+        */
+
+        final float VER_INSET = 0.001f;
+        final float HOR_INSET = VER_INSET * 2;
+
+        drawModelCuboid(matrices, buffer, -4 + VER_INSET, 0 + VER_INSET, -4 + VER_INSET, 8 - HOR_INSET, 5 - HOR_INSET, 8 - HOR_INSET);
+        drawModelCuboid(matrices, buffer, -3 + VER_INSET, 5 - VER_INSET, -3 + VER_INSET, 6 - HOR_INSET, 2 + HOR_INSET, 6 - HOR_INSET);
+        drawModelCuboid(matrices, buffer, -4 + VER_INSET, 7 + VER_INSET, -4 + VER_INSET, 8 - HOR_INSET, 5 - HOR_INSET, 8 - HOR_INSET);
+
+        RenderSystem.disableBlend();
+
         PSRenderStates.setScreenSizeDefault();
         PSRenderStates.setUseScreenTexCoords(false);
     }
 
-    public void renderJarInside(float partialTicks, float alpha) {
-        Tessellator tessellator = Tessellator.instance;
+    private void drawModelCuboid(MatrixStack matrices, VertexConsumer buffer, float x, float y, float z, float width, float height, float depth) {
+        // TODO: (Sollace) They're manually re-rendering the same cubes found in the jar model
 
-        float in = 0.001f;
-        float in2 = in * 2.0f;
+    }
 
-        tessellator.startDrawingQuads();
-        IvRenderHelper.drawModelCuboid(tessellator, -4.0f + in, 0.0f + in, -4.0f + in, 8.0f - in2, 5.0f - in2, 8.0f - in2);
-        IvRenderHelper.drawModelCuboid(tessellator, -3.0f + in, 5.0f - in, -3.0f + in, 6.0f - in2, 2.0f + in2, 6.0f - in2);
-        IvRenderHelper.drawModelCuboid(tessellator, -4.0f + in, 7.0f + in, -4.0f + in, 8.0f - in2, 5.0f - in2, 8.0f - in2);
-        tessellator.draw();
+    public static String cheeseString(String string, float effect, Random rand) {
+        if (effect <= 0) {
+            return string;
+        }
+
+        StringBuilder builder = new StringBuilder(string.length());
+
+        for (int i = 0; i < string.length(); i++) {
+            if (rand.nextFloat() <= effect) {
+                builder.append(' ');
+            } else {
+                builder.append(string.charAt(i));
+            }
+        }
+
+        return builder.toString();
     }
 }

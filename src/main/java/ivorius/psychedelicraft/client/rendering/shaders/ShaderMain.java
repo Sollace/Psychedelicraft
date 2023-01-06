@@ -26,6 +26,7 @@ import static org.lwjgl.opengl.GL11.GL_FOG;
 /**
  * Created by lukas on 26.02.14.
  */
+@Deprecated
 public class ShaderMain extends IvShaderInstance3D implements ShaderWorld {
     public boolean shouldDoShadows;
     public int shadowDepthTextureIndex;

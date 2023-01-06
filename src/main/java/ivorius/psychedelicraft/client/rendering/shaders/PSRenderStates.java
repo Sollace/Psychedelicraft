@@ -12,7 +12,6 @@ import ivorius.psychedelicraft.client.rendering.*;
 import ivorius.psychedelicraft.client.rendering.effectWrappers.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
@@ -87,6 +86,7 @@ public class PSRenderStates {
         currentRenderPass = null;
     }
 
+    @Deprecated(since = "hook")
     public static boolean setupCameraTransform() {
         if ("Shadows".equals(currentRenderPass)/* || (MinecraftClient.getInstance().ingameGUI.getUpdateCounter() % 100 > 2)*/) {
             PsycheShadowHelper.setupSunGLTransform();
@@ -139,24 +139,23 @@ public class PSRenderStates {
     public static void setUpRealtimeCacheTexture() {
     }
 
+    // this is called to update the values used by shaders
+    @Deprecated(since = "hook")
     public static void update() {
         if (MinecraftClient.getInstance().world != null) {
             effectWrappers.forEach(EffectWrapper::update);
         }
     }
 
-    private static boolean useShader(float partialTicks, float ticks, ShaderWorld shader)
-    {
+    private static boolean useShader(float partialTicks, float ticks, ShaderWorld shader) {
         //RenderSystem.setShader(() -> (ShaderProgram)shader);
         currentShader = null;
 
-        if (shader != null && shader3DEnabled)
-        {
+        if (shader != null && shader3DEnabled) {
             if (shader.isShaderActive())
                 return true;
 
-            if (shader.activate(partialTicks, ticks))
-            {
+            if (shader.activate(partialTicks, ticks)) {
                 currentShader = shader;
                 return true;
             }
@@ -166,8 +165,7 @@ public class PSRenderStates {
     }
 
     @Deprecated(since = "unused")
-    public static void preRenderSky(float partialTicks)
-    {
+    public static void preRenderSky(float partialTicks) {
         /*if (renderFakeSkybox)
         {
             setForceColorSafeMode(true);
@@ -204,6 +202,7 @@ public class PSRenderStates {
             currentShader.setPixelSize(pixelWidth, pixelHeight);
     }
 
+    @Deprecated(since = "unused")
     public static int getMCFBO() {
         MinecraftClient mc = MinecraftClient.getInstance();
         Framebuffer framebuffer = mc.getFramebuffer();
@@ -212,8 +211,6 @@ public class PSRenderStates {
     }
 
     public static int getTextureIndex(Identifier loc) {
-        TextureManager tm = MinecraftClient.getInstance().getTextureManager();
-        tm.bindTexture(loc); // Allocate texture. MOJANG!
-        return tm.getTexture(loc).getGlId();
+        return GLStateProxy.getTextureId(loc);
     }
 }

@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.block.entity;
 
 import java.util.*;
 
+import ivorius.psychedelicraft.client.rendering.bezier.IvBezierPath3D;
 import ivorius.psychedelicraft.entities.EntityRealityRift;
 import ivorius.psychedelicraft.entities.PSEntityList;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
