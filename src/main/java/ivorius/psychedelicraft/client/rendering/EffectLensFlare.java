@@ -52,8 +52,8 @@ public class EffectLensFlare implements ScreenEffect {
     public void apply(int screenWidth, int screenHeight, float tickDelta, @Nullable PingPong pingPong) {
         if (pingPong != null) {
             pingPong.pingPong();
+            MCColorHelper.drawScreen(screenWidth, screenHeight);
         }
-        //IvRenderHelper.drawRectFullScreen(screenWidth, screenHeight);
 
         if (actualSunAlpha <= 0) {
             return;
