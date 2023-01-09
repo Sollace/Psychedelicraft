@@ -11,9 +11,18 @@ import net.minecraft.item.ItemStack;
 /**
  * A fluid that can explode.
  */
-public interface ExplodingFluid
-{
-    String SUBTYPE = "exploding";
+public interface Combustable {
+    Combustable NON_COMBUSTABLE = new Combustable() {
+        @Override
+        public float getFireStrength(ItemStack stack) {
+            return 0;
+        }
+
+        @Override
+        public float getExplosionStrength(ItemStack stack) {
+            return 0;
+        }
+    };
 
     /**
      * Determines the flame distance of the explosion.
@@ -21,7 +30,7 @@ public interface ExplodingFluid
      * @param fluidStack The fluid stack.
      * @return The flame distance in blocks.
      */
-    float fireStrength(ItemStack fluidStack);
+    float getFireStrength(ItemStack stack);
 
     /**
      * Determines the explosion size.
@@ -29,14 +38,13 @@ public interface ExplodingFluid
      * @param fluidStack The fluid stack.
      * @return The explosion size in blocks.
      */
-    float explosionStrength(ItemStack fluidStack);
+    float getExplosionStrength(ItemStack stack);
 
-    static ExplodingFluid fromStack(ItemStack stack) {
-        if (stack.getItem() instanceof FluidContainerItem container
-            && container.getFluid(stack) instanceof ExplodingFluid exploder) {
+    static Combustable fromStack(ItemStack stack) {
+        if (FluidContainerItem.of(stack).getFluid(stack) instanceof Combustable exploder) {
             return exploder;
         }
 
-        return null;
+        return NON_COMBUSTABLE;
     }
 }

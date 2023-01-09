@@ -28,15 +28,15 @@ public class GuiBarrel extends GuiFluidHandler<BarrelBlockEntity> {
 
     @Override
     protected void drawAdditionalInfo(MatrixStack matrices, int baseX, int baseY) {
-        int timeLeftFermenting = handler.getBlockEntity().getRemainingFermentationTimeScaled(24);
-        if (timeLeftFermenting < 24) {
-            drawTexture(matrices, baseX + 23, baseY + 14, 176, 0, 24 - timeLeftFermenting, 17);
+        int progress = handler.getBlockEntity().getProgress(24);
+        if (progress < 24) {
+            drawTexture(matrices, baseX + 23, baseY + 14, 176, 0, 24 - progress, 17);
         }
     }
 
     @Override
     protected List<Text> getAdditionalTankText() {
-        return handler.getBlockEntity().isFermenting()
+        return handler.getBlockEntity().isActive()
                 ? Arrays.asList(Text.translatable("fluid.status.maturing").formatted(Formatting.GREEN))
                 : List.of();
     }

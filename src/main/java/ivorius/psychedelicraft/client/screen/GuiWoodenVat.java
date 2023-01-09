@@ -28,7 +28,7 @@ public class GuiWoodenVat extends GuiFluidHandler<MashTubBlockEntity> {
 
     @Override
     protected void drawAdditionalInfo(MatrixStack matrices, int baseX, int baseY) {
-        int timeLeftFermenting = handler.getBlockEntity().getRemainingFermentationTimeScaled(24);
+        int timeLeftFermenting = handler.getBlockEntity().getProgress(24);
         if (timeLeftFermenting < 24) {
             drawTexture(matrices, baseX + 23, baseY + 14, 176, 0, 24 - timeLeftFermenting, 17);
         }
@@ -36,7 +36,7 @@ public class GuiWoodenVat extends GuiFluidHandler<MashTubBlockEntity> {
 
     @Override
     protected List<Text> getAdditionalTankText() {
-        return handler.getBlockEntity().isFermenting()
+        return handler.getBlockEntity().isActive()
                 ? Arrays.asList(Text.translatable("fluid.status.fermenting").formatted(Formatting.GREEN))
                 : List.of();
     }

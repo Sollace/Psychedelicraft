@@ -135,29 +135,29 @@ public interface PSFluids {
             // TODO: Color for milk was set twice. Second time set to 0x77cac4b2 Should it be the distilled colour?
     );
 
-    FluidDrug coffee = new FluidCoffee(Psychedelicraft.id("coffee"), (FluidDrug.Settings)new FluidDrug.Settings().drinkable().color(0xffa77d55));
-    FluidDrug cocaTea = new FluidDrug(Psychedelicraft.id("coca_tea"), (FluidDrug.Settings)new FluidDrug.Settings()
+    DrugFluid coffee = new CoffeeFluid(Psychedelicraft.id("coffee"), (DrugFluid.Settings)new DrugFluid.Settings().drinkable().color(0xffa77d55));
+    DrugFluid cocaTea = new DrugFluid(Psychedelicraft.id("coca_tea"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
             .influence(new DrugInfluence("Cocaine", 60, 0.005, 0.002, 0.2f))
             .color(0x44787a36)
     );
-    FluidDrug cannabisTea = new FluidDrug(Psychedelicraft.id("cannabis_tea"), (FluidDrug.Settings)new FluidDrug.Settings()
+    DrugFluid cannabisTea = new DrugFluid(Psychedelicraft.id("cannabis_tea"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
             .influence(new DrugInfluence("Cannabis", 60, 0.005, 0.002, 0.25f))
             .color(0x446d6f3c)
     );
-    FluidDrug peyoteJuice = new FluidDrug(Psychedelicraft.id("peyote_juice"), (FluidDrug.Settings)new FluidDrug.Settings()
+    DrugFluid peyoteJuice = new DrugFluid(Psychedelicraft.id("peyote_juice"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
             .influence(new DrugInfluence("Peyote", 15, 0.005, 0.003, 2.0f))
             .color(0x779bab62)
     );
 
-    FluidDrug cocaineFluid = new FluidDrug(Psychedelicraft.id("cocaine"), (FluidDrug.Settings)new FluidDrug.Settings()
+    DrugFluid cocaineFluid = new DrugFluid(Psychedelicraft.id("cocaine"), (DrugFluid.Settings)new DrugFluid.Settings()
             .injectable()
             .influence(new DrugInfluence("Cocaine", 0, 0.005, 0.01, 50.0f))
             .color(0x44e8f4f8)
     );
-    FluidDrug caffeineFluid = new FluidDrug(Psychedelicraft.id("caffeine"), (FluidDrug.Settings)new FluidDrug.Settings()
+    DrugFluid caffeineFluid = new DrugFluid(Psychedelicraft.id("caffeine"), (DrugFluid.Settings)new DrugFluid.Settings()
             .injectable()
             .influence(new DrugInfluence("Caffeine", 0, 0.005, 0.01, 85.0f))
             .color(0x66eee2d3)

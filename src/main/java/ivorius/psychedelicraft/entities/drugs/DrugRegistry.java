@@ -23,43 +23,39 @@ public class DrugRegistry {
     private static final List<DrugFactory> drugFactories = new ArrayList<>();
     private static final BiMap<String, Class<? extends DrugInfluence>> drugMap = HashBiMap.create();
 
-    public static void registerFactory(DrugFactory factory)
-    {
+    public static void registerFactory(DrugFactory factory) {
         drugFactories.add(factory);
     }
 
-    public static Collection<DrugFactory> allFactories()
-    {
+    public static Collection<DrugFactory> allFactories() {
         return Collections.unmodifiableCollection(drugFactories);
     }
 
     public static List<String> getAllDrugNames() {
         List<String> names = new ArrayList<>();
-        for (DrugFactory factory : DrugRegistry.allFactories())
+        for (DrugFactory factory : allFactories()) {
             factory.addManagedDrugNames(names);
+        }
         return names;
     }
 
-    public static List<Pair<String, Drug>> createDrugs(LivingEntity entity)
-    {
+    public static List<Pair<String, Drug>> createDrugs(LivingEntity entity) {
         List<Pair<String, Drug>> list = new ArrayList<>();
-        for (DrugFactory drugFactory : drugFactories)
+        for (DrugFactory drugFactory : drugFactories) {
             drugFactory.createDrugs(entity, list);
+        }
         return list;
     }
 
-    public static void registerInfluence(Class<? extends DrugInfluence> clazz, String key)
-    {
+    public static void registerInfluence(Class<? extends DrugInfluence> clazz, String key) {
         drugMap.put(key, clazz);
     }
 
-    public static Class<? extends DrugInfluence> getClass(String drugID)
-    {
+    public static Class<? extends DrugInfluence> getClass(String drugID) {
         return drugMap.get(drugID);
     }
 
-    public static String getID(Class<? extends DrugInfluence> clazz)
-    {
+    public static String getID(Class<? extends DrugInfluence> clazz) {
         return drugMap.inverse().get(clazz);
     }
 

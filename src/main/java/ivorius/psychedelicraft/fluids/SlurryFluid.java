@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 /**
  * Created by lukas on 27.10.14.
  */
-public class SlurryFluid extends SimpleFluid implements Fermentable {
+public class SlurryFluid extends SimpleFluid implements Processable {
     public static final int FLUID_PER_DIRT = FluidHelper.MILLIBUCKETS_PER_LITER * 4;
 
     public SlurryFluid(Identifier id, Settings settings) {
@@ -21,12 +21,18 @@ public class SlurryFluid extends SimpleFluid implements Fermentable {
     }
 
     @Override
-    public int getFermentationTime(ItemStack stack, boolean openContainer) {
-        return stack.getCount() >= FLUID_PER_DIRT ? PSConfig.slurryHardeningTime : UNFERMENTABLE;
+    public int getProcessingTime(ItemStack stack, ProcessType type, boolean openContainer) {
+        if (type == ProcessType.FERMENT) {
+            return stack.getCount() >= FLUID_PER_DIRT ? PSConfig.slurryHardeningTime : UNCONVERTABLE;
+        }
+        return UNCONVERTABLE;
     }
 
     @Override
-    public ItemStack ferment(ItemStack stack, boolean openContainer) {
-        return new ItemStack(Items.DIRT, stack.getCount() / FLUID_PER_DIRT);
+    public ItemStack process(ItemStack stack, ProcessType type, boolean openContainer) {
+        if (type == ProcessType.FERMENT) {
+            return new ItemStack(Items.DIRT, stack.getCount() / FLUID_PER_DIRT);
+        }
+        return ItemStack.EMPTY;
     }
 }

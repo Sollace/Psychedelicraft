@@ -21,14 +21,14 @@ import java.util.List;
 /**
  * Created by lukas on 22.10.14.
  */
-public class FluidDrug extends SimpleFluid implements ConsumableFluid, ExplodingFluid {
+public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustable {
     protected final List<DrugInfluence> drugInfluences;
     protected final FoodComponent foodLevel;
 
     private final boolean drinkable;
     private final boolean injectable;
 
-    public FluidDrug(Identifier id, Settings settings) {
+    public DrugFluid(Identifier id, Settings settings) {
         super(id, settings);
         drinkable = settings.drinkable;
         injectable = settings.injectable;
@@ -93,12 +93,12 @@ public class FluidDrug extends SimpleFluid implements ConsumableFluid, Exploding
     }
 
     @Override
-    public float fireStrength(ItemStack fluidStack) {
+    public float getFireStrength(ItemStack fluidStack) {
         return getAlcohol(fluidStack) * fluidStack.getCount() / FluidHelper.MILLIBUCKETS_PER_LITER * 2.0f;
     }
 
     @Override
-    public float explosionStrength(ItemStack fluidStack) {
+    public float getExplosionStrength(ItemStack fluidStack) {
         return getAlcohol(fluidStack) * fluidStack.getCount() / FluidHelper.MILLIBUCKETS_PER_LITER * 0.6f;
     }
 

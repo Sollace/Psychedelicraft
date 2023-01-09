@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.items;
 
 import ivorius.psychedelicraft.entities.EntityMolotovCocktail;
 import ivorius.psychedelicraft.fluids.ConsumableFluid.ConsumptionType;
-import ivorius.psychedelicraft.fluids.ExplodingFluid;
+import ivorius.psychedelicraft.fluids.Combustable;
 import ivorius.psychedelicraft.fluids.SimpleFluid;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -66,9 +66,9 @@ public class ItemMolotovCocktail extends DrinkableItem {
         if (!fluid.isEmpty()) {
             int quality = 0;
 
-            if (fluid instanceof ExplodingFluid exploding) {
-                float explStr = exploding.explosionStrength(stack) * 0.8f;
-                float fireStr = exploding.fireStrength(stack) * 0.6f;
+            if (fluid instanceof Combustable exploding) {
+                float explStr = exploding.getExplosionStrength(stack) * 0.8f;
+                float fireStr = exploding.getFireStrength(stack) * 0.6f;
 
                 quality = MathHelper.clamp(MathHelper.floor((fireStr + explStr) + 0.5f), 0, 7);
             }

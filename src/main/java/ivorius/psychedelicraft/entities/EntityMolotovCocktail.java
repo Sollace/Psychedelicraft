@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.entities;
 
-import ivorius.psychedelicraft.fluids.ExplodingFluid;
+import ivorius.psychedelicraft.fluids.Combustable;
 import ivorius.psychedelicraft.items.PSItems;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
@@ -83,14 +83,9 @@ public class EntityMolotovCocktail extends ThrownItemEntity {
 
         playSound(SoundEvents.BLOCK_GLASS_BREAK, 1, 1);
 
-        float explosionStrength = 0;
-        float fireStrength = 0;
-
-        ExplodingFluid fluid = ExplodingFluid.fromStack(getItem());
-        if (fluid != null) {
-            explosionStrength = fluid.explosionStrength(getItem());
-            fireStrength = fluid.fireStrength(getItem());
-        }
+        Combustable combustable = Combustable.fromStack(getItem());
+        float explosionStrength = combustable.getExplosionStrength(getItem());
+        float fireStrength = combustable.getFireStrength(getItem());
 
         for (int i = 0; i < fireStrength * 2; i++) {
             world.addParticle(ParticleTypes.FLAME,

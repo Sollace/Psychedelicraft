@@ -28,7 +28,7 @@ public class GuiDistillery extends GuiFluidHandler<DistilleryBlockEntity> {
 
     @Override
     protected void drawAdditionalInfo(MatrixStack matrices, int baseX, int baseY) {
-        int timeLeftFermenting = handler.getBlockEntity().getRemainingDistillationTimeScaled(13);
+        int timeLeftFermenting = handler.getBlockEntity().getProgress(13);
         if (timeLeftFermenting < 24) {
             drawTexture(matrices, baseX + 24, baseY + 15 + timeLeftFermenting, 176, timeLeftFermenting, 20, 13 - timeLeftFermenting);
         }
@@ -36,7 +36,7 @@ public class GuiDistillery extends GuiFluidHandler<DistilleryBlockEntity> {
 
     @Override
     protected List<Text> getAdditionalTankText() {
-        return handler.getBlockEntity().isDistilling()
+        return handler.getBlockEntity().isActive()
                 ? Arrays.asList(Text.translatable("fluid.status.distilling").formatted(Formatting.GREEN))
                 : List.of();
     }

@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 /**
  * Created by lukas on 25.11.14.
  */
-public class AlcoholicFluid extends FluidDrug implements Fermentable, FluidDistillable {
+public class AlcoholicFluid extends DrugFluid implements Processable {
     final Settings settings;
 
     public AlcoholicFluid(Identifier id, Settings settings) {
@@ -55,57 +55,61 @@ public class AlcoholicFluid extends FluidDrug implements Fermentable, FluidDisti
     }
 
     @Override
-    public int getFermentationTime(ItemStack stack, boolean openContainer) {
-        if (getFermentation(stack) < settings.fermentationSteps) {
-            return openContainer ? settings.tickInfo.get().ticksPerFermentation : UNFERMENTABLE;
+    public int getProcessingTime(ItemStack stack, ProcessType type, boolean openContainer) {
+        if (type == ProcessType.DISTILL) {
+            if (getFermentation(stack) < settings.fermentationSteps || getMaturation(stack) != 0) {
+                return UNCONVERTABLE;
+            }
+
+            return settings.tickInfo.get().ticksPerDistillation;
         }
-        return openContainer ? settings.tickInfo.get().ticksUntilAcetification : settings.tickInfo.get().ticksPerMaturation;
+
+        if (type == ProcessType.FERMENT) {
+            if (getFermentation(stack) < settings.fermentationSteps) {
+                return openContainer ? settings.tickInfo.get().ticksPerFermentation : UNCONVERTABLE;
+            }
+            return openContainer ? settings.tickInfo.get().ticksUntilAcetification : settings.tickInfo.get().ticksPerMaturation;
+        }
+
+        return UNCONVERTABLE;
     }
 
     @Override
-    public ItemStack ferment(ItemStack stack, boolean openContainer) {
-        int fermentation = getFermentation(stack);
+    public ItemStack process(ItemStack stack, ProcessType type, boolean openContainer) {
+        if (type == ProcessType.DISTILL) {
+            int fermentation = getFermentation(stack);
 
-        if (openContainer) {
             if (fermentation < settings.fermentationSteps) {
-                setFermentation(stack, fermentation + 1);
-            } else {
-                setIsVinegar(stack, true);
+                return ItemStack.EMPTY;
             }
-        } else {
-            setMaturation(stack, getMaturation(stack) + 1);
+
+            int distillation = getDistillation(stack);
+
+            setDistillation(stack, distillation + 1);
+            int distilledAmount = MathHelper.floor(stack.getCount() * (1.0f - 0.5f / (distillation + 1.0f)));
+
+            stack.split(distilledAmount);
+
+            ItemStack result = new ItemStack(Items.AIR, stack.getCount() - distilledAmount);
+            FluidContainerItem.of(result).setFluid(result, PSFluids.slurry);
+            FluidContainerItem.of(result).setLevel(result, 1);
+            return result;
+        }
+
+        if (type == ProcessType.FERMENT) {
+            int fermentation = getFermentation(stack);
+
+            if (openContainer) {
+                if (fermentation < settings.fermentationSteps) {
+                    setFermentation(stack, fermentation + 1);
+                } else {
+                    setIsVinegar(stack, true);
+                }
+            } else {
+                setMaturation(stack, getMaturation(stack) + 1);
+            }
         }
         return ItemStack.EMPTY;
-    }
-
-    @Override
-    public int distillationTime(ItemStack stack) {
-        if (getFermentation(stack) < settings.fermentationSteps || getMaturation(stack) != 0) {
-            return UNDISTILLABLE;
-        }
-
-        return settings.tickInfo.get().ticksPerDistillation;
-    }
-
-    @Override
-    public ItemStack distillStep(ItemStack stack) {
-        int fermentation = getFermentation(stack);
-
-        if (fermentation < settings.fermentationSteps) {
-            return ItemStack.EMPTY;
-        }
-
-        int distillation = getDistillation(stack);
-
-        setDistillation(stack, distillation + 1);
-        int distilledAmount = MathHelper.floor(stack.getCount() * (1.0f - 0.5f / (distillation + 1.0f)));
-
-        stack.split(distilledAmount);
-
-        ItemStack result = new ItemStack(Items.AIR, stack.getCount() - distilledAmount);
-        FluidContainerItem.of(result).setFluid(result, PSFluids.slurry);
-        FluidContainerItem.of(result).setLevel(result, 1);
-        return result;
     }
 
     public int getFermentation(ItemStack stack) {
@@ -183,7 +187,7 @@ public class AlcoholicFluid extends FluidDrug implements Fermentable, FluidDisti
         return MathUtils.mixColors(baseFluidColor, matureColor, (1.0f - 1.0f / (1.0f + maturation * 0.2f)));
     }
 
-    public static class Settings extends FluidDrug.Settings {
+    public static class Settings extends DrugFluid.Settings {
         private AlcoholicDrinkTypes types;
 
         int fermentationSteps;
