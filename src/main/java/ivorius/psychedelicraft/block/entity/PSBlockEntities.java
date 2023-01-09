@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.block.entity;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.blocks.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -21,7 +22,7 @@ public interface PSBlockEntities {
     ));
 
     static <T extends BlockEntity> BlockEntityType<T> create(String id, Builder<T> builder) {
-        return Registry.register(Registries.BLOCK_ENTITY_TYPE, id, builder.build(null));
+        return Registry.register(Registries.BLOCK_ENTITY_TYPE, Psychedelicraft.id(id), builder.build(null));
     }
 
     static void bootstrap() { }

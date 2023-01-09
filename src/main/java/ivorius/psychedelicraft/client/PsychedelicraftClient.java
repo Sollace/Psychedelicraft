@@ -13,9 +13,12 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
  * @since 1 Jan 2023
  */
 public class PsychedelicraftClient implements ClientModInitializer {
+    public PsychedelicraftClient() {
+        new ClientProxy();
+    }
+
     @Override
     public void onInitializeClient() {
-        new ClientProxy();
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             PSRenderStates.update();
 

@@ -117,12 +117,12 @@ public class PSItems {
 
     public static ItemHarmonium harmonium = register("harmonium", new ItemHarmonium(new Settings()));
 
-    public static ItemBong pipe = register("smoking_pipe", new ItemBong(new Settings().maxDamage(50).maxCount(1)))
+    public static ItemBong pipe = register("smoking_pipe", new ItemBong(new Settings().maxDamage(50)))
             .consumes(new ItemBong.Consumable(driedCannabisBuds.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.25F)))
             .consumes(new ItemBong.Consumable(driedTobacco.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.8f)))
             .consumes(new ItemBong.Consumable(harmonium.getDefaultStack(), stack -> new DrugInfluenceHarmonium("Harmonium", 0, 0.04, 0.01, 0.65f, MathUtils.unpackRgb(harmonium.getColor(stack)))));
     // TODO: Play around with the bongs benefits
-    public static ItemBong bong = register("bong", new ItemBong(new Settings().maxDamage(128).maxCount(1)))
+    public static ItemBong bong = register("bong", new ItemBong(new Settings().maxDamage(128)))
             .consumes(new ItemBong.Consumable(driedCannabisBuds.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.2F)))
             .consumes(new ItemBong.Consumable(driedTobacco.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.6F)));
 

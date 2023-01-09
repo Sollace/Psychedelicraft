@@ -25,19 +25,19 @@ public class BlockMashTub extends BlockWithFluid<MashTubBlockEntity> {
     public static final int SIZE = 15;
     public static final int BORDER_SIZE = 1;
     public static final int HEIGHT = 16;
-    private static final int WIDTH = SIZE * 2 + BORDER_SIZE * 2;
+    private static final int WIDTH = 32;
 
     // TODO: (Sollace) MushTub is a 3x3 multi-block and this voxel shape reflects that
     //           x from -15 to +30
     private static final VoxelShape SHAPE = VoxelShapes.union(
-            createShape(-SIZE - BORDER_SIZE, -0.5F, -SIZE - BORDER_SIZE, WIDTH,       HEIGHT,      BORDER_SIZE),
-            createShape(-SIZE - BORDER_SIZE, -0.5F,  SIZE,               WIDTH,       HEIGHT,      BORDER_SIZE),
-            createShape(-SIZE - BORDER_SIZE, -0.5F, -SIZE - BORDER_SIZE, BORDER_SIZE, HEIGHT,      WIDTH),
-            createShape( SIZE,               -0.5F, -SIZE - BORDER_SIZE, BORDER_SIZE, HEIGHT,      WIDTH),
-            createShape(-SIZE - BORDER_SIZE, -0.5F, -SIZE - BORDER_SIZE, WIDTH,       BORDER_SIZE, WIDTH)
+            createShape(-16, -0.5F, -16, 32, 16,  1),
+            createShape(-16, -0.5F,  15, 32, 16,  1),
+            createShape(-16, -0.5F, -16,  1, 16, 32),
+            createShape(-16, -0.5F, -16,  1, 16, 32),
+            createShape(-16, -0.5F, -16, 32,  1, 32)
     );
     private static VoxelShape createShape(double x, double y, double z, double width, double height, double depth) {
-        return Block.createCuboidShape(x, y, z, width - x, height - y, depth - z);
+        return Block.createCuboidShape(x, y, z, x + width, y + height, z + depth);
     }
 
     public BlockMashTub(Settings settings) {
