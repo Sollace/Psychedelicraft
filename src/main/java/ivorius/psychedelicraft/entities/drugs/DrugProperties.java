@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.entities.drugs;
 
 import ivorius.psychedelicraft.*;
+import ivorius.psychedelicraft.client.ClientProxy;
 import ivorius.psychedelicraft.client.rendering.IDrugRenderer;
 import ivorius.psychedelicraft.client.screen.UpdatableContainer;
 import ivorius.psychedelicraft.config.PSConfig;
@@ -30,10 +31,6 @@ public class DrugProperties implements NbtSerialisable {
     public static final UUID drugUUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1"); // Randomly gen'd
     public static final String EEP_KEY = "DrugHelper";
     public static final String EEP_CMP_KEY = "drugData";
-
-    public static boolean waterOverlayEnabled;
-    public static boolean hurtOverlayEnabled;
-    public static float[] digitalEffectPixelRescale;
 
     private Map<String, Drug> drugs;
     public List<DrugInfluence> influences = new ArrayList<>();
@@ -286,8 +283,8 @@ public class DrugProperties implements NbtSerialisable {
             }
         }
 
-        if (!entity.world.isClient && PSConfig.randomTicksUntilRiftSpawn > 0) {
-            if (random.nextInt(PSConfig.randomTicksUntilRiftSpawn) == 0) {
+        if (!entity.world.isClient && PSConfig.getInstance().balancing.randomTicksUntilRiftSpawn > 0) {
+            if (random.nextInt(PSConfig.getInstance().balancing.randomTicksUntilRiftSpawn) == 0) {
                 spawnRiftAtPlayer();
             }
         }
@@ -408,7 +405,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public float[] getDigitalEffectPixelResize() {
-        return digitalEffectPixelRescale;
+        return PSConfig.<ClientProxy.Config>getInstance().visual.getDigitalEffectPixelResize();
     }
 
     public void changeDrugModifierMultiply(LivingEntity entity, EntityAttribute attribute, double value) {

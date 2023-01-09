@@ -6,8 +6,10 @@
 package ivorius.psychedelicraft.client.rendering.effectWrappers;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
+import ivorius.psychedelicraft.client.ClientProxy;
+import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 import ivorius.psychedelicraft.client.rendering.shaders.ShaderHeatDistortions;
+import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -27,11 +29,11 @@ public class WrapperHeatDistortion extends ShaderWrapper<ShaderHeatDistortions> 
     public void setShaderValues(float partialTicks, int ticks, Framebuffer depthBuffer) {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
-        if (PSRenderStates.doHeatDistortion && drugProperties != null && depthBuffer != null) {
+        if (PSConfig.<ClientProxy.Config>getInstance().visual.doHeatDistortion && drugProperties != null && depthBuffer != null) {
             float heatDistortion = drugProperties.renderer.getCurrentHeatDistortion();
 
             shaderInstance.depthTextureIndex = depthBuffer.getDepthAttachment();
-            shaderInstance.noiseTextureIndex = PSRenderStates.getTextureIndex(heatDistortionNoiseTexture);
+            shaderInstance.noiseTextureIndex = GLStateProxy.getTextureId(heatDistortionNoiseTexture);
 
             shaderInstance.strength = heatDistortion;
             shaderInstance.wobbleSpeed = 0.15f;
@@ -45,7 +47,7 @@ public class WrapperHeatDistortion extends ShaderWrapper<ShaderHeatDistortions> 
         DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
         if (drugProperties != null) {
-            float heatDistortion = PSRenderStates.doHeatDistortion ? drugProperties.renderer.getCurrentHeatDistortion() : 0.0f;
+            float heatDistortion = PSConfig.<ClientProxy.Config>getInstance().visual.doHeatDistortion ? drugProperties.renderer.getCurrentHeatDistortion() : 0.0f;
 
             return heatDistortion > 0.0f;
         }

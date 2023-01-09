@@ -49,10 +49,10 @@ public interface PSItemGroups {
                 entries.add(PSItems.peyoteJoint);
                 entries.add(PSItems.itemFlask);
                 entries.add(PSItems.itemDistillery);
-                if (PSConfig.enableHarmonium) {
+                if (PSConfig.getInstance().balancing.enableHarmonium) {
                     entries.add(PSItems.harmonium);
                 }
-                if (PSConfig.enableRiftJars) {
+                if (PSConfig.getInstance().balancing.enableRiftJars) {
                     entries.add(ItemRiftJar.createFilledRiftJar(0.0F, PSItems.itemRiftJar));
                     entries.add(ItemRiftJar.createFilledRiftJar(0.25F, PSItems.itemRiftJar));
                     entries.add(ItemRiftJar.createFilledRiftJar(0.55F, PSItems.itemRiftJar));

@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.client.sound;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.ClientProxy;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.client.MinecraftClient;
@@ -21,7 +22,7 @@ public class MovingSoundDrug extends MovingSoundInstance {
     public static void initializeForEntity(DrugProperties drugProperties) {
         SoundManager soundHandler = MinecraftClient.getInstance().getSoundManager();
         for (String drugName : drugProperties.getAllDrugNames()) {
-            if (PSConfig.hasBGM(drugName)) {
+            if (PSConfig.<ClientProxy.Config>getInstance().audio.hasBackgroundMusic(drugName)) {
                 Identifier id = Psychedelicraft.id("drug." + drugName.toLowerCase());
                 // TODO: PSSoundEvents
                 soundHandler.play(new MovingSoundDrug(Registries.SOUND_EVENT.get(id), SoundCategory.AMBIENT, drugProperties.asEntity(), drugProperties, drugName));

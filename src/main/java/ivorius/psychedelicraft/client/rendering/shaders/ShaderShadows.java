@@ -5,7 +5,9 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
+import ivorius.psychedelicraft.client.ClientProxy;
 import ivorius.psychedelicraft.client.rendering.GLStateProxy;
+import ivorius.psychedelicraft.config.PSConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.SimpleFramebuffer;
@@ -19,7 +21,12 @@ import org.apache.logging.log4j.Logger;
  */
 @Deprecated(forRemoval = true, since = "Not necessary: the game implements shaders for us already")
 public class ShaderShadows extends IvShaderInstance3D implements ShaderWorld {
+    public static int shadowPixelsPerChunk = 256;
     public Framebuffer depthBuffer;
+
+    public static int getShadowPixels() {
+        return MinecraftClient.getInstance().options.getViewDistance().getValue() * PSConfig.<ClientProxy.Config>getInstance().visual.shadowPixelsPerChunk;
+    }
 
     public ShaderShadows(Logger logger) {
         super(logger);
@@ -147,9 +154,5 @@ public class ShaderShadows extends IvShaderInstance3D implements ShaderWorld {
     @Override
     public void setForceColorSafeMode(boolean enable) {
 
-    }
-
-    public static int getShadowPixels() {
-        return MinecraftClient.getInstance().options.getViewDistance().getValue() * PSRenderStates.shadowPixelsPerChunk;
     }
 }

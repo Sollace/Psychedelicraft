@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.fluids;
 
+import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
 import ivorius.psychedelicraft.items.FluidContainerItem;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -199,7 +200,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         private int matureColor = 0xcc592518;
         private int distilledColor = 0x33ffffff;
 
-        public Supplier<TickInfo> tickInfo;
+        public Supplier<PSConfig.Balancing.FluidProperties.TickInfo> tickInfo;
 
         public Settings matureColor(int matureColor) {
             this.matureColor = matureColor;
@@ -228,16 +229,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             return this;
         }
 
-        public Settings tickRate(Supplier<TickInfo> tickInfo) {
+        public Settings tickRate(Supplier<PSConfig.Balancing.FluidProperties.TickInfo> tickInfo) {
             this.tickInfo = tickInfo;
             return this;
         }
     }
 
-    public static class TickInfo {
-        public int ticksPerFermentation;
-        public int ticksPerDistillation;
-        public int ticksPerMaturation;
-        public int ticksUntilAcetification;
-    }
 }

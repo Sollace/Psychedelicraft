@@ -6,7 +6,8 @@
 package ivorius.psychedelicraft.client.rendering;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
+import ivorius.psychedelicraft.client.ClientProxy;
+import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.Drug;
 import ivorius.psychedelicraft.entities.drugs.DrugHallucination;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
@@ -76,11 +77,11 @@ public class DrugRenderer implements IDrugRenderer {
     @Override
     public void update(DrugProperties drugProperties, LivingEntity entity)
     {
-        if (DrugProperties.hurtOverlayEnabled) {
+        if (PSConfig.<ClientProxy.Config>getInstance().visual.hurtOverlayEnabled) {
             experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
         }
 
-        if (PSRenderStates.sunFlareIntensity > 0.0f) {
+        if (PSConfig.<ClientProxy.Config>getInstance().visual.sunFlareIntensity > 0) {
             effectLensFlare.updateLensFlares();
         }
 
@@ -88,7 +89,7 @@ public class DrugRenderer implements IDrugRenderer {
         // TODO: (Sollace) The year is 2023. Can the client handle rain? I think it can now
         //wasInRain = player.worldObj.getRainStrength(1.0f) > 0.0f && player.worldObj.getPrecipitationHeight(MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY)) <= player.posY; //Client can't handle rain
 
-        if (DrugProperties.waterOverlayEnabled) {
+        if (PSConfig.<ClientProxy.Config>getInstance().visual.waterOverlayEnabled) {
             timeScreenWet--;
 
             if (wasInWater) {
@@ -139,7 +140,7 @@ public class DrugRenderer implements IDrugRenderer {
 
     @Override
     public void renderOverlaysBeforeShaders(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
-        effectLensFlare.sunFlareIntensity = PSRenderStates.sunFlareIntensity;
+        effectLensFlare.sunFlareIntensity = PSConfig.<ClientProxy.Config>getInstance().visual.sunFlareIntensity;
 
         if (effectLensFlare.shouldApply(updateCounter + partialTicks)) {
             effectLensFlare.apply(width, height, partialTicks, null);
@@ -157,7 +158,7 @@ public class DrugRenderer implements IDrugRenderer {
             drug.drawOverlays(matrices, partialTicks, entity, updateCounter, width, height, drugProperties);
         }
 
-        if (DrugProperties.hurtOverlayEnabled && entity.hurtTime > 0 || experiencedHealth < 5F) {
+        if (PSConfig.<ClientProxy.Config>getInstance().visual.hurtOverlayEnabled && entity.hurtTime > 0 || experiencedHealth < 5F) {
             float p1 = (float) entity.hurtTime / (float) entity.maxHurtTime;
             float p2 = +(5f - experiencedHealth) / 6f;
 

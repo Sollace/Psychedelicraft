@@ -5,8 +5,10 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
+import ivorius.psychedelicraft.client.ClientProxy;
 import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 import ivorius.psychedelicraft.client.rendering.PsycheShadowHelper;
+import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -53,7 +55,7 @@ public class ShaderMain extends IvShaderInstance3D implements ShaderWorld {
 
         setUniformFloats("ticks", ticks);
         setUniformInts("worldTime", (int) mc.world.getTime());
-        setUniformInts("uses2DShaders", PSRenderStates.shader2DEnabled ? 1 : 0);
+        setUniformInts("uses2DShaders", PSConfig.<ClientProxy.Config>getInstance().visual.shader2DEnabled ? 1 : 0);
 
         setUniformFloats("playerPos", (float) renderEntity.getX(), (float) renderEntity.getY(), (float) renderEntity.getZ());
 

@@ -6,9 +6,10 @@
 package ivorius.psychedelicraft.client.rendering.effectWrappers;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.ClientProxy;
 import ivorius.psychedelicraft.client.rendering.ScreenEffect;
 import ivorius.psychedelicraft.client.rendering.shaders.IvShaderInstance2D;
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
+import ivorius.psychedelicraft.config.PSConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.util.Identifier;
@@ -38,7 +39,7 @@ public abstract class ShaderWrapper<ShaderInstance extends IvShaderInstance2D> i
 
     @Override
     public void apply(float partialTicks, ScreenEffect.PingPong pingPong, Framebuffer depthBuffer) {
-        if (PSRenderStates.shader2DEnabled) {
+        if (PSConfig.<ClientProxy.Config>getInstance().visual.shader2DEnabled) {
             MinecraftClient mc = MinecraftClient.getInstance();
             int ticks = mc.cameraEntity.age;
             setShaderValues(partialTicks, ticks, depthBuffer);

@@ -5,13 +5,9 @@
 
 package ivorius.psychedelicraft.entities;
 
-import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -31,38 +27,31 @@ import net.minecraft.world.poi.PointOfInterestType;
  * @since 1 Jan 2023
  */
 public interface PSTradeOffers {
-    Supplier<Optional<VillagerProfession>> DRUG_DEALER_PROFESSION = Suppliers.memoize(() -> {
-        if (!PSConfig.villagerDealer) {
-            return Optional.empty();
-        }
-        return Optional.of(register("drug_dealer", PointOfInterestType.NONE, VillagerProfession.IS_ACQUIRABLE_JOB_SITE, null));
-    });
+    VillagerProfession DRUG_DEALER_PROFESSION = register("drug_dealer", PointOfInterestType.NONE, VillagerProfession.IS_ACQUIRABLE_JOB_SITE, null);
 
     static void bootstrap() {
-        DRUG_DEALER_PROFESSION.get().ifPresent(profession -> {
-            TradeOfferHelper.registerVillagerOffers(profession, 0, factories -> {
-                factories.add(buy(Items.EMERALD, 1, PSItems.cannabisLeaf, 1, 9, 1, 0.7f));
-                factories.add(buy(Items.EMERALD, 1, PSItems.cannabisSeeds, 5, 12, 2, 0.5f));
-                factories.add(buy(Items.EMERALD, 1, PSItems.driedCannabisBuds, 2, 8, 2, 0.9f));
-                factories.add(buy(Items.EMERALD, 1, PSItems.driedCannabisLeaves, 2, 5, 3, 0.8f));
-                factories.add(buy(Items.EMERALD, 1, PSItems.hashMuffin, 2, 3, 1, 0.7f));
+        TradeOfferHelper.registerVillagerOffers(DRUG_DEALER_PROFESSION, 0, factories -> {
+            factories.add(buy(Items.EMERALD, 1, PSItems.cannabisLeaf, 1, 9, 1, 0.7f));
+            factories.add(buy(Items.EMERALD, 1, PSItems.cannabisSeeds, 5, 12, 2, 0.5f));
+            factories.add(buy(Items.EMERALD, 1, PSItems.driedCannabisBuds, 2, 8, 2, 0.9f));
+            factories.add(buy(Items.EMERALD, 1, PSItems.driedCannabisLeaves, 2, 5, 3, 0.8f));
+            factories.add(buy(Items.EMERALD, 1, PSItems.hashMuffin, 2, 3, 1, 0.7f));
 
-                factories.add(buy(Items.EMERALD, 2, PSItems.magicMushroomsBrown, 8, 3, 3, 0.5f));
-                factories.add(buy(Items.EMERALD, 2, PSItems.magicMushroomsRed, 8, 3, 3, 0.5f));
+            factories.add(buy(Items.EMERALD, 2, PSItems.magicMushroomsBrown, 8, 3, 3, 0.5f));
+            factories.add(buy(Items.EMERALD, 2, PSItems.magicMushroomsRed, 8, 3, 3, 0.5f));
 
-                factories.add(buy(Items.EMERALD, 1, PSItems.cocaLeaf, 4, 4, 1, 0.5f));
-                factories.add(buy(Items.EMERALD, 2, PSItems.cocaSeeds, 4, 4, 1, 0.5f));
-                factories.add(buy(Items.EMERALD, 2, PSItems.driedCocaLeaves, 20, 3, 2, 0.5f));
+            factories.add(buy(Items.EMERALD, 1, PSItems.cocaLeaf, 4, 4, 1, 0.5f));
+            factories.add(buy(Items.EMERALD, 2, PSItems.cocaSeeds, 4, 4, 1, 0.5f));
+            factories.add(buy(Items.EMERALD, 2, PSItems.driedCocaLeaves, 20, 3, 2, 0.5f));
 
-                factories.add(buy(Items.EMERALD, 2, PSItems.syringe, 4, 3, 1, 0.5f));
+            factories.add(buy(Items.EMERALD, 2, PSItems.syringe, 4, 3, 1, 0.5f));
 
-                factories.add(buy(Items.EMERALD, 3, PSItems.driedPeyote, 10, 2, 2, 0.5f));
-                factories.add(buy(Items.EMERALD, 1, PSItems.peyoteJoint, 3, 2, 3, 0.5f));
-                factories.add(buy(Items.EMERALD, 1, PSItems.peyote, 5, 4, 4, 0.5f));
-            });
+            factories.add(buy(Items.EMERALD, 3, PSItems.driedPeyote, 10, 2, 2, 0.5f));
+            factories.add(buy(Items.EMERALD, 1, PSItems.peyoteJoint, 3, 2, 3, 0.5f));
+            factories.add(buy(Items.EMERALD, 1, PSItems.peyote, 5, 4, 4, 0.5f));
         });
 
-        if (PSConfig.farmerDrugDeals) {
+        if (PSConfig.getInstance().balancing.worldGeneration.farmerDrugDeals) {
             TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 0, factories -> {
                 factories.add(buy(Items.EMERALD, 2, PSItems.wineGrapes, 3, 8, 1, 0.5F));
                 factories.add(buy(Items.EMERALD, 1, PSItems.hopCones, 1, 4, 1, 0.6F));

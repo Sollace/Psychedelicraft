@@ -1,138 +1,83 @@
-/*
- *  Copyright (c) 2014, Lukas Tenbrink.
- *  * http://lukas.axxim.net
- */
-
 package ivorius.psychedelicraft.config;
 
+import java.util.function.Supplier;
+
 import ivorius.psychedelicraft.PSProxy;
-import ivorius.psychedelicraft.fluids.AlcoholicFluid;
 
-import java.util.HashMap;
-import java.util.Map;
+public class PSConfig {
+    private static final Supplier<JsonConfig.Loader<PSConfig>> LOADER
+        = JsonConfig.create("psychedelicraft.json", () -> PSProxy.getInstance().createConfig());
 
-/**
- * Created by lukas on 31.07.14.
- */
-public class PSConfig
-{
-    public static final String CATEGORY_BALANCING = "balancing";
-    public static final String CATEGORY_VISUAL = "visual";
-    public static final String CATEGORY_AUDIO = "audio";
+    @SuppressWarnings("unchecked")
+    public static <T extends PSConfig> T getInstance() {
+        return (T)LOADER.get().getData();
+    }
 
-    private static final int MINUTE = 20 * 60;
+    public static final int MINUTE = 20 * 60;
 
-    public static int randomTicksUntilRiftSpawn;
-    public static boolean enableHarmonium;
-    public static boolean enableRiftJars;
+    public final Balancing balancing = new Balancing();
 
-    public static boolean genJuniper;
-    public static boolean genCannabis;
-    public static boolean genHop;
-    public static boolean genTobacco;
-    public static boolean genCoffea;
-    public static boolean genCoca;
-    public static boolean genPeyote;
+    public static class Balancing {
+        public final int randomTicksUntilRiftSpawn = MINUTE * 180;
+        public final int dryingTableTickDuration = MINUTE * 16;
+        public final int ironDryingTableTickDuration = MINUTE * 12;
+        public final int slurryHardeningTime = MINUTE * 30;
 
-    public static boolean dungeonChests;
-    public static boolean villageChests;
+        public final boolean enableHarmonium = false;
+        public final boolean enableRiftJars = false;
+        public final Generation worldGeneration = new Generation();
+        public final FluidProperties fluidAttributes = new FluidProperties();
+        //public final MessageDistortion messageDistortion = new MessageDistortion();
 
-    public static boolean farmerDrugDeals;
+        // TODO: reimplement message distortion
+        /*
+        public static class MessageDistortion {
+            public final boolean incoming = true;
+            public final boolean outgoing = true;
+        }*/
 
-    public static int dryingTableTickDuration;
-    public static int ironDryingTableTickDuration;
+        public static class FluidProperties {
+            static final TickInfo DEFAULT = new TickInfo(40, 40, 30, 30);
 
-    public static final Map<String, Boolean> drugBGM = new HashMap<>();
+            public final TickInfo alcInfoWheatHop = new TickInfo(30, 60, 100, 30);
+            public final TickInfo alcInfoWheat = DEFAULT;
+            public final TickInfo alcInfoCorn = DEFAULT;
+            public final TickInfo alcInfoPotato = DEFAULT;
+            public final TickInfo alcInfoRedGrapes = DEFAULT;
+            public final TickInfo alcInfoRice = DEFAULT;
+            public final TickInfo alcInfoJuniper = DEFAULT;
+            public final TickInfo alcInfoSugarCane = DEFAULT;
+            public final TickInfo alcInfoHoney = DEFAULT;
+            public final TickInfo alcInfoApple = DEFAULT;
+            public final TickInfo alcInfoPineapple = DEFAULT;
+            public final TickInfo alcInfoBanana = DEFAULT;
+            public final TickInfo alcInfoMilk = DEFAULT;
 
-    public static final AlcoholicFluid.TickInfo alcInfoWheatHop = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoWheat = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoCorn = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoPotato = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoRedGrapes = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoRice = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoJuniper = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoSugarCane = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoHoney = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoApple = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoPineapple = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoBanana = new AlcoholicFluid.TickInfo();
-    public static final AlcoholicFluid.TickInfo alcInfoMilk = new AlcoholicFluid.TickInfo();
+            public static class TickInfo {
+                public final int ticksPerFermentation;
+                public final int ticksPerDistillation;
+                public final int ticksPerMaturation;
+                public final int ticksUntilAcetification;
 
-    public static int slurryHardeningTime;
-
-    public static boolean distortIncomingMessages;
-    public static boolean distortOutgoingMessages;
-
-    public static boolean villagerDealer;
-
-    public static void loadConfig(String configID, Configuration config)
-    {
-        if (configID == null || configID.equals(Configuration.CATEGORY_GENERAL))
-        {
-            villagerDealer = config.get("General", "villagerDealerProfessionID", false, "Internal ID for the drug dealer villager. Enter a negative number to disable.");
+                public TickInfo(int fermentation, int distillation, int maturation, int acetification) {
+                    ticksPerFermentation = fermentation * MINUTE;
+                    ticksPerDistillation = distillation * MINUTE;
+                    ticksPerMaturation = maturation * MINUTE;
+                    ticksUntilAcetification = acetification * MINUTE;
+                }
+            }
         }
 
-        if (configID == null || configID.equals(CATEGORY_BALANCING))
-        {
-            randomTicksUntilRiftSpawn = config.get(CATEGORY_BALANCING, "randomTicksUntilRiftSpawn", MINUTE * 180, "Approximate number of ticks until a rift spawns. Enter a negative number to disable.");
-
-            enableHarmonium = config.get(CATEGORY_BALANCING, "enableHarmonium", false);
-            enableRiftJars = config.get(CATEGORY_BALANCING, "enableRiftJars", false);
-
-            genJuniper = config.get(CATEGORY_BALANCING, "generateJuniper", true);
-            genCannabis = config.get(CATEGORY_BALANCING, "generateCannabis", true);
-            genHop = config.get(CATEGORY_BALANCING, "genHop", true);
-            genTobacco = config.get(CATEGORY_BALANCING, "generateTobacco", true);
-            genCoffea = config.get(CATEGORY_BALANCING, "generateCoffea", true);
-            genCoca = config.get(CATEGORY_BALANCING, "generateCoca", true);
-            genPeyote = config.get(CATEGORY_BALANCING, "generatePeyote", true);
-
-            dungeonChests = config.get(CATEGORY_BALANCING, "dungeonChests", true);
-            villageChests = config.get(CATEGORY_BALANCING, "villageChests", true);
-
-            farmerDrugDeals = config.get(CATEGORY_BALANCING, "farmerDrugDeals", true);
-
-            dryingTableTickDuration = config.get(CATEGORY_BALANCING, "dryingTableTickDuration", MINUTE * 16, "Time until plants in the drying table finish the drying process.");
-            ironDryingTableTickDuration = config.get(CATEGORY_BALANCING, "ironDryingTableTickDuration", MINUTE * 12, "Time until plants in the iron drying table finish the drying process.");
-
-            readTickInfo(alcInfoWheatHop, "wheatHop", MINUTE * 30, MINUTE * 60, MINUTE * 100, MINUTE * 30, config);
-            readTickInfo(alcInfoWheat, "wheat", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoCorn, "corn", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoPotato, "potato", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoRedGrapes, "redGrapes", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoRice, "rice", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoJuniper, "juniper", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoSugarCane, "sugarCane", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoHoney, "honey", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoApple, "apple", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoPineapple, "pineapple", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoBanana, "banana", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-            readTickInfo(alcInfoMilk, "milk", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
-
-            slurryHardeningTime = config.get(CATEGORY_BALANCING, "slurryHardeningTime", MINUTE * 30, "The amount of ticks slurry needs to sit in a vat to harden to dirt.");
-
-            distortOutgoingMessages = config.get(CATEGORY_BALANCING, "distortOutgoingMessages", true, "Whether the mod should distort chat messages when drugs have been consumed ('slurred speech').");
+        // TODO: reimplement world gen features
+        public static class Generation {
+           // public final boolean genJuniper = true;
+           // public final boolean genCannabis = true;
+           // public final boolean genHop = true;
+           // public final boolean genTobacco = true;
+           // public final boolean genCoffea = true;
+           // public final boolean genCoca = true;
+           // public final boolean genPeyote = true;
+            public final boolean farmerDrugDeals = true;
         }
-
-        PSProxy.getInstance().loadConfig(config, configID);
-    }
-
-    public static void readTickInfo(AlcoholicFluid.TickInfo tickInfo, String fluidName, int defaultFermentation, int defaultDistillation, int defaultMaturation, int defaultAcetification, Configuration config)
-    {
-        tickInfo.ticksPerFermentation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerFermentation", defaultFermentation, String.format("Time until %s wort ferments to the next step.", fluidName));
-        tickInfo.ticksPerDistillation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerDistillation", defaultDistillation, String.format("Time until %s distills to the next step.", fluidName));
-        tickInfo.ticksPerMaturation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerMaturation", defaultMaturation, String.format("Time until %s matures to the next step.", fluidName));
-        tickInfo.ticksUntilAcetification = config.get(CATEGORY_BALANCING, fluidName + "_ticksUntilAcetification", defaultAcetification, String.format("Time until %s acetifies to form vinegar. Enter -1 to disable.", fluidName));
-    }
-
-    public static void readHasBGM(String drugName, Configuration config)
-    {
-        drugBGM.put(drugName, config.get(CATEGORY_AUDIO, "bgm_" + drugName, false, "Indicates if the drug is supposed to have background music when active (refer to the wiki for instructions)."));
-    }
-
-    public static boolean hasBGM(String drugName)
-    {
-        Boolean bool = drugBGM.get(drugName);
-        return bool != null && bool;
     }
 }

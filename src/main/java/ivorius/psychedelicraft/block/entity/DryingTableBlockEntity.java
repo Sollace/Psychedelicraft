@@ -55,8 +55,8 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         if (!plannedResult.isEmpty()) {
             dryingProgress += heatRatio / (
                     world.getBlockState(pos).isOf(PSBlocks.dryingTableIron)
-                    ? PSConfig.ironDryingTableTickDuration
-                    : PSConfig.dryingTableTickDuration
+                    ? PSConfig.getInstance().balancing.ironDryingTableTickDuration
+                    : PSConfig.getInstance().balancing.dryingTableTickDuration
             );
 
             if (dryingProgress >= 1) {

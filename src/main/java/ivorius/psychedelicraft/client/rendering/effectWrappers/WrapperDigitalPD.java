@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.client.rendering.effectWrappers;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
+import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 import ivorius.psychedelicraft.client.rendering.shaders.ShaderDigitalDepth;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.client.MinecraftClient;
@@ -30,7 +30,7 @@ public class WrapperDigitalPD extends ShaderWrapper<ShaderDigitalDepth> {
         if (drugProperties != null && depthBuffer != null) {
             shaderInstance.digital = drugProperties.getDrugValue("Zero");
             shaderInstance.maxDownscale = drugProperties.getDigitalEffectPixelResize();
-            shaderInstance.digitalTextTexture = PSRenderStates.getTextureIndex(digitalTextTexture);
+            shaderInstance.digitalTextTexture = GLStateProxy.getTextureId(digitalTextTexture);
             shaderInstance.depthTextureIndex = depthBuffer.getDepthAttachment();
 
             shaderInstance.zNear = 0.05f;

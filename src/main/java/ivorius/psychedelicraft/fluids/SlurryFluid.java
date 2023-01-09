@@ -23,7 +23,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     @Override
     public int getProcessingTime(ItemStack stack, ProcessType type, boolean openContainer) {
         if (type == ProcessType.FERMENT) {
-            return stack.getCount() >= FLUID_PER_DIRT ? PSConfig.slurryHardeningTime : UNCONVERTABLE;
+            return stack.getCount() >= FLUID_PER_DIRT ? PSConfig.getInstance().balancing.slurryHardeningTime : UNCONVERTABLE;
         }
         return UNCONVERTABLE;
     }

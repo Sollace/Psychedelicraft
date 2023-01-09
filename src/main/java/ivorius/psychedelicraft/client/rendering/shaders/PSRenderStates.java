@@ -8,12 +8,13 @@ package ivorius.psychedelicraft.client.rendering.shaders;
 import com.google.common.base.Charsets;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.ClientProxy;
 import ivorius.psychedelicraft.client.rendering.*;
 import ivorius.psychedelicraft.client.rendering.effectWrappers.*;
+import ivorius.psychedelicraft.config.PSConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.util.Window;
-import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
 
 import java.util.ArrayList;
@@ -28,16 +29,6 @@ public class PSRenderStates {
 
     private static List<EffectWrapper> effectWrappers = new ArrayList<>();
 
-    private static boolean shader3DEnabled = true;
-    public static boolean shader2DEnabled = true;
-    public static boolean doShadows = false;
-    public static boolean doHeatDistortion = false;
-    public static boolean doWaterDistortion = false;
-    public static boolean doMotionBlur = false;
-
-    public static float sunFlareIntensity;
-    public static int shadowPixelsPerChunk = 256;
-
     private static String currentRenderPass;
 
     @Deprecated(since = "hook")
@@ -51,7 +42,7 @@ public class PSRenderStates {
 
         switch (pass) {
             case "Default":
-                shaderInstance.shouldDoShadows = doShadows;
+                shaderInstance.shouldDoShadows = PSConfig.<ClientProxy.Config>getInstance().visual.doShadows;
                 shaderInstance.shadowDepthTextureIndex = shaderInstanceShadows.depthBuffer.getDepthAttachment();
                 return useShader(partialTicks, ticks, shaderInstance);
             case "Depth":
@@ -97,10 +88,11 @@ public class PSRenderStates {
         return false;
     }
 
+    @Deprecated
     public static void allocate() {
         MinecraftClient mc = MinecraftClient.getInstance();
         String utils = mc.getResourceManager()
-                .getResource(new Identifier(Psychedelicraft.MODID, Psychedelicraft.filePathShaders + "shaderUtils.frag"))
+                .getResource(Psychedelicraft.id(Psychedelicraft.filePathShaders + "shaderUtils.frag"))
                 .map(resource -> {
                     try {
                         return IOUtils.toString(resource.getInputStream(), Charsets.UTF_8);
@@ -151,7 +143,7 @@ public class PSRenderStates {
         //RenderSystem.setShader(() -> (ShaderProgram)shader);
         currentShader = null;
 
-        if (shader != null && shader3DEnabled) {
+        if (shader != null && PSConfig.<ClientProxy.Config>getInstance().visual.shader3DEnabled) {
             if (shader.isShaderActive())
                 return true;
 
@@ -164,7 +156,7 @@ public class PSRenderStates {
         return false;
     }
 
-    @Deprecated(since = "unused")
+    @Deprecated(since = "unused/hook")
     public static void preRenderSky(float partialTicks) {
         /*if (renderFakeSkybox)
         {
@@ -208,9 +200,5 @@ public class PSRenderStates {
         Framebuffer framebuffer = mc.getFramebuffer();
 
         return (framebuffer != null && framebuffer.fbo >= 0) ? framebuffer.fbo : 0;
-    }
-
-    public static int getTextureIndex(Identifier loc) {
-        return GLStateProxy.getTextureId(loc);
     }
 }

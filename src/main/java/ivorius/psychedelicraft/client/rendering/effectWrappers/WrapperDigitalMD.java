@@ -8,7 +8,7 @@ package ivorius.psychedelicraft.client.rendering.effectWrappers;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
+import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 import ivorius.psychedelicraft.client.rendering.shaders.ShaderDigital;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.client.MinecraftClient;
@@ -34,7 +34,7 @@ public class WrapperDigitalMD extends ShaderWrapper<ShaderDigital> {
         if (drugProperties != null) {
             shaderInstance.digital = drugProperties.getDrugValue("Zero");
             shaderInstance.maxDownscale = drugProperties.getDigitalEffectPixelResize();
-            shaderInstance.digitalTextTexture = PSRenderStates.getTextureIndex(digitalTextTexture);
+            shaderInstance.digitalTextTexture = GLStateProxy.getTextureId(digitalTextTexture);
         } else {
             shaderInstance.digital = 0.0f;
         }
