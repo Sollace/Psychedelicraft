@@ -7,9 +7,9 @@ package ivorius.psychedelicraft.blocks;
 
 import org.jetbrains.annotations.Nullable;
 
-import ivorius.psychedelicraft.client.screen.ContainerFluidHandler;
 import ivorius.psychedelicraft.fluids.Resovoir;
 import ivorius.psychedelicraft.items.FluidContainerItem;
+import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
@@ -71,7 +71,7 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
 
                 @Override
                 public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new ContainerFluidHandler<>(null, syncId, inv, be.getTank(hit.getSide()), be);
+                    return new FluidContraptionScreenHandler<>(null, syncId, inv, be.getTank(hit.getSide()), be);
                 }
             });
             return ActionResult.SUCCESS;

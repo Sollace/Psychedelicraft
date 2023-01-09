@@ -8,7 +8,7 @@ package ivorius.psychedelicraft.entities.drugs;
 import ivorius.psychedelicraft.*;
 import ivorius.psychedelicraft.client.ClientProxy;
 import ivorius.psychedelicraft.client.rendering.IDrugRenderer;
-import ivorius.psychedelicraft.client.screen.UpdatableContainer;
+import ivorius.psychedelicraft.client.screen.TickableContainer;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.*;
 import ivorius.psychedelicraft.util.NbtSerialisable;
@@ -289,8 +289,8 @@ public class DrugProperties implements NbtSerialisable {
             }
         }
 
-        if (entity.currentScreenHandler instanceof UpdatableContainer updateable) {
-            updateable.updateAsCustomContainer();
+        if (entity.currentScreenHandler instanceof TickableContainer updateable) {
+            updateable.onClientTick();
         }
     }
 

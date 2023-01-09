@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.entities.drugs;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.rendering.ModelRastaHead;
+import ivorius.psychedelicraft.client.rendering.RastaHeadModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -26,7 +26,7 @@ public class DrugHallucinationRastaHead extends AbstractEntityHallucination {
 
     public final LookControl lookControl;
 
-    public final Model modelRastaHead = new ModelRastaHead();
+    public final Model modelRastaHead = new RastaHeadModel();
 
     public DrugHallucinationRastaHead(PlayerEntity playerEntity) {
         super(playerEntity);

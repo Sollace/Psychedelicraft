@@ -14,14 +14,14 @@ import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 public interface PSRenderers {
     static void bootstrap() {
         EntityRendererRegistry.register(PSEntities.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
-        EntityRendererRegistry.register(PSEntities.REALITY_RIFT, RenderRealityRift::new);
+        EntityRendererRegistry.register(PSEntities.REALITY_RIFT, RealityRiftEntityRenderer::new);
 
-        BlockEntityRendererRegistry.register(PSBlockEntities.DISTILLERY, TileEntityRendererDistillery::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.FLASK, TileEntityRendererFlask::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.MASH_TUB, TileEntityRendererMashTub::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.BARREL, TileEntityRendererBarrel::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.DRYING_TABLE, TileEntityRendererDryingTable::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.RIFT_JAR, TileEntityRendererRiftJar::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.BOTTLE_RACK, TileEntityRendererBottleRack::new);
+        BlockEntityRendererRegistry.register(PSBlockEntities.DISTILLERY, DistilleryBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(PSBlockEntities.FLASK, FlaskBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(PSBlockEntities.MASH_TUB, MashTubBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(PSBlockEntities.BARREL, BarrelBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(PSBlockEntities.DRYING_TABLE, DryingTableBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(PSBlockEntities.RIFT_JAR, RiftJarBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(PSBlockEntities.BOTTLE_RACK, BottleRackBlockEntityRenderer::new);
     }
 }

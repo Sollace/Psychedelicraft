@@ -53,11 +53,11 @@ public interface PSItemGroups {
                     entries.add(PSItems.HARMONIUM);
                 }
                 if (PSConfig.getInstance().balancing.enableRiftJars) {
-                    entries.add(ItemRiftJar.createFilledRiftJar(0.0F, PSItems.RIFT_JAR));
-                    entries.add(ItemRiftJar.createFilledRiftJar(0.25F, PSItems.RIFT_JAR));
-                    entries.add(ItemRiftJar.createFilledRiftJar(0.55F, PSItems.RIFT_JAR));
-                    entries.add(ItemRiftJar.createFilledRiftJar(0.75F, PSItems.RIFT_JAR));
-                    entries.add(ItemRiftJar.createFilledRiftJar(0.9F, PSItems.RIFT_JAR));
+                    entries.add(RiftJarItem.createFilledRiftJar(0.0F, PSItems.RIFT_JAR));
+                    entries.add(RiftJarItem.createFilledRiftJar(0.25F, PSItems.RIFT_JAR));
+                    entries.add(RiftJarItem.createFilledRiftJar(0.55F, PSItems.RIFT_JAR));
+                    entries.add(RiftJarItem.createFilledRiftJar(0.75F, PSItems.RIFT_JAR));
+                    entries.add(RiftJarItem.createFilledRiftJar(0.9F, PSItems.RIFT_JAR));
                 }
             })
             .build();

@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
-import ivorius.psychedelicraft.entities.drugs.effects.DrugHarmonium;
+import ivorius.psychedelicraft.entities.drugs.effects.HarmoniumDrug;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
@@ -31,8 +31,8 @@ public class DrugInfluenceHarmonium extends DrugInfluence {
 
         Drug drug = drugProperties.getDrug(getDrugName());
 
-        if (drug instanceof DrugHarmonium) {
-            DrugHarmonium harmonium = (DrugHarmonium) drug;
+        if (drug instanceof HarmoniumDrug) {
+            HarmoniumDrug harmonium = (HarmoniumDrug) drug;
 
             double inf = value + (1.0f - value) * (1.0f - harmonium.getActiveValue());
             harmonium.currentColor[0] = (float) MathHelper.lerp(inf, harmonium.currentColor[0], color[0]);

@@ -11,9 +11,9 @@ import net.minecraft.registry.Registry;
 public interface PSBlockEntities {
     BlockEntityType<DryingTableBlockEntity> DRYING_TABLE = create("drying_table", BlockEntityType.Builder.create(DryingTableBlockEntity::new, PSBlocks.DRYING_TABLE, PSBlocks.IRON_DRYING_TABLE));
     BlockEntityType<MashTubBlockEntity> MASH_TUB = create("mash_tub", BlockEntityType.Builder.create(MashTubBlockEntity::new, PSBlocks.MASH_TUB));
-    BlockEntityType<TileEntityRiftJar> RIFT_JAR = create("rift_jar", BlockEntityType.Builder.create(TileEntityRiftJar::new, PSBlocks.RIFT_JAR));
+    BlockEntityType<RiftJarBlockEntity> RIFT_JAR = create("rift_jar", BlockEntityType.Builder.create(RiftJarBlockEntity::new, PSBlocks.RIFT_JAR));
     BlockEntityType<DistilleryBlockEntity> DISTILLERY = create("distillery", BlockEntityType.Builder.create(DistilleryBlockEntity::new, PSBlocks.DISTILLERY));
-    BlockEntityType<TileEntityBottleRack> BOTTLE_RACK = create("bottle_rack", BlockEntityType.Builder.create(TileEntityBottleRack::new, PSBlocks.BOTTLE_RACK));
+    BlockEntityType<BottleRackBlockEntity> BOTTLE_RACK = create("bottle_rack", BlockEntityType.Builder.create(BottleRackBlockEntity::new, PSBlocks.BOTTLE_RACK));
     BlockEntityType<FlaskBlockEntity> FLASK = create("flask", BlockEntityType.Builder.create(FlaskBlockEntity::new, PSBlocks.FLASK));
     BlockEntityType<BarrelBlockEntity> BARREL = create("barrel", BlockEntityType.Builder.create(BarrelBlockEntity::new,
             PSBlocks.OAK_BARREL, PSBlocks.SPRUCE_BARREL,

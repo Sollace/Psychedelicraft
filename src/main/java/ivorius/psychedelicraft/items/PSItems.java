@@ -36,16 +36,16 @@ public interface PSItems {
     FlaskItem ACACIA_BARREL = register("acacia_barrel", new FlaskItem(PSBlocks.ACACIA_BARREL, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
     FlaskItem DARK_OAK_BARREL = register("dark_oak_barrel", new FlaskItem(PSBlocks.DARK_OAK_BARREL, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
 
-    FlaskItem MASH_TUB = register("mash_tub", new ItemMashTub(PSBlocks.MASH_TUB, new Settings().maxCount(16)));
+    FlaskItem MASH_TUB = register("mash_tub", new MashTubItem(PSBlocks.MASH_TUB, new Settings().maxCount(16)));
     FlaskItem FLASK = register("flask", new FlaskItem(PSBlocks.FLASK, new Settings().maxCount(16), FlaskBlockEntity.FLASK_CAPACITY));
     FlaskItem DISTILLERY = register("distillery", new FlaskItem(PSBlocks.DISTILLERY, new Settings().maxCount(16), DistilleryBlockEntity.DISTILLERY_CAPACITY));
-    ItemRiftJar RIFT_JAR = register("rift_jar", new ItemRiftJar(PSBlocks.RIFT_JAR, new Settings()));
+    RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings()));
 
-    Item WINE_GRAPES = register("wine_grapes", new ItemWineGrapes(new Settings().food(
+    Item WINE_GRAPES = register("wine_grapes", new WineGrapesItem(new Settings().food(
             new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()
     ), 15));
     DrinkableItem bottle = register("bottle", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER * 2, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    ItemMolotovCocktail molotovCocktail = register("molotov_cocktail", new ItemMolotovCocktail(new Settings().maxCount(16), MILLIBUCKETS_PER_LITER * 2));
+    MolotovCocktailItem molotovCocktail = register("molotov_cocktail", new MolotovCocktailItem(new Settings().maxCount(16), MILLIBUCKETS_PER_LITER * 2));
 
     Item CANNABIS_SEEDS = register("cannabis_seeds", new AliasedBlockItem(PSBlocks.CANNABIS, new Settings()));
     Item CANNABIS_LEAF = register("cannabis_leaf");
@@ -90,11 +90,11 @@ public interface PSItems {
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));
     Item COCA_LEAVES = register("coca_leaves");
     Item DRIED_COCA_LEAVES = register("dried_coca_leaves");
-    Item COCAINE_POWDER = register("cocaine_powder", new ItemCocainePowder(new Settings(), new DrugInfluence("Cocaine", 0, 0.002, 0.003, 0.35f)));
+    Item COCAINE_POWDER = register("cocaine_powder", new CocainePowderItem(new Settings(), new DrugInfluence("Cocaine", 0, 0.002, 0.003, 0.35f)));
 
     InjectableItem SYRINGE = register("syringe", new InjectableItem(new Settings(), MILLIBUCKETS_PER_LITER / 100));
 
-    Item JUNIPER_BERRIES = register("juniper_berries", new ItemFoodSpecial(
+    Item JUNIPER_BERRIES = register("juniper_berries", new SpecialFoodItem(
             new Settings().food(new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()), 15
     ));
     Item COFFEA_CHERRIES = register("coffea_cherries", new AliasedBlockItem(PSBlocks.COFFEA, new Settings()));
@@ -116,16 +116,16 @@ public interface PSItems {
     Item DRYING_TABLE = register("drying_table", PSBlocks.DRYING_TABLE);
     Item IRON_DRYING_TABLE = register("iron_drying_table", PSBlocks.IRON_DRYING_TABLE);
 
-    ItemHarmonium HARMONIUM = register("harmonium", new ItemHarmonium(new Settings()));
+    HarmoniumItem HARMONIUM = register("harmonium", new HarmoniumItem(new Settings()));
 
-    ItemBong SMOKING_PIPE = register("smoking_pipe", new ItemBong(new Settings().maxDamage(50)))
-            .consumes(new ItemBong.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.25F)))
-            .consumes(new ItemBong.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.8f)))
-            .consumes(new ItemBong.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluenceHarmonium("Harmonium", 0, 0.04, 0.01, 0.65f, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
+    BongItem SMOKING_PIPE = register("smoking_pipe", new BongItem(new Settings().maxDamage(50)))
+            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.25F)))
+            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.8f)))
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluenceHarmonium("Harmonium", 0, 0.04, 0.01, 0.65f, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
     // TODO: Play around with the bongs benefits
-    ItemBong BONG = register("bong", new ItemBong(new Settings().maxDamage(128)))
-            .consumes(new ItemBong.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.2F)))
-            .consumes(new ItemBong.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.6F)));
+    BongItem BONG = register("bong", new BongItem(new Settings().maxDamage(128)))
+            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.2F)))
+            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.6F)));
 
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Item.Settings()));

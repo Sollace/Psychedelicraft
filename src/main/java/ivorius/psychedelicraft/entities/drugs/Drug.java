@@ -11,8 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 
-public interface Drug extends NbtSerialisable
-{
+public interface Drug extends NbtSerialisable {
     void update(LivingEntity entity, DrugProperties drugProperties);
 
     void reset(LivingEntity entity, DrugProperties drugProperties);

@@ -21,18 +21,18 @@ public class DrugFactoryPsychedelicraft implements DrugFactory
 {
     @Override
     public void createDrugs(LivingEntity entity, List<Pair<String, Drug>> drugs) {
-        addDrug("Alcohol", new DrugAlcohol(1, 0.0002d), drugs);
-        addDrug("Cannabis", new DrugCannabis(1, 0.0002d), drugs);
-        addDrug("BrownShrooms", new DrugBrownShrooms(1, 0.0002d), drugs);
-        addDrug("RedShrooms", new DrugRedShrooms(1, 0.0002d), drugs);
-        addDrug("Tobacco", new DrugTobacco(1, 0.003d), drugs);
-        addDrug("Cocaine", new DrugCocaine(1, 0.0003d), drugs);
-        addDrug("Caffeine", new DrugCaffeine(1, 0.0002d), drugs);
-        addDrug("Warmth", new DrugWarmth(1, 0.004d), drugs);
-        addDrug("Peyote", new DrugPeyote(1, 0.0002d), drugs);
-        addDrug("Zero", new DrugZero(1, 0.0001d), drugs);
-        addDrug("Power", new DrugPower(0.95, 0.0001d), drugs);
-        addDrug("Harmonium", new DrugHarmonium(1, 0.0003d), drugs);
+        addDrug("Alcohol", new AlcoholDrug(1, 0.0002d), drugs);
+        addDrug("Cannabis", new CannabisDrug(1, 0.0002d), drugs);
+        addDrug("BrownShrooms", new BrownShroomsDrug(1, 0.0002d), drugs);
+        addDrug("RedShrooms", new RedShroomsDrug(1, 0.0002d), drugs);
+        addDrug("Tobacco", new TobaccoDrug(1, 0.003d), drugs);
+        addDrug("Cocaine", new CocaineDrug(1, 0.0003d), drugs);
+        addDrug("Caffeine", new CaffeineDrug(1, 0.0002d), drugs);
+        addDrug("Warmth", new WarmthDrug(1, 0.004d), drugs);
+        addDrug("Peyote", new PeyoteDrug(1, 0.0002d), drugs);
+        addDrug("Zero", new ZeroDrug(1, 0.0001d), drugs);
+        addDrug("Power", new PowerDrug(0.95, 0.0001d), drugs);
+        addDrug("Harmonium", new HarmoniumDrug(1, 0.0003d), drugs);
     }
 
     @Override
