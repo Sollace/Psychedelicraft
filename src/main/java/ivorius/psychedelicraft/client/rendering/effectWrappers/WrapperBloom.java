@@ -18,7 +18,7 @@ import net.minecraft.client.gl.Framebuffer;
  */
 public class WrapperBloom extends ShaderWrapper<ShaderBloom> {
     public WrapperBloom(String utils) {
-        super(new ShaderBloom(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderBloom.frag"), utils);
+        super(new ShaderBloom(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderBloom.frag"), utils);
     }
 
     @Override

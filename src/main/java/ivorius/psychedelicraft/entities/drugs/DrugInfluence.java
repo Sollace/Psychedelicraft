@@ -98,7 +98,7 @@ public class DrugInfluence implements NbtSerialisable {
         try {
             inf = getClass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            Psychedelicraft.logger.error("Exception whilst cloning DrugInfluence", e);
+            Psychedelicraft.LOGGER.error("Exception whilst cloning DrugInfluence", e);
             e.printStackTrace();
         }
 

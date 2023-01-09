@@ -26,9 +26,9 @@ import java.util.stream.Stream;
  * Updated by Sollace on 4 Jan 2023
  */
 public class DrugPower extends DrugSimple {
-    public static final Identifier POWER_PARTICLE_TEXTURE = Psychedelicraft.id(Psychedelicraft.filePathTextures + "powerParticle.png");
+    public static final Identifier POWER_PARTICLE_TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "powerParticle.png");
     public static final Identifier[] LIGHTNING_TEXTURES = Stream.iterate(0, i -> i + 1)
-            .map(i -> Psychedelicraft.id(Psychedelicraft.filePathTextures + "lightning" + i + ".png"))
+            .map(i -> Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "lightning" + i + ".png"))
             .limit(4)
             .toArray(Identifier[]::new);
 

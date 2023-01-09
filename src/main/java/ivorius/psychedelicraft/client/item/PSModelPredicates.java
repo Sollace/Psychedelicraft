@@ -20,10 +20,10 @@ public interface PSModelPredicates {
             }
             return entity.getItemUseTimeLeft() > 0 ? 1 : 0;
         });
-        ModelPredicateProviderRegistry.register(PSItems.bong, Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
-            return PSItems.bong.hasUsableConsumable(entity) ? 1 : 0;
+        ModelPredicateProviderRegistry.register(PSItems.BONG, Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
+            return PSItems.BONG.hasUsableConsumable(entity) ? 1 : 0;
         });
-        ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : PSItems.harmonium.getColor(stack), PSItems.harmonium);
+        ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : PSItems.HARMONIUM.getColor(stack), PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
             if (layer == 0 && stack.getItem() instanceof DyeableItem dyeable) {
                 return ((DyeableItem)stack.getItem()).getColor(stack);
@@ -35,6 +35,6 @@ public interface PSModelPredicates {
                 }
             }
             return -1;
-        }, PSItems.bottle, PSItems.molotovCocktail, PSItems.glassChalice, PSItems.stoneCup, PSItems.woodenMug);
+        }, PSItems.bottle, PSItems.molotovCocktail, PSItems.GLASS_CHALICE, PSItems.STONE_CUP, PSItems.WOODEN_MUG);
     }
 }

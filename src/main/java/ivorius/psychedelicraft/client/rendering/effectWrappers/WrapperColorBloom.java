@@ -16,7 +16,7 @@ import net.minecraft.client.gl.Framebuffer;
  */
 public class WrapperColorBloom extends ShaderWrapper<ShaderColorBloom> {
     public WrapperColorBloom(String utils) {
-        super(new ShaderColorBloom(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderColoredBloom.frag"), utils);
+        super(new ShaderColorBloom(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderColoredBloom.frag"), utils);
     }
 
     @Override

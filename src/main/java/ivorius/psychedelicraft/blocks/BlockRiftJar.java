@@ -51,7 +51,7 @@ class BlockRiftJar extends BlockWithEntity {
             world.getBlockEntity(pos, PSBlockEntities.RIFT_JAR).ifPresent(be -> {
 
                 if (!be.jarBroken) {
-                    Block.dropStack(world, pos, ItemRiftJar.createFilledRiftJar(be.currentRiftFraction, PSItems.itemRiftJar));
+                    Block.dropStack(world, pos, ItemRiftJar.createFilledRiftJar(be.currentRiftFraction, PSItems.RIFT_JAR));
                 }
             });
         }

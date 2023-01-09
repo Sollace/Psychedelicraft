@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
 
 public class DrugHallucinationRastaHead extends AbstractEntityHallucination {
-    private static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.filePathTextures + "rastaHeadTexture.png");
+    private static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "rastaHeadTexture.png");
 
     public final LookControl lookControl;
 

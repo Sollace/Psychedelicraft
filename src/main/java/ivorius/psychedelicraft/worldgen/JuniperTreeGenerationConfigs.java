@@ -22,9 +22,9 @@ class JuniperTreeGenerationConfigs {
 
     private static void bootstrapConfigurations(Registry<ConfiguredFeature<?, ?>> registry) {
         var feature = new ConfiguredFeature<>(Feature.TREE, new TreeFeatureConfig.Builder(
-                BlockStateProvider.of(PSBlocks.psycheLog),
+                BlockStateProvider.of(PSBlocks.JUNIPER_LOG),
                 new BendingTrunkPlacer(5, 3, 3, 0, UniformIntProvider.create(-1, 1)),
-                BlockStateProvider.of(PSBlocks.psycheLeaves),
+                BlockStateProvider.of(PSBlocks.JUNIPER_LEAVES),
                 new BlobFoliagePlacer(
                         ConstantIntProvider.create(0),
                         ConstantIntProvider.ZERO,
@@ -39,7 +39,7 @@ class JuniperTreeGenerationConfigs {
     }
     private static void bootstrapPlacements(DynamicRegistryView registries, Registry<PlacedFeature> registry) {
         var registryEntryLookup = registries.getOptional(RegistryKeys.CONFIGURED_FEATURE).orElseThrow();
-        var placement = new PlacedFeature(registryEntryLookup.getEntry(JUNIPER_TREE_CONFIG).orElseThrow(), List.of(PlacedFeatures.wouldSurvive(PSBlocks.psycheSapling)));
+        var placement = new PlacedFeature(registryEntryLookup.getEntry(JUNIPER_TREE_CONFIG).orElseThrow(), List.of(PlacedFeatures.wouldSurvive(PSBlocks.JUNIPER_SAPLING)));
         Registry.register(registry, JUNIPER_TREE_PLACEMENT.getValue(), placement);
     }
 

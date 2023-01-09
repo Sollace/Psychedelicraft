@@ -16,7 +16,7 @@ import net.minecraft.client.gl.Framebuffer;
  */
 public class WrapperRadialBlur extends ShaderWrapper<ShaderRadialBlur> {
     public WrapperRadialBlur(String utils) {
-        super(new ShaderRadialBlur(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderRadialBlur.frag"), utils);
+        super(new ShaderRadialBlur(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderRadialBlur.frag"), utils);
     }
 
     @Override

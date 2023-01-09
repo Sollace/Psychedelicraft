@@ -69,8 +69,8 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
     }
 
     public void onDestroyed(ServerWorld world) {
-        ItemStack flaskStack = PSItems.itemFlask.getDefaultStack();
-        int maxCapacity = PSItems.itemFlask.getMaxCapacity(flaskStack);
+        ItemStack flaskStack = PSItems.FLASK.getDefaultStack();
+        int maxCapacity = PSItems.FLASK.getMaxCapacity(flaskStack);
         while (!tank.isEmpty()) {
             Block.dropStack(world, pos, tank.drain(maxCapacity, flaskStack));
         }

@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class WrapperDoubleVision extends ShaderWrapper<ShaderDoubleVision> {
     public WrapperDoubleVision(String utils) {
-        super(new ShaderDoubleVision(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderDoubleVision.frag"), utils);
+        super(new ShaderDoubleVision(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderDoubleVision.frag"), utils);
     }
 
     @Override

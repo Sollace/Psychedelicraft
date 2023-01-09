@@ -19,10 +19,10 @@ import net.minecraft.util.Identifier;
  * Created by lukas on 26.04.14.
  */
 public class WrapperHeatDistortion extends ShaderWrapper<ShaderHeatDistortions> {
-    public Identifier heatDistortionNoiseTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "heatDistortionNoise.png");
+    public Identifier heatDistortionNoiseTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "heatDistortionNoise.png");
 
     public WrapperHeatDistortion(String utils) {
-        super(new ShaderHeatDistortions(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderHeatDistortion.frag"), utils);
+        super(new ShaderHeatDistortions(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderHeatDistortion.frag"), utils);
     }
 
     @Override

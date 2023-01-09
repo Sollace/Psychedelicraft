@@ -22,7 +22,7 @@ import java.util.List;
  * Updated by Sollace on 4 Jan 2023
  */
 public class GuiFluidHandler<T extends BlockEntity> extends GuiFluid<ContainerFluidHandler<T>> {
-    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_fluid.png");
+    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_fluid.png");
 
     public ButtonWidget changeTransferButton;
 

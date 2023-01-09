@@ -18,7 +18,7 @@ import net.minecraft.client.gl.Framebuffer;
  */
 public class WrapperSimpleEffects extends ShaderWrapper<ShaderSimpleEffects> {
     public WrapperSimpleEffects(String utils) {
-        super(new ShaderSimpleEffects(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderSimpleEffects.frag"), utils);
+        super(new ShaderSimpleEffects(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderSimpleEffects.frag"), utils);
     }
 
     @Override

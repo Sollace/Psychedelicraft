@@ -15,7 +15,7 @@ import java.util.List;
  * Updated by Sollace on 4 Jan 2023
  */
 public class GuiWoodenVat extends GuiFluidHandler<MashTubBlockEntity> {
-    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_woodenVat.png");
+    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_woodenVat.png");
 
     public GuiWoodenVat(ContainerFluidHandler<MashTubBlockEntity> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);

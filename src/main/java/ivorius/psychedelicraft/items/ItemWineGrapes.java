@@ -23,8 +23,8 @@ public class ItemWineGrapes extends ItemFoodSpecial {
 
         BlockPos pos = context.getBlockPos();
 
-        if (context.getWorld().getBlockState(pos).isOf(PSBlocks.emptyLattice)) {
-            context.getWorld().setBlockState(pos, PSBlocks.wineGrapeLattice.getDefaultState());
+        if (context.getWorld().getBlockState(pos).isOf(PSBlocks.LATTICE)) {
+            context.getWorld().setBlockState(pos, PSBlocks.WINE_GRAPE_LATTICE.getDefaultState());
             return ActionResult.SUCCESS;
         }
 

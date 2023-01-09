@@ -20,7 +20,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
  * Updated by Sollace on 3 Jan 2023
  */
 public class GuiDryingTable extends HandledScreen<DryingTableScreenHandler> {
-    public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.filePathTextures + "guiDryingTable.png");
+    public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "guiDryingTable.png");
 
     public GuiDryingTable(DryingTableScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);

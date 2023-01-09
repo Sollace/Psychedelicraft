@@ -20,7 +20,7 @@ public class WrapperBlur extends ShaderWrapper<ShaderBlur> {
     private float screenBackgroundBlur;
 
     public WrapperBlur(String utils) {
-        super(new ShaderBlur(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderBlur.frag"), utils);
+        super(new ShaderBlur(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderBlur.frag"), utils);
     }
 
     @Override

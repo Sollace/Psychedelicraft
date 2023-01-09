@@ -28,13 +28,13 @@ import java.util.Random;
  */
 public class RenderRealityRift extends EntityRenderer<EntityRealityRift> {
     public static final Identifier[] zeroScreenTexture;
-    public static final Identifier zeroCenterTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "zeroCenter.png");
+    public static final Identifier zeroCenterTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zeroCenter.png");
 
     static {
         zeroScreenTexture = new Identifier[8];
         for (int i = 0; i < zeroScreenTexture.length; i++)
         {
-            zeroScreenTexture[i] = Psychedelicraft.id(Psychedelicraft.filePathTextures + "zeroScreen" + i + ".png");
+            zeroScreenTexture[i] = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zeroScreen" + i + ".png");
         }
     }
 

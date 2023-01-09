@@ -13,14 +13,14 @@ import ivorius.psychedelicraft.entities.drugs.DrugProperties;
  */
 public class PSProxy {
 
-    private static PSProxy instance = new PSProxy();
+    private static PSProxy INSTANCE = new PSProxy();
 
     public static PSProxy getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     protected PSProxy() {
-        instance = this;
+        INSTANCE = this;
     }
 
     public void createDrugRenderer(DrugProperties drugProperties) {

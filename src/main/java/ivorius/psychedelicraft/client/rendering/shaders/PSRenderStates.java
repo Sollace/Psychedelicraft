@@ -92,24 +92,24 @@ public class PSRenderStates {
     public static void allocate() {
         MinecraftClient mc = MinecraftClient.getInstance();
         String utils = mc.getResourceManager()
-                .getResource(Psychedelicraft.id(Psychedelicraft.filePathShaders + "shaderUtils.frag"))
+                .getResource(Psychedelicraft.id(Psychedelicraft.SHADERS_PATH + "shaderUtils.frag"))
                 .map(resource -> {
                     try {
                         return IOUtils.toString(resource.getInputStream(), Charsets.UTF_8);
                     } catch (Exception ex) {
-                        Psychedelicraft.logger.error("Could not load shader utils!", ex);
+                        Psychedelicraft.LOGGER.error("Could not load shader utils!", ex);
                     }
                     return null;
                 }).orElse(null);
 
 
-        shaderInstance = new ShaderMain(Psychedelicraft.logger);
+        shaderInstance = new ShaderMain(Psychedelicraft.LOGGER);
         //setUpShader(shaderInstance, "shader3D.vert", "shader3D.frag", utils);
 
-        shaderInstanceDepth = new ShaderMainDepth(Psychedelicraft.logger);
+        shaderInstanceDepth = new ShaderMainDepth(Psychedelicraft.LOGGER);
         //setUpShader(shaderInstanceDepth, "shader3D.vert", "shader3DDepth.frag", utils);
 
-        shaderInstanceShadows = new ShaderShadows(Psychedelicraft.logger);
+        shaderInstanceShadows = new ShaderShadows(Psychedelicraft.LOGGER);
         //setUpShader(shaderInstanceShadows, "shader3D.vert", "shader3DDepth.frag", utils);
 
         // Add order = Application order!

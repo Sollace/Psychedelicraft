@@ -19,7 +19,7 @@ import net.minecraft.client.gl.Framebuffer;
  */
 public class WrapperDoF extends ShaderWrapper<ShaderDoF> {
     public WrapperDoF(String utils) {
-        super(new ShaderDoF(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderDof.frag"), utils);
+        super(new ShaderDoF(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderDof.frag"), utils);
     }
 
     public boolean isActive() {

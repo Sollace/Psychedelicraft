@@ -34,7 +34,7 @@ public abstract class ShaderWrapper<ShaderInstance extends IvShaderInstance2D> i
     }
 
     public static Identifier getRL(String shaderFile) {
-        return Psychedelicraft.id(Psychedelicraft.filePathShaders + shaderFile);
+        return Psychedelicraft.id(Psychedelicraft.SHADERS_PATH + shaderFile);
     }
 
     @Override

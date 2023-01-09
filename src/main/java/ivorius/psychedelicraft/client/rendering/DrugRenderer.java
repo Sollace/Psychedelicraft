@@ -51,7 +51,7 @@ public class DrugRenderer implements IDrugRenderer {
         MinecraftClient.getInstance().getTextureManager().bindTexture(resourceLocation);
     }
 
-    public Identifier hurtOverlay = Psychedelicraft.id(Psychedelicraft.filePathTextures + "hurtOverlay.png");
+    public Identifier hurtOverlay = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "hurtOverlay.png");
 
     public float experiencedHealth = 5F;
 
@@ -67,10 +67,10 @@ public class DrugRenderer implements IDrugRenderer {
         effectLensFlare = new EffectLensFlare();
         effectLensFlare.sunFlareSizes = new float[]{0.15f, 0.24f, 0.12f, 0.036f, 0.06f, 0.048f, 0.006f, 0.012f, 0.5f, 0.09f, 0.036f, 0.09f, 0.06f, 0.05f, 0.6f};
         effectLensFlare.sunFlareInfluences = new float[]{-1.3f, -2.0f, 0.2f, 0.4f, 0.25f, -0.25f, -0.7f, -1.0f, 1.0f, 1.4f, -1.31f, -1.2f, -1.5f, -1.55f, -3.0f};
-        effectLensFlare.sunBlindnessTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "sunBlindness.png");
+        effectLensFlare.sunBlindnessTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "sunBlindness.png");
         effectLensFlare.sunFlareTextures = new Identifier[effectLensFlare.sunFlareSizes.length];
         for (int i = 0; i < effectLensFlare.sunFlareTextures.length; i++) {
-            effectLensFlare.sunFlareTextures[i] = Psychedelicraft.id(Psychedelicraft.filePathTextures + "flare" + i + ".png");
+            effectLensFlare.sunFlareTextures[i] = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "flare" + i + ".png");
         }
     }
 

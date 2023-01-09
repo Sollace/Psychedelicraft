@@ -9,7 +9,7 @@ import java.util.*;
 
 import ivorius.psychedelicraft.client.rendering.bezier.IvBezierPath3D;
 import ivorius.psychedelicraft.entities.EntityRealityRift;
-import ivorius.psychedelicraft.entities.PSEntityList;
+import ivorius.psychedelicraft.entities.PSEntities;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.BlockState;
@@ -140,7 +140,7 @@ public class TileEntityRiftJar extends BlockEntity {
             if (rifts.size() > 0) {
                 rifts.get(0).addToRift(currentRiftFraction);
             } else if (!world.isClient) {
-                EntityRealityRift rift = PSEntityList.REALITY_RIFT.create(world);
+                EntityRealityRift rift = PSEntities.REALITY_RIFT.create(world);
                 rift.setPosition(getPos().toCenterPos().add(5, 3, 0.5));
                 rift.setRiftSize(currentRiftFraction);
                 world.spawnEntity(rift);

@@ -112,7 +112,7 @@ public class DrugProperties implements NbtSerialisable {
 
     public void addToDrug(String drugName, double effect) {
         if (!drugs.containsKey(drugName)) {
-            Psychedelicraft.logger.warn("Tried to add to drug " + drugName);
+            Psychedelicraft.LOGGER.warn("Tried to add to drug " + drugName);
             return;
         }
 
@@ -122,7 +122,7 @@ public class DrugProperties implements NbtSerialisable {
 
     public void setDrugValue(String drugName, double effect) {
         if (!drugs.containsKey(drugName)) {
-            Psychedelicraft.logger.warn("Tried to set drug value " + drugName);
+            Psychedelicraft.LOGGER.warn("Tried to set drug value " + drugName);
             return;
         }
 
@@ -295,7 +295,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     private void spawnRiftAtPlayer() {
-        EntityRealityRift rift = PSEntityList.REALITY_RIFT.create(entity.world);
+        EntityRealityRift rift = PSEntities.REALITY_RIFT.create(entity.world);
 
         double xP = (entity.getRandom().nextDouble() - 0.5) * 100;
         double yP = (entity.getRandom().nextDouble() - 0.5) * 100;

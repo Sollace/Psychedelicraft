@@ -46,7 +46,7 @@ public class BlockWineGrapeLattice extends LatticeBlock implements Fertilizable 
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.getStackInHand(hand).isOf(Items.SHEARS)) {
             if (!world.isClient) {
-                Block.dropStack(world, pos, new ItemStack(PSItems.wineGrapes, world.random.nextInt(3) + 1));
+                Block.dropStack(world, pos, new ItemStack(PSItems.WINE_GRAPES, world.random.nextInt(3) + 1));
             }
             if (!player.isCreative()) {
                 player.getStackInHand(hand).damage(1, player, p -> p.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));

@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public class WrapperBlurNoise extends ShaderWrapper<ShaderBlurNoise> {
     public WrapperBlurNoise(String utils) {
-        super(new ShaderBlurNoise(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderBlurNoise.frag"), utils);
+        super(new ShaderBlurNoise(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderBlurNoise.frag"), utils);
     }
 
     @Override

@@ -15,7 +15,7 @@ import java.util.List;
  * Updated by Sollace on 4 Jan 2023
  */
 public class GuiDistillery extends GuiFluidHandler<DistilleryBlockEntity> {
-    public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_distillery.png");
+    public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_distillery.png");
 
     public GuiDistillery(ContainerFluidHandler<DistilleryBlockEntity> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);

@@ -17,10 +17,10 @@ import net.minecraft.util.Identifier;
  * Created by lukas on 26.04.14.
  */
 public class WrapperDigitalPD extends ShaderWrapper<ShaderDigitalDepth> {
-    public Identifier digitalTextTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "digitalText.png");
+    public Identifier digitalTextTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "digitalText.png");
 
     public WrapperDigitalPD(String utils) {
-        super(new ShaderDigitalDepth(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderDigitalDepth.frag"), utils);
+        super(new ShaderDigitalDepth(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderDigitalDepth.frag"), utils);
     }
 
     @Override

@@ -13,8 +13,8 @@ import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
  */
 public interface PSRenderers {
     static void bootstrap() {
-        EntityRendererRegistry.register(PSEntityList.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
-        EntityRendererRegistry.register(PSEntityList.REALITY_RIFT, RenderRealityRift::new);
+        EntityRendererRegistry.register(PSEntities.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
+        EntityRendererRegistry.register(PSEntities.REALITY_RIFT, RenderRealityRift::new);
 
         BlockEntityRendererRegistry.register(PSBlockEntities.DISTILLERY, TileEntityRendererDistillery::new);
         BlockEntityRendererRegistry.register(PSBlockEntities.FLASK, TileEntityRendererFlask::new);

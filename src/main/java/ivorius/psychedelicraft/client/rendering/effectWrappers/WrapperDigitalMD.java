@@ -22,9 +22,9 @@ public class WrapperDigitalMD extends ShaderWrapper<ShaderDigital> {
     public Identifier digitalTextTexture;
 
     public WrapperDigitalMD(String utils) {
-        super(new ShaderDigital(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderDigital.frag"), utils);
+        super(new ShaderDigital(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderDigital.frag"), utils);
 
-        digitalTextTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "digitalText.png");
+        digitalTextTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "digitalText.png");
     }
 
     @Override

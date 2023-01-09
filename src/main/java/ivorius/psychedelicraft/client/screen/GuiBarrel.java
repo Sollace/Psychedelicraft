@@ -15,7 +15,7 @@ import java.util.List;
  * Updated by Sollace on 4 Jan 2023
  */
 public class GuiBarrel extends GuiFluidHandler<BarrelBlockEntity> {
-    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.filePathTextures + "container_barrel.png");
+    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_barrel.png");
 
     public GuiBarrel(ContainerFluidHandler<BarrelBlockEntity> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);

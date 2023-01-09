@@ -181,7 +181,7 @@ public class EntityRealityRift extends Entity {
                 BlockPos center = getBlockPos();
                 BlockPos.iterateOutwards(center, desRange, desRange, desRange).forEach(p -> {
                     if (p.isWithinDistance(center, newDesRange) && !p.isWithinDistance(center, prevDesRange) && !world.isAir(p)) {
-                        world.setBlockState(p, PSBlocks.glitched.getDefaultState());
+                        world.setBlockState(p, PSBlocks.GLITCH.getDefaultState());
                     }
                 });
             }

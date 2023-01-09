@@ -17,13 +17,13 @@ public class DryingRegistry
 
     static {
         dryingRecipes = new HashMap<>();
-        addDryingResult(PSItems.cannabisLeaf, new ItemStack(PSItems.driedCannabisLeaves, 3));
-        addDryingResult(PSItems.cannabisBuds, new ItemStack(PSItems.driedCannabisBuds, 3));
-        addDryingResult(Items.BROWN_MUSHROOM, new ItemStack(PSItems.magicMushroomsBrown, 3));
-        addDryingResult(Items.RED_MUSHROOM, new ItemStack(PSItems.magicMushroomsRed, 3));
-        addDryingResult(PSItems.tobaccoLeaf, new ItemStack(PSItems.driedTobacco, 3));
-        addDryingResult(PSItems.cocaLeaf, new ItemStack(PSItems.driedCocaLeaves, 3));
-        addDryingResult(PSItems.peyote, new ItemStack(PSItems.driedPeyote, 3));
+        addDryingResult(PSItems.CANNABIS_LEAF, new ItemStack(PSItems.DRIED_CANNABIS_LEAF, 3));
+        addDryingResult(PSItems.CANNABIS_BUDS, new ItemStack(PSItems.DRIED_CANNABIS_BUDS, 3));
+        addDryingResult(Items.BROWN_MUSHROOM, new ItemStack(PSItems.BROWN_MAGIC_MUSHROOMS, 3));
+        addDryingResult(Items.RED_MUSHROOM, new ItemStack(PSItems.RED_MAGIC_MUSHROOMS, 3));
+        addDryingResult(PSItems.TOBACCO_LEAVES, new ItemStack(PSItems.DRIED_TOBACCO, 3));
+        addDryingResult(PSItems.COCA_LEAVES, new ItemStack(PSItems.DRIED_COCA_LEAVES, 3));
+        addDryingResult(PSItems.PEYOTE, new ItemStack(PSItems.DRIED_PEYOTE, 3));
     }
 
     public static void addDryingResult(Object src, ItemStack result) {

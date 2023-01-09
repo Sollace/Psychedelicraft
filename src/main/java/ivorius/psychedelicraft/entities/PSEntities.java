@@ -16,7 +16,7 @@ import net.minecraft.registry.Registry;
  *
  * Updated by Sollace on 1 Jan 2023
  */
-public interface PSEntityList {
+public interface PSEntities {
     EntityType<EntityMolotovCocktail> MOLOTOV_COCKTAIL = register("molotov_cocktail", FabricEntityTypeBuilder.<EntityMolotovCocktail>create(SpawnGroup.MISC, EntityMolotovCocktail::new)
             .trackedUpdateRate(10).trackRangeBlocks(64)
             .dimensions(EntityDimensions.fixed(0.1F, 0.1F)));

@@ -28,11 +28,11 @@ public class EntityMolotovCocktail extends ThrownItemEntity {
     }
 
     public EntityMolotovCocktail(World world, LivingEntity owner) {
-        super(PSEntityList.MOLOTOV_COCKTAIL, owner, world);
+        super(PSEntities.MOLOTOV_COCKTAIL, owner, world);
     }
 
     public EntityMolotovCocktail(World world, double x, double y, double z) {
-        super(PSEntityList.MOLOTOV_COCKTAIL, x, y, z, world);
+        super(PSEntities.MOLOTOV_COCKTAIL, x, y, z, world);
     }
 
     @Override

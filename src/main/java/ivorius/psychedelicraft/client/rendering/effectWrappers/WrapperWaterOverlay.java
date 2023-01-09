@@ -21,10 +21,10 @@ import net.minecraft.util.Identifier;
  * Created by lukas on 26.04.14.
  */
 public class WrapperWaterOverlay extends ShaderWrapper<ShaderDistortionMap> {
-    public Identifier waterDropletsDistortionTexture = Psychedelicraft.id(Psychedelicraft.filePathTextures + "waterDistortion.png");
+    public Identifier waterDropletsDistortionTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "waterDistortion.png");
 
     public WrapperWaterOverlay(String utils) {
-        super(new ShaderDistortionMap(Psychedelicraft.logger), getRL("shaderBasic.vert"), getRL("shaderDistortionMap.frag"), utils);
+        super(new ShaderDistortionMap(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderDistortionMap.frag"), utils);
     }
 
     @Override
