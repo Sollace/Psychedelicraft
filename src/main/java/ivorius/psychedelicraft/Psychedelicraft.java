@@ -9,6 +9,7 @@ import ivorius.psychedelicraft.blocks.PSBlocks;
 import ivorius.psychedelicraft.commands.*;
 import ivorius.psychedelicraft.crafting.PSRecipes;
 import ivorius.psychedelicraft.entities.PSEntities;
+import ivorius.psychedelicraft.fluids.PSFluids;
 import ivorius.psychedelicraft.items.PSItemGroups;
 import ivorius.psychedelicraft.items.PSItems;
 import ivorius.psychedelicraft.worldgen.PSWorldGen;
@@ -35,6 +36,7 @@ public class Psychedelicraft implements ModInitializer {
         PSBlocks.bootstrap();
         PSItems.bootstrap();
         PSItemGroups.bootstrap();
+        PSFluids.bootstrap();
         PSRecipes.bootstrap();
         PSEntities.bootstrap();
         PSWorldGen.bootstrap();
