@@ -1,8 +1,7 @@
 package ivorius.psychedelicraft.client;
 
 import ivorius.psychedelicraft.client.item.PSModelPredicates;
-import ivorius.psychedelicraft.client.rendering.DrugEffectInterpreter;
-import ivorius.psychedelicraft.client.rendering.SmoothCameraHelper;
+import ivorius.psychedelicraft.client.rendering.*;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.fabricmc.api.ClientModInitializer;
@@ -29,6 +28,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
             }
         });
 
+        PSRenderers.bootstrap();
         PSModelPredicates.bootstrap();
     }
 }

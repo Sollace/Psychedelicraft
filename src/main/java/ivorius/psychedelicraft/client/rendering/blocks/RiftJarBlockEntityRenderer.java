@@ -26,10 +26,10 @@ import java.util.stream.Stream;
 
 public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBlockEntity> {
     private static final IvBezierPath3DRendererText bezierPath3DRendererText = new IvBezierPath3DRendererText().setFont(new Identifier("alt"));
-    public static final Identifier texture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "riftJar.png");
-    public static final Identifier crackedTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "riftJarCracked.png");
+    public static final Identifier texture = Psychedelicraft.id("textures/entity/rift_jar/rift_jar.png");
+    public static final Identifier crackedTexture = Psychedelicraft.id("textures/entity/rift_jar/rift_jar_cracked.png");
     public static final Identifier[] zeroScreenTexture = Stream.iterate(0, i -> i + 1)
-            .map(i -> Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zeroScreen" + i + ".png"))
+            .map(i -> Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zero_screen_" + i + ".png"))
             .limit(8)
             .toArray(Identifier[]::new);
 

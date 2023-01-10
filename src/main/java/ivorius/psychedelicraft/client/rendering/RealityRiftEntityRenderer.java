@@ -28,13 +28,12 @@ import java.util.Random;
  */
 public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift> {
     public static final Identifier[] zeroScreenTexture;
-    public static final Identifier zeroCenterTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zeroCenter.png");
+    public static final Identifier zeroCenterTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zero_center.png");
 
     static {
         zeroScreenTexture = new Identifier[8];
-        for (int i = 0; i < zeroScreenTexture.length; i++)
-        {
-            zeroScreenTexture[i] = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zeroScreen" + i + ".png");
+        for (int i = 0; i < zeroScreenTexture.length; i++) {
+            zeroScreenTexture[i] = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zero_screen_" + i + ".png");
         }
     }
 
@@ -81,7 +80,8 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
 
         int textureChosen = MathHelper.floor(ticks * 0.5f);
         Random rng = new Random(textureChosen);
-        GL11.glTexCoord2f(rng.nextInt(10) * 0.1f * pixelsX, rng.nextInt(8) * 0.125f * pixelsY);
+        // TODO: (Sollace) Can't call it directly
+       // GL11.glTexCoord2f(rng.nextInt(10) * 0.1f * pixelsX, rng.nextInt(8) * 0.125f * pixelsY);
 
         renderLightsScreen(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucent(zeroScreenTexture[textureChosen % 8])), ticks, 1, 0xffffffff, 20);
 
@@ -93,7 +93,8 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
         // RenderHelper.disableStandardItemLighting();
 
         Random random = new Random(432L);
-        GL11.glShadeModel(GL11.GL_SMOOTH);
+     // TODO: (Sollace) Can't call it directly
+     //   GL11.glShadeModel(GL11.GL_SMOOTH);
         RenderSystem.enableBlend();
 //        GL11.glEnable(GL11.GL_CULL_FACE);
         RenderSystem.depthMask(false);
@@ -140,7 +141,8 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
         RenderSystem.depthMask(true);
 //        GL11.glDisable(GL11.GL_CULL_FACE);
         RenderSystem.disableBlend();
-        GL11.glShadeModel(GL11.GL_FLAT);
+      // TODO: (Sollace) Can't call it directly
+      //  GL11.glShadeModel(GL11.GL_FLAT);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         // RenderHelper.enableStandardItemLighting();
     }
