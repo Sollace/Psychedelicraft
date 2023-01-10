@@ -92,7 +92,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             stack.split(distilledAmount);
 
             ItemStack result = new ItemStack(Items.AIR, stack.getCount() - distilledAmount);
-            FluidContainerItem.of(result).setFluid(result, PSFluids.slurry);
+            FluidContainerItem.of(result).setFluid(result, PSFluids.SLURRY);
             FluidContainerItem.of(result).setLevel(result, 1);
             return result;
         }
