@@ -46,7 +46,7 @@ public class SmokeableItem extends Item {
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return UseAction.BOW;
+        return UseAction.TOOT_HORN;
     }
 
     @Override

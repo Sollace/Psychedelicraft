@@ -1,5 +1,5 @@
 {
-    "parent": "item/generated",
+    "parent": "psychedelicraft:item/smoking_pipe",
     "textures": {
         "layer0": "psychedelicraft:item/joint"
     },

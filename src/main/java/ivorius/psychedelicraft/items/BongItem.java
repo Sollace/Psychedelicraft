@@ -39,7 +39,7 @@ public class BongItem extends Item {
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return UseAction.BLOCK;
+        return UseAction.TOOT_HORN;
     }
 
     @Override
@@ -47,7 +47,10 @@ public class BongItem extends Item {
         DrugProperties.of(entity).ifPresent(drugProperties -> {
             getUsedConsumable(drugProperties.asEntity()).ifPresent(consumable -> {
                 // TODO: (Sollace) check for possible client desync
-                drugProperties.asEntity().getInventory().removeOne(consumable.getKey());
+
+                PlayerInventory inventory = drugProperties.asEntity().getInventory();
+                int slot = inventory.indexOf(consumable.getKey());
+                inventory.removeStack(slot, 1);
                 drugProperties.addAll(consumable.getValue().drugInfluences().apply(consumable.getKey()));
                 stack.damage(1, drugProperties.asEntity(), p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
                 drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), consumable.getValue().smokeColor);
@@ -59,11 +62,14 @@ public class BongItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (DrugProperties.of(player).timeBreathingSmoke <= 0 && getUsedConsumable(player).isPresent()) {
-            return TypedActionResult.consume(player.getStackInHand(hand));
+        ItemStack stack = player.getStackInHand(hand);
+
+        if (DrugProperties.of(player).timeBreathingSmoke <= 0 && hasUsableConsumable(player)) {
+            player.setCurrentHand(hand);
+            return TypedActionResult.consume(stack);
         }
 
-        return TypedActionResult.fail(ItemStack.EMPTY);
+        return TypedActionResult.fail(stack);
     }
 
     public Optional<Map.Entry<ItemStack, Consumable>> getUsedConsumable(LivingEntity entity) {
