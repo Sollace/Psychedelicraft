@@ -75,7 +75,7 @@ public interface PSItems {
     Item DRIED_TOBACCO = register("dried_tobacco");
 
     SmokeableItem CIGARETTE = register("cigarette", new SmokeableItem(
-            new Settings().maxCount(1), 2,
+            new Settings().maxCount(1).maxDamage(1), 2,
             new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.7f)
     ));
     SmokeableItem CIGAR = register("cigar", new SmokeableItem(

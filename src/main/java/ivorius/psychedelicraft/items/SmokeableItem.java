@@ -56,7 +56,14 @@ public class SmokeableItem extends Item {
             drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), smokeColor);
         });
 
-        stack.damage(1, entity, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+
+        if (!(entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode)) {
+            if (!stack.isDamageable()) {
+                stack.decrement(1);
+            } else {
+                stack.damage(1, entity, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+            }
+        }
 
         return super.finishUsing(stack, world, entity);
     }
@@ -66,9 +73,10 @@ public class SmokeableItem extends Item {
         ItemStack stack = player.getStackInHand(hand);
 
         if (DrugProperties.of(player).timeBreathingSmoke == 0) {
-            return TypedActionResult.success(stack, world.isClient());
+            player.setCurrentHand(hand);
+            return TypedActionResult.consume(stack);
         }
 
-        return TypedActionResult.pass(stack);
+        return TypedActionResult.fail(stack);
     }
 }
