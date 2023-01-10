@@ -187,13 +187,15 @@ public class EntityRealityRift extends Entity {
             }
         }
 
+        setRiftSize(1);
+
         if (isRiftClosing()) {
             setRiftSize(getRiftSize() - 1F / 20F);
         } else if (!critical) {
             setRiftSize(getRiftSize() - 1F / 20F / 20F / 60F);
         }
 
-//        setRiftSize(getRiftSize() - 1.0f / 1.0f / 20.0f / 60.0f);
+       // setRiftSize(getRiftSize() - 1.0f / 1.0f / 20.0f / 60.0f);
         visualRiftSize = MathUtils.nearValue(visualRiftSize, getRiftSize(), 0.05f, 0.005f);
 
         if (!world.isClient) {
