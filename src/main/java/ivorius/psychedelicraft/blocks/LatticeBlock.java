@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.blocks;
 
 import net.minecraft.block.*;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -30,5 +31,10 @@ public class LatticeBlock extends HorizontalFacingBlock {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
     }
 }

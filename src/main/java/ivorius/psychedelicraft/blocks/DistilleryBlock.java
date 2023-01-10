@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.blocks;
 import ivorius.psychedelicraft.block.entity.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -45,13 +46,11 @@ public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
-    /*
     @Override
-    public IIcon getIcon(int side, int meta)
-    {
-        return Blocks.glass.getIcon(side, 0);
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
     }
-*/
+
     @Override
     protected BlockEntityType<DistilleryBlockEntity> getBlockEntityType() {
         return PSBlockEntities.DISTILLERY;
