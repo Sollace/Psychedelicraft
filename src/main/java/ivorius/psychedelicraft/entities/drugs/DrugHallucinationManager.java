@@ -118,31 +118,30 @@ public class DrugHallucinationManager {
 
         updateEntities(entity, drugProperties, random);
 
-        float totalHallucinationValue = 0.0f;
-        for (HallucinationType type : hallucinationTypes)
-        {
+        float totalHallucinationValue = 0;
+        for (HallucinationType type : hallucinationTypes) {
             float desiredValue = type.getDesiredValue(drugProperties);
-            type.currentValue = MathUtils.nearValue(type.currentValue, desiredValue, 0.01f, 0.01f);
+            type.currentValue = MathUtils.nearValue(type.currentValue, desiredValue, 0.01F, 0.01F);
             totalHallucinationValue += type.currentValue;
         }
 
-        int desiredHallucinations = MathHelper.floor(totalHallucinationValue * 4.0f + 0.9f);
+        int desiredHallucinations = Math.max(0, MathHelper.floor(totalHallucinationValue * 4F + 0.9f));
 
-        if (activeHallucinations.size() > 0)
-        {
-            while (random.nextFloat() < 1.0f / (20 * 60 * 5 / activeHallucinations.size()))
-            {
+        if (activeHallucinations.size() > 0) {
+            while (random.nextFloat() < 1f / (20 * 60 * 5 / activeHallucinations.size())) {
                 removeRandomHallucination(random);
                 addRandomHallucination(random);
             }
         }
 
-        while (activeHallucinations.size() > desiredHallucinations)
+        while (activeHallucinations.size() > desiredHallucinations) {
             removeRandomHallucination(random);
-        while (activeHallucinations.size() < desiredHallucinations)
-        {
-            if (!addRandomHallucination(random))
+        }
+
+        while (activeHallucinations.size() < desiredHallucinations) {
+            if (!addRandomHallucination(random)) {
                 break;
+            }
         }
 
         for (Integer hKey : hallucinationValues.keySet())
