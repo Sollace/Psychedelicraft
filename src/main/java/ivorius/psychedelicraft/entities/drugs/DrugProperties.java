@@ -251,7 +251,8 @@ public class DrugProperties implements NbtSerialisable {
             timeBreathingSmoke--;
 
             if (timeBreathingSmoke > 10 && entity.world.isClient) {
-                Vec3d look = entity.getCameraPosVec(1);
+                Vec3d look = entity.getRotationVec(1);
+
 
                 if (random.nextInt(2) == 0) {
                     float s = random.nextFloat() * 0.05f + 0.1f;
