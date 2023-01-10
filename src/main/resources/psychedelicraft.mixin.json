@@ -4,6 +4,9 @@
     "package": "ivorius.psychedelicraft.mixin",
     "refmap": "psychedelicraft.mixin.refmap.json",
     "compatibilityLevel": "JAVA_16",
-    "main": [
+    "mixins": [
+      "MixinPlayerEntity"
+    ],
+    "client": [
     ]
 }
