@@ -42,12 +42,15 @@ public interface JsonConfig {
 
         @SuppressWarnings("unchecked")
         public void load() {
+            T blank = initializer.get();
+            data = null;
             if (Files.exists(path)) {
                 try (var reader = Files.newBufferedReader(path)) {
-                    data = (T) GSON.fromJson(reader, getData().getClass());
-                } catch (IOException e) {
-                    data = initializer.get();
-                }
+                    data = (T) GSON.fromJson(reader, blank.getClass());
+                } catch (IOException e) {}
+            }
+            if (data == null) {
+                data = blank;
             }
             save();
         }
