@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft;
 
-import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 
 /**
@@ -25,9 +24,5 @@ public class PSProxy {
 
     public void createDrugRenderer(DrugProperties drugProperties) {
 
-    }
-
-    public PSConfig createConfig() {
-        return new PSConfig();
     }
 }

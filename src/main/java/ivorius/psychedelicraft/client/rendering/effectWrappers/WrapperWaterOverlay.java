@@ -8,10 +8,9 @@ package ivorius.psychedelicraft.client.rendering.effectWrappers;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.ClientProxy;
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 import ivorius.psychedelicraft.client.rendering.shaders.ShaderDistortionMap;
-import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -31,7 +30,7 @@ public class WrapperWaterOverlay extends ShaderWrapper<ShaderDistortionMap> {
     public void setShaderValues(float tickDelta, int ticks, @Nullable Framebuffer buffer) {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
-        if (drugProperties != null && PSConfig.<ClientProxy.Config>getInstance().visual.waterOverlayEnabled) {
+        if (drugProperties != null && PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {
             float waterScreenDistortion = drugProperties.renderer.getCurrentWaterScreenDistortion();
             shaderInstance.strength = waterScreenDistortion * 0.2F;
             shaderInstance.alpha = waterScreenDistortion;

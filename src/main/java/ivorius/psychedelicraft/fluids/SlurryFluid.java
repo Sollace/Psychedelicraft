@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.fluids;
 
-import ivorius.psychedelicraft.config.PSConfig;
+import ivorius.psychedelicraft.Psychedelicraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
@@ -23,7 +23,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     @Override
     public int getProcessingTime(ItemStack stack, ProcessType type, boolean openContainer) {
         if (type == ProcessType.FERMENT) {
-            return stack.getCount() >= FLUID_PER_DIRT ? PSConfig.getInstance().balancing.slurryHardeningTime : UNCONVERTABLE;
+            return stack.getCount() >= FLUID_PER_DIRT ? Psychedelicraft.getConfig().balancing.slurryHardeningTime : UNCONVERTABLE;
         }
         return UNCONVERTABLE;
     }

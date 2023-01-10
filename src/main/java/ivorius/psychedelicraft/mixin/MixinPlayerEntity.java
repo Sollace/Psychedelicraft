@@ -25,7 +25,6 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
     @Override
     public DrugProperties getDrugProperties() {
         if (drugProperties == null) {
-            this.wakeUp();
             drugProperties = new DrugProperties((PlayerEntity)(Object)this);
         }
         return drugProperties;

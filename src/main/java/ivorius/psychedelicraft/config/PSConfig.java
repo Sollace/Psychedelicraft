@@ -1,18 +1,6 @@
 package ivorius.psychedelicraft.config;
 
-import java.util.function.Supplier;
-
-import ivorius.psychedelicraft.PSProxy;
-
 public class PSConfig {
-    private static final Supplier<JsonConfig.Loader<PSConfig>> LOADER
-        = JsonConfig.create("psychedelicraft.json", () -> PSProxy.getInstance().createConfig());
-
-    @SuppressWarnings("unchecked")
-    public static <T extends PSConfig> T getInstance() {
-        return (T)LOADER.get().getData();
-    }
-
     public static final int MINUTE = 20 * 60;
 
     public final Balancing balancing = new Balancing();

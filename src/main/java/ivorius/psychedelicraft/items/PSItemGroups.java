@@ -6,7 +6,6 @@
 package ivorius.psychedelicraft.items;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.config.PSConfig;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;
 
@@ -49,10 +48,10 @@ public interface PSItemGroups {
                 entries.add(PSItems.PEYOTE_JOINT);
                 entries.add(PSItems.FLASK);
                 entries.add(PSItems.DISTILLERY);
-                if (PSConfig.getInstance().balancing.enableHarmonium) {
+                if (Psychedelicraft.getConfig().balancing.enableHarmonium) {
                     entries.add(PSItems.HARMONIUM);
                 }
-                if (PSConfig.getInstance().balancing.enableRiftJars) {
+                if (Psychedelicraft.getConfig().balancing.enableRiftJars) {
                     entries.add(RiftJarItem.createFilledRiftJar(0.0F, PSItems.RIFT_JAR));
                     entries.add(RiftJarItem.createFilledRiftJar(0.25F, PSItems.RIFT_JAR));
                     entries.add(RiftJarItem.createFilledRiftJar(0.55F, PSItems.RIFT_JAR));

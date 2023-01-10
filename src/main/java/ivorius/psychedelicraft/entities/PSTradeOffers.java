@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.ImmutableSet;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.items.PSItems;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.block.Block;
@@ -51,7 +50,7 @@ public interface PSTradeOffers {
             factories.add(buy(Items.EMERALD, 1, PSItems.PEYOTE, 5, 4, 4, 0.5f));
         });
 
-        if (PSConfig.getInstance().balancing.worldGeneration.farmerDrugDeals) {
+        if (Psychedelicraft.getConfig().balancing.worldGeneration.farmerDrugDeals) {
             TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 0, factories -> {
                 factories.add(buy(Items.EMERALD, 2, PSItems.WINE_GRAPES, 3, 8, 1, 0.5F));
                 factories.add(buy(Items.EMERALD, 1, PSItems.HOP_CONES, 1, 4, 1, 0.6F));

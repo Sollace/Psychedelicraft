@@ -1,7 +1,6 @@
 package ivorius.psychedelicraft.entities.drugs;
 
-import ivorius.psychedelicraft.client.ClientProxy;
-import ivorius.psychedelicraft.config.PSConfig;
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -9,6 +8,7 @@ import net.minecraft.util.math.MathHelper;
  * Created by lukas on 22.11.14.
  */
 public class DrugMusicManager {
+    // TODO: (Sollace) Move client code to the client package
     public static final float PLAY_THRESHOLD = 0.01f;
 
     private String activeDrug;
@@ -17,7 +17,7 @@ public class DrugMusicManager {
     public void update(LivingEntity entity, DrugProperties drugProperties) {
         if (activeDrug == null) {
             for (String drugName : drugProperties.getAllDrugNames()) {
-                if (PSConfig.<ClientProxy.Config>getInstance().audio.hasBackgroundMusic(drugName) && drugProperties.getDrugValue(drugName) >= PLAY_THRESHOLD) {
+                if (PsychedelicraftClient.getConfig().audio.hasBackgroundMusic(drugName) && drugProperties.getDrugValue(drugName) >= PLAY_THRESHOLD) {
                     activeDrug = drugName;
                 }
             }

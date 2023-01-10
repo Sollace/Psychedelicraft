@@ -19,17 +19,16 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.Random;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 /**
  * Created by lukas on 01.11.14.
  * Updated by Sollace on 4 Jan 2023
  */
 public class PowerDrug extends SimpleDrug {
-    public static final Identifier POWER_PARTICLE_TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "powerParticle.png");
-    public static final Identifier[] LIGHTNING_TEXTURES = Stream.iterate(0, i -> i + 1)
-            .map(i -> Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "lightning" + i + ".png"))
-            .limit(4)
+    public static final Identifier POWER_PARTICLE_TEXTURE = Psychedelicraft.id("textures/drug/power/particle.png");
+    public static final Identifier[] LIGHTNING_TEXTURES = IntStream.range(0, 4)
+            .mapToObj(i -> Psychedelicraft.id("textures/drug/power/lightning_" + i + ".png"))
             .toArray(Identifier[]::new);
 
     public PowerDrug(double decSpeed, double decSpeedPlus) {

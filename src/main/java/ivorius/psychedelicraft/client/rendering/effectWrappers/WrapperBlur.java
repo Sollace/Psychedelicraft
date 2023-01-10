@@ -6,9 +6,8 @@
 package ivorius.psychedelicraft.client.rendering.effectWrappers;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.ClientProxy;
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.rendering.shaders.ShaderBlur;
-import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -28,7 +27,7 @@ public class WrapperBlur extends ShaderWrapper<ShaderBlur> {
         shaderInstance.vBlur = DrugProperties.of(MinecraftClient.getInstance().cameraEntity).map(d -> d.getDrugValue("Power")).orElse(0F);
         shaderInstance.hBlur = 0;
 
-        float blur = PSConfig.<ClientProxy.Config>getInstance().visual.pauseMenuBlur * screenBackgroundBlur * screenBackgroundBlur * screenBackgroundBlur;
+        float blur = PsychedelicraftClient.getConfig().visual.pauseMenuBlur * screenBackgroundBlur * screenBackgroundBlur * screenBackgroundBlur;
         shaderInstance.vBlur += blur;
         shaderInstance.hBlur += blur;
     }

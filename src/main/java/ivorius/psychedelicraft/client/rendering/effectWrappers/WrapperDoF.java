@@ -8,9 +8,8 @@ package ivorius.psychedelicraft.client.rendering.effectWrappers;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.ClientProxy;
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.rendering.shaders.ShaderDoF;
-import ivorius.psychedelicraft.config.PSConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 
@@ -23,8 +22,8 @@ public class WrapperDoF extends ShaderWrapper<ShaderDoF> {
     }
 
     public boolean isActive() {
-        return (PSConfig.<ClientProxy.Config>getInstance().visual.dofFocalBlurFar > 0 || PSConfig.<ClientProxy.Config>getInstance().visual.dofFocalBlurNear > 0)
-            && (PSConfig.<ClientProxy.Config>getInstance().visual.dofFocalPointNear > 0 || PSConfig.<ClientProxy.Config>getInstance().visual.dofFocalPointFar < getCurrentZFar());
+        return (PsychedelicraftClient.getConfig().visual.dofFocalBlurFar > 0 || PsychedelicraftClient.getConfig().visual.dofFocalBlurNear > 0)
+            && (PsychedelicraftClient.getConfig().visual.dofFocalPointNear > 0 || PsychedelicraftClient.getConfig().visual.dofFocalPointFar < getCurrentZFar());
     }
 
     protected float getCurrentZFar() {
@@ -39,10 +38,10 @@ public class WrapperDoF extends ShaderWrapper<ShaderDoF> {
             shaderInstance.zNear = 0.05f;
             shaderInstance.zFar = getCurrentZFar();
 
-            shaderInstance.focalPointNear = PSConfig.<ClientProxy.Config>getInstance().visual.dofFocalPointNear / shaderInstance.zFar;
-            shaderInstance.focalPointFar = PSConfig.<ClientProxy.Config>getInstance().visual.dofFocalPointFar / shaderInstance.zFar;
-            shaderInstance.focalBlurFar = PSConfig.<ClientProxy.Config>getInstance().visual.dofFocalBlurFar;
-            shaderInstance.focalBlurNear = PSConfig.<ClientProxy.Config>getInstance().visual.dofFocalBlurNear;
+            shaderInstance.focalPointNear = PsychedelicraftClient.getConfig().visual.dofFocalPointNear / shaderInstance.zFar;
+            shaderInstance.focalPointFar = PsychedelicraftClient.getConfig().visual.dofFocalPointFar / shaderInstance.zFar;
+            shaderInstance.focalBlurFar = PsychedelicraftClient.getConfig().visual.dofFocalBlurFar;
+            shaderInstance.focalBlurNear = PsychedelicraftClient.getConfig().visual.dofFocalBlurNear;
         } else {
             shaderInstance.focalBlurFar = 0.0f;
             shaderInstance.focalBlurNear = 0.0f;

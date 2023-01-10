@@ -5,8 +5,8 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.blocks.PSBlocks;
-import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.crafting.DryingRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -55,8 +55,8 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         if (!plannedResult.isEmpty()) {
             dryingProgress += heatRatio / (
                     world.getBlockState(pos).isOf(PSBlocks.IRON_DRYING_TABLE)
-                    ? PSConfig.getInstance().balancing.ironDryingTableTickDuration
-                    : PSConfig.getInstance().balancing.dryingTableTickDuration
+                    ? Psychedelicraft.getConfig().balancing.ironDryingTableTickDuration
+                    : Psychedelicraft.getConfig().balancing.dryingTableTickDuration
             );
 
             if (dryingProgress >= 1) {

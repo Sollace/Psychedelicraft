@@ -8,10 +8,9 @@ package ivorius.psychedelicraft.client.rendering.shaders;
 import com.google.common.base.Charsets;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.ClientProxy;
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.rendering.*;
 import ivorius.psychedelicraft.client.rendering.effectWrappers.*;
-import ivorius.psychedelicraft.config.PSConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.util.Window;
@@ -42,7 +41,7 @@ public class PSRenderStates {
 
         switch (pass) {
             case "Default":
-                shaderInstance.shouldDoShadows = PSConfig.<ClientProxy.Config>getInstance().visual.doShadows;
+                shaderInstance.shouldDoShadows = PsychedelicraftClient.getConfig().visual.doShadows;
                 shaderInstance.shadowDepthTextureIndex = shaderInstanceShadows.depthBuffer.getDepthAttachment();
                 return useShader(partialTicks, ticks, shaderInstance);
             case "Depth":
@@ -143,7 +142,7 @@ public class PSRenderStates {
         //RenderSystem.setShader(() -> (ShaderProgram)shader);
         currentShader = null;
 
-        if (shader != null && PSConfig.<ClientProxy.Config>getInstance().visual.shader3DEnabled) {
+        if (shader != null && PsychedelicraftClient.getConfig().visual.shader3DEnabled) {
             if (shader.isShaderActive())
                 return true;
 

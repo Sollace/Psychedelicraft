@@ -20,7 +20,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
  * Created by lukas on 01.11.14.
  */
 public class WarmthDrug extends SimpleDrug {
-    private static final Identifier COFFEE_OVERLAY = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "coffeeOverlayBlend.png");
+    private static final Identifier COFFEE_OVERLAY = Psychedelicraft.id("textures/drug/coffee/overlay.png");
 
     public WarmthDrug(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus, true);

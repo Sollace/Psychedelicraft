@@ -5,9 +5,8 @@
 
 package ivorius.psychedelicraft.client.rendering.shaders;
 
-import ivorius.psychedelicraft.client.ClientProxy;
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.rendering.GLStateProxy;
-import ivorius.psychedelicraft.config.PSConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.SimpleFramebuffer;
@@ -25,7 +24,7 @@ public class ShaderShadows extends IvShaderInstance3D implements ShaderWorld {
     public Framebuffer depthBuffer;
 
     public static int getShadowPixels() {
-        return MinecraftClient.getInstance().options.getViewDistance().getValue() * PSConfig.<ClientProxy.Config>getInstance().visual.shadowPixelsPerChunk;
+        return MinecraftClient.getInstance().options.getViewDistance().getValue() * PsychedelicraftClient.getConfig().visual.shadowPixelsPerChunk;
     }
 
     public ShaderShadows(Logger logger) {

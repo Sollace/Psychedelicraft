@@ -6,10 +6,9 @@
 package ivorius.psychedelicraft.entities.drugs;
 
 import ivorius.psychedelicraft.*;
-import ivorius.psychedelicraft.client.ClientProxy;
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.rendering.IDrugRenderer;
 import ivorius.psychedelicraft.client.screen.TickableContainer;
-import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.*;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.entity.*;
@@ -283,8 +282,8 @@ public class DrugProperties implements NbtSerialisable {
             }
         }
 
-        if (!entity.world.isClient && PSConfig.getInstance().balancing.randomTicksUntilRiftSpawn > 0) {
-            if (random.nextInt(PSConfig.getInstance().balancing.randomTicksUntilRiftSpawn) == 0) {
+        if (!entity.world.isClient && Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0) {
+            if (random.nextInt(Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn) == 0) {
                 spawnRiftAtPlayer();
             }
         }
@@ -405,7 +404,8 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public float[] getDigitalEffectPixelResize() {
-        return PSConfig.<ClientProxy.Config>getInstance().visual.getDigitalEffectPixelResize();
+        // TODO: Shouldn't this be stored? Why is it even here?
+        return PsychedelicraftClient.getConfig().visual.getDigitalEffectPixelResize();
     }
 
     public void changeDrugModifierMultiply(LivingEntity entity, EntityAttribute attribute, double value) {

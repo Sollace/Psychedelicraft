@@ -1,8 +1,12 @@
 package ivorius.psychedelicraft.client;
 
+import java.util.function.Supplier;
+
 import ivorius.psychedelicraft.client.item.PSModelPredicates;
 import ivorius.psychedelicraft.client.rendering.*;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
+import ivorius.psychedelicraft.config.JsonConfig;
+import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -12,6 +16,12 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
  * @since 1 Jan 2023
  */
 public class PsychedelicraftClient implements ClientModInitializer {
+    private static final Supplier<JsonConfig.Loader<PSClientConfig>> CONFIG_LOADER = JsonConfig.create("psychedelicraft_client.json", PSClientConfig::new);
+
+    public static PSClientConfig getConfig() {
+        return CONFIG_LOADER.get().getData();
+    }
+
     public PsychedelicraftClient() {
         new ClientProxy();
     }
