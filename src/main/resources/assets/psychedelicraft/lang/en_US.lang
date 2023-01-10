@@ -1,41 +1,16 @@
-item.smokingPipe.name=Pipe
-item.bong.name=Bong
-item.wineGrapes.name=Wine Grapes
 tile.wineGrapeLattice.name=Wood Lattice
 tile.cannabisPlant.name=Cannabis Plant
-item.cannabisSeeds.name=Cannabis Seeds
-item.cannabisLeaf.name=Cannabis Leaf
-item.cannabisBuds.name=Cannabis Buds
-item.driedCannabisBuds.name=Dried Cannabis Buds
-item.driedCannabisLeaves.name=Dried Cannabis Leaves
 item.hashMuffin.name=Hash Muffin
 tile.dryingTable.name=Drying Table
 tile.ironDryingTable.name=Iron Drying Table
-item.magicMushroomsBrown.name=Brown Magic Mushrooms
-item.magicMushroomsRed.name=Red Magic Mushrooms
 tile.tobaccoPlant.name=Tobacco Plant
-item.tobaccoLeaf.name=Tobacco Leaf
-item.tobaccoSeeds.name=Tobacco Seeds
-item.driedTobacco.name=Dried Tobacco
-item.cigarette.name=Cigarette
-item.cigar.name=Cigar
-item.joint.name=Joint
 tile.cocaPlant.name=Coca Plant
-item.cocaSeeds.name=Coca Seeds
-item.cocaLeaf.name=Coca Leaf
-item.driedCocaLeaves.name=Dried Coca Leaves
 tile.psycheLeaves.name=Juniper Leaves
 tile.psycheLeaves.juniper.name=Juniper Leaves
 tile.psycheLeaves.juniperBerries.name=Juniper Berry Leaves
 tile.psycheLog.name=Juniper Log
 tile.psycheSapling.name=Juniper Sapling
-item.juniperBerries.name=Juniper Berries
 tile.coffea.name=Coffea
-item.coffeaCherries.name=Coffea Cherries
-item.coffeeBeans.name=Coffee Beans
-tile.peyote.name=Peyote
-item.driedPeyote.name=Dried Peyote
-item.jointPeyote.name=Peyote Joint
 tile.riftJar.name=Rift Jar
 item.riftJar.empty=Empty
 item.riftJar.slightlyFilled=Slightly Filled
@@ -43,30 +18,11 @@ item.riftJar.halfFilled=Half Full
 item.riftJar.full=Full
 item.riftJar.overflowing=Overflowing
 tile.glitched.name=Block $__0
-tile.psFlask.name=Flask
-tile.psFlask.full.name=Flask of %s
-tile.psDistillery.name=Distillery
-tile.psDistillery.full.name=Distillery (Filled with %s)
 tile.hopPlant.name=Hops
-item.hopSeeds.name=Hop Seeds
-item.hopCones.name=Hop Cones
-item.cocainePowder.name=Cocaine Powder
+
 tile.bottleRack.name=Bottle Rack
 container.bottleRack=Bottle Rack
 
-item.woodenMug.name=Wooden Mug
-item.woodenMug.full.name=Wooden Mug of %s
-
-item.glassChalice.name=Glass Chalice
-item.glassChalice.full.name=Glass Chalice of %s
-
-item.stoneCup.name=Cup
-item.stoneCup.full.name=Cup of %s
-
-item.pscBottle.name=Bottle
-item.pscBottle.full.name=Bottle of %s
-
-item.molotovCocktail.name=Molotov Cocktail
 item.molotovCocktail.empty.name=Empty Molotov Cocktail
 item.molotovCocktail.quality0.name=Useless Molotov Cocktail
 item.molotovCocktail.quality1.name=Horrible Molotov Cocktail
@@ -76,15 +32,9 @@ item.molotovCocktail.quality4.name=Good Molotov Cocktail
 item.molotovCocktail.quality5.name=Excellent Molotov Cocktail
 item.molotovCocktail.quality6.name=Perfect Molotov Cocktail
 item.molotovCocktail.quality7.name=Unreal Molotov Cocktail
-entity.molotovCocktail.name=Molotov Cocktail
 
 tile.psBarrel.name=Barrel
 tile.psBarrel.full.name=%s Barrel
-tile.psMashTub.name=Wooden Vat
-tile.psMashTub.full.name=Wooden Vat (%s)
-
-item.syringe.name=Syringe
-item.syringe.full.name=Syringe - %s
 
 item.harmonium.dye0.name=Black Harmonium
 item.harmonium.dye1.name=Red Harmonium
@@ -102,8 +52,6 @@ item.harmonium.dye12.name=Light Blue Harmonium
 item.harmonium.dye13.name=Magenta Harmonium
 item.harmonium.dye14.name=Orange Harmonium
 item.harmonium.dye15.name=White Harmonium
-
-entity.realityRift.name=Zero Rift
 
 tile.bed.onDrugs=The drugs in your body keep you awake
 
@@ -219,12 +167,6 @@ fluid.psc_caffeine_fluid=Caffeine
 fluid.status.maturing=Maturing
 fluid.status.fermenting=Fermenting
 fluid.status.distilling=Distilling
-
-itemGroup.psychedelicraft=Psychedelicraft
-itemGroup.psycheDrinks=Drinks
-itemGroup.psycheWeapons=Psychedelicraft Weapons
-
-commands.psyche.usage=/psyche spawnRift [x] [y] [z]
 
 commands.drug.usage=/drug <player> <drug> <set|lock|unlock> [value]
 commands.drug.success=%s's %s set to %s
