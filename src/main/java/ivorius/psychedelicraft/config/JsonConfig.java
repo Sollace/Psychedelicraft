@@ -35,7 +35,7 @@ public interface JsonConfig {
 
         public T getData() {
             if (data == null) {
-                data = initializer.get();
+                load();
             }
             return data;
         }
