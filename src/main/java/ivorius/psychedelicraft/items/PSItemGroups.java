@@ -59,6 +59,12 @@ public interface PSItemGroups {
                     entries.add(RiftJarItem.createFilledRiftJar(0.75F, PSItems.RIFT_JAR));
                     entries.add(RiftJarItem.createFilledRiftJar(0.9F, PSItems.RIFT_JAR));
                 }
+                entries.add(PSItems.OAK_BARREL);
+                entries.add(PSItems.BIRCH_BARREL);
+                entries.add(PSItems.SPRUCE_BARREL);
+                entries.add(PSItems.ACACIA_BARREL);
+                entries.add(PSItems.JUNGLE_BARREL);
+                entries.add(PSItems.DARK_OAK_BARREL);
             })
             .build();
     ItemGroup drinksTab = FabricItemGroup.builder(Psychedelicraft.id("drinks"))

@@ -33,9 +33,6 @@ item.molotovCocktail.quality5.name=Excellent Molotov Cocktail
 item.molotovCocktail.quality6.name=Perfect Molotov Cocktail
 item.molotovCocktail.quality7.name=Unreal Molotov Cocktail
 
-tile.psBarrel.name=Barrel
-tile.psBarrel.full.name=%s Barrel
-
 item.harmonium.dye0.name=Black Harmonium
 item.harmonium.dye1.name=Red Harmonium
 item.harmonium.dye2.name=Green Harmonium

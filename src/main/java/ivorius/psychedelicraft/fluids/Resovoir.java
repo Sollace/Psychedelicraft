@@ -14,7 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 public class Resovoir implements Inventory, NbtSerialisable {
     private int capacity;
 
-    private ItemStack stack;
+    private ItemStack stack = ItemStack.EMPTY;
 
     private final ChangeListener changeCallback;
 
