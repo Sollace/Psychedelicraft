@@ -1,5 +1,5 @@
 {
-   "heartBeat": {"category": "master", "sounds": [{"name": "heartBeat", "stream": false}]},
+   "heart_beat": {"category": "master", "sounds": [{"name": "heart_beat", "stream": false}]},
    "breath": {"category": "master", "sounds": [{"name": "breath", "stream": false}]},
 
    "drug.alcohol": {"category": "record", "sounds": [{"name": "drugs/alcohol", "stream": true}]},
