@@ -26,7 +26,7 @@ public class BottleRackBlockEntity extends BlockEntityWithInventory {
     @Override
     public boolean isValid(int slot, ItemStack stack) {
         // TODO: (Sollace) Tags
-        return stack.isOf(PSItems.molotovCocktail) || stack.isOf(PSItems.bottle);
+        return stack.isOf(PSItems.MOLOTOV_COCKTAIL) || stack.isOf(PSItems.BOTTLE);
         //return stack.isIn(PSTags.BOTTLES);
     }
 

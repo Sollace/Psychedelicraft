@@ -35,6 +35,6 @@ public interface PSModelPredicates {
                 }
             }
             return -1;
-        }, PSItems.bottle, PSItems.molotovCocktail, PSItems.GLASS_CHALICE, PSItems.STONE_CUP, PSItems.WOODEN_MUG);
+        }, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.GLASS_CHALICE, PSItems.STONE_CUP, PSItems.WOODEN_MUG);
     }
 }

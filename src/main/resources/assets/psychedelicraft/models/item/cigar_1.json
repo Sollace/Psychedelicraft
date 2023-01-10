@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "psychedelicraft:item/coffea_berries"
+        "layer0": "psychedelicraft:item/cigar_1"
     }
 }

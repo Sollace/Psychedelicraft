@@ -37,7 +37,7 @@ public class EntityMolotovCocktail extends ThrownItemEntity {
 
     @Override
     protected Item getDefaultItem() {
-        return PSItems.molotovCocktail;
+        return PSItems.MOLOTOV_COCKTAIL;
     }
 
     @Override

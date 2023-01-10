@@ -44,8 +44,8 @@ public interface PSItems {
     Item WINE_GRAPES = register("wine_grapes", new WineGrapesItem(new Settings().food(
             new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()
     ), 15));
-    DrinkableItem bottle = register("bottle", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER * 2, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    MolotovCocktailItem molotovCocktail = register("molotov_cocktail", new MolotovCocktailItem(new Settings().maxCount(16), MILLIBUCKETS_PER_LITER * 2));
+    DrinkableItem BOTTLE = register("bottle", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER * 2, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings().maxCount(16), MILLIBUCKETS_PER_LITER * 2));
 
     Item CANNABIS_SEEDS = register("cannabis_seeds", new AliasedBlockItem(PSBlocks.CANNABIS, new Settings()));
     Item CANNABIS_LEAF = register("cannabis_leaf");
@@ -61,11 +61,11 @@ public interface PSItems {
     Item HOP_CONES = register("hop_cones");
     Item HOP_SEEDS = register("hop_seeds", new AliasedBlockItem(PSBlocks.HOP, new Settings()));
 
-    Item BROWN_MAGIC_MUSHROOMS = register("brown_magic_mushroom", new EdibleItem(
+    Item BROWN_MAGIC_MUSHROOMS = register("brown_magic_mushrooms", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence("BrownShrooms", 15, 0.005, 0.003, 0.5f)
     ));
-    Item RED_MAGIC_MUSHROOMS = register("red_magic_mushroom", new EdibleItem(
+    Item RED_MAGIC_MUSHROOMS = register("red_magic_mushrooms", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence("RedShrooms", 15, 0.005, 0.003, 0.5f)
     ));
@@ -82,7 +82,7 @@ public interface PSItems {
             new Settings().maxCount(1).maxDamage(3), 4,
             new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.7f)
     ));
-    SmokeableItem JOINT = register("join", new SmokeableItem(
+    SmokeableItem JOINT = register("joint", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(2), 2,
             new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.20f)
     ));

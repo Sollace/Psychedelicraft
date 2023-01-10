@@ -67,14 +67,14 @@ public interface PSItemGroups {
                 entries.add(PSItems.STONE_CUP);
                 entries.add(PSItems.WOODEN_MUG);
                 entries.add(PSItems.GLASS_CHALICE);
-                entries.add(PSItems.bottle);
+                entries.add(PSItems.BOTTLE);
                 entries.add(PSItems.MASH_TUB);
             })
             .build();
     ItemGroup weaponsTab = FabricItemGroup.builder(Psychedelicraft.id("weapons"))
-            .icon(PSItems.molotovCocktail::getDefaultStack)
+            .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
             .entries((features, entries, search) -> {
-                entries.add(PSItems.molotovCocktail);
+                entries.add(PSItems.MOLOTOV_COCKTAIL);
             })
             .build();
 
