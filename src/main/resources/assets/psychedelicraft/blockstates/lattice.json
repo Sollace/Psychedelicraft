@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "psychedelicraft:block/lattice",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "psychedelicraft:block/lattice"
+    },
+    "facing=south": {
+      "model": "psychedelicraft:block/lattice"
+    },
+    "facing=west": {
+      "model": "psychedelicraft:block/lattice",
+      "y": 90
+    }
+  }
+}

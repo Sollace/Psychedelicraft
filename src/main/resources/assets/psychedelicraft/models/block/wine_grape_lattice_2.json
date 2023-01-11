@@ -1,0 +1,6 @@
+{
+  "parent": "psychedelicraft:block/wine_grape_lattice_0",
+  "textures": {
+    "grapes": "psychedelicraft:block/wine_grape_lattice_2"
+  }
+}

@@ -43,9 +43,9 @@ public interface PSBlocks {
     Block COFFEA = register("coffea", new CoffeaPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     Block PEYOTE = register("peyote", new PeyoteBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
 
-    Block LATTICE = register("lattice", new LatticeBlock(Block.Settings.of(Material.WOOD).hardness(0.3F).nonOpaque()));
+    Block LATTICE = register("lattice", new LatticeBlock(Block.Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(0.3F).nonOpaque()));
     Block WINE_GRAPE_LATTICE = register("wine_grape_lattice", new WineGrapeLatticeBlock(Block.Settings.of(Material.WOOD)
-            .hardness(0.3F).ticksRandomly().nonOpaque()
+            .sounds(BlockSoundGroup.WOOD).hardness(0.3F).ticksRandomly().nonOpaque()
     ));
 
     Block RIFT_JAR = register("rift_jar", new RiftJarBlock(Settings.of(Material.ORGANIC_PRODUCT).hardness(0.5F).sounds(BlockSoundGroup.STONE).nonOpaque()));

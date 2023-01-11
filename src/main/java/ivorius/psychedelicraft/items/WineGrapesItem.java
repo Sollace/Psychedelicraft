@@ -5,7 +5,9 @@
 
 package ivorius.psychedelicraft.items;
 
+import ivorius.psychedelicraft.blocks.LatticeBlock;
 import ivorius.psychedelicraft.blocks.PSBlocks;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -17,14 +19,15 @@ public class WineGrapesItem extends SpecialFoodItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        if (!context.shouldCancelInteraction() || context.getPlayer().canModifyAt(context.getWorld(), context.getBlockPos())) {
+        if (context.shouldCancelInteraction() || !context.getPlayer().canModifyAt(context.getWorld(), context.getBlockPos())) {
             return ActionResult.PASS;
         }
 
         BlockPos pos = context.getBlockPos();
+        BlockState state = context.getWorld().getBlockState(pos);
 
-        if (context.getWorld().getBlockState(pos).isOf(PSBlocks.LATTICE)) {
-            context.getWorld().setBlockState(pos, PSBlocks.WINE_GRAPE_LATTICE.getDefaultState());
+        if (state.isOf(PSBlocks.LATTICE)) {
+            context.getWorld().setBlockState(pos, PSBlocks.WINE_GRAPE_LATTICE.getDefaultState().with(LatticeBlock.FACING, state.get(LatticeBlock.FACING)));
             return ActionResult.SUCCESS;
         }
 

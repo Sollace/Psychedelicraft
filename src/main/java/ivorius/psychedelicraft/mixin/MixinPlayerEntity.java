@@ -42,7 +42,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
         }
     }
 
-    @Inject(method = "getBlockBreakingSpeed", at = @At("RETURN"))
+    @Inject(method = "getBlockBreakingSpeed", at = @At("RETURN"), cancellable = true)
     private void onGetBlockBreakingSpeed(BlockState block, CallbackInfoReturnable<Float> info) {
         info.setReturnValue(info.getReturnValue() * getDrugProperties().getDigSpeedModifier());
     }

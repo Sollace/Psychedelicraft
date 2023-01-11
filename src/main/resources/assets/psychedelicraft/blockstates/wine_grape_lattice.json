@@ -1,0 +1,60 @@
+{
+  "variants": {
+    "facing=east,age=0": {
+      "model": "psychedelicraft:block/wine_grape_lattice_0",
+      "y": 90
+    },
+    "facing=north,age=0": {
+      "model": "psychedelicraft:block/wine_grape_lattice_0"
+    },
+    "facing=south,age=0": {
+      "model": "psychedelicraft:block/wine_grape_lattice_0"
+    },
+    "facing=west,age=0": {
+      "model": "psychedelicraft:block/wine_grape_lattice_0",
+      "y": 90
+    },
+    "facing=east,age=1": {
+      "model": "psychedelicraft:block/wine_grape_lattice_1",
+      "y": 90
+    },
+    "facing=north,age=1": {
+      "model": "psychedelicraft:block/wine_grape_lattice_1"
+    },
+    "facing=south,age=1": {
+      "model": "psychedelicraft:block/wine_grape_lattice_1"
+    },
+    "facing=west,age=1": {
+      "model": "psychedelicraft:block/wine_grape_lattice_1",
+      "y": 90
+    },
+    "facing=east,age=2": {
+      "model": "psychedelicraft:block/wine_grape_lattice_2",
+      "y": 90
+    },
+    "facing=north,age=2": {
+      "model": "psychedelicraft:block/wine_grape_lattice_2"
+    },
+    "facing=south,age=2": {
+      "model": "psychedelicraft:block/wine_grape_lattice_2"
+    },
+    "facing=west,age=2": {
+      "model": "psychedelicraft:block/wine_grape_lattice_2",
+      "y": 90
+    },
+    "facing=east,age=3": {
+      "model": "psychedelicraft:block/wine_grape_lattice_3",
+      "y": 90
+    },
+    "facing=north,age=3": {
+      "model": "psychedelicraft:block/wine_grape_lattice_3"
+    },
+    "facing=south,age=3": {
+      "model": "psychedelicraft:block/wine_grape_lattice_3"
+    },
+    "facing=west,age=3": {
+      "model": "psychedelicraft:block/wine_grape_lattice_3",
+      "y": 90
+    }
+  }
+}
