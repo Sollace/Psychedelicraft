@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import org.joml.Vector2f;
 
 public class PSClientConfig {
-    public final PSClientConfig.Audio audio = new Audio();
-    public final PSClientConfig.Visual visual = new Visual();
+    public PSClientConfig.Audio audio = new Audio();
+    public PSClientConfig.Visual visual = new Visual();
 
     public static class Audio {
         public String[] drugsWithBackgroundMusic = new String[0];
@@ -25,28 +25,28 @@ public class PSClientConfig {
     }
 
     public static class Visual {
-        public final float dofFocalPointNear = 0.2F;
-        public final float dofFocalBlurNear = 0;
-        public final float dofFocalPointFar = 128;
-        public final float dofFocalBlurFar = 0;
+        public float dofFocalPointNear = 0.2F;
+        public float dofFocalBlurNear = 0;
+        public float dofFocalPointFar = 128;
+        public float dofFocalBlurFar = 0;
 
-        public final float pauseMenuBlur = 0;
+        public float pauseMenuBlur = 0;
 
-        public final boolean shader2DEnabled = true;
-        public final boolean shader3DEnabled = true;
+        public boolean shader2DEnabled = true;
+        public boolean shader3DEnabled = true;
         // (Sollace) made transient because this config was disabled before
-        public transient final boolean doShadows = false;
+        public transient boolean doShadows = false;
 
-        public final boolean doHeatDistortion = true;
-        public final boolean doWaterDistortion = true;
-        public final boolean doMotionBlur = true;
+        public boolean doHeatDistortion = true;
+        public boolean doWaterDistortion = true;
+        public boolean doMotionBlur = true;
 
-        public final float sunFlareIntensity = 0.25F;
-        public final int shadowPixelsPerChunk = 256;
+        public float sunFlareIntensity = 0.25F;
+        public int shadowPixelsPerChunk = 256;
 
-        public final boolean waterOverlayEnabled = true;
-        public final boolean hurtOverlayEnabled = true;
-        public final Vector2f digitalEffectPixelRescale = new Vector2f(0.05F, 0.05F);
+        public boolean waterOverlayEnabled = true;
+        public boolean hurtOverlayEnabled = true;
+        public Vector2f digitalEffectPixelRescale = new Vector2f(0.05F, 0.05F);
 
         private transient float[] digitalEffectPixelRescaleF;
 

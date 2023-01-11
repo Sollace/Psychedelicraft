@@ -1,51 +1,51 @@
 package ivorius.psychedelicraft.config;
 
 public class PSConfig {
-    public static final int MINUTE = 20 * 60;
+    public static int MINUTE = 20 * 60;
 
-    public final Balancing balancing = new Balancing();
+    public Balancing balancing = new Balancing();
 
     public static class Balancing {
-        public final int randomTicksUntilRiftSpawn = MINUTE * 180;
-        public final int dryingTableTickDuration = MINUTE * 16;
-        public final int ironDryingTableTickDuration = MINUTE * 12;
-        public final int slurryHardeningTime = MINUTE * 30;
+        public int randomTicksUntilRiftSpawn = MINUTE * 180;
+        public int dryingTableTickDuration = MINUTE * 16;
+        public int ironDryingTableTickDuration = MINUTE * 12;
+        public int slurryHardeningTime = MINUTE * 30;
 
-        public final boolean enableHarmonium = false;
-        public final boolean enableRiftJars = false;
-        public final Generation worldGeneration = new Generation();
-        public final FluidProperties fluidAttributes = new FluidProperties();
-        //public final MessageDistortion messageDistortion = new MessageDistortion();
+        public boolean enableHarmonium = false;
+        public boolean enableRiftJars = false;
+        public Generation worldGeneration = new Generation();
+        public FluidProperties fluidAttributes = new FluidProperties();
+        //public MessageDistortion messageDistortion = new MessageDistortion();
 
         // TODO: reimplement message distortion
         /*
         public static class MessageDistortion {
-            public final boolean incoming = true;
-            public final boolean outgoing = true;
+            public boolean incoming = true;
+            public boolean outgoing = true;
         }*/
 
         public static class FluidProperties {
-            static final TickInfo DEFAULT = new TickInfo(40, 40, 30, 30);
+            static TickInfo DEFAULT = new TickInfo(40, 40, 30, 30);
 
-            public final TickInfo alcInfoWheatHop = new TickInfo(30, 60, 100, 30);
-            public final TickInfo alcInfoWheat = DEFAULT;
-            public final TickInfo alcInfoCorn = DEFAULT;
-            public final TickInfo alcInfoPotato = DEFAULT;
-            public final TickInfo alcInfoRedGrapes = DEFAULT;
-            public final TickInfo alcInfoRice = DEFAULT;
-            public final TickInfo alcInfoJuniper = DEFAULT;
-            public final TickInfo alcInfoSugarCane = DEFAULT;
-            public final TickInfo alcInfoHoney = DEFAULT;
-            public final TickInfo alcInfoApple = DEFAULT;
-            public final TickInfo alcInfoPineapple = DEFAULT;
-            public final TickInfo alcInfoBanana = DEFAULT;
-            public final TickInfo alcInfoMilk = DEFAULT;
+            public TickInfo alcInfoWheatHop = new TickInfo(30, 60, 100, 30);
+            public TickInfo alcInfoWheat = DEFAULT;
+            public TickInfo alcInfoCorn = DEFAULT;
+            public TickInfo alcInfoPotato = DEFAULT;
+            public TickInfo alcInfoRedGrapes = DEFAULT;
+            public TickInfo alcInfoRice = DEFAULT;
+            public TickInfo alcInfoJuniper = DEFAULT;
+            public TickInfo alcInfoSugarCane = DEFAULT;
+            public TickInfo alcInfoHoney = DEFAULT;
+            public TickInfo alcInfoApple = DEFAULT;
+            public TickInfo alcInfoPineapple = DEFAULT;
+            public TickInfo alcInfoBanana = DEFAULT;
+            public TickInfo alcInfoMilk = DEFAULT;
 
             public static class TickInfo {
-                public final int ticksPerFermentation;
-                public final int ticksPerDistillation;
-                public final int ticksPerMaturation;
-                public final int ticksUntilAcetification;
+                public int ticksPerFermentation;
+                public int ticksPerDistillation;
+                public int ticksPerMaturation;
+                public int ticksUntilAcetification;
 
                 public TickInfo(int fermentation, int distillation, int maturation, int acetification) {
                     ticksPerFermentation = fermentation * MINUTE;
@@ -58,14 +58,14 @@ public class PSConfig {
 
         // TODO: reimplement world gen features
         public static class Generation {
-           // public final boolean genJuniper = true;
-           // public final boolean genCannabis = true;
-           // public final boolean genHop = true;
-           // public final boolean genTobacco = true;
-           // public final boolean genCoffea = true;
-           // public final boolean genCoca = true;
-           // public final boolean genPeyote = true;
-            public final boolean farmerDrugDeals = true;
+           // public boolean genJuniper = true;
+           // public boolean genCannabis = true;
+           // public boolean genHop = true;
+           // public boolean genTobacco = true;
+           // public boolean genCoffea = true;
+           // public boolean genCoca = true;
+           // public boolean genPeyote = true;
+            public boolean farmerDrugDeals = true;
         }
     }
 }
