@@ -59,7 +59,7 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float breathVolume() {
-        return MathHelper.getLerpProgress((float) getActiveValue(), 0.4f, 1.0f) * 1.5f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4f, 1.0f), 0, 1) * 1.5F;
     }
 
     @Override

@@ -21,6 +21,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
@@ -165,6 +166,8 @@ public class DrugProperties implements NbtSerialisable {
     public void startBreathingSmoke(int time, float[] color) {
         this.breathSmokeColor = color == null ? new float[]{1.0f, 1.0f, 1.0f} : color;
         this.timeBreathingSmoke = time + 10; //10 is the time spent breathing in
+
+        entity.world.playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 0.02F, 1.5F);
     }
 
     public void onTick() {
@@ -204,9 +207,7 @@ public class DrugProperties implements NbtSerialisable {
                     }
 
                     delayUntilHeartbeat = MathHelper.floor(35.0f / (speed - 1.0f));
-
-                    // TODO: (Sollace) PSSoundEvents
-                    // entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), Psychedelicraft.modBase + "heartBeat", heartbeatVolume, speed, false);
+                    entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_HEARTBEAT, SoundCategory.AMBIENT, heartbeatVolume, speed, false);
                 }
             }
 
@@ -219,14 +220,18 @@ public class DrugProperties implements NbtSerialisable {
                 lastBreathWasIn = !lastBreathWasIn;
 
                 if (breathVolume > 0) {
-                    float speed = 1.0f;
+                    float speed = 1;
                     for (Drug drug : getAllDrugs()) {
                         speed += drug.breathSpeed();
                     }
                     delayUntilBreath = MathHelper.floor(30F / speed);
 
-                    // TODO: (Sollace) PSSoundEvents
-                    // entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), Psychedelicraft.modBase + "breath", breathVolume, speed * 0.1f + 0.9f + (lastBreathWasIn ? 0.15f : 0.0f), false);
+                    // TODO: (Sollace) Breathing sounds like the thing from the black lagoon
+                    entity.sendMessage(Text.literal(breathVolume + ""));
+                    entity.world.playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS,
+                            breathVolume,
+                            speed * 0.05F + 0.9F + (lastBreathWasIn ? 0.15F : 0)
+                    );
                 }
             }
 
@@ -241,7 +246,7 @@ public class DrugProperties implements NbtSerialisable {
             }
 
             if (!entity.handSwinging) {
-                float punchChance = 0.0f;
+                float punchChance = 0;
                 for (Drug drug : getAllDrugs()) {
                     punchChance += drug.randomPunchChance();
                 }
@@ -257,7 +262,6 @@ public class DrugProperties implements NbtSerialisable {
 
             if (timeBreathingSmoke > 10 && entity.world.isClient) {
                 Vec3d look = entity.getRotationVec(1);
-
 
                 if (random.nextInt(2) == 0) {
                     float s = random.nextFloat() * 0.05f + 0.1f;
@@ -365,7 +369,7 @@ public class DrugProperties implements NbtSerialisable {
         influences.clear();
         hasChanges = true;
 
-        // TODO: (Sollace) Reimplement longer sleeping/comas
+        // TODO: (Sollace) Implement longer sleeping/comas
         return true;
     }
 

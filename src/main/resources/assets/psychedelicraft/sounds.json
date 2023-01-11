@@ -1,16 +1,117 @@
 {
-   "heart_beat": {"category": "master", "sounds": [{"name": "heart_beat", "stream": false}]},
-   "breath": {"category": "master", "sounds": [{"name": "breath", "stream": false}]},
-
-   "drug.alcohol": {"category": "record", "sounds": [{"name": "drugs/alcohol", "stream": true}]},
-   "drug.cannabis": {"category": "record", "sounds": [{"name": "drugs/cannabis", "stream": true}]},
-   "drug.brownshrooms": {"category": "record", "sounds": [{"name": "drugs/brownshrooms", "stream": true}]},
-   "drug.redshrooms": {"category": "record", "sounds": [{"name": "drugs/redshrooms", "stream": true}]},
-   "drug.tobacco": {"category": "record", "sounds": [{"name": "drugs/tobacco", "stream": true}]},
-   "drug.cocaine": {"category": "record", "sounds": [{"name": "drugs/cocaine", "stream": true}]},
-   "drug.caffeine": {"category": "record", "sounds": [{"name": "drugs/caffeine", "stream": true}]},
-   "drug.warmth": {"category": "record", "sounds": [{"name": "drugs/warmth", "stream": true}]},
-   "drug.peyote": {"category": "record", "sounds": [{"name": "drugs/peyote", "stream": true}]},
-   "drug.zero": {"category": "record", "sounds": [{"name": "drugs/zero", "stream": true}]},
-   "drug.harmonium": {"category": "record", "sounds": [{"name": "drugs/harmonium", "stream": true}]}
+  "entity.player.heartbeat": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "psychedelicraft:heart_beat"
+      }
+    ]
+  },
+  "entity.player.breath": {
+    "category": "player",
+    "sounds": [
+      {
+        "name": "psychedelicraft:breath"
+      }
+    ]
+  },
+  "drug.alcohol": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/alcohol",
+        "stream": true
+      }
+    ]
+  },
+  "drug.cannabis": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/cannabis",
+        "stream": true
+      }
+    ]
+  },
+  "drug.brownshrooms": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/brownshrooms",
+        "stream": true
+      }
+    ]
+  },
+  "drug.redshrooms": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/redshrooms",
+        "stream": true
+      }
+    ]
+  },
+  "drug.tobacco": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/tobacco",
+        "stream": true
+      }
+    ]
+  },
+  "drug.cocaine": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/cocaine",
+        "stream": true
+      }
+    ]
+  },
+  "drug.caffeine": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/caffeine",
+        "stream": true
+      }
+    ]
+  },
+  "drug.warmth": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/warmth",
+        "stream": true
+      }
+    ]
+  },
+  "drug.peyote": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/peyote",
+        "stream": true
+      }
+    ]
+  },
+  "drug.zero": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/zero",
+        "stream": true
+      }
+    ]
+  },
+  "drug.harmonium": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "psychedelicraft:drugs/harmonium",
+        "stream": true
+      }
+    ]
+  }
 }
