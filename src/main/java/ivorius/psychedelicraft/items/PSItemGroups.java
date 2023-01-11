@@ -7,7 +7,9 @@ package ivorius.psychedelicraft.items;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.*;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * @author Sollace
@@ -51,8 +53,14 @@ public interface PSItemGroups {
                 entries.add(PSItems.PEYOTE_JOINT);
                 entries.add(PSItems.FLASK);
                 entries.add(PSItems.DISTILLERY);
+                entries.add(PSItems.LATTICE);
                 if (Psychedelicraft.getConfig().balancing.enableHarmonium) {
-                    entries.add(PSItems.HARMONIUM);
+                    for (DyeColor dye : DyeColor.values()) {
+                        float[] color = dye.getColorComponents();
+                        ItemStack harmonium = PSItems.HARMONIUM.getDefaultStack();
+                        PSItems.HARMONIUM.setColor(harmonium, MathHelper.packRgb(color[0], color[1], color[2]));
+                        entries.add(harmonium);
+                    }
                 }
                 if (Psychedelicraft.getConfig().balancing.enableRiftJars) {
                     entries.add(RiftJarItem.createFilledRiftJar(0.0F, PSItems.RIFT_JAR));
