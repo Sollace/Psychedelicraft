@@ -23,14 +23,14 @@ class JuniperTreeGenerationConfigs {
     private static void bootstrapConfigurations(Registry<ConfiguredFeature<?, ?>> registry) {
         var feature = new ConfiguredFeature<>(Feature.TREE, new TreeFeatureConfig.Builder(
                 BlockStateProvider.of(PSBlocks.JUNIPER_LOG),
-                new BendingTrunkPlacer(5, 3, 3, 0, UniformIntProvider.create(-1, 1)),
+                new BendingTrunkPlacer(6, 4, 3, 7, UniformIntProvider.create(-1, 1)),
                 BlockStateProvider.of(PSBlocks.JUNIPER_LEAVES),
                 new BlobFoliagePlacer(
-                        ConstantIntProvider.create(0),
+                        ConstantIntProvider.create(4),
                         ConstantIntProvider.ZERO,
-                        0
+                        3
                 ),
-                new TwoLayersFeatureSize(1, 0, 1))
+                new TwoLayersFeatureSize(1, 2, 4))
         .dirtProvider(BlockStateProvider.of(Blocks.ROOTED_DIRT))
         .forceDirt()
         .build());
