@@ -10,6 +10,7 @@ import net.minecraft.util.math.Direction.Axis;
 
 import java.util.*;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.items.PSItems;
 
 /**
@@ -25,9 +26,7 @@ public class BottleRackBlockEntity extends BlockEntityWithInventory {
 
     @Override
     public boolean isValid(int slot, ItemStack stack) {
-        // TODO: (Sollace) Tags
-        return stack.isOf(PSItems.MOLOTOV_COCKTAIL) || stack.isOf(PSItems.BOTTLE);
-        //return stack.isIn(PSTags.BOTTLES);
+        return stack.isIn(PSTags.Items.BOTTLES);
     }
 
     @Override
