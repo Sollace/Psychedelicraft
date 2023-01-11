@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/leaves",
+  "textures": {
+    "all": "psychedelicraft:block/fruiting_juniper_leaves"
+  }
+}

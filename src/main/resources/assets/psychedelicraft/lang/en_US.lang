@@ -5,10 +5,7 @@ tile.dryingTable.name=Drying Table
 tile.ironDryingTable.name=Iron Drying Table
 tile.tobaccoPlant.name=Tobacco Plant
 tile.cocaPlant.name=Coca Plant
-tile.psycheLeaves.name=Juniper Leaves
-tile.psycheLeaves.juniper.name=Juniper Leaves
-tile.psycheLeaves.juniperBerries.name=Juniper Berry Leaves
-tile.psycheLog.name=Juniper Log
+
 tile.psycheSapling.name=Juniper Sapling
 tile.coffea.name=Coffea
 tile.riftJar.name=Rift Jar

@@ -20,27 +20,6 @@ public class JuniperLeavesBlock extends LeavesBlock {
         super(settings);
     }
 
-    /*
-    @SideOnly(Side.CLIENT)
-    public int getRenderColor(int p_149741_1_)
-    {
-        if ((p_149741_1_ & 3) == 0 || (p_149741_1_ & 3) == 1)
-            return 0xffffff;
-
-        return (p_149741_1_ & 3) == 1 ? ColorizerFoliage.getFoliageColorPine() : ((p_149741_1_ & 3) == 2 ? ColorizerFoliage.getFoliageColorBirch() : super.getRenderColor(p_149741_1_));
-    }
-
-    @SideOnly(Side.CLIENT)
-    public int colorMultiplier(IBlockAccess p_149720_1_, int p_149720_2_, int p_149720_3_, int p_149720_4_)
-    {
-        int l = p_149720_1_.getBlockMetadata(p_149720_2_, p_149720_3_, p_149720_4_);
-
-        if ((l & 3) == 0 || (l & 3) == 1)
-            return 0xffffff;
-
-        return super.colorMultiplier(p_149720_1_, p_149720_2_, p_149720_3_, p_149720_4_);
-    }*/
-
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
@@ -54,7 +33,7 @@ public class JuniperLeavesBlock extends LeavesBlock {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (this == PSBlocks.JUNIPER_BERRIES) {
+        if (this == PSBlocks.FRUITING_JUNIPER_LEAVES) {
             Block.dropStack(world, pos, PSItems.JUNIPER_BERRIES.getDefaultStack());
             world.setBlockState(pos, PSBlocks.JUNIPER_LEAVES.getDefaultState());
             return ActionResult.SUCCESS;

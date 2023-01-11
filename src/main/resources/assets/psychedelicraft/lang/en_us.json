@@ -59,6 +59,9 @@
   "block.psychedelicraft.jungle_barrel.filled": "Jungle Barrel of %s",
   "block.psychedelicraft.acacia_barrel.filled": "Acacia Barrel of %s",
   "block.psychedelicraft.dark_oak_barrel.filled": "Dark Oak Barrel of %s",
+  "block.psychedelicraft.juniper_leaves": "Juniper Leaves",
+  "block.psychedelicraft.fruiting_juniper_leaves": "Fruiting Juniper Leaves",
+  "block.psychedelicraft.juniper_log": "Juniper Log",
 
   "entity.psychedelicraft.molotov_cocktail": "Molotov Cocktail",
   "entity.psychedelicraft.reality_rift": "Zero Rift",

@@ -94,6 +94,9 @@ public interface PSItems {
 
     InjectableItem SYRINGE = register("syringe", new InjectableItem(new Settings(), MILLIBUCKETS_PER_LITER / 100));
 
+    Item JUNIPER_LEAVES = register("juniper_leaves", PSBlocks.JUNIPER_LEAVES);
+    Item FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", PSBlocks.FRUITING_JUNIPER_LEAVES);
+    Item JUNIPER_LOG = register("juniper_log", PSBlocks.JUNIPER_LOG);
     Item JUNIPER_BERRIES = register("juniper_berries", new SpecialFoodItem(
             new Settings().food(new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()), 15
     ));

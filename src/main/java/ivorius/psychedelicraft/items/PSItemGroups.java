@@ -41,6 +41,9 @@ public interface PSItemGroups {
                 entries.add(PSItems.BROWN_MAGIC_MUSHROOMS);
                 entries.add(PSItems.RED_MAGIC_MUSHROOMS);
                 entries.add(PSItems.JUNIPER_BERRIES);
+                entries.add(PSItems.JUNIPER_LEAVES);
+                entries.add(PSItems.FRUITING_JUNIPER_LEAVES);
+                entries.add(PSItems.JUNIPER_LOG);
                 entries.add(PSItems.COFFEA_CHERRIES);
                 entries.add(PSItems.COFFEE_BEANS);
                 entries.add(PSItems.PEYOTE);

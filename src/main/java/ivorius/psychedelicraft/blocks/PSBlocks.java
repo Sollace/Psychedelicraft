@@ -32,7 +32,7 @@ public interface PSBlocks {
     Block IRON_DRYING_TABLE = register("iron_drying_table", new DryingTableBlock(Settings.of(Material.METAL).hardness(5)));
 
     JuniperLeavesBlock JUNIPER_LEAVES = register("juniper_leaves", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
-    JuniperLeavesBlock JUNIPER_BERRIES = register("juniper_berries", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
+    JuniperLeavesBlock FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
     Block JUNIPER_LOG = register("juniper_log", BlockConstructionUtils.log(MapColor.CYAN, MapColor.BLUE));
     Block JUNIPER_SAPLING = register("juniper_sapling", new SaplingBlock(new JuniperTreeSaplingGenerator(), BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
 
