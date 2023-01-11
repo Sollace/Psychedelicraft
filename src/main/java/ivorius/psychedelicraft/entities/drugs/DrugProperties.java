@@ -33,9 +33,7 @@ import java.util.*;
 import java.util.stream.*;
 
 public class DrugProperties implements NbtSerialisable {
-    public static final UUID drugUUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1"); // Randomly gen'd
-    public static final String EEP_KEY = "DrugHelper";
-    public static final String EEP_CMP_KEY = "drugData";
+    public static final UUID DRUG_EFFECT_UUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1");
 
     private Map<String, Drug> drugs;
     public List<DrugInfluence> influences = new ArrayList<>();
@@ -417,12 +415,12 @@ public class DrugProperties implements NbtSerialisable {
 
     public void changeDrugModifier(LivingEntity entity, EntityAttribute attribute, double value, Operation operation) {
         EntityAttributeInstance speedInstance = entity.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);  // TODO: (Sollace) [sic] Should be using the passed attribute
-        EntityAttributeModifier oldModifier = speedInstance.getModifier(DrugProperties.drugUUID);
+        EntityAttributeModifier oldModifier = speedInstance.getModifier(DrugProperties.DRUG_EFFECT_UUID);
 
         if (oldModifier != null) {
             speedInstance.removeModifier(oldModifier);
         }
 
-        speedInstance.addTemporaryModifier(new EntityAttributeModifier(DrugProperties.drugUUID, "Drug Effects", value, operation));
+        speedInstance.addTemporaryModifier(new EntityAttributeModifier(DrugProperties.DRUG_EFFECT_UUID, "Drug Effects", value, operation));
     }
 }
