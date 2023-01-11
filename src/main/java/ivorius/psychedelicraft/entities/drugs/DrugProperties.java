@@ -9,6 +9,7 @@ import ivorius.psychedelicraft.*;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.rendering.IDrugRenderer;
 import ivorius.psychedelicraft.client.screen.TickableContainer;
+import ivorius.psychedelicraft.client.sound.DrugMusicManager;
 import ivorius.psychedelicraft.entities.*;
 import ivorius.psychedelicraft.mixin.MixinLivingEntity;
 import ivorius.psychedelicraft.network.Channel;
@@ -180,7 +181,7 @@ public class DrugProperties implements NbtSerialisable {
 
         if (entity.world.isClient) {
             hallucinationManager.update(entity, this);
-            musicManager.update(entity, this);
+            musicManager.update(this);
 
             if (delayUntilHeartbeat > 0) {
                 delayUntilHeartbeat--;

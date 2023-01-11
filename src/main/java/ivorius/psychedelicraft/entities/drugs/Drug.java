@@ -20,6 +20,9 @@ public interface Drug extends NbtSerialisable {
 
     void reset(LivingEntity entity, DrugProperties drugProperties);
 
+    /**
+     * A value from 0 to 0 indicating the strength of this particular effect.
+     */
     double getActiveValue();
 
     void addToDesiredValue(double effect);

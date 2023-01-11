@@ -17,7 +17,6 @@ import net.minecraft.util.math.random.Random;
  * Created by lukas on 22.11.14.
  */
 public class MovingSoundDrug extends MovingSoundInstance {
-
     public static void initializeForEntity(DrugProperties drugProperties) {
         SoundManager soundHandler = MinecraftClient.getInstance().getSoundManager();
         for (String drugName : drugProperties.getAllDrugNames()) {
@@ -31,7 +30,7 @@ public class MovingSoundDrug extends MovingSoundInstance {
 
     private final Entity entity;
     private final DrugProperties drugProperties;
-    private String drugName;
+    private final String drugName;
 
     public MovingSoundDrug(SoundEvent event, SoundCategory category, Entity entity, DrugProperties drugProperties, String drugName) {
         super(event, category, Random.create());
@@ -48,7 +47,7 @@ public class MovingSoundDrug extends MovingSoundInstance {
             x = (float) entity.getX();
             y = (float) entity.getY();
             z = (float) entity.getZ();
-            volume = drugName.equals(drugProperties.musicManager.getActiveDrug()) ? drugProperties.musicManager.getVolume() : 0;
+            volume = drugProperties.musicManager.getVolumeFor(drugName);
         }
     }
 }
