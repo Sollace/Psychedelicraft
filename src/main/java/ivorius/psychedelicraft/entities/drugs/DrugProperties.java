@@ -231,7 +231,7 @@ public class DrugProperties implements NbtSerialisable {
                     jumpChance += drug.randomJumpChance();
 
                 if (random.nextFloat() < jumpChance) {
-                    PSAccessHelperEntity.jump(entity);
+                    ((MixinLivingEntity)entity).invokeJump();
                 }
             }
 
