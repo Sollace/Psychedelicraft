@@ -9,6 +9,7 @@ import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 
@@ -26,13 +27,13 @@ public class CoffeeFluid extends DrugFluid {
     public void getDrugInfluencesPerLiter(ItemStack fluidStack, List<DrugInfluence> list) {
         super.getDrugInfluencesPerLiter(fluidStack, list);
         float warmth = (float)getTemperature(fluidStack) / WARMTH_STEPS;
-        list.add(new DrugInfluence("Caffeine", 20, 0.002, 0.001, 0.25f + warmth * 0.05f));
-        list.add(new DrugInfluence("Warmth", 0, 0.00, 0.1, 0.8f * warmth));
+        list.add(new DrugInfluence("Caffeine", 20, 0.002, 0.001, 0.25F + warmth * 0.05F));
+        list.add(new DrugInfluence("Warmth", 0, 0, 0.1, 0.8F * warmth));
     }
 
     @Override
     public Text getName(ItemStack stack) {
-        return Text.translatable(getTranslationKey() + ".temperature" + getTemperature(stack));
+        return Text.translatable(getTranslationKey() + ".temperature." + getTemperature(stack));
     }
 
     public void setTemperature(ItemStack stack, int temperature) {
@@ -40,6 +41,6 @@ public class CoffeeFluid extends DrugFluid {
     }
 
     public int getTemperature(ItemStack stack) {
-        return getFluidTag(stack, true).getInt("temperature");
+        return MathHelper.clamp(getFluidTag(stack, true).getInt("temperature"), 0, WARMTH_STEPS);
     }
 }

@@ -5,6 +5,8 @@ import net.minecraft.predicate.NumberRange.IntRange;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * @author Sollace
  * @since 2 Jan 2023
@@ -44,6 +46,7 @@ public record AlcoholicDrinkTypes (List<NamedAlcohol> names, List<AlcoholIcon> a
                 .addIcon(IntRange.ANY, IntRange.atLeast(14), IntRange.ANY, "rum_mature_still", "rum_mature_flow")
             .build();
 
+    @Nullable
     public <M extends AlcoholMatcher> M getMatchedValue(ItemStack stack, AlcoholicFluid fluid, List<M> values) {
         int fermentation = fluid.getFermentation(stack);
         int distillation = fluid.getDistillation(stack);
@@ -58,10 +61,12 @@ public record AlcoholicDrinkTypes (List<NamedAlcohol> names, List<AlcoholIcon> a
         return null;
     }
 
+    @Nullable
     public NamedAlcohol getSpecialName(ItemStack stack, AlcoholicFluid fluid) {
         return getMatchedValue(stack, fluid, names);
     }
 
+    @Nullable
     public AlcoholIcon getSpecialIcon(ItemStack stack, AlcoholicFluid fluid) {
         return getMatchedValue(stack, fluid, alcIcons);
     }

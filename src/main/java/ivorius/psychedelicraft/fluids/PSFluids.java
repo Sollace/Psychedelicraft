@@ -134,7 +134,10 @@ public interface PSFluids {
             // TODO: Color for milk was set twice. Second time set to 0x77cac4b2 Should it be the distilled colour?
     );
 
-    DrugFluid COFFEE = new CoffeeFluid(Psychedelicraft.id("coffee"), (DrugFluid.Settings)new DrugFluid.Settings().drinkable().color(0xffa77d55));
+    DrugFluid COFFEE = new CoffeeFluid(Psychedelicraft.id("coffee"), (DrugFluid.Settings)new DrugFluid.Settings()
+            .drinkable()
+            .color(0xffa77d55)
+    );
     DrugFluid COCA_TEA = new DrugFluid(Psychedelicraft.id("coca_tea"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
             .influence(new DrugInfluence("Cocaine", 60, 0.005, 0.002, 0.2f))

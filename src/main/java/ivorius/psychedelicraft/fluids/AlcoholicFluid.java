@@ -44,13 +44,9 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     public void getDrugInfluencesPerLiter(ItemStack fluidStack, List<DrugInfluence> list) {
         super.getDrugInfluencesPerLiter(fluidStack, list);
 
-        int fermentation = getFermentation(fluidStack);
-        int distillation = getDistillation(fluidStack);
-        int maturation = getMaturation(fluidStack);
-
-        double alcohol = fermentation / (double) settings.fermentationSteps * settings.fermentationAlcohol
-                + settings.distillationAlcohol * (1.0 - 1.0 / (1.0 + distillation))
-                + settings.maturationAlcohol * (1.0 - 1.0 / (1.0 + maturation * 0.2));
+        double alcohol = getFermentation(fluidStack) / (double) settings.fermentationSteps * settings.fermentationAlcohol
+                + settings.distillationAlcohol * MathUtils.progress(getDistillation(fluidStack))
+                + settings.maturationAlcohol * MathUtils.progress(getMaturation(fluidStack) * 0.2F);
 
         list.add(new DrugInfluence("Alcohol", 20, 0.003, 0.002, alcohol));
     }
@@ -87,7 +83,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             int distillation = getDistillation(stack);
 
             setDistillation(stack, distillation + 1);
-            int distilledAmount = MathHelper.floor(stack.getCount() * (1.0f - 0.5f / (distillation + 1.0f)));
+            int distilledAmount = MathHelper.floor(stack.getCount() * MathUtils.progress(distillation, 0.5F));
 
             stack.split(distilledAmount);
 
@@ -177,15 +173,15 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public int getColor(ItemStack stack) {
-        int slurryColor = super.getColor(stack);
-        int matureColor = getMatureColor(stack);
-        int clearColor = getDistilledColor(stack);
-
-        int distillation = getDistillation(stack);
-        int maturation = getMaturation(stack);
-
-        int baseFluidColor = MathUtils.mixColors(slurryColor, clearColor, (1.0f - 1.0f / (1.0f + distillation)));
-        return MathUtils.mixColors(baseFluidColor, matureColor, (1.0f - 1.0f / (1.0f + maturation * 0.2f)));
+        return MathUtils.mixColors(
+                MathUtils.mixColors(
+                        super.getColor(stack),
+                        getDistilledColor(stack),
+                        MathUtils.progress(getDistillation(stack))
+                ),
+                getMatureColor(stack),
+                MathUtils.progress(getMaturation(stack) * 0.2F)
+        );
     }
 
     public static class Settings extends DrugFluid.Settings {

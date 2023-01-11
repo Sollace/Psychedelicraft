@@ -78,6 +78,14 @@ public interface MathUtils {
         );
     }
 
+    static float progress(float metric, float delta) {
+        return 1 - (delta / (1 + metric));
+    }
+
+    static float progress(float metric) {
+        return progress(metric, 1F);
+    }
+
     static int packArgb(int a, int r, int g, int b) {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }

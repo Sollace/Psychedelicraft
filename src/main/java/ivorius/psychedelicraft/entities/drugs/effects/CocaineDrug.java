@@ -19,7 +19,7 @@ import net.minecraft.util.math.random.Random;
  * Created by lukas on 01.11.14.
  */
 public class CocaineDrug extends SimpleDrug {
-    static final Optional<Text> SLEEP_STATUS = Optional.of(Text.translatable("block.psychedelicraft.coccaine"));
+    static final Optional<Text> SLEEP_STATUS = Optional.of(Text.translatable("psychedelicraft.sleep.fail.coccaine"));
 
     public CocaineDrug(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus);

@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
  * Created by lukas on 01.11.14.
  */
 public class CaffeineDrug extends SimpleDrug {
-    static final Optional<Text> SLEEP_STATUS = Optional.of(Text.translatable("block.psychedelicraft.caffiene"));
+    static final Optional<Text> SLEEP_STATUS = Optional.of(Text.translatable("psychedelicraft.sleep.fail.caffiene"));
 
     public CaffeineDrug(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus);
