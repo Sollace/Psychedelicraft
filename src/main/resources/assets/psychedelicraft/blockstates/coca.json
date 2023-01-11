@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "age=0": { "model": "psychedelicraft:block/coca_stage0" },
+    "age=1": { "model": "psychedelicraft:block/coca_stage0" },
+    "age=2": { "model": "psychedelicraft:block/coca_stage0" },
+    "age=3": { "model": "psychedelicraft:block/coca_stage1" },
+    "age=4": { "model": "psychedelicraft:block/coca_stage1" },
+    "age=5": { "model": "psychedelicraft:block/coca_stage1" },
+    "age=6": { "model": "psychedelicraft:block/coca_stage2" },
+    "age=7": { "model": "psychedelicraft:block/coca_stage2" },
+    "age=8": { "model": "psychedelicraft:block/coca_stage2" },
+    "age=9": { "model": "psychedelicraft:block/coca_stage3" },
+    "age=10": { "model": "psychedelicraft:block/coca_stage3" },
+    "age=11": { "model": "psychedelicraft:block/coca_stage3" },
+    "age=12": { "model": "psychedelicraft:block/coca_stage3" }
+  }
+}

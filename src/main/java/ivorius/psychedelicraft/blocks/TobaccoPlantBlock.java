@@ -5,13 +5,29 @@
 package ivorius.psychedelicraft.blocks;
 
 import net.minecraft.block.*;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 
 public class TobaccoPlantBlock extends CannabisPlantBlock {
+    public static final BooleanProperty TOP = BooleanProperty.of("top");
+
     public TobaccoPlantBlock(Settings settings) {
         super(settings);
+        setDefaultState(getDefaultState().with(TOP, false));
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(TOP);
+    }
+
+    @Override
+    protected IntProperty getAgeProperty() {
+        return Properties.AGE_7;
     }
 
     @Override
@@ -56,14 +72,14 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
         int number = bonemeal ? random.nextInt(2) + 1 : 1;
 
         for (int i = 0; i < number; i++) {
-            final int age = state.get(AGE);
+            final int age = state.get(getAgeProperty());
             final boolean freeOver = world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight();
 
             if (age < getMaxAge(state)) {
-                world.setBlockState(pos, state.cycle(AGE), Block.NOTIFY_ALL);
+                world.setBlockState(pos, state.cycle(getAgeProperty()), Block.NOTIFY_ALL);
             }
             if (freeOver && age >= getMaxAge(state)) {
-                world.setBlockState(pos.up(), getDefaultState(), Block.NOTIFY_ALL);
+                world.setBlockState(pos.up(), getDefaultState().with(TOP, true), Block.NOTIFY_ALL);
             }
         }
     }
@@ -71,7 +87,7 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
     @Override
     public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
         final boolean freeOver = world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight();
-        final int age = state.get(AGE);
+        final int age = state.get(getAgeProperty());
         return (age < getMaxAge(state))
             || (freeOver && age >= getMaxAge(state));
     }

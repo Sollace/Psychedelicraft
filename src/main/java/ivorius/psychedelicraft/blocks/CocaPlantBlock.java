@@ -6,12 +6,20 @@
 package ivorius.psychedelicraft.blocks;
 
 import net.minecraft.block.*;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
 public class CocaPlantBlock extends CannabisPlantBlock {
+    private static final IntProperty AGE_12 = IntProperty.of("age", 0, 12);
+
     public CocaPlantBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    protected IntProperty getAgeProperty() {
+        return AGE_12;
     }
 
     @Override

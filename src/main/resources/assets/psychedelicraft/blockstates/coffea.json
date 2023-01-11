@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "age=0,top=false": { "model": "psychedelicraft:block/coffea_stage0" },
+    "age=1,top=false": { "model": "psychedelicraft:block/coffea_stage0" },
+    "age=2,top=false": { "model": "psychedelicraft:block/coffea_stage1" },
+    "age=3,top=false": { "model": "psychedelicraft:block/coffea_stage1" },
+    "age=4,top=false": { "model": "psychedelicraft:block/coffea_stage2" },
+    "age=5,top=false": { "model": "psychedelicraft:block/coffea_stage2" },
+    "age=6,top=false": { "model": "psychedelicraft:block/coffea_stage3" },
+    "age=7,top=false": { "model": "psychedelicraft:block/coffea_stage3" },
+    "age=0,top=true": { "model": "psychedelicraft:block/coffea_top_stage0" },
+    "age=1,top=true": { "model": "psychedelicraft:block/coffea_top_stage0" },
+    "age=2,top=true": { "model": "psychedelicraft:block/coffea_top_stage1" },
+    "age=3,top=true": { "model": "psychedelicraft:block/coffea_top_stage1" },
+    "age=4,top=true": { "model": "psychedelicraft:block/coffea_top_stage2" },
+    "age=5,top=true": { "model": "psychedelicraft:block/coffea_top_stage2" },
+    "age=6,top=true": { "model": "psychedelicraft:block/coffea_top_stage3" },
+    "age=7,top=true": { "model": "psychedelicraft:block/coffea_top_stage3" }
+  }
+}

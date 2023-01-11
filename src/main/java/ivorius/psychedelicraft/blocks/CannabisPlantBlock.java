@@ -16,7 +16,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
 public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
-    public static final IntProperty AGE = Properties.AGE_15;
     public static final int MAX_AGE = 15;
     public static final int MATURATION_AGE = 11;
 
@@ -24,13 +23,17 @@ public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
 
     public CannabisPlantBlock(Settings settings) {
         super(settings.ticksRandomly().nonOpaque());
-        setDefaultState(getDefaultState().with(AGE, 0));
+        setDefaultState(getDefaultState().with(getAgeProperty(), 0));
+    }
+
+    protected IntProperty getAgeProperty() {
+        return Properties.AGE_15;
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
-        builder.add(AGE);
+        builder.add(getAgeProperty());
     }
 
     @Override
@@ -105,11 +108,11 @@ public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
         int number = bonemeal ? random.nextInt(4) + 1 : 1;
 
         for (int i = 0; i < number; i++) {
-            final int age = state.get(CropBlock.AGE);
+            final int age = state.get(getAgeProperty());
             final boolean freeOver = world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight();
 
             if ((age < getMaxAge(state) && freeOver) || (!freeOver && age < MATURATION_AGE)) {
-                state = state.cycle(CropBlock.AGE);
+                state = state.cycle(getAgeProperty());
                 world.setBlockState(pos, state, Block.NOTIFY_ALL);
             } else if (world.isAir(pos.up()) && freeOver && age == getMaxAge(state)) {
                 world.setBlockState(pos.up(), getDefaultState(), Block.NOTIFY_ALL);
@@ -120,10 +123,12 @@ public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
     @Override
     public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
         final boolean freeOver = getPlantSize(world, pos) < getMaxHeight();
-        final int age = state.get(AGE);
-        return (age < getMaxAge(state) && freeOver)
+        final int age = state.get(getAgeProperty());
+        boolean ret = (age < getMaxAge(state) && freeOver)
             || (!freeOver && age < MATURATION_AGE)
             || (world.isAir(pos.up()) && freeOver && age == getMaxAge(state));
+
+        return ret;
     }
 
     protected int getPlantSize(WorldView world, BlockPos pos) {
