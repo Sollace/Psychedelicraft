@@ -24,11 +24,17 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 class RiftJarBlock extends BlockWithEntity {
-    private static final VoxelShape SHAPE = Block.createCuboidShape(1.6, 1.6, 1.6, 14.4, 12.8, 14.4);
+    private static final VoxelShape SHAPE = VoxelShapes.union(
+            Block.createCuboidShape(4, 0, 4, 12, 5, 12),
+            Block.createCuboidShape(4.5, 5, 4.5, 11.5, 7, 11.5),
+            Block.createCuboidShape(4, 7, 4, 12, 12, 12),
+            Block.createCuboidShape(5, 12, 5, 11, 14, 11)
+    );
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     public RiftJarBlock(Settings settings) {
