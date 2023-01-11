@@ -21,7 +21,7 @@ import ivorius.psychedelicraft.fluids.*;
 public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     public static final int MASH_TUB_CAPACITY = FluidHelper.MILLIBUCKETS_PER_LITER * 16;
 
-    public ItemStack solidContents;
+    public ItemStack solidContents = ItemStack.EMPTY;
 
     public MashTubBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.MASH_TUB, pos, state, MASH_TUB_CAPACITY, Processable.ProcessType.FERMENT);
