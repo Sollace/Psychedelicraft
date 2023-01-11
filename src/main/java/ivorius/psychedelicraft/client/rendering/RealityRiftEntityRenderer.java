@@ -6,7 +6,6 @@
 package ivorius.psychedelicraft.client.rendering;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import ivorius.psychedelicraft.entities.EntityRealityRift;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
@@ -21,15 +20,14 @@ import org.joml.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.Random;
-import java.util.stream.IntStream;
 import java.lang.Math;
 
 /**
  * Created by lukas on 03.03.14.
  */
 public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift> {
-    public static final Identifier[] zeroScreenTexture = IntStream.range(0, 8).mapToObj(i -> Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zero_screen_" + i + ".png")).toArray(Identifier[]::new);
-    public static final Identifier zeroCenterTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zero_center.png");
+    public static final Identifier CENTER_TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zero_center.png");
+    private static final Random RANDOM = new Random(432L);
 
     public RealityRiftEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
@@ -37,7 +35,7 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
 
     @Override
     public Identifier getTexture(EntityRealityRift entity) {
-        return zeroCenterTexture;
+        return CENTER_TEXTURE;
     }
 
     @Override
@@ -56,7 +54,7 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(zeroCenterTexture));
+        VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(CENTER_TEXTURE));
         Vector4f vector = new Vector4f(0, 0, 0, 1);
 
         matrices.push();
@@ -95,42 +93,19 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
     }
 
     public void renderRift(MatrixStack matrices, VertexConsumerProvider vertices, float partialTicks, float ticks) {
-        float pixelsX = 140 / 2f;
-        float pixelsY = 224 / 2f;
-
-        PSRenderStates.setUseScreenTexCoords(true);
-        PSRenderStates.setPixelSize(1.0f / pixelsX, -1.0f / pixelsY);
-
-        int textureChosen = MathHelper.floor(ticks * 0.5f);
-        Random rng = new Random(textureChosen);
-
-        DiffuseLighting.disableGuiDepthLighting();
-
      // TODO: (Sollace) Can't call it directly
      //   GL11.glShadeModel(GL11.GL_SMOOTH);
-        RenderSystem.enableBlend();
-        RenderSystem.enableCull();
-        RenderSystem.depthMask(false);
-
-        renderLightsScreen(matrices,
-                vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(zeroScreenTexture[textureChosen % 8])),
-                rng.nextInt(10) * 0.1f * pixelsX, rng.nextInt(8) * 0.125f * pixelsY,
-                ticks, 1, 0xffffffff, 20);
-
-        PSRenderStates.setScreenSizeDefault();
-        PSRenderStates.setUseScreenTexCoords(false);
-
-        RenderSystem.depthMask(true);
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
+        ZeroScreen.render(ticks, (texture, u, v) -> {
+            renderLightsScreen(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(texture)), u, v, ticks, 1, 0xffffffff, 20);
+        });
       // TODO: (Sollace) Can't call it directly
       //  GL11.glShadeModel(GL11.GL_FLAT);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        DiffuseLighting.enableGuiDepthLighting();
     }
 
+
+
     public static void renderLightsScreen(MatrixStack matrices, VertexConsumer vertices, float u, float v, float ticks, float alpha, int color, int number) {
-        Random random = new Random(432L);
+        RANDOM.setSeed(432L);
         matrices.push();
 
         float width = 2.5F;
@@ -151,18 +126,18 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
 
             if (lightAlpha > 0.01F) {
                 matrices.multiply(new Quaternionf().rotateXYZ(
-                        random.nextFloat() * MathHelper.TAU,
-                        random.nextFloat() * MathHelper.TAU,
-                        random.nextFloat() * MathHelper.TAU
+                        RANDOM.nextFloat() * MathHelper.TAU,
+                        RANDOM.nextFloat() * MathHelper.TAU,
+                        RANDOM.nextFloat() * MathHelper.TAU
                 ));
                 matrices.multiply(new Quaternionf().rotateXYZ(
-                        random.nextFloat() * MathHelper.TAU,
-                        random.nextFloat() * MathHelper.TAU,
-                        random.nextFloat() * MathHelper.TAU + rotation * MathHelper.HALF_PI * 0.5F
+                        RANDOM.nextFloat() * MathHelper.TAU,
+                        RANDOM.nextFloat() * MathHelper.TAU,
+                        RANDOM.nextFloat() * MathHelper.TAU + rotation * MathHelper.HALF_PI * 0.5F
                 ));
 
-                float var8 = random.nextFloat() * 20 + 5;
-                float var9 = random.nextFloat() * 2 + 1;
+                float var8 = RANDOM.nextFloat() * 20 + 5;
+                float var9 = RANDOM.nextFloat() * 2 + 1;
 
                 vector.set(0, 0, 0, 1);
                 Vector4f pos = positionMatrix.transform(vector);

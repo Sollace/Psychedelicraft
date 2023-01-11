@@ -187,8 +187,6 @@ public class EntityRealityRift extends Entity {
             }
         }
 
-        setRiftSize(1);
-
         if (isRiftClosing()) {
             setRiftSize(getRiftSize() - 1F / 20F);
         } else if (!critical) {
