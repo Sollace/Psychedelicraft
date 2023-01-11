@@ -278,8 +278,8 @@ public class DrugProperties implements NbtSerialisable {
             hasChanges = false;
 
             if (!entity.world.isClient) {
-                // TODO: (Sollace) Packet to send drug update data to the client
-                // PSNetworkHelperServer.sendEEPUpdatePacket(entity, EEP_KEY, "DrugData", Psychedelicraft.network);
+                Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this), entity);
+                Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this), (ServerPlayerEntity)entity);
             }
         }
 
