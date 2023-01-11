@@ -6,14 +6,19 @@
 package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
+import ivorius.psychedelicraft.blocks.PSBlocks;
 import ivorius.psychedelicraft.client.rendering.ZeroScreen;
 import ivorius.psychedelicraft.client.rendering.bezier.*;
+import ivorius.psychedelicraft.items.PSItems;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.block.entity.*;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
@@ -23,13 +28,21 @@ import java.util.Random;
 
 public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBlockEntity> {
     private static final IvBezierPath3DRendererText bezierPath3DRendererText = new IvBezierPath3DRendererText().setFont(new Identifier("alt"));
-    public static final Identifier texture = Psychedelicraft.id("textures/entity/rift_jar/rift_jar.png");
-    public static final Identifier crackedTexture = Psychedelicraft.id("textures/entity/rift_jar/rift_jar_cracked.png");
+    public static final Identifier TEXTURE = Psychedelicraft.id("textures/entity/rift_jar/rift_jar.png");
+    public static final Identifier CRACKED_TEXTURE = Psychedelicraft.id("textures/entity/rift_jar/rift_jar_cracked.png");
 
-    public static final IvBezierPath3D sphereBezierPath = IvBezierPath3DCreator.createSpiraledSphere(3.0, 8.0, 0.2);
-    public static final IvBezierPath3D outgoingBezierPath = IvBezierPath3DCreator.createSpiraledBezierPath(0.06, 6.0, 6.0, 1.0, 0.2, 0.0, false);
+    public static final IvBezierPath3D SPHERE_BEZIER_PATH = IvBezierPath3DCreator.createSpiraledSphere(3.0, 8.0, 0.2);
+    public static final IvBezierPath3D OUTGOING_PATH = IvBezierPath3DCreator.createSpiraledBezierPath(0.06, 6.0, 6.0, 1.0, 0.2, 0.0, false);
 
     private final RiftJarModel model = new RiftJarModel(RiftJarModel.getTexturedModelData().createModel());
+
+    private static final RiftJarBlockEntity ITEM_ENTITY = PSBlockEntities.RIFT_JAR.instantiate(BlockPos.ORIGIN, PSBlocks.RIFT_JAR.getDefaultState());
+
+    public static void renderStack(ItemStack stack, ModelTransformation.Mode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        ITEM_ENTITY.currentRiftFraction = PSItems.RIFT_JAR.getRiftFraction(stack);
+        ITEM_ENTITY.ticksAliveVisual = (int)((System.currentTimeMillis() % 500) / 100);
+        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(ITEM_ENTITY, matrices, vertices, light, overlay);
+    }
 
     public RiftJarBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 
@@ -49,17 +62,13 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         matrices.translate(0, 1, 0);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
+        model.render(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucent(TEXTURE)), light, overlay, 1, 1, 1, 1);
 
-        model.render(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucent(texture)), light, overlay, 1, 1, 1, 1);
-
-        float crackedVisibility = Math.min((entity.currentRiftFraction - 0.5f) * 2, 1);
+        float crackedVisibility = Math.min((entity.currentRiftFraction - 0.5F) * 2, 1);
 
         if (crackedVisibility > 0) {
-            RenderSystem.setShaderColor(1, 1, 1, crackedVisibility);
-            model.render(matrices, vertices.getBuffer(model.getLayer(crackedTexture)), light, overlay, 1, 1, 1, crackedVisibility);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
+            model.render(matrices, vertices.getBuffer(model.getLayer(CRACKED_TEXTURE)), light, overlay, 1, 1, 1, crackedVisibility);
         }
-
 
         if (entity.currentRiftFraction > 0) {
             matrices.push();
@@ -112,7 +121,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
                 bezierPath3DRendererText.setCapBottom(0);
                 bezierPath3DRendererText.setCapTop(1);
 
-                bezierPath3DRendererText.render(sphereBezierPath);
+                bezierPath3DRendererText.render(SPHERE_BEZIER_PATH);
 
                 matrices.pop();
             }
@@ -127,7 +136,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
             bezierPath3DRendererText.setCapBottom(0);
             bezierPath3DRendererText.setCapTop(outgoingStrength);
 
-            bezierPath3DRendererText.render(outgoingBezierPath);
+            bezierPath3DRendererText.render(OUTGOING_PATH);
         }
 
         RenderSystem.enableCull();
