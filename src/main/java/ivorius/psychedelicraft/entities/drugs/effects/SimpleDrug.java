@@ -5,12 +5,16 @@
 
 package ivorius.psychedelicraft.entities.drugs.effects;
 
+import java.util.Optional;
+
 import ivorius.psychedelicraft.entities.drugs.Drug;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class SimpleDrug implements Drug {
@@ -154,12 +158,12 @@ public class SimpleDrug implements Drug {
     public float soundVolumeModifier() {
         return 1;
     }
-/*
+
     @Override
-    public EntityPlayer.EnumStatus getSleepStatus() {
-        return null;
+    public Optional<Text> trySleep(BlockPos pos) {
+        return Optional.empty();
     }
-*/
+
     @Override
     public void applyContrastColorization(float[] rgba) {
 

@@ -10,15 +10,19 @@ import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.rendering.IDrugRenderer;
 import ivorius.psychedelicraft.client.screen.TickableContainer;
 import ivorius.psychedelicraft.entities.*;
+import ivorius.psychedelicraft.mixin.MixinLivingEntity;
+import ivorius.psychedelicraft.network.Channel;
+import ivorius.psychedelicraft.network.MsgDrugProperties;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -383,19 +387,11 @@ public class DrugProperties implements NbtSerialisable {
         }
         return modifier;
     }
-/*
-    public EntityPlayer.EnumStatus getDrugSleepStatus()
-    {
-        for (Drug drug : getAllDrugs())
-        {
-            EntityPlayer.EnumStatus status = drug.getSleepStatus();
-            if (status != null)
-                return status;
-        }
 
-        return null;
+    public Optional<Text> trySleep(BlockPos pos) {
+        return getAllDrugs().stream().flatMap(drug -> drug.trySleep(pos).stream()).findFirst();
     }
-*/
+
     public float getSoundMultiplier() {
         float modifier = 1;
         for (Drug drug : getAllDrugs()) {

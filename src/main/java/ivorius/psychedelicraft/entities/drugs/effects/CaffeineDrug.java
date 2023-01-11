@@ -5,12 +5,18 @@
 
 package ivorius.psychedelicraft.entities.drugs.effects;
 
+import java.util.Optional;
+
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 01.11.14.
  */
 public class CaffeineDrug extends SimpleDrug {
+    static final Optional<Text> SLEEP_STATUS = Optional.of(Text.translatable("block.psychedelicraft.caffiene"));
+
     public CaffeineDrug(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus);
     }
@@ -54,12 +60,14 @@ public class CaffeineDrug extends SimpleDrug {
     public float digSpeedModifier() {
         return 1 + (float) getActiveValue() * 0.2F;
     }
-/*
+
     @Override
-    public EntityPlayer.EnumStatus getSleepStatus() {
-        return getActiveValue() > 0.1 ? Psychedelicraft.sleepStatusDrugs : null;
+    public Optional<Text> trySleep(BlockPos pos) {
+        return getActiveValue() > 0.1
+                ? SLEEP_STATUS
+                : Optional.empty();
     }
-*/
+
     @Override
     public float superSaturationHallucinationStrength() {
         return (float)getActiveValue() * 0.3f;

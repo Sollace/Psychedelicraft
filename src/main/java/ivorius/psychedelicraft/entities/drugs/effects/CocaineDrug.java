@@ -5,9 +5,13 @@
 
 package ivorius.psychedelicraft.entities.drugs.effects;
 
+import java.util.Optional;
+
 import ivorius.psychedelicraft.PSDamageSources;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -15,6 +19,8 @@ import net.minecraft.util.math.random.Random;
  * Created by lukas on 01.11.14.
  */
 public class CocaineDrug extends SimpleDrug {
+    static final Optional<Text> SLEEP_STATUS = Optional.of(Text.translatable("block.psychedelicraft.coccaine"));
+
     public CocaineDrug(double decSpeed, double decSpeedPlus) {
         super(decSpeed, decSpeedPlus);
     }
@@ -80,13 +86,14 @@ public class CocaineDrug extends SimpleDrug {
     public float digSpeedModifier() {
         return 1.0F + (float) getActiveValue() * 0.15F;
     }
-/*
+
     @Override
-    public EntityPlayer.EnumStatus getSleepStatus()
-    {
-        return getActiveValue() > 0.4 ? Psychedelicraft.sleepStatusDrugs : null;
+    public Optional<Text> trySleep(BlockPos pos) {
+        return getActiveValue() > 0.4
+                ? SLEEP_STATUS
+                : Optional.empty();
     }
-*/
+
     @Override
     public float desaturationHallucinationStrength() {
         return (float)getActiveValue() * 0.75f;

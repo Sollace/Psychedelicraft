@@ -5,11 +5,15 @@
 
 package ivorius.psychedelicraft.entities.drugs;
 
+import java.util.Optional;
+
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 
 public interface Drug extends NbtSerialisable {
     void update(LivingEntity entity, DrugProperties drugProperties);
@@ -46,7 +50,7 @@ public interface Drug extends NbtSerialisable {
 
     float soundVolumeModifier();
 
-    //EntityPlayer.EnumStatus getSleepStatus();
+    Optional<Text> trySleep(BlockPos pos);
 
     void applyContrastColorization(float[] rgba);
 

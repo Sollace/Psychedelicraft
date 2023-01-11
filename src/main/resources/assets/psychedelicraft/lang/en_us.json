@@ -73,5 +73,8 @@
 
   "itemGroup.psychedelicraft.general": "Psychedelicraft",
   "itemGroup.psychedelicraft.drinks": "Psychedelicraft - Drinks",
-  "itemGroup.psychedelicraft.weapons": "Psychedelicraft - Weapons"
+  "itemGroup.psychedelicraft.weapons": "Psychedelicraft - Weapons",
+  
+  "block.psychedelicraft.coccaine": "The drugs in your system keep you awake",
+  "block.psychedelicraft.caffiene": "You do not feel tired"
 }

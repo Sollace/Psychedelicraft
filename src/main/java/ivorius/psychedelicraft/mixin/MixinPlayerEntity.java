@@ -7,6 +7,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.mojang.datafixers.util.Either;
+
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import ivorius.psychedelicraft.entities.drugs.DrugPropertiesContainer;
 import net.minecraft.block.BlockState;
@@ -14,6 +16,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.Unit;
+import net.minecraft.util.math.BlockPos;
 
 @Mixin(PlayerEntity.class)
 abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesContainer {
@@ -35,10 +39,23 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
         getDrugProperties().onTick();
     }
 
-    @Inject(method = "waveUp(ZZ)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "wakeUp(ZZ)V", at = @At("HEAD"), cancellable = true)
     private void onWakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo info) {
         if (!getDrugProperties().onAwoken()) {
             info.cancel();
+        }
+    }
+
+    @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;",
+            at = @At("HEAD"),
+            cancellable = true)
+    private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
+        if (!world.isClient) {
+            getDrugProperties().trySleep(pos).ifPresent(reason -> {
+                ((PlayerEntity)(Object)this).sendMessage(reason, true);
+
+                info.setReturnValue(Either.right(Unit.INSTANCE));
+            });
         }
     }
 
