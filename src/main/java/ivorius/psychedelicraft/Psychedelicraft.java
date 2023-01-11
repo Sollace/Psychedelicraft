@@ -45,6 +45,7 @@ public class Psychedelicraft implements ModInitializer {
     public void onInitialize() {
         PSBlocks.bootstrap();
         PSItems.bootstrap();
+        PSTags.bootstrap();
         PSItemGroups.bootstrap();
         PSFluids.bootstrap();
         PSRecipes.bootstrap();

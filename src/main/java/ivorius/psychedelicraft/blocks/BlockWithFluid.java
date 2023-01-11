@@ -37,6 +37,12 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
     protected abstract BlockEntityType<T> getBlockEntityType();
 
     @Override
+    @Deprecated
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         if (!world.isClient && stack.getItem() instanceof FluidContainerItem container) {
             world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {

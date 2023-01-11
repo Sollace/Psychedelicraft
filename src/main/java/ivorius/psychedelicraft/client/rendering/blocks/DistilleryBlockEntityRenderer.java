@@ -6,10 +6,10 @@
 package ivorius.psychedelicraft.client.rendering.blocks;
 
 import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
+import ivorius.psychedelicraft.blocks.DistilleryBlock;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
 import ivorius.psychedelicraft.fluids.Resovoir;
 import ivorius.psychedelicraft.fluids.SimpleFluid;
-import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -29,7 +29,7 @@ public class DistilleryBlockEntityRenderer implements BlockEntityRenderer<Distil
     public void render(DistilleryBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         matrices.push();
         matrices.translate(0.5F, 0.502F, 0.5F);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getCachedState().get(HorizontalFacingBlock.FACING).asRotation() + 180));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getCachedState().get(DistilleryBlock.FACING).asRotation() + 180));
 
         Resovoir tank = entity.getTank(Direction.UP);
         SimpleFluid fluid = tank.getFluidType();

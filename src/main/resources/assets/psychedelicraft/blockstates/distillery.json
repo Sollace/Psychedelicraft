@@ -1,0 +1,25 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "psychedelicraft:block/distillery_disconnected"
+    },
+    "facing=down": {
+      "model": "psychedelicraft:block/distillery_disconnected"
+    },
+    "facing=east": {
+      "model": "psychedelicraft:block/distillery_connected",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "psychedelicraft:block/distillery_connected",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "psychedelicraft:block/distillery_connected"
+    },
+    "facing=west": {
+      "model": "psychedelicraft:block/distillery_connected",
+      "y": 90
+    }
+  }
+}
