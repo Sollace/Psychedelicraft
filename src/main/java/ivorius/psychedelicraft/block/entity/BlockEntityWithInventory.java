@@ -105,4 +105,11 @@ public abstract class BlockEntityWithInventory extends BlockEntity implements Si
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
     }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound compound = new NbtCompound();
+        writeNbt(compound);
+        return compound;
+    }
 }

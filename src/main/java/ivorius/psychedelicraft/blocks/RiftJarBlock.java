@@ -5,14 +5,17 @@
 
 package ivorius.psychedelicraft.blocks;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
 import ivorius.psychedelicraft.items.RiftJarItem;
 import ivorius.psychedelicraft.items.PSItems;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -83,6 +86,14 @@ class RiftJarBlock extends BlockWithEntity {
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new RiftJarBlockEntity(pos, state);
+    }
+
+    @Override
+    @Nullable
+    public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
+        return world.isClient
+                ? checkType(type, PSBlockEntities.RIFT_JAR, (w, p, s, entity) -> entity.tickAnimation())
+                : checkType(type, PSBlockEntities.RIFT_JAR, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
 
     @Override

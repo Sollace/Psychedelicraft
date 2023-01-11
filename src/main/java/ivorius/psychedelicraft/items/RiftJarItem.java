@@ -12,6 +12,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -47,9 +48,7 @@ public class RiftJarItem extends BlockItem {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
         float fillAmount = getRiftFraction(stack);
-        if (fillAmount > 0) {
-            tooltip.add(Text.translatable(this.getTranslationKey() + "." + getUnlocalizedFractionName(fillAmount)));
-        }
+        tooltip.add(Text.translatable(getTranslationKey() + "." + getUnlocalizedFractionName(fillAmount)).formatted(Formatting.GRAY));
     }
 
     public float getRiftFraction(ItemStack itemStack) {
@@ -57,16 +56,19 @@ public class RiftJarItem extends BlockItem {
     }
 
     private static String getUnlocalizedFractionName(float fraction) {
-        if (fraction <= 0.0f) {
+        if (fraction <= 0) {
             return "empty";
-        } else if (fraction < 0.4f) {
-            return "slightlyFilled";
-        } else if (fraction < 0.6f) {
-            return "halfFilled";
-        } else if (fraction < 0.8f) {
-            return "full";
+        }
+        if (fraction < 0.4F) {
+            return "slightly_filled";
+        }
+        if (fraction < 0.6F) {
+            return "half_filled";
+        }
+        if (fraction < 0.8F) {
+            return "filled";
         }
 
-        return "overflowing";
+        return "over_filled";
     }
 }

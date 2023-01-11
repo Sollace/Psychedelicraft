@@ -61,6 +61,7 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
         return tank;
     }
 
+    @Override
     public void tick(ServerWorld world) {
         if (pendingSync) {
             pendingSync = false;
@@ -68,6 +69,7 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
         }
     }
 
+    @Override
     public void onDestroyed(ServerWorld world) {
         ItemStack flaskStack = PSItems.FLASK.getDefaultStack();
         int maxCapacity = PSItems.FLASK.getMaxCapacity(flaskStack);
@@ -91,5 +93,12 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound compound = new NbtCompound();
+        writeNbt(compound);
+        return compound;
     }
 }

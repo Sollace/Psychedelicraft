@@ -13,7 +13,7 @@ import ivorius.psychedelicraft.entities.PSEntities;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
@@ -45,9 +45,15 @@ public class RiftJarBlockEntity extends BlockEntity {
         return riftConnections.values();
     }
 
-    public void tick(ServerWorld world) {
+    public void tickAnimation() {
         fractionOpen = MathUtils.nearValue(fractionOpen, isOpening ? 1 : 0, 0, 0.02F);
         fractionHandleUp = MathUtils.nearValue(fractionHandleUp, isSuckingRifts() ? 0 : 1, 0, 0.04F);
+        ticksAliveVisual++;
+        System.out.println(fractionOpen);
+    }
+
+    public void tick(ServerWorld world) {
+        tickAnimation();
 
 //        if (!world.isClient)
 //        {
@@ -97,7 +103,7 @@ public class RiftJarBlockEntity extends BlockEntity {
 
         riftConnections.values().removeIf(connection -> (connection.fractionUp -= 0.01F) <= 0);
 
-        if (currentRiftFraction > 1.0f) {
+        if (currentRiftFraction > 1) {
             jarBroken = true;
 
             releaseRift();
@@ -105,8 +111,6 @@ public class RiftJarBlockEntity extends BlockEntity {
             Vec3d explosionPosition = getPos().toCenterPos();
             world.createExplosion(null, explosionPosition.x, explosionPosition.y, explosionPosition.z, 1, false, ExplosionSourceType.BLOCK);
         }
-
-        ticksAliveVisual++;
     }
 
     public JarRiftConnection createAndGetRiftConnection(EntityRealityRift rift) {
@@ -118,6 +122,7 @@ public class RiftJarBlockEntity extends BlockEntity {
             isOpening = !isOpening;
 
             markDirty();
+            ((ServerWorld)world).getChunkManager().markForUpdate(getPos());
         }
     }
 
@@ -126,6 +131,7 @@ public class RiftJarBlockEntity extends BlockEntity {
             suckingRifts = !suckingRifts;
 
             markDirty();
+            ((ServerWorld)world).getChunkManager().markForUpdate(getPos());
         }
     }
 
@@ -177,6 +183,13 @@ public class RiftJarBlockEntity extends BlockEntity {
         jarBroken = compound.getBoolean("jarBroken");
         suckingRifts = compound.getBoolean("suckingRifts");
         fractionHandleUp = compound.getFloat("fractionHandleUp");
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound compound = new NbtCompound();
+        writeNbt(compound);
+        return compound;
     }
 
     @Override
