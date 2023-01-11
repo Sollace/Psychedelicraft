@@ -1,24 +1,5 @@
-tile.wineGrapeLattice.name=Wood Lattice
-tile.cannabisPlant.name=Cannabis Plant
-item.hashMuffin.name=Hash Muffin
-tile.dryingTable.name=Drying Table
-tile.ironDryingTable.name=Iron Drying Table
-tile.tobaccoPlant.name=Tobacco Plant
-tile.cocaPlant.name=Coca Plant
 
-tile.psycheSapling.name=Juniper Sapling
-tile.coffea.name=Coffea
-tile.riftJar.name=Rift Jar
-item.riftJar.empty=Empty
-item.riftJar.slightlyFilled=Slightly Filled
-item.riftJar.halfFilled=Half Full
-item.riftJar.full=Full
-item.riftJar.overflowing=Overflowing
 tile.glitched.name=Block $__0
-tile.hopPlant.name=Hops
-
-tile.bottleRack.name=Bottle Rack
-container.bottleRack=Bottle Rack
 
 item.molotovCocktail.empty.name=Empty Molotov Cocktail
 item.molotovCocktail.quality0.name=Useless Molotov Cocktail
