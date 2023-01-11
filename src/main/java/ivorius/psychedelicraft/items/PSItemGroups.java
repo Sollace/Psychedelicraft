@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.items;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.fluids.SimpleFluid;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.*;
 import net.minecraft.util.DyeColor;
@@ -19,41 +20,74 @@ public interface PSItemGroups {
     ItemGroup creativeTab = FabricItemGroup.builder(Psychedelicraft.id("general"))
             .icon(PSItems.CANNABIS_LEAF::getDefaultStack)
             .entries((features, entries, search) -> {
-                entries.add(PSItems.TOBACCO_SEEDS);
-                entries.add(PSItems.TOBACCO_LEAVES);
-                entries.add(PSItems.DRIED_TOBACCO);
+                entries.add(PSItems.DRYING_TABLE);
+                entries.add(PSItems.IRON_DRYING_TABLE);
+                entries.add(PSItems.FLASK);
+                entries.add(PSItems.DISTILLERY);
+                entries.add(PSItems.BOTTLE_RACK);
+
+                entries.add(PSItems.OAK_BARREL);
+                entries.add(PSItems.BIRCH_BARREL);
+                entries.add(PSItems.SPRUCE_BARREL);
+                entries.add(PSItems.ACACIA_BARREL);
+                entries.add(PSItems.JUNGLE_BARREL);
+                entries.add(PSItems.DARK_OAK_BARREL);
+
+                if (Psychedelicraft.getConfig().balancing.enableRiftJars) {
+                    entries.add(RiftJarItem.createFilledRiftJar(0.0F, PSItems.RIFT_JAR));
+                    entries.add(RiftJarItem.createFilledRiftJar(0.25F, PSItems.RIFT_JAR));
+                    entries.add(RiftJarItem.createFilledRiftJar(0.55F, PSItems.RIFT_JAR));
+                    entries.add(RiftJarItem.createFilledRiftJar(0.75F, PSItems.RIFT_JAR));
+                    entries.add(RiftJarItem.createFilledRiftJar(0.9F, PSItems.RIFT_JAR));
+                }
+
                 entries.add(PSItems.CIGARETTE);
                 entries.add(PSItems.CIGAR);
                 entries.add(PSItems.JOINT);
+                entries.add(PSItems.PEYOTE_JOINT);
+                entries.add(PSItems.SMOKING_PIPE);
+                entries.add(PSItems.BONG);
+                entries.add(PSItems.SYRINGE);
+
+                entries.add(PSItems.CANNABIS_SEEDS);
+                entries.add(PSItems.HOP_SEEDS);
+                entries.add(PSItems.TOBACCO_SEEDS);
                 entries.add(PSItems.COCA_SEEDS);
+                entries.add(PSItems.COFFEA_CHERRIES);
+
+                entries.add(PSItems.TOBACCO_LEAVES);
+                entries.add(PSItems.DRIED_TOBACCO);
+
+
                 entries.add(PSItems.COCA_LEAVES);
                 entries.add(PSItems.DRIED_COCA_LEAVES);
                 entries.add(PSItems.COCAINE_POWDER);
-                entries.add(PSItems.SYRINGE);
-                entries.add(PSItems.WINE_GRAPES);
+
+                entries.add(PSItems.PEYOTE);
+                entries.add(PSItems.DRIED_PEYOTE);
+
                 entries.add(PSItems.HOP_CONES);
-                entries.add(PSItems.HOP_SEEDS);
-                entries.add(PSItems.CANNABIS_SEEDS);
+
                 entries.add(PSItems.CANNABIS_LEAF);
                 entries.add(PSItems.CANNABIS_BUDS);
                 entries.add(PSItems.DRIED_CANNABIS_LEAF);
-                entries.add(PSItems.SMOKING_PIPE);
-                entries.add(PSItems.BONG);
+
                 entries.add(PSItems.HASH_MUFFIN);
+
                 entries.add(PSItems.BROWN_MAGIC_MUSHROOMS);
                 entries.add(PSItems.RED_MAGIC_MUSHROOMS);
+
+                entries.add(PSItems.WINE_GRAPES);
+                entries.add(PSItems.LATTICE);
+
                 entries.add(PSItems.JUNIPER_BERRIES);
                 entries.add(PSItems.JUNIPER_LEAVES);
                 entries.add(PSItems.FRUITING_JUNIPER_LEAVES);
                 entries.add(PSItems.JUNIPER_LOG);
-                entries.add(PSItems.COFFEA_CHERRIES);
+                entries.add(PSItems.JUNIPER_SAPLING);
+
                 entries.add(PSItems.COFFEE_BEANS);
-                entries.add(PSItems.PEYOTE);
-                entries.add(PSItems.DRIED_PEYOTE);
-                entries.add(PSItems.PEYOTE_JOINT);
-                entries.add(PSItems.FLASK);
-                entries.add(PSItems.DISTILLERY);
-                entries.add(PSItems.LATTICE);
+
                 if (Psychedelicraft.getConfig().balancing.enableHarmonium) {
                     for (DyeColor dye : DyeColor.values()) {
                         float[] color = dye.getColorComponents();
@@ -62,46 +96,30 @@ public interface PSItemGroups {
                         entries.add(harmonium);
                     }
                 }
-                if (Psychedelicraft.getConfig().balancing.enableRiftJars) {
-                    entries.add(RiftJarItem.createFilledRiftJar(0.0F, PSItems.RIFT_JAR));
-                    entries.add(RiftJarItem.createFilledRiftJar(0.25F, PSItems.RIFT_JAR));
-                    entries.add(RiftJarItem.createFilledRiftJar(0.55F, PSItems.RIFT_JAR));
-                    entries.add(RiftJarItem.createFilledRiftJar(0.75F, PSItems.RIFT_JAR));
-                    entries.add(RiftJarItem.createFilledRiftJar(0.9F, PSItems.RIFT_JAR));
-                }
-                entries.add(PSItems.OAK_BARREL);
-                entries.add(PSItems.BIRCH_BARREL);
-                entries.add(PSItems.SPRUCE_BARREL);
-                entries.add(PSItems.ACACIA_BARREL);
-                entries.add(PSItems.JUNGLE_BARREL);
-                entries.add(PSItems.DARK_OAK_BARREL);
             })
             .build();
     ItemGroup drinksTab = FabricItemGroup.builder(Psychedelicraft.id("drinks"))
             .icon(PSItems.OAK_BARREL::getDefaultStack)
             .entries((features, entries, search) -> {
-                entries.add(PSItems.STONE_CUP);
-                entries.add(PSItems.WOODEN_MUG);
-                entries.add(PSItems.GLASS_CHALICE);
-                entries.add(PSItems.BOTTLE);
-                entries.add(PSItems.MASH_TUB);
+                appendAllFluids(PSItems.STONE_CUP, entries);
+                appendAllFluids(PSItems.WOODEN_MUG, entries);
+                appendAllFluids(PSItems.GLASS_CHALICE, entries);
+                appendAllFluids(PSItems.BOTTLE, entries);
+                appendAllFluids(PSItems.MASH_TUB, entries);
             })
             .build();
     ItemGroup weaponsTab = FabricItemGroup.builder(Psychedelicraft.id("weapons"))
             .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
             .entries((features, entries, search) -> {
-                entries.add(PSItems.MOLOTOV_COCKTAIL);
+                appendAllFluids(PSItems.MOLOTOV_COCKTAIL, entries);
             })
             .build();
 
-    static void bootstrap() {
-       /* dryingTableIron.setCreativeTab(Psychedelicraft.creativeTab);
-        psycheLeaves.setCreativeTab(Psychedelicraft.creativeTab);
-        psycheLog.setCreativeTab(Psychedelicraft.creativeTab);
-        psycheSapling.setCreativeTab(Psychedelicraft.creativeTab);
-        bottleRack.setCreativeTab(creativeTab);
-        wineGrapeLattice.setCreativeTab(Psychedelicraft.creativeTab);
-        dryingTable.setCreativeTab(Psychedelicraft.creativeTab);*/
-
+    private static void appendAllFluids(FluidContainerItem item, ItemGroup.Entries entries) {
+        SimpleFluid.REGISTRY.forEach(fluid -> {
+            entries.add(item.getDefaultStack(fluid));
+        });
     }
+
+    static void bootstrap() { }
 }

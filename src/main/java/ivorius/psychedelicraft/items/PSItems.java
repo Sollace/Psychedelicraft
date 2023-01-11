@@ -100,6 +100,8 @@ public interface PSItems {
     Item JUNIPER_BERRIES = register("juniper_berries", new SpecialFoodItem(
             new Settings().food(new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()), 15
     ));
+    Item JUNIPER_SAPLING = register("juniper_sapling", PSBlocks.JUNIPER_SAPLING);
+
     Item COFFEA_CHERRIES = register("coffea_cherries", new AliasedBlockItem(PSBlocks.COFFEA, new Settings()));
     Item COFFEE_BEANS = register("coffee_beans");
 
