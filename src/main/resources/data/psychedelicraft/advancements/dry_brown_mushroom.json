@@ -2,13 +2,13 @@
   "parent": "psychedelicraft:make_drying_table",
   "display": {
     "icon": {
-      "item": "psychedelicraft:brown_magic_mushroom"
+      "item": "psychedelicraft:brown_magic_mushrooms"
     },
     "title": {
-      "translate": "advancements.psychedelicraft.dry_brown_mushroom.title"
+      "translate": "advancements.psychedelicraft.dry_brown_mushrooms.title"
     },
     "description": {
-      "translate": "advancements.psychedelicraft.dry_brown_mushroom.description"
+      "translate": "advancements.psychedelicraft.dry_brown_mushrooms.description"
     },
     "frame": "task",
     "show_toast": true,
@@ -17,10 +17,10 @@
   },
   "criteria": {
     "consumed_the_thing": {
-      "trigger": "minecraft:consume_item",
+      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "item": {
-          "items": [ "psychedelicraft:brown_magic_mushroom" ]
+          "items": [ "psychedelicraft:brown_magic_mushrooms" ]
         }
       }
     }
