@@ -34,6 +34,10 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
         return getMaxCapacity();
     }
 
+    default float getFillPercentage(ItemStack stack) {
+        return MathHelper.clamp(MathHelper.getLerpProgress(getFluidLevel(stack), 0, getMaxCapacity(stack)), 0, 1);
+    }
+
     default ItemStack getDefaultStack(SimpleFluid fluid) {
         return setLevel(setFluid(asItem().getDefaultStack(), fluid), getMaxCapacity());
     }

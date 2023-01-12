@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 /**
@@ -54,6 +55,7 @@ public class DrinkableItem extends Item implements FluidContainerItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         if (ConsumableFluid.canConsume(stack, player, consumptionVolume, consumptionType)) {
+            player.setCurrentHand(hand);
             return TypedActionResult.consume(stack);
         }
         return super.use(world, player, hand);
@@ -61,7 +63,7 @@ public class DrinkableItem extends Item implements FluidContainerItem {
 
     @Override
     public int getMaxUseTime(ItemStack stack) {
-        return 32;
+        return DEFAULT_MAX_USE_TIME;
     }
 
     @Override
@@ -82,7 +84,11 @@ public class DrinkableItem extends Item implements FluidContainerItem {
 
     @Override
     public int getItemBarStep(ItemStack stack) {
-        int level = getFluidLevel(stack);
-        return level == 0 ? 0 : 1 - (level / getMaxCapacity());
+        return (int)(ITEM_BAR_STEPS * getFillPercentage(stack));
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        return MathHelper.hsvToRgb(getFillPercentage(stack) / 3F, 1, 1);
     }
 }
