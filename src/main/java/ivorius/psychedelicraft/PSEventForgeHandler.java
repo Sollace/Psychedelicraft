@@ -13,10 +13,8 @@ import net.minecraft.item.ItemStack;
  * Created by lukas on 18.02.14.
  */
 @Deprecated(forRemoval = true)
-public class PSEventForgeHandler
-{
-    public static boolean containsAlcohol(ItemStack stack, AlcoholicFluid fluid, Boolean distilled, int minMatured)
-    {
+public class PSEventForgeHandler {
+    public static boolean containsAlcohol(ItemStack stack, AlcoholicFluid fluid, Boolean distilled, int minMatured) {
         return stack.getItem() instanceof FluidContainerItem container
                 && container.getFluid(stack) == fluid
                 && (distilled == null || (fluid.getDistillation(stack) > 0) == distilled)
@@ -73,19 +71,4 @@ public class PSEventForgeHandler
 //            }
 //        }
 //    }
-/*
-    //@SubscribeEvent
-    public void onPlayerSleep(PlayerSleepInBedEvent event)
-    {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(event.entityLiving);
-
-        if (drugProperties != null)
-        {
-            EntityPlayer.EnumStatus status = drugProperties.getDrugSleepStatus();
-
-            if (status != null)
-                event.result = status;
-        }
-    }
-*/
 }
