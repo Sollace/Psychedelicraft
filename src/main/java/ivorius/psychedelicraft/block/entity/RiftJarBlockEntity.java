@@ -49,7 +49,6 @@ public class RiftJarBlockEntity extends BlockEntity {
         fractionOpen = MathUtils.nearValue(fractionOpen, isOpening ? 1 : 0, 0, 0.02F);
         fractionHandleUp = MathUtils.nearValue(fractionHandleUp, isSuckingRifts() ? 0 : 1, 0, 0.04F);
         ticksAliveVisual++;
-        System.out.println(fractionOpen);
     }
 
     public void tick(ServerWorld world) {
