@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.screen;
 
+import ivorius.psychedelicraft.blocks.BlockWithFluid;
 import ivorius.psychedelicraft.client.screen.TickableContainer;
 import ivorius.psychedelicraft.fluids.Resovoir;
 import ivorius.psychedelicraft.items.FluidContainerItem;
@@ -13,14 +14,16 @@ import net.minecraft.entity.player.*;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.math.Direction;
 
 /**
  * Created by lukas on 26.10.14.
  * Updated by Sollace on 3 Jan 2023
  */
-public class FluidContraptionScreenHandler<T extends BlockEntity> extends ScreenHandler implements TickableContainer {
+public class FluidContraptionScreenHandler<T extends BlockEntity & BlockWithFluid.DirectionalFluidResovoir> extends ScreenHandler implements TickableContainer {
     public int drainSpeedPerTick = 100;
     public boolean currentlyDrainingItem;
 
@@ -28,9 +31,14 @@ public class FluidContraptionScreenHandler<T extends BlockEntity> extends Screen
     private final Resovoir tank;
     private final T blockEntity;
 
-    public FluidContraptionScreenHandler(ScreenHandlerType<? extends FluidContraptionScreenHandler<T>> type, int syncId, PlayerInventory inventoryPlayer, Resovoir tank, T blockEntity) {
+    @SuppressWarnings("unchecked")
+    public FluidContraptionScreenHandler(ScreenHandlerType<? extends FluidContraptionScreenHandler<T>> type, int syncId, PlayerInventory inventory, PacketByteBuf buffer) {
+        this(type, syncId, inventory, (T)inventory.player.world.getBlockEntity(buffer.readBlockPos()), buffer.readEnumConstant(Direction.class));
+    }
+
+    public FluidContraptionScreenHandler(ScreenHandlerType<? extends FluidContraptionScreenHandler<T>> type, int syncId, PlayerInventory inventory, T blockEntity, Direction direction) {
         super(type, syncId);
-        this.tank = tank;
+        this.tank = blockEntity.getTank(direction);
         this.blockEntity = blockEntity;
         addSlot(new Slot(inputInventory, 0, 25, 40) {
             @Override
@@ -41,12 +49,12 @@ public class FluidContraptionScreenHandler<T extends BlockEntity> extends Screen
         });
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 9; ++x) {
-                addSlot(new Slot(inventoryPlayer, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
+                addSlot(new Slot(inventory, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
             }
         }
 
         for (int x = 0; x < 9; ++x) {
-            addSlot(new Slot(inventoryPlayer, x, 8 + x * 18, 142));
+            addSlot(new Slot(inventory, x, 8 + x * 18, 142));
         }
     }
 

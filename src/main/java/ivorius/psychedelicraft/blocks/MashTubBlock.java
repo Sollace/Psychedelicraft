@@ -10,12 +10,15 @@ import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.*;
+import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -67,6 +70,11 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
     @Override
     protected BlockEntityType<MashTubBlockEntity> getBlockEntityType() {
         return PSBlockEntities.MASH_TUB;
+    }
+
+    @Override
+    protected ScreenHandlerType<FluidContraptionScreenHandler<MashTubBlockEntity>> getScreenHandlerType() {
+        return PSScreenHandlers.MASH_TUB;
     }
 
     @Override

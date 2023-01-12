@@ -20,16 +20,16 @@ import com.mojang.blaze3d.systems.RenderSystem;
  * Updated by Sollace on 3 Jan 2023
  */
 public class DryingTableScreen extends HandledScreen<DryingTableScreenHandler> {
-    public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "guiDryingTable.png");
+    public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "gui_drying_table.png");
 
     public DryingTableScreen(DryingTableScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        drawTextWithShadow(matrices, textRenderer, Text.literal("Drying Table"), 28, 6, 4210752);
-        drawTextWithShadow(matrices, textRenderer, title, 8, y - 96 + 2, 4210752);
+    public void init() {
+        super.init();
+        titleX = 26;
     }
 
     @Override
@@ -38,9 +38,10 @@ public class DryingTableScreen extends HandledScreen<DryingTableScreenHandler> {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, TEXTURE);
 
-        int var5 = (width - x) / 2;
-        int var6 = (height - y) / 2;
-        drawTexture(matrices, var5, var6, 0, 0, x, y);
+        int var5 = (width - backgroundWidth) / 2;
+        int var6 = (height - backgroundHeight) / 2;
+
+        drawTexture(matrices, var5, var6, 0, 0, backgroundWidth, backgroundHeight);
 
         if (handler.entity.dryingProgress > 0) {
             drawTexture(matrices, var5 + 88, var6 + 34, 176, 59, 25, 16);

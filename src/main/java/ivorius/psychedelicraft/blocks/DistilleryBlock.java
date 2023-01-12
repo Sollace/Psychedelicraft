@@ -7,9 +7,12 @@ package ivorius.psychedelicraft.blocks;
 
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.block.entity.*;
+import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
 import net.minecraft.util.BlockMirror;
@@ -77,6 +80,11 @@ public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
     @Override
     protected BlockEntityType<DistilleryBlockEntity> getBlockEntityType() {
         return PSBlockEntities.DISTILLERY;
+    }
+
+    @Override
+    protected ScreenHandlerType<FluidContraptionScreenHandler<DistilleryBlockEntity>> getScreenHandlerType() {
+        return PSScreenHandlers.DISTILLERY;
     }
 
     @Override

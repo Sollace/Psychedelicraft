@@ -57,11 +57,10 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
     }
 
     public void drawRepeatingTexture(int x, int y, int width, int height, float u0, float u1, float v0, float v1, float repeatX, float repeatY, boolean fromBelow) {
-        drawRepeatingTexture(x, y, getZOffset(), height, u0, u1, v0, v1, repeatX, repeatY, fromBelow);
+        drawRepeatingTexture(x, y, getZOffset(), width, height, u0, u1, v0, v1, repeatX, repeatY, fromBelow);
     }
 
-    public static void drawRepeatingTexture(int x, int y, int z, int width, int height,
-            float u0, float u1, float v0, float v1, float repeatX, float repeatY, boolean fromBelow) {
+    public static void drawRepeatingTexture(int x, int y, int z, int width, int height, float u0, float u1, float v0, float v1, float repeatX, float repeatY, boolean fromBelow) {
         Tessellator tessellator = Tessellator.getInstance();
 
         if (fromBelow) {

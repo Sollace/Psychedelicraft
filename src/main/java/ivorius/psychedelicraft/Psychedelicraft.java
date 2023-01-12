@@ -15,6 +15,7 @@ import ivorius.psychedelicraft.fluids.PSFluids;
 import ivorius.psychedelicraft.items.PSItemGroups;
 import ivorius.psychedelicraft.items.PSItems;
 import ivorius.psychedelicraft.network.Channel;
+import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import ivorius.psychedelicraft.worldgen.PSWorldGen;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
@@ -54,6 +55,7 @@ public class Psychedelicraft implements ModInitializer {
         PSWorldGen.bootstrap();
         PSCommands.bootstrap();
         PSSounds.bootstrap();
+        PSScreenHandlers.bootstrap();
         Channel.bootstrap();
     }
 }

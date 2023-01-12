@@ -15,7 +15,7 @@ import java.util.List;
  * Created by lukas on 13.11.14.
  * Updated by Sollace on 4 Jan 2023
  */
-public class DistilleryScreen extends FluidContraptionScreen<DistilleryBlockEntity> {
+public class DistilleryScreen extends FlaskScreen<DistilleryBlockEntity> {
     public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_distillery.png");
 
     public DistilleryScreen(FluidContraptionScreenHandler<DistilleryBlockEntity> handler, PlayerInventory inventory, Text title) {

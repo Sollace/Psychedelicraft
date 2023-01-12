@@ -9,11 +9,14 @@ import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.fluids.FluidHelper;
 import ivorius.psychedelicraft.items.FluidContainerItem;
+import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -82,6 +85,11 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     @Override
     protected BlockEntityType<BarrelBlockEntity> getBlockEntityType() {
         return PSBlockEntities.BARREL;
+    }
+
+    @Override
+    protected ScreenHandlerType<FluidContraptionScreenHandler<BarrelBlockEntity>> getScreenHandlerType() {
+        return PSScreenHandlers.BARREL;
     }
 
     @Override

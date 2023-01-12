@@ -15,8 +15,8 @@ import java.util.List;
  * Created by lukas on 13.11.14.
  * Updated by Sollace on 4 Jan 2023
  */
-public class MushTubScreen extends FluidContraptionScreen<MashTubBlockEntity> {
-    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_woodenVat.png");
+public class MushTubScreen extends FlaskScreen<MashTubBlockEntity> {
+    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_wooden_vat.png");
 
     public MushTubScreen(FluidContraptionScreenHandler<MashTubBlockEntity> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);

@@ -10,13 +10,15 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.fluids.Resovoir;
 import ivorius.psychedelicraft.items.FluidContainerItem;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.*;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -36,6 +38,8 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
     }
 
     protected abstract BlockEntityType<T> getBlockEntityType();
+
+    protected abstract ScreenHandlerType<FluidContraptionScreenHandler<T>> getScreenHandlerType();
 
     public BlockPos getBlockEntityPos(BlockView world, BlockState state, BlockPos pos) {
         return pos;
@@ -79,7 +83,7 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
             if (result != ActionResult.PASS) {
                 return result;
             }
-            player.openHandledScreen(new NamedScreenHandlerFactory() {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
                 public Text getDisplayName() {
                     return BlockWithFluid.this.getName();
@@ -87,7 +91,13 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
 
                 @Override
                 public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new FluidContraptionScreenHandler<>(null, syncId, inv, be.getTank(hit.getSide()), be);
+                    return new FluidContraptionScreenHandler<>(getScreenHandlerType(), syncId, inv, be, hit.getSide());
+                }
+
+                @Override
+                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+                    buf.writeBlockPos(be.getPos());
+                    buf.writeEnumConstant(hit.getSide());
                 }
             });
             return ActionResult.SUCCESS;

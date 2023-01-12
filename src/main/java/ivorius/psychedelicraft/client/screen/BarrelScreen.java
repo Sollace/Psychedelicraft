@@ -15,7 +15,7 @@ import java.util.List;
  * Created by lukas on 13.11.14.
  * Updated by Sollace on 4 Jan 2023
  */
-public class BarrelScreen extends FluidContraptionScreen<BarrelBlockEntity> {
+public class BarrelScreen extends FlaskScreen<BarrelBlockEntity> {
     public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_barrel.png");
 
     public BarrelScreen(FluidContraptionScreenHandler<BarrelBlockEntity> handler, PlayerInventory inventory, Text title) {

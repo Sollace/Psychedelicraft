@@ -51,7 +51,7 @@ public class DryingTableBlock extends BlockWithEntity {
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
                 public Text getDisplayName() {
-                    return Text.translatable("container.dryingTable");
+                    return DryingTableBlock.this.getName();
                 }
                 @Override
                 public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
@@ -60,6 +60,7 @@ public class DryingTableBlock extends BlockWithEntity {
 
                 @Override
                 public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+                    buf.writeBlockPos(pos);
                 }
             });
             return ActionResult.SUCCESS;

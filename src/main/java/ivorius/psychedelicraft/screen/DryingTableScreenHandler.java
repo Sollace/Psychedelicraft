@@ -4,6 +4,7 @@ import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
@@ -14,8 +15,13 @@ public class DryingTableScreenHandler extends ScreenHandler {
     private final Inventory inventory;
     public final DryingTableBlockEntity entity;
 
+
+    public DryingTableScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buffer) {
+        this(syncId, inventory, (DryingTableBlockEntity)inventory.player.getWorld().getBlockEntity(buffer.readBlockPos()));
+    }
+
     public DryingTableScreenHandler(int syncId, PlayerInventory inventory, DryingTableBlockEntity container) {
-        super(null, syncId);
+        super(PSScreenHandlers.DRYING_TABLE, syncId);
         this.inventory = inventory;
         this.entity = container;
 

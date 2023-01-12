@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.blocks.BlockWithFluid;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -22,12 +23,12 @@ import java.util.List;
  * Created by lukas on 26.10.14.
  * Updated by Sollace on 4 Jan 2023
  */
-public class FluidContraptionScreen<T extends BlockEntity> extends AbstractFluidContraptionScreen<FluidContraptionScreenHandler<T>> {
+public class FlaskScreen<T extends BlockEntity & BlockWithFluid.DirectionalFluidResovoir> extends AbstractFluidContraptionScreen<FluidContraptionScreenHandler<T>> {
     public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_fluid.png");
 
     public ButtonWidget changeTransferButton;
 
-    public FluidContraptionScreen(FluidContraptionScreenHandler<T> handler, PlayerInventory inventory, Text title) {
+    public FlaskScreen(FluidContraptionScreenHandler<T> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }
 
@@ -38,8 +39,8 @@ public class FluidContraptionScreen<T extends BlockEntity> extends AbstractFluid
     }
 
     protected void initTransferButton() {
-        int baseX = (width - x) / 2;
-        int baseY = (height - y) / 2;
+        int baseX = (width - backgroundWidth) / 2;
+        int baseY = (height - backgroundHeight) / 2;
         addDrawableChild(changeTransferButton = ButtonWidget.builder(Text.empty(), this::toggleTransfer).dimensions(baseX + 7, baseY + 60, 50, 20).build());
         updateTransferButtonTitle();
     }
@@ -56,9 +57,9 @@ public class FluidContraptionScreen<T extends BlockEntity> extends AbstractFluid
     protected void drawBackground(MatrixStack matrices, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, getBackgroundTexture());
-        int baseX = (width - x) / 2;
-        int baseY = (height - y) / 2;
-        drawTexture(matrices, baseX, baseY, 0, 0, x, y);
+        int baseX = (width - backgroundWidth) / 2;
+        int baseY = (height - backgroundHeight) / 2;
+        drawTexture(matrices, baseX, baseY, 0, 0, backgroundWidth, backgroundHeight);
         drawAdditionalInfo(matrices, baseX, baseY);
         drawTanks(matrices, baseX, baseY);
     }
@@ -78,8 +79,8 @@ public class FluidContraptionScreen<T extends BlockEntity> extends AbstractFluid
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
         super.render(matrices, mouseX, mouseY, tickDelta);
-        int baseX = (width - x) / 2;
-        int baseY = (height - y) / 2;
+        int baseX = (width - backgroundWidth) / 2;
+        int baseY = (height - backgroundHeight) / 2;
         drawTankTooltips(matrices, mouseX, mouseY, baseX, baseY);
     }
 

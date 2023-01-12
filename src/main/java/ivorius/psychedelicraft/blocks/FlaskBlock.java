@@ -6,8 +6,11 @@
 package ivorius.psychedelicraft.blocks;
 
 import ivorius.psychedelicraft.block.entity.*;
+import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -30,5 +33,10 @@ public class FlaskBlock extends BlockWithFluid<FlaskBlockEntity> {
     @Override
     protected BlockEntityType<FlaskBlockEntity> getBlockEntityType() {
         return PSBlockEntities.FLASK;
+    }
+
+    @Override
+    protected ScreenHandlerType<FluidContraptionScreenHandler<FlaskBlockEntity>> getScreenHandlerType() {
+        return PSScreenHandlers.FLASK;
     }
 }

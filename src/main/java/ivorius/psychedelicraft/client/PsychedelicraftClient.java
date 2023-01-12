@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 import ivorius.psychedelicraft.client.item.PSModelPredicates;
 import ivorius.psychedelicraft.client.rendering.*;
 import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
+import ivorius.psychedelicraft.client.screen.PSScreens;
 import ivorius.psychedelicraft.config.JsonConfig;
-import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entities.drugs.DrugProperties;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -40,5 +40,6 @@ public class PsychedelicraftClient implements ClientModInitializer {
 
         PSRenderers.bootstrap();
         PSModelPredicates.bootstrap();
+        PSScreens.bootstrap();
     }
 }
