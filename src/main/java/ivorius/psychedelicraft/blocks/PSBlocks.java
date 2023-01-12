@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.blocks;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.worldgen.JuniperTreeSaplingGenerator;
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.registry.Registries;
@@ -63,5 +64,10 @@ public interface PSBlocks {
 
     static void bootstrap() {
         PSBlockEntities.bootstrap();
+
+        FlammableBlockRegistry.getDefaultInstance().add(JUNIPER_LOG, 5, 5);
+        FlammableBlockRegistry.getDefaultInstance().add(JUNIPER_LEAVES, 30, 60);
+        FlammableBlockRegistry.getDefaultInstance().add(LATTICE, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(WINE_GRAPE_LATTICE, 5, 20);
     }
 }
