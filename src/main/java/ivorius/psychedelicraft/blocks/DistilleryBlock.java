@@ -21,13 +21,21 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
 
 /**
  * Created by lukas on 25.10.14.
  */
 public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
-    private static final VoxelShape SHAPE = Block.createCuboidShape(4, 0, 4, 12, 14.4, 12);
+    private static final VoxelShape SHAPE = VoxelShapes.union(
+        Block.createCuboidShape(5, 0, 5, 11, 6, 11),
+        Block.createCuboidShape(4, 0, 6, 12, 5, 10),
+        Block.createCuboidShape(6, 0, 4, 10, 5, 12),
+        Block.createCuboidShape(6, 6, 6, 10, 14, 10),
+        Block.createCuboidShape(5, 9, 6, 11, 13, 10),
+        Block.createCuboidShape(6, 9, 5, 10, 13, 11)
+    );
     public static final DirectionProperty FACING = Properties.FACING;
 
     public DistilleryBlock(Settings settings) {

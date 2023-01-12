@@ -13,13 +13,21 @@ import net.minecraft.block.entity.*;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 /**
  * Created by lukas on 25.10.14.
  */
 public class FlaskBlock extends BlockWithFluid<FlaskBlockEntity> {
-    private static final VoxelShape SHAPE = Block.createCuboidShape(4, 0, 4, 12, 11.5, 12);
+    private static final VoxelShape SHAPE = VoxelShapes.union(
+        Block.createCuboidShape(5, 0, 5, 11, 5, 11),
+        Block.createCuboidShape(4, 0, 6, 12, 4, 10),
+        Block.createCuboidShape(6, 0, 4, 10, 4, 12),
+        Block.createCuboidShape(6, 5, 6, 10, 11, 10),
+        Block.createCuboidShape(5, 7, 6, 11, 10, 10),
+        Block.createCuboidShape(6, 7, 5, 10, 10, 11)
+    );
 
     public FlaskBlock(Settings settings) {
         super(settings);

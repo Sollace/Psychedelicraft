@@ -24,11 +24,24 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     public static final int MAX_TAP_AMOUNT = FluidHelper.MILLIBUCKETS_PER_LITER;
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+
+    private static final VoxelShape X_ORIENTED_SHAPE = VoxelShapes.union(
+        Block.createCuboidShape(0, 5, 2, 16, 13, 14),
+        Block.createCuboidShape(0, 3, 4, 16, 15, 12)
+    );
+    private static final VoxelShape Z_ORIENTED_SHAPE = VoxelShapes.union(
+        Block.createCuboidShape(2, 5, 0, 14, 13, 16),
+        Block.createCuboidShape(4, 3, 0, 12, 15, 16)
+    );
 
     public BarrelBlock(Settings settings) {
         super(settings.nonOpaque());
@@ -39,6 +52,11 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     @Deprecated
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return state.get(FACING).getAxis() == Axis.X ? X_ORIENTED_SHAPE : Z_ORIENTED_SHAPE;
     }
 
     @Override
