@@ -34,15 +34,12 @@ public class DryingTableBlock extends BlockWithEntity {
     public DryingTableBlock(Settings settings) {
         super(settings.nonOpaque());
     }
-    /*
-    @Override
-    public void registerBlockIcons(IIconRegister par1IconRegister) {
-        super.registerBlockIcons(par1IconRegister);
 
-        bottomIcon = par1IconRegister.registerIcon(Psychedelicraft.modBase + "dryingTableBottom");
-        topIcon = par1IconRegister.registerIcon(Psychedelicraft.modBase + "dryingTableTop");
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
-*/
+
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
