@@ -12,6 +12,7 @@ import net.minecraft.util.math.MathHelper;
 /**
  * Created by lukas on 18.02.14.
  */
+@Deprecated
 public class ShaderBlur extends IvShaderInstance2D {
     public float vBlur;
     public float hBlur;
@@ -29,17 +30,14 @@ public class ShaderBlur extends IvShaderInstance2D {
     public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
         useShader();
 
-        for (int i = 0; i < 1; i++) {
-            setUniformInts("tex" + i, i);
-        }
-
-        setUniformFloats("pixelSize", 1.0f / screenWidth, 1.0f / screenHeight);
+        setUniformInts("tex0", 0);
+        setUniformFloats("pixelSize", 1F / screenWidth, 1F / screenHeight);
 
         for (int n = 0; n < MathHelper.ceil(Math.max(hBlur, vBlur)); n++) {
             for (int i = 0; i < 2; i++) {
                 float activeBlur = Math.min(1, (i == 0 ? hBlur : vBlur) - n);
 
-                if (activeBlur > 0.0f) {
+                if (activeBlur > 0) {
                     setUniformInts("vertical", i);
                     setUniformFloats("totalAlpha", activeBlur);
 

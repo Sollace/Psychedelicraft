@@ -15,6 +15,7 @@ import net.minecraft.util.math.MathHelper;
 /**
  * Created by lukas on 18.02.14.
  */
+@Deprecated
 public class ShaderDoF extends IvShaderInstance2D {
     public int depthTextureIndex;
 

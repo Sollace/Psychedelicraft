@@ -10,36 +10,29 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by lukas on 18.02.14.
  */
-public class ShaderBlurNoise extends IvShaderInstance2D
-{
+@Deprecated
+public class ShaderBlurNoise extends IvShaderInstance2D {
     public float strength;
     public float seed;
 
-    public ShaderBlurNoise(Logger logger)
-    {
+    public ShaderBlurNoise(Logger logger) {
         super(logger);
     }
 
     @Override
-    public boolean shouldApply(float ticks)
-    {
-        return (strength > 0.0f) && super.shouldApply(ticks);
+    public boolean shouldApply(float ticks) {
+        return strength > 0 && super.shouldApply(ticks);
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong)
-    {
+    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
         useShader();
 
-        for (int i = 0; i < 1; i++)
-        {
-            setUniformInts("tex" + i, i);
-        }
-
-        setUniformFloats("pixelSize", 1.0f / screenWidth, 1.0f / screenHeight);
+        setUniformInts("tex0", 0);
+        setUniformFloats("pixelSize", 1F / screenWidth, 1F / screenHeight);
         setUniformFloats("strength", strength);
         setUniformFloats("seed", seed);
-        setUniformFloats("totalAlpha", 1.0f);
+        setUniformFloats("totalAlpha", 1F);
 
         drawFullScreen(screenWidth, screenHeight, pingPong);
 

@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by lukas on 26.02.14.
  */
-@Deprecated(forRemoval = true, since = "Not necessary: the game implements shaders for us already")
+@Deprecated
 public class ShaderMainDepth extends IvShaderInstance3D implements ShaderWorld {
     public ShaderMainDepth(Logger logger) {
         super(logger);

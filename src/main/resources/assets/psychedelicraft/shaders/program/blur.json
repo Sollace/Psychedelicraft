@@ -1,0 +1,18 @@
+{
+    "blend": {
+        "func": "add",
+        "srcrgb": "one",
+        "dstrgb": "zero"
+    },
+    "vertex": "psychadelicraft:post/basic",
+    "fragment": "psychadelicraft:post/blur",
+    "attributes": [ "Position" ],
+    "samplers": [
+        { "name": "tex0" }
+    ],
+    "uniforms": [
+        { "name": "pixelSize",    "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
+        { "name": "vertical",   "type": "int",     "count": 1,  "values": [ 1.0 ] },
+        { "name": "totalAlpha",   "type": "float",     "count": 1,  "values": [ 1.0 ] }
+    ]
+}

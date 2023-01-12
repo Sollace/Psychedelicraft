@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 /**
  * Created by lukas on 18.02.14.
  */
+@Deprecated
 public class ShaderHeatDistortions extends IvShaderInstance2D {
     public float strength;
     public float wobbleSpeed;
@@ -41,7 +42,6 @@ public class ShaderHeatDistortions extends IvShaderInstance2D {
             setUniformInts("tex" + i, i);
         }
         setUniformInts("noiseTex", 3);
-
         setUniformFloats("totalAlpha", 1.0f);
         setUniformFloats("ticks", ticks * wobbleSpeed);
         setUniformFloats("strength", strength);

@@ -1,0 +1,21 @@
+{
+    "blend": {
+        "func": "add",
+        "srcrgb": "one",
+        "dstrgb": "zero"
+    },
+    "vertex": "psychadelicraft:post/basic",
+    "fragment": "psychadelicraft:post/heat_distortion",
+    "attributes": [ "Position" ],
+    "samplers": [
+        { "name": "tex0" },
+        { "name": "tex1" },
+        { "name": "tex2" },
+        { "name": "noiseTex" }
+    ],
+    "uniforms": [
+        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "ticks", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "stretch", "type": "float", "count": 1, "values": [ 1.0 ] }
+    ]
+}

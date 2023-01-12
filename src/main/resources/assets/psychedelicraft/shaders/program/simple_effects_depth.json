@@ -1,0 +1,22 @@
+{
+    "blend": {
+        "func": "add",
+        "srcrgb": "one",
+        "dstrgb": "zero"
+    },
+    "vertex": "psychadelicraft:post/basic",
+    "fragment": "psychadelicraft:post/simple_effects_depth",
+    "attributes": [ "Position" ],
+    "samplers": [
+        { "name": "depthTex" },
+        { "name": "tex0" }
+    ],
+    "uniforms": [
+        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "slowColorRotation", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "quickColorRotation", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "colorIntensification", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "desaturation", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "depthRange", "type": "float", "count": 2, "values": [ 0.0, 1.0 ] }
+    ]
+}

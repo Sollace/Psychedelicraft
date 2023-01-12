@@ -1,0 +1,22 @@
+{
+    "blend": {
+        "func": "add",
+        "srcrgb": "one",
+        "dstrgb": "zero"
+    },
+    "vertex": "psychadelicraft:post/basic",
+    "fragment": "psychadelicraft:post/digital",
+    "attributes": [ "Position" ],
+    "samplers": [
+        { "name": "tex0" },
+        { "name": "tex1" },
+        { "name": "tex2" }
+    ],
+    "uniforms": [
+        { "name": "newResolution", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+        { "name": "textProgress", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "maxColors", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "saturation", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 0.0 ] }
+    ]
+}

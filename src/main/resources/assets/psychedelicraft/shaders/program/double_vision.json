@@ -1,0 +1,18 @@
+{
+    "blend": {
+        "func": "add",
+        "srcrgb": "one",
+        "dstrgb": "zero"
+    },
+    "vertex": "psychadelicraft:post/basic",
+    "fragment": "psychadelicraft:post/double_vision",
+    "attributes": [ "Position" ],
+    "samplers": [
+        { "name": "tex0" }
+    ],
+    "uniforms": [
+        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "distance", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "stretch", "type": "float", "count": 1, "values": [ 1.0 ] }
+    ]
+}

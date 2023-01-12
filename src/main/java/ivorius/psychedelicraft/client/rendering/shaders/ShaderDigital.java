@@ -15,6 +15,7 @@ import ivorius.psychedelicraft.util.MathUtils;
 /**
  * Created by lukas on 18.02.14.
  */
+@Deprecated
 public class ShaderDigital extends IvShaderInstance2D {
     public float digital;
     public float[] maxDownscale;

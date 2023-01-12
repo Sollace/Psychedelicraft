@@ -12,45 +12,31 @@ import net.minecraft.util.math.MathHelper;
 /**
  * Created by lukas on 18.02.14.
  */
-public class ShaderRadialBlur extends IvShaderInstance2D
-{
+@Deprecated
+public class ShaderRadialBlur extends IvShaderInstance2D {
     public float radialBlur;
 
-    public ShaderRadialBlur(Logger logger)
-    {
+    public ShaderRadialBlur(Logger logger) {
         super(logger);
     }
 
     @Override
-    public boolean shouldApply(float ticks)
-    {
-        return radialBlur > 0.0f && super.shouldApply(ticks);
+    public boolean shouldApply(float ticks) {
+        return radialBlur > 0 && super.shouldApply(ticks);
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong)
-    {
+    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
         useShader();
 
-        for (int i = 0; i < 1; i++)
-        {
-            setUniformInts("tex" + i, i);
-        }
+        setUniformInts("tex0", 0);
+        setUniformFloats("pixelSize", 1F / screenWidth * (radialBlur * 1.5f + 1F), 1F / screenHeight * (radialBlur * 1.5F + 1F));
 
-        setUniformFloats("pixelSize", 1.0f / screenWidth * (radialBlur * 1.5f + 1.0f), 1.0f / screenHeight * (radialBlur * 1.5f + 1.0f));
+        for (int n = 0; n < MathHelper.floor(radialBlur) + 1; n++) {
+            float activeBlur = Math.min(1, radialBlur - n);
 
-        for (int n = 0; n < MathHelper.floor(radialBlur) + 1; n++)
-        {
-            float activeBlur = radialBlur - n;
-            if (activeBlur > 1.0f)
-            {
-                activeBlur = 1.0f;
-            }
-
-            if (activeBlur > 0.0f)
-            {
+            if (activeBlur > 0) {
                 setUniformFloats("totalAlpha", activeBlur);
-
                 drawFullScreen(screenWidth, screenHeight, pingPong);
             }
         }

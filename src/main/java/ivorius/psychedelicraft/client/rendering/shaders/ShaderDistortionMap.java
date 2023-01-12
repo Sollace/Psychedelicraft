@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 /**
  * Created by lukas on 18.02.14.
  */
+@Deprecated
 public class ShaderDistortionMap extends IvShaderInstance2D {
     public float strength;
     public float alpha = 1;
@@ -42,10 +43,8 @@ public class ShaderDistortionMap extends IvShaderInstance2D {
         RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE + 1, noiseTextureIndex0);
         RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE + 2, noiseTextureIndex1);
         RenderSystem.activeTexture(GLStateProxy.DEFAULT_TEXTURE);
-
-        for (int i = 0; i < 2; i++) {
-            setUniformInts("tex" + i, i);
-        }
+        setUniformInts("tex0", 0);
+        setUniformInts("tex1", 1);
         setUniformInts("noiseTex0", 2);
         setUniformInts("noiseTex1", 3);
         setUniformFloats("totalAlpha", alpha);

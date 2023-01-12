@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.client.rendering.GLStateProxy;
 /**
  * Created by lukas on 18.02.14.
  */
+@Deprecated
 public class ShaderDigitalDepth extends ShaderDigital {
     public int depthTextureIndex;
 

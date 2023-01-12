@@ -1,0 +1,22 @@
+{
+    "blend": {
+        "func": "add",
+        "srcrgb": "one",
+        "dstrgb": "zero"
+    },
+    "vertex": "psychadelicraft:post/basic",
+    "fragment": "psychadelicraft:post/distortion_map",
+    "attributes": [ "Position" ],
+    "samplers": [
+        { "name": "tex0" },
+        { "name": "tex1" },
+        { "name": "noiseTex0" },
+        { "name": "noiseTex1" }
+    ],
+    "uniforms": [
+        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "strength", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "texTranslation0", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "texTranslation1", "type": "float", "count": 1, "values": [ 0.0 ] }
+    ]
+}

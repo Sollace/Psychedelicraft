@@ -1,0 +1,27 @@
+{
+    "blend": {
+        "func": "add",
+        "srcrgb": "one",
+        "dstrgb": "zero"
+    },
+    "vertex": "psychadelicraft:post/3d",
+    "fragment": "psychadelicraft:post/3d_depth",
+    "attributes": [ "Position" ],
+    "samplers": [
+        { "name": "tex0" }
+    ],
+    "uniforms": [
+        { "name": "ticks", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "worldTime", "type": "int", "count": 1, "values": [ 0.0 ] },
+        { "name": "playerPos", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+        { "name": "depthMultiplier", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "texture2DEnabled", "type": "int", "count": 1, "values": [ 1.0 ] },
+        { "name": "overrideColor", "type": "int", "count": 4, "values": [ 1.0, 1.0, 1.0, 1.0 ] },
+        { "name": "useScreenTexCoords", "type": "int", "count": 1, "values": [ 0.0 ] },
+        { "name": "pixelSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+        { "name": "bigWaves", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "smallWaves", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "wiggleWaves", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "distantWorldDeformation", "type": "float", "count": 1, "values": [ 1.0 ] }
+    ]
+}
