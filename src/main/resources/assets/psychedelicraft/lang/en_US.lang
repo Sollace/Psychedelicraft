@@ -16,11 +16,6 @@ item.harmonium.dye13.name=Magenta Harmonium
 item.harmonium.dye14.name=Orange Harmonium
 item.harmonium.dye15.name=White Harmonium
 
-death.attack.alcoholPoisoning=%1$s died of alcohol poisoning
-death.attack.stroke=%1$s had a stroke
-death.attack.heartFailure=%1$s's heart stopped beating
-death.attack.respiratoryFailure=%1$s had a respiratory failure
-
 fluid.status.maturing=Maturing
 fluid.status.fermenting=Fermenting
 fluid.status.distilling=Distilling

@@ -215,6 +215,11 @@
   "fluid.psychedelicraft.caffeine": "Caffeine",
   "fluid.psychedelicraft.slurry": "Slurry",
 
+  "death.attack.alcohol_poisoning": "%1$s died of alcohol poisoning",
+  "death.attack.stroke": "%1$s had a stroke",
+  "death.attack.heart_failure": "%1$s's heart stopped beating",
+  "death.attack.respiratory_failure": "%1$s had a respiratory failure",
+
   "advancements.psychedelicraft.root.title": "Psychedelicraft",
   "advancements.psychedelicraft.root.description": "Let's take a trip",
   "advancements.psychedelicraft.cannabis_buds.title": "Only the Finest",
