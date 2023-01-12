@@ -17,10 +17,10 @@ public interface PSSounds {
     SoundEvent DRUG_ALCOHOL = register("drug.alcohol");
     SoundEvent DRUG_CANNABIS = register("drug.cannabis");
     SoundEvent DRUG_BROWNSHROOMS = register("drug.brownshrooms");
-    SoundEvent DRUG_REDSHROOMS = register("drug.reedshrooms");
+    SoundEvent DRUG_REDSHROOMS = register("drug.redshrooms");
     SoundEvent DRUG_TOBACCO = register("drug.tobacco");
     SoundEvent DRUG_COCAINE = register("drug.cocaine");
-    SoundEvent DRUG_CAFFIENE = register("drug.caffiene");
+    SoundEvent DRUG_CAFFIENE = register("drug.caffeine");
     SoundEvent DRUG_WARMTH = register("drug.warmth");
     SoundEvent DRUG_PEYOTE = register("drug.peyote");
     SoundEvent DRUG_ZERO = register("drug.zero");
