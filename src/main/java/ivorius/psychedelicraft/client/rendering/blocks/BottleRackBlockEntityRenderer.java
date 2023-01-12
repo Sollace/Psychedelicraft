@@ -30,6 +30,7 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
 
     @Override
     public void render(BottleRackBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        if (model == null) return;
         matrices.push();
         //IvRotatableBlockRenderHelper.transformFor(tileEntityBottleRack, x, y, z);
         matrices.translate(0, 0.002F, 0);

@@ -22,14 +22,14 @@ import net.minecraft.util.math.MathHelper;
  *
  * Renders fluid inside the flask
  */
-public class FlaskBlockEntityRenderer implements BlockEntityRenderer<FlaskBlockEntity> {
+public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements BlockEntityRenderer<T> {
 
     public FlaskBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 
     }
 
     @Override
-    public void render(FlaskBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         matrices.push();
         matrices.translate(0.5F, 0.502F, 0.5F);
 
@@ -39,15 +39,15 @@ public class FlaskBlockEntityRenderer implements BlockEntityRenderer<FlaskBlockE
         if (!fluid.isEmpty()) {
             float fluidHeight = 2.8f * MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
 
-            FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance();
-            fluidRenderer.setScale(1F / 16F);
-            fluidRenderer.prepare(tank);
-            fluidRenderer.renderFluid(-1.9F, -8, -3.9f, 3.8F, fluidHeight, 0.9F, Direction.NORTH, Direction.UP);
-            fluidRenderer.renderFluid(-1.9F, -8,     3, 3.8f, fluidHeight, 0.9F, Direction.SOUTH, Direction.UP);
-            fluidRenderer.renderFluid(-3.9F, -8, -1.9F, 0.9F, fluidHeight, 3.8F, Direction.WEST, Direction.UP);
-            fluidRenderer.renderFluid( 3,    -8, -1.9F, 0.9F, fluidHeight, 3.8f, Direction.EAST, Direction.UP);
-            fluidRenderer.renderFluid(-3F,   -8,    -3,    6, fluidHeight,    6, Direction.UP);
-            fluidRenderer.cleanUp();
+            FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance().scale(1F / 16F)
+                    .texture(vertices, tank)
+                    .light(light).overlay(overlay)
+                    .position(matrices);
+            fluidRenderer.draw(-1.9F, -8, -3.9F, 3.8F, fluidHeight, 0.9F, Direction.NORTH, Direction.UP);
+            fluidRenderer.draw(-1.9F, -8,     3, 3.8F, fluidHeight, 0.9F, Direction.SOUTH, Direction.UP);
+            fluidRenderer.draw(-3.9F, -8, -1.9F, 0.9F, fluidHeight, 3.8F, Direction.WEST, Direction.UP);
+            fluidRenderer.draw(    3, -8, -1.9F, 0.9F, fluidHeight, 3.8F, Direction.EAST, Direction.UP);
+            fluidRenderer.draw(   -3, -8,    -3,    6, fluidHeight,    6, Direction.UP);
         }
 
         matrices.pop();

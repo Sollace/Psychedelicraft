@@ -8,8 +8,7 @@ package ivorius.psychedelicraft.client.rendering.blocks;
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
 import ivorius.psychedelicraft.blocks.MashTubBlock;
 import ivorius.psychedelicraft.client.rendering.FluidBoxRenderer;
-import ivorius.psychedelicraft.fluids.Resovoir;
-import ivorius.psychedelicraft.fluids.SimpleFluid;
+import ivorius.psychedelicraft.fluids.*;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -39,23 +38,19 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
 
         Resovoir tank = entity.getTank(Direction.UP);
         SimpleFluid fluid = tank.getFluidType();
-        FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance();
 
-        // TODO: Use the available MatrixStack for positioning
+        FluidBoxRenderer.getInstance().scale(1).light(light).overlay(overlay).position(matrices);
+
         if (!fluid.isEmpty()) {
             float fluidHeight = (MODEL_HEIGHT - MODEL_BORDER_WIDTH - 1F / 16F) * MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
 
-            fluidRenderer.setScale(1);
-            fluidRenderer.prepare(tank);
-            fluidRenderer.renderFluid(-MODEL_SIZE, -.5f + MODEL_BORDER_WIDTH, -MODEL_SIZE, MODEL_SIZE * 2, fluidHeight, MODEL_SIZE * 2, Direction.UP);
-            fluidRenderer.cleanUp();
+            FluidBoxRenderer.getInstance().texture(vertices, tank)
+                .draw(-MODEL_SIZE, -.5f + MODEL_BORDER_WIDTH, -MODEL_SIZE, MODEL_SIZE * 2, fluidHeight, MODEL_SIZE * 2, Direction.UP);
         } else if (!entity.solidContents.isEmpty() && entity.solidContents.getItem() instanceof BlockItem) {
             float fluidHeight = (MODEL_HEIGHT - MODEL_BORDER_WIDTH - 1.0f / 16.0f);
 
-            fluidRenderer.setScale(1);
-            fluidRenderer.prepare(entity.solidContents);
-            fluidRenderer.renderFluid(-MODEL_SIZE, -.5f + MODEL_BORDER_WIDTH, -MODEL_SIZE, MODEL_SIZE * 2, fluidHeight, MODEL_SIZE * 2, Direction.UP);
-            fluidRenderer.cleanUp();
+            FluidBoxRenderer.getInstance().texture(vertices, entity.solidContents)
+                .draw(-MODEL_SIZE, -.5f + MODEL_BORDER_WIDTH, -MODEL_SIZE, MODEL_SIZE * 2, fluidHeight, MODEL_SIZE * 2, Direction.UP);
         }
 
         matrices.pop();
