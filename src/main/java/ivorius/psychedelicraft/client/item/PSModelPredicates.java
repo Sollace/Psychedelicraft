@@ -28,10 +28,10 @@ public interface PSModelPredicates {
             if (layer == 0 && stack.getItem() instanceof DyeableItem dyeable) {
                 return ((DyeableItem)stack.getItem()).getColor(stack);
             }
-            if (stack.getItem() instanceof FluidContainerItem container) {
+            if (layer == 1 && stack.getItem() instanceof FluidContainerItem container) {
                 SimpleFluid fluid = container.getFluid(stack);
                 if (!fluid.isEmpty()) {
-                    return container.getFluid(stack).getColor(stack);
+                    return fluid.getTranslucentColor(stack);
                 }
             }
             return -1;

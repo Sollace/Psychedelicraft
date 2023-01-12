@@ -19,6 +19,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.fluids.Resovoir;
 import ivorius.psychedelicraft.fluids.SimpleFluid;
+import ivorius.psychedelicraft.util.MathUtils;
 
 import org.joml.Vector3f;
 
@@ -108,7 +109,13 @@ public class FluidBoxRenderer {
         } else {
             sprite = DEFAULT_BOUNDS;
             // TODO: fluids probably use their own texture rather than just a color
-            MCColorHelper.setColor(fluid.getColor(tank.getStack()), fluid.isTranslucent());
+            int color = fluid.getTranslucentColor(tank.getStack());
+            RenderSystem.setShaderColor(
+                    MathUtils.r(color),
+                    MathUtils.g(color),
+                    MathUtils.b(color),
+                    MathUtils.a(color)
+            );
             disableTexture();
 
             if (fluid.isTranslucent()) {

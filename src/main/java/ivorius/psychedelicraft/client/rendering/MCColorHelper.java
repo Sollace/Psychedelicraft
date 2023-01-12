@@ -18,6 +18,7 @@ import net.minecraft.client.render.VertexFormat.DrawMode;
  */
 @Environment(EnvType.CLIENT)
 public class MCColorHelper {
+    @Deprecated
     public static void setColor(int color, boolean hasAlpha) {
         RenderSystem.setShaderColor(
                 MathUtils.r(color),

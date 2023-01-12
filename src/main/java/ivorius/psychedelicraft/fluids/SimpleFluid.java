@@ -56,9 +56,9 @@ public class SimpleFluid {
     public final int getTranslucentColor(ItemStack stack) {
         int color = getColor(stack);
         if (!isTranslucent()) {
-            return color | 0xff000000;
+            return color | 0xFF000000;
         }
-        return 0xFFFFFFFF;
+        return color;
     }
 
     public boolean isTranslucent() {
@@ -107,6 +107,7 @@ public class SimpleFluid {
         private boolean translucent;
 
         public Settings color(int color) {
+            this.color = color;
             return this;
         }
 
