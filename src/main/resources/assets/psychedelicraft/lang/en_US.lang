@@ -1,16 +1,6 @@
 
 tile.glitched.name=Block $__0
 
-item.molotovCocktail.empty.name=Empty Molotov Cocktail
-item.molotovCocktail.quality0.name=Useless Molotov Cocktail
-item.molotovCocktail.quality1.name=Horrible Molotov Cocktail
-item.molotovCocktail.quality2.name=Bad Molotov Cocktail
-item.molotovCocktail.quality3.name=Decent Molotov Cocktail
-item.molotovCocktail.quality4.name=Good Molotov Cocktail
-item.molotovCocktail.quality5.name=Excellent Molotov Cocktail
-item.molotovCocktail.quality6.name=Perfect Molotov Cocktail
-item.molotovCocktail.quality7.name=Unreal Molotov Cocktail
-
 item.harmonium.dye0.name=Black Harmonium
 item.harmonium.dye1.name=Red Harmonium
 item.harmonium.dye2.name=Green Harmonium

@@ -8,7 +8,6 @@ package ivorius.psychedelicraft.items;
 import ivorius.psychedelicraft.entities.EntityMolotovCocktail;
 import ivorius.psychedelicraft.fluids.ConsumableFluid.ConsumptionType;
 import ivorius.psychedelicraft.fluids.Combustable;
-import ivorius.psychedelicraft.fluids.SimpleFluid;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -61,21 +60,21 @@ public class MolotovCocktailItem extends DrinkableItem {
 
     @Override
     public Text getName(ItemStack stack) {
-        SimpleFluid fluid = getFluid(stack);
-
-        if (!fluid.isEmpty()) {
-            int quality = 0;
-
-            if (fluid instanceof Combustable exploding) {
-                float explStr = exploding.getExplosionStrength(stack) * 0.8f;
-                float fireStr = exploding.getFireStrength(stack) * 0.6f;
-
-                quality = MathHelper.clamp(MathHelper.floor((fireStr + explStr) + 0.5f), 0, 7);
-            }
-
-            return Text.translatable(getTranslationKey(stack) + ".quality." + quality + ".name");
+        if (getFluid(stack).isEmpty()) {
+            return Text.translatable(getTranslationKey(stack) + ".empty");
         }
 
-        return super.getName();
+        return Text.translatable(getTranslationKey(stack) + ".quality." + getQuality(stack));
+    }
+
+    private int getQuality(ItemStack stack) {
+        if (getFluid(stack) instanceof Combustable exploding) {
+            float explStr = exploding.getExplosionStrength(stack) * 0.8f;
+            float fireStr = exploding.getFireStrength(stack) * 0.6f;
+
+            return MathHelper.clamp(MathHelper.floor((fireStr + explStr) + 0.5f), 0, 7);
+        }
+
+        return 0;
     }
 }
