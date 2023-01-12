@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "psychedelicraft:block/mash_tub"
+      "model": "psychedelicraft:block/wooden_vat"
     }
   }
 }

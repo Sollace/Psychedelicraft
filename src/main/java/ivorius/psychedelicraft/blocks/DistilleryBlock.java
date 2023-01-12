@@ -16,6 +16,7 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
@@ -56,13 +57,14 @@ public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
     public static boolean canConnectTo(BlockState state, Direction direction) {
         return state.isIn(PSTags.BARRELS)
             || state.isOf(PSBlocks.MASH_TUB)
+            || state.isOf(PSBlocks.FLASK)
             || (state.isOf(PSBlocks.DISTILLERY) && state.get(FACING) != direction.getOpposite());
     }
 
     @Deprecated
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (state.get(FACING) == direction) {
+        if (state.get(FACING).getAxis() == Axis.Y || state.get(FACING) == direction) {
             return state.with(FACING, Direction.Type.HORIZONTAL.stream().filter(d -> {
                 return canConnectTo(world.getBlockState(pos.offset(d)), d);
             }).findAny().orElse(Direction.UP));

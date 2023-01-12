@@ -1,18 +1,15 @@
 {
-    "gui_light": "side",
-    "textures": {
-      "particle": "#texture"
-    },
+    "parent": "psychedelicraft:block/wooden_vat",
     "display": {
         "gui": {
             "rotation": [ 30, 225, 0 ],
-            "translation": [ 0, 0.6, 0],
-            "scale":[ 0.8, 0.8, 0.8 ]
+            "translation": [ 0, -1, 0],
+            "scale":[ 0.3, 0.3, 0.3 ]
         },
         "ground": {
             "rotation": [ 0, 0, 0 ],
             "translation": [ 0, 3, 0],
-            "scale":[ 0.4, 0.4, 0.4 ]
+            "scale":[ 0.2, 0.2, 0.2 ]
         },
         "fixed": {
             "rotation": [ 0, 0, 0 ],
@@ -20,24 +17,24 @@
             "scale":[ 0.5, 0.5, 0.5 ]
         },
         "thirdperson_righthand": {
-            "rotation": [ 0, 0, 0 ],
-            "translation": [ 0, 2.5, 0],
-            "scale": [ 0.6, 0.6, 0.6 ]
+            "rotation": [ 45, 15, 0 ],
+            "translation": [ 0, 3, -4],
+            "scale": [ 0.3, 0.3, 0.3 ]
         },
         "thirdperson_lefthand": {
-            "rotation": [ 0, 0, 0 ],
-            "translation": [ 0, 2.5, 0],
-            "scale": [ 0.6, 0.6, 0.6 ]
+            "rotation": [ 45, 15, 0 ],
+            "translation": [ 0, 3, -4],
+            "scale": [ 0.3, 0.3, 0.3 ]
         },
         "firstperson_righthand": {
             "rotation": [ 0, 45, 0 ],
             "translation": [ 0, 0, 0 ],
-            "scale": [ 1, 1, 1 ]
+            "scale": [ 0.5, 0.5, 0.5 ]
         },
         "firstperson_lefthand": {
             "rotation": [ 0, 225, 0 ],
             "translation": [ 0, 0, 0 ],
-            "scale": [ 1, 1, 1 ]
+            "scale": [ 0.5, 0.5, 0.5 ]
         }
     }
 }

@@ -1,8 +1,7 @@
 {
 	"parent": "psychedelicraft:block/complex_block",
 	"textures": {
-		"texture": "psychedelicraft:block/distillery",
-		"particle": "#texture"
+		"texture": "psychedelicraft:block/distillery"
 	},
 	"elements": [
 		{

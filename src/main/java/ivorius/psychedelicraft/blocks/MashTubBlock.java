@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.blocks;
 
+import java.util.*;
+
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.*;
@@ -21,11 +23,11 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 
 /**
  * Created by lukas on 27.10.14.
+ * Updated by Sollace on 12 Jan 2023
  */
 public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
     public static final int SIZE = 15;
@@ -34,21 +36,20 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
 
     public static final BooleanProperty MASTER = BooleanProperty.of("master");
 
-    // TODO: (Sollace) MushTub is a 3x3 multi-block and this voxel shape reflects that
-    //           x from -15 to +30
     private static final VoxelShape SHAPE = VoxelShapes.union(
-            createShape(-16, -0.5F, -16, 32, 16,  1),
-            createShape(-16, -0.5F,  15, 32, 16,  1),
-            createShape( 15, -0.5F, -16,  1, 16, 32),
-            createShape(-16, -0.5F, -16,  1, 16, 32),
-            createShape(-16, -0.5F, -16, 32,  1, 32)
+            createShape(-8, -0.5F, -8, 32, 16,  1),
+            createShape(-8, -0.5F, 23, 32, 16,  1),
+            createShape(23, -0.5F, -8,  1, 16, 32),
+            createShape(-8, -0.5F, -8,  1, 16, 32),
+            createShape(-8, -0.5F, -8, 32,  1, 32)
     );
+
     private static VoxelShape createShape(double x, double y, double z, double width, double height, double depth) {
         return Block.createCuboidShape(x, y, z, x + width, y + height, z + depth);
     }
 
     public MashTubBlock(Settings settings) {
-        super(settings.nonOpaque());
+        super(settings);
     }
 
     @Override
@@ -56,39 +57,11 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
         if (state.get(MASTER)) {
             return SHAPE;
         }
-
-        return BlockPos.findClosest(pos, 1, 0, p -> {
-           BlockState s = world.getBlockState(p);
-           return s.isOf(this) && s.get(MASTER);
-        }).map(p -> SHAPE.offset(p.getX()-pos.getX(), 0, p.getZ()-pos.getZ())).orElseGet(() -> {
-            boolean east = world.getBlockState(pos.east()).isOf(this);
-            boolean west = world.getBlockState(pos.west()).isOf(this);
-
-            boolean north = world.getBlockState(pos.north()).isOf(this);
-            boolean south = world.getBlockState(pos.south()).isOf(this);
-
-            return VoxelShapes.union(
-                    north ? VoxelShapes.empty() : createShape(0, -0.5F, 0, 16, 16,  1),
-                    south ? VoxelShapes.empty() : createShape(0, -0.5F, 15, 16, 16,  1),
-                    east ? VoxelShapes.empty() : createShape(15, -0.5F, 0,  1, 16, 16),
-                    west ? VoxelShapes.empty() : createShape(0, -0.5F, 0,  1, 16, 16),
-                    createShape(0, -0.5F, 0, 16,  1, 16)
-            );
-        });
-/*
-        boolean east = world.getBlockState(pos.east()).isOf(this);
-        boolean west = world.getBlockState(pos.west()).isOf(this);
-
-        boolean north = world.getBlockState(pos.north()).isOf(this);
-        boolean south = world.getBlockState(pos.south()).isOf(this);
-
-        return VoxelShapes.union(
-                north ? VoxelShapes.empty() : createShape(0, -0.5F, 0, 16, 16,  1),
-                south ? VoxelShapes.empty() : createShape(0, -0.5F, 15, 16, 16,  1),
-                east ? VoxelShapes.empty() : createShape(15, -0.5F, 0,  1, 16, 16),
-                west ? VoxelShapes.empty() : createShape(0, -0.5F, 0,  1, 16, 16),
-                createShape(0, -0.5F, 0, 16,  1, 16)
-        );*/
+        BlockPos center = getBlockEntityPos(world, state, pos);
+        if (center.equals(pos)) {
+            return VoxelShapes.fullCube();
+        }
+        return SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ());
     }
 
     @Override
@@ -98,10 +71,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        BlockView world = ctx.getWorld();
-        return super.getPlacementState(ctx).with(MASTER, !BlockPos.findClosest(ctx.getBlockPos(), 1, 0, p -> {
-            return world.getBlockState(p).isOf(this);
-        }).isPresent());
+        return super.getPlacementState(ctx).with(MASTER, true);
     }
 
     @Override
@@ -120,8 +90,59 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
     }
 
     @Override
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        return getPlacementPosition(world, state, pos, false).isPresent();
+    }
+
+    private Optional<BlockPos> getPlacementPosition(WorldView world, BlockState state, BlockPos pos, boolean premitOverlap) {
+        return BlockPos.streamOutwards(pos, 1, 0, 1)
+                .filter(center -> BlockPos.streamOutwards(center, 1, 0, 1).allMatch(p -> {
+                    BlockState s = world.getBlockState(p);
+                    return world.isAir(p) || s.isReplaceable() || (premitOverlap && s.isOf(this));
+                }))
+                .findFirst()
+                .map(p -> p.toImmutable());
+    }
+
+    @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        getPlacementPosition(world, state, pos, true).ifPresent(center -> {
+            BlockPos.iterateOutwards(center, 1, 0, 1).forEach(p -> {
+                world.setBlockState(p, getDefaultState().with(MASTER, false));
+            });
+            world.setBlockState(center, getDefaultState().with(MASTER, true));
+        });
+
         super.onPlaced(world, pos, state, placer, stack);
+    }
+
+    @Override
+    public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
+        BlockPos center = getBlockEntityPos(world, state, pos);
+        if (center.equals(pos) && !state.get(MASTER)) {
+            return;
+        }
+        BlockPos.iterateOutwards(center, 1, 0, 1).forEach(p -> {
+            if (world.getBlockState(p).isOf(this)) {
+                world.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+            }
+        });
+    }
+
+    @Override
+    public BlockPos getBlockEntityPos(BlockView world, BlockState state, BlockPos pos) {
+        return BlockPos.findClosest(pos, 1, 0, p -> {
+            BlockState s = world.getBlockState(p);
+            return s.isOf(this) && s.get(MASTER);
+         }).orElse(pos);
+    }
+
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        if (!state.get(MASTER)) {
+            return null;
+        }
+        return super.createBlockEntity(pos, state);
     }
 
     @Override

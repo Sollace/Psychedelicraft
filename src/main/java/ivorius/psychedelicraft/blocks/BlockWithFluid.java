@@ -23,6 +23,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 /**
@@ -36,18 +37,27 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
 
     protected abstract BlockEntityType<T> getBlockEntityType();
 
+    public BlockPos getBlockEntityPos(BlockView world, BlockState state, BlockPos pos) {
+        return pos;
+    }
+
     @Override
     @Deprecated
     public BlockRenderType getRenderType(BlockState state) {
+        if (this == PSBlocks.MASH_TUB && !state.get(MashTubBlock.MASTER)) {
+            return BlockRenderType.INVISIBLE;
+        }
         return BlockRenderType.MODEL;
     }
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         if (!world.isClient && stack.getItem() instanceof FluidContainerItem container) {
+            pos = getBlockEntityPos(world, state, pos);
             world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
                 be.getTank(Direction.UP).deposit(stack);
             });
+            ((ServerWorld)world).getChunkManager().markForUpdate(pos);
         }
     }
 
@@ -55,7 +65,7 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock()) && !world.isClient) {
-            world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
+            world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).ifPresent(be -> {
                 be.onDestroyed((ServerWorld)world);
             });
         }
@@ -64,8 +74,8 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        return world.getBlockEntity(pos, getBlockEntityType()).map(be -> {
-            ActionResult result = onInteract(state, world, pos, player, hand, be);
+        return world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).map(be -> {
+            ActionResult result = onInteract(be.getCachedState(), world, be.getPos(), player, hand, be);
             if (result != ActionResult.PASS) {
                 return result;
             }
@@ -95,7 +105,7 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
     }
 
     @Override
-    public final BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return getBlockEntityType().instantiate(pos, state);
     }
 

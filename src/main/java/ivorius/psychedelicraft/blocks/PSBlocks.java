@@ -15,7 +15,8 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 
 public interface PSBlocks {
-    Block MASH_TUB = register("mash_tub", new MashTubBlock(Settings.of(Material.WOOD).hardness(2)));
+    Block MASH_TUB = register("mash_tub", new MashTubBlock(Settings.of(Material.WOOD)
+            .hardness(2).nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never)));
 
     Block OAK_BARREL = register("oak_barrel", new BarrelBlock(Settings.of(Material.WOOD).hardness(2)));
     Block SPRUCE_BARREL = register("spruce_barrel", new BarrelBlock(Settings.of(Material.WOOD).hardness(2)));
