@@ -17,6 +17,15 @@ import java.util.function.Supplier;
  * Created by lukas on 25.11.14.
  */
 public class AlcoholicFluid extends DrugFluid implements Processable {
+
+    @Deprecated(since = "unused")
+    public static boolean containsAlcohol(ItemStack stack, AlcoholicFluid fluid, Boolean distilled, int minMatured) {
+        return stack.getItem() instanceof FluidContainerItem container
+                && container.getFluid(stack) == fluid
+                && (distilled == null || (fluid.getDistillation(stack) > 0) == distilled)
+                && fluid.getMaturation(stack) >= minMatured;
+    }
+
     final Settings settings;
 
     public AlcoholicFluid(Identifier id, Settings settings) {

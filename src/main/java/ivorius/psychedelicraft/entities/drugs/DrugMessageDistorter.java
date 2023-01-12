@@ -13,34 +13,34 @@ import java.util.Random;
 /**
  * Created by lukas on 22.05.14.
  */
-public class DrugMessageDistorter
-{
-    public static String[] fillerWords = {", like, ", "... like, ", ", uhm, ", ", uhhhh, "};
-    public static String[] startFillerWords = {"Dude, ", "Dood, ", "Dewd, ", "Dude, like, ", "Dood, like, ", "Dewd, like, ", "Yeah... ", "And, "};
+public class DrugMessageDistorter {
+ // TODO: (Sollace) reimplement chat distortion
+    private static final String[] FILLER_WORDS = {
+            ", like, ", "... like, ", ", uhm, ", ", uhhhh, "
+    };
+    private static final String[] START_FILLTER_WORDS = {
+            "Dude, ", "Dood, ", "Dewd, ", "Dude, like, ", "Dood, like, ", "Dewd, like, ", "Yeah... ", "And, "
+    };
 
-    public String distortIncomingMessage(DrugProperties drugProperties, Entity entity, Random random, String message)
-    {
+    public String distortIncomingMessage(DrugProperties drugProperties, Entity entity, Random random, String message) {
         return message;
     }
 
-    public String distortOutgoingMessage(DrugProperties drugProperties, Entity entity, Random random, String message)
-    {
-        if (message.indexOf("/") == 0)
-        {
+    public String distortOutgoingMessage(DrugProperties drugProperties, Entity entity, Random random, String message) {
+        if (message.indexOf("/") == 0) {
             return message;
         }
 
         float alcohol = drugProperties.getDrugValue("Alcohol");
         float zero = drugProperties.getDrugValue("Zero");
         float cannabis = drugProperties.getDrugValue("Cannabis");
-        if (alcohol > 0.0f || zero > 0.0f || cannabis > 0.0f)
+        if (alcohol > 0.0f || zero > 0.0f || cannabis > 0.0f) {
             return distortIncomingMessage(message, random, alcohol, zero, cannabis);
-
+        }
         return message;
     }
 
-    public String distortIncomingMessage(String message, Random random, float alcohol, float zero, float cannabis)
-    {
+    public String distortIncomingMessage(String message, Random random, float alcohol, float zero, float cannabis) {
         StringBuilder builder = new StringBuilder();
 
         float randomCaseChance = MathHelper.lerp(alcohol, 0.3f, 1.0f) * 0.06f + MathHelper.lerp(zero, 0.0f, 0.3f);
@@ -58,84 +58,58 @@ public class DrugMessageDistorter
         float startFillerWordChance = MathHelper.lerp(cannabis, 0.2f, 0.95f) * 0.7f;
 
         boolean wasPoint = true;
-        for (int i = 0; i < message.length(); i++)
-        {
+        for (int i = 0; i < message.length(); i++) {
             char origChar = message.charAt(i);
             char curChar = origChar;
 
-            if (random.nextFloat() < oneZeroChance)
-            {
+            if (random.nextFloat() < oneZeroChance) {
                 curChar = random.nextBoolean() ? '0' : '1';
-            }
-            else if (random.nextFloat() < randomCharChance)
-            {
+            } else if (random.nextFloat() < randomCharChance) {
                 curChar = (char) (' ' + random.nextInt(('~' - ' ' + 1)));
-            }
-            else if (random.nextFloat() < randomLetterChance)
-            {
+            } else if (random.nextFloat() < randomLetterChance) {
                 curChar = (char) ((random.nextBoolean() ? 'a' : 'A') + random.nextInt(26));
-            }
-            else if (random.nextFloat() < randomCaseChance)
-            {
-                if (random.nextBoolean())
-                {
-                    if (Character.isUpperCase(curChar))
-                    {
+            } else if (random.nextFloat() < randomCaseChance) {
+                if (random.nextBoolean()) {
+                    if (Character.isUpperCase(curChar)) {
                         curChar = Character.toLowerCase(curChar);
-                    }
-                    else
-                    {
+                    } else {
                         curChar = Character.toUpperCase(curChar);
                     }
                 }
             }
 
-            if ((curChar == 's' || curChar == 'S') && random.nextFloat() < sToShChance)
-            {
+            if ((curChar == 's' || curChar == 'S') && random.nextFloat() < sToShChance) {
                 builder.append(curChar).append(random.nextFloat() < longShChance ? "hh" : "h");
-            }
-            else if (curChar == ' ' && random.nextFloat() < fillerWordChance)
-            {
-                builder.append(fillerWords[random.nextInt(fillerWords.length)]);
-            }
-            else if (wasPoint && random.nextFloat() < startFillerWordChance)
-            {
-                builder.append(startFillerWords[random.nextInt(startFillerWords.length)]).append(curChar);
-            }
-            else
-            {
+            } else if (curChar == ' ' && random.nextFloat() < fillerWordChance) {
+                builder.append(FILLER_WORDS[random.nextInt(FILLER_WORDS.length)]);
+            } else if (wasPoint && random.nextFloat() < startFillerWordChance) {
+                builder.append(START_FILLTER_WORDS[random.nextInt(START_FILLTER_WORDS.length)]).append(curChar);
+            } else {
                 builder.append(curChar);
             }
 
             wasPoint = false; // Grammar and stuff... I'd rather be safe
 
-            if (random.nextFloat() < longCharChance)
-            {
+            if (random.nextFloat() < longCharChance) {
                 float moreChance = 0.6f * 2.0f;
-                do
-                {
+                do {
                     moreChance *= 0.5f;
                     builder.append(curChar);
-                }
-                while (random.nextFloat() < moreChance);
+                } while (random.nextFloat() < moreChance);
             }
 
-            if (random.nextFloat() < hicChance)
-            {
+            if (random.nextFloat() < hicChance) {
                 builder.append("*hic*");
             }
 
-            if (random.nextFloat() < rewindChance)
-            {
+            if (random.nextFloat() < rewindChance) {
                 builder.append("... ");
                 int wordsRewind = random.nextInt(5) + 1;
-                for (int j = 0; j < wordsRewind; j++)
-                {
+                for (int j = 0; j < wordsRewind; j++) {
                     i = message.lastIndexOf(" ", i - 1);
                 }
 
-                if (i < 0)
-                {
+                if (i < 0) {
                     i = 0;
                 }
             }
