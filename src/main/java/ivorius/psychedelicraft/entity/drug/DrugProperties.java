@@ -3,13 +3,15 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drugs;
+package ivorius.psychedelicraft.entity.drug;
 
 import ivorius.psychedelicraft.*;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.screen.TickableContainer;
 import ivorius.psychedelicraft.client.sound.DrugMusicManager;
 import ivorius.psychedelicraft.entity.*;
+import ivorius.psychedelicraft.entity.drug.hallucination.DrugHallucinationManager;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.mixin.MixinLivingEntity;
 import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgDrugProperties;

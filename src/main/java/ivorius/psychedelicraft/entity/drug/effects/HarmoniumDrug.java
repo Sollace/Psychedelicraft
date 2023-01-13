@@ -3,9 +3,9 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drugs.effects;
+package ivorius.psychedelicraft.entity.drug.effects;
 
-import ivorius.psychedelicraft.entity.drugs.DrugType;
+import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
 

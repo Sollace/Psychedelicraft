@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.item;
 
-import ivorius.psychedelicraft.entity.drugs.DrugInfluence;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.UseAction;
 

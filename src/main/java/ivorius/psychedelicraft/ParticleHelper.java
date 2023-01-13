@@ -2,8 +2,6 @@ package ivorius.psychedelicraft;
 
 import java.util.function.Supplier;
 
-import org.joml.Vector3f;
-
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.*;
@@ -13,7 +11,7 @@ import net.minecraft.world.World;
 public interface ParticleHelper {
 
     static void spawnColoredParticle(Entity entity, float[] color, Vec3d direction, float speed, float size) {
-        var c = new Vector3f(color[0], color[1], color[2]);
+        //var c = new Vector3f(color[0], color[1], color[2]);
         Vec3d velocity = entity.getVelocity().add(direction.normalize().multiply(speed));
         Vec3d pos = entity.getEyePos();
         // TODO: (Sollace) Register a custom particle type that supports setting a color

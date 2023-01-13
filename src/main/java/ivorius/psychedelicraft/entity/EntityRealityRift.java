@@ -7,8 +7,8 @@ package ivorius.psychedelicraft.entity;
 
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.block.PSBlocks;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
-import ivorius.psychedelicraft.entity.drugs.DrugType;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;

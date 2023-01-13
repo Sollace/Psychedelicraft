@@ -12,8 +12,8 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 
-import ivorius.psychedelicraft.entity.drugs.DrugInfluence;
-import ivorius.psychedelicraft.entity.drugs.DrugType;
+import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 
 /**
  * Created by lukas on 22.10.14.

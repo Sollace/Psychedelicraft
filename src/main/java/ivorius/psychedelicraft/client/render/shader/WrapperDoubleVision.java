@@ -7,8 +7,8 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.shader.program.ShaderDoubleVision;
-import ivorius.psychedelicraft.entity.drugs.Drug;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.Drug;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.util.math.MathHelper;

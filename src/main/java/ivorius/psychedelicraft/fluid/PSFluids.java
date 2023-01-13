@@ -6,8 +6,8 @@
 package ivorius.psychedelicraft.fluid;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.entity.drugs.DrugInfluence;
-import ivorius.psychedelicraft.entity.drugs.DrugType;
+import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import net.minecraft.predicate.NumberRange.IntRange;
 
 /**

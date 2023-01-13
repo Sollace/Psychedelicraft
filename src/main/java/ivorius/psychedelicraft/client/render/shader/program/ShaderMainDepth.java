@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.client.render.shader.program;
 
 import ivorius.psychedelicraft.client.render.GLStateProxy;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 

@@ -3,7 +3,7 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drugs;
+package ivorius.psychedelicraft.entity.drug;
 
 import java.util.*;
 

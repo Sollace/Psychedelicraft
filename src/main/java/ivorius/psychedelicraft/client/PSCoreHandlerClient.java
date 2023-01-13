@@ -7,8 +7,8 @@ package ivorius.psychedelicraft.client;
 
 import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.program.PSRenderStates;
-import ivorius.psychedelicraft.entity.drugs.Drug;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.Drug;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.client.MinecraftClient;

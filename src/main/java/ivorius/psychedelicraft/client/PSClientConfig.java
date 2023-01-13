@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.joml.Vector2f;
 
-import ivorius.psychedelicraft.entity.drugs.DrugType;
+import ivorius.psychedelicraft.entity.drug.DrugType;
 
 public class PSClientConfig {
     public PSClientConfig.Audio audio = new Audio();

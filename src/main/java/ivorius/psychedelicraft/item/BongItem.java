@@ -5,8 +5,8 @@
 
 package ivorius.psychedelicraft.item;
 
-import ivorius.psychedelicraft.entity.drugs.DrugInfluence;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.recipe.RecipeUtils;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;

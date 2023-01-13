@@ -3,11 +3,11 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drugs.effects;
+package ivorius.psychedelicraft.entity.drug.effects;
 
 import java.util.Optional;
 
-import ivorius.psychedelicraft.entity.drugs.DrugType;
+import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;

@@ -3,13 +3,13 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drugs.effects;
+package ivorius.psychedelicraft.entity.drug.effects;
 
 import java.util.Optional;
 
 import ivorius.psychedelicraft.PSDamageSources;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
-import ivorius.psychedelicraft.entity.drugs.DrugType;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;

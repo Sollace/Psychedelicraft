@@ -3,7 +3,7 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drugs;
+package ivorius.psychedelicraft.entity.drug;
 
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.registry.Registry;
@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 import java.util.function.Supplier;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.entity.drugs.effects.*;
+import ivorius.psychedelicraft.entity.drug.effects.*;
 
 /**
  * Created by lukas on 22.10.14.

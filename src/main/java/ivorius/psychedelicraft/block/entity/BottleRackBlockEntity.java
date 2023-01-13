@@ -11,7 +11,6 @@ import net.minecraft.util.math.Direction.Axis;
 import java.util.*;
 
 import ivorius.psychedelicraft.PSTags;
-import ivorius.psychedelicraft.item.PSItems;
 
 /**
  * Created by lukas on 16.11.14.

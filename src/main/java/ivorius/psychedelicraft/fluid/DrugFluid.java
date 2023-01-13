@@ -14,7 +14,8 @@ import net.minecraft.util.math.MathHelper;
 
 import org.jetbrains.annotations.Nullable;
 
-import ivorius.psychedelicraft.entity.drugs.*;
+import ivorius.psychedelicraft.entity.drug.*;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 
 import java.util.ArrayList;
 import java.util.List;

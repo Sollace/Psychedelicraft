@@ -6,13 +6,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class IvBezierPath3DRendererText {
+    @SuppressWarnings("unused")
     private static final TextRenderer TEXT_RENDERER = MinecraftClient.getInstance().textRenderer;
 
     public IvBezierPath3DRendererText setFont(Identifier font) {
         return this;
     }
 
-    @Deprecated
     public IvBezierPath3DRendererText setText(String text) {
         return setText(Text.literal(text));
     }

@@ -7,8 +7,8 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.effect.EffectMotionBlur;
-import ivorius.psychedelicraft.entity.drugs.Drug;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.Drug;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 
 /**

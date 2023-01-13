@@ -3,24 +3,25 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drugs;
+package ivorius.psychedelicraft.entity.drug.influence;
 
-import ivorius.psychedelicraft.entity.drugs.effects.HarmoniumDrug;
+import ivorius.psychedelicraft.entity.drug.*;
+import ivorius.psychedelicraft.entity.drug.effects.HarmoniumDrug;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 10.03.14.
  */
-public class DrugInfluenceHarmonium extends DrugInfluence {
+public class HarmoniumDrugInfluence extends DrugInfluence {
     public float[] color;
 
-    public DrugInfluenceHarmonium(int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color) {
+    public HarmoniumDrugInfluence(int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color) {
         super(DrugType.HARMONIUM, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
         this.color = color;
     }
 
-    public DrugInfluenceHarmonium() {
+    public HarmoniumDrugInfluence() {
         super(InfluenceType.HARMONIUM);
         color = new float[3];
     }

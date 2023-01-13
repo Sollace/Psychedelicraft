@@ -3,12 +3,14 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drugs;
+package ivorius.psychedelicraft.entity.drug.influence;
 
 import java.util.Locale;
 import java.util.Optional;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;

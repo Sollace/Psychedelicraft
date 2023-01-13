@@ -2,7 +2,7 @@ package ivorius.psychedelicraft.network;
 
 import com.sollace.fabwork.api.packets.HandledPacket;
 
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;

@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.entity.drugs;
+package ivorius.psychedelicraft.entity.drug.hallucination;
 /*
  *  Copyright (c) 2014, Lukas Tenbrink.
  *  * http://lukas.axxim.net

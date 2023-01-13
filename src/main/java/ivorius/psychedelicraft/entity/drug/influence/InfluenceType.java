@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.entity.drugs;
+package ivorius.psychedelicraft.entity.drug.influence;
 
 import java.util.Optional;
 import java.util.function.Function;

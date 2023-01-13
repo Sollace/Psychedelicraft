@@ -3,31 +3,31 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drugs.effects;
+package ivorius.psychedelicraft.entity.drug.effects;
 
-import ivorius.psychedelicraft.entity.drugs.DrugType;
+import ivorius.psychedelicraft.entity.drug.DrugType;
 
 /**
  * Created by lukas on 01.11.14.
  */
-public class RedShroomsDrug extends SimpleDrug {
-    public RedShroomsDrug(double decSpeed, double decSpeedPlus) {
-        super(DrugType.RED_SHROOMS, decSpeed, decSpeedPlus);
+public class BrownShroomsDrug extends SimpleDrug {
+    public BrownShroomsDrug(double decSpeed, double decSpeedPlus) {
+        super(DrugType.BROWN_SHROOMS, decSpeed, decSpeedPlus);
     }
 
     @Override
     public float colorHallucinationStrength() {
-        return (float) getActiveValue() * 1.3F;
+        return (float) getActiveValue() * 0.8f;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return (float) getActiveValue() * 0.7F;
+        return (float) getActiveValue() * 1.0f;
     }
 
     @Override
     public float contextualHallucinationStrength() {
-        return (float) getActiveValue() * 0.2f;
+        return (float) getActiveValue() * 0.35f;
     }
 
     @Override

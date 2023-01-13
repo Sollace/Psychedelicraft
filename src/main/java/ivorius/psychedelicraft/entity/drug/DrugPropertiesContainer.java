@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.entity.drugs;
+package ivorius.psychedelicraft.entity.drug;
 
 public interface DrugPropertiesContainer {
     DrugProperties getDrugProperties();
