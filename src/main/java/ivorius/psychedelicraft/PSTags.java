@@ -12,6 +12,7 @@ import net.minecraft.registry.tag.TagKey;
 
 public interface PSTags {
     TagKey<Block> BARRELS = of("barrels");
+    TagKey<Block> DRYING_TABLES = of("drying_tables");
 
     static TagKey<Block> of(String name) {
         return TagKey.of(RegistryKeys.BLOCK, Psychedelicraft.id(name));
