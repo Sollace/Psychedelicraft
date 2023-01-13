@@ -1,5 +1,8 @@
 package ivorius.psychedelicraft.client.sound;
 
+import java.util.Locale;
+
+import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
@@ -17,13 +20,15 @@ import net.minecraft.util.math.random.Random;
  * Created by lukas on 22.11.14.
  */
 public class MovingSoundDrug extends MovingSoundInstance {
+
+    // TODO: Need to restart ambient sounds when the player joins a world/moves between dimensions
     public static void initializeForEntity(DrugProperties drugProperties) {
         SoundManager soundHandler = MinecraftClient.getInstance().getSoundManager();
         for (String drugName : drugProperties.getAllDrugNames()) {
             if (PsychedelicraftClient.getConfig().audio.hasBackgroundMusic(drugName)) {
-                Identifier id = Psychedelicraft.id("drug." + drugName.toLowerCase());
-                // TODO: PSSoundEvents
-                soundHandler.play(new MovingSoundDrug(Registries.SOUND_EVENT.get(id), SoundCategory.AMBIENT, drugProperties.asEntity(), drugProperties, drugName));
+                Registries.SOUND_EVENT.getOrEmpty(Psychedelicraft.id("drug." + drugName.toLowerCase(Locale.ROOT))).ifPresent(sound -> {
+                    soundHandler.play(new MovingSoundDrug(sound, SoundCategory.AMBIENT, drugProperties.asEntity(), drugProperties, drugName));
+                });
             }
         }
     }
