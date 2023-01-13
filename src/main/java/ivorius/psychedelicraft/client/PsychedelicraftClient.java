@@ -10,6 +10,9 @@ import ivorius.psychedelicraft.config.JsonConfig;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 
 /**
  * @author Sollace
@@ -36,6 +39,15 @@ public class PsychedelicraftClient implements ClientModInitializer {
                     SmoothCameraHelper.INSTANCE.update(DrugEffectInterpreter.getSmoothVision(drugProperties));
                 });
             }
+        });
+
+        WorldRenderEvents.AFTER_ENTITIES.register(context -> {
+            MinecraftClient client = MinecraftClient.getInstance();
+            DrugProperties.of((Entity)client.player).ifPresent(properties -> {
+                properties.getDrugRenderer().ifPresent(renderer -> {
+                    renderer.renderAllHallucinations(client.getTickDelta(), properties);
+                });
+            });
         });
 
         PSRenderers.bootstrap();

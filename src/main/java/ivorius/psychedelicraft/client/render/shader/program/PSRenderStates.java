@@ -12,9 +12,12 @@ import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.effect.EffectWrapper;
 import ivorius.psychedelicraft.client.render.shader.*;
+import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.util.Window;
+import net.minecraft.client.util.math.MatrixStack;
+
 import org.apache.commons.io.IOUtils;
 
 import java.util.ArrayList;
@@ -31,8 +34,43 @@ public class PSRenderStates {
 
     private static String currentRenderPass;
 
+    private static final String[] RENDER_PASSES = { "Default", "Depth", "Shadows" };
+
     @Deprecated(since = "hook")
-    public static boolean startRenderPass(String pass, float partialTicks, float ticks) {
+    public static void beforeWorldRender(float partialTicks, int rendererUpdateCount) {
+
+        float ticks = rendererUpdateCount + partialTicks;
+       // preRender(ticks);
+
+        for (String pass : RENDER_PASSES) {
+            if (!pass.equals("Default")) {
+                if (startRenderPass(pass, partialTicks, ticks)) {
+                   // MinecraftClient.getInstance().worldRenderer.renderWorld(partialTicks, 0L);
+                    endRenderPass();
+                }
+            }
+        }
+
+        startRenderPass("Default", partialTicks, ticks);
+       // preRender3D(ticks);
+    }
+
+    @Deprecated(since = "hook")
+    public static void afterWorldRender(MatrixStack matrices, float partialTicks, int rendererUpdateCount) {
+        float ticks = rendererUpdateCount + partialTicks;
+        PSRenderStates.endRenderPass();
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        DrugProperties drugProperties = DrugProperties.getDrugProperties(mc.cameraEntity);
+
+        if (drugProperties != null && drugProperties.renderer != null) {
+            drugProperties.renderer.renderOverlaysBeforeShaders(matrices, partialTicks, drugProperties.asEntity(), rendererUpdateCount, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight(), drugProperties);
+        }
+
+       // postRender(ticks, partialTicks);
+    }
+
+    private static boolean startRenderPass(String pass, float partialTicks, float ticks) {
         MinecraftClient mc = MinecraftClient.getInstance();
 
         if (currentRenderPass != null)
@@ -55,8 +93,7 @@ public class PSRenderStates {
         return true;
     }
 
-    @Deprecated(since = "hook")
-    public static void endRenderPass() {
+    private static void endRenderPass() {
         switch (currentRenderPass) {
             case "Default":
                 break;
@@ -156,7 +193,7 @@ public class PSRenderStates {
         return false;
     }
 
-    @Deprecated(since = "unused/hook")
+    @Deprecated(since = "hook")
     public static void preRenderSky(float partialTicks) {
         /*if (renderFakeSkybox)
         {
