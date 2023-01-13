@@ -5,8 +5,8 @@
 
 package ivorius.psychedelicraft.entity.drugs.effects;
 
-import ivorius.psychedelicraft.entity.drugs.DrugHallucinationManager;
 import ivorius.psychedelicraft.entity.drugs.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
 
 public class HarmoniumDrug extends SimpleDrug {
@@ -18,12 +18,12 @@ public class HarmoniumDrug extends SimpleDrug {
 
     @Override
     public void applyContrastColorization(float[] rgba) {
-        DrugHallucinationManager.mixColorsDynamic(currentColor, rgba, (float) getActiveValue());
+        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue());
     }
 
     @Override
     public void applyColorBloom(float[] rgba) {
-        DrugHallucinationManager.mixColorsDynamic(currentColor, rgba, (float) getActiveValue() * 3);
+        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue() * 3);
     }
 
     @Override

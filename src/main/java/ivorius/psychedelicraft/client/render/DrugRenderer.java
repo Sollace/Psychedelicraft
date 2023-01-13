@@ -169,8 +169,9 @@ public class DrugRenderer implements IDrugRenderer {
 
     @Override
     public void renderAllHallucinations(float par1, DrugProperties drugProperties) {
-        for (DrugHallucination h : drugProperties.getHallucinations().entities) {
-            h.render(par1, MathHelper.clamp(drugProperties.getHallucinations().getHallucinationStrength(drugProperties, par1) * 15, 0, 1));
+        DrugHallucinationManager hallucinations = drugProperties.getHallucinations();
+        for (DrugHallucination h : hallucinations.getHallucinations()) {
+            h.render(par1, MathHelper.clamp(hallucinations.getHallucinationStrength(drugProperties, par1) * 15, 0, 1));
         }
     }
 

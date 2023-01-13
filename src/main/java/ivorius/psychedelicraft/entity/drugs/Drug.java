@@ -36,7 +36,8 @@ public interface Drug extends NbtSerialisable {
 
     AggregateModifier SUPER_SATURATION_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::superSaturationHallucinationStrength, AggregateModifier.Combiner.INVERSE_MUL);
     AggregateModifier DESATURATION_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::desaturationHallucinationStrength, AggregateModifier.Combiner.INVERSE_MUL);
-    AggregateModifier BLOOM_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::desaturationHallucinationStrength, AggregateModifier.Combiner.SUM);
+    AggregateModifier BLOOM_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::bloomHallucinationStrength, AggregateModifier.Combiner.SUM);
+    AggregateModifier MOTION_BLUR = AggregateModifier.create(0, Drug::motionBlur, AggregateModifier.Combiner.INVERSE_MUL);
 
     DrugType getType();
 
