@@ -5,13 +5,13 @@
 
 package ivorius.psychedelicraft.client;
 
+import ivorius.psychedelicraft.client.render.DrugEffectInterpreter;
+import ivorius.psychedelicraft.client.render.SmoothCameraHelper;
+import ivorius.psychedelicraft.client.render.shader.program.PSRenderStates;
 import ivorius.psychedelicraft.client.sound.MovingSoundDrug;
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
-import ivorius.psychedelicraft.client.rendering.DrugEffectInterpreter;
-import ivorius.psychedelicraft.client.rendering.SmoothCameraHelper;
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;

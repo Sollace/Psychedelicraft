@@ -5,14 +5,13 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
-
-import ivorius.psychedelicraft.fluids.*;
 
 public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
     private final Processable.ProcessType processType;

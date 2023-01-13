@@ -7,10 +7,10 @@ package ivorius.psychedelicraft.block.entity;
 
 import java.util.*;
 
-import ivorius.psychedelicraft.client.rendering.bezier.IvBezierPath3D;
-import ivorius.psychedelicraft.entities.EntityRealityRift;
-import ivorius.psychedelicraft.entities.PSEntities;
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.client.render.bezier.IvBezierPath3D;
+import ivorius.psychedelicraft.entity.EntityRealityRift;
+import ivorius.psychedelicraft.entity.PSEntities;
+import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.*;

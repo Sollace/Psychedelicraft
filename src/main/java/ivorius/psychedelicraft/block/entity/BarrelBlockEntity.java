@@ -5,14 +5,13 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import static ivorius.psychedelicraft.fluid.FluidHelper.MILLIBUCKETS_PER_LITER;
+
+import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
-
-import static ivorius.psychedelicraft.fluids.FluidHelper.MILLIBUCKETS_PER_LITER;
-
-import ivorius.psychedelicraft.fluids.*;
 
 public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     public static final int BARREL_CAPACITY = MILLIBUCKETS_PER_LITER * 16;

@@ -3,11 +3,11 @@ package ivorius.psychedelicraft.client;
 import java.util.function.Supplier;
 
 import ivorius.psychedelicraft.client.item.PSModelPredicates;
-import ivorius.psychedelicraft.client.rendering.*;
-import ivorius.psychedelicraft.client.rendering.shaders.PSRenderStates;
+import ivorius.psychedelicraft.client.render.*;
+import ivorius.psychedelicraft.client.render.shader.program.PSRenderStates;
 import ivorius.psychedelicraft.client.screen.PSScreens;
 import ivorius.psychedelicraft.config.JsonConfig;
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 

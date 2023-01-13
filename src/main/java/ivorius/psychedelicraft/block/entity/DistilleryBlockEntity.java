@@ -5,9 +5,9 @@
 
 package ivorius.psychedelicraft.block.entity;
 
-import ivorius.psychedelicraft.blocks.BlockWithFluid;
-import ivorius.psychedelicraft.blocks.DistilleryBlock;
-import ivorius.psychedelicraft.fluids.*;
+import ivorius.psychedelicraft.block.BlockWithFluid;
+import ivorius.psychedelicraft.block.DistilleryBlock;
+import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;

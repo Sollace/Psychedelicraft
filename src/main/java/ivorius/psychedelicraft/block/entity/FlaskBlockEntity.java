@@ -16,10 +16,10 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import ivorius.psychedelicraft.blocks.BlockWithFluid;
-import ivorius.psychedelicraft.fluids.FluidHelper;
-import ivorius.psychedelicraft.fluids.Resovoir;
-import ivorius.psychedelicraft.items.PSItems;
+import ivorius.psychedelicraft.block.BlockWithFluid;
+import ivorius.psychedelicraft.fluid.FluidHelper;
+import ivorius.psychedelicraft.fluid.Resovoir;
+import ivorius.psychedelicraft.item.PSItems;
 
 /**
  * Created by lukas on 25.10.14.

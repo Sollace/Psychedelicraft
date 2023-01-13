@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -12,8 +13,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
-
-import ivorius.psychedelicraft.fluids.*;
 
 /**
  * Created by lukas on 27.10.14.

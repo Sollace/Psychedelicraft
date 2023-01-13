@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.mojang.datafixers.util.Either;
 
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
-import ivorius.psychedelicraft.entities.drugs.DrugPropertiesContainer;
+import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugPropertiesContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

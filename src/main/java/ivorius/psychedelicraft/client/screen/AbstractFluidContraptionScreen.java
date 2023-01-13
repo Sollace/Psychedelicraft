@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.client.screen;
 
-import ivorius.psychedelicraft.fluids.Resovoir;
-import ivorius.psychedelicraft.fluids.SimpleFluid;
+import ivorius.psychedelicraft.fluid.Resovoir;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.*;

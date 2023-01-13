@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.BlockWithFluid;
+import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.widget.ButtonWidget;

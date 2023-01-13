@@ -3,7 +3,7 @@ package ivorius.psychedelicraft.client.sound;
 import java.util.Optional;
 
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 import net.minecraft.util.math.MathHelper;
 
 /**

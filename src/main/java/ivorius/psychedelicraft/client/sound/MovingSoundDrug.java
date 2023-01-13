@@ -2,7 +2,7 @@ package ivorius.psychedelicraft.client.sound;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.client.sound.SoundManager;

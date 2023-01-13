@@ -1,9 +1,9 @@
 package ivorius.psychedelicraft.client.item;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.fluids.SimpleFluid;
-import ivorius.psychedelicraft.items.FluidContainerItem;
-import ivorius.psychedelicraft.items.PSItems;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.item.FluidContainerItem;
+import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.item.DyeableItem;

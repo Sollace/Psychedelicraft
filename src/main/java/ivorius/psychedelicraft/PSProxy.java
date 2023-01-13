@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft;
 
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 
 /**
  * Created by lukas on 24.05.14.

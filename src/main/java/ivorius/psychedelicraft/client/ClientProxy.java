@@ -6,8 +6,8 @@
 package ivorius.psychedelicraft.client;
 
 import ivorius.psychedelicraft.PSProxy;
-import ivorius.psychedelicraft.client.rendering.DrugRenderer;
-import ivorius.psychedelicraft.entities.drugs.DrugProperties;
+import ivorius.psychedelicraft.client.render.DrugRenderer;
+import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 
 public class ClientProxy extends PSProxy {
     @Override

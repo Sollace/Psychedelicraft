@@ -5,10 +5,10 @@
 
 package ivorius.psychedelicraft.screen;
 
-import ivorius.psychedelicraft.blocks.BlockWithFluid;
+import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.client.screen.TickableContainer;
-import ivorius.psychedelicraft.fluids.Resovoir;
-import ivorius.psychedelicraft.items.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.Resovoir;
+import ivorius.psychedelicraft.item.FluidContainerItem;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.Inventory;

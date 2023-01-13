@@ -6,8 +6,8 @@
 package ivorius.psychedelicraft.block.entity;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.blocks.PSBlocks;
-import ivorius.psychedelicraft.crafting.DryingRegistry;
+import ivorius.psychedelicraft.block.PSBlocks;
+import ivorius.psychedelicraft.recipe.DryingRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;

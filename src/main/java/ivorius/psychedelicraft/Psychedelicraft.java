@@ -5,18 +5,18 @@
 
 package ivorius.psychedelicraft;
 
-import ivorius.psychedelicraft.blocks.PSBlocks;
-import ivorius.psychedelicraft.commands.*;
+import ivorius.psychedelicraft.block.PSBlocks;
+import ivorius.psychedelicraft.command.*;
 import ivorius.psychedelicraft.config.JsonConfig;
 import ivorius.psychedelicraft.config.PSConfig;
-import ivorius.psychedelicraft.crafting.PSRecipes;
-import ivorius.psychedelicraft.entities.PSEntities;
-import ivorius.psychedelicraft.fluids.PSFluids;
-import ivorius.psychedelicraft.items.PSItemGroups;
-import ivorius.psychedelicraft.items.PSItems;
+import ivorius.psychedelicraft.entity.PSEntities;
+import ivorius.psychedelicraft.fluid.PSFluids;
+import ivorius.psychedelicraft.item.PSItemGroups;
+import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.network.Channel;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
-import ivorius.psychedelicraft.worldgen.PSWorldGen;
+import ivorius.psychedelicraft.world.gen.PSWorldGen;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 
