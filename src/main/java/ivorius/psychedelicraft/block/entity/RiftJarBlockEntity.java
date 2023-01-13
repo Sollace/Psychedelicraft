@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.client.render.bezier.IvBezierPath3D;
 import ivorius.psychedelicraft.entity.EntityRealityRift;
 import ivorius.psychedelicraft.entity.PSEntities;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.*;
@@ -92,8 +93,8 @@ public class RiftJarBlockEntity extends BlockEntity {
                     ), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR
                 ).stream().flatMap(DrugProperties::stream).forEach(drugProperties -> {
                     double effect = (5 - drugProperties.asEntity().getPos().distanceTo(center)) * 0.2F * minus;
-                    drugProperties.addToDrug("Zero", effect * 5);
-                    drugProperties.addToDrug("Power", effect * 35);
+                    drugProperties.addToDrug(DrugType.ZERO, effect * 5);
+                    drugProperties.addToDrug(DrugType.POWER, effect * 35);
                 });
 
                 currentRiftFraction -= minus;

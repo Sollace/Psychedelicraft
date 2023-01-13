@@ -23,7 +23,7 @@ public class WrapperMotionBlur extends ScreenEffectWrapper<EffectMotionBlur> {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
         if (PsychedelicraftClient.getConfig().visual.doMotionBlur && drugProperties != null) {
-            screenEffect.motionBlur = drugProperties.hallucinationManager.getMotionBlur(drugProperties, partialTicks);
+            screenEffect.motionBlur = drugProperties.getHallucinations().getMotionBlur(drugProperties, partialTicks);
         } else {
             screenEffect.motionBlur = 0.0f;
         }

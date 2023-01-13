@@ -25,7 +25,7 @@ public class WrapperColorBloom extends ShaderWrapper<ShaderColorBloom> {
 
         shaderInstance.coloredBloom = new float[]{1f, 1f, 1f, 0f};
         if (drugProperties != null) {
-            drugProperties.hallucinationManager.applyColorBloom(drugProperties, shaderInstance.coloredBloom, partialTicks);
+            drugProperties.getHallucinations().applyColorBloom(drugProperties, shaderInstance.coloredBloom, partialTicks);
         }
     }
 }

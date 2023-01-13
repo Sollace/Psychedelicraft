@@ -19,35 +19,20 @@ import java.util.Random;
  */
 @ParametersAreNonnullByDefault
 public interface DrugEffectInterpreter {
-    static float getSmoothVision(DrugProperties drugProperties) {
-        float smoothVision = 0.0f;
-        for (Drug drug : drugProperties.getAllDrugs())
-            smoothVision += drug.headMotionInertness();
-        return  1.0f / (1.0f + smoothVision);
-    }
-
     static float getCameraShiftY(DrugProperties drugProperties, float ticks) {
-        float amplitude = 0.0f;
-
-        for (Drug drug : drugProperties.getAllDrugs())
-            amplitude += (1.0f - amplitude) * drug.viewTrembleStrength();
-
-        if (amplitude > 0.0f)
-            return MathHelper.sin(ticks / 3.0f) * MathHelper.sin(ticks / 3.0f) * amplitude * 0.1f;
-
-        return 0.0f;
+        float amplitude = drugProperties.getModifier(Drug.VIEW_TREMBLE_STRENGTH);
+        if (amplitude > 0) {
+            return MathHelper.square(MathHelper.sin(ticks / 3F)) * amplitude * 0.1F;
+        }
+        return 0;
     }
 
     static float getCameraShiftX(DrugProperties drugProperties, float ticks) {
-        float amplitude = 0.0f;
-
-        for (Drug drug : drugProperties.getAllDrugs())
-            amplitude += (1.0f - amplitude) * drug.viewTrembleStrength();
-
-        if (amplitude > 0.0f)
-            return (new Random((long) (ticks * 1000.0f)).nextFloat() - 0.5f) * 0.05f * amplitude;
-
-        return 0.0f;
+        float amplitude = drugProperties.getModifier(Drug.VIEW_TREMBLE_STRENGTH);
+        if (amplitude <= 0) {
+            return 0;
+        }
+        return (new Random((long) (ticks * 1000)).nextFloat() - 0.5F) * 0.05F * amplitude;
     }
 
     static float getHandShiftY(DrugProperties drugProperties, float ticks) {
@@ -55,14 +40,10 @@ public interface DrugEffectInterpreter {
     }
 
     static float getHandShiftX(DrugProperties drugProperties, float ticks) {
-        float amplitude = 0.0f;
-
-        for (Drug drug : drugProperties.getAllDrugs())
-            amplitude += (1.0f - amplitude) * drug.handTrembleStrength();
-
-        if (amplitude > 0.0f)
-            return (new Random((long) (ticks * 1000.0f)).nextFloat() - 0.5f) * 0.015f * amplitude;
-
-        return 0.0f;
+        float amplitude = drugProperties.getModifier(Drug.HAND_TREMBLE_STRENGTH);
+        if (amplitude <= 0) {
+            return 0;
+        }
+        return (new Random((long) (ticks * 1000.0f)).nextFloat() - 0.5f) * 0.015f * amplitude;
     }
 }

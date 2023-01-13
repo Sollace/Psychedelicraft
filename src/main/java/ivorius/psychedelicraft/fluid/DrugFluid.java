@@ -14,8 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 import org.jetbrains.annotations.Nullable;
 
-import ivorius.psychedelicraft.entity.drugs.DrugInfluence;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +110,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
         getDrugInfluences(fluidStack, drugInfluences);
 
         for (DrugInfluence drugInfluence : drugInfluences) {
-            if (drugInfluence.getDrugName().equals("Alcohol")) {
+            if (drugInfluence.isOf(DrugType.ALCOHOL)) {
                 alcohol += drugInfluence.getMaxInfluence();
             }
         }

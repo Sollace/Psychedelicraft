@@ -84,17 +84,17 @@ public class ShaderMain extends IvShaderInstance3D implements ShaderWorld {
         DrugProperties drugProperties = DrugProperties.of(renderEntity).orElse(null);
 
         if (drugProperties != null) {
-            desaturation = drugProperties.hallucinationManager.getDesaturation(drugProperties, partialTicks);
-            colorIntensification = drugProperties.hallucinationManager.getColorIntensification(drugProperties, partialTicks);
-            quickColorRotationStrength = drugProperties.hallucinationManager.getQuickColorRotation(drugProperties, partialTicks);
-            slowColorRotationStrength = drugProperties.hallucinationManager.getSlowColorRotation(drugProperties, partialTicks);
-            bigWaveStrength = drugProperties.hallucinationManager.getBigWaveStrength(drugProperties, partialTicks);
-            smallWaveStrength = drugProperties.hallucinationManager.getSmallWaveStrength(drugProperties, partialTicks);
-            wiggleWaveStrength = drugProperties.hallucinationManager.getWiggleWaveStrength(drugProperties, partialTicks);
-            surfaceFractalStrength = drugProperties.hallucinationManager.getSurfaceFractalStrength(drugProperties, partialTicks);
-            distantWorldDeformationStrength = drugProperties.hallucinationManager.getDistantWorldDeformationStrength(drugProperties, partialTicks);
-            drugProperties.hallucinationManager.applyContrastColorization(drugProperties, contrastColorization, partialTicks);
-            drugProperties.hallucinationManager.applyPulseColor(drugProperties, pulseColor, partialTicks);
+            desaturation = drugProperties.getHallucinations().getDesaturation(drugProperties, partialTicks);
+            colorIntensification = drugProperties.getHallucinations().getColorIntensification(drugProperties, partialTicks);
+            quickColorRotationStrength = drugProperties.getHallucinations().getQuickColorRotation(drugProperties, partialTicks);
+            slowColorRotationStrength = drugProperties.getHallucinations().getSlowColorRotation(drugProperties, partialTicks);
+            bigWaveStrength = drugProperties.getHallucinations().getBigWaveStrength(drugProperties, partialTicks);
+            smallWaveStrength = drugProperties.getHallucinations().getSmallWaveStrength(drugProperties, partialTicks);
+            wiggleWaveStrength = drugProperties.getHallucinations().getWiggleWaveStrength(drugProperties, partialTicks);
+            surfaceFractalStrength = drugProperties.getHallucinations().getSurfaceFractalStrength(drugProperties, partialTicks);
+            distantWorldDeformationStrength = drugProperties.getHallucinations().getDistantWorldDeformationStrength(drugProperties, partialTicks);
+            drugProperties.getHallucinations().applyContrastColorization(drugProperties, contrastColorization, partialTicks);
+            drugProperties.getHallucinations().applyPulseColor(drugProperties, pulseColor, partialTicks);
         }
 
         setUniformFloats("desaturation", desaturation);

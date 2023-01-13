@@ -5,12 +5,14 @@
 
 package ivorius.psychedelicraft.entity.drugs.effects;
 
+import ivorius.psychedelicraft.entity.drugs.DrugType;
+
 /**
  * Created by lukas on 01.11.14.
  */
 public class PeyoteDrug extends SimpleDrug {
     public PeyoteDrug(double decSpeed, double decSpeedPlus) {
-        super(decSpeed, decSpeedPlus);
+        super(DrugType.PEYOTE, decSpeed, decSpeedPlus);
     }
 
     @Override

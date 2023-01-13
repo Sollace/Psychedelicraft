@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.entity.drugs.effects;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,7 +24,7 @@ public class WarmthDrug extends SimpleDrug {
     private static final Identifier COFFEE_OVERLAY = Psychedelicraft.id("textures/drug/coffee/overlay.png");
 
     public WarmthDrug(double decSpeed, double decSpeedPlus) {
-        super(decSpeed, decSpeedPlus, true);
+        super(DrugType.WARMTH, decSpeed, decSpeedPlus, true);
     }
 
     @Override

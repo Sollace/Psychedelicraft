@@ -60,11 +60,10 @@ public class PSRenderStates {
         float ticks = rendererUpdateCount + partialTicks;
         PSRenderStates.endRenderPass();
         MinecraftClient mc = MinecraftClient.getInstance();
-
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(mc.cameraEntity);
-
-        if (drugProperties != null && drugProperties.renderer != null) {
-            drugProperties.renderer.renderOverlaysBeforeShaders(matrices, partialTicks, drugProperties.asEntity(), rendererUpdateCount, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight(), drugProperties);
+        if (mc.player != null) {
+            DrugRenderer.INSTANCE.renderOverlaysBeforeShaders(matrices, partialTicks, mc.player, rendererUpdateCount,
+                    mc.getWindow().getFramebufferWidth(),
+                    mc.getWindow().getFramebufferHeight(), DrugProperties.of(mc.player));
         }
 
        // postRender(ticks, partialTicks);

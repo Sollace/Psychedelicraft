@@ -30,6 +30,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * Created by lukas on 17.02.14.
  */
 public class DrugRenderer implements IDrugRenderer {
+    public static final DrugRenderer INSTANCE = new DrugRenderer();
 
     public static void renderOverlay(float alpha, int width, int height, Identifier texture, float u0, float v0, float u1, float v1, int offset) {
         RenderSystem.setShaderColor(1, 1, 1, alpha);
@@ -49,7 +50,7 @@ public class DrugRenderer implements IDrugRenderer {
         MinecraftClient.getInstance().getTextureManager().bindTexture(resourceLocation);
     }
 
-    public Identifier hurtOverlay = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "hurtOverlay.png");
+    public Identifier hurtOverlay = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "hurt_overlay.png");
 
     public float experiencedHealth = 5F;
 
@@ -65,7 +66,7 @@ public class DrugRenderer implements IDrugRenderer {
         effectLensFlare = new EffectLensFlare();
         effectLensFlare.sunFlareSizes = new float[]{0.15f, 0.24f, 0.12f, 0.036f, 0.06f, 0.048f, 0.006f, 0.012f, 0.5f, 0.09f, 0.036f, 0.09f, 0.06f, 0.05f, 0.6f};
         effectLensFlare.sunFlareInfluences = new float[]{-1.3f, -2.0f, 0.2f, 0.4f, 0.25f, -0.25f, -0.7f, -1.0f, 1.0f, 1.4f, -1.31f, -1.2f, -1.5f, -1.55f, -3.0f};
-        effectLensFlare.sunBlindnessTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "sunBlindness.png");
+        effectLensFlare.sunBlindnessTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "sun_blindness.png");
         effectLensFlare.sunFlareTextures = new Identifier[effectLensFlare.sunFlareSizes.length];
         for (int i = 0; i < effectLensFlare.sunFlareTextures.length; i++) {
             effectLensFlare.sunFlareTextures[i] = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "flare" + i + ".png");
@@ -73,8 +74,7 @@ public class DrugRenderer implements IDrugRenderer {
     }
 
     @Override
-    public void update(DrugProperties drugProperties, LivingEntity entity)
-    {
+    public void update(DrugProperties drugProperties, LivingEntity entity) {
         if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled) {
             experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
         }
@@ -108,16 +108,16 @@ public class DrugRenderer implements IDrugRenderer {
 
     @ParametersAreNonnullByDefault
     @Override
-    public void distortScreen(float partialTicks, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties)
-    {
+    public void distortScreen(float partialTicks, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties) {
         float wobblyness = 0.0f;
-        for (Drug drug : drugProperties.getAllDrugs())
+        for (Drug drug : drugProperties.getAllDrugs()) {
             wobblyness += drug.viewWobblyness();
+        }
 
-        if (wobblyness > 0.0F)
-        {
-            if (wobblyness > 1.0F)
+        if (wobblyness > 0.0F) {
+            if (wobblyness > 1.0F) {
                 wobblyness = 1.0F;
+            }
 
             float f4 = 5F / (wobblyness * wobblyness + 5F) - wobblyness * 0.04F;
             f4 *= f4;
@@ -169,8 +169,8 @@ public class DrugRenderer implements IDrugRenderer {
 
     @Override
     public void renderAllHallucinations(float par1, DrugProperties drugProperties) {
-        for (DrugHallucination h : drugProperties.hallucinationManager.entities) {
-            h.render(par1, MathHelper.clamp(drugProperties.hallucinationManager.getHallucinationStrength(drugProperties, par1) * 15, 0, 1));
+        for (DrugHallucination h : drugProperties.getHallucinations().entities) {
+            h.render(par1, MathHelper.clamp(drugProperties.getHallucinations().getHallucinationStrength(drugProperties, par1) * 15, 0, 1));
         }
     }
 

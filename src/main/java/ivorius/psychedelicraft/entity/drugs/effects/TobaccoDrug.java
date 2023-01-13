@@ -5,12 +5,14 @@
 
 package ivorius.psychedelicraft.entity.drugs.effects;
 
+import ivorius.psychedelicraft.entity.drugs.DrugType;
+
 /**
  * Created by lukas on 01.11.14.
  */
 public class TobaccoDrug extends SimpleDrug {
     public TobaccoDrug(double decSpeed, double decSpeedPlus) {
-        super(decSpeed, decSpeedPlus);
+        super(DrugType.TOBACCO, decSpeed, decSpeedPlus);
     }
 
     @Override

@@ -71,7 +71,7 @@ public class SmokeableItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (DrugProperties.of(player).timeBreathingSmoke == 0) {
+        if (!DrugProperties.of(player).isBreathingSmoke()) {
             player.setCurrentHand(hand);
             return TypedActionResult.consume(stack);
         }

@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.joml.Vector2f;
 
+import ivorius.psychedelicraft.entity.drugs.DrugType;
+
 public class PSClientConfig {
     public PSClientConfig.Audio audio = new Audio();
     public PSClientConfig.Visual visual = new Visual();
@@ -14,13 +16,13 @@ public class PSClientConfig {
         public String[] drugsWithBackgroundMusic = new String[0];
         private transient Set<String> drugsWithBackgroundMusicSet;
 
-        public boolean hasBackgroundMusic(String drugName) {
+        public boolean hasBackgroundMusic(DrugType drugType) {
             if (drugsWithBackgroundMusicSet == null) {
                 drugsWithBackgroundMusicSet = Arrays.stream(drugsWithBackgroundMusic == null ? new String[0] : drugsWithBackgroundMusic)
                         .distinct()
                         .collect(Collectors.toSet());
             }
-            return drugsWithBackgroundMusicSet.contains(drugName);
+            return drugsWithBackgroundMusicSet.contains(drugType.id().toString());
         }
     }
 

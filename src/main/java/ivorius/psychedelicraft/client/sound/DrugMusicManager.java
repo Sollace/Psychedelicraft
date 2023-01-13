@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -12,13 +13,13 @@ import net.minecraft.util.math.MathHelper;
 public class DrugMusicManager {
     public static final float PLAY_THRESHOLD = 0.01F;
 
-    private Optional<String> activeDrug = Optional.empty();
+    private Optional<DrugType> activeDrug = Optional.empty();
     private float volume;
 
     public void update(DrugProperties properties) {
         if (activeDrug.isEmpty()) {
             activeDrug = properties.getAllDrugNames().stream()
-                .filter(drugName -> PsychedelicraftClient.getConfig().audio.hasBackgroundMusic(drugName) && properties.getDrugValue(drugName) >= PLAY_THRESHOLD)
+                .filter(type -> PsychedelicraftClient.getConfig().audio.hasBackgroundMusic(type) && properties.getDrugValue(type) >= PLAY_THRESHOLD)
                 .findFirst();
         }
 
@@ -35,7 +36,7 @@ public class DrugMusicManager {
         }
     }
 
-    public float getVolumeFor(String drugName) {
-        return activeDrug.filter(drugName::equals).isPresent() ? volume : 0;
+    public float getVolumeFor(DrugType drugType) {
+        return activeDrug.filter(drugType::equals).isPresent() ? volume : 0;
     }
 }

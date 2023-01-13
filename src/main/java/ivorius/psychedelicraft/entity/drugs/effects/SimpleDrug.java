@@ -7,8 +7,7 @@ package ivorius.psychedelicraft.entity.drugs.effects;
 
 import java.util.Optional;
 
-import ivorius.psychedelicraft.entity.drugs.Drug;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.*;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -26,15 +25,23 @@ public class SimpleDrug implements Drug {
     private final double decreaseSpeedPlus;
     private final boolean invisible;
 
-    public SimpleDrug(double decSpeed, double decSpeedPlus) {
-        this(decSpeed, decSpeedPlus, false);
+    private final DrugType type;
+
+    public SimpleDrug(DrugType type, double decSpeed, double decSpeedPlus) {
+        this(type, decSpeed, decSpeedPlus, false);
     }
 
-    public SimpleDrug(double decSpeed, double decSpeedPlus, boolean invisible) {
+    public SimpleDrug(DrugType type, double decSpeed, double decSpeedPlus, boolean invisible) {
+        this.type = type;
         decreaseSpeed = decSpeed;
         decreaseSpeedPlus = decSpeedPlus;
 
         this.invisible = invisible;
+    }
+
+    @Override
+    public final DrugType getType() {
+        return type;
     }
 
     public void setActiveValue(double value) {

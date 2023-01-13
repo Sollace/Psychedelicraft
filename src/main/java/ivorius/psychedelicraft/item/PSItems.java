@@ -10,8 +10,7 @@ import static ivorius.psychedelicraft.fluid.FluidHelper.MILLIBUCKETS_PER_LITER;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
 import ivorius.psychedelicraft.block.entity.*;
-import ivorius.psychedelicraft.entity.drugs.DrugInfluence;
-import ivorius.psychedelicraft.entity.drugs.DrugInfluenceHarmonium;
+import ivorius.psychedelicraft.entity.drugs.*;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.Block;
@@ -55,7 +54,7 @@ public interface PSItems {
 
     Item HASH_MUFFIN = register("hash_muffin", new EdibleItem(
             new Settings().food(EdibleItem.HAS_MUFFIN),
-            new DrugInfluence("Cannabis", 60, 0.004, 0.002, 0.7f)
+            new DrugInfluence(DrugType.CANNABIS, 60, 0.004, 0.002, 0.7f)
     ));
 
     Item HOP_CONES = register("hop_cones");
@@ -63,11 +62,11 @@ public interface PSItems {
 
     Item BROWN_MAGIC_MUSHROOMS = register("brown_magic_mushrooms", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence("BrownShrooms", 15, 0.005, 0.003, 0.5f)
+            new DrugInfluence(DrugType.BROWN_SHROOMS, 15, 0.005, 0.003, 0.5f)
     ));
     Item RED_MAGIC_MUSHROOMS = register("red_magic_mushrooms", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence("RedShrooms", 15, 0.005, 0.003, 0.5f)
+            new DrugInfluence(DrugType.RED_SHROOMS, 15, 0.005, 0.003, 0.5f)
     ));
 
     Item TOBACCO_LEAVES = register("tobacco");
@@ -76,21 +75,21 @@ public interface PSItems {
 
     SmokeableItem CIGARETTE = register("cigarette", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(1), 2,
-            new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.7f)
+            new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.7f)
     ));
     SmokeableItem CIGAR = register("cigar", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(3), 4,
-            new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.7f)
+            new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.7f)
     ));
     SmokeableItem JOINT = register("joint", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(2), 2,
-            new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.20f)
+            new DrugInfluence(DrugType.CANNABIS, 20, 0.002, 0.001, 0.20f)
     ));
 
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));
     Item COCA_LEAVES = register("coca_leaves");
     Item DRIED_COCA_LEAVES = register("dried_coca_leaves");
-    Item COCAINE_POWDER = register("cocaine_powder", new CocainePowderItem(new Settings(), new DrugInfluence("Cocaine", 0, 0.002, 0.003, 0.35f)));
+    Item COCAINE_POWDER = register("cocaine_powder", new CocainePowderItem(new Settings(), new DrugInfluence(DrugType.COCAINE, 0, 0.002, 0.003, 0.35f)));
 
     InjectableItem SYRINGE = register("syringe", new InjectableItem(new Settings(), MILLIBUCKETS_PER_LITER / 100));
 
@@ -111,12 +110,12 @@ public interface PSItems {
     Item PEYOTE = register("peyote", PSBlocks.PEYOTE);
     Item DRIED_PEYOTE = register("dried_peyote", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence("Peyote", 15, 0.005, 0.003, 0.5f)
+            new DrugInfluence(DrugType.PEYOTE, 15, 0.005, 0.003, 0.5f)
     ));
     Item PEYOTE_JOINT = register("peyote_joint", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(2), 2,
-            new DrugInfluence("Peyote", 20, 0.003, 0.0015, 0.4f),
-            new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.1f)
+            new DrugInfluence(DrugType.PEYOTE, 20, 0.003, 0.0015, 0.4f),
+            new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.1f)
     ));
 
     Item LATTICE = register("lattice", PSBlocks.LATTICE);
@@ -127,13 +126,13 @@ public interface PSItems {
     HarmoniumItem HARMONIUM = register("harmonium", new HarmoniumItem(new Settings()));
 
     BongItem SMOKING_PIPE = register("smoking_pipe", new BongItem(new Settings().maxDamage(50)))
-            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.25F)))
-            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.8f)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluenceHarmonium("Harmonium", 0, 0.04, 0.01, 0.65f, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
+            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, 20, 0.002, 0.001, 0.25F)))
+            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.8f)))
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluenceHarmonium(0, 0.04, 0.01, 0.65f, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
     // TODO: Play around with the bongs benefits
     BongItem BONG = register("bong", new BongItem(new Settings().maxDamage(128)))
-            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence("Cannabis", 20, 0.002, 0.001, 0.2F)))
-            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence("Tobacco", 0, 0.1, 0.02, 0.6F)));
+            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, 20, 0.002, 0.001, 0.2F)))
+            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.6F)));
 
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Item.Settings()));

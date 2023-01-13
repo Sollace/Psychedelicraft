@@ -48,10 +48,10 @@ public class ShaderMainDepth extends IvShaderInstance3D implements ShaderWorld {
         float distantWorldDeformationStrength = 0.0f;
         if (drugProperties != null)
         {
-            bigWaveStrength = drugProperties.hallucinationManager.getBigWaveStrength(drugProperties, partialTicks);
-            smallWaveStrength = drugProperties.hallucinationManager.getSmallWaveStrength(drugProperties, partialTicks);
-            wiggleWaveStrength = drugProperties.hallucinationManager.getWiggleWaveStrength(drugProperties, partialTicks);
-            distantWorldDeformationStrength = drugProperties.hallucinationManager.getDistantWorldDeformationStrength(drugProperties, partialTicks);
+            bigWaveStrength = drugProperties.getHallucinations().getBigWaveStrength(drugProperties, partialTicks);
+            smallWaveStrength = drugProperties.getHallucinations().getSmallWaveStrength(drugProperties, partialTicks);
+            wiggleWaveStrength = drugProperties.getHallucinations().getWiggleWaveStrength(drugProperties, partialTicks);
+            distantWorldDeformationStrength = drugProperties.getHallucinations().getDistantWorldDeformationStrength(drugProperties, partialTicks);
         }
         setUniformFloats("bigWaves", bigWaveStrength);
         setUniformFloats("smallWaves", smallWaveStrength);

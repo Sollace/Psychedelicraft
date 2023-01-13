@@ -15,13 +15,13 @@ import net.minecraft.util.math.MathHelper;
 public class DrugInfluenceHarmonium extends DrugInfluence {
     public float[] color;
 
-    public DrugInfluenceHarmonium(String drugName, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color) {
-        super(drugName, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
+    public DrugInfluenceHarmonium(int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color) {
+        super(DrugType.HARMONIUM, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
         this.color = color;
     }
 
     public DrugInfluenceHarmonium() {
-        super();
+        super(InfluenceType.HARMONIUM);
         color = new float[3];
     }
 
@@ -29,7 +29,7 @@ public class DrugInfluenceHarmonium extends DrugInfluence {
     public void addToDrug(DrugProperties drugProperties, double value) {
         super.addToDrug(drugProperties, value);
 
-        Drug drug = drugProperties.getDrug(getDrugName());
+        Drug drug = drugProperties.getDrug(getDrugType());
 
         if (drug instanceof HarmoniumDrug) {
             HarmoniumDrug harmonium = (HarmoniumDrug) drug;

@@ -5,9 +5,9 @@
 
 package ivorius.psychedelicraft.client;
 
-import ivorius.psychedelicraft.client.render.DrugEffectInterpreter;
-import ivorius.psychedelicraft.client.render.SmoothCameraHelper;
+import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.program.PSRenderStates;
+import ivorius.psychedelicraft.entity.drugs.Drug;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -31,27 +31,23 @@ public class PSCoreHandlerClient
         //if (event.type == RenderGameOverlayEvent.ElementType.PORTAL)
         MinecraftClient mc = MinecraftClient.getInstance();
         DrugProperties.of((Entity)mc.player).ifPresent(properties -> {
-            properties.getDrugRenderer().ifPresent(renderer -> {
-                matrices.push();
-                renderer.renderOverlaysAfterShaders(
-                        matrices,
-                        mc.getTickDelta(), properties.asEntity(),
-                        properties.asEntity().age,
-                        mc.getWindow().getScaledWidth(),
-                        mc.getWindow().getScaledHeight(),
-                        properties
-                );
-                matrices.pop();
-            });
+            matrices.push();
+            DrugRenderer.INSTANCE.renderOverlaysAfterShaders(
+                    matrices,
+                    mc.getTickDelta(), mc.player,
+                    mc.player.age,
+                    mc.getWindow().getScaledWidth(),
+                    mc.getWindow().getScaledHeight(),
+                    properties
+            );
+            matrices.pop();
         });
     }
 
     public void orientCamera() {
         MinecraftClient mc = MinecraftClient.getInstance();
         DrugProperties.of((Entity)mc.player).ifPresent(properties -> {
-            properties.getDrugRenderer().ifPresent(renderer -> {
-                renderer.distortScreen(mc.getTickDelta(), mc.player, mc.player.age, properties);
-            });
+            DrugRenderer.INSTANCE.distortScreen(mc.getTickDelta(), mc.player, mc.player.age, properties);
         });
     }
 
@@ -90,7 +86,7 @@ public class PSCoreHandlerClient
     public void setPlayerAngles() {
         MinecraftClient mc = MinecraftClient.getInstance();
         DrugProperties.of((Entity)mc.player).ifPresent(properties -> {
-            float smoothness = DrugEffectInterpreter.getSmoothVision(properties);
+            float smoothness = properties.getModifier(Drug.HEAD_MOTION_INERTNESS);
             if (smoothness < 1 && mc.isWindowFocused()) {
                 float deltaX = (float) mc.mouse.getX();
                 float deltaY = (float) mc.mouse.getY();
@@ -109,7 +105,7 @@ public class PSCoreHandlerClient
 
     public float getSoundVolume(float volume) {
         return DrugProperties.of((Entity)MinecraftClient.getInstance().player).map(properties -> {
-            return MathHelper.clamp(volume * properties.getSoundMultiplier(), 0, 1);
+            return MathHelper.clamp(volume * properties.getModifier(Drug.SOUND_VOLUME), 0, 1);
         }).orElse(volume);
     }
 

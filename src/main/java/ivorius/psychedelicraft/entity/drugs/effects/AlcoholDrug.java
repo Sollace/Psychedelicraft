@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.entity.drugs.effects;
 import ivorius.psychedelicraft.PSDamageSources;
 import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.*;
@@ -31,7 +32,7 @@ public class AlcoholDrug extends SimpleDrug {
     }
 
     public AlcoholDrug(double decSpeed, double decSpeedPlus) {
-        super(decSpeed, decSpeedPlus);
+        super(DrugType.ALCOHOL, decSpeed, decSpeedPlus);
     }
 
     @Override

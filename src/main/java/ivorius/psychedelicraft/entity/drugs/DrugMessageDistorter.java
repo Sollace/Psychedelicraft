@@ -14,6 +14,8 @@ import java.util.Random;
  * Created by lukas on 22.05.14.
  */
 public class DrugMessageDistorter {
+    public static final DrugMessageDistorter INSTANCE = new DrugMessageDistorter();
+
  // TODO: (Sollace) reimplement chat distortion
     private static final String[] FILLER_WORDS = {
             ", like, ", "... like, ", ", uhm, ", ", uhhhh, "
@@ -31,9 +33,9 @@ public class DrugMessageDistorter {
             return message;
         }
 
-        float alcohol = drugProperties.getDrugValue("Alcohol");
-        float zero = drugProperties.getDrugValue("Zero");
-        float cannabis = drugProperties.getDrugValue("Cannabis");
+        float alcohol = drugProperties.getDrugValue(DrugType.ALCOHOL);
+        float zero = drugProperties.getDrugValue(DrugType.ZERO);
+        float cannabis = drugProperties.getDrugValue(DrugType.CANNABIS);
         if (alcohol > 0.0f || zero > 0.0f || cannabis > 0.0f) {
             return distortIncomingMessage(message, random, alcohol, zero, cannabis);
         }

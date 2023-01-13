@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.GLStateProxy;
 import ivorius.psychedelicraft.client.render.shader.program.ShaderDigital;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.util.Identifier;
@@ -32,7 +33,7 @@ public class WrapperDigitalMD extends ShaderWrapper<ShaderDigital> {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
         if (drugProperties != null) {
-            shaderInstance.digital = drugProperties.getDrugValue("Zero");
+            shaderInstance.digital = drugProperties.getDrugValue(DrugType.ZERO);
             shaderInstance.maxDownscale = drugProperties.getDigitalEffectPixelResize();
             shaderInstance.digitalTextTexture = GLStateProxy.getTextureId(digitalTextTexture);
         } else {

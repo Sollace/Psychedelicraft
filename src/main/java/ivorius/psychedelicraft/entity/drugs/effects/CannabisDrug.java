@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.entity.drugs.effects;
 
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
@@ -15,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class CannabisDrug extends SimpleDrug {
     public CannabisDrug(double decSpeed, double decSpeedPlus) {
-        super(decSpeed, decSpeedPlus);
+        super(DrugType.CANNABIS, decSpeed, decSpeedPlus);
     }
 
     @Override
@@ -39,22 +40,22 @@ public class CannabisDrug extends SimpleDrug {
 
     @Override
     public float superSaturationHallucinationStrength() {
-        return MathHelper.getLerpProgress((float)getActiveValue(), 0.0f, 0.5f) * 0.3f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.0f, 0.5f), 0, 1) * 0.3f;
     }
 
     @Override
     public float colorHallucinationStrength() {
-        return MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.5f, 1.0f) * 0.1f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.5f, 1.0f), 0, 1) * 0.1f;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.5f, 1.0f) * 0.1f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.5f, 1.0f), 0, 1) * 0.1f;
     }
 
     @Override
     public float contextualHallucinationStrength() {
-        return MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.5f, 1.0f) * 0.1f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.5f, 1.0f), 0, 1) * 0.1f;
     }
 
     @Override

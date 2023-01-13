@@ -6,13 +6,14 @@
 package ivorius.psychedelicraft.entity.drugs.effects;
 
 import ivorius.psychedelicraft.entity.drugs.DrugHallucinationManager;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import net.minecraft.nbt.NbtCompound;
 
 public class HarmoniumDrug extends SimpleDrug {
     public float[] currentColor = new float[]{1.0f, 1.0f, 1.0f};
 
     public HarmoniumDrug(double decSpeed, double decSpeedPlus) {
-        super(decSpeed, decSpeedPlus);
+        super(DrugType.HARMONIUM, decSpeed, decSpeedPlus);
     }
 
     @Override

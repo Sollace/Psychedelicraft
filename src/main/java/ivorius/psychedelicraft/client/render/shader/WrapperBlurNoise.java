@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.client.render.shader;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.shader.program.ShaderBlurNoise;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 
@@ -26,7 +27,7 @@ public class WrapperBlurNoise extends ShaderWrapper<ShaderBlurNoise> {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
         if (drugProperties != null) {
-            shaderInstance.strength = drugProperties.getDrugValue("Power") * 0.6f;
+            shaderInstance.strength = drugProperties.getDrugValue(DrugType.POWER) * 0.6f;
             shaderInstance.seed = new Random((long) ((ticks + partialTicks) * 1000.0)).nextFloat() * 9.0f + 1.0f;
         } else {
             shaderInstance.strength = 0.0f;

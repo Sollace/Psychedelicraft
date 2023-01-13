@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.fluid;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drugs.DrugInfluence;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import net.minecraft.predicate.NumberRange.IntRange;
 
 /**
@@ -140,28 +141,28 @@ public interface PSFluids {
     );
     DrugFluid COCA_TEA = new DrugFluid(Psychedelicraft.id("coca_tea"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
-            .influence(new DrugInfluence("Cocaine", 60, 0.005, 0.002, 0.2f))
+            .influence(new DrugInfluence(DrugType.COCAINE, 60, 0.005, 0.002, 0.2f))
             .color(0x44787a36)
     );
     DrugFluid CANNABIS_TEA = new DrugFluid(Psychedelicraft.id("cannabis_tea"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
-            .influence(new DrugInfluence("Cannabis", 60, 0.005, 0.002, 0.25f))
+            .influence(new DrugInfluence(DrugType.CANNABIS, 60, 0.005, 0.002, 0.25f))
             .color(0x446d6f3c)
     );
     DrugFluid PEYOTE_JUICE = new DrugFluid(Psychedelicraft.id("peyote_juice"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
-            .influence(new DrugInfluence("Peyote", 15, 0.005, 0.003, 2.0f))
+            .influence(new DrugInfluence(DrugType.PEYOTE, 15, 0.005, 0.003, 2.0f))
             .color(0x779bab62)
     );
 
     DrugFluid COCAINE = new DrugFluid(Psychedelicraft.id("cocaine"), (DrugFluid.Settings)new DrugFluid.Settings()
             .injectable()
-            .influence(new DrugInfluence("Cocaine", 0, 0.005, 0.01, 50.0f))
+            .influence(new DrugInfluence(DrugType.COCAINE, 0, 0.005, 0.01, 50.0f))
             .color(0x44e8f4f8)
     );
     DrugFluid CAFFEINE = new DrugFluid(Psychedelicraft.id("caffeine"), (DrugFluid.Settings)new DrugFluid.Settings()
             .injectable()
-            .influence(new DrugInfluence("Caffeine", 0, 0.005, 0.01, 85.0f))
+            .influence(new DrugInfluence(DrugType.CAFFEINE, 0, 0.005, 0.01, 85.0f))
             .color(0x66eee2d3)
     );
 

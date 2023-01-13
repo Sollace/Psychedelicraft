@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.entity;
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -158,8 +159,8 @@ public class EntityRealityRift extends Entity {
 
             if (effect > 0.0) {
                 DrugProperties.of(entityLivingBase).ifPresentOrElse(drugProperties -> {
-                    drugProperties.addToDrug("Zero", effect * 20.0f);
-                    drugProperties.addToDrug("Power", effect * 200.0f);
+                    drugProperties.addToDrug(DrugType.ZERO, effect * 20.0f);
+                    drugProperties.addToDrug(DrugType.POWER, effect * 200.0f);
                 }, () -> {
                     if (critical) {
                         entityLivingBase.damage(DamageSource.MAGIC, (float) effect * 20.0f);

@@ -7,6 +7,7 @@ import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.program.PSRenderStates;
 import ivorius.psychedelicraft.client.screen.PSScreens;
 import ivorius.psychedelicraft.config.JsonConfig;
+import ivorius.psychedelicraft.entity.drugs.Drug;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -25,18 +26,15 @@ public class PsychedelicraftClient implements ClientModInitializer {
         return CONFIG_LOADER.get().getData();
     }
 
-    public PsychedelicraftClient() {
-        new ClientProxy();
-    }
-
     @Override
     public void onInitializeClient() {
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             PSRenderStates.update();
 
             if (!client.isPaused()) {
-                DrugProperties.of(client.cameraEntity).ifPresent(drugProperties -> {
-                    SmoothCameraHelper.INSTANCE.update(DrugEffectInterpreter.getSmoothVision(drugProperties));
+                DrugProperties.of((Entity)client.player).ifPresent(properties -> {
+                    DrugRenderer.INSTANCE.update(properties, client.player);
+                    SmoothCameraHelper.INSTANCE.update(properties.getModifier(Drug.HEAD_MOTION_INERTNESS));
                 });
             }
         });
@@ -44,9 +42,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
             DrugProperties.of((Entity)client.player).ifPresent(properties -> {
-                properties.getDrugRenderer().ifPresent(renderer -> {
-                    renderer.renderAllHallucinations(client.getTickDelta(), properties);
-                });
+                DrugRenderer.INSTANCE.renderAllHallucinations(client.getTickDelta(), properties);
             });
         });
 

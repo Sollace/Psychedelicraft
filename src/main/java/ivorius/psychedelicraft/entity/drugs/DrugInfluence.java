@@ -5,12 +5,22 @@
 
 package ivorius.psychedelicraft.entity.drugs;
 
+import java.util.Locale;
+import java.util.Optional;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.Identifier;
 
 public class DrugInfluence implements NbtSerialisable {
-    protected String drugName;
+
+    public static Optional<DrugInfluence> loadFromNbt(NbtCompound compound) {
+        return InfluenceType.of(compound.getString("type")).map(type -> type.create(compound));
+    }
+
+    protected DrugType drugType;
 
     protected int delay;
 
@@ -19,8 +29,11 @@ public class DrugInfluence implements NbtSerialisable {
 
     protected double maxInfluence;
 
-    public DrugInfluence(String drugName, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence) {
-        this.drugName = drugName;
+    private final InfluenceType type;
+
+    public DrugInfluence(DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence) {
+        this(InfluenceType.DEFAULT);
+        this.drugType = drugType;
 
         this.delay = delay;
 
@@ -30,12 +43,16 @@ public class DrugInfluence implements NbtSerialisable {
         this.maxInfluence = maxInfluence;
     }
 
-    public DrugInfluence() {
-
+    protected DrugInfluence(InfluenceType type) {
+        this.type = type;
     }
 
-    public String getDrugName() {
-        return drugName;
+    public final DrugType getDrugType() {
+        return drugType;
+    }
+
+    public boolean isOf(DrugType type) {
+        return getDrugType() == type;
     }
 
     public int getDelay() {
@@ -84,7 +101,7 @@ public class DrugInfluence implements NbtSerialisable {
     }
 
     public void addToDrug(DrugProperties drugProperties, double value) {
-        drugProperties.addToDrug(drugName, value);
+        drugProperties.addToDrug(drugType, value);
     }
 
     public boolean isDone() {
@@ -93,25 +110,16 @@ public class DrugInfluence implements NbtSerialisable {
 
     @Override
     public DrugInfluence clone() {
-        // TODO: (Sollace) Modernize
-        DrugInfluence inf = null;
-        try {
-            inf = getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            Psychedelicraft.LOGGER.error("Exception whilst cloning DrugInfluence", e);
-            e.printStackTrace();
-        }
-
-        if (inf != null) {
-            inf.fromNbt(toNbt());
-        }
-
-        return inf;
+        return type.create(toNbt());
     }
 
     @Override
     public void fromNbt(NbtCompound compound) {
-        drugName = compound.getString("drugName");
+        if (compound.contains("drugName", NbtElement.STRING_TYPE)) {
+            drugType = DrugType.REGISTRY.get(Psychedelicraft.id(compound.getString("drugName").toLowerCase(Locale.ROOT)));
+        } else {
+            drugType = DrugType.REGISTRY.get(Identifier.tryParse(compound.getString("drugType")));
+        }
         delay = compound.getInt("delay");
         influenceSpeed = compound.getDouble("influenceSpeed");
         influenceSpeedPlus = compound.getDouble("influenceSpeedPlus");
@@ -120,7 +128,8 @@ public class DrugInfluence implements NbtSerialisable {
 
     @Override
     public void toNbt(NbtCompound compound) {
-        compound.putString("drugName", drugName);
+        compound.putString("type", type.identifier());
+        compound.putString("drugType", drugType.id().toString());
         compound.putInt("delay", delay);
         compound.putDouble("influenceSpeed", influenceSpeed);
         compound.putDouble("influenceSpeedPlus", influenceSpeedPlus);

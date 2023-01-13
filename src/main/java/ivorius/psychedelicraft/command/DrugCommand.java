@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.command;
 
-import java.util.*;
 import java.util.stream.Stream;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -14,10 +13,12 @@ import ivorius.psychedelicraft.entity.drugs.*;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 /**
  * @author Sollace
@@ -25,12 +26,12 @@ import net.minecraft.text.Text;
  */
 public class DrugCommand {
     public static final SimpleCommandExceptionType INVALID_DRUG_NAME = new SimpleCommandExceptionType(Text.translatable("commands.drug.nodrug"));
-    private static final SuggestionProvider<ServerCommandSource> DRUG_NAME_SUGGESTIONS = (context, builder) -> CommandSource.suggestMatching(DrugRegistry.getAllDrugNames(), builder);
+    private static final SuggestionProvider<ServerCommandSource> DRUG_NAME_SUGGESTIONS = (context, builder) -> CommandSource.suggestIdentifiers(DrugType.REGISTRY.getIds(), builder);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
         dispatcher.register(CommandManager.literal("drug")
             .then(CommandManager.argument("target", EntityArgumentType.players())
-                .then(CommandManager.argument("drug name", StringArgumentType.word())
+                .then(CommandManager.argument("drug", IdentifierArgumentType.identifier())
                         .suggests(DRUG_NAME_SUGGESTIONS)
                     .then(CommandManager.literal("lock")
                         .then(CommandManager.argument("locked", BoolArgumentType.bool())
@@ -55,19 +56,13 @@ public class DrugCommand {
 
     static Stream<Drug> getDrugs(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         PlayerEntity player = EntityArgumentType.getPlayer(context, "target");
-        String drugName = StringArgumentType.getString(context, "drug name");
-
+        Identifier drugName = IdentifierArgumentType.getIdentifier(context, "drug");
         DrugProperties properties = DrugProperties.of(player);
 
-        if ("all".equalsIgnoreCase(drugName)) {
+        if ("all".equals(drugName.getPath())) {
             return properties.getAllDrugs().stream();
         }
 
-        Drug drug = properties.getDrug(drugName);
-        if (drug == null) {
-            throw new CommandSyntaxException(INVALID_DRUG_NAME, Text.translatable("commands.drug.nodrug", drugName));
-        }
-
-        return Optional.of(properties.getDrug(drugName)).stream();
+        return DrugType.REGISTRY.getOrEmpty(drugName).map(properties::getDrug).stream();
     }
 }

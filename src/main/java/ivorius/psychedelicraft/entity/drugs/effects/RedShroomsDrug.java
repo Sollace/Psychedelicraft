@@ -5,12 +5,14 @@
 
 package ivorius.psychedelicraft.entity.drugs.effects;
 
+import ivorius.psychedelicraft.entity.drugs.DrugType;
+
 /**
  * Created by lukas on 01.11.14.
  */
 public class RedShroomsDrug extends SimpleDrug {
     public RedShroomsDrug(double decSpeed, double decSpeedPlus) {
-        super(decSpeed, decSpeedPlus);
+        super(DrugType.RED_SHROOMS, decSpeed, decSpeedPlus);
     }
 
     @Override

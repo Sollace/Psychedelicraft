@@ -64,7 +64,7 @@ public class BongItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (DrugProperties.of(player).timeBreathingSmoke <= 0 && hasUsableConsumable(player)) {
+        if (!DrugProperties.of(player).isBreathingSmoke() && hasUsableConsumable(player)) {
             player.setCurrentHand(hand);
             return TypedActionResult.consume(stack);
         }

@@ -9,10 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
+import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.GLStateProxy;
 import ivorius.psychedelicraft.client.render.shader.program.ShaderHeatDistortions;
-import ivorius.psychedelicraft.entity.drugs.DrugProperties;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.util.Identifier;
 
@@ -41,9 +40,7 @@ public class WrapperUnderwaterDistortion extends ShaderWrapper<ShaderHeatDistort
     }
 
     private float getStrength() {
-        return DrugProperties.of(MinecraftClient.getInstance().cameraEntity)
-                .map(d -> d.renderer.getCurrentWaterDistortion())
-                .orElse(0F);
+        return DrugRenderer.INSTANCE.getCurrentWaterDistortion();
     }
 
     @Override

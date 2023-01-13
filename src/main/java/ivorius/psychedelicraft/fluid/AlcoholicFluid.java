@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.fluid;
 
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drugs.DrugInfluence;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import ivorius.psychedelicraft.item.FluidContainerItem;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
@@ -57,7 +58,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                 + settings.distillationAlcohol * MathUtils.progress(getDistillation(fluidStack))
                 + settings.maturationAlcohol * MathUtils.progress(getMaturation(fluidStack) * 0.2F);
 
-        list.add(new DrugInfluence("Alcohol", 20, 0.003, 0.002, alcohol));
+        list.add(new DrugInfluence(DrugType.ALCOHOL, 20, 0.003, 0.002, alcohol));
     }
 
     @Override

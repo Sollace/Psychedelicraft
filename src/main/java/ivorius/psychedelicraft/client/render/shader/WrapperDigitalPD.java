@@ -9,6 +9,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.GLStateProxy;
 import ivorius.psychedelicraft.client.render.shader.program.ShaderDigitalDepth;
 import ivorius.psychedelicraft.entity.drugs.DrugProperties;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.util.Identifier;
@@ -28,7 +29,7 @@ public class WrapperDigitalPD extends ShaderWrapper<ShaderDigitalDepth> {
         DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
 
         if (drugProperties != null && depthBuffer != null) {
-            shaderInstance.digital = drugProperties.getDrugValue("Zero");
+            shaderInstance.digital = drugProperties.getDrugValue(DrugType.ZERO);
             shaderInstance.maxDownscale = drugProperties.getDigitalEffectPixelResize();
             shaderInstance.digitalTextTexture = GLStateProxy.getTextureId(digitalTextTexture);
             shaderInstance.depthTextureIndex = depthBuffer.getDepthAttachment();
@@ -36,14 +37,12 @@ public class WrapperDigitalPD extends ShaderWrapper<ShaderDigitalDepth> {
             shaderInstance.zNear = 0.05f;
             shaderInstance.zFar = MinecraftClient.getInstance().options.getViewDistance().getValue() * 16;
         } else {
-            shaderInstance.digital = 0.0f;
+            shaderInstance.digital = 0;
         }
     }
 
     @Override
     public boolean wantsDepthBuffer(float partialTicks) {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
-
-        return drugProperties != null && drugProperties.getDrugValue("Zero") > 0.0;
+        return DrugProperties.of(MinecraftClient.getInstance().cameraEntity).filter(properties -> properties.getDrugValue(DrugType.ZERO) > 0).isPresent();
     }
 }

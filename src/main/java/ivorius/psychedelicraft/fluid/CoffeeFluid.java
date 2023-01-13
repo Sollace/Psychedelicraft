@@ -13,6 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import java.util.List;
 
 import ivorius.psychedelicraft.entity.drugs.DrugInfluence;
+import ivorius.psychedelicraft.entity.drugs.DrugType;
 
 /**
  * Created by lukas on 22.10.14.
@@ -28,8 +29,8 @@ public class CoffeeFluid extends DrugFluid {
     public void getDrugInfluencesPerLiter(ItemStack fluidStack, List<DrugInfluence> list) {
         super.getDrugInfluencesPerLiter(fluidStack, list);
         float warmth = (float)getTemperature(fluidStack) / WARMTH_STEPS;
-        list.add(new DrugInfluence("Caffeine", 20, 0.002, 0.001, 0.25F + warmth * 0.05F));
-        list.add(new DrugInfluence("Warmth", 0, 0, 0.1, 0.8F * warmth));
+        list.add(new DrugInfluence(DrugType.CAFFEINE, 20, 0.002, 0.001, 0.25F + warmth * 0.05F));
+        list.add(new DrugInfluence(DrugType.WARMTH, 0, 0, 0.1, 0.8F * warmth));
     }
 
     @Override
