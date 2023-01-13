@@ -97,6 +97,9 @@ public interface PSItems {
     Item JUNIPER_LEAVES = register("juniper_leaves", PSBlocks.JUNIPER_LEAVES);
     Item FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", PSBlocks.FRUITING_JUNIPER_LEAVES);
     Item JUNIPER_LOG = register("juniper_log", PSBlocks.JUNIPER_LOG);
+    Item JUNIPER_WOOD = register("juniper_wood", PSBlocks.JUNIPER_WOOD);
+    Item STRIPPED_JUNIPER_LOG = register("stripped_juniper_log", PSBlocks.STRIPPED_JUNIPER_LOG);
+    Item STRIPPED_JUNIPER_WOOD = register("stripped_juniper_wood", PSBlocks.STRIPPED_JUNIPER_WOOD);
     Item JUNIPER_BERRIES = register("juniper_berries", new SpecialFoodItem(
             new Settings().food(new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()), 15
     ));

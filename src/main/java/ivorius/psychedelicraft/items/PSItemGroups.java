@@ -84,6 +84,9 @@ public interface PSItemGroups {
                 entries.add(PSItems.JUNIPER_LEAVES);
                 entries.add(PSItems.FRUITING_JUNIPER_LEAVES);
                 entries.add(PSItems.JUNIPER_LOG);
+                entries.add(PSItems.JUNIPER_WOOD);
+                entries.add(PSItems.STRIPPED_JUNIPER_LOG);
+                entries.add(PSItems.STRIPPED_JUNIPER_WOOD);
                 entries.add(PSItems.JUNIPER_SAPLING);
 
                 entries.add(PSItems.COFFEE_BEANS);
