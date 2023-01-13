@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.entity.drug.influence;
 
 import ivorius.psychedelicraft.entity.drug.*;
-import ivorius.psychedelicraft.entity.drug.effects.HarmoniumDrug;
+import ivorius.psychedelicraft.entity.drug.type.HarmoniumDrug;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 

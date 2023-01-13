@@ -3,7 +3,7 @@
  *  * http://lukas.axxim.net
  */
 
-package ivorius.psychedelicraft.entity.drug.effects;
+package ivorius.psychedelicraft.entity.drug.type;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.DrugRenderer;

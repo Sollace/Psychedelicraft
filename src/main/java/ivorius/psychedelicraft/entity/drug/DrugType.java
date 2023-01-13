@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 import java.util.function.Supplier;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.entity.drug.effects.*;
+import ivorius.psychedelicraft.entity.drug.type.*;
 
 /**
  * Created by lukas on 22.10.14.

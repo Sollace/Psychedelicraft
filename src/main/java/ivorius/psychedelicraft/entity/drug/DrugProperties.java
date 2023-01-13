@@ -10,7 +10,7 @@ import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.screen.TickableContainer;
 import ivorius.psychedelicraft.client.sound.DrugMusicManager;
 import ivorius.psychedelicraft.entity.*;
-import ivorius.psychedelicraft.entity.drug.hallucination.DrugHallucinationManager;
+import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.mixin.MixinLivingEntity;
 import ivorius.psychedelicraft.network.Channel;
@@ -41,7 +41,7 @@ public class DrugProperties implements NbtSerialisable {
 
     public boolean hasChanges;
 
-    private DrugHallucinationManager hallucinationManager = new DrugHallucinationManager();
+    private HallucinationManager hallucinationManager = new HallucinationManager();
     private DrugMusicManager musicManager = new DrugMusicManager();
 
     public int ticksExisted = 0;
@@ -90,7 +90,7 @@ public class DrugProperties implements NbtSerialisable {
         return entity;
     }
 
-    public DrugHallucinationManager getHallucinations() {
+    public HallucinationManager getHallucinations() {
         return hallucinationManager;
     }
 

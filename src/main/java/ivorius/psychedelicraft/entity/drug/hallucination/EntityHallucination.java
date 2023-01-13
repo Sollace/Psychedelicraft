@@ -10,7 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 
-public class DrugHallucinationEntity extends AbstractEntityHallucination {
+public class EntityHallucination extends AbstractEntityHallucination {
     public static final EntityType<?>[] ENTITIES = new EntityType<?>[] {
         EntityType.CREEPER,
         EntityType.ZOMBIE,
@@ -30,7 +30,7 @@ public class DrugHallucinationEntity extends AbstractEntityHallucination {
 
     public float rotationYawPlus;
 
-    public DrugHallucinationEntity(PlayerEntity player) {
+    public EntityHallucination(PlayerEntity player) {
         super(player);
         Random rand = player.getRandom();
 

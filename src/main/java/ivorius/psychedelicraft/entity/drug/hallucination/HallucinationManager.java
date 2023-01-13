@@ -15,7 +15,7 @@ import net.minecraft.util.math.random.Random;
 /**
  * Created by lukas on 14.11.14.
  */
-public class DrugHallucinationManager {
+public class HallucinationManager {
     public static final int HALLUCATION_ENTITIES = 0;
     public static final int HALLUCATION_DESATURATION = 1;
     public static final int HALLUCATION_SUPER_SATURATION = 2;
@@ -127,10 +127,10 @@ public class DrugHallucinationManager {
             return;
         }
 
-        if (getNumberOfHallucinations(DrugHallucinationRastaHead.class) == 0 && (random.nextFloat() < 0.1f && drugProperties.getDrugValue(DrugType.CANNABIS) > 0.4f)) {
-            entities.add(new DrugHallucinationRastaHead(player));
+        if (getNumberOfHallucinations(RastaHeadHallucination.class) == 0 && (random.nextFloat() < 0.1f && drugProperties.getDrugValue(DrugType.CANNABIS) > 0.4f)) {
+            entities.add(new RastaHeadHallucination(player));
         } else {
-            entities.add(new DrugHallucinationEntity(player));
+            entities.add(new EntityHallucination(player));
         }
     }
 

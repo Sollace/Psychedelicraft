@@ -10,7 +10,7 @@ import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.effect.EffectLensFlare;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.DrugHallucination;
-import ivorius.psychedelicraft.entity.drug.hallucination.DrugHallucinationManager;
+import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
@@ -171,7 +171,7 @@ public class DrugRenderer implements IDrugRenderer {
 
     @Override
     public void renderAllHallucinations(float par1, DrugProperties drugProperties) {
-        DrugHallucinationManager hallucinations = drugProperties.getHallucinations();
+        HallucinationManager hallucinations = drugProperties.getHallucinations();
         for (DrugHallucination h : hallucinations.getHallucinations()) {
             h.render(par1, MathHelper.clamp(hallucinations.getHallucinationStrength(drugProperties, par1) * 15, 0, 1));
         }

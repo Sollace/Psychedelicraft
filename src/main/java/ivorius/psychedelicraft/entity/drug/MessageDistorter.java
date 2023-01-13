@@ -13,8 +13,8 @@ import java.util.Random;
 /**
  * Created by lukas on 22.05.14.
  */
-public class DrugMessageDistorter {
-    public static final DrugMessageDistorter INSTANCE = new DrugMessageDistorter();
+public class MessageDistorter {
+    public static final MessageDistorter INSTANCE = new MessageDistorter();
 
  // TODO: (Sollace) reimplement chat distortion
     private static final String[] FILLER_WORDS = {

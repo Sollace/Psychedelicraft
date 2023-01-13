@@ -21,14 +21,14 @@ import net.minecraft.util.math.Vec3d;
 
 import org.joml.Quaternionf;
 
-public class DrugHallucinationRastaHead extends AbstractEntityHallucination {
+public class RastaHeadHallucination extends AbstractEntityHallucination {
     private static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "rastaHeadTexture.png");
 
     public final LookControl lookControl;
 
     public final Model modelRastaHead = new RastaHeadModel();
 
-    public DrugHallucinationRastaHead(PlayerEntity playerEntity) {
+    public RastaHeadHallucination(PlayerEntity playerEntity) {
         super(playerEntity);
         this.entityMaxTicks = (playerEntity.getRandom().nextInt(59) + 120) * 20;
 
