@@ -12,7 +12,7 @@ public class PSWorldGen {
     public static void bootstrap() {
         JuniperTreeGenerationConfigs.bootstrap();
 /*
-        // TODO: Tree generator
+        // TODO: (Sollace) Tree generator
         if (PSConfig.genJuniper)
             registerWorldGenerator(new GeneratorGeneric(new JuniperTreeSaplingGenerator(false),
                     new EntryBiomeTypes(0.1f, 1, HILLS, COLD),
@@ -70,7 +70,7 @@ public class PSWorldGen {
 
         if (PSConfig.dungeonChests)
         {
-            // TODO: Loot tables
+            // TODO: (Sollace) Loot tables
             addItem(DUNGEON_CHEST, new WeightedRandomChestContent(wineGrapes, 0, 1, 8, 10));
             addItem(DUNGEON_CHEST, new WeightedRandomChestContent(glassChalice, 0, 1, 4, 5));
             addItem(DUNGEON_CHEST, new WeightedRandomChestContent(woodenMug, 0, 1, 16, 5));
@@ -87,7 +87,7 @@ public class PSWorldGen {
 
         if (PSConfig.villageChests)
         {
-            // TODO: Loot tables
+            // TODO: (Sollace) Loot tables
             addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(wineGrapes, 0, 1, 8, 10));
             addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(juniperBerries, 0, 1, 8, 10));
             addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(woodenMug, 0, 1, 16, 5));

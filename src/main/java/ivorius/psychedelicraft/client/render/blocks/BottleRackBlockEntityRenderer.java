@@ -58,7 +58,7 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
                 if (color != -1) {
                     RenderSystem.setShaderColor(MathUtils.r(color), MathUtils.g(color), MathUtils.b(color), 1);
                 }
-                // TODO: Convert from an obj model
+                // TODO: (Sollace) Convert from an obj model
                 // model.renderOnly("Bottle_" + i);
             }
         }

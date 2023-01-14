@@ -269,7 +269,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public float[] getDigitalEffectPixelResize() {
-        // TODO: Shouldn't this be stored? Why is it even here?
+        // TODO: (Sollace) Shouldn't this be stored? Why is it even here?
         return PsychedelicraftClient.getConfig().visual.getDigitalEffectPixelResize();
     }
 

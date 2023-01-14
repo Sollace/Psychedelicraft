@@ -22,7 +22,7 @@ import net.minecraft.world.*;
 public class BottleRackBlock extends BlockWithEntity {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
-    // TODO: rotations
+    // TODO: (Sollace) rotations
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
             Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6),
             Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6),

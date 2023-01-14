@@ -17,7 +17,7 @@ public class PSConfig {
         public FluidProperties fluidAttributes = new FluidProperties();
         //public MessageDistortion messageDistortion = new MessageDistortion();
 
-        // TODO: reimplement message distortion
+        // TODO: (Sollace) reimplement message distortion
         /*
         public static class MessageDistortion {
             public boolean incoming = true;
@@ -56,7 +56,7 @@ public class PSConfig {
             }
         }
 
-        // TODO: reimplement world gen features
+        // TODO: (Sollace) reimplement world gen features
         public static class Generation {
            // public boolean genJuniper = true;
            // public boolean genCannabis = true;

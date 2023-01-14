@@ -97,7 +97,7 @@ public class SimpleDrug implements Drug {
 
     @Override
     public void drawOverlays(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
-        // TODO: Rendering needs to be separated
+        // TODO: (Sollace) Rendering needs to be separated
     }
 
     @Override

@@ -77,7 +77,7 @@ public class FluidBoxRenderer {
             texture(vertices, tank.getStack());
         } else {
             sprite = DEFAULT_BOUNDS;
-            // TODO: fluids probably use their own texture rather than just a color
+            // TODO: (Sollace) fluids probably use their own texture rather than just a color
             int color = fluid.getTranslucentColor(tank.getStack());
             this.color = new float[] {
                     MathUtils.r(color),

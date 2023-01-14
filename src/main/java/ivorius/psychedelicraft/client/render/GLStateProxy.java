@@ -26,12 +26,12 @@ public class GLStateProxy {
     }
 
     public static boolean isTextureEnabled(int textureUnit) {
-        // TODO: accessor to GlStateManager.TEXTURES[textureUnit - GlConst.GL_TEXTURE0].capState;
+        // TODO: (Sollace) accessor to GlStateManager.TEXTURES[textureUnit - GlConst.GL_TEXTURE0].capState;
         return true;
     }
 
     public static int getBlendDFactor() {
-        // TODO: accessor to GlStateManager.BLEND.dstFactorRGB;
+        // TODO: (Sollace) accessor to GlStateManager.BLEND.dstFactorRGB;
         return 0;
     }
 

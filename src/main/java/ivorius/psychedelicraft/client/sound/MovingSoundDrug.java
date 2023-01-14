@@ -18,7 +18,7 @@ import net.minecraft.util.math.random.Random;
  */
 public class MovingSoundDrug extends MovingSoundInstance {
 
-    // TODO: Need to restart ambient sounds when the player joins a world/moves between dimensions
+    // TODO: (Sollace) Need to restart ambient sounds when the player joins a world/moves between dimensions
     public static void initializeForEntity(DrugProperties drugProperties) {
         SoundManager soundHandler = MinecraftClient.getInstance().getSoundManager();
         for (DrugType type : drugProperties.getAllDrugNames()) {

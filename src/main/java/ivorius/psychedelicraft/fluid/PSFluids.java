@@ -132,7 +132,7 @@ public interface PSFluids {
                     .addName("milk", IntRange.ANY, IntRange.ANY)
                     .build())
             .color(0xeecac4b2)
-            // TODO: Color for milk was set twice. Second time set to 0x77cac4b2 Should it be the distilled colour?
+            // TODO: (Sollace) Color for milk was set twice. Second time set to 0x77cac4b2 Should it be the distilled colour?
     );
 
     DrugFluid COFFEE = new CoffeeFluid(Psychedelicraft.id("coffee"), (DrugFluid.Settings)new DrugFluid.Settings()
