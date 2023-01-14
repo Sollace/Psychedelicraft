@@ -7,8 +7,6 @@ package ivorius.psychedelicraft.entity.drug.type;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -20,11 +18,11 @@ public class CannabisDrug extends SimpleDrug {
     }
 
     @Override
-    public void update(LivingEntity entity, DrugProperties drugProperties) {
-        super.update(entity, drugProperties);
+    public void update(DrugProperties drugProperties) {
+        super.update(drugProperties);
 
-        if (getActiveValue() > 0 && entity instanceof PlayerEntity player) {
-            player.addExhaustion(0.03F * (float) getActiveValue());
+        if (getActiveValue() > 0) {
+            drugProperties.asEntity().addExhaustion(0.03F * (float) getActiveValue());
         }
     }
 

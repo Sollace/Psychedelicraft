@@ -21,11 +21,6 @@ public class WrapperColorBloom extends ShaderWrapper<ShaderColorBloom> {
 
     @Override
     public void setShaderValues(float partialTicks, int ticks, Framebuffer depthBuffer) {
-        DrugProperties drugProperties = DrugProperties.of(MinecraftClient.getInstance().player);
-
-        shaderInstance.coloredBloom = new float[]{1f, 1f, 1f, 0f};
-        if (drugProperties != null) {
-            drugProperties.getHallucinations().applyColorBloom(drugProperties, shaderInstance.coloredBloom, partialTicks);
-        }
+        shaderInstance.coloredBloom = DrugProperties.of(MinecraftClient.getInstance().player).getHallucinations().getColorBloom(partialTicks);
     }
 }

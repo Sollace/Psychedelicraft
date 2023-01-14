@@ -85,7 +85,7 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
-    public void update(LivingEntity entity, DrugProperties drugProperties) {
+    public void update(DrugProperties drugProperties) {
         if (!locked) {
             effect *= decreaseSpeed;
             effect -= decreaseSpeedPlus;
@@ -101,7 +101,7 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
-    public void reset(LivingEntity entity, DrugProperties drugProperties) {
+    public void reset(DrugProperties drugProperties) {
         if (!locked) {
             effect = 0;
         }

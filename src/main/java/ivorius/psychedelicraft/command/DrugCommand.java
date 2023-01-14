@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.command;
 
-import java.util.stream.Stream;
+import java.util.function.Consumer;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.*;
@@ -37,7 +37,7 @@ public class DrugCommand {
                         .then(CommandManager.argument("locked", BoolArgumentType.bool())
                                 .executes(context -> {
                                     boolean locked = BoolArgumentType.getBool(context, "locked");
-                                    getDrugs(context).forEach(drug -> drug.setLocked(locked));
+                                    applyDrugChange(context, drug -> drug.setLocked(locked));
                                     return 0;
                                 })
                         )
@@ -45,7 +45,7 @@ public class DrugCommand {
                     .then(CommandManager.literal("set")
                         .then(CommandManager.argument("value", DoubleArgumentType.doubleArg(0, 1)).executes(context -> {
                             double value = DoubleArgumentType.getDouble(context, "value");
-                            getDrugs(context).forEach(drug -> drug.setDesiredValue(value));
+                            applyDrugChange(context, drug -> drug.setDesiredValue(value));
                             return 0;
                         }))
                     )
@@ -54,15 +54,17 @@ public class DrugCommand {
         );
     }
 
-    static Stream<Drug> getDrugs(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    static void applyDrugChange(CommandContext<ServerCommandSource> context, Consumer<Drug> change) throws CommandSyntaxException {
         PlayerEntity player = EntityArgumentType.getPlayer(context, "target");
         Identifier drugName = IdentifierArgumentType.getIdentifier(context, "drug");
         DrugProperties properties = DrugProperties.of(player);
 
         if ("all".equals(drugName.getPath())) {
-            return properties.getAllDrugs().stream();
+            DrugType.REGISTRY.forEach(type -> {
+                change.accept(properties.getDrug(type));
+            });
+        } else {
+            DrugType.REGISTRY.getOrEmpty(drugName).map(properties::getDrug).ifPresent(change);
         }
-
-        return DrugType.REGISTRY.getOrEmpty(drugName).map(properties::getDrug).stream();
     }
 }

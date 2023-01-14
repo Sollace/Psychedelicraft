@@ -26,10 +26,10 @@ public class WrapperSimpleEffects extends ShaderWrapper<ShaderSimpleEffects> {
         DrugProperties drugProperties = DrugProperties.of(MinecraftClient.getInstance().player);
 
         if (drugProperties != null) {
-            shaderInstance.quickColorRotation = drugProperties.getHallucinations().getQuickColorRotation(drugProperties, tickDelta);
-            shaderInstance.slowColorRotation = drugProperties.getHallucinations().getSlowColorRotation(drugProperties, tickDelta);
-            shaderInstance.desaturation = drugProperties.getHallucinations().getDesaturation(drugProperties, tickDelta);
-            shaderInstance.colorIntensification = drugProperties.getHallucinations().getColorIntensification(drugProperties, tickDelta);
+            shaderInstance.quickColorRotation = drugProperties.getHallucinations().getQuickColorRotation(tickDelta);
+            shaderInstance.slowColorRotation = drugProperties.getHallucinations().getSlowColorRotation(tickDelta);
+            shaderInstance.desaturation = drugProperties.getHallucinations().getDesaturation(tickDelta);
+            shaderInstance.colorIntensification = drugProperties.getHallucinations().getColorIntensification(tickDelta);
         } else {
             shaderInstance.slowColorRotation = 0;
             shaderInstance.quickColorRotation = 0;

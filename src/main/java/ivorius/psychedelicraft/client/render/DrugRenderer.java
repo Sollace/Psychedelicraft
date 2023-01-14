@@ -111,16 +111,9 @@ public class DrugRenderer implements IDrugRenderer {
     @ParametersAreNonnullByDefault
     @Override
     public void distortScreen(float partialTicks, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties) {
-        float wobblyness = 0.0f;
-        for (Drug drug : drugProperties.getAllDrugs()) {
-            wobblyness += drug.viewWobblyness();
-        }
+        float wobblyness = Math.min(1, drugProperties.getModifier(Drug.VIEW_WOBBLYNESS));
 
-        if (wobblyness > 0.0F) {
-            if (wobblyness > 1.0F) {
-                wobblyness = 1.0F;
-            }
-
+        if (wobblyness > 0) {
             float f4 = 5F / (wobblyness * wobblyness + 5F) - wobblyness * 0.04F;
             f4 *= f4;
 
@@ -170,10 +163,10 @@ public class DrugRenderer implements IDrugRenderer {
     }
 
     @Override
-    public void renderAllHallucinations(float par1, DrugProperties drugProperties) {
+    public void renderAllHallucinations(float tickDelta, DrugProperties drugProperties) {
         HallucinationManager hallucinations = drugProperties.getHallucinations();
-        for (DrugHallucination h : hallucinations.getHallucinations()) {
-            h.render(par1, MathHelper.clamp(hallucinations.getHallucinationStrength(drugProperties, par1) * 15, 0, 1));
+        for (DrugHallucination h : hallucinations.getEntities()) {
+            h.render(tickDelta, MathHelper.clamp(hallucinations.getHallucinationStrength(tickDelta) * 15, 0, 1));
         }
     }
 

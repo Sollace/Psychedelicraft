@@ -8,7 +8,6 @@ package ivorius.psychedelicraft.client.render.shader.program;
 import ivorius.psychedelicraft.client.render.GLStateProxy;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
 
 import org.apache.logging.log4j.Logger;
 
@@ -40,10 +39,10 @@ public class ShaderMainDepth extends IvShaderInstance3D implements ShaderWorld {
         setPixelSize(1F / mc.getWindow().getFramebufferWidth(), 1F / mc.getWindow().getFramebufferHeight());
 
         DrugProperties drugProperties = DrugProperties.of(mc.player);
-        setUniformFloats("bigWaves", drugProperties.getHallucinations().getBigWaveStrength(drugProperties, partialTicks));
-        setUniformFloats("smallWaves", drugProperties.getHallucinations().getSmallWaveStrength(drugProperties, partialTicks));
-        setUniformFloats("wiggleWaves", drugProperties.getHallucinations().getWiggleWaveStrength(drugProperties, partialTicks));
-        setUniformFloats("distantWorldDeformation", drugProperties.getHallucinations().getDistantWorldDeformationStrength(drugProperties, partialTicks));
+        setUniformFloats("bigWaves", drugProperties.getHallucinations().getBigWaveStrength(partialTicks));
+        setUniformFloats("smallWaves", drugProperties.getHallucinations().getSmallWaveStrength(partialTicks));
+        setUniformFloats("wiggleWaves", drugProperties.getHallucinations().getWiggleWaveStrength(partialTicks));
+        setUniformFloats("distantWorldDeformation", drugProperties.getHallucinations().getDistantWorldDeformationStrength(partialTicks));
 
         return true;
     }

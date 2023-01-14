@@ -15,6 +15,7 @@ import net.minecraft.client.texture.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -23,14 +24,6 @@ import net.minecraft.util.math.random.Random;
  * Created by lukas on 01.11.14.
  */
 public class AlcoholDrug extends SimpleDrug {
-    public static void rotateEntityPitch(Entity entity, double amount) {
-        entity.setPitch((float)MathHelper.clamp(entity.getPitch() + amount, -90F, 90F));
-    }
-
-    public static void rotateEntityYaw(Entity entity, double amount) {
-        entity.setYaw(entity.getYaw() + (float)amount);
-    }
-
     public AlcoholDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.ALCOHOL, decSpeed, decSpeedPlus);
     }
@@ -51,11 +44,12 @@ public class AlcoholDrug extends SimpleDrug {
     }
 
     @Override
-    public void update(LivingEntity entity, DrugProperties drugProperties) {
-        super.update(entity, drugProperties);
+    public void update(DrugProperties drugProperties) {
+        super.update(drugProperties);
 
         if (getActiveValue() > 0) {
-            int ticksExisted = drugProperties.ticksExisted;
+            int ticksExisted = drugProperties.age;
+            PlayerEntity entity = drugProperties.asEntity();
             Random random = entity.getRandom();
 
             double activeValue = getActiveValue();
@@ -98,5 +92,13 @@ public class AlcoholDrug extends SimpleDrug {
                 sprite.getMinV(),
                 sprite.getMaxU(),
                 sprite.getMaxV(), 0);
+    }
+
+    public static void rotateEntityPitch(Entity entity, double amount) {
+        entity.setPitch((float)MathHelper.clamp(entity.getPitch() + amount, -90F, 90F));
+    }
+
+    public static void rotateEntityYaw(Entity entity, double amount) {
+        entity.setYaw(entity.getYaw() + (float)amount);
     }
 }

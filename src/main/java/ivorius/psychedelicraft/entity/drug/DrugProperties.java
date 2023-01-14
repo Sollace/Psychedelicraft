@@ -27,31 +27,25 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.*;
 
 public class DrugProperties implements NbtSerialisable {
     public static final UUID DRUG_EFFECT_UUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1");
 
-    private final Map<DrugType, Drug> drugs = DrugType.REGISTRY.stream().collect(Collectors.toMap(Function.identity(), DrugType::create));
+    public int age = 0;
+
+    private final Map<DrugType, Drug> drugs = new HashMap<>();
     private final List<DrugInfluence> influences = new ArrayList<>();
 
-    public boolean hasChanges;
+    private boolean hasChanges;
 
-    private HallucinationManager hallucinationManager = new HallucinationManager();
-    private DrugMusicManager musicManager = new DrugMusicManager();
-
-    public int ticksExisted = 0;
+    private final HallucinationManager hallucinations = new HallucinationManager(this);
+    private final DrugMusicManager soundManager = new DrugMusicManager(this);
 
     private int timeBreathingSmoke;
     private float[] breathSmokeColor;
-
-    private int delayUntilHeartbeat;
-    private int delayUntilBreath;
-    private boolean lastBreathWasIn;
 
     private final PlayerEntity entity;
 
@@ -82,44 +76,29 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public HallucinationManager getHallucinations() {
-        return hallucinationManager;
+        return hallucinations;
     }
 
     public DrugMusicManager getMusicManager() {
-        return musicManager;
+        return soundManager;
     }
 
-    public void addDrug(Drug drug) {
-        drugs.put(drug.getType(), drug);
-    }
-
-    @Nullable
     public Drug getDrug(DrugType type) {
-        return drugs.get(type);
+        return drugs.computeIfAbsent(type, DrugType::create);
     }
 
     public float getDrugValue(DrugType type) {
-        return (float) drugs.get(type).getActiveValue();
+        return (float) getDrug(type).getActiveValue();
     }
 
     public void addToDrug(DrugType type, double effect) {
-        if (!drugs.containsKey(type)) {
-            Psychedelicraft.LOGGER.warn("Tried to add to drug " + type.id());
-            return;
-        }
-
         hasChanges = true;
-        drugs.get(type).addToDesiredValue(effect);
+        getDrug(type).addToDesiredValue(effect);
     }
 
     public void setDrugValue(DrugType type, double effect) {
-        if (!drugs.containsKey(type)) {
-            Psychedelicraft.LOGGER.warn("Tried to set drug value " + type.id());
-            return;
-        }
-
         hasChanges = true;
-        drugs.get(type).setDesiredValue(effect);
+        getDrug(type).setDesiredValue(effect);
     }
 
     public void addToDrug(DrugInfluence influence) {
@@ -128,9 +107,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public void addAll(Iterable<DrugInfluence> influences) {
-        influences.forEach(influence -> {
-            this.influences.add(influence.clone());
-        });
+        influences.forEach(influence -> this.influences.add(influence.clone()));
         hasChanges = true;
     }
 
@@ -140,14 +117,6 @@ public class DrugProperties implements NbtSerialisable {
 
     public Set<DrugType> getAllDrugNames() {
         return drugs.keySet();
-    }
-
-    public String[] getAllVisibleDrugNames() {
-        return drugs.entrySet().stream().filter(e -> e.getValue().isVisible()).map(Map.Entry::getKey).toArray(String[]::new);
-    }
-
-    public boolean doesDrugExist(DrugType type) {
-        return drugs.containsKey(type);
     }
 
     public void startBreathingSmoke(int time, float[] color) {
@@ -162,55 +131,21 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public void onTick() {
-        if (ticksExisted % 5 == 0) { //4 times / sec is enough
+        if (age % 5 == 0) { //4 times / sec is enough
             influences.removeIf(influence -> {
                 influence.update(this);
                 return influence.isDone();
             });
         }
 
-        drugs.values().forEach(drug -> drug.update(entity, this));
+        drugs.values().forEach(drug -> drug.update(this));
 
         Random random = entity.getRandom();
 
         if (entity.world.isClient) {
-            hallucinationManager.update(entity, this);
-            musicManager.update(this);
+            hallucinations.update();
+            soundManager.update();
 
-            if (delayUntilHeartbeat > 0) {
-                delayUntilHeartbeat--;
-            }
-
-            if (delayUntilBreath > 0) {
-                delayUntilBreath--;
-            }
-
-            if (delayUntilHeartbeat == 0) {
-                float heartbeatVolume = getModifier(Drug.HEART_BEAT_VOLUME);
-                if (heartbeatVolume > 0) {
-                    float speed = getModifier(Drug.HEART_BEAT_SPEED);
-
-                    delayUntilHeartbeat = MathHelper.floor(35.0f / (speed - 1.0f));
-                    entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_HEARTBEAT, SoundCategory.AMBIENT, heartbeatVolume, speed, false);
-                }
-            }
-
-            if (delayUntilBreath == 0) {
-                lastBreathWasIn = !lastBreathWasIn;
-
-                float breathVolume = getModifier(Drug.BREATH_VOLUME);
-                if (breathVolume > 0) {
-                    float speed = getModifier(Drug.BREATH_SPEED);
-                    delayUntilBreath = MathHelper.floor(30F / speed);
-
-                    // TODO: (Sollace) Breathing sounds like the thing from the black lagoon
-                    entity.sendMessage(Text.literal(breathVolume + ""));
-                    entity.world.playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS,
-                            breathVolume,
-                            speed * 0.05F + 0.9F + (lastBreathWasIn ? 0.15F : 0)
-                    );
-                }
-            }
 
             if (entity.isOnGround() && random.nextFloat() < getModifier(Drug.JUMP_CHANCE)) {
                 ((MixinLivingEntity)entity).invokeJump();
@@ -241,7 +176,7 @@ public class DrugProperties implements NbtSerialisable {
 
         changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_MOVEMENT_SPEED, getModifier(Drug.SPEED));
 
-        ticksExisted++;
+        age++;
 
         if (hasChanges) {
             hasChanges = false;
@@ -284,7 +219,7 @@ public class DrugProperties implements NbtSerialisable {
         tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE).forEach(tag -> {
             DrugInfluence.loadFromNbt((NbtCompound)tag).ifPresent(this::addToDrug);
         });
-        this.ticksExisted = tagCompound.getInt("drugsTicksExisted");
+        age = tagCompound.getInt("age");
         hasChanges = false;
     }
 
@@ -301,20 +236,16 @@ public class DrugProperties implements NbtSerialisable {
             influenceTagList.add(influence.toNbt());
         }
         compound.put("drugInfluences", influenceTagList);
-        compound.putInt("drugsTicksExisted", ticksExisted);
+        compound.putInt("age", age);
     }
 
     public boolean onAwoken() {
-        drugs.values().forEach(drug -> drug.reset(entity, this));
+        drugs.values().forEach(drug -> drug.reset(this));
         influences.clear();
         hasChanges = true;
 
         // TODO: (Sollace) Implement longer sleeping/comas
         return true;
-    }
-
-    public void receiveChatMessage(LivingEntity entity, String message) {
-        hallucinationManager.receiveChatMessage(entity, message);
     }
 
     public Optional<Text> trySleep(BlockPos pos) {

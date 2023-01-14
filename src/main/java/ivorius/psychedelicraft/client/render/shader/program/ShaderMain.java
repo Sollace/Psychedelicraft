@@ -12,7 +12,6 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.entity.Entity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.math.MathHelper;
 
@@ -69,31 +68,21 @@ public class ShaderMain extends IvShaderInstance3D implements ShaderWorld {
 
         DrugProperties drugProperties = DrugProperties.of(mc.player);
 
-        setUniformFloats("desaturation", drugProperties.getHallucinations().getDesaturation(drugProperties, partialTicks));
-        setUniformFloats("quickColorRotation", drugProperties.getHallucinations().getQuickColorRotation(drugProperties, partialTicks));
-        setUniformFloats("slowColorRotation", drugProperties.getHallucinations().getSlowColorRotation(drugProperties, partialTicks));
-        setUniformFloats("colorIntensification", drugProperties.getHallucinations().getColorIntensification(drugProperties, partialTicks));
-
-        setUniformFloats("bigWaves", drugProperties.getHallucinations().getBigWaveStrength(drugProperties, partialTicks));
-        setUniformFloats("smallWaves", drugProperties.getHallucinations().getSmallWaveStrength(drugProperties, partialTicks));
-        setUniformFloats("wiggleWaves", drugProperties.getHallucinations().getWiggleWaveStrength(drugProperties, partialTicks));
-        setUniformFloats("distantWorldDeformation", drugProperties.getHallucinations().getDistantWorldDeformationStrength(drugProperties, partialTicks));
-
-        float[] contrastColorization = new float[]{1f, 1f, 1f, 0f};
-        drugProperties.getHallucinations().applyContrastColorization(drugProperties, contrastColorization, partialTicks);
-
-        float[] pulseColor = new float[]{1f, 1f, 1f, 0f};
-        drugProperties.getHallucinations().applyPulseColor(drugProperties, pulseColor, partialTicks);
-        pulseColor[3] = MathHelper.clamp(pulseColor[3], 0, 1);
-        setUniformFloats("pulses", pulseColor);
-
-        float surfaceFractalStrength = drugProperties.getHallucinations().getSurfaceFractalStrength(drugProperties, partialTicks);
-        if (surfaceFractalStrength > 0.0f) {
+        setUniformFloats("desaturation", drugProperties.getHallucinations().getDesaturation(partialTicks));
+        setUniformFloats("quickColorRotation", drugProperties.getHallucinations().getQuickColorRotation(partialTicks));
+        setUniformFloats("slowColorRotation", drugProperties.getHallucinations().getSlowColorRotation(partialTicks));
+        setUniformFloats("colorIntensification", drugProperties.getHallucinations().getColorIntensification(partialTicks));
+        setUniformFloats("bigWaves", drugProperties.getHallucinations().getBigWaveStrength(partialTicks));
+        setUniformFloats("smallWaves", drugProperties.getHallucinations().getSmallWaveStrength(partialTicks));
+        setUniformFloats("wiggleWaves", drugProperties.getHallucinations().getWiggleWaveStrength(partialTicks));
+        setUniformFloats("distantWorldDeformation", drugProperties.getHallucinations().getDistantWorldDeformationStrength(partialTicks));
+        setUniformFloats("pulses", drugProperties.getHallucinations().getPulseColor(partialTicks));
+        setUniformFloats("worldColorization", drugProperties.getHallucinations().getContrastColorization(partialTicks));
+        float surfaceFractalStrength = MathHelper.clamp(drugProperties.getHallucinations().getSurfaceFractalStrength(partialTicks), 0, 1);
+        if (surfaceFractalStrength > 0) {
             registerFractals();
         }
-        setUniformFloats("surfaceFractal", MathHelper.clamp(surfaceFractalStrength, 0, 1));
-        contrastColorization[3] = MathHelper.clamp(contrastColorization[3], 0, 1);
-        setUniformFloats("worldColorization", contrastColorization);
+        setUniformFloats("surfaceFractal", surfaceFractalStrength);
 
         if (shouldDoShadows) {
             setUniformMatrix("inverseViewMatrix", PsycheShadowHelper.getInverseViewMatrix(partialTicks));

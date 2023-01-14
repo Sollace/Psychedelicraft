@@ -10,7 +10,7 @@ import java.util.Optional;
 import ivorius.psychedelicraft.PSDamageSources;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -27,12 +27,13 @@ public class CocaineDrug extends SimpleDrug {
     }
 
     @Override
-    public void update(LivingEntity entity, DrugProperties drugProperties) {
-        super.update(entity, drugProperties);
+    public void update(DrugProperties drugProperties) {
+        super.update(drugProperties);
 
         if (getActiveValue() > 0.0) {
+            PlayerEntity entity = drugProperties.asEntity();
             Random random = entity.world.random;
-            int ticksExisted = drugProperties.ticksExisted;
+            int ticksExisted = drugProperties.age;
 
             if (!entity.world.isClient) {
                 double chance = (getActiveValue() - 0.8f) * 0.1f;
