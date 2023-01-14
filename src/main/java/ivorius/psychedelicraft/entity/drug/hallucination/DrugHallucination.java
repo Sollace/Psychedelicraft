@@ -5,6 +5,9 @@
 
 package ivorius.psychedelicraft.entity.drug.hallucination;
 
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
@@ -41,7 +44,7 @@ public abstract class DrugHallucination {
         }
     }
 
-    public abstract void render(float par1, float dAlpha);
+    public abstract void render(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, float alpha);
 
     public abstract boolean isDead();
 

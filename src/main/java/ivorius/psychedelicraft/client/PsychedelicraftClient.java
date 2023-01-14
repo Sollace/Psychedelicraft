@@ -7,7 +7,6 @@ import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.program.PSRenderStates;
 import ivorius.psychedelicraft.client.screen.PSScreens;
 import ivorius.psychedelicraft.config.JsonConfig;
-import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -42,7 +41,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
             DrugProperties.of((Entity)client.player).ifPresent(properties -> {
-                DrugRenderer.INSTANCE.renderAllHallucinations(client.getTickDelta(), properties);
+                DrugRenderer.INSTANCE.renderAllHallucinations(context.matrixStack(), context.consumers(), context.camera(), context.tickDelta(), properties);
             });
         });
 

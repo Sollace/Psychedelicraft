@@ -6,13 +6,13 @@
 package ivorius.psychedelicraft.entity.drug.hallucination;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import ivorius.psychedelicraft.client.render.PassThroughVertexConsumer;
 
 public abstract class AbstractEntityHallucination extends DrugHallucination {
 
@@ -52,49 +52,67 @@ public abstract class AbstractEntityHallucination extends DrugHallucination {
         animateEntity();
 
         if (entity instanceof LivingEntity living) {
-            double velocity = entity.getPos().subtract(entity.prevX, 0, entity.prevZ).horizontalLength() * 4;
-            living.limbAngle += (Math.min(velocity, 1) / 3F - living.limbAngle) * 0.4F;
-            living.limbDistance += living.limbAngle;
+            living.updateLimbs(living, false);
         }
     }
 
     protected abstract void animateEntity();
 
-    @Override
-    public void render(float tickDelta, float dAlpha) {
-        float alpha = Math.min(1, MathHelper.sin((float) Math.min(entityTicksAlive, entityMaxTicks - 2) / (float) (entityMaxTicks - 2) * MathHelper.PI) * 18);
+    private float dAlpha;
+    private final PassThroughVertexConsumer.Parameters colourSpace = new PassThroughVertexConsumer.Parameters().color((parent, r, g, b, a) -> {
+        parent.color(color[0], color[1], color[2], dAlpha);
+    });
 
-        if (alpha <= 0) {
+    @Override
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, float dAlpha) {
+        this.dAlpha = Math.min(1,
+                MathHelper.sin(
+                        (float) Math.min(entityTicksAlive, entityMaxTicks - 2) / (float) (entityMaxTicks - 2)
+                        * MathHelper.PI) * 18) * dAlpha;
+
+        if (this.dAlpha <= 0) {
             return;
         }
 
-        MinecraftClient client = MinecraftClient.getInstance();
+        Vec3d cameraPos = camera.getPos();
 
-        double x = MathHelper.lerp(tickDelta, entity.prevX, entity.getX());
-        double y = MathHelper.lerp(tickDelta, entity.prevY, entity.getY());
-        double z = MathHelper.lerp(tickDelta, entity.prevZ, entity.getZ());
-        float pitch = entity.getPitch(tickDelta);
-        float yaw = entity.getYaw(tickDelta);
+        double x = MathHelper.lerp(tickDelta, entity.prevX, entity.getX()) - cameraPos.x;
+        double y = MathHelper.lerp(tickDelta, entity.prevY, entity.getY()) - cameraPos.y;
+        double z = MathHelper.lerp(tickDelta, entity.prevZ, entity.getZ()) - cameraPos.z;
+        float pitch = MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch(tickDelta));
+        float yaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw(tickDelta));
 
-        MatrixStack matrices = new MatrixStack();
+        entity.lastRenderX = entity.getX();
+        entity.lastRenderY = entity.getY();
+        entity.lastRenderZ = entity.getZ();
+
         matrices.push();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(color[0], color[1], color[2], alpha * dAlpha);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+        matrices.translate(x, y, z);
         matrices.scale(scale, scale, scale);
-        Vec3d camera = client.gameRenderer.getCamera().getPos();
-        renderModel(matrices, client.getBufferBuilders().getEntityVertexConsumers(), x - camera.x, y - camera.y, z - camera.z, pitch, yaw, tickDelta);
+        matrices.translate(-x, -y, -z);
+
+        Temp.setShaderUp();
+        renderModel(matrices, layer -> {
+            var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+
+            var renderer = dispatcher.getRenderer(entity);
+            layer = RenderLayer.getEntityTranslucent(renderer.getTexture(entity));
+
+            return PassThroughVertexConsumer.of(
+                    vertices.getBuffer(layer),
+                    colourSpace
+            );
+        }, x, y, z, pitch, yaw, tickDelta);
         matrices.pop();
-        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
     protected void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, double x, double y, double z, float pitch, float yaw, float tickDelta) {
-        MinecraftClient.getInstance().getEntityRenderDispatcher().render(
+        var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+        dispatcher.render(
                 entity,
                 x, y, z, yaw, tickDelta, matrices,
                 vertices,
-                0xF000F0
+                dispatcher.getLight(entity, tickDelta)
         );
     }
 }

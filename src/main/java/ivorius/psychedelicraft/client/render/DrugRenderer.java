@@ -9,8 +9,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.effect.EffectLensFlare;
 import ivorius.psychedelicraft.entity.drug.*;
-import ivorius.psychedelicraft.entity.drug.hallucination.DrugHallucination;
-import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
+import ivorius.psychedelicraft.entity.drug.hallucination.*;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
@@ -190,10 +189,11 @@ public class DrugRenderer {
         matrices.pop();
     }
 
-    public void renderAllHallucinations(float tickDelta, DrugProperties drugProperties) {
+    public void renderAllHallucinations(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, DrugProperties drugProperties) {
         HallucinationManager hallucinations = drugProperties.getHallucinations();
+        float alpha = MathHelper.clamp(hallucinations.getHallucinationStrength(tickDelta) * 15, 0, 1);
         for (DrugHallucination h : hallucinations.getEntities()) {
-            h.render(tickDelta, MathHelper.clamp(hallucinations.getHallucinationStrength(tickDelta) * 15, 0, 1));
+            h.render(matrices, vertices, camera, tickDelta, alpha);
         }
     }
 
