@@ -117,7 +117,7 @@ public class DrugRenderer {
             float sin2 = MathHelper.sin(tick / 170 * MathHelper.PI);
             float sin3 = MathHelper.sin(tick / 190 * MathHelper.PI);
 
-            float yz = tick * 3F;
+            float yz = tick * 3F * MathHelper.RADIANS_PER_DEGREE;
             matrices.multiply(new Quaternionf().rotateXYZ(0, yz, yz));
             matrices.scale(
                     1F / (f4 + (wobblyness * sin1) / 2),

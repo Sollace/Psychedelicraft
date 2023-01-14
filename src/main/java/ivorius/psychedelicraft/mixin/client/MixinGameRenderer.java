@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import ivorius.psychedelicraft.client.render.DrugRenderer;
-import net.minecraft.client.Mouse;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -16,7 +15,7 @@ abstract class MixinGameRenderer {
     @Inject(method = "renderWorld",
             at = @At(
                 value = "INVOKE",
-                target = "net/minecraft/client/Camera.update(Lnet/minecraft/world/BlockView;Lnet/minecraft/entity/Entity;ZZF)V",
+                target = "net/minecraft/client/render/Camera.update(Lnet/minecraft/world/BlockView;Lnet/minecraft/entity/Entity;ZZF)V",
                 shift = Shift.AFTER),
             cancellable = true
     )

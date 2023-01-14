@@ -37,8 +37,8 @@ public class DrugProperties implements NbtSerialisable {
 
     public int age = 0;
 
-    private final Map<DrugType, Drug> drugs = new HashMap<>();
-    private final List<DrugInfluence> influences = new ArrayList<>();
+    private Map<DrugType, Drug> drugs = new HashMap<>();
+    private List<DrugInfluence> influences = new ArrayList<>();
 
     private boolean dirty;
 
@@ -187,10 +187,6 @@ public class DrugProperties implements NbtSerialisable {
 
         age++;
 
-        if (age % 5 == 0) {
-            dirty = true;
-        }
-
         if (dirty) {
             dirty = false;
 
@@ -225,13 +221,13 @@ public class DrugProperties implements NbtSerialisable {
     @Override
     public void fromNbt(NbtCompound tagCompound) {
         NbtCompound drugData = tagCompound.getCompound("Drugs");
-        drugs.clear();
+        drugs = new HashMap<>();
         drugData.getKeys().forEach(key -> {
             DrugType.REGISTRY.getOrEmpty(Identifier.tryParse(key)).ifPresent(type -> {
                 getDrug(type).fromNbt(drugData.getCompound(key));
             });
         });
-        influences.clear();
+        influences = new ArrayList<>();
         tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE).forEach(tag -> {
             DrugInfluence.loadFromNbt((NbtCompound)tag).ifPresent(this::addToDrug);
         });
