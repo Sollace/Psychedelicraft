@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2014, Lukas Tenbrink.
- *  * http://lukas.axxim.net
- */
-
 package ivorius.psychedelicraft.client.screen;
 
 
@@ -12,7 +7,8 @@ import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 
 /**
- * Created by lukas on 26.10.14.
+ * @author Sollace
+ * @since 13 Jan 2023
  */
 public interface PSScreens {
     static void bootstrap() {
