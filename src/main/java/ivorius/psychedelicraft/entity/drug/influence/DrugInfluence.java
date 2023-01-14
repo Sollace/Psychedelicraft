@@ -89,7 +89,7 @@ public class DrugInfluence implements NbtSerialisable {
         this.maxInfluence = maxInfluence;
     }
 
-    public void update(DrugProperties drugProperties) {
+    public boolean update(DrugProperties drugProperties) {
         if (delay > 0) {
             delay--;
         }
@@ -100,6 +100,8 @@ public class DrugInfluence implements NbtSerialisable {
             addToDrug(drugProperties, addition);
             maxInfluence -= addition;
         }
+
+        return isDone();
     }
 
     public void addToDrug(DrugProperties drugProperties, double value) {

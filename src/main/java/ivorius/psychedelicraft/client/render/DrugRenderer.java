@@ -22,6 +22,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
+import org.joml.Quaternionf;
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -31,7 +32,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 /**
  * Created by lukas on 17.02.14.
  */
-public class DrugRenderer implements IDrugRenderer {
+public class DrugRenderer {
     public static final DrugRenderer INSTANCE = new DrugRenderer();
 
     public static void renderOverlay(float alpha, int width, int height, Identifier texture, float u0, float v0, float u1, float v1, int offset) {
@@ -75,7 +76,6 @@ public class DrugRenderer implements IDrugRenderer {
         }
     }
 
-    @Override
     public void update(DrugProperties drugProperties, LivingEntity entity) {
         if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled) {
             experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
@@ -109,8 +109,7 @@ public class DrugRenderer implements IDrugRenderer {
     }
 
     @ParametersAreNonnullByDefault
-    @Override
-    public void distortScreen(float partialTicks, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties) {
+    public void distortScreen(MatrixStack matrices, float partialTicks, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties) {
         float wobblyness = Math.min(1, drugProperties.getModifier(Drug.VIEW_WOBBLYNESS));
 
         if (wobblyness > 0) {
@@ -121,17 +120,23 @@ public class DrugRenderer implements IDrugRenderer {
             float sin2 = MathHelper.sin(((rendererUpdateCount + partialTicks) / 170 * (float) Math.PI));
             float sin3 = MathHelper.sin(((rendererUpdateCount + partialTicks) / 190 * (float) Math.PI));
 
-            GL11.glRotatef((rendererUpdateCount + partialTicks) * 3F, 0.0F, 1.0F, 1.0F);
-            GL11.glScalef(1.0F / (f4 + (wobblyness * sin1) / 2), 1.0F / (f4 + (wobblyness * sin2) / 2), 1.0F / (f4 + (wobblyness * sin3) / 2));
-            GL11.glRotatef(-(rendererUpdateCount + partialTicks) * 3F, 0.0F, 1.0F, 1.0F);
+            float yz = (rendererUpdateCount + partialTicks) * 3F;
+            matrices.multiply(new Quaternionf().rotateXYZ(0, yz, yz));
+            matrices.scale(
+                    1F / (f4 + (wobblyness * sin1) / 2),
+                    1F / (f4 + (wobblyness * sin2) / 2),
+                    1F / (f4 + (wobblyness * sin3) / 2)
+            );
+            matrices.multiply(new Quaternionf().rotateXYZ(0, -yz, -yz));
         }
 
-        float shiftX = DrugEffectInterpreter.getCameraShiftX(drugProperties, rendererUpdateCount + partialTicks);
-        float shiftY = DrugEffectInterpreter.getCameraShiftY(drugProperties, rendererUpdateCount + partialTicks);
-        GL11.glTranslatef(shiftX, shiftY, 0.0f);
+        matrices.translate(
+                DrugEffectInterpreter.getCameraShiftX(drugProperties, rendererUpdateCount + partialTicks),
+                DrugEffectInterpreter.getCameraShiftY(drugProperties, rendererUpdateCount + partialTicks),
+                0
+        );
     }
 
-    @Override
     public void renderOverlaysBeforeShaders(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
         effectLensFlare.sunFlareIntensity = PsychedelicraftClient.getConfig().visual.sunFlareIntensity;
 
@@ -140,7 +145,6 @@ public class DrugRenderer implements IDrugRenderer {
         }
     }
 
-    @Override
     public void renderOverlaysAfterShaders(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
@@ -162,7 +166,6 @@ public class DrugRenderer implements IDrugRenderer {
         RenderSystem.enableDepthTest();
     }
 
-    @Override
     public void renderAllHallucinations(float tickDelta, DrugProperties drugProperties) {
         HallucinationManager hallucinations = drugProperties.getHallucinations();
         for (DrugHallucination h : hallucinations.getEntities()) {
@@ -170,17 +173,14 @@ public class DrugRenderer implements IDrugRenderer {
         }
     }
 
-    @Override
     public float getCurrentHeatDistortion() {
         return wasInWater ? 0 : MathHelper.clamp(((currentHeat - 1) * 0.0015f), 0, 0.01F);
     }
 
-    @Override
     public float getCurrentWaterDistortion() {
         return wasInWater ? 0.025F : 0;
     }
 
-    @Override
     public float getCurrentWaterScreenDistortion() {
         return timeScreenWet > 0 && !wasInWater ? Math.min(1, timeScreenWet / 80F) : 0;
     }

@@ -25,6 +25,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 
@@ -39,7 +40,7 @@ public class DrugProperties implements NbtSerialisable {
     private final Map<DrugType, Drug> drugs = new HashMap<>();
     private final List<DrugInfluence> influences = new ArrayList<>();
 
-    private boolean hasChanges;
+    private boolean dirty;
 
     private final HallucinationManager hallucinations = new HallucinationManager(this);
     private final DrugMusicManager soundManager = new DrugMusicManager(this);
@@ -75,6 +76,10 @@ public class DrugProperties implements NbtSerialisable {
         return entity;
     }
 
+    public void markDirty() {
+        dirty = true;
+    }
+
     public HallucinationManager getHallucinations() {
         return hallucinations;
     }
@@ -92,23 +97,23 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public void addToDrug(DrugType type, double effect) {
-        hasChanges = true;
         getDrug(type).addToDesiredValue(effect);
+        markDirty();
     }
 
     public void setDrugValue(DrugType type, double effect) {
-        hasChanges = true;
         getDrug(type).setDesiredValue(effect);
+        markDirty();
     }
 
     public void addToDrug(DrugInfluence influence) {
-        hasChanges = true;
         influences.add(influence);
+        markDirty();
     }
 
     public void addAll(Iterable<DrugInfluence> influences) {
         influences.forEach(influence -> this.influences.add(influence.clone()));
-        hasChanges = true;
+        markDirty();
     }
 
     public Collection<Drug> getAllDrugs() {
@@ -122,6 +127,7 @@ public class DrugProperties implements NbtSerialisable {
     public void startBreathingSmoke(int time, float[] color) {
         this.breathSmokeColor = color == null ? new float[]{1.0f, 1.0f, 1.0f} : color;
         this.timeBreathingSmoke = time + 10; //10 is the time spent breathing in
+        markDirty();
 
         entity.world.playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 0.02F, 1.5F);
     }
@@ -133,8 +139,11 @@ public class DrugProperties implements NbtSerialisable {
     public void onTick() {
         if (age % 5 == 0) { //4 times / sec is enough
             influences.removeIf(influence -> {
-                influence.update(this);
-                return influence.isDone();
+                if (influence.update(this)) {
+                    markDirty();
+                    return true;
+                }
+                return false;
             });
         }
 
@@ -178,8 +187,12 @@ public class DrugProperties implements NbtSerialisable {
 
         age++;
 
-        if (hasChanges) {
-            hasChanges = false;
+        if (age % 5 == 0) {
+            dirty = true;
+        }
+
+        if (dirty) {
+            dirty = false;
 
             if (!entity.world.isClient) {
                 Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this), entity);
@@ -212,22 +225,25 @@ public class DrugProperties implements NbtSerialisable {
     @Override
     public void fromNbt(NbtCompound tagCompound) {
         NbtCompound drugData = tagCompound.getCompound("Drugs");
-        drugs.forEach((key, drug) -> {
-            drug.fromNbt(drugData.getCompound(key.toString()));
+        drugs.clear();
+        drugData.getKeys().forEach(key -> {
+            DrugType.REGISTRY.getOrEmpty(Identifier.tryParse(key)).ifPresent(type -> {
+                getDrug(type).fromNbt(drugData.getCompound(key));
+            });
         });
         influences.clear();
         tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE).forEach(tag -> {
             DrugInfluence.loadFromNbt((NbtCompound)tag).ifPresent(this::addToDrug);
         });
         age = tagCompound.getInt("age");
-        hasChanges = false;
+        dirty = false;
     }
 
     @Override
     public void toNbt(NbtCompound compound) {
         NbtCompound drugsComp = new NbtCompound();
         drugs.forEach((key, drug) -> {
-            drugsComp.put(key.toString(), drug.toNbt());
+            drugsComp.put(key.id().toString(), drug.toNbt());
         });
         compound.put("Drugs", drugsComp);
 
@@ -242,7 +258,7 @@ public class DrugProperties implements NbtSerialisable {
     public boolean onAwoken() {
         drugs.values().forEach(drug -> drug.reset(this));
         influences.clear();
-        hasChanges = true;
+        dirty = true;
 
         // TODO: (Sollace) Implement longer sleeping/comas
         return true;

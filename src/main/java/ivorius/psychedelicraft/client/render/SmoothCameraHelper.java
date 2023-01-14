@@ -5,6 +5,10 @@
 
 package ivorius.psychedelicraft.client.render;
 
+import org.joml.Vector2f;
+
+import ivorius.psychedelicraft.entity.drug.Drug;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.SmoothUtil;
 
@@ -20,41 +24,56 @@ public class SmoothCameraHelper {
 
     private float lastTickDelta;
 
-    private float cursorDeltaX;
-    private float cursorDeltaY;
+    private Vector2f cursorDelta = new Vector2f();
 
-    private float smoothedCursorX;
-    private float smoothedCursorY;
+    private Vector2f smoothedCursor = new Vector2f();
+    private Vector2f prevCursorDelta = new Vector2f();
 
-    public void update(float multiplier) {
-        float speed = getSpeed();
-        smoothedCursorX = (float)this.xSmoother.smooth(cursorDeltaX, multiplier * speed);
-        smoothedCursorY = (float)this.ySmoother.smooth(cursorDeltaY, multiplier * speed);
-        lastTickDelta = 0;
-        cursorDeltaX = 0;
-        cursorDeltaY = 0;
+    public void setCursorDelta(float deltaX, float deltaY) {
+        prevCursorDelta.x = deltaX;
+        prevCursorDelta.y = deltaY;
     }
 
-    public float[] getAngles(float deltaX, float deltaY) {
+    public void applyCameraChange() {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (mc.isWindowFocused() && !mc.isPaused() && mc.player != null) {
+            DrugProperties properties = DrugProperties.of(mc.player);
+            if (properties.getModifier(Drug.HEAD_MOTION_INERTNESS) > 0) {
+                Vector2f angles = getAngles();
+
+                if (!mc.options.smoothCameraEnabled) {
+                    angles.sub(getOriginalAngles());
+                }
+
+                mc.player.changeLookDirection(angles.x, angles.y);
+            }
+        }
+    }
+
+    public void tick(float multiplier) {
         float speed = getSpeed();
-        this.cursorDeltaX += (deltaX * speed);
-        this.cursorDeltaY += (deltaY * speed);
+        smoothedCursor.set(
+                (float)xSmoother.smooth(cursorDelta.x, multiplier * speed),
+                (float)ySmoother.smooth(cursorDelta.y, multiplier * speed)
+        );
+        lastTickDelta = 0;
+        cursorDelta.set(0, 0);
+    }
+
+    private Vector2f getAngles() {
+        float speed = getSpeed();
+        cursorDelta.add(prevCursorDelta.x * speed, prevCursorDelta.y * speed);
 
         float tickDelta = MinecraftClient.getInstance().getTickDelta();
         float progress = tickDelta - lastTickDelta;
         lastTickDelta = tickDelta;
-        return new float[]{
-            smoothedCursorX * progress,
-            smoothedCursorY * progress * getYSignum()
-        };
+
+        return smoothedCursor.mul(progress, progress * getYSignum(), new Vector2f());
     }
 
-    public float[] getOriginalAngles(float deltaX, float deltaY) {
+    private Vector2f getOriginalAngles() {
         float speed = getSpeed();
-        return new float[] {
-            deltaX * speed,
-            deltaY * speed * getYSignum()
-        };
+        return prevCursorDelta.mul(speed, speed * getYSignum(), new Vector2f());
     }
 
     private float getYSignum() {
@@ -63,6 +82,10 @@ public class SmoothCameraHelper {
 
     private float getSpeed() {
         float sensitivity = MinecraftClient.getInstance().options.getMouseSensitivity().getValue().floatValue() * 0.6F + 0.2F;
-        return sensitivity * sensitivity * sensitivity * 8;
+        sensitivity = sensitivity * sensitivity * sensitivity;
+        if (!MinecraftClient.getInstance().player.isUsingSpyglass()) {
+            sensitivity *= 8;
+        }
+        return sensitivity;
     }
 }

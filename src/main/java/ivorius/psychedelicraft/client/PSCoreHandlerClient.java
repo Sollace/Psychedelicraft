@@ -7,10 +7,8 @@ package ivorius.psychedelicraft.client;
 
 import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.program.PSRenderStates;
-import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -34,20 +32,14 @@ public class PSCoreHandlerClient
             matrices.push();
             DrugRenderer.INSTANCE.renderOverlaysAfterShaders(
                     matrices,
-                    mc.getTickDelta(), mc.player,
+                    mc.getTickDelta(),
+                    mc.player,
                     mc.player.age,
                     mc.getWindow().getScaledWidth(),
                     mc.getWindow().getScaledHeight(),
                     properties
             );
             matrices.pop();
-        });
-    }
-
-    public void orientCamera() {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        DrugProperties.of((Entity)mc.player).ifPresent(properties -> {
-            DrugRenderer.INSTANCE.distortScreen(mc.getTickDelta(), mc.player, mc.player.age, properties);
         });
     }
 
@@ -82,32 +74,6 @@ public class PSCoreHandlerClient
             }
         }
     }*/
-
-    public void setPlayerAngles() {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        DrugProperties.of((Entity)mc.player).ifPresent(properties -> {
-            float smoothness = properties.getModifier(Drug.HEAD_MOTION_INERTNESS);
-            if (smoothness < 1 && mc.isWindowFocused()) {
-                float deltaX = (float) mc.mouse.getX();
-                float deltaY = (float) mc.mouse.getY();
-
-                float[] angles = SmoothCameraHelper.INSTANCE.getAngles(deltaX, deltaY);
-
-                if (!mc.options.smoothCameraEnabled) {
-                    float[] originalAngles = SmoothCameraHelper.INSTANCE.getOriginalAngles(deltaX, deltaY);
-                    mc.player.changeLookDirection(angles[0] - originalAngles[0], angles[1] - originalAngles[1]);
-                } else {
-                    mc.player.changeLookDirection(angles[0], angles[1]);
-                }
-            }
-        });
-    }
-
-    public float getSoundVolume(float volume) {
-        return DrugProperties.of((Entity)MinecraftClient.getInstance().player).map(properties -> {
-            return MathHelper.clamp(volume * properties.getModifier(Drug.SOUND_VOLUME), 0, 1);
-        }).orElse(volume);
-    }
 
     public void setupCameraTransform(CallbackInfo event) {
         if (PSRenderStates.setupCameraTransform()) {

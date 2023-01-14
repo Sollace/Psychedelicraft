@@ -9,5 +9,8 @@
       "MixinLivingEntity"
     ],
     "client": [
+      "client.MixinMouse",
+      "client.MixinSoundSystem",
+      "client.MixinGameRenderer"
     ]
 }
