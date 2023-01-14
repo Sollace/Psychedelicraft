@@ -16,18 +16,18 @@ public abstract class DrugHallucination {
 
     public static final int UNLIMITED = -1;
 
-    public PlayerEntity player;
+    protected final PlayerEntity player;
 
-    public int entityTicksAlive;
+    protected int age;
 
-    public IvChatBot chatBot;
+    protected IvChatBot chatBot;
 
     public DrugHallucination(PlayerEntity player) {
         this.player = player;
     }
 
     public void update() {
-        entityTicksAlive++;
+        age++;
 
         if (chatBot != null) {
             String sendString = chatBot.update();

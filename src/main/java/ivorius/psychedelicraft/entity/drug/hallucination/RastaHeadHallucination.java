@@ -30,7 +30,7 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
 
     public RastaHeadHallucination(PlayerEntity playerEntity) {
         super(playerEntity);
-        this.entityMaxTicks = (playerEntity.getRandom().nextInt(59) + 120) * 20;
+        this.maxAge = (playerEntity.getRandom().nextInt(59) + 120) * 20;
 
         this.entity = EntityType.PIG.create(playerEntity.world);
         this.entity.setPosition(playerEntity.getPos());

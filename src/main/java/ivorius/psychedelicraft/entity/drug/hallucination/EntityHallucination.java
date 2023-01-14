@@ -46,7 +46,7 @@ public class EntityHallucination extends AbstractEntityHallucination {
                 (rand.nextDouble() - 0.5D) / 10D
         );
         entity.setYaw(rand.nextInt(360));
-        entityMaxTicks = (rand.nextInt(59) + 3) * 20;
+        maxAge = (rand.nextInt(59) + 3) * 20;
         rotationYawPlus = rand.nextFloat() * 10 * (rand.nextBoolean() ? 0 : 1);
 
         color = new float[] {

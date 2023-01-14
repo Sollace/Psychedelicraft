@@ -16,13 +16,13 @@ import ivorius.psychedelicraft.client.render.PassThroughVertexConsumer;
 
 public abstract class AbstractEntityHallucination extends DrugHallucination {
 
-    public Entity entity;
+    protected Entity entity;
 
-    public int entityMaxTicks;
+    protected int maxAge;
 
-    public float[] color;
+    protected float[] color;
 
-    public float scale;
+    protected float scale;
 
     public AbstractEntityHallucination(PlayerEntity player) {
         super(player);
@@ -35,7 +35,7 @@ public abstract class AbstractEntityHallucination extends DrugHallucination {
 
     @Override
     public boolean isDead() {
-        return entityTicksAlive >= entityMaxTicks;
+        return age >= maxAge;
     }
 
     @Override
@@ -67,7 +67,7 @@ public abstract class AbstractEntityHallucination extends DrugHallucination {
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, float dAlpha) {
         this.dAlpha = Math.min(1,
                 MathHelper.sin(
-                        (float) Math.min(entityTicksAlive, entityMaxTicks - 2) / (float) (entityMaxTicks - 2)
+                        (float) Math.min(age, maxAge - 2) / (float) (maxAge - 2)
                         * MathHelper.PI) * 18) * dAlpha;
 
         if (this.dAlpha <= 0) {
@@ -91,7 +91,6 @@ public abstract class AbstractEntityHallucination extends DrugHallucination {
         matrices.scale(scale, scale, scale);
         matrices.translate(-x, -y, -z);
 
-        Temp.setShaderUp();
         renderModel(matrices, layer -> {
             var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
 
