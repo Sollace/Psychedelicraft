@@ -7,13 +7,11 @@ import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import ivorius.psychedelicraft.client.render.DrugRenderer;
-import ivorius.psychedelicraft.entity.drug.DrugProperties;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 
-@Mixin(Mouse.class)
+@Mixin(GameRenderer.class)
 abstract class MixinGameRenderer {
     @Inject(method = "renderWorld",
             at = @At(
@@ -23,9 +21,6 @@ abstract class MixinGameRenderer {
             cancellable = true
     )
     public void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        DrugProperties.of((Entity)mc.player).ifPresent(properties -> {
-            DrugRenderer.INSTANCE.distortScreen(matrices, tickDelta, mc.player, mc.player.age, properties);
-        });
+        DrugRenderer.INSTANCE.distortScreen(matrices, tickDelta);
     }
 }

@@ -25,37 +25,6 @@ public class PSCoreHandlerClient
    // private final Vec3 field_82885_c = Vec3.createVectorHelper(-0.20000000298023224D, 1.0D, 0.699999988079071D).normalize();
 
     //@SubscribeEvent
-    public void onRenderOverlay(MatrixStack matrices) {
-        //if (event.type == RenderGameOverlayEvent.ElementType.PORTAL)
-        MinecraftClient mc = MinecraftClient.getInstance();
-        DrugProperties.of((Entity)mc.player).ifPresent(properties -> {
-            matrices.push();
-            DrugRenderer.INSTANCE.renderOverlaysAfterShaders(
-                    matrices,
-                    mc.getTickDelta(),
-                    mc.player,
-                    mc.player.age,
-                    mc.getWindow().getScaledWidth(),
-                    mc.getWindow().getScaledHeight(),
-                    properties
-            );
-            matrices.pop();
-        });
-    }
-
-    public void renderHeldItem(MatrixStack matrices) {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        int rendererUpdateCount = mc.inGameHud.getTicks();
-        float partialTicks = mc.getTickDelta();
-
-        DrugProperties.of((Entity)mc.player).ifPresent(drugProperties -> {
-            float shiftX = DrugEffectInterpreter.getHandShiftX(drugProperties, rendererUpdateCount + partialTicks);
-            float shiftY = DrugEffectInterpreter.getHandShiftY(drugProperties, rendererUpdateCount + partialTicks);
-            matrices.translate(shiftX, shiftY, 0);
-        });
-    }
-
-    //@SubscribeEvent
     /*public void renderHand(RenderHandEvent event)
     {
         if (event instanceof RenderHandEvent.Pre)

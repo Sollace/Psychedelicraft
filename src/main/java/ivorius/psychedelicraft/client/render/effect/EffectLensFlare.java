@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.client.render.effect;
 
+import java.util.stream.IntStream;
+
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -12,6 +14,7 @@ import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.MCColorHelper;
 import ivorius.psychedelicraft.client.render.PsycheMatrixHelper;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -34,11 +37,13 @@ public class EffectLensFlare implements ScreenEffect {
     private static final float SUN_RADIANS = 5F * MathHelper.RADIANS_PER_DEGREE;
     private static final float SUN_WIDTH = 20;
 
-    public float[] sunFlareSizes;
-    public float[] sunFlareInfluences;
-    public Identifier[] sunFlareTextures;
+    public static final float[] SUN_FLARE_SIZES = new float[]{0.15f, 0.24f, 0.12f, 0.036f, 0.06f, 0.048f, 0.006f, 0.012f, 0.5f, 0.09f, 0.036f, 0.09f, 0.06f, 0.05f, 0.6f};
+    public static final float[] SUN_FLARE_INFLUENCES = new float[]{-1.3f, -2.0f, 0.2f, 0.4f, 0.25f, -0.25f, -0.7f, -1.0f, 1.0f, 1.4f, -1.31f, -1.2f, -1.5f, -1.55f, -3.0f};
+    public static final Identifier[] SUN_FLARE_TEXTURES = IntStream.range(0, SUN_FLARE_SIZES.length)
+            .mapToObj(i -> Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "flare" + i + ".png"))
+            .toArray(Identifier[]::new);
 
-    public Identifier sunBlindnessTexture;
+    public Identifier sunBlindnessTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "sun_blindness.png");
     public float sunFlareIntensity;
 
     public float actualSunAlpha = 0.0f;
@@ -97,13 +102,13 @@ public class EffectLensFlare implements ScreenEffect {
             float screenCenterX = screenWidth * 0.5f;
             float screenCenterY = screenHeight * 0.5f;
 
-            for (int i = 0; i < sunFlareSizes.length; i++) {
-                float flareSizeHalf = sunFlareSizes[i] * genSize * 0.5f;
-                float flareCenterX = screenCenterX + xDist * sunFlareInfluences[i];
-                float flareCenterY = screenCenterY + yDist * sunFlareInfluences[i];
+            for (int i = 0; i < SUN_FLARE_SIZES.length; i++) {
+                float flareSizeHalf = SUN_FLARE_SIZES[i] * genSize * 0.5f;
+                float flareCenterX = screenCenterX + xDist * SUN_FLARE_INFLUENCES[i];
+                float flareCenterY = screenCenterY + yDist * SUN_FLARE_INFLUENCES[i];
 
                 RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, (alpha * i == 8 ? 1F : 0.5F) * actualSunAlpha * sunFlareIntensity);
-                RenderSystem.setShaderTexture(0, sunFlareTextures[i]);
+                RenderSystem.setShaderTexture(0, SUN_FLARE_TEXTURES[i]);
 
                 buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
                 buffer.vertex(flareCenterX - flareSizeHalf, flareCenterY + flareSizeHalf, -90.0D).texture(0, 1).next();

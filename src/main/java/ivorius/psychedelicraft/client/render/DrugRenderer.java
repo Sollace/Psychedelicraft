@@ -16,14 +16,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 import org.joml.Quaternionf;
-import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -63,18 +64,7 @@ public class DrugRenderer {
 
     public float currentHeat;
 
-    public EffectLensFlare effectLensFlare;
-
-    public DrugRenderer() {
-        effectLensFlare = new EffectLensFlare();
-        effectLensFlare.sunFlareSizes = new float[]{0.15f, 0.24f, 0.12f, 0.036f, 0.06f, 0.048f, 0.006f, 0.012f, 0.5f, 0.09f, 0.036f, 0.09f, 0.06f, 0.05f, 0.6f};
-        effectLensFlare.sunFlareInfluences = new float[]{-1.3f, -2.0f, 0.2f, 0.4f, 0.25f, -0.25f, -0.7f, -1.0f, 1.0f, 1.4f, -1.31f, -1.2f, -1.5f, -1.55f, -3.0f};
-        effectLensFlare.sunBlindnessTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "sun_blindness.png");
-        effectLensFlare.sunFlareTextures = new Identifier[effectLensFlare.sunFlareSizes.length];
-        for (int i = 0; i < effectLensFlare.sunFlareTextures.length; i++) {
-            effectLensFlare.sunFlareTextures[i] = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "flare" + i + ".png");
-        }
-    }
+    public final EffectLensFlare effectLensFlare = new EffectLensFlare();
 
     public void update(DrugProperties drugProperties, LivingEntity entity) {
         if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled) {
@@ -109,18 +99,25 @@ public class DrugRenderer {
     }
 
     @ParametersAreNonnullByDefault
-    public void distortScreen(MatrixStack matrices, float partialTicks, LivingEntity entity, int rendererUpdateCount, DrugProperties drugProperties) {
-        float wobblyness = Math.min(1, drugProperties.getModifier(Drug.VIEW_WOBBLYNESS));
+    public void distortScreen(MatrixStack matrices, float tickDelta) {
+        DrugProperties properties = DrugProperties.of(MinecraftClient.getInstance().player);
+        if (properties == null) {
+            return;
+        }
+
+        float wobblyness = Math.min(1, properties.getModifier(Drug.VIEW_WOBBLYNESS));
+
+        int frame = properties.asEntity().age;
+        float tick = frame + tickDelta;
 
         if (wobblyness > 0) {
-            float f4 = 5F / (wobblyness * wobblyness + 5F) - wobblyness * 0.04F;
-            f4 *= f4;
+            float f4 = MathHelper.square(5F / (wobblyness * wobblyness + 5F) - wobblyness * 0.04F);
 
-            float sin1 = MathHelper.sin(((rendererUpdateCount + partialTicks) / 150 * (float) Math.PI));
-            float sin2 = MathHelper.sin(((rendererUpdateCount + partialTicks) / 170 * (float) Math.PI));
-            float sin3 = MathHelper.sin(((rendererUpdateCount + partialTicks) / 190 * (float) Math.PI));
+            float sin1 = MathHelper.sin(tick / 150 * MathHelper.PI);
+            float sin2 = MathHelper.sin(tick / 170 * MathHelper.PI);
+            float sin3 = MathHelper.sin(tick / 190 * MathHelper.PI);
 
-            float yz = (rendererUpdateCount + partialTicks) * 3F;
+            float yz = tick * 3F;
             matrices.multiply(new Quaternionf().rotateXYZ(0, yz, yz));
             matrices.scale(
                     1F / (f4 + (wobblyness * sin1) / 2),
@@ -131,10 +128,22 @@ public class DrugRenderer {
         }
 
         matrices.translate(
-                DrugEffectInterpreter.getCameraShiftX(drugProperties, rendererUpdateCount + partialTicks),
-                DrugEffectInterpreter.getCameraShiftY(drugProperties, rendererUpdateCount + partialTicks),
+                DrugEffectInterpreter.getCameraShiftX(properties, tick),
+                DrugEffectInterpreter.getCameraShiftY(properties, tick),
                 0
         );
+    }
+
+    public void distortHand(MatrixStack matrices) {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        int rendererUpdateCount = mc.inGameHud.getTicks();
+        float partialTicks = mc.getTickDelta();
+
+        DrugProperties.of((Entity)mc.player).ifPresent(drugProperties -> {
+            float shiftX = DrugEffectInterpreter.getHandShiftX(drugProperties, rendererUpdateCount + partialTicks);
+            float shiftY = DrugEffectInterpreter.getHandShiftY(drugProperties, rendererUpdateCount + partialTicks);
+            matrices.translate(shiftX, shiftY, 0);
+        });
     }
 
     public void renderOverlaysBeforeShaders(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
@@ -145,14 +154,28 @@ public class DrugRenderer {
         }
     }
 
-    public void renderOverlaysAfterShaders(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
+    public void onRenderOverlay(MatrixStack matrices, float tickDelta) {
+        DrugProperties.of((Entity)MinecraftClient.getInstance().player).ifPresent(properties -> {
+            renderOverlays(matrices, tickDelta, properties);
+        });
+    }
+
+    public void renderOverlays(MatrixStack matrices, float partialTicks, DrugProperties drugProperties) {
+        matrices.push();
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.defaultBlendFunc();
 
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        PlayerEntity entity = drugProperties.asEntity();
+
+        int width = client.getWindow().getScaledWidth();
+        int height = client.getWindow().getScaledHeight();
+
         for (Drug drug : drugProperties.getAllDrugs()) {
-            drug.drawOverlays(matrices, partialTicks, entity, updateCounter, width, height, drugProperties);
+            drug.drawOverlays(matrices, partialTicks, entity, entity.age, width, height, drugProperties);
         }
 
         if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled && entity.hurtTime > 0 || experiencedHealth < 5F) {
@@ -164,6 +187,7 @@ public class DrugRenderer {
         }
 
         RenderSystem.enableDepthTest();
+        matrices.pop();
     }
 
     public void renderAllHallucinations(float tickDelta, DrugProperties drugProperties) {
