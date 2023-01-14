@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.SmoothUtil;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 23.02.14.
@@ -50,7 +51,8 @@ public class SmoothCameraHelper {
         }
     }
 
-    public void tick(float multiplier) {
+    public void tick(DrugProperties properties) {
+        float multiplier = MathHelper.clamp(properties.getModifier(Drug.HEAD_MOTION_INERTNESS), 0, 1);
         float speed = getSpeed();
         smoothedCursor.set(
                 (float)xSmoother.smooth(cursorDelta.x, multiplier * speed),

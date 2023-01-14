@@ -34,7 +34,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
             if (!client.isPaused()) {
                 DrugProperties.of((Entity)client.player).ifPresent(properties -> {
                     DrugRenderer.INSTANCE.update(properties, client.player);
-                    SmoothCameraHelper.INSTANCE.tick(properties.getModifier(Drug.HEAD_MOTION_INERTNESS));
+                    SmoothCameraHelper.INSTANCE.tick(properties);
                 });
             }
         });
