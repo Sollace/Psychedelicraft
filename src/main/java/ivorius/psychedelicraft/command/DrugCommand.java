@@ -66,5 +66,7 @@ public class DrugCommand {
         } else {
             DrugType.REGISTRY.getOrEmpty(drugName).map(properties::getDrug).ifPresent(change);
         }
+
+        properties.markDirty();
     }
 }
