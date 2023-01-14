@@ -29,7 +29,7 @@ public class WrapperWaterOverlay extends ShaderWrapper<ShaderDistortionMap> {
 
     @Override
     public void setShaderValues(float tickDelta, int ticks, @Nullable Framebuffer buffer) {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
+        DrugProperties drugProperties = DrugProperties.of(MinecraftClient.getInstance().player);
 
         if (drugProperties != null && PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {
             float waterScreenDistortion = DrugRenderer.INSTANCE.getCurrentWaterScreenDistortion();
@@ -40,7 +40,7 @@ public class WrapperWaterOverlay extends ShaderWrapper<ShaderDistortionMap> {
             shaderInstance.texTranslation0 = new float[]{0, ticks * 0.005F};
             shaderInstance.texTranslation1 = new float[]{0.5F, ticks * 0.007F};
         } else {
-            shaderInstance.strength = 0.0f;
+            shaderInstance.strength = 0;
         }
     }
 }

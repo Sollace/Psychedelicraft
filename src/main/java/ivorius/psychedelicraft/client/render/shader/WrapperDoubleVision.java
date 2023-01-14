@@ -23,15 +23,13 @@ public class WrapperDoubleVision extends ShaderWrapper<ShaderDoubleVision> {
 
     @Override
     public void setShaderValues(float partialTicks, int ticks, Framebuffer depthBuffer) {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
-
-        shaderInstance.doubleVision = 0.0f;
+        DrugProperties drugProperties = DrugProperties.of(MinecraftClient.getInstance().player);
 
         if (drugProperties != null) {
-            for (Drug drug : drugProperties.getAllDrugs())
-                shaderInstance.doubleVision += (1.0f - shaderInstance.doubleVision) * drug.doubleVision();
-
-            shaderInstance.doubleVisionDistance = MathHelper.sin((ticks + partialTicks) / 20.0f) * 0.05f * shaderInstance.doubleVision;
+            shaderInstance.doubleVision = drugProperties.getModifier(Drug.DOUBLE_VISION);
+            shaderInstance.doubleVisionDistance = MathHelper.sin((ticks + partialTicks) / 20F) * 0.05f * shaderInstance.doubleVision;
+        } else {
+            shaderInstance.doubleVision = 0;
         }
     }
 }

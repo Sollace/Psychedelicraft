@@ -29,34 +29,21 @@ public class ShaderMainDepth extends IvShaderInstance3D implements ShaderWorld {
 
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        Entity renderEntity = mc.getCameraEntity();
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(renderEntity);
-
         setUniformFloats("ticks", ticks);
         setUniformInts("worldTime", (int) mc.world.getTime());
 
-        setUniformFloats("playerPos", (float) renderEntity.getX(), (float) renderEntity.getY(), (float) renderEntity.getZ());
+        setUniformFloats("playerPos", (float) mc.player.getX(), (float) mc.player.getY(), (float) mc.player.getZ());
         setDepthMultiplier(1.0f);
         setTexture2DEnabled(GLStateProxy.isTextureEnabled(GLStateProxy.DEFAULT_TEXTURE));
         setOverrideColor(null);
         setUseScreenTexCoords(false);
         setPixelSize(1F / mc.getWindow().getFramebufferWidth(), 1F / mc.getWindow().getFramebufferHeight());
 
-        float bigWaveStrength = 0.0f;
-        float smallWaveStrength = 0.0f;
-        float wiggleWaveStrength = 0.0f;
-        float distantWorldDeformationStrength = 0.0f;
-        if (drugProperties != null)
-        {
-            bigWaveStrength = drugProperties.getHallucinations().getBigWaveStrength(drugProperties, partialTicks);
-            smallWaveStrength = drugProperties.getHallucinations().getSmallWaveStrength(drugProperties, partialTicks);
-            wiggleWaveStrength = drugProperties.getHallucinations().getWiggleWaveStrength(drugProperties, partialTicks);
-            distantWorldDeformationStrength = drugProperties.getHallucinations().getDistantWorldDeformationStrength(drugProperties, partialTicks);
-        }
-        setUniformFloats("bigWaves", bigWaveStrength);
-        setUniformFloats("smallWaves", smallWaveStrength);
-        setUniformFloats("wiggleWaves", wiggleWaveStrength);
-        setUniformFloats("distantWorldDeformation", distantWorldDeformationStrength);
+        DrugProperties drugProperties = DrugProperties.of(mc.player);
+        setUniformFloats("bigWaves", drugProperties.getHallucinations().getBigWaveStrength(drugProperties, partialTicks));
+        setUniformFloats("smallWaves", drugProperties.getHallucinations().getSmallWaveStrength(drugProperties, partialTicks));
+        setUniformFloats("wiggleWaves", drugProperties.getHallucinations().getWiggleWaveStrength(drugProperties, partialTicks));
+        setUniformFloats("distantWorldDeformation", drugProperties.getHallucinations().getDistantWorldDeformationStrength(drugProperties, partialTicks));
 
         return true;
     }

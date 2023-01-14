@@ -59,15 +59,6 @@ public class DrugProperties implements NbtSerialisable {
         this.entity = entity;
     }
 
-    @Deprecated(forRemoval = true)
-    @Nullable
-    public static DrugProperties getDrugProperties(Entity entity) {
-        if (entity instanceof DrugPropertiesContainer c) {
-            return c.getDrugProperties();
-        }
-        return null;
-    }
-
     public static DrugProperties of(PlayerEntity player) {
         return ((DrugPropertiesContainer)player).getDrugProperties();
     }

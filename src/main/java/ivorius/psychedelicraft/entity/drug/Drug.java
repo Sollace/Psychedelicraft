@@ -29,6 +29,7 @@ public interface Drug extends NbtSerialisable {
     AggregateModifier HEAD_MOTION_INERTNESS = AggregateModifier.create(0, Drug::headMotionInertness, AggregateModifier.Combiner.SUM);
     AggregateModifier VIEW_TREMBLE_STRENGTH = AggregateModifier.create(0, Drug::viewTrembleStrength, AggregateModifier.Combiner.INVERSE_MUL);
     AggregateModifier HAND_TREMBLE_STRENGTH = AggregateModifier.create(0, Drug::handTrembleStrength, AggregateModifier.Combiner.INVERSE_MUL);
+    AggregateModifier DOUBLE_VISION = AggregateModifier.create(0, Drug::doubleVision, AggregateModifier.Combiner.INVERSE_MUL);
 
     AggregateModifier COLOR_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::colorHallucinationStrength, AggregateModifier.Combiner.SUM);
     AggregateModifier MOVEMENT_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::movementHallucinationStrength, AggregateModifier.Combiner.SUM);

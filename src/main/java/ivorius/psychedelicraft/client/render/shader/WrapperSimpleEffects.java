@@ -23,7 +23,7 @@ public class WrapperSimpleEffects extends ShaderWrapper<ShaderSimpleEffects> {
 
     @Override
     public void setShaderValues(float tickDelta, int ticks, @Nullable Framebuffer buffer) {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
+        DrugProperties drugProperties = DrugProperties.of(MinecraftClient.getInstance().player);
 
         if (drugProperties != null) {
             shaderInstance.quickColorRotation = drugProperties.getHallucinations().getQuickColorRotation(drugProperties, tickDelta);

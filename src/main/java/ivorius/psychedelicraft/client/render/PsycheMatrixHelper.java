@@ -49,7 +49,7 @@ public class PsycheMatrixHelper {
          */
         // Entity is in center implicitly when drawn
 
-        if (entity == MinecraftClient.getInstance().cameraEntity) {
+        if (entity == MinecraftClient.getInstance().player || entity == MinecraftClient.getInstance().cameraEntity) {
             return getCurrentProjectionMatrix(1);
         }
 

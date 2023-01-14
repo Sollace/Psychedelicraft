@@ -21,12 +21,12 @@ public class WrapperMotionBlur extends ScreenEffectWrapper<EffectMotionBlur> {
 
     @Override
     public void setScreenEffectValues(float partialTicks, int ticks) {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().player);
+        DrugProperties drugProperties = DrugProperties.of(MinecraftClient.getInstance().player);
 
         if (PsychedelicraftClient.getConfig().visual.doMotionBlur && drugProperties != null) {
             screenEffect.motionBlur = drugProperties.getModifier(Drug.MOTION_BLUR);
         } else {
-            screenEffect.motionBlur = 0.0f;
+            screenEffect.motionBlur = 0;
         }
     }
 }

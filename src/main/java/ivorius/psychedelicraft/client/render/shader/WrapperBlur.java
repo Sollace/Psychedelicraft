@@ -29,7 +29,7 @@ public class WrapperBlur extends ShaderWrapper<ShaderBlur> {
 
     @Override
     public void setShaderValues(float tickDelta, int ticks, Framebuffer buffer) {
-        shaderInstance.vBlur = DrugProperties.of(MinecraftClient.getInstance().cameraEntity).map(d -> d.getDrugValue(DrugType.POWER)).orElse(0F);
+        shaderInstance.vBlur = DrugProperties.of(MinecraftClient.getInstance().player).getDrugValue(DrugType.POWER);
         shaderInstance.hBlur = 0;
 
         float blur = PsychedelicraftClient.getConfig().visual.pauseMenuBlur * screenBackgroundBlur * screenBackgroundBlur * screenBackgroundBlur;

@@ -24,7 +24,7 @@ public class WrapperBlurNoise extends ShaderWrapper<ShaderBlurNoise> {
 
     @Override
     public void setShaderValues(float partialTicks, int ticks, Framebuffer depthBuffer) {
-        DrugProperties drugProperties = DrugProperties.getDrugProperties(MinecraftClient.getInstance().cameraEntity);
+        DrugProperties drugProperties = DrugProperties.of(MinecraftClient.getInstance().player);
 
         if (drugProperties != null) {
             shaderInstance.strength = drugProperties.getDrugValue(DrugType.POWER) * 0.6f;

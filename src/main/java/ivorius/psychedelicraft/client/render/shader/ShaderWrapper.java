@@ -41,7 +41,7 @@ public abstract class ShaderWrapper<ShaderInstance extends IvShaderInstance2D> i
     public void apply(float partialTicks, ScreenEffect.PingPong pingPong, Framebuffer depthBuffer) {
         if (PsychedelicraftClient.getConfig().visual.shader2DEnabled) {
             MinecraftClient mc = MinecraftClient.getInstance();
-            int ticks = mc.cameraEntity.age;
+            int ticks = mc.player.age;
             setShaderValues(partialTicks, ticks, depthBuffer);
 
             if (shaderInstance.shouldApply(ticks + partialTicks)) {

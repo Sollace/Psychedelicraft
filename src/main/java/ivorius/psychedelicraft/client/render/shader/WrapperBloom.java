@@ -23,8 +23,7 @@ public class WrapperBloom extends ShaderWrapper<ShaderBloom> {
 
     @Override
     public void setShaderValues(float partialTicks, int ticks, @Nullable Framebuffer depthBuffer) {
-        shaderInstance.bloom = DrugProperties.of(MinecraftClient.getInstance().cameraEntity)
-                .map(d -> d.getHallucinations().getBloom(d, partialTicks))
-                .orElse(0F);
+        DrugProperties d = DrugProperties.of(MinecraftClient.getInstance().player);
+        shaderInstance.bloom = d.getHallucinations().getBloom(d, partialTicks);
     }
 }
