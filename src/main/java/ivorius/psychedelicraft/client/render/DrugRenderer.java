@@ -193,7 +193,7 @@ public class DrugRenderer {
     public void renderAllHallucinations(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, DrugProperties drugProperties) {
         HallucinationManager hallucinations = drugProperties.getHallucinations();
         float alpha = MathHelper.clamp(hallucinations.getHallucinationStrength(tickDelta) * 15, 0, 1);
-        for (DrugHallucination h : hallucinations.getEntities()) {
+        for (Hallucination h : hallucinations.getEntities()) {
             h.render(matrices, vertices, camera, tickDelta, alpha);
         }
     }

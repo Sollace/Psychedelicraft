@@ -14,7 +14,7 @@ import net.minecraft.util.math.*;
 
 import ivorius.psychedelicraft.client.render.PassThroughVertexConsumer;
 
-public abstract class AbstractEntityHallucination extends DrugHallucination {
+public abstract class AbstractEntityHallucination extends Hallucination {
 
     protected Entity entity;
 

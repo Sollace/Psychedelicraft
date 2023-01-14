@@ -5,14 +5,14 @@
 
 package ivorius.psychedelicraft.entity.drug.hallucination;
 
+import java.util.Optional;
+
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
 
-public abstract class DrugHallucination {
+public abstract class Hallucination {
 
     public static final int UNLIMITED = -1;
 
@@ -20,28 +20,19 @@ public abstract class DrugHallucination {
 
     protected int age;
 
-    protected IvChatBot chatBot;
+    protected Optional<ChatBot> chatBot = Optional.empty();
 
-    public DrugHallucination(PlayerEntity player) {
+    public Hallucination(PlayerEntity player) {
         this.player = player;
     }
 
     public void update() {
         age++;
-
-        if (chatBot != null) {
-            String sendString = chatBot.update();
-
-            if (sendString != null) {
-                player.sendMessage(Text.literal(sendString));
-            }
-        }
+        chatBot.ifPresent(ChatBot::tick);
     }
 
-    public void receiveChatMessage(String message, LivingEntity entity) {
-        if (this.chatBot != null) {
-            this.chatBot.receiveChatMessage(message);
-        }
+    public Optional<ChatBot> getChatBot() {
+        return chatBot;
     }
 
     public abstract void render(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, float alpha);
@@ -49,10 +40,4 @@ public abstract class DrugHallucination {
     public abstract boolean isDead();
 
     public abstract int getMaxHallucinations();
-
-    public interface IvChatBot {
-        String update();
-
-        void receiveChatMessage(String message);
-    }
 }

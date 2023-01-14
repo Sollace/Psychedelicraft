@@ -4,12 +4,11 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import ivorius.psychedelicraft.entity.drug.*;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.random.Random;
 
-public class EntityHallucinationList implements Iterable<DrugHallucination> {
-    private final List<DrugHallucination> entities = new ArrayList<>();
-    private final List<DrugHallucination> pending = new ArrayList<>();
+public class EntityHallucinationList implements Iterable<Hallucination> {
+    private final List<Hallucination> entities = new ArrayList<>();
+    private final List<Hallucination> pending = new ArrayList<>();
 
     private final HallucinationManager manager;
 
@@ -52,9 +51,9 @@ public class EntityHallucinationList implements Iterable<DrugHallucination> {
         }
     }
 
-    private int getNumberOfHallucinations(Predicate<DrugHallucination> test) {
+    private int getNumberOfHallucinations(Predicate<Hallucination> test) {
         int count = 0;
-        for (DrugHallucination hallucination : this) {
+        for (Hallucination hallucination : this) {
             if (test.test(hallucination)) {
                 count++;
             }
@@ -63,14 +62,8 @@ public class EntityHallucinationList implements Iterable<DrugHallucination> {
         return count;
     }
 
-    public void receiveChatMessage(LivingEntity entity, String message) {
-        for (DrugHallucination h : this) {
-            h.receiveChatMessage(message, entity);
-        }
-    }
-
     @Override
-    public Iterator<DrugHallucination> iterator() {
+    public Iterator<Hallucination> iterator() {
         return entities.iterator();
     }
 }

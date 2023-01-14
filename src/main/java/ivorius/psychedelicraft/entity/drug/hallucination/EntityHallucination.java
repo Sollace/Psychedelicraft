@@ -67,8 +67,4 @@ public class EntityHallucination extends AbstractEntityHallucination {
         entity.setPosition(entity.getPos().add(entity.getVelocity()));
         entity.setYaw(MathHelper.wrapDegrees(entity.getYaw() + rotationYawPlus));
     }
-
-    @Override
-    public void receiveChatMessage(String message, LivingEntity entity) { }
-
 }
