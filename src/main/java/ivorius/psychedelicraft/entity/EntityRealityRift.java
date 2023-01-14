@@ -38,14 +38,14 @@ public class EntityRealityRift extends Entity {
 
     public float visualRiftSize;
 
-    public EntityRealityRift(EntityType<EntityRealityRift> type, World par1World)
-    {
+    public EntityRealityRift(EntityType<EntityRealityRift> type, World par1World) {
         super(type, par1World);
-        // TODO: (Sollace) Minecraft now supports a render bounding box
-        this.ignoreCameraFrustum = true; // Change this when MC supports a render bounding box...
-        //this.yOffset = this.height / 2.0F;
-
         setRiftSize((float)world.random.nextTriangular(0.5F, 0.5F));
+    }
+
+    @Override
+    public Box getVisibilityBoundingBox() {
+        return getBoundingBox().expand(20);
     }
 
     @Override
