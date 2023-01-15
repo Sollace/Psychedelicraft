@@ -48,7 +48,7 @@ public interface Drug extends NbtSerialisable {
     void reset(DrugProperties drugProperties);
 
     /**
-     * A value from 0 to 0 indicating the strength of this particular effect.
+     * A value from 0 to 1 indicating the strength of this particular effect.
      */
     double getActiveValue();
 

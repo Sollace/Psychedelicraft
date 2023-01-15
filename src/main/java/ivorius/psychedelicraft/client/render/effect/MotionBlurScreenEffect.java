@@ -8,17 +8,19 @@ package ivorius.psychedelicraft.client.render.effect;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import com.mojang.blaze3d.platform.*;
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
-import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
-import ivorius.psychedelicraft.client.render.GLStateProxy;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 
 /**
@@ -48,14 +50,17 @@ public class MotionBlurScreenEffect implements ScreenEffect {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
+
         if (motionBlur > 0) {
             if (textures != null && textures.sizeChanged(screenWidth, screenHeight)) {
                 close();
             }
 
             if (textures == null) {
-                textures = new GlTextureSet(screenWidth, screenHeight, MAX_SAMPLES);
+                textures = new GlTextureSet(MAX_SAMPLES, screenWidth, screenHeight);
             }
+
+            ticks += MinecraftClient.getInstance().player.age;
 
             if (previousTicks > ticks) {
                 previousTicks = ticks;
@@ -102,7 +107,7 @@ public class MotionBlurScreenEffect implements ScreenEffect {
         public GlTextureSet(int samples, int width, int height) {
             this.width = width;
             this.height = height;
-            textures = IntStream.range(1, samples).mapToObj(i -> new GlTexture(i, width, height)).toList();
+            textures = IntStream.range(1, samples + 1).mapToObj(i -> new GlTexture(i, width, height)).toList();
         }
 
         public GlTexture getTexture(int sample) {
@@ -115,9 +120,7 @@ public class MotionBlurScreenEffect implements ScreenEffect {
 
         public void drawToScreen(int currentSample) {
             for (int i = 0; i < textures.size(); i++) {
-                int sampleIndex = (i + currentSample) % textures.size();
-
-                textures.get(sampleIndex).drawToScreen();
+                textures.get((i + currentSample) % textures.size()).drawToScreen();
             }
         }
 
@@ -145,8 +148,15 @@ public class MotionBlurScreenEffect implements ScreenEffect {
         }
 
         public void sample() {
+            Framebuffer buffer = MinecraftClient.getInstance().getFramebuffer();
+            NativeImage copy = new NativeImage(buffer.textureWidth, buffer.textureHeight, false);
+            RenderSystem.bindTexture(buffer.getColorAttachment());
+            copy.loadFromTextureImage(0, true);
+
+            TextureUtil.prepareImage(id, buffer.textureWidth, buffer.textureHeight);
             RenderSystem.bindTexture(id);
-            GLStateProxy.copyTexture(0, 0, 0, 0, width, height);
+            copy.upload(0, 0, 0, true);
+
             prepared = true;
         }
 
@@ -158,8 +168,10 @@ public class MotionBlurScreenEffect implements ScreenEffect {
             float alpha = Math.min(1, sample * 0.02f * motionBlur);
 
             if (prepared && alpha > 0) {
+                RenderSystem.setShader(GameRenderer::getPositionTexProgram);
                 RenderSystem.setShaderColor(1, 1, 1, alpha);
-                RenderSystem.bindTexture(id);
+                RenderSystem.enableBlend();
+                RenderSystem.setShaderTexture(0, id);
                 ScreenEffect.drawScreen(width, height);
             }
         }

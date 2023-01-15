@@ -28,12 +28,12 @@ public class AlcoholDrug extends SimpleDrug {
 
     @Override
     public float doubleVision() {
-        return MathHelper.lerp((float)getActiveValue(), 0.25f, 1);
+        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.25f, 1), 0, 1);
     }
 
     @Override
     public float motionBlur() {
-        return MathHelper.lerp((float)getActiveValue(), 0.5f, 1) * 0.3F;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.5f, 1), 0, 1) * 0.3F;
     }
 
     @Override
