@@ -2,21 +2,17 @@
   "entity.player.heartbeat": {
     "category": "player",
     "sounds": [
-      {
-        "name": "psychedelicraft:heart_beat"
-      }
+      "psychedelicraft:heart_beat"
     ]
   },
   "entity.player.breath": {
     "category": "player",
     "sounds": [
-      {
-        "name": "psychedelicraft:breath"
-      }
+      "psychedelicraft:breath"
     ]
   },
   "drug.alcohol": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/alcohol",
@@ -25,7 +21,7 @@
     ]
   },
   "drug.cannabis": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/cannabis",
@@ -34,7 +30,7 @@
     ]
   },
   "drug.brownshrooms": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/brownshrooms",
@@ -43,7 +39,7 @@
     ]
   },
   "drug.redshrooms": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/redshrooms",
@@ -52,7 +48,7 @@
     ]
   },
   "drug.tobacco": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/tobacco",
@@ -61,7 +57,7 @@
     ]
   },
   "drug.cocaine": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/cocaine",
@@ -70,7 +66,7 @@
     ]
   },
   "drug.caffeine": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/caffeine",
@@ -79,7 +75,7 @@
     ]
   },
   "drug.warmth": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/warmth",
@@ -88,7 +84,7 @@
     ]
   },
   "drug.peyote": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/peyote",
@@ -97,7 +93,7 @@
     ]
   },
   "drug.zero": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/zero",
@@ -106,7 +102,7 @@
     ]
   },
   "drug.harmonium": {
-    "category": "record",
+    "category": "player",
     "sounds": [
       {
         "name": "psychedelicraft:drugs/harmonium",

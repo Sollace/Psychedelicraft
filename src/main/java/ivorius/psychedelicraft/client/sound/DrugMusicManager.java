@@ -3,23 +3,30 @@ package ivorius.psychedelicraft.client.sound;
 import java.util.Optional;
 
 import ivorius.psychedelicraft.PSSounds;
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.entity.drug.*;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.SoundManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 22.11.14.
+ * Updated by Sollace on 15 Jan 2023
  */
 public class DrugMusicManager {
     public static final float PLAY_THRESHOLD = 0.01F;
 
     private Optional<DrugType> activeDrug = Optional.empty();
+
+    private Optional<MovingSoundDrug> activeSound = Optional.empty();
+
     private float volume;
 
-    private final DrugProperties properties;
+    final DrugProperties properties;
 
     private int delayUntilHeartbeat;
     private int delayUntilBreath;
@@ -34,7 +41,8 @@ public class DrugMusicManager {
             activeDrug = DrugType.REGISTRY
                 .stream()
                 .filter(type -> PsychedelicraftClient.getConfig().audio.hasBackgroundMusic(type) && properties.getDrugValue(type) >= PLAY_THRESHOLD)
-                .findFirst();
+                .findFirst()
+                .map(this::startPlayingSound);
         }
 
         PlayerEntity entity = properties.asEntity();
@@ -48,6 +56,8 @@ public class DrugMusicManager {
             volume = destVolume;
         } else {
             activeDrug = Optional.empty();
+            activeSound.ifPresent(MovingSoundDrug::markCompleted);
+            activeSound = Optional.empty();
             volume = 0;
         }
 
@@ -85,6 +95,17 @@ public class DrugMusicManager {
                 );
             }
         }
+    }
+
+    private DrugType startPlayingSound(DrugType type) {
+        Registries.SOUND_EVENT.getOrEmpty(Psychedelicraft.id("drug." + type.id().getPath())).ifPresent(sound -> {
+            SoundManager manager = MinecraftClient.getInstance().getSoundManager();
+            activeSound.ifPresent(MovingSoundDrug::markCompleted);
+            MovingSoundDrug newSound = new MovingSoundDrug(sound, SoundCategory.AMBIENT, this, type);
+            activeSound = Optional.of(newSound);
+            manager.play(newSound);
+        });
+        return type;
     }
 
     public float getVolumeFor(DrugType drugType) {
