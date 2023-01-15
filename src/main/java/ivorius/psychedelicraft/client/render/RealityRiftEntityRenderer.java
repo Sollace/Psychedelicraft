@@ -49,8 +49,8 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
 
         matrices.scale(visualRiftSize, visualRiftSize, visualRiftSize);
 
-        float critStatus = entity.getCriticalStatus();
-        renderRift(matrices, vertices, tickDelta, entity.age + tickDelta + (critStatus * critStatus * 3000));
+        float instability = entity.getInstability();
+        renderRift(matrices, vertices, tickDelta, entity.age + tickDelta + (instability * instability * 3000));
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

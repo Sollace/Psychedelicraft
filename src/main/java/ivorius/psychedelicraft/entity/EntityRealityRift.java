@@ -33,7 +33,7 @@ import com.google.common.base.Suppliers;
  */
 public class EntityRealityRift extends Entity {
     private static final TrackedData<Float> SIZE = DataTracker.registerData(EntityRealityRift.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Float> UNSTABILITY = DataTracker.registerData(EntityRealityRift.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Float> INSTABILITY = DataTracker.registerData(EntityRealityRift.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> CLOSING = DataTracker.registerData(EntityRealityRift.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public float visualRiftSize;
@@ -52,7 +52,7 @@ public class EntityRealityRift extends Entity {
     protected void initDataTracker() {
         this.getDataTracker().startTracking(SIZE, 0F);
         this.getDataTracker().startTracking(CLOSING, false);
-        this.getDataTracker().startTracking(UNSTABILITY, 0F);
+        this.getDataTracker().startTracking(INSTABILITY, 0F);
     }
 
     public float getRiftSize() {
@@ -80,12 +80,12 @@ public class EntityRealityRift extends Entity {
         return riftSize - newVal;
     }
 
-    public float getCriticalStatus() {
-        return getDataTracker().get(UNSTABILITY);
+    public float getInstability() {
+        return getDataTracker().get(INSTABILITY);
     }
 
-    public void setCriticalStatus(float status) {
-        getDataTracker().set(UNSTABILITY, Math.max(0, status));
+    public void setInstability(float instability) {
+        getDataTracker().set(INSTABILITY, Math.max(0, instability));
     }
 
     public boolean isRiftClosing() {
@@ -97,7 +97,7 @@ public class EntityRealityRift extends Entity {
     }
 
     public boolean isCritical() {
-        return ((getCriticalStatus() > 0) || (getRiftSize() > 3)) && !isRiftClosing();
+        return ((getInstability() > 0) || (getRiftSize() > 3)) && !isRiftClosing();
     }
 
 //    @Override
@@ -152,7 +152,7 @@ public class EntityRealityRift extends Entity {
             }, 1);
         }
 
-        float searchDistance = 5.0f + getCriticalStatus() * 50.0f;
+        float searchDistance = 5.0f + getInstability() * 50.0f;
         for (LivingEntity entityLivingBase : world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(searchDistance), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
             double dist = entityLivingBase.distanceTo(this);
             double effect = (searchDistance - dist) * 0.0005 * getRiftSize();
@@ -170,9 +170,9 @@ public class EntityRealityRift extends Entity {
         }
 
         if (critical) {
-            float prevS = getCriticalStatus();
+            float prevS = getInstability();
             float newS = Math.min(prevS + 0.001f, 1.0f);
-            setCriticalStatus(newS);
+            setInstability(newS);
 
             float prevDesRange = prevS * 50.0f;
             float newDesRange = newS * 50.0f;
@@ -198,7 +198,7 @@ public class EntityRealityRift extends Entity {
         visualRiftSize = MathUtils.nearValue(visualRiftSize, getRiftSize(), 0.05f, 0.005f);
 
         if (!world.isClient) {
-            if (getCriticalStatus() >= 0.9f) {
+            if (getInstability() >= 0.9f) {
                 setRiftClosing(true);
             }
 
@@ -212,14 +212,14 @@ public class EntityRealityRift extends Entity {
     protected void readCustomDataFromNbt(NbtCompound compound) {
         setRiftSize(compound.getFloat("riftSize"));
         setRiftClosing(compound.getBoolean("isRiftClosing"));
-        setCriticalStatus(compound.getFloat("criticalStatus"));
+        setInstability(compound.getFloat("instability"));
     }
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound compound) {
         compound.putFloat("riftSize", getRiftSize());
         compound.putBoolean("isRiftClosing", isRiftClosing());
-        compound.putFloat("criticalStatus", getCriticalStatus());
+        compound.putFloat("instability", getInstability());
     }
 
 }
