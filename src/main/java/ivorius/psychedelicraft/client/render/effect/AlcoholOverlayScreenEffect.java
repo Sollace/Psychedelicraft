@@ -29,6 +29,8 @@ public class AlcoholOverlayScreenEffect extends DrugOverlayScreenEffect<AlcoholD
                 sprite.getMinU(),
                 sprite.getMinV(),
                 sprite.getMaxU(),
-                sprite.getMaxV(), 0);
+                sprite.getMaxV(),
+                0
+        );
     }
 }

@@ -33,19 +33,28 @@ public class DrugRenderer {
 
     static final int SCREEN_Z_OFFSET = -90;
 
-    public static void drawOverlay(MatrixStack matrices, float alpha, int width, int height, Identifier texture, float u0, float v0, float u1, float v1, int offset) {
+    public static void drawOverlay(MatrixStack matrices, float alpha,
+            int width, int height,
+            Identifier texture,
+            float u0, float v0,
+            float u1, float v1, int offset) {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.setShaderTexture(0, texture);
-        Tessellator var8 = Tessellator.getInstance();
-        BufferBuilder buffer = var8.getBuffer();
+        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
         Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
         buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        buffer.vertex(positionMatrix, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1).next();
-        buffer.vertex(positionMatrix, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1).next();
-        buffer.vertex(positionMatrix, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0).next();
-        buffer.vertex(positionMatrix, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0).next();
-        var8.draw();
+
+        float x0 = -offset;
+        float y0 = -offset;
+        float x1 = width - x0;
+        float y1 = height - y0;
+
+        buffer.vertex(positionMatrix, x0, y1, SCREEN_Z_OFFSET).texture(u0, v1).next();
+        buffer.vertex(positionMatrix, x1, y1, SCREEN_Z_OFFSET).texture(u1, v1).next();
+        buffer.vertex(positionMatrix, x1, y0, SCREEN_Z_OFFSET).texture(u1, v0).next();
+        buffer.vertex(positionMatrix, x0, y0, SCREEN_Z_OFFSET).texture(u0, v0).next();
+        Tessellator.getInstance().draw();
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
@@ -129,7 +138,7 @@ public class DrugRenderer {
         Window window = client.getWindow();
         getScreenEffects().render(matrices,
                 client.getBufferBuilders().getEntityVertexConsumers(),
-                window.getFramebufferWidth(), window.getFramebufferHeight(), tickDelta, null);
+                window.getScaledWidth(), window.getScaledHeight(), tickDelta, null);
     }
 
     public void renderAllHallucinations(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, DrugProperties drugProperties) {
