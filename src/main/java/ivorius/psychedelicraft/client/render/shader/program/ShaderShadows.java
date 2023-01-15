@@ -126,16 +126,6 @@ public class ShaderShadows extends IvShaderInstance3D implements ShaderWorld {
     }
 
     @Override
-    public void setUseScreenTexCoords(boolean enabled) {
-
-    }
-
-    @Override
-    public void setPixelSize(float pixelWidth, float pixelHeight) {
-
-    }
-
-    @Override
     public void setBlendModeEnabled(boolean enabled) {
 
     }

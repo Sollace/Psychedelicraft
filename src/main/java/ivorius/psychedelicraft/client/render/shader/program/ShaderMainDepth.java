@@ -35,8 +35,8 @@ public class ShaderMainDepth extends IvShaderInstance3D implements ShaderWorld {
         setDepthMultiplier(1.0f);
         setTexture2DEnabled(GLStateProxy.isTextureEnabled(GLStateProxy.DEFAULT_TEXTURE));
         setOverrideColor(null);
-        setUseScreenTexCoords(false);
-        setPixelSize(1F / mc.getWindow().getFramebufferWidth(), 1F / mc.getWindow().getFramebufferHeight());
+        setUniformInts("useScreenTexCoords", GLStateProxy.getUsesScreenTexCoords() ? 1 : 0);
+        setUniformFloats("pixelSize", GLStateProxy.getResolution());
 
         DrugProperties drugProperties = DrugProperties.of(mc.player);
         setUniformFloats("bigWaves", drugProperties.getHallucinations().getBigWaveStrength(partialTicks));
@@ -89,16 +89,6 @@ public class ShaderMainDepth extends IvShaderInstance3D implements ShaderWorld {
     @Override
     public void setDepthMultiplier(float depthMultiplier) {
         setUniformFloats("depthMultiplier", depthMultiplier);
-    }
-
-    @Override
-    public void setUseScreenTexCoords(boolean enabled) {
-        setUniformInts("useScreenTexCoords", enabled ? 1 : 0);
-    }
-
-    @Override
-    public void setPixelSize(float pixelWidth, float pixelHeight) {
-        setUniformFloats("pixelSize", pixelWidth, pixelHeight);
     }
 
     @Override

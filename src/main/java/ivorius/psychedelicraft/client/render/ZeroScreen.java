@@ -6,7 +6,6 @@ import java.util.stream.IntStream;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.render.shader.program.PSRenderStates;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -20,9 +19,9 @@ public class ZeroScreen {
     private static final Random RNG = new Random(0L);
 
     public static void render(float ticks, Renderable action) {
-        PSRenderStates.setUseScreenTexCoords(true);
-        PSRenderStates.setPixelSize(1F / ZeroScreen.X_PIXELS, -1F / ZeroScreen.Y_PIXELS);
-       // RenderSystem.depthMask(false);
+        GLStateProxy.enableTexCoords();
+        GLStateProxy.setResolution(ZeroScreen.X_PIXELS, ZeroScreen.Y_PIXELS);
+        RenderSystem.depthMask(false);
         RenderSystem.enableCull();
 
         int seed = MathHelper.floor(ticks * 0.5F);
@@ -34,9 +33,9 @@ public class ZeroScreen {
         );
 
         RenderSystem.disableCull();
-       // RenderSystem.depthMask(true);
-        PSRenderStates.setScreenSizeDefault();
-        PSRenderStates.setUseScreenTexCoords(false);
+        RenderSystem.depthMask(true);
+        GLStateProxy.clearResolution();
+        GLStateProxy.disableScreenTexCoords();
     }
 
     @FunctionalInterface

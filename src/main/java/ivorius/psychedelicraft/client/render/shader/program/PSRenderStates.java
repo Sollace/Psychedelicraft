@@ -15,7 +15,6 @@ import ivorius.psychedelicraft.client.render.shader.*;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 
 import org.apache.commons.io.IOUtils;
@@ -209,25 +208,6 @@ public class PSRenderStates {
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             setForceColorSafeMode(false);
         }*/
-    }
-
-    public static void setUseScreenTexCoords(boolean enabled) {
-        if (currentShader != null)
-            currentShader.setUseScreenTexCoords(enabled);
-    }
-
-    public static void setScreenSizeDefault() {
-        Window mc = MinecraftClient.getInstance().getWindow();
-        setScreenSize(mc.getWidth(), mc.getHeight());
-    }
-
-    private static void setScreenSize(float screenWidth, float screenHeight) {
-        setPixelSize(1.0f / screenWidth, 1.0f / screenHeight);
-    }
-
-    public static void setPixelSize(float pixelWidth, float pixelHeight) {
-        if (currentShader != null)
-            currentShader.setPixelSize(pixelWidth, pixelHeight);
     }
 
     @Deprecated(since = "unused")

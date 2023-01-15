@@ -35,10 +35,6 @@ public interface ShaderWorld
 
     void setDepthMultiplier(float depthMultiplier);
 
-    void setUseScreenTexCoords(boolean enabled);
-
-    void setPixelSize(float pixelWidth, float pixelHeight);
-
     void setBlendModeEnabled(boolean enabled);
 
     void setBlendFunc(int sFactor, int dFactor, int sFactorA, int dFactorA);

@@ -61,8 +61,8 @@ public class ShaderMain extends IvShaderInstance3D implements ShaderWorld {
         evaluateColorSafeMode();
 
         setDepthMultiplier(1.0f);
-        setUseScreenTexCoords(false);
-        setPixelSize(1.0f / mc.getWindow().getFramebufferWidth(), 1.0f / mc.getWindow().getFramebufferHeight());
+        setUniformInts("useScreenTexCoords", GLStateProxy.getUsesScreenTexCoords() ? 1 : 0);
+        setUniformFloats("pixelSize", GLStateProxy.getResolution());
         setFogMode(GL11.GL_LINEAR);
         setOverrideColor(null);
 
@@ -156,16 +156,6 @@ public class ShaderMain extends IvShaderInstance3D implements ShaderWorld {
     @Override
     public void setDepthMultiplier(float depthMultiplier) {
         setUniformFloats("depthMultiplier", depthMultiplier);
-    }
-
-    @Override
-    public void setUseScreenTexCoords(boolean enabled) {
-        setUniformInts("useScreenTexCoords", enabled ? 1 : 0);
-    }
-
-    @Override
-    public void setPixelSize(float pixelWidth, float pixelHeight) {
-        setUniformFloats("pixelSize", pixelWidth, pixelHeight);
     }
 
     @Override
