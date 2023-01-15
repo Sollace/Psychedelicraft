@@ -7,10 +7,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.PowerDrug;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.util.math.MatrixStack;
@@ -29,15 +27,15 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
     }
 
     @Override
-    protected void render(MatrixStack matrices, VertexConsumerProvider vertices, int width, int height, float ticks, DrugProperties properties, PowerDrug drug) {
+    protected void render(MatrixStack matrices, VertexConsumerProvider vertices, int width, int height, float partialTicks, DrugProperties properties, PowerDrug drug) {
 
-        float partialTicks = MinecraftClient.getInstance().getTickDelta();
         PlayerEntity entity = properties.asEntity();
 
         float power = (float)drug.getActiveValue();
         Random powerR = new Random(entity.age); // 20 changes / sec is alright
         int powerParticles = MathHelper.floor(powerR.nextFloat() * 200.0f * power);
         if (powerParticles > 0) {
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, POWER_PARTICLE_TEXTURE);
             renderRandomParticles(matrices, powerParticles, height / 10, MathHelper.ceil(height / 10 * power), width, height, powerR);
         }
@@ -52,6 +50,7 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
         if (powerLightnings > 0) {
             int lightningW = height;
 
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.blendFuncSeparate(
                     GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE,
                     GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
@@ -67,9 +66,9 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
                 float lightningTime = ((entity.age % 2) + partialTicks) * 0.5f;
 
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, (0.05f + power * 0.1f) * (1.0f - lightningTime));
-                DrugRenderer.bindTexture(LIGHTNING_TEXTURES[lIndex]);
+                RenderSystem.setShaderTexture(0, LIGHTNING_TEXTURES[lIndex]);
 
-                buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+                buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
                 buffer.vertex(lX, height, -90.0).texture(0, upsideDown ? 0 : 1).next();
                 buffer.vertex(lX + lightningW, height, -90.0).texture(1, upsideDown ? 0 : 1).next();
                 buffer.vertex(lX + lightningW, 0, -90.0).texture(1, upsideDown ? 1 : 0).next();
@@ -85,7 +84,7 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         for (int i = 0; i < number; i++) {
             int x = rand.nextInt(screenWidth + width) - width;
             int y = rand.nextInt(screenHeight + height) - height;

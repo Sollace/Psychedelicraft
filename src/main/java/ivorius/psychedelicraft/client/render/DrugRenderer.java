@@ -58,8 +58,9 @@ public class DrugRenderer {
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
+    @Deprecated
     public static void bindTexture(Identifier resourceLocation) {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(resourceLocation);
+        RenderSystem.setShaderTexture(0, resourceLocation);
     }
 
     private final EnvironmentalScreenEffect environmentalEffects = new EnvironmentalScreenEffect();
