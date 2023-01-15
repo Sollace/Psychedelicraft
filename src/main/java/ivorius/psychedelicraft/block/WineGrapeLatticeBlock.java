@@ -56,7 +56,7 @@ public class WineGrapeLatticeBlock extends LatticeBlock implements Fertilizable 
             world.playSoundFromEntity(null, player, SoundEvents.ENTITY_SHEEP_SHEAR, player.getSoundCategory(), 1, 1);
 
             if (!world.isClient) {
-                world.setBlockState(pos, PSBlocks.LATTICE.getDefaultState().with(FACING, state.get(FACING)));
+                world.setBlockState(pos, state.with(AGE, 1));
                 Block.dropStack(world, pos, new ItemStack(PSItems.WINE_GRAPES, world.random.nextInt(3) + 1));
             }
             if (!player.isCreative()) {
