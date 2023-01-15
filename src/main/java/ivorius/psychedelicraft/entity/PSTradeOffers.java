@@ -33,7 +33,12 @@ import net.minecraft.world.poi.PointOfInterestTypes;
  */
 public interface PSTradeOffers {
     RegistryKey<PointOfInterestType> DRUG_DEALER_POI = poi("drug_dealer");
-    VillagerProfession DRUG_DEALER_PROFESSION = register("drug_dealer", type -> type.matchesKey(DRUG_DEALER_POI), SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION);
+    VillagerProfession DRUG_DEALER_PROFESSION = register("drug_dealer",
+            type -> type.matchesKey(DRUG_DEALER_POI),
+            type -> type.matchesKey(DRUG_DEALER_POI),
+            ImmutableSet.of(PSItems.CANNABIS_SEEDS, PSItems.COCA_SEEDS, PSItems.HOP_SEEDS, PSItems.TOBACCO_SEEDS, Items.BONE_MEAL),
+            ImmutableSet.of(Blocks.FARMLAND),
+            SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION);
 
     static void bootstrap() {
         TradeOfferHelper.registerVillagerOffers(DRUG_DEALER_PROFESSION, 1, factories -> {
@@ -98,10 +103,6 @@ public interface PSTradeOffers {
 
     private static RegistryKey<PointOfInterestType> poi(String id) {
         return RegistryKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, Psychedelicraft.id(id));
-    }
-
-    private static VillagerProfession register(String id, Predicate<RegistryEntry<PointOfInterestType>> workstation, @Nullable SoundEvent workSound) {
-        return register(id, workstation, workstation, ImmutableSet.of(), ImmutableSet.of(), workSound);
     }
 
     private static VillagerProfession register(String id, Predicate<RegistryEntry<PointOfInterestType>> heldWorkstation, Predicate<RegistryEntry<PointOfInterestType>> acquirableWorkstation, ImmutableSet<Item> gatherableItems, ImmutableSet<Block> secondaryJobSites, @Nullable SoundEvent workSound) {
