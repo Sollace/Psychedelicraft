@@ -115,51 +115,6 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
-    public float heartbeatVolume() {
-        return 0;
-    }
-
-    @Override
-    public float heartbeatSpeed() {
-        return 0;
-    }
-
-    @Override
-    public float breathVolume() {
-        return 0;
-    }
-
-    @Override
-    public float breathSpeed() {
-        return 0;
-    }
-
-    @Override
-    public float randomJumpChance() {
-        return 0;
-    }
-
-    @Override
-    public float randomPunchChance() {
-        return 0;
-    }
-
-    @Override
-    public float digSpeedModifier() {
-        return 1;
-    }
-
-    @Override
-    public float speedModifier() {
-        return 1;
-    }
-
-    @Override
-    public float soundVolumeModifier() {
-        return 1;
-    }
-
-    @Override
     public Optional<Text> trySleep(BlockPos pos) {
         return Optional.empty();
     }
@@ -172,65 +127,5 @@ public class SimpleDrug implements Drug {
     @Override
     public void applyColorBloom(float[] rgba) {
 
-    }
-
-    @Override
-    public float desaturationHallucinationStrength() {
-        return 0;
-    }
-
-    @Override
-    public float superSaturationHallucinationStrength() {
-        return 0;
-    }
-
-    @Override
-    public float contextualHallucinationStrength() {
-        return 0;
-    }
-
-    @Override
-    public float colorHallucinationStrength() {
-        return 0;
-    }
-
-    @Override
-    public float movementHallucinationStrength() {
-        return 0;
-    }
-
-    @Override
-    public float handTrembleStrength() {
-        return 0;
-    }
-
-    @Override
-    public float viewTrembleStrength() {
-        return 0;
-    }
-
-    @Override
-    public float headMotionInertness() {
-        return 0;
-    }
-
-    @Override
-    public float bloomHallucinationStrength() {
-        return 0;
-    }
-
-    @Override
-    public float viewWobblyness() {
-        return 0;
-    }
-
-    @Override
-    public float doubleVision() {
-        return 0;
-    }
-
-    @Override
-    public float motionBlur() {
-        return 0;
     }
 }

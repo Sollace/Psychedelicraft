@@ -58,23 +58,6 @@ public interface Drug extends NbtSerialisable {
 
     boolean isLocked();
 
-    float heartbeatVolume();
-
-    float heartbeatSpeed();
-
-    float breathVolume();
-
-    float breathSpeed();
-
-    float randomJumpChance();
-
-    float randomPunchChance();
-
-    float digSpeedModifier();
-
-    float speedModifier();
-
-    float soundVolumeModifier();
 
     Optional<Text> trySleep(BlockPos pos);
 
@@ -82,29 +65,89 @@ public interface Drug extends NbtSerialisable {
 
     void applyColorBloom(float[] rgba);
 
-    float desaturationHallucinationStrength();
+    default float heartbeatVolume() {
+        return 0;
+    }
 
-    float superSaturationHallucinationStrength();
+    default float heartbeatSpeed() {
+        return 0;
+    }
 
-    float contextualHallucinationStrength();
+    default float breathVolume() {
+        return 0;
+    }
 
-    float colorHallucinationStrength();
+    default float breathSpeed() {
+        return 0;
+    }
 
-    float movementHallucinationStrength();
+    default float randomJumpChance() {
+        return 0;
+    }
 
-    float handTrembleStrength();
+    default float randomPunchChance() {
+        return 0;
+    }
 
-    float viewTrembleStrength();
+    default float digSpeedModifier() {
+        return 1;
+    }
 
-    float headMotionInertness();
+    default float speedModifier() {
+        return 1;
+    }
 
-    float bloomHallucinationStrength();
+    default float soundVolumeModifier() {
+        return 1;
+    }
 
-    float viewWobblyness();
+    default float desaturationHallucinationStrength() {
+        return 0;
+    }
 
-    float doubleVision();
+    default float superSaturationHallucinationStrength() {
+        return 0;
+    }
 
-    float motionBlur();
+    default float contextualHallucinationStrength() {
+        return 0;
+    }
+
+    default float colorHallucinationStrength() {
+        return 0;
+    }
+
+    default float movementHallucinationStrength() {
+        return 0;
+    }
+
+    default float handTrembleStrength() {
+        return 0;
+    }
+
+    default float viewTrembleStrength() {
+        return 0;
+    }
+
+    default float headMotionInertness() {
+        return 0;
+    }
+
+    default float bloomHallucinationStrength() {
+        return 0;
+    }
+
+    default float viewWobblyness() {
+        return 0;
+    }
+
+    default float doubleVision() {
+        return 0;
+    }
+
+    default float motionBlur() {
+        return 0;
+    }
 
     public interface Modifier {
         float get(Drug drug);
