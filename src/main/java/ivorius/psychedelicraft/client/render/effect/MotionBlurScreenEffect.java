@@ -124,7 +124,6 @@ public class MotionBlurScreenEffect implements ScreenEffect {
         @Override
         public void close() {
             textures.forEach(GlTexture::close);
-            textures.clear();
         }
     }
 
