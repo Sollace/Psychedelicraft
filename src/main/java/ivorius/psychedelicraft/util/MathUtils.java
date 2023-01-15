@@ -79,7 +79,7 @@ public interface MathUtils {
         );
     }
 
-    static void mixColorsDynamic(float[] color, float[] colorBase, float alpha) {
+    static float[] mixColorsDynamic(float[] color, float[] colorBase, float alpha, boolean fixAlpha) {
         if (alpha > 0.0f) {
             float max = alpha + colorBase[3];
             colorBase[0] = MathHelper.lerp(alpha / max, colorBase[0], color[0]);
@@ -87,6 +87,10 @@ public interface MathUtils {
             colorBase[2] = MathHelper.lerp(alpha / max, colorBase[2], color[2]);
             colorBase[3] = max;
         }
+        if (fixAlpha) {
+            colorBase[3] = MathHelper.clamp(colorBase[3], 0, 1);
+        }
+        return colorBase;
     }
 
     static float randomColor(Random random, int ticksExisted, float base, float sway, float... speed) {

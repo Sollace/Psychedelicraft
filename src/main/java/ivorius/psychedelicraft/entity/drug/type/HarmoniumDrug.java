@@ -18,12 +18,12 @@ public class HarmoniumDrug extends SimpleDrug {
 
     @Override
     public void applyContrastColorization(float[] rgba) {
-        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue());
+        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue(), false);
     }
 
     @Override
     public void applyColorBloom(float[] rgba) {
-        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue() * 3);
+        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue() * 3, false);
     }
 
     @Override

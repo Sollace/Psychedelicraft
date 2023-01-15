@@ -11,6 +11,7 @@ import net.minecraft.util.math.random.Random;
 
 /**
  * Created by lukas on 14.11.14.
+ * Updated by Sollace on 14 Jan 2023
  */
 public class HallucinationManager {
     protected final float[] currentMindColor = new float[]{1.0f, 1.0f, 1.0f};
@@ -108,16 +109,20 @@ public class HallucinationManager {
         return hallucinationTypes.getMultiplier(hallucination) * hallucinationStrengths.get(hallucination);
     }
 
-    public float getHallucinationStrength(float partialTicks) {
-        return 0.4f * getMultiplier(HallucinationTypes.ENTITIES);
-    }
-
     public float getDesaturation(float partialTicks) {
         return Drug.DESATURATION_HALLUCINATION_STRENGTH.get(getMultiplier(HallucinationTypes.DESATURATION), properties);
     }
 
     public float getColorIntensification(float partialTicks) {
         return Drug.SUPER_SATURATION_HALLUCINATION_STRENGTH.get(getMultiplier(HallucinationTypes.SUPER_SATURATION), properties);
+    }
+
+    public float getBloom(float partialTicks) {
+        return Drug.BLOOM_HALLUCINATION_STRENGTH.get(getMultiplier(HallucinationTypes.BLOOM), properties);
+    }
+
+    public float getHallucinationStrength(float partialTicks) {
+        return getMultiplier(HallucinationTypes.ENTITIES) * 0.4F;
     }
 
     public float getSlowColorRotation(float partialTicks) {
@@ -129,15 +134,15 @@ public class HallucinationManager {
     }
 
     public float getBigWaveStrength(float partialTicks) {
-        return 0.6f * getMultiplier(HallucinationTypes.BIG_WAVES);
+        return getMultiplier(HallucinationTypes.BIG_WAVES) * 0.6F;
     }
 
     public float getSmallWaveStrength(float partialTicks) {
-        return 0.5f * getMultiplier(HallucinationTypes.SMALL_WAVES);
+        return getMultiplier(HallucinationTypes.SMALL_WAVES) * 0.5F;
     }
 
     public float getWiggleWaveStrength(float partialTicks) {
-        return 0.7f * getMultiplier(HallucinationTypes.WIGGLE_WAVES);
+        return getMultiplier(HallucinationTypes.WIGGLE_WAVES) * 0.7F;
     }
 
     public float getSurfaceFractalStrength(float partialTicks) {
@@ -158,25 +163,18 @@ public class HallucinationManager {
     }
 
     public float[] getColorBloom(float partialTicks) {
-        float[] bloomColor = new float[] {1, 1, 1, 0};
-        for (Drug drug : properties.getAllDrugs()) {
-            drug.applyColorBloom(bloomColor);
-        }
-        MathUtils.mixColorsDynamic(currentMindColor, bloomColor, MathHelper.clamp(1.5f * getMultiplier(HallucinationTypes.COLOR_BLOOM), 0, 1));
-        return bloomColor;
+        return MathUtils.mixColorsDynamic(
+                currentMindColor,
+                Drug.BLOOM.apply(properties),
+                MathHelper.clamp(1.5f * getMultiplier(HallucinationTypes.COLOR_BLOOM), 0, 1), false);
     }
 
     public float[] getContrastColorization(float partialTicks) {
-        float[] contrastColor = new float[] {1, 1, 1, 0};
-        for (Drug drug : properties.getAllDrugs()) {
-            drug.applyContrastColorization(contrastColor);
-        }
-        MathUtils.mixColorsDynamic(currentMindColor, contrastColor, MathHelper.clamp(getMultiplier(HallucinationTypes.COLOR_CONTRAST), 0, 1));
-        contrastColor[3] = MathHelper.clamp(contrastColor[3], 0, 1);
-        return contrastColor;
-    }
-
-    public float getBloom(float partialTicks) {
-        return Drug.BLOOM_HALLUCINATION_STRENGTH.get(getMultiplier(HallucinationTypes.BLOOM), properties);
+        return MathUtils.mixColorsDynamic(
+                currentMindColor,
+                Drug.CONTRAST_COLORIZATION.apply(properties),
+                MathHelper.clamp(getMultiplier(HallucinationTypes.COLOR_CONTRAST), 0, 1),
+                true
+        );
     }
 }

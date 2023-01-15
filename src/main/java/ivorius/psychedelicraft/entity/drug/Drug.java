@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.entity.drug;
 
 import java.util.*;
+import java.util.function.*;
 
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.text.Text;
@@ -36,6 +37,9 @@ public interface Drug extends NbtSerialisable {
     AggregateModifier DESATURATION_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::desaturationHallucinationStrength, AggregateModifier.Combiner.INVERSE_MUL);
     AggregateModifier BLOOM_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::bloomHallucinationStrength, AggregateModifier.Combiner.SUM);
     AggregateModifier MOTION_BLUR = AggregateModifier.create(0, Drug::motionBlur, AggregateModifier.Combiner.INVERSE_MUL);
+
+    Function<DrugProperties, float[]> CONTRAST_COLORIZATION = AggregateModifier.createColorModification(Drug::applyContrastColorization);
+    Function<DrugProperties, float[]> BLOOM = AggregateModifier.createColorModification(Drug::applyColorBloom);
 
     DrugType getType();
 
@@ -177,6 +181,16 @@ public interface Drug extends NbtSerialisable {
             };
             MODIFIERS.add(result);
             return result;
+        }
+
+        static Function<DrugProperties, float[]> createColorModification(BiConsumer<Drug, float[]> modifier) {
+            return properties -> {
+                float[] initial = {1, 1, 1, 0};
+                for (Drug drug : properties.getAllDrugs()) {
+                    modifier.accept(drug, initial);
+                }
+                return initial;
+            };
         }
 
         interface Combiner {

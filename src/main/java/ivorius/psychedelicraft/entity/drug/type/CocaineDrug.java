@@ -30,7 +30,7 @@ public class CocaineDrug extends SimpleDrug {
     public void update(DrugProperties drugProperties) {
         super.update(drugProperties);
 
-        if (getActiveValue() > 0.0) {
+        if (getActiveValue() > 0) {
             PlayerEntity entity = drugProperties.asEntity();
             Random random = entity.world.random;
             int ticksExisted = drugProperties.age;
