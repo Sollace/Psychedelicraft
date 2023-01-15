@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.WarmthDrug;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.util.math.MatrixStack;
@@ -20,13 +21,14 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
 
     @Override
     protected void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, DrugProperties properties, WarmthDrug drug) {
-        renderWarmthOverlay(matrices, (float)drug.getActiveValue() * 0.5F, screenWidth, screenHeight, 0);
+        renderWarmthOverlay(matrices, (float)drug.getActiveValue() * 0.5F, screenWidth, screenHeight, MinecraftClient.getInstance().player.age);
     }
 
     private void renderWarmthOverlay(MatrixStack matrices, float alpha, int width, int height, int ticks) {
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, COFFEE_OVERLAY);
-        Tessellator var8 = Tessellator.getInstance();
-        BufferBuilder buffer = var8.getBuffer();
+        RenderSystem.enableBlend();
+        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
 
         for (int i = 0; i < 3; i++) {
             int steps = 30;
@@ -39,24 +41,24 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
             for (int y = 0; y < steps; y++) {
                 float prog = (float) (steps - y) / (float) steps;
 
-                RenderSystem.setShaderColor(1.0f, 0.5f + prog * 0.3f, 0.35f + prog * 0.1f, alpha - prog * 0.4f);
+                RenderSystem.setShaderColor(1, 0.5F + prog * 0.3F, 0.35F + prog * 0.1F, alpha - prog * 0.4F);
 
                 int segWidth = width / 9;
 
-                int xM = (int) (segWidth * (i * 3 + 1.5f));
+                int xM = (int) (segWidth * (i * 3 + 1.5F));
 
-                float xShift = MathHelper.sin((float) y / (float) steps * 5.0f + ticks / 10.0f);
+                float xShift = MathHelper.sin((float) y / (float) steps * 5F + ticks / 10F);
                 float mXL = xM - segWidth + xShift * segWidth * 0.25f;
                 float mXR = xM + segWidth + xShift * segWidth * 0.25f;
                 float mY = (float) y / (float) steps * height / 7 * 5 + height / 7;
 
                 if (init) {
-                    buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-                    buffer.vertex(mXL, mY, -90.0D).texture(0, (float) y / (float) steps).next();
-                    buffer.vertex(mXR, mY, -90.0D).texture(1, (float) y / (float) steps).next();
-                    buffer.vertex(prevXR, prevY, -90.0D).texture(1, (float) (y - 1) / (float) steps).next();
-                    buffer.vertex(prevXL, prevY, -90.0D).texture(0, (float) (y - 1) / (float) steps).next();
-                    var8.draw();
+                    buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+                    buffer.vertex(mXL, mY, -90).texture(0, (float) y / (float) steps).next();
+                    buffer.vertex(mXR, mY, -90).texture(1, (float) y / (float) steps).next();
+                    buffer.vertex(prevXR, prevY, -90).texture(1, (float) (y - 1) / (float) steps).next();
+                    buffer.vertex(prevXL, prevY, -90).texture(0, (float) (y - 1) / (float) steps).next();
+                    Tessellator.getInstance().draw();
                 } else {
                     init = true;
                 }
