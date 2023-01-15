@@ -9,8 +9,6 @@ import java.util.Optional;
 
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -93,11 +91,6 @@ public class SimpleDrug implements Drug {
 
         effect = MathHelper.clamp(effect, 0, 1);
         effectActive = MathUtils.nearValue(effectActive, effect, 0.05, 0.005);
-    }
-
-    @Override
-    public void drawOverlays(MatrixStack matrices, float partialTicks, LivingEntity entity, int updateCounter, int width, int height, DrugProperties drugProperties) {
-        // TODO: (Sollace) Rendering needs to be separated
     }
 
     @Override

@@ -38,31 +38,31 @@ public class CannabisDrug extends SimpleDrug {
 
     @Override
     public float superSaturationHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.0f, 0.5f), 0, 1) * 0.3f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0, 0.5f), 0, 1) * 0.3F;
     }
 
     @Override
     public float colorHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.5f, 1.0f), 0, 1) * 0.1f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.5F, 1), 0, 1) * 0.1F;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.5f, 1.0f), 0, 1) * 0.1f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.5f, 1), 0, 1) * 0.1F;
     }
 
     @Override
     public float contextualHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.5f, 1.0f), 0, 1) * 0.1f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.5f, 1), 0, 1) * 0.1F;
     }
 
     @Override
     public float headMotionInertness() {
-        return (float)getActiveValue() * 8.0f;
+        return (float)getActiveValue() * 8.0F;
     }
 
     @Override
     public float viewWobblyness() {
-        return (float)getActiveValue() * 0.02f;
+        return (float)getActiveValue() * 0.02F;
     }
 }

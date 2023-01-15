@@ -5,122 +5,170 @@
 
 package ivorius.psychedelicraft.client.render.effect;
 
-import org.lwjgl.opengl.GL11;
+import java.util.*;
+import java.util.stream.IntStream;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.GLStateProxy;
-import ivorius.psychedelicraft.client.render.MCColorHelper;
+import ivorius.psychedelicraft.entity.drug.Drug;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 
 /**
  * Created by lukas on 21.02.14.
+ * Updated by Sollace on 15 Jan 2023
  */
-public class EffectMotionBlur implements ScreenEffect {
-    public int[] motionBlurCacheTextures;
-    public boolean[] motionBlurCacheTexturesInitialized;
-    public float sampleFrequency = 0.5f;
+public class MotionBlurScreenEffect implements ScreenEffect {
+    private static final int MAX_SAMPLES = 30;
+    private static final float SAMPLE_FREQUENCY = 0.5f;
 
-    public int motionBlurCacheTextureIndex;
     private float previousTicks;
+    private int currentSample;
+    private GlTextureSet textures;
 
     public float motionBlur;
 
-    private int currentTexturesWidth = -1;
-    private int currentTexturesHeight = -1;
-
     @Override
-    public boolean shouldApply(float ticks) {
-        return true;
+    public void update(float tickDelta) {
+        DrugProperties drugProperties = DrugProperties.of(MinecraftClient.getInstance().player);
+
+        if (PsychedelicraftClient.getConfig().visual.doMotionBlur && drugProperties != null) {
+            motionBlur = drugProperties.getModifier(Drug.MOTION_BLUR);
+        } else {
+            motionBlur = 0;
+        }
     }
 
     @Override
-    public void apply(int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
         if (motionBlur > 0) {
-            if (screenWidth != currentTexturesWidth || screenHeight != currentTexturesHeight) {
-                setUp(screenWidth, screenHeight, 30);
+            if (textures != null && textures.sizeChanged(screenWidth, screenHeight)) {
+                close();
+            }
+
+            if (textures == null) {
+                textures = new GlTextureSet(screenWidth, screenHeight, MAX_SAMPLES);
             }
 
             if (previousTicks > ticks) {
                 previousTicks = ticks;
-            } else if (previousTicks + sampleFrequency * motionBlurCacheTextures.length < ticks) {
-                previousTicks = ticks - sampleFrequency * motionBlurCacheTextures.length;
+            } else if (previousTicks + SAMPLE_FREQUENCY * MAX_SAMPLES < ticks) {
+                previousTicks = ticks - SAMPLE_FREQUENCY * MAX_SAMPLES;
             }
 
-            while (previousTicks + sampleFrequency <= ticks) {
-                motionBlurCacheTextureIndex++;
-                motionBlurCacheTextureIndex %= motionBlurCacheTextures.length;
-
-                RenderSystem.bindTexture(motionBlurCacheTextures[motionBlurCacheTextureIndex]);
-                GLStateProxy.copyTexture(0, 0, 0, 0, screenWidth, screenHeight);
-                motionBlurCacheTexturesInitialized[motionBlurCacheTextureIndex] = true;
-
-                previousTicks += sampleFrequency;
+            while (previousTicks + SAMPLE_FREQUENCY <= ticks) {
+                currentSample++;
+                currentSample %= MAX_SAMPLES;
+                textures.getTexture(currentSample).sample();
+                previousTicks += SAMPLE_FREQUENCY;
             }
 
             if (pingPong != null) {
                 pingPong.pingPong();
-                MCColorHelper.drawScreen(screenWidth, screenHeight);
+                ScreenEffect.drawScreen(screenWidth, screenHeight);
             }
 
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
-            for (int i = 0; i < motionBlurCacheTextures.length; i++)
-            {
-                int index = (i + motionBlurCacheTextureIndex) % motionBlurCacheTextures.length;
-
-                if (motionBlurCacheTexturesInitialized[index])
-                {
-                    float alpha = Math.min(1, i * 0.02f * motionBlur);
-
-                    if (alpha > 0.0f) {
-                        GL11.glColor4f(1, 1, 1, alpha);
-                        GL11.glBindTexture(GL11.GL_TEXTURE_2D, motionBlurCacheTextures[index]);
-                        MCColorHelper.drawScreen(screenWidth, screenHeight);
-                    }
-                }
-            }
+            textures.drawToScreen(currentSample);
             RenderSystem.disableBlend();
-        } else {
-            if (motionBlurCacheTexturesInitialized != null) {
-                motionBlurCacheTextureIndex++;
-                motionBlurCacheTextureIndex %= motionBlurCacheTextures.length;
-                motionBlurCacheTexturesInitialized[motionBlurCacheTextureIndex] = false;
-            }
+        } else if (textures != null) {
+            currentSample++;
+            currentSample %= MAX_SAMPLES;
+            textures.getTexture(currentSample).reset();
         }
     }
 
     @Override
-    public void destruct() {
-        if (motionBlurCacheTextures != null) {
-            for (int i = 0; i < motionBlurCacheTextures.length; i++) {
-                if (motionBlurCacheTextures[i] > 0) {
-                    GL11.glDeleteTextures(motionBlurCacheTextures[i]);
-                    motionBlurCacheTextures[i] = 0;
-                }
+    public void close() {
+        if (textures != null) {
+            textures.close();
+            textures = null;
+        }
+    }
+
+    private class GlTextureSet implements AutoCloseable {
+        private final int width;
+        private final int height;
+        private final List<GlTexture> textures;
+
+        public GlTextureSet(int samples, int width, int height) {
+            this.width = width;
+            this.height = height;
+            textures = IntStream.range(1, samples).mapToObj(i -> new GlTexture(i, width, height)).toList();
+        }
+
+        public GlTexture getTexture(int sample) {
+            return textures.get(sample);
+        }
+
+        public boolean sizeChanged(int width, int height) {
+            return this.width != width || this.height != height;
+        }
+
+        public void drawToScreen(int currentSample) {
+            for (int i = 0; i < textures.size(); i++) {
+                int sampleIndex = (i + currentSample) % textures.size();
+
+                textures.get(sampleIndex).drawToScreen();
             }
         }
 
-        motionBlurCacheTextureIndex = 0;
-        currentTexturesWidth = -1;
-        currentTexturesHeight = -1;
+        @Override
+        public void close() {
+            textures.forEach(GlTexture::close);
+            textures.clear();
+        }
     }
 
-    public void setUp(int width, int height, int samples) {
-        destruct();
+    private class GlTexture implements AutoCloseable {
+        private int id;
 
-        motionBlurCacheTextures = new int[samples];
-        motionBlurCacheTexturesInitialized = new boolean[motionBlurCacheTextures.length];
+        private final int sample;
+        private final int width;
+        private final int height;
 
-        for (int i = 0; i < motionBlurCacheTextures.length; i++) {
-            motionBlurCacheTextures[i] = TextureUtil.generateTextureId();
-            GlStateManager._texImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, null);
+        private boolean prepared;
+
+        public GlTexture(int sample, int width, int height) {
+            this.sample = sample;
+            this.width = width;
+            this.height = height;
+            id = TextureUtil.generateTextureId();
+            TextureUtil.prepareImage(id, width, height);
         }
 
-        currentTexturesWidth = width;
-        currentTexturesHeight = height;
+        public void sample() {
+            RenderSystem.bindTexture(id);
+            GLStateProxy.copyTexture(0, 0, 0, 0, width, height);
+            prepared = true;
+        }
+
+        public void reset() {
+            prepared = false;
+        }
+
+        public void drawToScreen() {
+            float alpha = Math.min(1, sample * 0.02f * motionBlur);
+
+            if (prepared && alpha > 0) {
+                RenderSystem.setShaderColor(1, 1, 1, alpha);
+                RenderSystem.bindTexture(id);
+                ScreenEffect.drawScreen(width, height);
+            }
+        }
+
+        @Override
+        public void close() {
+            TextureUtil.releaseTextureId(id);
+            id = -1;
+        }
     }
 }

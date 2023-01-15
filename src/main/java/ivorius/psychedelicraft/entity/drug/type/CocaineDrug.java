@@ -36,12 +36,12 @@ public class CocaineDrug extends SimpleDrug {
             int ticksExisted = drugProperties.age;
 
             if (!entity.world.isClient) {
-                double chance = (getActiveValue() - 0.8f) * 0.1f;
+                double chance = (getActiveValue() - 0.8F) * 0.1F;
 
                 if (ticksExisted % 20 == 0 && random.nextFloat() < chance) {
-                    entity.damage(random.nextFloat() < 0.4f
+                    entity.damage(random.nextFloat() < 0.4F
                             ? PSDamageSources.STROKE
-                            : random.nextFloat() < 0.5f
+                            : random.nextFloat() < 0.5F
                             ? PSDamageSources.HEART_FAILURE
                             : PSDamageSources.RESPIRATORY_FAILURE, Integer.MAX_VALUE);
                 }
@@ -51,7 +51,7 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float heartbeatVolume() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4f, 1.0f), 0, 1) * 1.2f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1), 0, 1) * 1.2F;
     }
 
     @Override
@@ -66,17 +66,17 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float breathSpeed() {
-        return (float) getActiveValue() * 0.8f;
+        return (float) getActiveValue() * 0.8F;
     }
 
     @Override
     public float randomJumpChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6f, 1.0f), 0, 1) * 0.03f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1), 0, 1) * 0.03F;
     }
 
     @Override
     public float randomPunchChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.5f, 1.0f), 0, 1) * 0.02f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.5F, 1), 0, 1) * 0.02F;
     }
 
     @Override
@@ -103,36 +103,36 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float handTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.6f, 1.0f), 0, 1);
+        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.6F, 1), 0, 1);
     }
 
     @Override
     public float viewTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.8f, 1.0f), 0, 1);
+        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.8F, 1), 0, 1);
     }
 
     @Override
     public float headMotionInertness() {
-        return (float)getActiveValue() * 10.0f;
+        return (float)getActiveValue() * 10;
     }
 
     @Override
     public float bloomHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.0f, 0.6f), 0, 1) * 1.5f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0, 0.6F), 0, 1) * 1.5F;
     }
 
     @Override
     public float colorHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.7f, 1.0f), 0, 1) * 0.05f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.05F;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.7f, 1.0f), 0, 1) * 0.05f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.05F;
     }
 
     @Override
     public float contextualHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3f, 0.7f, 1.0f), 0, 1) * 0.05f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.05F;
     }
 }

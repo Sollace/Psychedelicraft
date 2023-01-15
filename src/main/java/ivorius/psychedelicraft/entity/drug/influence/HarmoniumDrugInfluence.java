@@ -35,7 +35,7 @@ public class HarmoniumDrugInfluence extends DrugInfluence {
         if (drug instanceof HarmoniumDrug) {
             HarmoniumDrug harmonium = (HarmoniumDrug) drug;
 
-            double inf = value + (1.0f - value) * (1.0f - harmonium.getActiveValue());
+            double inf = value + (1 - value) * (1 - harmonium.getActiveValue());
             harmonium.currentColor[0] = (float) MathHelper.lerp(inf, harmonium.currentColor[0], color[0]);
             harmonium.currentColor[1] = (float) MathHelper.lerp(inf, harmonium.currentColor[1], color[1]);
             harmonium.currentColor[2] = (float) MathHelper.lerp(inf, harmonium.currentColor[2], color[2]);

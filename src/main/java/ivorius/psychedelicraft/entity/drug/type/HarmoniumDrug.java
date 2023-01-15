@@ -10,7 +10,7 @@ import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
 
 public class HarmoniumDrug extends SimpleDrug {
-    public float[] currentColor = new float[]{1.0f, 1.0f, 1.0f};
+    public float[] currentColor = { 1, 1, 1 };
 
     public HarmoniumDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.HARMONIUM, decSpeed, decSpeedPlus);

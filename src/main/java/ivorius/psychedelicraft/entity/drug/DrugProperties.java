@@ -96,6 +96,10 @@ public class DrugProperties implements NbtSerialisable {
         return (float) getDrug(type).getActiveValue();
     }
 
+    public boolean isDrugActive(DrugType type) {
+        return drugs.containsKey(type) && getDrugValue(type) > 0;
+    }
+
     public void addToDrug(DrugType type, double effect) {
         getDrug(type).addToDesiredValue(effect);
         markDirty();

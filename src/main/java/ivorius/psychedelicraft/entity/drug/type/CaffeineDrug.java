@@ -34,22 +34,22 @@ public class CaffeineDrug extends SimpleDrug {
 
     @Override
     public float breathVolume() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1), 0, 1) * 0.5f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1), 0, 1) * 0.5F;
     }
 
     @Override
     public float breathSpeed() {
-        return (float) getActiveValue() * 0.3f;
+        return (float) getActiveValue() * 0.3F;
     }
 
     @Override
     public float randomJumpChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1), 0, 1) * 0.07f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1), 0, 1) * 0.07F;
     }
 
     @Override
     public float randomPunchChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.3F, 1), 0, 1) * 0.05f;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.3F, 1), 0, 1) * 0.05F;
     }
 
     @Override
@@ -71,17 +71,17 @@ public class CaffeineDrug extends SimpleDrug {
 
     @Override
     public float superSaturationHallucinationStrength() {
-        return (float)getActiveValue() * 0.3f;
+        return (float)getActiveValue() * 0.3F;
     }
 
     @Override
     public float handTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1.0F), 0, 1);
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1), 0, 1);
     }
 
     @Override
     public float viewTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.8F, 1.0F), 0, 1);
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.8F, 1), 0, 1);
     }
 
     @Override

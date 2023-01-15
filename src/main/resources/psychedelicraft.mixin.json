@@ -11,6 +11,7 @@
     "client": [
       "client.MixinMouse",
       "client.MixinSoundSystem",
-      "client.MixinGameRenderer"
+      "client.MixinGameRenderer",
+      "client.MixinInGameHud"
     ]
 }

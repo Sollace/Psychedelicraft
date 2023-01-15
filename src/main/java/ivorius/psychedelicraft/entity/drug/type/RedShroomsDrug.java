@@ -27,11 +27,11 @@ public class RedShroomsDrug extends SimpleDrug {
 
     @Override
     public float contextualHallucinationStrength() {
-        return (float) getActiveValue() * 0.2f;
+        return (float) getActiveValue() * 0.2F;
     }
 
     @Override
     public float viewWobblyness() {
-        return (float) getActiveValue() * 0.03f;
+        return (float) getActiveValue() * 0.03F;
     }
 }

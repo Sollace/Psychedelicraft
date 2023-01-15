@@ -17,21 +17,21 @@ public class BrownShroomsDrug extends SimpleDrug {
 
     @Override
     public float colorHallucinationStrength() {
-        return (float) getActiveValue() * 0.8f;
+        return (float) getActiveValue() * 0.8F;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return (float) getActiveValue() * 1.0f;
+        return (float) getActiveValue();
     }
 
     @Override
     public float contextualHallucinationStrength() {
-        return (float) getActiveValue() * 0.35f;
+        return (float) getActiveValue() * 0.35F;
     }
 
     @Override
     public float viewWobblyness() {
-        return (float) getActiveValue() * 0.03f;
+        return (float) getActiveValue() * 0.03F;
     }
 }

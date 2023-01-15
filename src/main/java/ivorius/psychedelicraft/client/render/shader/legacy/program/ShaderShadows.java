@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 public class ShaderShadows extends IvShaderInstance3D implements ShaderWorld {
     public static int shadowPixelsPerChunk = 256;
 
-    private Framebuffer depthBuffer;
+    public Framebuffer depthBuffer;
 
     public ShaderShadows(Logger logger) {
         super(logger);
