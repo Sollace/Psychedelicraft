@@ -79,9 +79,6 @@ public class DrugMusicManager {
             if (breathVolume > 0) {
                 float speed = properties.getModifier(Drug.BREATH_SPEED);
                 delayUntilBreath = MathHelper.floor(30F / speed);
-
-                // TODO: (Sollace) Breathing sounds like the thing from the black lagoon
-                entity.sendMessage(Text.literal(breathVolume + ""));
                 entity.world.playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS,
                         breathVolume,
                         speed * 0.05F + 0.9F + (lastBreathWasIn ? 0.15F : 0)
