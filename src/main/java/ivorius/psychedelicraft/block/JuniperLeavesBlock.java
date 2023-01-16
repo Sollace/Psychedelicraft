@@ -24,7 +24,7 @@ public class JuniperLeavesBlock extends LeavesBlock {
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
         if (this == PSBlocks.JUNIPER_LEAVES && random.nextFloat() < 0.01F && !state.get(WATERLOGGED)) {
-            world.setBlockState(pos, PSBlocks.JUNIPER_LEAVES.getDefaultState()
+            world.setBlockState(pos, PSBlocks.FRUITING_JUNIPER_LEAVES.getDefaultState()
                     .with(DISTANCE, state.get(DISTANCE))
                     .with(PERSISTENT, state.get(PERSISTENT))
                     .with(WATERLOGGED, state.get(WATERLOGGED)));

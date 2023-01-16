@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.block;
 
 import net.minecraft.block.*;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -23,6 +24,12 @@ public class PeyoteBlock extends PlantBlock implements Fertilizable {
 
     public PeyoteBlock(Settings settings) {
         super(settings);
+        this.setDefaultState(getDefaultState().with(AGE, 0));
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(AGE);
     }
 
     @Override
@@ -43,18 +50,6 @@ public class PeyoteBlock extends PlantBlock implements Fertilizable {
             }
         }
     }
-/*
-    @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune)
-    {
-        ArrayList<ItemStack> drops = new ArrayList<>();
-
-        for (int i = 0; i < meta + 1; i++)
-            drops.add(new ItemStack(PSBlocks.peyote, 1, 0));
-
-        return drops;
-    }
-*/
 
     public void applyGrowth(World world, Random random, BlockPos pos, BlockState state, boolean bonemeal) {
         if (state.get(AGE) < MAX_AGE) {

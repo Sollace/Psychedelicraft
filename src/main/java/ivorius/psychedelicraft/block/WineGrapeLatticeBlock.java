@@ -5,21 +5,20 @@
 
 package ivorius.psychedelicraft.block;
 
-import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.*;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.context.*;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 
@@ -32,19 +31,6 @@ public class WineGrapeLatticeBlock extends LatticeBlock implements Fertilizable 
         setDefaultState(getDefaultState().with(AGE, 0));
     }
 
-/*
-    @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune)
-    {
-        ArrayList<ItemStack> drops = super.getDrops(world, x, y, z, metadata, fortune);
-
-        if (metadata >> 1 == 4)
-            drops.add(new ItemStack(PSItems.wineGrapes, world.rand.nextInt(3) + 1));
-
-        return drops;
-    }
-*/
-
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.getStackInHand(hand).isOf(Items.SHEARS)) {
@@ -56,8 +42,18 @@ public class WineGrapeLatticeBlock extends LatticeBlock implements Fertilizable 
             world.playSoundFromEntity(null, player, SoundEvents.ENTITY_SHEEP_SHEAR, player.getSoundCategory(), 1, 1);
 
             if (!world.isClient) {
+                Identifier lootTableId = getLootTableId().withPath(p -> p + "_farming");
+                world.getServer().getLootManager().getTable(lootTableId)
+                    .generateLoot(new LootContext.Builder((ServerWorld)world)
+                        .random(world.random)
+                        .parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+                        .parameter(LootContextParameters.TOOL, player.getStackInHand(hand))
+                        .parameter(LootContextParameters.BLOCK_STATE, state)
+                        .optionalParameter(LootContextParameters.BLOCK_ENTITY, world.getBlockEntity(pos))
+                        .build(LootContextTypes.BLOCK)).forEach(stack -> {
+                    Block.dropStack(world, pos, stack);
+                });
                 world.setBlockState(pos, state.with(AGE, 1));
-                Block.dropStack(world, pos, new ItemStack(PSItems.WINE_GRAPES, world.random.nextInt(3) + 1));
             }
             if (!player.isCreative()) {
                 player.getStackInHand(hand).damage(1, player, p -> p.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));

@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "psychedelicraft:drying_table",
+    "#psychedelicraft:barrels",
+    "psychedelicraft:mash_tub",
+    "psychedelicraft:distillery",
+    "psychedelicraft:flask"
+  ]
+}

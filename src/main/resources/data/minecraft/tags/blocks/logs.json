@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "psychedelicraft:juniper_log"
+    "psychedelicraft:juniper_log",
+    "psychedelicraft:juniper_wood",
+    "psychedelicraft:stripped_juniper_log",
+    "psychedelicraft:stripped_juniper_wood"
   ]
 }

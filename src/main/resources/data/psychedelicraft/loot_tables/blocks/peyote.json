@@ -1,0 +1,108 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "psychedelicraft:peyote",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "age": 0
+              }
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:explosion_decay"
+            }
+          ],
+          "name": "psychedelicraft:peyote"
+        },
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "psychedelicraft:peyote",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "age": 1
+              }
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
+              "count": 2,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:explosion_decay"
+            }
+          ],
+          "name": "psychedelicraft:peyote"
+        },
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "psychedelicraft:peyote",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "age": 2
+              }
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
+              "count": 3,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:explosion_decay"
+            }
+          ],
+          "name": "psychedelicraft:peyote"
+        },
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "psychedelicraft:peyote",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "age": 3
+              }
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
+              "count": 4,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:explosion_decay"
+            }
+          ],
+          "name": "psychedelicraft:peyote"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

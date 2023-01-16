@@ -1,8 +1,8 @@
 {
-	"credit": "Made with Blockbench",
 	"textures": {
 		"lattice": "psychedelicraft:block/lattice",
-		"grapes": "psychedelicraft:block/wine_grape_lattice_0"
+		"grapes": "psychedelicraft:block/wine_grape_lattice_0",
+		"particle": "#lattice"
 	},
 	"elements": [
 		{

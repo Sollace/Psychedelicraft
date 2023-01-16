@@ -76,43 +76,6 @@ public class CannabisPlantBlock extends CropBlock {
         }
     }
 
-/*
-    @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune)
-    {
-        ArrayList<ItemStack> drops = new ArrayList<>();
-
-        int countB = world.rand.nextInt(meta / 6 + 1);
-        for (int i = 0; i < countB; i++)
-            drops.add(new ItemStack(PSItems.cannabisBuds, 1, 0));
-
-        int countL = world.rand.nextInt(meta / 5 + 1) + meta / 6;
-        for (int i = 0; i < countL; i++)
-            drops.add(new ItemStack(PSItems.cannabisLeaf, 1, 0));
-
-        int countS = meta / 8;
-        for (int i = 0; i < countS; i++)
-            drops.add(new ItemStack(PSItems.cannabisSeeds, 1, 0));
-
-        return drops;
-    }
-
-/*
-    @Override
-    public IIcon getIcon(int side, int meta)
-    {
-        if (meta < 4)
-            return super.getIcon(side, meta);
-        else if (meta < 8)
-            return textures[0];
-        else if (meta < 12)
-            return textures[1];
-        else if (meta < 16)
-            return textures[2];
-
-        return super.getIcon(side, meta);
-    }
-*/
     public void applyGrowth(World world, BlockPos pos, BlockState state, boolean bonemeal) {
         int number = bonemeal ? world.random.nextInt(4) + 1 : 1;
 
