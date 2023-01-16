@@ -93,11 +93,9 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
     }
 
     public void renderRift(MatrixStack matrices, VertexConsumerProvider vertices, float partialTicks, float ticks) {
-        GLStateProxy.setShadeMode(GLStateProxy.ShadeMode.SMOOTH);
         ZeroScreen.render(ticks, (texture, u, v) -> {
             renderLightsScreen(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(texture)), u, v, ticks, 1, 0xffffffff, 20);
         });
-        GLStateProxy.setShadeMode(GLStateProxy.ShadeMode.FLAT);
     }
 
     public static void renderLightsScreen(MatrixStack matrices, VertexConsumer vertices, float u, float v, float ticks, float alpha, int color, int number) {

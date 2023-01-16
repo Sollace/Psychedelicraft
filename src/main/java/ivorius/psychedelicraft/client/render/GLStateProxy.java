@@ -84,19 +84,6 @@ public class GLStateProxy {
         return 0;
     }
 
-    public static void setShadeMode(ShadeMode shadeMode) {
-        // Shade mode is deprecated
-        /*if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> _setShadeMode(shadeMode));
-        } else {
-            _setShadeMode(shadeMode);
-        }*/
-    }
-
-    private static void _setShadeMode(ShadeMode shadeMode) {
-        // GL11.glShadeModel(shadeMode == ShadeMode.FLAT ? GL11.GL_FLAT : GL11.GL_SMOOTH);
-    }
-
     public static void copyTexture(int offsetX, int offsetY, int x, int y, int width, int height) {
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> _copyTexture(offsetX, offsetY, x, y, width, height));
