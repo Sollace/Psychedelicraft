@@ -24,6 +24,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -76,5 +77,32 @@ public class DryingTableBlock extends BlockWithEntity {
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new DryingTableBlockEntity(pos, state);
+    }
+
+    @Override
+    @Deprecated
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    @Deprecated
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
+            return (int)(be.getHeatRatio() * 15);
+        }).orElse(0);
+    }
+
+    @Override
+    public boolean emitsRedstonePower(BlockState state) {
+        return true;
+    }
+
+    @Override
+    @Deprecated
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
+            return (int)(be.getDryingProgress() * 15);
+        }).orElse(0);
     }
 }

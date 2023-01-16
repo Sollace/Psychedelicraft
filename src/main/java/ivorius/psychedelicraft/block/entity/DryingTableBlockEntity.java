@@ -70,19 +70,28 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         entity.tick(world);
     }
 
-    public void tick(ServerWorld world) {
+    public float getHeatRatio() {
+        return heatRatio;
+    }
 
-        ticksAlive++;
-        float progress = dryingProgress;
+    public float getDryingProgress() {
+        return dryingProgress;
+    }
+
+    public void tick(ServerWorld world) {
+        float oldProgress = dryingProgress;
         float oldHeat = heatRatio;
 
-        if (ticksAlive % 30 == 5) {
+        if (++ticksAlive % 30 == 0) {
             float l = world.getLightLevel(pos) / 15F;
             float h = !world.isAir(pos) ? world.getBiome(pos).value().getTemperature() * 0.75F + 0.25F : 0;
             heatRatio = MathHelper.clamp((l * l * h) * (l * l * h), 0, 1);
 
             if (world.getRainGradient(1) > 0 && world.getTopPosition(Type.MOTION_BLOCKING, pos).getY() == pos.getY() + 1) {
                 dryingProgress = 0;
+            }
+            if (!MathHelper.approximatelyEquals(oldHeat, heatRatio)) {
+                world.updateComparators(pos, getCachedState().getBlock());
             }
         }
 
@@ -112,10 +121,10 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
             dryingProgress = 0;
         }
 
-        if (progress != dryingProgress || oldHeat != heatRatio) {
+        if (!MathHelper.approximatelyEquals(oldProgress, dryingProgress) || !MathHelper.approximatelyEquals(oldHeat, heatRatio)) {
+            world.updateNeighbors(pos, getCachedState().getBlock());
             world.getChunkManager().markForUpdate(pos);
         }
-        heatRatio = 0.7F;
         markDirty();
     }
 
