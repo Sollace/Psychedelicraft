@@ -58,13 +58,13 @@ public class PSConfig {
 
         // TODO: (Sollace) reimplement world gen features
         public static class Generation {
-           // public boolean genJuniper = true;
-           // public boolean genCannabis = true;
-           // public boolean genHop = true;
-           // public boolean genTobacco = true;
-           // public boolean genCoffea = true;
-           // public boolean genCoca = true;
-           // public boolean genPeyote = true;
+            public boolean genJuniper = true;
+            public boolean genCannabis = true;
+            public boolean genHop = true;
+            public boolean genTobacco = true;
+            public boolean genCoffea = true;
+            public boolean genCoca = true;
+            public boolean genPeyote = true;
             public boolean farmerDrugDeals = true;
         }
     }

@@ -18,12 +18,12 @@ public class CocaPlantBlock extends CannabisPlantBlock {
     }
 
     @Override
-    protected IntProperty getAgeProperty() {
+    public IntProperty getAgeProperty() {
         return AGE_12;
     }
 
     @Override
-    protected int getMaxAge(BlockState state) {
+    public int getMaxAge(BlockState state) {
         return 12;
     }
 

@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.block;
 
 import net.minecraft.block.*;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -15,7 +16,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
-public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
+public class CannabisPlantBlock extends CropBlock {
     public static final int MAX_AGE = 15;
     public static final int MATURATION_AGE = 11;
 
@@ -23,16 +24,19 @@ public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
 
     public CannabisPlantBlock(Settings settings) {
         super(settings.ticksRandomly().nonOpaque());
-        setDefaultState(getDefaultState().with(getAgeProperty(), 0));
     }
 
-    protected IntProperty getAgeProperty() {
+    public BlockState getStateForHeight(int y) {
+        return getDefaultState();
+    }
+
+    @Override
+    public IntProperty getAgeProperty() {
         return Properties.AGE_15;
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
         builder.add(getAgeProperty());
     }
 
@@ -41,16 +45,21 @@ public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
         return SHAPE;
     }
 
-    protected int getMaxAge(BlockState state) {
+    public int getMaxAge(BlockState state) {
         return MAX_AGE;
     }
 
-    protected int getMaxHeight() {
+    public int getMaxHeight() {
         return 3;
     }
 
     protected float getRandomGrothChance() {
         return 0.12F;
+    }
+
+    @Override
+    protected ItemConvertible getSeedsItem() {
+        return asItem();
     }
 
     @Override
@@ -60,9 +69,9 @@ public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (world.getLightLevel(pos.up()) >= 9 && random.nextFloat() < getRandomGrothChance()) {
+        if (world.getBaseLightLevel(pos.up(), 0) >= 9 && random.nextFloat() < getRandomGrothChance()) {
             if (isFertilizable(world, pos, state, false)) {
-                applyGrowth(world, random, pos, state, false);
+                applyGrowth(world, pos, state, false);
             }
         }
     }
@@ -104,8 +113,8 @@ public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
         return super.getIcon(side, meta);
     }
 */
-    public void applyGrowth(World world, Random random, BlockPos pos, BlockState state, boolean bonemeal) {
-        int number = bonemeal ? random.nextInt(4) + 1 : 1;
+    public void applyGrowth(World world, BlockPos pos, BlockState state, boolean bonemeal) {
+        int number = bonemeal ? world.random.nextInt(4) + 1 : 1;
 
         for (int i = 0; i < number; i++) {
             final int age = state.get(getAgeProperty());
@@ -146,6 +155,6 @@ public class CannabisPlantBlock extends PlantBlock implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        applyGrowth(world, random, pos, state, true);
+        applyGrowth(world, pos, state, true);
     }
 }

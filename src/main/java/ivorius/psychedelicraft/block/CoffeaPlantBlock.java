@@ -14,7 +14,7 @@ public class CoffeaPlantBlock extends TobaccoPlantBlock {
     }
 
     @Override
-    protected int getMaxAge(BlockState state) {
+    public int getMaxAge(BlockState state) {
         return state.get(TOP) ? 3 : super.getMaxAge(state);
     }
 

@@ -8,7 +8,6 @@ import net.minecraft.block.*;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 
 public class TobaccoPlantBlock extends CannabisPlantBlock {
@@ -19,6 +18,12 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
         setDefaultState(getDefaultState().with(TOP, false));
     }
 
+
+    @Override
+    public BlockState getStateForHeight(int y) {
+        return getDefaultState().with(TOP, y > 0);
+    }
+
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
@@ -26,17 +31,17 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
     }
 
     @Override
-    protected IntProperty getAgeProperty() {
+    public IntProperty getAgeProperty() {
         return Properties.AGE_7;
     }
 
     @Override
-    protected int getMaxHeight() {
+    public int getMaxHeight() {
         return 2;
     }
 
     @Override
-    protected int getMaxAge(BlockState state) {
+    public int getMaxAge(BlockState state) {
         return 7;
     }
 
@@ -68,8 +73,8 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
     }*/
 
     @Override
-    public void applyGrowth(World world, Random random, BlockPos pos, BlockState state, boolean bonemeal) {
-        int number = bonemeal ? random.nextInt(2) + 1 : 1;
+    public void applyGrowth(World world, BlockPos pos, BlockState state, boolean bonemeal) {
+        int number = bonemeal ? world.random.nextInt(2) + 1 : 1;
 
         for (int i = 0; i < number; i++) {
             final int age = state.get(getAgeProperty());
