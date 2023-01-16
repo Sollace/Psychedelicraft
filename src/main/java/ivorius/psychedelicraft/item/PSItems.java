@@ -121,6 +121,7 @@ public interface PSItems {
     ));
 
     Item LATTICE = register("lattice", PSBlocks.LATTICE);
+    Item WINE_GRAPE_LATTICE = register("wine_grape_lattice", PSBlocks.WINE_GRAPE_LATTICE);
     Item BOTTLE_RACK = register("bottle_rack", PSBlocks.BOTTLE_RACK);
     Item DRYING_TABLE = register("drying_table", PSBlocks.DRYING_TABLE);
     Item IRON_DRYING_TABLE = register("iron_drying_table", PSBlocks.IRON_DRYING_TABLE);

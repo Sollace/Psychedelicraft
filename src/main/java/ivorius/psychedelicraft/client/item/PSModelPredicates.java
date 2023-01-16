@@ -23,6 +23,9 @@ public interface PSModelPredicates {
         ModelPredicateProviderRegistry.register(PSItems.BONG, Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
             return PSItems.BONG.hasUsableConsumable(entity) ? 1 : 0;
         });
+        ModelPredicateProviderRegistry.register(PSItems.WINE_GRAPE_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> {
+            return stack.getDamage() / 10F;
+        });
         ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : PSItems.HARMONIUM.getColor(stack), PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
             if (layer == 0 && stack.getItem() instanceof DyeableItem dyeable) {

@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.client.render;
 
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.platform.GlConst;
