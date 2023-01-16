@@ -56,6 +56,16 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
     }
 
     @Override
+    public boolean hasSidedTransparency(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+        return state.get(MASTER) ? 0.2F : 1;
+    }
+
+    @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         if (state.get(MASTER)) {
             return SHAPE;
