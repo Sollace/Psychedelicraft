@@ -26,7 +26,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     public float heatRatio;
     public float dryingProgress;
 
-    public ItemStack plannedResult = ItemStack.EMPTY;
+    private ItemStack plannedResult = ItemStack.EMPTY;
 
     public DryingTableBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.DRYING_TABLE, pos, state, 10);

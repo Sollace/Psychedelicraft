@@ -32,7 +32,7 @@ public class DryingRegistry
 
     public static ItemStack dryingResult(Collection<ItemStack> sources) {
         if (sources.size() != 9)
-            return null;
+            return ItemStack.EMPTY;
 
         for (Object target : allDryingSources()) {
             boolean allSame = true;
@@ -49,7 +49,7 @@ public class DryingRegistry
                 return dryingResult(target);
         }
 
-        return null;
+        return ItemStack.EMPTY;
     }
 
     public static ItemStack dryingResult(Object source) {
