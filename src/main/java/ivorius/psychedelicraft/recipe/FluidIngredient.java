@@ -15,7 +15,7 @@ import net.minecraft.util.JsonHelper;
 record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
     public static FluidIngredient fromJson(JsonObject json) {
         SimpleFluid fluid = SimpleFluid.REGISTRY.getOrEmpty(Identifier.tryParse(JsonHelper.getString(json, "fluid"))).orElseThrow();
-        int level = JsonHelper.getInt(json, "level");
+        int level = JsonHelper.getInt(json, "level", -1);
 
         NbtCompound nbt = new NbtCompound();
 
@@ -44,6 +44,7 @@ record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
         boolean result = true;
         result &= fluid.isEmpty() || FluidContainerItem.of(stack).getFluid(stack) == fluid;
         result &= !stack.hasNbt() || attributes.isEmpty() || (stack.getNbt().contains("fluid") && NbtHelper.matches(attributes, stack.getSubNbt("fluid"), true));
+        result &= level <= 0 || FluidContainerItem.of(stack).getFluidLevel(stack) >= level;
         return result;
     }
 }

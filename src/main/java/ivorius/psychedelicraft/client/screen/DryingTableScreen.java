@@ -38,19 +38,19 @@ public class DryingTableScreen extends HandledScreen<DryingTableScreenHandler> {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, TEXTURE);
 
-        int var5 = (width - backgroundWidth) / 2;
-        int var6 = (height - backgroundHeight) / 2;
+        int centerX = (width - backgroundWidth) / 2;
+        int centerY = (height - backgroundHeight) / 2;
 
-        drawTexture(matrices, var5, var6, 0, 0, backgroundWidth, backgroundHeight);
+        drawTexture(matrices, centerX, centerY, 0, 0, backgroundWidth, backgroundHeight);
 
-        if (handler.entity.dryingProgress > 0) {
-            drawTexture(matrices, var5 + 88, var6 + 34, 176, 59, 25, 16);
+        if (handler.getProgress() > 0) {
+            drawTexture(matrices, centerX + 88, centerY + 34, 176, 59, 25, 16);
         }
 
-        int var7 = (int)handler.entity.dryingProgress * 24; //Max 24, progress
-        drawTexture(matrices, var5 + 88, var6 + 34, 176, 42, var7 + 1, 16);
+        int progress = (int)(handler.getProgress() * 24); //Max 24, progress
+        drawTexture(matrices, centerX + 88, centerY + 34, 176, 42, progress + 1, 16);
 
-        int var8 = (int) handler.entity.heatRatio * 20; //Max 20, sun
-        drawTexture(matrices, var5 + 148, var6 + 6 + (20 - var8), 176, 21 + (20 - var8), 20, var8);
+        int heat = (int) (handler.getHeatRatio() * 20); //Max 20, sun
+        drawTexture(matrices, centerX + 148, centerY + 6 + (20 - heat), 176, 21 + (20 - heat), 20, heat);
     }
 }

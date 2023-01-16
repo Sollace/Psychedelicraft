@@ -5,6 +5,7 @@ import net.minecraft.entity.player.*;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
@@ -13,8 +14,8 @@ import net.minecraft.screen.slot.Slot;
 */
 public class DryingTableScreenHandler extends ScreenHandler {
     private final Inventory inventory;
-    public final DryingTableBlockEntity entity;
 
+    private final PropertyDelegate properties;
 
     public DryingTableScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buffer) {
         this(syncId, inventory, (DryingTableBlockEntity)inventory.player.getWorld().getBlockEntity(buffer.readBlockPos()));
@@ -23,7 +24,7 @@ public class DryingTableScreenHandler extends ScreenHandler {
     public DryingTableScreenHandler(int syncId, PlayerInventory inventory, DryingTableBlockEntity container) {
         super(PSScreenHandlers.DRYING_TABLE, syncId);
         this.inventory = inventory;
-        this.entity = container;
+        this.properties = container.propertyDelegate;
 
         addSlot(new SlotDryingTableResult(inventory.player, container, 0, 124, 35));
 
@@ -44,6 +45,16 @@ public class DryingTableScreenHandler extends ScreenHandler {
         for (var3 = 0; var3 < 9; ++var3) {
             this.addSlot(new Slot(inventory, var3, 8 + var3 * 18, 142));
         }
+
+        this.addProperties(properties);
+    }
+
+    public float getHeatRatio() {
+        return properties.get(0) / 1000F;
+    }
+
+    public float getProgress() {
+        return properties.get(1) / 1000F;
     }
 
     @Override

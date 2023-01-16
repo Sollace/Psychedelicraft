@@ -1,0 +1,12 @@
+{
+  "type": "psychedelicraft:drying",
+  "cookingtime": 100,
+  "experience": 0.2,
+  "ingredient": {
+    "item": "psychedelicraft:cannabis_buds"
+  },
+  "result": {
+    "item": "psychedelicraft:dried_cannabis_buds",
+    "count": 3
+  }
+}

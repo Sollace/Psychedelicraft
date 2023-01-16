@@ -7,26 +7,60 @@ package ivorius.psychedelicraft.block.entity;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
-import ivorius.psychedelicraft.recipe.DryingRegistry;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Heightmap.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DryingTableBlockEntity extends BlockEntityWithInventory {
     private static final int[] INPUT_SLOTS = new int[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     private static final int[] OUTPUT_SLOTS = new int[]{ 0 };
 
-    public int ticksAlive;
+    private int ticksAlive;
 
-    public float heatRatio;
-    public float dryingProgress;
+    private float heatRatio;
+    private float dryingProgress;
 
     private ItemStack plannedResult = ItemStack.EMPTY;
+
+    public final PropertyDelegate propertyDelegate = new PropertyDelegate(){
+        @Override
+        public int get(int index) {
+            switch (index) {
+                case 0: {
+                    return (int)(heatRatio * 1000);
+                }
+                case 1: {
+                    return (int)(dryingProgress * 1000);
+                }
+            }
+            return 0;
+        }
+
+        @Override
+        public void set(int index, int value) {
+            switch (index) {
+                case 0: {
+                    heatRatio = value / 1000F;
+                    break;
+                }
+                case 1: {
+                    dryingProgress = value / 1000F;
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public int size() {
+            return 2;
+        }
+    };
 
     public DryingTableBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.DRYING_TABLE, pos, state, 10);
@@ -59,6 +93,18 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
                     : Psychedelicraft.getConfig().balancing.dryingTableTickDuration
             );
 
+            int delta = (int)((1 - MathHelper.clamp(dryingProgress, 0, 1)) * 100);
+
+            if (delta == 0 || world.getTime() % delta == 0) {
+                for (int i = 0; i < 5; i++) {
+                    world.spawnParticles(ParticleTypes.SMOKE,
+                        pos.getX() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                        pos.getY() + 0.6F,
+                        pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                        2, 0, 0, 0, 0);
+                }
+            }
+
             if (dryingProgress >= 1) {
                 endDryingProcess();
             }
@@ -69,37 +115,30 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         if (progress != dryingProgress || oldHeat != heatRatio) {
             world.getChunkManager().markForUpdate(pos);
         }
+        heatRatio = 0.7F;
         markDirty();
     }
 
     public ItemStack getResult() {
-        List<ItemStack> src = new ArrayList<>(size() - 1);
-        for (int i = 1; i < size(); i++) {
-            ItemStack stack = getStack(i);
-            if (!stack.isEmpty()) {
-                src.add(stack);
-            }
-        }
-
-        ItemStack itemStack = DryingRegistry.dryingResult(src);
-        return getStack(0).isEmpty() || ItemStack.areEqual(itemStack, getStack(0)) ? itemStack : ItemStack.EMPTY;
+        return getWorld().getRecipeManager()
+                .getFirstMatch(PSRecipes.DRYING_TYPE, this, this.getWorld())
+                .map(recipe -> recipe.craft(this))
+                .orElse(ItemStack.EMPTY);
     }
 
     public void endDryingProcess() {
         dryingProgress = 0;
 
         ItemStack result = getResult();
+        ItemStack output = getStack(0);
+        clear();
 
-        for (int i = 1; i < size(); i++) {
-            setStack(i, ItemStack.EMPTY);
-        }
-
-        if (getStack(0).isEmpty()) {
-            setStack(0, result);
+        if (output.isEmpty()) {
+            output = result;
         } else {
-            getStack(0).increment(result.getCount());
+            output.increment(result.getCount());
         }
-        onInventoryChanged();
+        setStack(0, output);
     }
 
     @Override
@@ -125,8 +164,10 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
 
     @Override
     public void onInventoryChanged() {
-        plannedResult = getResult();
-        dryingProgress = 0;
+        if (!getWorld().isClient) {
+            plannedResult = getResult();
+            dryingProgress = 0;
+        }
 
         super.onInventoryChanged();
     }
