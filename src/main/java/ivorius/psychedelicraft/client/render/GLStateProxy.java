@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.client.render;
 
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.platform.GlConst;
@@ -84,15 +85,16 @@ public class GLStateProxy {
     }
 
     public static void setShadeMode(ShadeMode shadeMode) {
-        if (!RenderSystem.isOnRenderThread()) {
+        // Shade mode is deprecated
+        /*if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> _setShadeMode(shadeMode));
         } else {
             _setShadeMode(shadeMode);
-        }
+        }*/
     }
 
     private static void _setShadeMode(ShadeMode shadeMode) {
-        GL11.glShadeModel(shadeMode == ShadeMode.FLAT ? GL11.GL_FLAT : GL11.GL_SMOOTH);
+        // GL11.glShadeModel(shadeMode == ShadeMode.FLAT ? GL11.GL_FLAT : GL11.GL_SMOOTH);
     }
 
     public static void copyTexture(int offsetX, int offsetY, int x, int y, int width, int height) {
