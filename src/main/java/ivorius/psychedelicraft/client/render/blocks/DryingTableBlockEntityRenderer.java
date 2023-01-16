@@ -52,18 +52,14 @@ public class DryingTableBlockEntityRenderer implements BlockEntityRenderer<Dryin
             matrices.translate(positionX, i / 500F, positionZ);
 
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
-            matrices.scale(0.25f, 0.25f, 0.25f);
+            matrices.scale(0.5f, 0.5f, 0.5f);
             if (result) {
                 matrices.scale(1.5F, 1.5F, 1.5F);
             }
             matrices.translate(0, 0, -0.2F);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
-
-//				Srsly Mojang
-            // Sollace: ...What?
-            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(335));
-            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(50));
-            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, Mode.GROUND, light, overlay, matrices, vertices, (int)seed);
+            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-50));
+            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, Mode.FIXED, light, overlay, matrices, vertices, (int)seed);
 
             matrices.pop();
         }
