@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.item;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.*;
@@ -49,7 +50,8 @@ public interface PSItemGroups {
 
                 entries.add(PSItems.BONG);
                 entries.add(PSItems.SYRINGE);
-
+                entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.COCAINE));
+                entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.CAFFEINE));
 
                 entries.add(PSItems.COFFEA_CHERRIES);
                 entries.add(PSItems.COFFEE_BEANS);

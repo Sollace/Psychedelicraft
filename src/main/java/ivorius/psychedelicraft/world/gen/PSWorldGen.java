@@ -160,51 +160,5 @@ public class PSWorldGen {
                     placement
             );
         }
-        /*
-        if (PSConfig.dungeonChests)
-        {
-            // TODO: (Sollace) Loot tables
-            addItem(DUNGEON_CHEST, new WeightedRandomChestContent(wineGrapes, 0, 1, 8, 10));
-            addItem(DUNGEON_CHEST, new WeightedRandomChestContent(glassChalice, 0, 1, 4, 5));
-            addItem(DUNGEON_CHEST, new WeightedRandomChestContent(woodenMug, 0, 1, 16, 5));
-            addItem(DUNGEON_CHEST, new WeightedRandomChestContent(juniperBerries, 0, 1, 8, 10));
-            addItem(DUNGEON_CHEST, new WeightedRandomChestContent(driedTobacco, 0, 1, 16, 5));
-
-            addItem(MINESHAFT_CORRIDOR, new WeightedRandomChestContent(wineGrapes, 0, 1, 8, 10));
-            addItem(MINESHAFT_CORRIDOR, new WeightedRandomChestContent(woodenMug, 0, 1, 16, 5));
-            addItem(MINESHAFT_CORRIDOR, new WeightedRandomChestContent(juniperBerries, 0, 1, 8, 10));
-            addItem(MINESHAFT_CORRIDOR, new WeightedRandomChestContent(driedTobacco, 0, 1, 16, 5));
-            addItem(MINESHAFT_CORRIDOR, new WeightedRandomChestContent(pipe, 0, 1, 1, 3));
-            addItem(MINESHAFT_CORRIDOR, new WeightedRandomChestContent(cigarette, 0, 1, 8, 5));
-        }
-
-        if (PSConfig.villageChests)
-        {
-            // TODO: (Sollace) Loot tables
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(wineGrapes, 0, 1, 8, 10));
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(juniperBerries, 0, 1, 8, 10));
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(woodenMug, 0, 1, 16, 5));
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(cigarette, 0, 1, 16, 1));
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(cigar, 0, 1, 1, 1));
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(joint, 0, 1, 1, 1));
-
-            ItemStack coffeeStack = new ItemStack(woodenMug);
-            woodenMug.fill(coffeeStack, new FluidStack(PSFluids.coffee, 1), true);
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(coffeeStack, 1, 4, 1));
-
-            ItemStack peyoteStack = new ItemStack(stoneCup);
-            stoneCup.fill(coffeeStack, new FluidStack(PSFluids.peyoteJuice, 1), true);
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(peyoteStack, 1, 1, 1));
-
-            ItemStack cocaineStack = new ItemStack(syringe);
-            syringe.fill(coffeeStack, new FluidStack(PSFluids.cocaineFluid, 1), true);
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(cocaineStack, 1, 1, 1));
-
-            ItemStack caffeineStack = new ItemStack(syringe);
-            syringe.fill(coffeeStack, new FluidStack(PSFluids.caffeineFluid, 1), true);
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(caffeineStack, 1, 1, 1));
-
-            addItem(VILLAGE_BLACKSMITH, new WeightedRandomChestContent(hashMuffin, 0, 1, 8, 1));
-        }*/
     }
 }
