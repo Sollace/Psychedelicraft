@@ -8,15 +8,12 @@ package ivorius.psychedelicraft.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.util.MathUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 /**
  * Created by lukas on 25.10.14.
+ * Updated by Sollace on 17 Jan 2023
  */
-@Environment(EnvType.CLIENT)
-public class MCColorHelper {
-    @Deprecated
+public class RenderUtil {
     public static void setColor(int color, boolean hasAlpha) {
         RenderSystem.setShaderColor(
                 MathUtils.r(color),
@@ -24,10 +21,5 @@ public class MCColorHelper {
                 MathUtils.b(color),
                 hasAlpha ? MathUtils.a(color) : 1
         );
-    }
-
-    @Deprecated
-    public static int mixColors(int left, int right, float progress) {
-        return MathUtils.mixColors(left, right, progress);
     }
 }

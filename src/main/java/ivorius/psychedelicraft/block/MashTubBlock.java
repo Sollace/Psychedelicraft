@@ -10,16 +10,16 @@ import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.*;
+import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.item.FluidContainerItem;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
+import net.minecraft.fluid.*;
+import net.minecraft.item.*;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -35,7 +35,7 @@ import net.minecraft.world.*;
  * Created by lukas on 27.10.14.
  * Updated by Sollace on 12 Jan 2023
  */
-public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
+public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements FluidFillable {
     public static final int SIZE = 15;
     public static final int BORDER_SIZE = 1;
     public static final int HEIGHT = 16;
@@ -177,5 +177,41 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
             return Fluids.WATER.getDefaultState();
         }
         return Fluids.EMPTY.getDefaultState();
+    }
+
+    @Override
+    public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+        return world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).filter(be -> {
+            Resovoir tank = be.getTank(Direction.UP);
+            return (tank.isEmpty()
+                || tank.getFluidType().getFluidState(0).isOf(fluid))
+                && tank.getCapacity() - tank.getLevel() >=  FluidHelper.MILLIBUCKETS_PER_LITER;
+        }).isPresent();
+    }
+
+    @Override
+    public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
+        return world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).filter(be -> {
+            SimpleFluid f = SimpleFluid.forVanilla(fluidState.getFluid());
+
+            Resovoir tank = be.getTank(Direction.UP);
+
+            if (tank.getCapacity() - tank.getLevel() <  FluidHelper.MILLIBUCKETS_PER_LITER) {
+                return false;
+            }
+
+            ItemStack overflow = tank.deposit(f.getDefaultStack(FluidHelper.MILLIBUCKETS_PER_LITER));
+            if (!FluidContainerItem.DEFAULT.getFluid(overflow).isEmpty()) {
+                if (world instanceof World) {
+                    Block.dropStack((World)world, pos, overflow);
+                }
+            }
+
+            if (world instanceof ServerWorld sw) {
+                sw.getChunkManager().markForUpdate(pos);
+                be.markDirty();
+            }
+            return true;
+        }).isPresent();
     }
 }

@@ -31,7 +31,9 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
         FluidBoxRenderer.getInstance().scale(1).light(light).overlay(overlay).position(matrices);
 
         if (!fluid.isEmpty()) {
-            float fluidHeight = 0.9F * MathHelper.clamp((float)tank.getLevel() / tank.getCapacity(), 0, 1);
+            float fillPercentage = MathHelper.clamp((float)tank.getLevel() / tank.getCapacity(), 0, 2);
+
+            float fluidHeight = 0.3F + fillPercentage * 0.6F;
 
             FluidBoxRenderer.getInstance().texture(vertices, tank)
                 .draw(-0.5F, 0, -0.5F, 2, fluidHeight, 2, Direction.UP);

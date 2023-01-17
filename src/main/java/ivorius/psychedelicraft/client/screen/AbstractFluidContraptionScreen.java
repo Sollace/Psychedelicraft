@@ -1,11 +1,12 @@
 package ivorius.psychedelicraft.client.screen;
 
-import ivorius.psychedelicraft.client.render.MCColorHelper;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.*;
@@ -15,6 +16,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -61,12 +63,15 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         float fluidHeight = MathHelper.clamp((float) level / (float) tank.getCapacity(), 0, 1);
         int fluidHeightPixels = MathHelper.floor(fluidHeight * height + 0.5f);
 
-        Identifier texture = fluid.getId();
-        texture = new Identifier(texture.getNamespace(), "textures/block/fluid/" + texture.getPath() + "_still.png");
+        Identifier texture = fluid.getStationaryTexture();
+
+        if (fluid.getFluidState(0).isIn(FluidTags.WATER)) {
+            RenderUtil.setColor(BiomeColors.getWaterColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos()), false);
+        }
 
         if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
             RenderSystem.enableBlend();
-            MCColorHelper.setColor(fluid.getColor(tank.getStack()), false);
+            RenderUtil.setColor(fluid.getColor(tank.getStack()), false);
             texture = new Identifier("textures/block/water_still.png");
         }
 
@@ -81,46 +86,6 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
-    }
-
-    public void drawRepeatingTexture(int x, int y, int width, int height, float u0, float u1, float v0, float v1, float repeatX, float repeatY, boolean fromBelow) {
-        drawRepeatingTexture(x, y, getZOffset(), width, height, u0, u1, v0, v1, repeatX, repeatY, fromBelow);
-    }
-
-    public static void drawRepeatingTexture(int x, int y, int z, int width, int height, float u0, float u1, float v0, float v1, float repeatX, float repeatY, boolean fromBelow) {
-        Tessellator tessellator = Tessellator.getInstance();
-
-        if (fromBelow) {
-            height = -height;
-            // Flip for correct vertex order
-            x = x + width;
-            width = -width;
-        }
-
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        for (int curX = 0; curX < MathHelper.ceil(repeatX); curX++) {
-            for (int curY = 0; curY < MathHelper.ceil(repeatY); curY++) {
-                float curWidthPartial = MathHelper.clamp(repeatX - curX, 0, 1);
-                float curHeightPartial = MathHelper.clamp(repeatY - curY, 0, 1);
-
-                float curWidth = curWidthPartial * width / repeatX;
-                float curHeight = curHeightPartial * height / repeatY;
-
-                float origX = curX * width / repeatX + x;
-                float origY = curY * height / repeatY + y;
-
-                float curTexX1 = u0 + (u1 - u0) * curWidthPartial;
-                float curTexY1 = v0 + (v1 - v0) * curHeightPartial;
-
-                buffer.vertex(origX, origY, z).texture(u0, v0).next();
-                buffer.vertex(origX, origY + curHeight, z).texture(u0, curTexY1).next();
-                buffer.vertex(origX + curWidth, origY + curHeight, z).texture(curTexX1, curTexY1).next();
-                buffer.vertex(origX + curWidth, origY, z).texture(curTexX1, v0).next();
-            }
-        }
-
-        tessellator.draw();
     }
 
     public void drawTankTooltip(MatrixStack matrices, Resovoir tank, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {

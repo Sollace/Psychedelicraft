@@ -8,12 +8,14 @@ package ivorius.psychedelicraft.fluid;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.SimpleFluid.Settings;
 import net.minecraft.predicate.NumberRange.IntRange;
 
 /**
  * Created by lukas on 22.10.14.
  */
 public interface PSFluids {
+    SimpleFluid EMPTY = new SimpleFluid(SimpleFluid.EMPTY_KEY, new Settings().color(0xFFFFFFFF));
     AlcoholicFluid WHEAT_HOP = new AlcoholicFluid(Psychedelicraft.id("wheat_hop"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .fermentation(2)
             .alcohol(0.25, 1.7, 0.1)
@@ -168,5 +170,5 @@ public interface PSFluids {
 
     SimpleFluid SLURRY = new SlurryFluid(Psychedelicraft.id("slurry"), new SimpleFluid.Settings().color(0xcc704E21));
 
-    static void bootstrap() { }
+    static void bootstrap() {}
 }

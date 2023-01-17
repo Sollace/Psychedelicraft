@@ -14,7 +14,7 @@ import net.minecraft.util.JsonHelper;
 
 record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
     public static FluidIngredient fromJson(JsonObject json) {
-        SimpleFluid fluid = SimpleFluid.REGISTRY.getOrEmpty(Identifier.tryParse(JsonHelper.getString(json, "fluid"))).orElseThrow();
+        SimpleFluid fluid = SimpleFluid.byId(Identifier.tryParse(JsonHelper.getString(json, "fluid")));
         int level = JsonHelper.getInt(json, "level", -1);
 
         NbtCompound nbt = new NbtCompound();
@@ -28,11 +28,11 @@ record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
     }
 
     public FluidIngredient(PacketByteBuf buffer) {
-        this(buffer.readRegistryValue(SimpleFluid.REGISTRY), buffer.readVarInt(), buffer.readNbt());
+        this(SimpleFluid.byId(buffer.readIdentifier()), buffer.readVarInt(), buffer.readNbt());
     }
 
     public void write(PacketByteBuf buffer) {
-        buffer.writeRegistryValue(SimpleFluid.REGISTRY, fluid);
+        buffer.writeIdentifier(fluid.getId());
         buffer.writeVarInt(level);
         buffer.writeNbt(attributes);
     }

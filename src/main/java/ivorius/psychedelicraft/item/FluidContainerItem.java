@@ -1,7 +1,9 @@
 package ivorius.psychedelicraft.item;
 
+import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.recipe.Pourable;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -13,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
  * @since 1 Jan 2023
  */
 public interface FluidContainerItem extends Pourable, ItemConvertible {
-    FluidContainerItem FLUID = new FluidContainerItem() {
+    FluidContainerItem DEFAULT = new FluidContainerItem() {
         @Override
         public Item asItem() {
             return Items.AIR;
@@ -25,7 +27,7 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
     };
 
     static FluidContainerItem of(ItemStack stack) {
-        return stack.getItem() instanceof FluidContainerItem c ? c : FLUID;
+        return stack.getItem() instanceof FluidContainerItem c ? c : DEFAULT;
     }
 
     int getMaxCapacity();
@@ -39,19 +41,19 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
     }
 
     default ItemStack getDefaultStack(SimpleFluid fluid) {
-        return setLevel(setFluid(asItem().getDefaultStack(), fluid), getMaxCapacity());
+        Item bucketItem = this != DEFAULT || fluid.getFluidState(0).getFluid() == Fluids.EMPTY ? asItem() : fluid.getFluidState(0).getFluid().getBucketItem();
+        return setLevel(setFluid(bucketItem.getDefaultStack(), fluid), getMaxCapacity());
     }
 
     default SimpleFluid getFluid(ItemStack stack) {
-        if (getFluidLevel(stack) == 0 || !(stack.hasNbt() && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE))) {
-            return SimpleFluid.EMPTY;
+        if (getFluidLevel(stack) == 0 || !(stack.getNbt() != null && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE))) {
+            return PSFluids.EMPTY;
         }
-        Identifier fluidId = Identifier.tryParse(stack.getSubNbt("fluid").getString("id"));
-        return fluidId == null ? SimpleFluid.EMPTY : SimpleFluid.REGISTRY.get(fluidId);
+        return SimpleFluid.byId(Identifier.tryParse(stack.getSubNbt("fluid").getString("id")));
     }
 
     default int getFluidLevel(ItemStack stack) {
-        return stack.hasNbt() && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE) ? stack.getSubNbt("fluid").getInt("level") : 0;
+        return stack.getNbt() != null && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE) ? stack.getSubNbt("fluid").getInt("level") : 0;
     }
 
     /**
@@ -72,7 +74,7 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
         if (of(from).getFluid(from).isEmpty()) {
             return stack;
         }
-        NbtCompound source = from.hasNbt() && from.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE) ? from.getSubNbt("fluid") : new NbtCompound();
+        NbtCompound source = from.getNbt() != null && from.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE) ? from.getSubNbt("fluid") : new NbtCompound();
         SimpleFluid fluid = getFluid(stack);
         int level = getFluidLevel(stack) + of(from).getFluidLevel(from);
         stack.getOrCreateSubNbt("fluid").copyFrom(source);
@@ -82,7 +84,7 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
     default ItemStack setLevel(ItemStack stack, int level) {
         level = MathHelper.clamp(level, 0, getMaxCapacity());
         if (level == 0) {
-            return setFluid(stack, SimpleFluid.EMPTY);
+            return setFluid(stack, PSFluids.EMPTY);
         }
         stack.getOrCreateSubNbt("fluid").putInt("level", level);
         return stack;
@@ -90,7 +92,7 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
 
     default ItemStack setFluid(ItemStack stack, SimpleFluid fluid) {
         if (fluid.isEmpty()) {
-            if (stack.hasNbt() && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE)) {
+            if (stack.getNbt() != null && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE)) {
                 stack.getNbt().remove("fluid");
             }
         } else {

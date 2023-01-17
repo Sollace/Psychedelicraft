@@ -24,11 +24,11 @@ public class Resovoir implements Inventory, NbtSerialisable {
     }
 
     public SimpleFluid getFluidType() {
-        return FluidContainerItem.FLUID.getFluid(stack);
+        return FluidContainerItem.DEFAULT.getFluid(stack);
     }
 
     public int getLevel() {
-        return FluidContainerItem.FLUID.getFluidLevel(stack);
+        return FluidContainerItem.DEFAULT.getFluidLevel(stack);
     }
 
     public ItemStack getStack() {
@@ -52,8 +52,8 @@ public class Resovoir implements Inventory, NbtSerialisable {
         if (level > capacity) {
             int expunged = level - capacity;
             ItemStack clone = stack.copy();
-            FluidContainerItem.FLUID.setLevel(clone, expunged);
-            stack = FluidContainerItem.FLUID.setLevel(stack, capacity);
+            FluidContainerItem.DEFAULT.setLevel(clone, expunged);
+            stack = FluidContainerItem.DEFAULT.setLevel(stack, capacity);
             changeCallback.onDrain(this);
             return clone;
         }
@@ -81,11 +81,14 @@ public class Resovoir implements Inventory, NbtSerialisable {
         int available = Math.min(levels, incoming.getFluidLevel(stack));
         int newLevel = Math.min(getCapacity(), getLevel() + available);
         if (newLevel > getLevel()) {
-            changeCallback.onFill(this, getLevel() - newLevel);
+            changeCallback.onFill(this, newLevel - getLevel());
         }
         ItemStack copy = stack.copy();
         incoming.setLevel(copy, Math.max(0, available - getCapacity()));
-        FluidContainerItem.FLUID.setLevel(this.stack, newLevel);
+        FluidContainerItem.DEFAULT.setLevel(this.stack, newLevel);
+        if (getFluidType().isEmpty()) {
+            FluidContainerItem.DEFAULT.setFluid(this.stack, fluid);
+        }
 
         return copy;
     }
@@ -93,8 +96,8 @@ public class Resovoir implements Inventory, NbtSerialisable {
     public ItemStack drain(int levels) {
         ItemStack stack = this.stack.copy();
         int withdrawn = Math.min(levels, getLevel());
-        FluidContainerItem.FLUID.setLevel(stack, withdrawn);
-        FluidContainerItem.FLUID.setLevel(this.stack, getLevel() - withdrawn);
+        FluidContainerItem.DEFAULT.setLevel(stack, withdrawn);
+        FluidContainerItem.DEFAULT.setLevel(this.stack, getLevel() - withdrawn);
         changeCallback.onDrain(this);
         return stack;
     }
@@ -103,7 +106,7 @@ public class Resovoir implements Inventory, NbtSerialisable {
         ItemStack stack = container.copy();
         int withdrawn = Math.min(FluidContainerItem.of(stack).getMaxCapacity(stack), Math.min(levels, getLevel()));
         FluidContainerItem.of(stack).setLevel(stack, withdrawn);
-        FluidContainerItem.FLUID.setLevel(this.stack, getLevel() - withdrawn);
+        FluidContainerItem.DEFAULT.setLevel(this.stack, getLevel() - withdrawn);
         changeCallback.onDrain(this);
         return stack;
     }

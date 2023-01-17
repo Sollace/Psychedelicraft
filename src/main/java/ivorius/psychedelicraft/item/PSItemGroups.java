@@ -119,7 +119,7 @@ public interface PSItemGroups {
             .build();
 
     private static void appendAllFluids(FluidContainerItem item, ItemGroup.Entries entries) {
-        SimpleFluid.REGISTRY.forEach(fluid -> {
+        SimpleFluid.all().forEach(fluid -> {
             entries.add(item.getDefaultStack(fluid));
         });
     }

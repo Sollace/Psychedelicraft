@@ -6,10 +6,12 @@
 package ivorius.psychedelicraft.client.render;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -85,8 +87,17 @@ public class FluidBoxRenderer {
 
             sprite = new TextureBounds(0, spriteWidth, ticks * spriteHeight, (1 + ticks) * spriteHeight);
 
-            Identifier texture = fluid.getId();
-            texture = new Identifier(texture.getNamespace(), "textures/block/fluid/" + texture.getPath() + "_still.png");
+            Identifier texture = fluid.getStationaryTexture();
+
+            if (fluid.getFluidState(0).isIn(FluidTags.WATER)) {
+                int color = BiomeColors.getWaterColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos());
+                this.color = new float[] {
+                        MathUtils.r(color),
+                        MathUtils.g(color),
+                        MathUtils.b(color),
+                        1
+                };
+            }
 
             if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
                 int color = fluid.getColor(tank.getStack());
