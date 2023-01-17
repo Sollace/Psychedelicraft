@@ -48,9 +48,6 @@ public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.Dire
     @Override
     @Deprecated
     public BlockRenderType getRenderType(BlockState state) {
-        if (this == PSBlocks.MASH_TUB && !state.get(MashTubBlock.MASTER)) {
-            return BlockRenderType.INVISIBLE;
-        }
         return BlockRenderType.MODEL;
     }
 

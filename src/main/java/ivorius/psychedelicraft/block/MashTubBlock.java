@@ -42,13 +42,14 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
     public static final BooleanProperty MASTER = BooleanProperty.of("master");
 
-    private static final VoxelShape SHAPE = VoxelShapes.union(
+    private static final VoxelShape COLLISSION_SHAPE = VoxelShapes.union(
             createShape(-8, -0.5F, -8, 32, 16,  1),
             createShape(-8, -0.5F, 23, 32, 16,  1),
             createShape(23, -0.5F, -8,  1, 16, 32),
             createShape(-8, -0.5F, -8,  1, 16, 32),
             createShape(-8, -0.5F, -8, 32,  1, 32)
     );
+    private static final VoxelShape RAYCAST_SHAPE = createShape(-8, -0.5F, -8, 32, 16, 32);
 
     private static VoxelShape createShape(double x, double y, double z, double width, double height, double depth) {
         return Block.createCuboidShape(x, y, z, x + width, y + height, z + depth);
@@ -56,6 +57,15 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
     public MashTubBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    @Deprecated
+    public BlockRenderType getRenderType(BlockState state) {
+        if (!state.get(MashTubBlock.MASTER)) {
+            return BlockRenderType.INVISIBLE;
+        }
+        return BlockRenderType.MODEL;
     }
 
     @Override
@@ -71,13 +81,20 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         if (state.get(MASTER)) {
-            return SHAPE;
+            return COLLISSION_SHAPE;
         }
         BlockPos center = getBlockEntityPos(world, state, pos);
         if (center.equals(pos)) {
             return VoxelShapes.fullCube();
         }
-        return SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ());
+
+        return COLLISSION_SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ());
+    }
+
+    @Override
+    @Deprecated
+    public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+        return state.get(MASTER) ? RAYCAST_SHAPE : VoxelShapes.empty();
     }
 
     @Override
@@ -173,7 +190,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     }
 
     public FluidState getFluidState(World world, BlockState state, BlockPos pos) {
-        if (state.get(MASTER) && world.getBlockEntity(pos, getBlockEntityType()).filter(be -> !be.getTank(Direction.UP).isEmpty()).isEmpty()) {
+        if (state.get(MASTER) && world.getBlockEntity(pos, getBlockEntityType()).filter(be -> !be.getTank(Direction.UP).isEmpty()).isPresent()) {
             return Fluids.WATER.getDefaultState();
         }
         return Fluids.EMPTY.getDefaultState();

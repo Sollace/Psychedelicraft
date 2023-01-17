@@ -5,6 +5,7 @@
     "refmap": "psychedelicraft.mixin.refmap.json",
     "compatibilityLevel": "JAVA_16",
     "mixins": [
+      "MixinEntity",
       "MixinPlayerEntity",
       "MixinLivingEntity"
     ],
