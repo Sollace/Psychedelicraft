@@ -25,6 +25,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.FLASK);
                 entries.add(PSItems.DISTILLERY);
                 entries.add(PSItems.BOTTLE_RACK);
+                entries.add(PSItems.MASH_TUB);
 
                 entries.add(PSItems.OAK_BARREL);
                 entries.add(PSItems.BIRCH_BARREL);
@@ -41,46 +42,48 @@ public interface PSItemGroups {
                     entries.add(RiftJarItem.createFilledRiftJar(0.9F, PSItems.RIFT_JAR));
                 }
 
+                entries.add(PSItems.SMOKING_PIPE);
                 entries.add(PSItems.CIGARETTE);
                 entries.add(PSItems.CIGAR);
                 entries.add(PSItems.JOINT);
-                entries.add(PSItems.PEYOTE_JOINT);
-                entries.add(PSItems.SMOKING_PIPE);
+
                 entries.add(PSItems.BONG);
                 entries.add(PSItems.SYRINGE);
 
-                entries.add(PSItems.CANNABIS_SEEDS);
-                entries.add(PSItems.HOP_SEEDS);
-                entries.add(PSItems.TOBACCO_SEEDS);
-                entries.add(PSItems.COCA_SEEDS);
-                entries.add(PSItems.COFFEA_CHERRIES);
 
+                entries.add(PSItems.COFFEA_CHERRIES);
+                entries.add(PSItems.COFFEE_BEANS);
+
+                entries.add(PSItems.TOBACCO_SEEDS);
                 entries.add(PSItems.TOBACCO_LEAVES);
                 entries.add(PSItems.DRIED_TOBACCO);
 
-
+                entries.add(PSItems.COCA_SEEDS);
                 entries.add(PSItems.COCA_LEAVES);
                 entries.add(PSItems.DRIED_COCA_LEAVES);
                 entries.add(PSItems.COCAINE_POWDER);
 
                 entries.add(PSItems.PEYOTE);
                 entries.add(PSItems.DRIED_PEYOTE);
+                entries.add(PSItems.PEYOTE_JOINT);
 
+                entries.add(PSItems.HOP_SEEDS);
                 entries.add(PSItems.HOP_CONES);
 
+                entries.add(PSItems.CANNABIS_SEEDS);
                 entries.add(PSItems.CANNABIS_LEAF);
-                entries.add(PSItems.CANNABIS_BUDS);
                 entries.add(PSItems.DRIED_CANNABIS_LEAF);
+                entries.add(PSItems.CANNABIS_BUDS);
+                entries.add(PSItems.DRIED_CANNABIS_BUDS);
 
                 entries.add(PSItems.HASH_MUFFIN);
 
                 entries.add(PSItems.BROWN_MAGIC_MUSHROOMS);
                 entries.add(PSItems.RED_MAGIC_MUSHROOMS);
 
-                entries.add(PSItems.WINE_GRAPES);
                 entries.add(PSItems.LATTICE);
+                entries.add(PSItems.WINE_GRAPES);
 
-                entries.add(PSItems.JUNIPER_BERRIES);
                 entries.add(PSItems.JUNIPER_LEAVES);
                 entries.add(PSItems.FRUITING_JUNIPER_LEAVES);
                 entries.add(PSItems.JUNIPER_LOG);
@@ -88,8 +91,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.STRIPPED_JUNIPER_LOG);
                 entries.add(PSItems.STRIPPED_JUNIPER_WOOD);
                 entries.add(PSItems.JUNIPER_SAPLING);
-
-                entries.add(PSItems.COFFEE_BEANS);
+                entries.add(PSItems.JUNIPER_BERRIES);
 
                 if (Psychedelicraft.getConfig().balancing.enableHarmonium) {
                     for (DyeColor dye : DyeColor.values()) {
@@ -108,7 +110,6 @@ public interface PSItemGroups {
                 appendAllFluids(PSItems.WOODEN_MUG, entries);
                 appendAllFluids(PSItems.GLASS_CHALICE, entries);
                 appendAllFluids(PSItems.BOTTLE, entries);
-                appendAllFluids(PSItems.MASH_TUB, entries);
             })
             .build();
     ItemGroup weaponsTab = FabricItemGroup.builder(Psychedelicraft.id("weapons"))
@@ -120,7 +121,7 @@ public interface PSItemGroups {
 
     private static void appendAllFluids(FluidContainerItem item, ItemGroup.Entries entries) {
         SimpleFluid.all().forEach(fluid -> {
-            entries.add(item.getDefaultStack(fluid));
+            fluid.getDefaultStacks(item, entries::add);
         });
     }
 

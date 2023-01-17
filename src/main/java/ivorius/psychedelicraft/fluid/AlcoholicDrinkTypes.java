@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Sollace
  * @since 2 Jan 2023
  */
-public record AlcoholicDrinkTypes (List<NamedAlcohol> names, List<AlcoholIcon> alcIcons) {
+public record AlcoholicDrinkTypes (List<Entry<String>> names, List<Entry<Icons>> alcIcons) {
     static final AlcoholicDrinkTypes BEER = new AlcoholicDrinkTypes.Builder()
             .addName("beer", IntRange.ANY, IntRange.ANY)
                 .addIcon(IntRange.ANY, IntRange.atMost(3), IntRange.atLeast(2), "clear_still", "clear_flow")
@@ -47,13 +47,13 @@ public record AlcoholicDrinkTypes (List<NamedAlcohol> names, List<AlcoholIcon> a
             .build();
 
     @Nullable
-    public <M extends AlcoholMatcher> M getMatchedValue(ItemStack stack, AlcoholicFluid fluid, List<M> values) {
+    public <T> Entry<T> getMatchedValue(ItemStack stack, AlcoholicFluid fluid, List<Entry<T>> values) {
         int fermentation = fluid.getFermentation(stack);
         int distillation = fluid.getDistillation(stack);
         int maturation = fluid.getMaturation(stack);
 
-        for (M alc : values) {
-            if (alc.matches(fermentation, fluid.settings.fermentationSteps, distillation, maturation)) {
+        for (Entry<T> alc : values) {
+            if (alc.predicate.matches(fermentation, fluid.settings.fermentationSteps, distillation, maturation)) {
                 return alc;
             }
         }
@@ -62,26 +62,26 @@ public record AlcoholicDrinkTypes (List<NamedAlcohol> names, List<AlcoholIcon> a
     }
 
     @Nullable
-    public NamedAlcohol getSpecialName(ItemStack stack, AlcoholicFluid fluid) {
+    public Entry<String> getSpecialName(ItemStack stack, AlcoholicFluid fluid) {
         return getMatchedValue(stack, fluid, names);
     }
 
     @Nullable
-    public AlcoholIcon getSpecialIcon(ItemStack stack, AlcoholicFluid fluid) {
+    public Entry<Icons> getSpecialIcon(ItemStack stack, AlcoholicFluid fluid) {
         return getMatchedValue(stack, fluid, alcIcons);
     }
 
     public static class Builder {
-        private final List<NamedAlcohol> names = new ArrayList<>();
-        private final List<AlcoholIcon> alcIcons = new ArrayList<>();
+        private final List<Entry<String>> names = new ArrayList<>();
+        private final List<Entry<Icons>> alcIcons = new ArrayList<>();
 
         public Builder addName(String iconName, IntRange maturationRange, IntRange distillationRange) {
-            names.add(new NamedAlcohol(iconName, maturationRange, distillationRange));
+            names.add(new Entry<>(iconName, new StatePredicate(IntRange.ANY, maturationRange, distillationRange)));
             return this;
         }
 
         public Builder addIcon(IntRange fermentationRange, IntRange maturationRange, IntRange distillationRange, String stillIconName, String flowingIconName) {
-            alcIcons.add(new AlcoholIcon(fermentationRange, maturationRange, distillationRange, stillIconName, flowingIconName));
+            alcIcons.add(new Entry<>(new Icons(stillIconName, flowingIconName), new StatePredicate(fermentationRange, maturationRange, distillationRange)));
             return this;
         }
 
@@ -90,46 +90,21 @@ public record AlcoholicDrinkTypes (List<NamedAlcohol> names, List<AlcoholIcon> a
         }
     }
 
-    private static class AlcoholMatcher {
-        public IntRange fermentationRange;
-        public IntRange maturationRange;
-        public IntRange distillationRange;
-
-        public AlcoholMatcher(IntRange fermentationRange, IntRange maturationRange, IntRange distillationRange) {
-            this.fermentationRange = fermentationRange;
-            this.maturationRange = maturationRange;
-            this.distillationRange = distillationRange;
-        }
-
+    public record StatePredicate (
+            IntRange fermentationRange,
+            IntRange maturationRange,
+            IntRange distillationRange
+    ) {
         public boolean matches(int fermentation, int maxFermentation, int distillation, int maturation) {
-            return (fermentationRange.getMin() < 0 ? fermentation >= maxFermentation : rangeContains(fermentationRange, fermentation))
-                    && rangeContains(distillationRange, distillation)
-                    && rangeContains(maturationRange, maturation);
+            return fermentationRange.test(fermentation) && distillationRange.test(distillation) && maturationRange.test(maturation);
         }
 
-        private static boolean rangeContains(IntRange range, int value) {
-            return value >= range.getMin() && (range.getMax() < 0 || value <= range.getMax());
+        public static int getUnboxedMin(Integer min) {
+            return min == null ? 0 : min.intValue();
         }
     }
 
-    public static class NamedAlcohol extends AlcoholMatcher {
-        public String iconName;
+    public record Icons (String still, String flowing) {}
 
-        public NamedAlcohol(String iconName, IntRange maturationRange, IntRange distillationRange) {
-            super(IntRange.between(-1, -1), maturationRange, distillationRange);
-            this.iconName = iconName;
-        }
-    }
-
-    public static class AlcoholIcon extends AlcoholMatcher {
-        public String stillIconName;
-
-        public String flowingIconName;
-
-        public AlcoholIcon(IntRange fermentationRange, IntRange maturationRange, IntRange distillationRange, String stillIconName, String flowingIconName) {
-            super(fermentationRange, maturationRange, distillationRange);
-            this.stillIconName = stillIconName;
-            this.flowingIconName = flowingIconName;
-        }
-    }
+    public record Entry<T> (T value, StatePredicate predicate) { }
 }

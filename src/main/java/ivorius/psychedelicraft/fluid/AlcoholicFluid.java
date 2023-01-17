@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.fluid;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.AlcoholicDrinkTypes.StatePredicate;
 import ivorius.psychedelicraft.item.FluidContainerItem;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -192,6 +194,19 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                 getMatureColor(stack),
                 MathUtils.progress(getMaturation(stack) * 0.2F)
         );
+    }
+
+
+    @Override
+    public void getDefaultStacks(FluidContainerItem container, Consumer<ItemStack> consumer) {
+        super.getDefaultStacks(container, consumer);
+        settings.types.names().forEach(namedAlcohol -> {
+            ItemStack stack = getDefaultStack(container);
+            setDistillation(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().distillationRange().getMin()));
+            setMaturation(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().maturationRange().getMin()));
+            setFermentation(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().fermentationRange().getMin()));
+            consumer.accept(stack);
+        });
     }
 
     public static class Settings extends DrugFluid.Settings {

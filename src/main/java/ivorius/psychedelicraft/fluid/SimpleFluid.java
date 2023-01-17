@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.fluid;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.item.FluidContainerItem;
@@ -119,6 +120,10 @@ public class SimpleFluid {
 
     public ItemStack getDefaultStack(FluidContainerItem container, int level) {
         return container.setLevel(container.getDefaultStack(this), level);
+    }
+
+    public void getDefaultStacks(FluidContainerItem container, Consumer<ItemStack> consumer) {
+        consumer.accept(getDefaultStack(container));
     }
 
     public Text getName(ItemStack stack) {
