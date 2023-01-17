@@ -105,6 +105,8 @@
   "psychedelicraft.sleep.fail.coccaine": "The drugs in your system keep you awake",
   "psychedelicraft.sleep.fail.caffiene": "You do not feel tired",
 
+  "fluid.psychedelicraft.empty": "Empty",
+
   "fluid.psychedelicraft.wheat_hop": "Bitter Wheat Wort",
   "fluid.psychedelicraft.wheat_hop.vinegar": "Bitter Beer Vinegar",
   "fluid.psychedelicraft.wheat_hop.mature.distilled": "Wheat Beer (%d DM, %d TD)",

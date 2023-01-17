@@ -11,9 +11,9 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import ivorius.psychedelicraft.fluid.Resovoir;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.util.MathUtils;
 
 import org.jetbrains.annotations.Nullable;
@@ -76,16 +76,30 @@ public class FluidBoxRenderer {
         if (fluid.isEmpty()) {
             texture(vertices, tank.getStack());
         } else {
-            sprite = DEFAULT_BOUNDS;
-            // TODO: (Sollace) fluids probably use their own texture rather than just a color
-            int color = fluid.getTranslucentColor(tank.getStack());
-            this.color = new float[] {
-                    MathUtils.r(color),
-                    MathUtils.g(color),
-                    MathUtils.b(color),
-                    MathUtils.a(color)
-            };
-            buffer = vertices.getBuffer(fluid.isTranslucent() ? RenderLayer.getTranslucent() : RenderLayer.getSolid());
+            float frameSize = 1F / 8F;
+            int frameCount = 20;
+            int ticks = ((MinecraftClient.getInstance().player.age / 3) % frameCount);
+
+            float spriteWidth = frameSize * frameCount;
+            float spriteHeight = frameSize;
+
+            sprite = new TextureBounds(0, spriteWidth, ticks * spriteHeight, (1 + ticks) * spriteHeight);
+
+            Identifier texture = fluid.getId();
+            texture = new Identifier(texture.getNamespace(), "textures/block/fluid/" + texture.getPath() + "_still.png");
+
+            if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
+                int color = fluid.getColor(tank.getStack());
+                this.color = new float[] {
+                        MathUtils.r(color),
+                        MathUtils.g(color),
+                        MathUtils.b(color),
+                        1
+                };
+                texture = new Identifier("textures/block/water_still.png");
+            }
+
+            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(texture));
         }
 
         return this;
@@ -109,14 +123,12 @@ public class FluidBoxRenderer {
                 POSITION_VECTOR.x * scale, POSITION_VECTOR.y * scale, POSITION_VECTOR.z * scale,
                 color[0], color[1], color[2], color[3],
                 u, v,
-                light, overlay,
+                overlay, light,
                 direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ()
         );
     }
 
-    private void renderFluidFace(float x, float y, float z,
-            float width, float height, float length,
-            Direction... directions) {
+    private void renderFluidFace(float x, float y, float z, float width, float height, float length, Direction... directions) {
         for (Direction direction : directions) {
             switch (direction) {
                 case DOWN:

@@ -46,7 +46,7 @@ public class SimpleFluid {
 
     public final Identifier getSymbol() {
         Identifier id = getId();
-        return new Identifier(id.getNamespace(), "textures/fluids/" + id.getPath() + ".png");
+        return new Identifier(id.getNamespace(), "textures/fluid/" + id.getPath() + ".png");
     }
 
     public int getColor(ItemStack stack) {

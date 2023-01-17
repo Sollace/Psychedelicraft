@@ -1,21 +1,31 @@
 package ivorius.psychedelicraft.client.screen;
 
-import ivorius.psychedelicraft.fluid.Resovoir;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.client.render.MCColorHelper;
+import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
+
+import io.netty.util.internal.MathUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,23 +51,34 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
     }
 
     public void drawTank(Resovoir tank, int x, int y, int width, int height, float repeatTextureX, float repeatTextureY) {
-        SimpleFluid fluid = tank.getFluidType();
+        if (tank.isEmpty()) {
+            return;
+        }
 
-        float fluidHeight = MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
+        SimpleFluid fluid = tank.getFluidType();
+        int level = tank.getLevel();
+
+        float fluidHeight = MathHelper.clamp((float) level / (float) tank.getCapacity(), 0, 1);
         int fluidHeightPixels = MathHelper.floor(fluidHeight * height + 0.5f);
 
-        RenderSystem.enableBlend();
-        // GL11.glAlphaFunc(GL11.GL_GREATER, 0.001f);
-        RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA, SrcFactor.ONE, DstFactor.ZERO);
+        Identifier texture = fluid.getId();
+        texture = new Identifier(texture.getNamespace(), "textures/block/fluid/" + texture.getPath() + "_still.png");
 
-        int color = fluid.getTranslucentColor(tank.getStack());
+        if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
+            RenderSystem.enableBlend();
+            MCColorHelper.setColor(fluid.getColor(tank.getStack()), false);
+            texture = new Identifier("textures/block/water_still.png");
+        }
 
-        RenderSystem.setShaderColor(NativeImage.getRed(color), NativeImage.getGreen(color), NativeImage.getBlue(color), NativeImage.getAlpha(color));
-        RenderSystem.setShaderTexture(0, fluid.getSymbol());
+        RenderSystem.setShaderTexture(0, texture);
 
-        drawRepeatingTexture(x, y, width, fluidHeightPixels, 0, 0, 16, 16, repeatTextureX, repeatTextureY * fluidHeight, true);
+        int frameSize = 32;
+        int frameCount = 32;
+        int ticks = (MinecraftClient.getInstance().player.age % frameCount);
+        DrawableHelper.drawTexture(new MatrixStack(), x, y - fluidHeightPixels, 0, 0, ticks * frameSize, width, fluidHeightPixels, frameSize, frameSize * frameCount);
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
+
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     }
@@ -77,7 +98,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         }
 
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         for (int curX = 0; curX < MathHelper.ceil(repeatX); curX++) {
             for (int curY = 0; curY < MathHelper.ceil(repeatY); curY++) {
                 float curWidthPartial = MathHelper.clamp(repeatX - curX, 0, 1);
@@ -109,7 +130,9 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
             List<Text> tooltip = new ArrayList<>();
             tooltip.add(fluid.getName(tank.getStack()));
-            tooltip.add(Text.literal("Amount: " + level).formatted(Formatting.GRAY));
+            if (!fluid.isEmpty()) {
+                tooltip.add(Text.literal("Amount: " + level).formatted(Formatting.GRAY));
+            }
             tooltip.addAll(details);
             renderTooltip(matrices, tooltip, mouseX, mouseY);
         }

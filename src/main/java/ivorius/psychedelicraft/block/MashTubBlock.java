@@ -16,6 +16,8 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandlerType;
@@ -24,6 +26,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
@@ -127,6 +130,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
         getPlacementPosition(world, state, pos, true).ifPresent(center -> {
             BlockPos.iterateOutwards(center, 1, 0, 1).forEach(p -> {
                 world.setBlockState(p, getDefaultState().with(MASTER, false));
+                world.removeBlockEntity(p);
             });
             world.setBlockState(center, getDefaultState().with(MASTER, true));
         });
@@ -166,5 +170,12 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(MASTER);
+    }
+
+    public FluidState getFluidState(World world, BlockState state, BlockPos pos) {
+        if (state.get(MASTER) && world.getBlockEntity(pos, getBlockEntityType()).filter(be -> !be.getTank(Direction.UP).isEmpty()).isEmpty()) {
+            return Fluids.WATER.getDefaultState();
+        }
+        return Fluids.EMPTY.getDefaultState();
     }
 }
