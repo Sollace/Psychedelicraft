@@ -1,2 +1,4 @@
 accessWidener       v1       named
 accessible          method   net/minecraft/world/poi/PointOfInterestTypes      register       (Lnet/minecraft/registry/Registry;Lnet/minecraft/registry/RegistryKey;Ljava/util/Set;II)Lnet/minecraft/world/poi/PointOfInterestType;
+accessible          class    net/minecraft/client/render/RenderLayer$MultiPhaseParameters
+accessible          method   net/minecraft/client/render/RenderLayer     of     (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;Lnet/minecraft/client/render/VertexFormat$DrawMode;IZZLnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)Lnet/minecraft/client/render/RenderLayer$MultiPhase;

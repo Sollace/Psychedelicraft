@@ -9,7 +9,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
-import ivorius.psychedelicraft.client.render.ZeroScreen;
+import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.bezier.*;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -75,8 +75,8 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
             matrices.translate(0, 1.5F, 0);
             matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(180));
             matrices.scale(0.9F, 0.9F, 0.9F);
-            ZeroScreen.render(ticks, (texture, u, v) -> {
-                model.renderInterior(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(texture)), 0, 0,
+            ZeroScreen.render(ticks, (layer, u, v) -> {
+                model.renderInterior(matrices, vertices.getBuffer(layer), 0, 0,
                         1, 1, 1, Math.min(entity.currentRiftFraction * 2, 1));
             });
             matrices.pop();

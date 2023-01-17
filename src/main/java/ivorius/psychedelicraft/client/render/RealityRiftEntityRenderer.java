@@ -93,8 +93,8 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
     }
 
     public void renderRift(MatrixStack matrices, VertexConsumerProvider vertices, float partialTicks, float ticks) {
-        ZeroScreen.render(ticks, (texture, u, v) -> {
-            renderLightsScreen(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(texture)), u, v, ticks, 1, 0xffffffff, 20);
+        ZeroScreen.render(ticks, (layer, u, v) -> {
+            renderLightsScreen(matrices, vertices.getBuffer(layer), u, v, ticks, 1, 0xffffffff, 20);
         });
     }
 
