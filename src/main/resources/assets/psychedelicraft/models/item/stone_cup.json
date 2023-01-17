@@ -2,5 +2,13 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "psychedelicraft:item/stone_cup"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:filled": 1
+            },
+            "model": "psychedelicraft:item/stone_cup_filled"
+        }
+    ]
 }

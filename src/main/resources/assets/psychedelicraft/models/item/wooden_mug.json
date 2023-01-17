@@ -2,5 +2,13 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "psychedelicraft:item/wooden_mug"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:filled": 1
+            },
+            "model": "psychedelicraft:item/wooden_mug_filled"
+        }
+    ]
 }

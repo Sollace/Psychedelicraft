@@ -2,7 +2,15 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "psychedelicraft:item/bottle",
-        "layer1": "psychedelicraft:item/bottle_liquid",
+        "layer1": "psychedelicraft:item/bottle_overlay",
         "layer2": "psychedelicraft:item/bottle_overlay"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:filled": 1
+            },
+            "model": "psychedelicraft:item/bottle_filled"
+        }
+    ]
 }

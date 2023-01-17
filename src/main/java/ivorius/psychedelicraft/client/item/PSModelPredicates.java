@@ -2,8 +2,7 @@ package ivorius.psychedelicraft.client.item;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.item.FluidContainerItem;
-import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.*;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.item.DyeableItem;
@@ -20,11 +19,14 @@ public interface PSModelPredicates {
             }
             return entity.getItemUseTimeLeft() > 0 ? 1 : 0;
         });
-        ModelPredicateProviderRegistry.register(PSItems.BONG, Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
-            return PSItems.BONG.hasUsableConsumable(entity) ? 1 : 0;
-        });
         ModelPredicateProviderRegistry.register(PSItems.WINE_GRAPE_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> {
             return stack.getDamage() / 10F;
+        });
+        ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
+            if (stack.getItem() instanceof BongItem item) {
+                return item.hasUsableConsumable(entity) ? 1 : 0;
+            }
+            return FluidContainerItem.of(stack).getFluid(stack).isEmpty() ? 0 : 1;
         });
         ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : PSItems.HARMONIUM.getColor(stack), PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {

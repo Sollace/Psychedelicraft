@@ -1,0 +1,7 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "psychedelicraft:item/syringe",
+        "layer1": "psychedelicraft:item/syringe_liquid"
+    }
+}
