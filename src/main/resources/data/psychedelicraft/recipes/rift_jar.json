@@ -6,9 +6,9 @@
     "OIO"
   ],
   "key": {
-    "O": { "item": "minecraft:glass_block" },
-    "-": { "item": "minecraft:planks" },
-    "G": { "item": "minecraft:golden_ingot" },
+    "O": { "item": "minecraft:glass" },
+    "-": { "tag": "minecraft:planks" },
+    "G": { "item": "minecraft:gold_ingot" },
     "I": { "item": "minecraft:iron_ingot" }
   },
   "result": {

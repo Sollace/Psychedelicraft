@@ -1,7 +1,7 @@
 {
   "type": "psychedelicraft:fill_drink_container",
   "ingredients": [
-    { "item": "psychedelicraft:mash_table" },
+    { "item": "psychedelicraft:mash_tub" },
     { "item": "minecraft:water_bucket" },
     { "item": "minecraft:wheat" },
     { "item": "minecraft:wheat" },

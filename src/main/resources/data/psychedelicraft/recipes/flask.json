@@ -7,7 +7,7 @@
   ],
   "key": {
     "#": { "item": "minecraft:copper_ingot" },
-    "G": { "item": "minecraft:glass_block" }
+    "G": { "item": "minecraft:glass" }
   },
   "result": {
     "item": "psychedelicraft:flask"

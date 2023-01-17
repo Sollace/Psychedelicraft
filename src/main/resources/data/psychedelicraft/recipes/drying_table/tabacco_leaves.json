@@ -3,10 +3,10 @@
   "cookingtime": 100,
   "experience": 0.2,
   "ingredient": {
-    "item": "psychedelicraft:tabacco"
+    "item": "psychedelicraft:tobacco"
   },
   "result": {
-    "item": "psychedelicraft:dried_tabacco",
+    "item": "psychedelicraft:dried_tobacco",
     "count": 3
   }
 }

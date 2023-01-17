@@ -6,7 +6,7 @@
   ],
   "key": {
     "#": { "tag": "minecraft:planks" },
-    "R": { "item": "minecraft:redstone_dust" }
+    "R": { "item": "minecraft:redstone" }
   },
   "result": {
     "item": "psychedelicraft:drying_table"

@@ -6,7 +6,7 @@
     " # "
   ],
   "key": {
-    "#": { "item": "minecraft:glass_block" }
+    "#": { "item": "minecraft:glass" }
   },
   "result": {
     "item": "psychedelicraft:glass_chalice"

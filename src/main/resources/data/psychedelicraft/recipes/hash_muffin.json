@@ -8,7 +8,7 @@
   "key": {
     "X": { "item": "minecraft:light_blue_dye" },
     "#": { "item": "minecraft:wheat" },
-    "L": { "item": "psychedelicraft:dried_cannabis" }
+    "L": { "item": "psychedelicraft:dried_cannabis_leaf" }
   },
   "result": {
     "item": "psychedelicraft:hash_muffin"

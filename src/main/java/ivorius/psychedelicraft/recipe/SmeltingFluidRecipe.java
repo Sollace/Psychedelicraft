@@ -139,10 +139,10 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
                     CookingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CookingRecipeCategory.MISC),
                     FluidIngredient.fromJson(JsonHelper.getObject(json, "input")),
                     json.has("item") ? Ingredient.fromJson(json.get("item")) : Ingredient.empty(),
-                    Modification.fromJson(JsonHelper.getObject(json, "result")),
-                    ShapedRecipe.outputFromJson(JsonHelper.getObject(json, "result")),
+                    Modification.fromJson(JsonHelper.getObject(JsonHelper.getObject(json, "result"), "attributes", new JsonObject())),
+                    JsonHelper.getObject(json, "result").has("item") ? ShapedRecipe.outputFromJson(JsonHelper.getObject(json, "result")) : ItemStack.EMPTY,
                     JsonHelper.getFloat(json, "experience"),
-                    JsonHelper.getInt(json, "cookingTime")
+                    JsonHelper.getInt(json, "cookingTime", 200)
             );
         }
 

@@ -1,7 +1,7 @@
 {
   "type": "psychedelicraft:fill_drink_container",
   "ingredients": [
-    { "item": "psychedelicraft:mash_table" },
+    { "item": "psychedelicraft:mash_tub" },
     { "tag": "psychedelicraft:milk_bucket" },
     { "tag": "psychedelicraft:milk_bucket" },
     { "tag": "psychedelicraft:milk_bucket" },

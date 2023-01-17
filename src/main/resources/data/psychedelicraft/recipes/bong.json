@@ -7,7 +7,7 @@
   ],
   "key": {
     "P": { "item": "minecraft:glass_pane" },
-    "G": { "item": "minecraft:glass_block" }
+    "G": { "item": "minecraft:glass" }
   },
   "result": {
     "item": "psychedelicraft:bong"
