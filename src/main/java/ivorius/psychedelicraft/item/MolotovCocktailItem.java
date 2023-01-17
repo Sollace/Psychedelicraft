@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.item;
 import ivorius.psychedelicraft.entity.EntityMolotovCocktail;
 import ivorius.psychedelicraft.fluid.Combustable;
 import ivorius.psychedelicraft.fluid.ConsumableFluid.ConsumptionType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -35,27 +36,33 @@ public class MolotovCocktailItem extends DrinkableItem {
 
     @Override
     public boolean isUsedOnRelease(ItemStack stack) {
-        return false;
+        return true;
+    }
+
+    @Override
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        float strength = user.getItemUseTimeLeft() / (float)getMaxUseTime(stack);
+        world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+
+        if (!world.isClient) {
+            EntityMolotovCocktail projectile = new EntityMolotovCocktail(world, user);
+            projectile.setItem(stack);
+            projectile.setVelocity(user, user.getPitch(), user.getYaw(), 0, 0.5F * strength, 1F);
+            world.spawnEntity(projectile);
+        }
+
+        if (user instanceof PlayerEntity player) {
+            if (!player.isCreative()) {
+                stack.decrement(1);
+            }
+            player.incrementStat(Stats.USED.getOrCreateStat(this));
+        }
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-
-        float strength = user.getItemUseTimeLeft() / (float)getMaxUseTime(itemStack);
-
-        world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
-        if (!world.isClient) {
-            EntityMolotovCocktail projectile = new EntityMolotovCocktail(world, user);
-            projectile.setItem(itemStack);
-            projectile.setVelocity(user, user.getPitch(), user.getYaw(), 0, 1.5F * strength, 1F);
-            world.spawnEntity(projectile);
-        }
-        user.incrementStat(Stats.USED.getOrCreateStat(this));
-        if (!user.getAbilities().creativeMode) {
-            itemStack.decrement(1);
-        }
-        return TypedActionResult.success(itemStack, world.isClient());
+        user.setCurrentHand(hand);
+        return TypedActionResult.success(user.getStackInHand(hand));
     }
 
     @Override

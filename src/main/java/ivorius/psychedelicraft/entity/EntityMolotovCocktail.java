@@ -43,7 +43,9 @@ public class EntityMolotovCocktail extends ThrownItemEntity {
     @Override
     public void tick() {
         super.tick();
-        spawnParticles(1);
+        if (Combustable.fromStack(getItem()).getFireStrength(getStack()) > 0) {
+            spawnParticles(1);
+        }
     }
 
     private void spawnParticles(float spread) {
@@ -73,11 +75,10 @@ public class EntityMolotovCocktail extends ThrownItemEntity {
         hit.getEntity().damage(DamageSource.thrownProjectile(this, getOwner()), 4);
     }
 
-
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
-        if (world.isClient) {
+        if (world.isClient || isRemoved()) {
             return;
         }
 
@@ -87,34 +88,42 @@ public class EntityMolotovCocktail extends ThrownItemEntity {
         float explosionStrength = combustable.getExplosionStrength(getItem());
         float fireStrength = combustable.getFireStrength(getItem());
 
-        for (int i = 0; i < fireStrength * 2; i++) {
-            world.addParticle(ParticleTypes.FLAME,
-                    world.random.nextTriangular(getX(), 0.5 * fireStrength),
-                    world.random.nextTriangular(getY(), 0.5 * fireStrength),
-                    world.random.nextTriangular(getZ(), 0.5 * fireStrength),
-                    0, 0, 0
-            );
+        if (fireStrength > 0) {
+            for (int i = 0; i < fireStrength * 2; i++) {
+                world.addParticle(ParticleTypes.FLAME,
+                        world.random.nextTriangular(getX(), 0.5 * fireStrength),
+                        world.random.nextTriangular(getY(), 0.5 * fireStrength),
+                        world.random.nextTriangular(getZ(), 0.5 * fireStrength),
+                        0, 0, 0
+                );
 
-            world.addParticle(ParticleTypes.LAVA,
-                    world.random.nextTriangular(getX(), 0.5 * fireStrength),
-                    world.random.nextTriangular(getY() + getHeight(), 0.5 * fireStrength),
-                    world.random.nextTriangular(getZ(), 0.5 * fireStrength),
-                    0, 0, 0
-            );
+                world.addParticle(ParticleTypes.LAVA,
+                        world.random.nextTriangular(getX(), 0.5 * fireStrength),
+                        world.random.nextTriangular(getY() + getHeight(), 0.5 * fireStrength),
+                        world.random.nextTriangular(getZ(), 0.5 * fireStrength),
+                        0, 0, 0
+                );
+            }
         }
 
-        world.createExplosion(
-                this,
-                DamageSource.thrownProjectile(this, getOwner()),
-                new ExplosionBehavior() {
-                    @Override
-                    public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
-                        return state.isReplaceable();
-                    }
-                },
-                getPos(),
-                explosionStrength,
-                fireStrength > 0, ExplosionSourceType.MOB
-        );
+        if (explosionStrength > 0) {
+            world.createExplosion(
+                    this,
+                    DamageSource.thrownProjectile(this, getOwner()),
+                    new ExplosionBehavior() {
+                        @Override
+                        public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
+                            return state.isReplaceable();
+                        }
+                    },
+                    getPos(),
+                    explosionStrength,
+                    fireStrength > 0, ExplosionSourceType.MOB
+            );
+        } else {
+            playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1, 1);
+        }
+
+        discard();
     }
 }
