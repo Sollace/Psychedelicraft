@@ -16,14 +16,15 @@
     "hidden": false
   },
   "criteria": {
-    "has_the_thing": {
-      "trigger": "psychedelicraft:custom",
+    "mashed_item": {
+      "trigger": "psychedelicraft:mashing_tub",
       "conditions": {
-        "action": "wash_grapes"
+        "fluid": "psychedelicraft:red_grapes",
+        "fermentation": 0
       }
     }
   },
   "requirements": [
-    [ "has_the_thing" ]
+    [ "mashed_item" ]
   ]
 }

@@ -16,16 +16,15 @@
     "hidden": false
   },
   "criteria": {
-    "has_the_thing": {
-      "trigger": "minecraft:inventory_changed",
+    "mashed_item": {
+      "trigger": "psychedelicraft:mashing_tub",
       "conditions": {
-        "items": [
-          { "items": [ "psychedelicraft:hop_cones" ] }
-        ]
+        "fluid": "psychedelicraft:sugar_cane",
+        "fermentation": 2
       }
     }
   },
   "requirements": [
-    [ "has_the_thing" ]
+    [ "mashed_item" ]
   ]
 }

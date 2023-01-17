@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft;
 
+import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.command.*;
 import ivorius.psychedelicraft.config.JsonConfig;
@@ -57,5 +58,6 @@ public class Psychedelicraft implements ModInitializer {
         PSSounds.bootstrap();
         PSScreenHandlers.bootstrap();
         Channel.bootstrap();
+        PSCriteria.bootstrap();
     }
 }

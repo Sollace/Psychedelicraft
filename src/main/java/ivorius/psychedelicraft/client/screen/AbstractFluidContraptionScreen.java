@@ -3,31 +3,19 @@ package ivorius.psychedelicraft.client.screen;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
-import ivorius.psychedelicraft.util.MathUtils;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.VertexFormat.DrawMode;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
-import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
-
-import io.netty.util.internal.MathUtil;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,6 +9,7 @@ import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.FluidContainerItem;
@@ -115,6 +116,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
         if (!blockEntity.solidContents.isEmpty()) {
+            PSCriteria.SIMPLY_MASHING.trigger(player, blockEntity.solidContents);
             Block.dropStack(world, pos, blockEntity.solidContents);
             blockEntity.solidContents = ItemStack.EMPTY;
             blockEntity.markDirty();
