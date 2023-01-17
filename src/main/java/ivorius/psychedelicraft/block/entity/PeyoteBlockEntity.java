@@ -7,12 +7,10 @@ package ivorius.psychedelicraft.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 
-// TODO: (Sollace) What is this for?
 public class PeyoteBlockEntity extends BlockEntity {
-    public PeyoteBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state);
+    public PeyoteBlockEntity(BlockPos pos, BlockState state) {
+        super(PSBlockEntities.PEYOTE, pos, state);
     }
 }

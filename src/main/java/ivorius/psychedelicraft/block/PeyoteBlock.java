@@ -5,7 +5,9 @@
 
 package ivorius.psychedelicraft.block;
 
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -16,7 +18,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
-public class PeyoteBlock extends PlantBlock implements Fertilizable {
+public class PeyoteBlock extends PlantBlock implements Fertilizable, BlockEntityProvider {
     public static final IntProperty AGE = Properties.AGE_3;
     public static final int MAX_AGE = 3;
 
@@ -35,6 +37,11 @@ public class PeyoteBlock extends PlantBlock implements Fertilizable {
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.INVISIBLE;
     }
 
     @Override
@@ -83,5 +90,10 @@ public class PeyoteBlock extends PlantBlock implements Fertilizable {
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         applyGrowth(world, random, pos, state, true);
+    }
+
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return PSBlockEntities.PEYOTE.instantiate(pos, state);
     }
 }
