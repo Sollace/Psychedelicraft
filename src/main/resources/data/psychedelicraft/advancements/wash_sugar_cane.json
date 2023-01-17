@@ -17,7 +17,7 @@
   },
   "criteria": {
     "mashed_item": {
-      "trigger": "psychedelicraft:mashing_tub",
+      "trigger": "psychedelicraft:mashed_item",
       "conditions": {
         "fluid": "psychedelicraft:sugar_cane",
         "fermentation": 2

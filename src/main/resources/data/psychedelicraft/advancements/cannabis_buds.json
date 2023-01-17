@@ -1,5 +1,5 @@
 {
-  "parent": "psychedelicraft:drying_table",
+  "parent": "psychedelicraft:make_drying_table",
   "display": {
     "icon": {
       "item": "psychedelicraft:cannabis_buds"

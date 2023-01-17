@@ -31,6 +31,13 @@ public class DryingRecipe extends AbstractCookingRecipe {
         return input;
     }
 
+    // Suppress warnings being logged when Minecraft realises it doesn't know what category to put these recipes into
+    // The mashing tub doesn't have a recipe book anyway
+    @Override
+    public boolean isIgnoredInRecipeBook() {
+        return true;
+    }
+
     public static class Serializer implements RecipeSerializer<DryingRecipe> {
         private final int cookingTime;
 
