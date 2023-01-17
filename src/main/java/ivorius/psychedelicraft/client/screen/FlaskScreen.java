@@ -50,6 +50,7 @@ public class FlaskScreen<T extends BlockEntity & BlockWithFluid.DirectionalFluid
         updateTransferButtonTitle();
 
         handler.sendContentUpdates();
+
         //this.mc.playerController.sendEnchantPacket(handler.syncId, handler.currentlyDrainingItem ? 1 : 0);
     }
 
