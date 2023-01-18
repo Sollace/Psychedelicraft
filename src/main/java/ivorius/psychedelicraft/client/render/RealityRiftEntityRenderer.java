@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.client.render;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.entity.EntityRealityRift;
+import ivorius.psychedelicraft.entity.RealityRiftEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -25,7 +25,7 @@ import java.lang.Math;
 /**
  * Created by lukas on 03.03.14.
  */
-public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift> {
+public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity> {
     public static final Identifier CENTER_TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zero_center.png");
     private static final Random RANDOM = new Random(432L);
 
@@ -34,12 +34,12 @@ public class RealityRiftEntityRenderer extends EntityRenderer<EntityRealityRift>
     }
 
     @Override
-    public Identifier getTexture(EntityRealityRift entity) {
+    public Identifier getTexture(RealityRiftEntity entity) {
         return CENTER_TEXTURE;
     }
 
     @Override
-    public void render(EntityRealityRift entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+    public void render(RealityRiftEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         matrices.push();
         matrices.translate(0, entity.getHeight() * 0.5, 0);
 

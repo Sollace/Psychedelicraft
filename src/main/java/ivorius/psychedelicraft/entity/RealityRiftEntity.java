@@ -20,7 +20,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.*;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 
 import java.util.function.Supplier;
 
@@ -31,14 +31,24 @@ import com.google.common.base.Suppliers;
 /**
  * Created by lukas on 03.03.14.
  */
-public class EntityRealityRift extends Entity {
-    private static final TrackedData<Float> SIZE = DataTracker.registerData(EntityRealityRift.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Float> INSTABILITY = DataTracker.registerData(EntityRealityRift.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Boolean> CLOSING = DataTracker.registerData(EntityRealityRift.class, TrackedDataHandlerRegistry.BOOLEAN);
+public class RealityRiftEntity extends Entity {
+    private static final TrackedData<Float> SIZE = DataTracker.registerData(RealityRiftEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Float> INSTABILITY = DataTracker.registerData(RealityRiftEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Boolean> CLOSING = DataTracker.registerData(RealityRiftEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public float visualRiftSize;
 
-    public EntityRealityRift(EntityType<EntityRealityRift> type, World par1World) {
+    public static void spawn(Entity entity) {
+        RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(entity.world);
+        rift.setPosition(
+                entity.getX() + (entity.world.random.nextDouble() - 0.5) * 100,
+                entity.getY() + (entity.world.random.nextDouble() - 0.5) * 100,
+                entity.getZ() + (entity.world.random.nextDouble() - 0.5) * 100
+        );
+        entity.world.spawnEntity(rift);
+    }
+
+    RealityRiftEntity(EntityType<RealityRiftEntity> type, World par1World) {
         super(type, par1World);
         setRiftSize((float)world.random.nextTriangular(0.5F, 0.5F));
     }
@@ -209,14 +219,14 @@ public class EntityRealityRift extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound compound) {
+    public void readCustomDataFromNbt(NbtCompound compound) {
         setRiftSize(compound.getFloat("riftSize"));
         setRiftClosing(compound.getBoolean("isRiftClosing"));
         setInstability(compound.getFloat("instability"));
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound compound) {
+    public void writeCustomDataToNbt(NbtCompound compound) {
         compound.putFloat("riftSize", getRiftSize());
         compound.putBoolean("isRiftClosing", isRiftClosing());
         compound.putFloat("instability", getInstability());

@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.item;
 
-import ivorius.psychedelicraft.entity.EntityMolotovCocktail;
+import ivorius.psychedelicraft.entity.MolotovCocktailEntity;
 import ivorius.psychedelicraft.fluid.Combustable;
 import ivorius.psychedelicraft.fluid.ConsumableFluid.ConsumptionType;
 import net.minecraft.entity.LivingEntity;
@@ -45,7 +45,7 @@ public class MolotovCocktailItem extends DrinkableItem {
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
 
         if (!world.isClient) {
-            EntityMolotovCocktail projectile = new EntityMolotovCocktail(world, user);
+            MolotovCocktailEntity projectile = new MolotovCocktailEntity(world, user);
             projectile.setItem(stack);
             projectile.setVelocity(user, user.getPitch(), user.getYaw(), 0, 0.5F * strength, 1F);
             world.spawnEntity(projectile);

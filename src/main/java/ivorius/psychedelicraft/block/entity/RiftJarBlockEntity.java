@@ -8,7 +8,7 @@ package ivorius.psychedelicraft.block.entity;
 import java.util.*;
 
 import ivorius.psychedelicraft.client.render.bezier.Bezier;
-import ivorius.psychedelicraft.entity.EntityRealityRift;
+import ivorius.psychedelicraft.entity.RealityRiftEntity;
 import ivorius.psychedelicraft.entity.PSEntities;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
@@ -69,7 +69,7 @@ public class RiftJarBlockEntity extends BlockEntity {
 
         if (isSuckingRifts()) {
             if (fractionOpen > 0) {
-                List<EntityRealityRift> rifts = getAffectedRifts();
+                List<RealityRiftEntity> rifts = getAffectedRifts();
 
                 if (rifts.size() > 0) {
                     float minus = (1F / rifts.size()) * 0.001f * fractionOpen;
@@ -113,7 +113,7 @@ public class RiftJarBlockEntity extends BlockEntity {
         }
     }
 
-    public JarRiftConnection createAndGetRiftConnection(EntityRealityRift rift) {
+    public JarRiftConnection createAndGetRiftConnection(RealityRiftEntity rift) {
         return riftConnections.computeIfAbsent(rift.getUuid(), id -> new JarRiftConnection(rift));
     }
 
@@ -141,12 +141,12 @@ public class RiftJarBlockEntity extends BlockEntity {
 
     public void releaseRift() {
         if (currentRiftFraction > 0) {
-            List<EntityRealityRift> rifts = getAffectedRifts();
+            List<RealityRiftEntity> rifts = getAffectedRifts();
 
             if (rifts.size() > 0) {
                 rifts.get(0).addToRift(currentRiftFraction);
             } else if (!world.isClient) {
-                EntityRealityRift rift = PSEntities.REALITY_RIFT.create(world);
+                RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(world);
                 rift.setPosition(getPos().toCenterPos().add(5, 3, 0.5));
                 rift.setRiftSize(currentRiftFraction);
                 world.spawnEntity(rift);
@@ -156,9 +156,9 @@ public class RiftJarBlockEntity extends BlockEntity {
         }
     }
 
-    public List<EntityRealityRift> getAffectedRifts() {
+    public List<RealityRiftEntity> getAffectedRifts() {
         BlockPos pos = getPos();
-        return world.getEntitiesByClass(EntityRealityRift.class, new Box(
+        return world.getEntitiesByClass(RealityRiftEntity.class, new Box(
                 pos.getX() - 2.0f, pos.getY() + 0.0f, pos.getZ() - 2.0f,
                 pos.getX() + 3.0f, pos.getY() + 10, pos.getZ() + 3
             ), EntityPredicates.VALID_ENTITY
@@ -204,7 +204,7 @@ public class RiftJarBlockEntity extends BlockEntity {
         public Bezier bezier;
         public float fractionUp;
 
-        public JarRiftConnection(EntityRealityRift rift) {
+        public JarRiftConnection(RealityRiftEntity rift) {
             riftID = rift.getUuid();
             position = rift.getEyePos();
         }

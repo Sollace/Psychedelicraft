@@ -21,17 +21,17 @@ import net.minecraft.world.World.ExplosionSourceType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
-public class EntityMolotovCocktail extends ThrownItemEntity {
+public class MolotovCocktailEntity extends ThrownItemEntity {
 
-    public EntityMolotovCocktail(EntityType<EntityMolotovCocktail> type, World world) {
+    public MolotovCocktailEntity(EntityType<MolotovCocktailEntity> type, World world) {
         super(type, world);
     }
 
-    public EntityMolotovCocktail(World world, LivingEntity owner) {
+    public MolotovCocktailEntity(World world, LivingEntity owner) {
         super(PSEntities.MOLOTOV_COCKTAIL, owner, world);
     }
 
-    public EntityMolotovCocktail(World world, double x, double y, double z) {
+    public MolotovCocktailEntity(World world, double x, double y, double z) {
         super(PSEntities.MOLOTOV_COCKTAIL, x, y, z, world);
     }
 

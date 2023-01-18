@@ -202,24 +202,13 @@ public class DrugProperties implements NbtSerialisable {
 
         if (!entity.world.isClient && Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0) {
             if (random.nextInt(Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn) == 0) {
-                spawnRiftAtPlayer();
+                RealityRiftEntity.spawn(entity);
             }
         }
 
         if (entity.currentScreenHandler instanceof TickableContainer updateable) {
             updateable.onClientTick();
         }
-    }
-
-    private void spawnRiftAtPlayer() {
-        EntityRealityRift rift = PSEntities.REALITY_RIFT.create(entity.world);
-
-        double xP = (entity.getRandom().nextDouble() - 0.5) * 100;
-        double yP = (entity.getRandom().nextDouble() - 0.5) * 100;
-        double zP = (entity.getRandom().nextDouble() - 0.5) * 100;
-
-        rift.setPosition(entity.getX() + xP, entity.getY() + yP, entity.getZ() + zP);
-        entity.world.spawnEntity(rift);
     }
 
     @Override

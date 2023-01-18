@@ -17,10 +17,10 @@ import net.minecraft.registry.Registry;
  * Updated by Sollace on 1 Jan 2023
  */
 public interface PSEntities {
-    EntityType<EntityMolotovCocktail> MOLOTOV_COCKTAIL = register("molotov_cocktail", FabricEntityTypeBuilder.<EntityMolotovCocktail>create(SpawnGroup.MISC, EntityMolotovCocktail::new)
+    EntityType<MolotovCocktailEntity> MOLOTOV_COCKTAIL = register("molotov_cocktail", FabricEntityTypeBuilder.<MolotovCocktailEntity>create(SpawnGroup.MISC, MolotovCocktailEntity::new)
             .trackedUpdateRate(10).trackRangeBlocks(64)
             .dimensions(EntityDimensions.fixed(0.1F, 0.1F)));
-    EntityType<EntityRealityRift> REALITY_RIFT = register("reality_rift", FabricEntityTypeBuilder.create(SpawnGroup.MISC, EntityRealityRift::new)
+    EntityType<RealityRiftEntity> REALITY_RIFT = register("reality_rift", FabricEntityTypeBuilder.create(SpawnGroup.MISC, RealityRiftEntity::new)
             .trackedUpdateRate(3).trackRangeBlocks(80)
             .dimensions(EntityDimensions.fixed(2F, 2F)));
 
