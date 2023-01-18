@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.block.entity;
 
 import java.util.*;
 
-import ivorius.psychedelicraft.client.render.bezier.IvBezierPath3D;
+import ivorius.psychedelicraft.client.render.bezier.Bezier;
 import ivorius.psychedelicraft.entity.EntityRealityRift;
 import ivorius.psychedelicraft.entity.PSEntities;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
@@ -201,7 +201,7 @@ public class RiftJarBlockEntity extends BlockEntity {
         public final UUID riftID;
         public final Vec3d position;
 
-        public IvBezierPath3D bezierPath3D;
+        public Bezier bezier;
         public float fractionUp;
 
         public JarRiftConnection(EntityRealityRift rift) {

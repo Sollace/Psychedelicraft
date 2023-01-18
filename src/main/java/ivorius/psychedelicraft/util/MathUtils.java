@@ -1,5 +1,8 @@
 package ivorius.psychedelicraft.util;
 
+import org.joml.Vector3d;
+
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -128,11 +131,27 @@ public interface MathUtils {
         return cubicMix(0, 0, 1, 1, MathHelper.clamp(delta, 0, 1));
     }
 
+    static Vector3d cubicMix(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, double delta, Vector3d dest) {
+        return dest.set(
+            cubicMix(v1.x, v2.x, v3.x, v4.x, delta),
+            cubicMix(v1.y, v2.y, v3.y, v4.y, delta),
+            cubicMix(v1.z, v2.z, v3.z, v4.z, delta)
+        );
+    }
+
     static float cubicMix(float v1, float v2, float v3, float v4, float delta) {
         return (float)MathHelper.lerp3(delta, delta, delta, v1, v2, v2, v3, v2, v3, v3, v4);
     }
 
     static double cubicMix(double v1, double v2, double v3, double v4, double delta) {
         return MathHelper.lerp3(delta, delta, delta, v1, v2, v2, v3, v2, v3, v3, v4);
+    }
+
+    static Vector3d apply(Vector3d vector, Double2DoubleFunction function) {
+        return new Vector3d(
+                function.applyAsDouble(vector.x),
+                function.applyAsDouble(vector.y),
+                function.applyAsDouble(vector.z)
+        );
     }
 }

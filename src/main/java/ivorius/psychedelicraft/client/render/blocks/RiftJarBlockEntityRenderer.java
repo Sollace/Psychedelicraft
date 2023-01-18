@@ -19,6 +19,7 @@ import net.minecraft.client.render.block.entity.*;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
@@ -26,13 +27,18 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.Random;
 
+import org.joml.Vector3d;
+
 public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBlockEntity> {
-    private static final IvBezierPath3DRendererText bezierPath3DRendererText = new IvBezierPath3DRendererText().setFont(new Identifier("alt"));
     public static final Identifier TEXTURE = Psychedelicraft.id("textures/entity/rift_jar/rift_jar.png");
     public static final Identifier CRACKED_TEXTURE = Psychedelicraft.id("textures/entity/rift_jar/rift_jar_cracked.png");
+    private static final Identifier FONT = new Identifier("alt");
 
-    public static final IvBezierPath3D SPHERE_BEZIER_PATH = IvBezierPath3DCreator.createSpiraledSphere(3.0, 8.0, 0.2);
-    public static final IvBezierPath3D OUTGOING_PATH = IvBezierPath3DCreator.createSpiraledBezierPath(0.06, 6.0, 6.0, 1.0, 0.2, 0.0, false);
+    private static final Bezier SPHERE_BEZIER_PATH = Bezier.sphere(3, 8, 0.2);
+    private static final Bezier OUTGOING_PATH = Bezier.spiral(0.06, 6, 6, 1, 0.2, 0);
+
+    private static final BezierLabelRenderer.Style LABEL_STYLE = new BezierLabelRenderer.Style().spread(true);
+    private static final Text SMALL_SPIRAL_TEXT = Text.literal("This is a small spiral.").styled(s -> s.withFont(FONT));
 
     private final RiftJarModel model = new RiftJarModel(RiftJarModel.getTexturedModelData().createModel());
 
@@ -92,36 +98,28 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         Vec3d jarPosition = entity.getPos().toCenterPos();
 
         for (RiftJarBlockEntity.JarRiftConnection connection : entity.getConnections()) {
-            if (connection.bezierPath3D == null) {
-                connection.bezierPath3D = IvBezierPath3DCreator.createSpiraledBezierPath(0.1, 0.5, 8.0, new double[] {
-                        connection.position.x - jarPosition.x,
-                        connection.position.y - (jarPosition.y + 0.1F),
-                        connection.position.z - jarPosition.z
-                }, 0.2, 0.0, false);
+            Vector3d connectionPoint = new Vector3d(
+                    connection.position.x - jarPosition.x,
+                    connection.position.y - (jarPosition.y + 0.1F),
+                    connection.position.z - jarPosition.z
+            );
+            if (connection.bezier == null) {
+                connection.bezier = Bezier.spiral(0.1, 0.5, 8, connectionPoint, 0.2, 0);
             }
 
-            bezierPath3DRendererText.setText("This is a small spiral.");
-            bezierPath3DRendererText.setSpreadToFill(true);
-            bezierPath3DRendererText.setShift(ticks * -0.002);
-            bezierPath3DRendererText.setInwards(false);
-            bezierPath3DRendererText.setCapBottom(0);
-            bezierPath3DRendererText.setCapTop(connection.fractionUp);
-
-            bezierPath3DRendererText.render(connection.bezierPath3D);
+            BezierLabelRenderer.INSTANCE.render(matrices, connection.bezier, LABEL_STYLE.shift(ticks * -0.002F).topCap(connection.fractionUp), SMALL_SPIRAL_TEXT);
 
             if (connection.fractionUp > 0) {
                 matrices.push();
-
-                matrices.translate(connection.position.x - jarPosition.x, connection.position.y - (jarPosition.y + 0.1), connection.position.z - jarPosition.z);
-
-                bezierPath3DRendererText.setText(cheeseString("This is a small circle.", 1.0f - connection.fractionUp, new Random(42)));
-                bezierPath3DRendererText.setSpreadToFill(true);
-                bezierPath3DRendererText.setShift(ticks * -0.002F);
-                bezierPath3DRendererText.setInwards(false);
-                bezierPath3DRendererText.setCapBottom(0);
-                bezierPath3DRendererText.setCapTop(1);
-
-                bezierPath3DRendererText.render(SPHERE_BEZIER_PATH);
+                matrices.translate(
+                        connectionPoint.x,
+                        connectionPoint.y,
+                        connectionPoint.z
+                );
+                BezierLabelRenderer.INSTANCE.render(matrices,
+                        SPHERE_BEZIER_PATH,
+                        LABEL_STYLE.shift(ticks * -0.002F).topCap(1),
+                        Text.literal(cheeseString("This is a small circle.", 1 - connection.fractionUp, new Random(42))).styled(s -> s.withFont(FONT)));
 
                 matrices.pop();
             }
@@ -129,14 +127,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
 
         float outgoingStrength = entity.fractionHandleUp * entity.fractionOpen;
         if (outgoingStrength > 0) {
-            bezierPath3DRendererText.setText("This is a small spiral.");
-            bezierPath3DRendererText.setSpreadToFill(true);
-            bezierPath3DRendererText.setShift(ticks * 0.002);
-            bezierPath3DRendererText.setInwards(false);
-            bezierPath3DRendererText.setCapBottom(0);
-            bezierPath3DRendererText.setCapTop(outgoingStrength);
-
-            bezierPath3DRendererText.render(OUTGOING_PATH);
+            BezierLabelRenderer.INSTANCE.render(matrices, OUTGOING_PATH, LABEL_STYLE.shift(ticks * -0.002F).topCap(outgoingStrength), SMALL_SPIRAL_TEXT);
         }
 
         RenderSystem.enableCull();
