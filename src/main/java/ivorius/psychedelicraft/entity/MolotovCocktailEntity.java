@@ -41,6 +41,13 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     }
 
     @Override
+    public ItemStack getStack() {
+        ItemStack stack = super.getStack();
+        stack.getOrCreateNbt().putBoolean("flying", true);
+        return stack;
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (Combustable.fromStack(getItem()).getFireStrength(getStack()) > 0) {

@@ -86,15 +86,15 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
                 } else {
                     player.setStackInHand(hand, blockEntity.getTank(Direction.DOWN).drain(MAX_TAP_AMOUNT, stack.split(1)));
                 }
-            }
 
-            blockEntity.timeLeftTapOpen = 20;
-            blockEntity.markDirty();
-            if (!world.isClient) {
-                ((ServerWorld)world).getChunkManager().markForUpdate(pos);
-            }
+                blockEntity.timeLeftTapOpen = 20;
+                blockEntity.markDirty();
+                if (!world.isClient) {
+                    ((ServerWorld)world).getChunkManager().markForUpdate(pos);
+                }
 
-            return ActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
+            }
         }
 
         return ActionResult.PASS;

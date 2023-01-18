@@ -19,6 +19,9 @@ public interface PSModelPredicates {
             }
             return entity.getItemUseTimeLeft() > 0 ? 1 : 0;
         });
+        ModelPredicateProviderRegistry.register(Psychedelicraft.id("flying"), (stack, world, entity, seed) -> {
+            return stack.hasNbt() && stack.getNbt().getBoolean("flying") ? 1 : 0;
+        });
         ModelPredicateProviderRegistry.register(PSItems.WINE_GRAPE_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> {
             return stack.getDamage() / 10F;
         });

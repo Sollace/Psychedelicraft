@@ -30,9 +30,10 @@ public class DistilleryScreen extends FlaskScreen<DistilleryBlockEntity> {
 
     @Override
     protected void drawAdditionalInfo(MatrixStack matrices, int baseX, int baseY) {
-        int timeLeftFermenting = handler.getBlockEntity().getProgress(13);
-        if (timeLeftFermenting < 24) {
-            drawTexture(matrices, baseX + 24, baseY + 15 + timeLeftFermenting, 176, timeLeftFermenting, 20, 13 - timeLeftFermenting);
+        float progress = handler.getBlockEntity().getProgress();
+        if (progress > 0 && progress < 1) {
+            int timeLeft = (int)(progress * 13);
+            drawTexture(matrices, baseX + 24, baseY + 15 + timeLeft, 176, timeLeft, 20, 13 - timeLeft);
         }
     }
 

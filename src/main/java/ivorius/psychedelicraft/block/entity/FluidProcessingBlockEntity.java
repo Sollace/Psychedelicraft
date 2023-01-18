@@ -10,13 +10,64 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 
 public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
     private final Processable.ProcessType processType;
 
-    public int timeProcessed;
+    protected int timeProcessed;
+    private int timeNeeded;
+
+    public final PropertyDelegate propertyDelegate = new PropertyDelegate(){
+        @Override
+        public int get(int index) {
+            switch (index) {
+                case 0: {
+                    return timeNeeded;
+                }
+                case 1: {
+                    return timeProcessed;
+                }
+            }
+            return 0;
+        }
+
+        @Override
+        public void set(int index, int value) {
+            switch (index) {
+                case 0: {
+                    timeNeeded = value;
+                    break;
+                }
+                case 1: {
+                    timeProcessed = value;
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public int size() {
+            return 2;
+        }
+    };
+
+    public int getNeededTime() {
+        return timeNeeded;
+    }
+
+    public float getProgress() {
+        if (isActive()) {
+            return (float)timeProcessed / timeNeeded;
+        }
+        return 0;
+    }
+
+    public boolean isActive() {
+        return timeNeeded != Processable.UNCONVERTABLE;
+    }
 
     public FluidProcessingBlockEntity(
             BlockEntityType<? extends FluidProcessingBlockEntity> type,
@@ -37,7 +88,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
         Resovoir tank = getTank(Direction.UP);
         if (tank.getFluidType() instanceof Processable p) {
             boolean open = isOpen();
-            int timeNeeded = p.getProcessingTime(tank.getStack(), processType, open);
+            timeNeeded = p.getProcessingTime(tank.getStack(), processType, open);
 
             if (canProcess(world, timeNeeded)) {
                 if (timeProcessed >= timeNeeded) {
@@ -57,6 +108,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
 
     protected void onProcessCompleted(ServerWorld world, Resovoir tank, ItemStack solids) {
         timeProcessed = 0;
+        timeNeeded = Processable.UNCONVERTABLE;
 
         world.getChunkManager().markForUpdate(getPos());
         markDirty();
@@ -75,28 +127,6 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
         super.onFill(resovoir, amountFilled);
         double percentFilled = amountFilled / (double) resovoir.getLevel();
         timeProcessed = MathHelper.floor(timeProcessed * (1 - percentFilled));
-    }
-
-    public int getNeededTime() {
-        Resovoir tank = getTank(Direction.UP);
-        SimpleFluid fluid = tank.getFluidType();
-        if (fluid instanceof Processable p) {
-            return p.getProcessingTime(tank.getStack(), Processable.ProcessType.FERMENT, isOpen());
-        }
-
-        return Processable.UNCONVERTABLE;
-    }
-
-    public int getProgress(int scale) {
-        int neededTime = getNeededTime();
-        if (neededTime >= 0) {
-            return (neededTime - timeProcessed) * scale / neededTime;
-        }
-        return scale;
-    }
-
-    public boolean isActive() {
-        return getNeededTime() >= 0;
     }
 
     @Override

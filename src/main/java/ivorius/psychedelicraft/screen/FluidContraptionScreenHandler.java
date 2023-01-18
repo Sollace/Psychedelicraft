@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.screen;
 
 import ivorius.psychedelicraft.block.BlockWithFluid;
+import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
 import ivorius.psychedelicraft.client.screen.TickableContainer;
 import ivorius.psychedelicraft.fluid.Resovoir;
 import ivorius.psychedelicraft.item.FluidContainerItem;
@@ -24,11 +25,15 @@ import net.minecraft.util.math.Direction;
  * Updated by Sollace on 3 Jan 2023
  */
 public class FluidContraptionScreenHandler<T extends BlockEntity & BlockWithFluid.DirectionalFluidResovoir> extends ScreenHandler implements TickableContainer {
-    public int drainSpeedPerTick = 100;
+
+    // TODO: It's weird and inconvenient to use a button to toggle between draining and not draining,
+    //       Rather let the fluid container have an input stack slot and output stack slot
+    //       that it always processes so we can more easily automate the process.
     public boolean currentlyDrainingItem;
 
     private final Inventory inputInventory = new SimpleInventory(1);
     private final Resovoir tank;
+
     private final T blockEntity;
 
     @SuppressWarnings("unchecked")
@@ -40,6 +45,7 @@ public class FluidContraptionScreenHandler<T extends BlockEntity & BlockWithFlui
         super(type, syncId);
         this.tank = blockEntity.getTank(direction);
         this.blockEntity = blockEntity;
+
         addSlot(new Slot(inputInventory, 0, 25, 40) {
             @Override
             public void markDirty() {
@@ -56,6 +62,10 @@ public class FluidContraptionScreenHandler<T extends BlockEntity & BlockWithFlui
         for (int x = 0; x < 9; ++x) {
             addSlot(new Slot(inventory, x, 8 + x * 18, 142));
         }
+
+        if (blockEntity instanceof FluidProcessingBlockEntity f) {
+            addProperties(f.propertyDelegate);
+        }
     }
 
     public Resovoir getTank() {
@@ -68,15 +78,15 @@ public class FluidContraptionScreenHandler<T extends BlockEntity & BlockWithFlui
 
     @Override
     public void onClientTick() {
-        transferLiquid(currentlyDrainingItem, drainSpeedPerTick);
+        transferLiquid(currentlyDrainingItem, 1);
     }
 
     public void transferLiquid(boolean drainItem, int drainSpeed) {
-        ItemStack inputStack = inputInventory.getStack(0);
-        if (inputStack.getItem() instanceof FluidContainerItem container) {
-            if (drainItem) {
-                inputInventory.setStack(0, tank.deposit(drainSpeed, inputStack));
-            }
+        Slot inputSlot = slots.get(0);
+        ItemStack inputStack = inputSlot.getStack();
+        if (inputStack.getItem() instanceof FluidContainerItem container && drainItem) {
+            inputSlot.setStack(tank.deposit(drainSpeed, inputStack));
+            inputSlot.markDirty();
         }
     }
 
@@ -87,7 +97,16 @@ public class FluidContraptionScreenHandler<T extends BlockEntity & BlockWithFlui
             return true;
         }
 
+        this.close(player);
         return super.onButtonClick(player, action);
+    }
+
+    @Override
+    public void close(PlayerEntity player) {
+        super.close(player);
+        if (!player.world.isClient) {
+            dropInventory(player, inputInventory);
+        }
     }
 
     @Override

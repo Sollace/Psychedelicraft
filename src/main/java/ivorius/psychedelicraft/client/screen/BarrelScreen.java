@@ -31,9 +31,9 @@ public class BarrelScreen extends FlaskScreen<BarrelBlockEntity> {
 
     @Override
     protected void drawAdditionalInfo(MatrixStack matrices, int baseX, int baseY) {
-        int progress = handler.getBlockEntity().getProgress(24);
-        if (progress < 24) {
-            drawTexture(matrices, baseX + 23, baseY + 14, 176, 0, 24 - progress, 17);
+        float progress = handler.getBlockEntity().getProgress();
+        if (progress > 0 && progress < 1) {
+            drawTexture(matrices, baseX + 23, baseY + 14, 176, 0, (int)(24 * progress), 17);
         }
     }
 

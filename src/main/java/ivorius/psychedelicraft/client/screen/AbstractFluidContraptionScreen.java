@@ -49,7 +49,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         int level = tank.getLevel();
 
         float fluidHeight = MathHelper.clamp((float) level / (float) tank.getCapacity(), 0, 1);
-        int fluidHeightPixels = MathHelper.floor(fluidHeight * height + 0.5f);
+        int fluidHeightPixels = MathHelper.ceil(fluidHeight * height + 0.5f);
 
         Identifier texture = fluid.getStationaryTexture();
 

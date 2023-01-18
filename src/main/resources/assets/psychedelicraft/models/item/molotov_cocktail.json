@@ -9,13 +9,13 @@
         {
             "predicate": {
                 "psychedelicraft:filled": 1,
-                "psychedelicraft:thrown": 0
+                "psychedelicraft:flying": 0
             },
             "model": "psychedelicraft:item/molotov_cocktail_filled"
         },
         {
             "predicate": {
-                "psychedelicraft:thrown": 1
+                "psychedelicraft:flying": 1
             },
             "model": "psychedelicraft:item/thrown_molotov_cocktail"
         }

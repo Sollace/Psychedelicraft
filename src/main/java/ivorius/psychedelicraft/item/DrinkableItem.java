@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 /**
@@ -79,7 +78,7 @@ public class DrinkableItem extends Item implements FluidContainerItem {
 
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
-        return !getFluid(stack).isEmpty();
+        return !getFluid(stack).isEmpty() && getFillPercentage(stack) < 1;
     }
 
     @Override
@@ -89,6 +88,6 @@ public class DrinkableItem extends Item implements FluidContainerItem {
 
     @Override
     public int getItemBarColor(ItemStack stack) {
-        return MathHelper.hsvToRgb(getFillPercentage(stack) / 3F, 1, 1);
+        return 0xAAAAFF;
     }
 }
