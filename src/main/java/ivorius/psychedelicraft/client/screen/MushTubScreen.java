@@ -8,7 +8,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,6 +16,8 @@ import java.util.List;
  */
 public class MushTubScreen extends FlaskScreen<MashTubBlockEntity> {
     public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_wooden_vat.png");
+
+    private static final List<Text> FERMENTING_LABEL = List.of(Text.translatable("fluid.status.fermenting").formatted(Formatting.GREEN));
 
     public MushTubScreen(FluidContraptionScreenHandler<MashTubBlockEntity> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -37,8 +38,6 @@ public class MushTubScreen extends FlaskScreen<MashTubBlockEntity> {
 
     @Override
     protected List<Text> getAdditionalTankText() {
-        return handler.getBlockEntity().isActive()
-                ? Arrays.asList(Text.translatable("fluid.status.fermenting").formatted(Formatting.GREEN))
-                : List.of();
+        return handler.getBlockEntity().isActive() ? FERMENTING_LABEL : List.of();
     }
 }

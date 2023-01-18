@@ -10,7 +10,6 @@ package ivorius.psychedelicraft.recipe;
  */
 public class PSCrafting {
     public static void initialize() {
-        // TODO: (Sollace) Move recipes to resources
         // TODO: (Sollace) Molotov cocktail recipes (dyed items recipe)
         //    -- Update: We don't need to add our own recipes! Just implement DyeableItem on the items we want dyed!
         //            Items so far that be dyeable:
@@ -41,8 +40,5 @@ public class PSCrafting {
         //    GameRegistry.addRecipe(new RecipeConvertFluidContainer(new ItemStack(molotovCocktail, 1, color), wool, new ItemStack(bottle, 1, color)));
         //    GameRegistry.addRecipe(new RecipeConvertFluidContainer(new ItemStack(bottle, 1, color), new ItemStack(molotovCocktail, 1, color)));
         //}
-
-        //if (PSConfig.enableHarmonium)
-        // if (PSConfig.enableRiftJars)
     }
 }

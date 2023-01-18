@@ -46,8 +46,6 @@ public class BongItem extends Item {
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
         DrugProperties.of(entity).ifPresent(drugProperties -> {
             getUsedConsumable(drugProperties.asEntity()).ifPresent(consumable -> {
-                // TODO: (Sollace) check for possible client desync
-
                 PlayerInventory inventory = drugProperties.asEntity().getInventory();
                 int slot = inventory.indexOf(consumable.getKey());
                 inventory.removeStack(slot, 1);

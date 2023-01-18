@@ -8,7 +8,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,6 +16,8 @@ import java.util.List;
  */
 public class DistilleryScreen extends FlaskScreen<DistilleryBlockEntity> {
     public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_distillery.png");
+
+    private static final List<Text> DISTILLING_LABEL = List.of(Text.translatable("fluid.status.distilling").formatted(Formatting.GREEN));
 
     public DistilleryScreen(FluidContraptionScreenHandler<DistilleryBlockEntity> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -37,8 +38,6 @@ public class DistilleryScreen extends FlaskScreen<DistilleryBlockEntity> {
 
     @Override
     protected List<Text> getAdditionalTankText() {
-        return handler.getBlockEntity().isActive()
-                ? Arrays.asList(Text.translatable("fluid.status.distilling").formatted(Formatting.GREEN))
-                : List.of();
+        return handler.getBlockEntity().isActive() ? DISTILLING_LABEL : List.of();
     }
 }

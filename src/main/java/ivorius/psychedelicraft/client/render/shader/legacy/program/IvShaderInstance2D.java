@@ -9,6 +9,7 @@ import net.minecraft.client.render.VertexFormat.DrawMode;
 /**
  * Created by Sollace on 4 Jan 2023
  */
+@Deprecated
 public class IvShaderInstance2D implements AutoCloseable {
     static void drawScreen(int screenWidth, int screenHeight) {
         BufferBuilder renderer = Tessellator.getInstance().getBuffer();
@@ -49,13 +50,7 @@ public class IvShaderInstance2D implements AutoCloseable {
     protected void drawFullScreen(int width, int height, PingPong pingPong) {}
 
     @Override
-    public void close() throws Exception {
-        // TODO Auto-generated method stub
+    public void close() throws Exception {}
 
-    }
-
-    public void update(float tickDelta) {
-        // TODO Auto-generated method stub
-
-    }
+    public void update(float tickDelta) {}
 }

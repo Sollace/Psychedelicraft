@@ -29,9 +29,9 @@ import org.apache.logging.log4j.Logger;
 public class Psychedelicraft implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
 
+    @Deprecated
     public static final String TEXTURES_PATH = "textures/mod/";
-    public static final String MODELS_PATH = "models/";
-    public static final String OTHER_PATH = "other/";
+    @Deprecated
     public static final String SHADERS_PATH = "shaders/";
 
     private static final Supplier<JsonConfig.Loader<PSConfig>> CONFIG_LOADER = JsonConfig.create("psychedelicraft.json", PSConfig::new);

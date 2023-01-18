@@ -24,9 +24,9 @@ import org.joml.Quaternionf;
 public class RastaHeadHallucination extends AbstractEntityHallucination {
     private static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "rasta_head_texture.png");
 
-    public final LookControl lookControl;
+    private final LookControl lookControl;
 
-    public final Model modelRastaHead = new RastaHeadModel();
+    private final Model modelRastaHead = new RastaHeadModel();
 
     public RastaHeadHallucination(PlayerEntity playerEntity) {
         super(playerEntity);

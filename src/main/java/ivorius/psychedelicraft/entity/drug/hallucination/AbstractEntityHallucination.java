@@ -24,6 +24,11 @@ public abstract class AbstractEntityHallucination extends Hallucination {
 
     protected float scale;
 
+    private float dAlpha;
+    private final PassThroughVertexConsumer.Parameters colourSpace = new PassThroughVertexConsumer.Parameters().color((parent, r, g, b, a) -> {
+        parent.color(color[0], color[1], color[2], dAlpha);
+    });
+
     public AbstractEntityHallucination(PlayerEntity player) {
         super(player);
     }
@@ -57,11 +62,6 @@ public abstract class AbstractEntityHallucination extends Hallucination {
     }
 
     protected abstract void animateEntity();
-
-    private float dAlpha;
-    private final PassThroughVertexConsumer.Parameters colourSpace = new PassThroughVertexConsumer.Parameters().color((parent, r, g, b, a) -> {
-        parent.color(color[0], color[1], color[2], dAlpha);
-    });
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, float dAlpha) {

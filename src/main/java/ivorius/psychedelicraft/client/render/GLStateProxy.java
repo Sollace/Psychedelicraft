@@ -74,8 +74,9 @@ public class GLStateProxy {
     }
 
     public static boolean isTextureEnabled(int textureUnit) {
-        // TODO: (Sollace) accessor to GlStateManager.TEXTURES[textureUnit - GlConst.GL_TEXTURE0].capState;
-        return true;
+        RenderSystem.enableTexture();
+        // XXX: (Sollace) accessor to GlStateManager.TEXTURES[textureUnit - GlConst.GL_TEXTURE0].capState;
+        return GlStateManager._getTextureId(textureUnit - GlConst.GL_TEXTURE0) != 0;
     }
 
     public static int getBlendDFactor() {

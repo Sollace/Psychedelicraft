@@ -51,7 +51,6 @@ public class BezierLabelRenderer {
                     matrices.push();
                     matrices.translate(position.x, position.y, position.z);
                     matrices.scale(textSize, textSize, textSize);
-                    // TODO: x and y are swapped. wot??
                     matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float)rotation.x + (style.inwards ? 0 : 180)));
                     matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float)rotation.y));
 

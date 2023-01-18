@@ -18,6 +18,8 @@ import java.util.List;
 public class BarrelScreen extends FlaskScreen<BarrelBlockEntity> {
     public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_barrel.png");
 
+    private static final List<Text> MATURING_LABEL = Arrays.asList(Text.translatable("fluid.status.maturing").formatted(Formatting.GREEN));
+
     public BarrelScreen(FluidContraptionScreenHandler<BarrelBlockEntity> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }
@@ -37,8 +39,6 @@ public class BarrelScreen extends FlaskScreen<BarrelBlockEntity> {
 
     @Override
     protected List<Text> getAdditionalTankText() {
-        return handler.getBlockEntity().isActive()
-                ? Arrays.asList(Text.translatable("fluid.status.maturing").formatted(Formatting.GREEN))
-                : List.of();
+        return handler.getBlockEntity().isActive() ? MATURING_LABEL : List.of();
     }
 }
