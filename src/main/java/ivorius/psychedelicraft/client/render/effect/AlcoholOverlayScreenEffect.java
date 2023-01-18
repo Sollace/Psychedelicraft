@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.client.render.effect;
 
-import ivorius.psychedelicraft.client.render.DrugRenderer;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.AlcoholDrug;
 import net.minecraft.block.Blocks;
@@ -25,7 +25,7 @@ public class AlcoholOverlayScreenEffect extends DrugOverlayScreenEffect<AlcoholD
 
         float overlayAlpha = Math.min(0.8F, (MathHelper.sin(ticks / 80F) * alcohol * 0.5F + alcohol));
         Sprite sprite = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
-        DrugRenderer.drawOverlay(matrices, overlayAlpha * 0.25f, width, height, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+        RenderUtil.drawOverlay(matrices, overlayAlpha * 0.25f, width, height, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
                 sprite.getMinU(),
                 sprite.getMinV(),
                 sprite.getMaxU(),

@@ -15,7 +15,7 @@ import java.util.List;
  * Updated by Sollace on 4 Jan 2023
  */
 public class MushTubScreen extends FlaskScreen<MashTubBlockEntity> {
-    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_wooden_vat.png");
+    public static final Identifier BACKGROUND = Psychedelicraft.id("textures/gui/wooden_vat.png");
 
     private static final List<Text> FERMENTING_LABEL = List.of(Text.translatable("fluid.status.fermenting").formatted(Formatting.GREEN));
 

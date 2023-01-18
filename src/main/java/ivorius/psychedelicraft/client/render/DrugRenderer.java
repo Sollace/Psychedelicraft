@@ -6,62 +6,28 @@
 package ivorius.psychedelicraft.client.render;
 
 import ivorius.psychedelicraft.client.render.effect.*;
-import ivorius.psychedelicraft.entity.drug.*;
-import ivorius.psychedelicraft.entity.drug.hallucination.*;
+import ivorius.psychedelicraft.entity.drug.Drug;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.hallucination.Hallucination;
+import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-
-import org.joml.*;
 import java.lang.Math;
+
+import org.joml.Quaternionf;
 
 /**
  * Created by lukas on 17.02.14.
  */
 public class DrugRenderer {
     public static final DrugRenderer INSTANCE = new DrugRenderer();
-
-    static final int SCREEN_Z_OFFSET = -90;
-
-    public static void drawOverlay(MatrixStack matrices, float alpha,
-            int width, int height,
-            Identifier texture,
-            float u0, float v0,
-            float u1, float v1, int offset) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderColor(1, 1, 1, alpha);
-        RenderSystem.setShaderTexture(0, texture);
-        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
-        Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
-        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-
-        float x0 = -offset;
-        float y0 = -offset;
-        float x1 = width - x0;
-        float y1 = height - y0;
-
-        buffer.vertex(positionMatrix, x0, y1, SCREEN_Z_OFFSET).texture(u0, v1).next();
-        buffer.vertex(positionMatrix, x1, y1, SCREEN_Z_OFFSET).texture(u1, v1).next();
-        buffer.vertex(positionMatrix, x1, y0, SCREEN_Z_OFFSET).texture(u1, v0).next();
-        buffer.vertex(positionMatrix, x0, y0, SCREEN_Z_OFFSET).texture(u0, v0).next();
-        Tessellator.getInstance().draw();
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-    }
-
-    @Deprecated
-    public static void bindTexture(Identifier resourceLocation) {
-        RenderSystem.setShaderTexture(0, resourceLocation);
-    }
 
     private final EnvironmentalScreenEffect environmentalEffects = new EnvironmentalScreenEffect();
     private final ScreenEffect screenEffects = CompoundScreenEffect.of(
@@ -85,7 +51,6 @@ public class DrugRenderer {
         screenEffects.update(MinecraftClient.getInstance().getTickDelta());
     }
 
-    @ParametersAreNonnullByDefault
     public void distortScreen(MatrixStack matrices, float tickDelta) {
         DrugProperties properties = DrugProperties.of(MinecraftClient.getInstance().player);
         if (properties == null) {

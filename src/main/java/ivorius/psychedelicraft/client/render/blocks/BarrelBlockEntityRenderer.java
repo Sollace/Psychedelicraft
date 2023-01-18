@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -17,8 +18,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
-
-import org.joml.Matrix4f;
 
 public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBlockEntity> {
     private final BarrelModel model;
@@ -48,11 +47,10 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
             float iconSize = 0.5F;
 
             VertexConsumer buffer = vertices.getBuffer(model.getLayer(fluid.getSymbol()));
-            Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
-            buffer.vertex(positionMatrix, -iconSize, -iconSize, barrelZ).texture(1, 1).normal(0, 0, 1).next();
-            buffer.vertex(positionMatrix, -iconSize,  iconSize, barrelZ).texture(1, 0).normal(0, 0, 1).next();
-            buffer.vertex(positionMatrix,  iconSize,  iconSize, barrelZ).texture(0, 0).normal(0, 0, 1).next();
-            buffer.vertex(positionMatrix,  iconSize, -iconSize, barrelZ).texture(0, 1).normal(0, 0, 1).next();
+            RenderUtil.vertex(buffer, matrices, -iconSize, -iconSize, barrelZ, 1, 1, light, overlay);
+            RenderUtil.vertex(buffer, matrices, -iconSize,  iconSize, barrelZ, 1, 0, light, overlay);
+            RenderUtil.vertex(buffer, matrices,  iconSize,  iconSize, barrelZ, 0, 0, light, overlay);
+            RenderUtil.vertex(buffer, matrices,  iconSize, -iconSize, barrelZ, 0, 1, light, overlay);
         }
 
         matrices.pop();
@@ -63,5 +61,4 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
         Identifier id = Registries.BLOCK.getId(state.getBlock());
         return new Identifier(id.getNamespace(), "textures/entity/barrel/" + id.getPath() + ".png");
     }
-
 }

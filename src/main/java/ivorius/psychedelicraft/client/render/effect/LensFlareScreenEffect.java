@@ -17,10 +17,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.PsycheMatrixHelper;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
@@ -54,10 +54,10 @@ public class LensFlareScreenEffect implements ScreenEffect {
             -1.31f, -1.2f, -1.5f, -1.55f, -3.0f
     };
     private static final Identifier[] FLARES = IntStream.range(0, FLARE_SIZES.length)
-            .mapToObj(i -> Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "flare" + i + ".png"))
+            .mapToObj(i -> Psychedelicraft.id("textures/environment/lense_flare/flare" + i + ".png"))
             .toArray(Identifier[]::new);
 
-    private static final Identifier BLINDNESS_OVERLAY = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "sun_blindness.png");
+    private static final Identifier BLINDNESS_OVERLAY = Psychedelicraft.id("textures/environment/lense_flare/sun_blindness.png");
 
     private float actualSunAlpha = 0;
 
@@ -137,7 +137,6 @@ public class LensFlareScreenEffect implements ScreenEffect {
         int fogGreen = NativeImage.getGreen(colorValue);
         int fogBlue = NativeImage.getBlue(colorValue);
 
-        int zIndex = -0;
         float alpha = Math.min(1, sunPositionOnScreen.z);
 
         RenderSystem.disableDepthTest();
@@ -145,11 +144,6 @@ public class LensFlareScreenEffect implements ScreenEffect {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-
-        Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
 
         float screenCenterX = screenWidth * 0.5f;
         float screenCenterY = screenHeight * 0.5f;
@@ -162,13 +156,12 @@ public class LensFlareScreenEffect implements ScreenEffect {
             RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, (alpha * i == 8 ? 1F : 0.5F) * actualSunAlpha * getIntensity());
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.setShaderTexture(0, FLARES[i]);
-
-            buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-            buffer.vertex(positionMatrix, flareCenterX - flareSizeHalf, flareCenterY + flareSizeHalf, zIndex).texture(0, 1).next();
-            buffer.vertex(positionMatrix, flareCenterX + flareSizeHalf, flareCenterY + flareSizeHalf, zIndex).texture(1, 1).next();
-            buffer.vertex(positionMatrix, flareCenterX + flareSizeHalf, flareCenterY - flareSizeHalf, zIndex).texture(1, 0).next();
-            buffer.vertex(positionMatrix, flareCenterX - flareSizeHalf, flareCenterY - flareSizeHalf, zIndex).texture(0, 0).next();
-            tessellator.draw();
+            RenderUtil.drawQuad(matrices,
+                    flareCenterX - flareSizeHalf,
+                    flareCenterY - flareSizeHalf,
+                    flareCenterX + flareSizeHalf,
+                    flareCenterY + flareSizeHalf
+            );
         }
 
         // Looks weird because of a hard edge... :|
@@ -185,12 +178,12 @@ public class LensFlareScreenEffect implements ScreenEffect {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
             RenderSystem.setShaderTexture(0, BLINDNESS_OVERLAY);
-            buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-            buffer.vertex(positionMatrix, blendCenterX - blendingSizeHalf, blendCenterY + blendingSizeHalf, zIndex).texture(0, 1).next();
-            buffer.vertex(positionMatrix, blendCenterX + blendingSizeHalf, blendCenterY + blendingSizeHalf, zIndex).texture(1, 1).next();
-            buffer.vertex(positionMatrix, blendCenterX + blendingSizeHalf, blendCenterY - blendingSizeHalf, zIndex).texture(1, 0).next();
-            buffer.vertex(positionMatrix, blendCenterX - blendingSizeHalf, blendCenterY - blendingSizeHalf, zIndex).texture(0, 0).next();
-            tessellator.draw();
+            RenderUtil.drawQuad(matrices,
+                    blendCenterX - blendingSizeHalf,
+                    blendCenterY - blendingSizeHalf,
+                    blendCenterX + blendingSizeHalf,
+                    blendCenterY + blendingSizeHalf
+            );
         }
 
         RenderSystem.depthMask(true);

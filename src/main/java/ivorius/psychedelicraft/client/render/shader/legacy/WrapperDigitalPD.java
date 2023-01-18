@@ -12,14 +12,11 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.util.Identifier;
 
 /**
  * Created by lukas on 26.04.14.
  */
 public class WrapperDigitalPD extends ShaderWrapper<ShaderDigitalDepth> {
-    public Identifier digitalTextTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "digitalText.png");
-
     public WrapperDigitalPD(String utils) {
         super(new ShaderDigitalDepth(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderDigitalDepth.frag"), utils);
     }
@@ -31,7 +28,7 @@ public class WrapperDigitalPD extends ShaderWrapper<ShaderDigitalDepth> {
         if (drugProperties != null && depthBuffer != null) {
             shaderInstance.digital = drugProperties.getDrugValue(DrugType.ZERO);
             shaderInstance.maxDownscale = drugProperties.getDigitalEffectPixelResize();
-            shaderInstance.digitalTextTexture = GLStateProxy.getTextureId(digitalTextTexture);
+            shaderInstance.digitalTextTexture = GLStateProxy.getTextureId(WrapperDigitalMD.DIGITAL_TEXTURE);
             shaderInstance.depthTextureIndex = depthBuffer.getDepthAttachment();
 
             shaderInstance.zNear = 0.05f;

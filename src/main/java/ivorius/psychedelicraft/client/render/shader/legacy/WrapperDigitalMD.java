@@ -20,12 +20,10 @@ import net.minecraft.util.Identifier;
  * Created by lukas on 26.04.14.
  */
 public class WrapperDigitalMD extends ShaderWrapper<ShaderDigital> {
-    public Identifier digitalTextTexture;
+    public static final Identifier DIGITAL_TEXTURE = Psychedelicraft.id("textures/drug/zero/programming.png");
 
     public WrapperDigitalMD(String utils) {
         super(new ShaderDigital(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderDigital.frag"), utils);
-
-        digitalTextTexture = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "digitalText.png");
     }
 
     @Override
@@ -35,7 +33,7 @@ public class WrapperDigitalMD extends ShaderWrapper<ShaderDigital> {
         if (drugProperties != null) {
             shaderInstance.digital = drugProperties.getDrugValue(DrugType.ZERO);
             shaderInstance.maxDownscale = drugProperties.getDigitalEffectPixelResize();
-            shaderInstance.digitalTextTexture = GLStateProxy.getTextureId(digitalTextTexture);
+            shaderInstance.digitalTextTexture = GLStateProxy.getTextureId(DIGITAL_TEXTURE);
         } else {
             shaderInstance.digital = 0.0f;
         }

@@ -24,7 +24,7 @@ import java.util.List;
  * Updated by Sollace on 4 Jan 2023
  */
 public class FlaskScreen<T extends BlockEntity & BlockWithFluid.DirectionalFluidResovoir> extends AbstractFluidContraptionScreen<FluidContraptionScreenHandler<T>> {
-    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_fluid.png");
+    public static final Identifier BACKGROUND = Psychedelicraft.id("textures/gui/flask.png");
 
     public ButtonWidget changeTransferButton;
 
@@ -41,17 +41,16 @@ public class FlaskScreen<T extends BlockEntity & BlockWithFluid.DirectionalFluid
     protected void initTransferButton() {
         int baseX = (width - backgroundWidth) / 2;
         int baseY = (height - backgroundHeight) / 2;
-        addDrawableChild(changeTransferButton = ButtonWidget.builder(Text.empty(), this::toggleTransfer).dimensions(baseX + 7, baseY + 60, 50, 20).build());
+        addDrawableChild(changeTransferButton = ButtonWidget.builder(Text.empty(), this::toggleTransfer)
+                .dimensions(baseX + 7, baseY + 60, 50, 20)
+                .build());
         updateTransferButtonTitle();
     }
 
     protected void toggleTransfer(ButtonWidget sender) {
-        handler.currentlyDrainingItem = !handler.currentlyDrainingItem;
+        handler.onButtonClick(client.player, handler.currentlyDrainingItem ? 0 : 1);
+        client.interactionManager.clickButton(handler.syncId, handler.currentlyDrainingItem ? 1 : 0);
         updateTransferButtonTitle();
-
-        handler.sendContentUpdates();
-
-        //this.mc.playerController.sendEnchantPacket(handler.syncId, handler.currentlyDrainingItem ? 1 : 0);
     }
 
     @Override

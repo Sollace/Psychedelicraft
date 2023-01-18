@@ -15,7 +15,7 @@ import java.util.List;
  * Updated by Sollace on 4 Jan 2023
  */
 public class DistilleryScreen extends FlaskScreen<DistilleryBlockEntity> {
-    public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_distillery.png");
+    public static final Identifier TEXTURE = Psychedelicraft.id("textures/gui/distillery.png");
 
     private static final List<Text> DISTILLING_LABEL = List.of(Text.translatable("fluid.status.distilling").formatted(Formatting.GREEN));
 

@@ -26,7 +26,7 @@ import java.lang.Math;
  * Created by lukas on 03.03.14.
  */
 public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity> {
-    public static final Identifier CENTER_TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zero_center.png");
+    public static final Identifier CENTER_TEXTURE = Psychedelicraft.id("textures/entity/reality_rift/zero_center.png");
     private static final Random RANDOM = new Random(432L);
 
     public RealityRiftEntityRenderer(EntityRendererFactory.Context ctx) {

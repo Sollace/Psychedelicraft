@@ -9,7 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
-import ivorius.psychedelicraft.client.render.DrugRenderer;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -25,7 +25,7 @@ import net.minecraft.util.math.MathHelper;
  * @since 15 Jan 2023
  */
 public class EnvironmentalScreenEffect implements ScreenEffect {
-    private static final Identifier HURT_OVERLAY = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "hurt_overlay.png");
+    private static final Identifier HURT_OVERLAY = Psychedelicraft.id("textures/environment/hurt_overlay.png");
 
     private float experiencedHealth = 5F;
 
@@ -95,7 +95,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
             float p2 = (5 - experiencedHealth) / 6F;
 
             float p = p1 > 0 ? p1 : p2 > 0 ? p2 : 0;
-            DrugRenderer.drawOverlay(matrices, p, screenWidth, screenHeight, HURT_OVERLAY, 0, 0, 1, 1, (int) ((1 - p) * 40));
+            RenderUtil.drawOverlay(matrices, p, screenWidth, screenHeight, HURT_OVERLAY, 0, 0, 1, 1, (int) ((1 - p) * 40));
         }
 
         RenderSystem.enableDepthTest();

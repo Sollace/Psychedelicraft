@@ -14,7 +14,7 @@ public class ZeroScreen extends RenderLayer {
     private ZeroScreen() {super(null, null, null, 0, false, false, null, null);}
 
     public static final Identifier[] TEXTURES = IntStream.range(0, 8)
-            .mapToObj(i -> Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "zero_screen_" + i + ".png"))
+            .mapToObj(i -> Psychedelicraft.id("textures/entity/reality_rift/zero_screen_" + i + ".png"))
             .toArray(Identifier[]::new);
     public static final float X_PIXELS = 140 / 2F;
     public static final float Y_PIXELS = 224 / 2F;

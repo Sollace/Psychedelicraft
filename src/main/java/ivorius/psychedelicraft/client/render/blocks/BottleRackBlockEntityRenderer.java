@@ -21,7 +21,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
  * Updated by Sollace on 6 Jan 2023
  */
 public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<BottleRackBlockEntity> {
-    public static final Identifier TEXTURE = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "wine_rack.png");
+    public static final Identifier TEXTURE = Psychedelicraft.id("textures/entity/wine_rack.png");
 
     public Model model;// = AdvancedModelLoader.loadModel(Psychedelicraft.id(Psychedelicraft.filePathModels + "wineRack.obj"));
 

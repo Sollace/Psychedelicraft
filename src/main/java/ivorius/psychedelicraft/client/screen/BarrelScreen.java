@@ -16,7 +16,7 @@ import java.util.List;
  * Updated by Sollace on 4 Jan 2023
  */
 public class BarrelScreen extends FlaskScreen<BarrelBlockEntity> {
-    public static final Identifier BACKGROUND = Psychedelicraft.id(Psychedelicraft.TEXTURES_PATH + "container_barrel.png");
+    public static final Identifier BACKGROUND = Psychedelicraft.id("textures/gui/barrel.png");
 
     private static final List<Text> MATURING_LABEL = Arrays.asList(Text.translatable("fluid.status.maturing").formatted(Formatting.GREEN));
 
