@@ -13,6 +13,10 @@ import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.legacy.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.entity.*;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Arm;
 
 import org.apache.commons.io.IOUtils;
 
@@ -198,5 +202,37 @@ public class PSRenderStates {
         Framebuffer framebuffer = mc.getFramebuffer();
 
         return (framebuffer != null && framebuffer.fbo >= 0) ? framebuffer.fbo : 0;
+    }
+
+    static final class FakeSunEntity extends LivingEntity {
+        public Entity prevViewEntity;
+
+        public FakeSunEntity(Entity prevViewEntity) {
+            super(EntityType.PLAYER, prevViewEntity.world);
+            this.prevViewEntity = prevViewEntity;
+
+            NbtCompound cmp = new NbtCompound();
+            prevViewEntity.writeNbt(cmp);
+            readNbt(cmp);
+        }
+
+        @Override
+        public Iterable<ItemStack> getArmorItems() {
+            return List.of();
+        }
+
+        @Override
+        public ItemStack getEquippedStack(EquipmentSlot var1) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public void equipStack(EquipmentSlot var1, ItemStack var2) {
+        }
+
+        @Override
+        public Arm getMainArm() {
+            return Arm.LEFT;
+        }
     }
 }
