@@ -31,24 +31,27 @@ public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements Blo
     @Override
     public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         matrices.push();
-        matrices.translate(0.5F, 0.502F, 0.5F);
+        matrices.translate(0.5F, 0, 0.5F);
+
+        float scale = 1/8F - 0.001F;
+        matrices.scale(scale, scale, scale);
+
 
         Resovoir tank = entity.getTank(Direction.UP);
         SimpleFluid fluid = tank.getFluidType();
 
         if (!fluid.isEmpty()) {
-            float fluidHeight = 2.8f * MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
+            float fluidHeight = MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
 
             FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance()
-                    .scale(1)
                     .texture(vertices, tank)
                     .light(light).overlay(overlay)
                     .position(matrices);
-            fluidRenderer.draw(-1.9F, -8, -3.9F, 3.8F, fluidHeight, 0.9F, Direction.NORTH, Direction.UP);
-            fluidRenderer.draw(-1.9F, -8,     3, 3.8F, fluidHeight, 0.9F, Direction.SOUTH, Direction.UP);
-            fluidRenderer.draw(-3.9F, -8, -1.9F, 0.9F, fluidHeight, 3.8F, Direction.WEST, Direction.UP);
-            fluidRenderer.draw(    3, -8, -1.9F, 0.9F, fluidHeight, 3.8F, Direction.EAST, Direction.UP);
-            fluidRenderer.draw(   -3, -8,    -3,    6, fluidHeight,    6, Direction.UP);
+            fluidRenderer.draw(-1, 0, -2, 2, fluidHeight, 1, Direction.NORTH, Direction.UP);
+            fluidRenderer.draw(-1, 0,  1, 2, fluidHeight, 1, Direction.SOUTH, Direction.UP);
+            fluidRenderer.draw(-2, 0, -1, 1, fluidHeight, 2, Direction.WEST, Direction.UP);
+            fluidRenderer.draw( 1, 0, -1, 1, fluidHeight, 2, Direction.EAST, Direction.UP);
+            fluidRenderer.draw(-1, 0, -1, 2, fluidHeight, 2, Direction.UP);
         }
 
         matrices.pop();
