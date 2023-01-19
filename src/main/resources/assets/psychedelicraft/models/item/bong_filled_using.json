@@ -1,5 +1,5 @@
 {
-    "parent": "psychedelicraft:item/smoking_pipe",
+    "parent": "psychedelicraft:item/smoking_pipe_using",
     "textures": {
         "layer0": "psychedelicraft:item/bong_filled"
     }

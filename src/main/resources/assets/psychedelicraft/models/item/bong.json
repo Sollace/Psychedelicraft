@@ -1,14 +1,22 @@
 {
-    "parent": "item/generated",
+    "parent": "psychedelicraft:item/smoking_pipe",
     "textures": {
         "layer0": "psychedelicraft:item/bong_empty"
     },
     "overrides": [
         {
             "predicate": {
-                "psychedelicraft:filled": 1
+                "psychedelicraft:filled": 1,
+                "psychedelicraft:using": 0
             },
             "model": "psychedelicraft:item/bong_filled"
+        },
+        {
+            "predicate": {
+                "psychedelicraft:filled": 1,
+                "psychedelicraft:using": 1
+            },
+            "model": "psychedelicraft:item/bong_filled_using"
         }
     ]
 }
