@@ -18,7 +18,7 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
 
     public int timeFermented;
 
-    public float tapRotation = 0.0f;
+    public float tapRotation = 0;
     public int timeLeftTapOpen = 0;
 
     public BarrelBlockEntity(BlockPos pos, BlockState state) {
@@ -28,17 +28,20 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     @Override
     public void tick(ServerWorld world) {
         super.tick(world);
+        tickAnimations();
+    }
 
+    public void tickAnimations() {
         if (timeLeftTapOpen > 0) {
             timeLeftTapOpen--;
         }
 
-        if (timeLeftTapOpen > 0 && tapRotation < 3.141f * 0.5f) {
-            tapRotation += 3.141f * 0.1f;
+        if (timeLeftTapOpen > 0 && tapRotation < MathHelper.HALF_PI) {
+            tapRotation += MathHelper.PI * 0.1F;
         }
 
-        if (timeLeftTapOpen == 0 && tapRotation > 0.0f) {
-            tapRotation -= 3.141f * 0.1f;
+        if (timeLeftTapOpen == 0 && tapRotation > 0) {
+            tapRotation -= MathHelper.PI * 0.1F;
         }
     }
 

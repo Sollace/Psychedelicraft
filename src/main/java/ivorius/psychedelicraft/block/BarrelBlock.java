@@ -115,4 +115,10 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
         super.appendProperties(builder);
         builder.add(FACING);
     }
+
+    @Override
+    @Nullable
+    public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
+        return world.isClient ? checkType(type, getBlockEntityType(), (w, p, s, entity) -> entity.tickAnimations()) : super.getTicker(world, state, type);
+    }
 }
