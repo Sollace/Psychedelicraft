@@ -87,7 +87,7 @@ public class FluidBoxRenderer {
 
             sprite = new TextureBounds(0, spriteWidth, ticks * spriteHeight, (1 + ticks) * spriteHeight);
 
-            Identifier texture = fluid.getStationaryTexture();
+            Identifier texture = fluid.getStationaryTexture(tank.getStack());
 
             if (fluid.getFluidState(0).isIn(FluidTags.WATER)) {
                 int color = BiomeColors.getWaterColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos());

@@ -1,9 +1,11 @@
 package ivorius.psychedelicraft.fluid;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.AlcoholicDrinkTypes.StatePredicate;
+import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -124,24 +126,27 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         return MathHelper.clamp(getFluidTag(stack, true).getInt("fermentation"), 0, settings.fermentationSteps);
     }
 
-    public void setFermentation(ItemStack stack, int fermentation) {
+    public int setFermentation(ItemStack stack, int fermentation) {
         getFluidTag(stack, false).putInt("fermentation", fermentation);
+        return fermentation;
     }
 
     public int getDistillation(ItemStack stack) {
         return Math.max(getFluidTag(stack, true).getInt("distillation"), 0);
     }
 
-    public void setDistillation(ItemStack stack, int distillation) {
+    public int setDistillation(ItemStack stack, int distillation) {
         getFluidTag(stack, false).putInt("distillation", distillation);
+        return distillation;
     }
 
     public int getMaturation(ItemStack stack) {
         return Math.max(getFluidTag(stack, true).getInt("maturation"), 0);
     }
 
-    public void setMaturation(ItemStack stack, int maturation) {
+    public int setMaturation(ItemStack stack, int maturation) {
         getFluidTag(stack, false).putInt("maturation", maturation);
+        return maturation;
     }
 
     public boolean isVinegar(ItemStack stack) {
@@ -195,17 +200,51 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         );
     }
 
+    @Override
+    public Identifier getSymbol(ItemStack stack) {
+        var specialName = settings.types.getSpecialName(stack, this);
+        if (specialName != null) {
+            return getId().withPath(p -> "textures/fluid/" + specialName.value() + ".png");
+        }
+        return super.getSymbol(stack);
+    }
+
+    @Override
+    public Identifier getStationaryTexture(ItemStack stack) {
+        var specialName = settings.types.getSpecialName(stack, this);
+        if (specialName != null) {
+            return getId().withPath(p -> "textures/block/fluid/" + specialName.value() + "_still.png");
+        }
+        return super.getStationaryTexture(stack);
+    }
+
+    @Override
+    public Identifier getFlowingTexture(ItemStack stack) {
+        var specialName = settings.types.getSpecialName(stack, this);
+        if (specialName != null) {
+            return getId().withPath(p -> "textures/block/fluid/" + specialName.value() + "_flow.png");
+        }
+        return super.getFlowingTexture(stack);
+    }
 
     @Override
     public void getDefaultStacks(FluidContainerItem container, Consumer<ItemStack> consumer) {
         super.getDefaultStacks(container, consumer);
         settings.types.names().forEach(namedAlcohol -> {
             ItemStack stack = getDefaultStack(container);
-            setDistillation(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().distillationRange().getMin()));
-            setMaturation(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().maturationRange().getMin()));
-            setFermentation(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().fermentationRange().getMin()));
-            consumer.accept(stack);
+            if (setDistillation(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().distillationRange().getMin())) != 0
+                && setMaturation(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().maturationRange().getMin())) != 0
+                && setFermentation(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().fermentationRange().getMin())) != 0) {
+                consumer.accept(stack);
+            }
         });
+    }
+
+    @Override
+    public boolean isSuitableContainer(FluidContainerItem container) {
+        return container == PSItems.GLASS_CHALICE
+            || container == PSItems.WOODEN_MUG
+            || container.asItem().getDefaultStack().isIn(PSTags.Items.BOTTLES);
     }
 
     public static class Settings extends DrugFluid.Settings {

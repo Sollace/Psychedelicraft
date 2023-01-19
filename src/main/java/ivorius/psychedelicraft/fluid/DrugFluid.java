@@ -14,8 +14,10 @@ import net.minecraft.util.math.MathHelper;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.item.PSItems;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +118,11 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
             }
         }
         return MathHelper.clamp(alcohol, 0.0f, 1.0f);
+    }
+
+    @Override
+    public boolean isSuitableContainer(FluidContainerItem container) {
+        return container != PSItems.WOODEN_MUG && !isInjectable();
     }
 
     public static class Settings extends SimpleFluid.Settings {

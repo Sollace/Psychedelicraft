@@ -20,6 +20,7 @@ public interface PSTags {
 
     interface Items {
         TagKey<Item> BOTTLES = of("bottles");
+        TagKey<Item> BARRELS = of("barrels");
 
         static TagKey<Item> of(String name) {
             return TagKey.of(RegistryKeys.ITEM, Psychedelicraft.id(name));

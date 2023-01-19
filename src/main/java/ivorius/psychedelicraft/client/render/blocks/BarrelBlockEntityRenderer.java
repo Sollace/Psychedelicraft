@@ -10,6 +10,7 @@ import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -43,14 +44,18 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
 
         SimpleFluid fluid = tank.getFluidType();
         if (!fluid.isEmpty()) {
-            float barrelZ = -0.45F;
-            float iconSize = 0.5F;
+            Identifier symbol = fluid.getSymbol(tank.getStack());
 
-            VertexConsumer buffer = vertices.getBuffer(model.getLayer(fluid.getSymbol()));
-            RenderUtil.vertex(buffer, matrices, -iconSize, -iconSize, barrelZ, 1, 1, light, overlay);
-            RenderUtil.vertex(buffer, matrices, -iconSize,  iconSize, barrelZ, 1, 0, light, overlay);
-            RenderUtil.vertex(buffer, matrices,  iconSize,  iconSize, barrelZ, 0, 0, light, overlay);
-            RenderUtil.vertex(buffer, matrices,  iconSize, -iconSize, barrelZ, 0, 1, light, overlay);
+            if (MinecraftClient.getInstance().getResourceManager().getResource(symbol).isPresent()) {
+                float barrelZ = -0.4376F;
+                float iconSize = 0.5F;
+
+                VertexConsumer buffer = vertices.getBuffer(model.getLayer(symbol));
+                RenderUtil.vertex(buffer, matrices, -iconSize, -iconSize, barrelZ, 1, 1, overlay, light);
+                RenderUtil.vertex(buffer, matrices, -iconSize,  iconSize, barrelZ, 1, 0, overlay, light);
+                RenderUtil.vertex(buffer, matrices,  iconSize,  iconSize, barrelZ, 0, 0, overlay, light);
+                RenderUtil.vertex(buffer, matrices,  iconSize, -iconSize, barrelZ, 0, 1, overlay, light);
+            }
         }
 
         matrices.pop();

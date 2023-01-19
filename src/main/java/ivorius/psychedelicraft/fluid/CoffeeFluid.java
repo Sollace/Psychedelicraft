@@ -11,9 +11,11 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.item.PSItems;
 
 /**
  * Created by lukas on 22.10.14.
@@ -38,11 +40,24 @@ public class CoffeeFluid extends DrugFluid {
         return Text.translatable(getTranslationKey() + ".temperature." + getTemperature(stack));
     }
 
-    public void setTemperature(ItemStack stack, int temperature) {
+    public ItemStack setTemperature(ItemStack stack, int temperature) {
         getFluidTag(stack, false).putInt("temperature", temperature);
+        return stack;
     }
 
     public int getTemperature(ItemStack stack) {
         return MathHelper.clamp(getFluidTag(stack, true).getInt("temperature"), 0, WARMTH_STEPS);
+    }
+
+    @Override
+    public void getDefaultStacks(FluidContainerItem container, Consumer<ItemStack> consumer) {
+        super.getDefaultStacks(container, consumer);
+        consumer.accept(setTemperature(getDefaultStack(container), 1));
+        consumer.accept(setTemperature(getDefaultStack(container), 2));
+    }
+
+    @Override
+    public boolean isSuitableContainer(FluidContainerItem container) {
+        return container == PSItems.STONE_CUP;
     }
 }

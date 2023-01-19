@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.fluid;
 import java.util.*;
 import java.util.function.Consumer;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.fluid.*;
@@ -69,15 +70,15 @@ public class SimpleFluid {
         return id;
     }
 
-    public final Identifier getSymbol() {
+    public Identifier getSymbol(ItemStack stack) {
         return symbol;
     }
 
-    public final Identifier getStationaryTexture() {
+    public Identifier getStationaryTexture(ItemStack stack) {
         return stationaryTexture;
     }
 
-    public final Identifier getFlowingTexture() {
+    public Identifier getFlowingTexture(ItemStack stack) {
         return flowingTexture;
     }
 
@@ -127,6 +128,10 @@ public class SimpleFluid {
 
     public Text getName(ItemStack stack) {
         return Text.translatable(getTranslationKey());
+    }
+
+    public boolean isSuitableContainer(FluidContainerItem container) {
+        return !container.asItem().getDefaultStack().isIn(PSTags.Items.BARRELS);
     }
 
     private static final NbtCompound EMPTY_NBT = new NbtCompound();

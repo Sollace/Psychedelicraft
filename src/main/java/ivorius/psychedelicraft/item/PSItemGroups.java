@@ -122,7 +122,9 @@ public interface PSItemGroups {
 
     private static void appendAllFluids(FluidContainerItem item, ItemGroup.Entries entries) {
         SimpleFluid.all().forEach(fluid -> {
-            fluid.getDefaultStacks(item, entries::add);
+            if (fluid.isSuitableContainer(item)) {
+                fluid.getDefaultStacks(item, entries::add);
+            }
         });
     }
 

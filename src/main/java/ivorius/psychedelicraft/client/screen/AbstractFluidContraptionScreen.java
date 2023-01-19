@@ -53,7 +53,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         float fluidHeight = MathHelper.clamp((float) level / (float) tank.getCapacity(), 0, 1);
         int fluidHeightPixels = MathHelper.ceil(fluidHeight * height);
 
-        Identifier texture = fluid.getStationaryTexture();
+        Identifier texture = fluid.getStationaryTexture(tank.getStack());
 
         if (fluid.getFluidState(0).isIn(FluidTags.WATER)) {
             RenderUtil.setColor(BiomeColors.getWaterColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos()), false);
