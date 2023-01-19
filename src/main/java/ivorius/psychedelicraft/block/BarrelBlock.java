@@ -5,14 +5,15 @@
 
 package ivorius.psychedelicraft.block;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
-import ivorius.psychedelicraft.fluid.FluidContainerItem;
-import ivorius.psychedelicraft.fluid.FluidHelper;
+import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -81,20 +82,27 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
         if (stack.getItem() instanceof FluidContainerItem container) {
 
             if (container.getFluidLevel(stack) < container.getMaxCapacity(stack)) {
-                if (stack.getCount() > 1) {
-                    player.getInventory().offerOrDrop(blockEntity.getTank(Direction.DOWN).drain(MAX_TAP_AMOUNT, stack.split(1)));
-                } else {
-                    player.setStackInHand(hand, blockEntity.getTank(Direction.DOWN).drain(MAX_TAP_AMOUNT, stack.split(1)));
-                }
 
-                blockEntity.timeLeftTapOpen = 20;
-                blockEntity.markDirty();
-                if (!world.isClient) {
-                    ((ServerWorld)world).getChunkManager().markForUpdate(pos);
-                }
+                Resovoir tank = blockEntity.getTank(Direction.DOWN);
+                if (tank.getLevel() > 0 && tank.getFluidType().isSuitableContainer(container)) {
+                    if (!world.isClient) {
+                        if (stack.getCount() > 1) {
+                            player.getInventory().offerOrDrop(tank.drain(MAX_TAP_AMOUNT, stack.split(1)));
+                        } else {
+                            player.setStackInHand(hand, tank.drain(MAX_TAP_AMOUNT, stack.split(1)));
+                        }
 
-                return ActionResult.SUCCESS;
+                        blockEntity.timeLeftTapOpen = 20;
+                        blockEntity.markDirty();
+
+                        ((ServerWorld)world).getChunkManager().markForUpdate(pos);
+                    }
+
+                    return ActionResult.SUCCESS;
+                }
             }
+
+            return ActionResult.FAIL;
         }
 
         return ActionResult.PASS;
