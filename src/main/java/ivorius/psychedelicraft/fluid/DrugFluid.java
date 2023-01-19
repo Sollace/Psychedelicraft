@@ -14,7 +14,6 @@ import net.minecraft.util.math.MathHelper;
 
 import org.jetbrains.annotations.Nullable;
 
-import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.item.PSItems;

@@ -89,14 +89,14 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
         boolean playSound = false;
         if (output.getItem() instanceof FluidContainerItem container && container.getFillPercentage(output) < 1) {
             int oldLevel = container.getFluidLevel(output);
-            ioInventory.setStack(1, tank.drain(1, output, outputSlot::incrementLevelsTransferred));
+            ioInventory.setStack(1, tank.drain(50, output, outputSlot::incrementLevelsTransferred));
             playSound |= oldLevel != container.getFluidLevel(outputSlot.getStack());
         }
 
         ItemStack input = inputSlot.getStack();
         if (input.getItem() instanceof FluidContainerItem container && container.getFillPercentage(input) > 0) {
             int oldLevel = container.getFluidLevel(input);
-            ioInventory.setStack(0, tank.deposit(1, input, inputSlot::incrementLevelsTransferred));
+            ioInventory.setStack(0, tank.deposit(50, input, inputSlot::incrementLevelsTransferred));
             playSound |= oldLevel != container.getFluidLevel(inputSlot.getStack());
         }
 
