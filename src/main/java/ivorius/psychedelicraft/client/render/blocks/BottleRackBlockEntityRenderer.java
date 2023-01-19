@@ -2,8 +2,8 @@ package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.BottleRackBlockEntity;
+import ivorius.psychedelicraft.fluid.FluidContainerItem;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.item.FluidContainerItem;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.VertexConsumerProvider;

@@ -7,8 +7,9 @@ package ivorius.psychedelicraft.block;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
+import ivorius.psychedelicraft.fluid.FluidContainerItem;
 import ivorius.psychedelicraft.fluid.Resovoir;
-import ivorius.psychedelicraft.item.FluidContainerItem;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.*;
@@ -32,7 +33,7 @@ import net.minecraft.world.World;
  * @author Sollace
  * @since 3 Jan 2023
  */
-public abstract class BlockWithFluid<T extends BlockEntity & BlockWithFluid.DirectionalFluidResovoir> extends BlockWithEntity {
+public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWithEntity {
     protected BlockWithFluid(Settings settings) {
         super(settings);
     }

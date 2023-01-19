@@ -51,7 +51,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     @Override
     public void onDrain(Resovoir resovoir) {
         if (!solidContents.isEmpty() && resovoir.isEmpty()) {
-            timeProcessed = 0;
+            setTimeProcessed(0);
         }
         onIdle(resovoir);
     }

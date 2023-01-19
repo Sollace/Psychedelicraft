@@ -10,64 +10,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 
 public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
     private final Processable.ProcessType processType;
-
-    protected int timeProcessed;
-    private int timeNeeded;
-
-    public final PropertyDelegate propertyDelegate = new PropertyDelegate(){
-        @Override
-        public int get(int index) {
-            switch (index) {
-                case 0: {
-                    return timeNeeded;
-                }
-                case 1: {
-                    return timeProcessed;
-                }
-            }
-            return 0;
-        }
-
-        @Override
-        public void set(int index, int value) {
-            switch (index) {
-                case 0: {
-                    timeNeeded = value;
-                    break;
-                }
-                case 1: {
-                    timeProcessed = value;
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public int size() {
-            return 2;
-        }
-    };
-
-    public int getNeededTime() {
-        return timeNeeded;
-    }
-
-    public float getProgress() {
-        if (isActive()) {
-            return (float)timeProcessed / timeNeeded;
-        }
-        return 0;
-    }
-
-    public boolean isActive() {
-        return timeNeeded != Processable.UNCONVERTABLE;
-    }
 
     public FluidProcessingBlockEntity(
             BlockEntityType<? extends FluidProcessingBlockEntity> type,
@@ -75,6 +22,38 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
             Processable.ProcessType processType) {
         super(type, pos, state, capacity);
         this.processType = processType;
+    }
+
+    @Override
+    protected int getTotalProperties() {
+        return super.getTotalProperties() + 2;
+    }
+
+    public int getTimeNeeded() {
+        return propertyDelegate.get(4);
+    }
+
+    public void setTimeNeeded(int value) {
+        propertyDelegate.set(4, value);
+    }
+
+    public int getTimeProcessed() {
+        return propertyDelegate.get(5);
+    }
+
+    public void setTimeProcessed(int value) {
+        propertyDelegate.set(5, value);
+    }
+
+    public float getProgress() {
+        if (isActive()) {
+            return (float)getTimeProcessed() / getTimeNeeded();
+        }
+        return 0;
+    }
+
+    public boolean isActive() {
+        return getTimeNeeded() != Processable.UNCONVERTABLE;
     }
 
     protected boolean isOpen() {
@@ -88,17 +67,19 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
         Resovoir tank = getTank(Direction.UP);
         if (tank.getFluidType() instanceof Processable p) {
             boolean open = isOpen();
-            timeNeeded = p.getProcessingTime(tank.getStack(), processType, open);
+            setTimeNeeded(p.getProcessingTime(tank.getStack(), processType, open));
 
-            if (canProcess(world, timeNeeded)) {
-                if (timeProcessed >= timeNeeded) {
+            if (canProcess(world, getTimeNeeded())) {
+                if (getTimeProcessed() >= getTimeNeeded()) {
                     onProcessCompleted(world, tank, p.process(tank.getStack(), processType, open));
                 } else {
-                    timeProcessed++;
+                    setTimeProcessed(getTimeProcessed() + 1);
                 }
             } else {
-                timeProcessed = 0;
+                setTimeProcessed(0);
             }
+        } else {
+            setTimeNeeded(Processable.UNCONVERTABLE);
         }
     }
 
@@ -107,8 +88,8 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
     }
 
     protected void onProcessCompleted(ServerWorld world, Resovoir tank, ItemStack solids) {
-        timeProcessed = 0;
-        timeNeeded = Processable.UNCONVERTABLE;
+        setTimeProcessed(0);
+        setTimeNeeded(Processable.UNCONVERTABLE);
 
         world.getChunkManager().markForUpdate(getPos());
         markDirty();
@@ -117,7 +98,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
     @Override
     public void onDrain(Resovoir resovoir) {
         if (resovoir.isEmpty()) {
-            timeProcessed = 0;
+            setTimeProcessed(0);
         }
         super.onDrain(resovoir);
     }
@@ -126,18 +107,20 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
     public void onFill(Resovoir resovoir, int amountFilled) {
         super.onFill(resovoir, amountFilled);
         double percentFilled = amountFilled / (double) resovoir.getLevel();
-        timeProcessed = MathHelper.floor(timeProcessed * (1 - percentFilled));
+        setTimeNeeded(MathHelper.floor(getTimeProcessed() * (1 - percentFilled)));
     }
 
     @Override
     public void writeNbt(NbtCompound compound) {
         super.writeNbt(compound);
-        compound.putInt("timeProcessed", timeProcessed);
+        compound.putInt("timeProcessed", getTimeProcessed());
+        compound.putInt("timeNeeded", getTimeNeeded());
     }
 
     @Override
     public void readNbt(NbtCompound compound) {
         super.readNbt(compound);
-        timeProcessed = compound.getInt("timeProcessed");
+        setTimeProcessed(compound.getInt("timeProcessed"));
+        setTimeNeeded(compound.getInt("timeNeeded"));
     }
 }

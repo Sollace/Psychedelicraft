@@ -6,10 +6,8 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.BlockWithFluid;
+import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
@@ -23,45 +21,41 @@ import java.util.List;
  * Created by lukas on 26.10.14.
  * Updated by Sollace on 4 Jan 2023
  */
-public class FlaskScreen<T extends BlockEntity & BlockWithFluid.DirectionalFluidResovoir> extends AbstractFluidContraptionScreen<FluidContraptionScreenHandler<T>> {
+public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContraptionScreen<FluidContraptionScreenHandler<T>> {
     public static final Identifier BACKGROUND = Psychedelicraft.id("textures/gui/flask.png");
-
-    public ButtonWidget changeTransferButton;
 
     public FlaskScreen(FluidContraptionScreenHandler<T> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }
 
     @Override
-    public void init() {
-        super.init();
-        initTransferButton();
-    }
-
-    protected void initTransferButton() {
+    protected void drawBackground(MatrixStack matrices, float partialTicks, int mouseX, int mouseY) {
         int baseX = (width - backgroundWidth) / 2;
         int baseY = (height - backgroundHeight) / 2;
-        addDrawableChild(changeTransferButton = ButtonWidget.builder(Text.empty(), this::toggleTransfer)
-                .dimensions(baseX + 7, baseY + 60, 50, 20)
-                .build());
-        updateTransferButtonTitle();
-    }
-
-    protected void toggleTransfer(ButtonWidget sender) {
-        handler.onButtonClick(client.player, handler.currentlyDrainingItem ? 0 : 1);
-        client.interactionManager.clickButton(handler.syncId, handler.currentlyDrainingItem ? 1 : 0);
-        updateTransferButtonTitle();
-    }
-
-    @Override
-    protected void drawBackground(MatrixStack matrices, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, getBackgroundTexture());
-        int baseX = (width - backgroundWidth) / 2;
-        int baseY = (height - backgroundHeight) / 2;
+        drawTexture(matrices, baseX + 30, baseY + 20, 0, backgroundHeight, 110, 50);
+
+        drawTanks(matrices, baseX, baseY);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.setShaderTexture(0, getBackgroundTexture());
+
         drawTexture(matrices, baseX, baseY, 0, 0, backgroundWidth, backgroundHeight);
         drawAdditionalInfo(matrices, baseX, baseY);
-        drawTanks(matrices, baseX, baseY);
+
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+
+        float inputProgress = handler.getBlockEntity().inputSlot.getProgress();
+        if (inputProgress > 0 && inputProgress < 1) {
+            int width = (int)(45 * inputProgress);
+            drawTexture(matrices, baseX + 20 + width, baseY + 40, 176 + width, 0, 45 - width, 16);
+        }
+        float outputProgress = handler.getBlockEntity().outputSlot.getProgress();
+        if (outputProgress > 0 && outputProgress < 1) {
+            drawTexture(matrices, baseX + 68, baseY + 60, 176, 17, (int)(53 * outputProgress), 20);
+        }
+
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
     protected void drawAdditionalInfo(MatrixStack matrices, int baseX, int baseY) {
@@ -69,7 +63,7 @@ public class FlaskScreen<T extends BlockEntity & BlockWithFluid.DirectionalFluid
     }
 
     protected void drawTanks(MatrixStack matrices, int baseX, int baseY) {
-        drawTank(getTank(), baseX + 60, baseY + 14 + 57, 108, 57, 4.0f, 2.1111f);
+        drawTank(getTank(), baseX + 48, baseY + 59, 64, 27, 4.0f, 2.1111f);
     }
 
     protected Identifier getBackgroundTexture() {
@@ -85,14 +79,10 @@ public class FlaskScreen<T extends BlockEntity & BlockWithFluid.DirectionalFluid
     }
 
     protected void drawTankTooltips(MatrixStack matrices, int mouseX, int mouseY, int baseX, int baseY) {
-        drawTankTooltip(matrices, getTank(), baseX + 60, baseY + 14, 108, 57, mouseX, mouseY, getAdditionalTankText());
+        drawTankTooltip(matrices, getTank(), baseX + 65, baseY + 33, 40, 30, mouseX, mouseY, getAdditionalTankText());
     }
 
     protected List<Text> getAdditionalTankText() {
         return List.of();
-    }
-
-    public void updateTransferButtonTitle() {
-        changeTransferButton.setMessage(handler.currentlyDrainingItem ? Text.literal("Drain") : Text.literal("Fill"));
     }
 }

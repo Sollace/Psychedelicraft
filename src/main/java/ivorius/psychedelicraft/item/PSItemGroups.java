@@ -6,8 +6,7 @@
 package ivorius.psychedelicraft.item;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.fluid.PSFluids;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.fluid.*;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.*;
 import net.minecraft.util.DyeColor;

@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.client.item;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.fluid.FluidContainerItem;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.*;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;

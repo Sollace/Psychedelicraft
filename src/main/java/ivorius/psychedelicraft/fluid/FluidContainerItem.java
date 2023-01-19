@@ -1,7 +1,5 @@
-package ivorius.psychedelicraft.item;
+package ivorius.psychedelicraft.fluid;
 
-import ivorius.psychedelicraft.fluid.PSFluids;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.recipe.Pourable;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
@@ -46,39 +44,17 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
     }
 
     default SimpleFluid getFluid(ItemStack stack) {
-        if (getFluidLevel(stack) == 0 || !(stack.getNbt() != null && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE))) {
+        if (!(stack.getNbt() != null && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE)) || getFluidLevel(stack) == 0) {
             return PSFluids.EMPTY;
         }
         return SimpleFluid.byId(Identifier.tryParse(stack.getSubNbt("fluid").getString("id")));
     }
 
     default int getFluidLevel(ItemStack stack) {
-        return stack.getNbt() != null && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE) ? stack.getSubNbt("fluid").getInt("level") : 0;
-    }
-
-    /**
-     * Removes a certain amount of fluid from the given stack and returns a
-     * new stack containing the amount of fluid that was drained.
-     */
-    default ItemStack drain(ItemStack stack, int amount) {
-        ItemStack removed = setLevel(stack.copy(), amount);
-        setLevel(stack, getFluidLevel(stack) - amount);
-        return removed;
-    }
-
-    /**
-     * Copies the fluid information from another stack to this one.
-     */
-    default ItemStack fill(ItemStack stack, ItemStack from) {
-        stack = stack.copy();
-        if (of(from).getFluid(from).isEmpty()) {
-            return stack;
-        }
-        NbtCompound source = from.getNbt() != null && from.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE) ? from.getSubNbt("fluid") : new NbtCompound();
-        SimpleFluid fluid = getFluid(stack);
-        int level = getFluidLevel(stack) + of(from).getFluidLevel(from);
-        stack.getOrCreateSubNbt("fluid").copyFrom(source);
-        return setLevel(setFluid(stack, fluid), level);
+        return stack.getNbt() != null
+                && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE)
+                && stack.getSubNbt("fluid").contains("id")
+                && !SimpleFluid.byId(Identifier.tryParse(stack.getSubNbt("fluid").getString("id"))).isEmpty() ? stack.getSubNbt("fluid").getInt("level") : 0;
     }
 
     default ItemStack setLevel(ItemStack stack, int level) {
@@ -100,6 +76,47 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
         }
 
         return stack;
+    }
+
+    /**
+     * Removes a certain amount of fluid from the given stack and returns a
+     * new stack containing the amount of fluid that was drained.
+     */
+    default ItemStack drain(ItemStack stack, int amount) {
+        amount = Math.min(getFluidLevel(stack), amount);
+        ItemStack removed = setLevel(stack.copy(), amount);
+        setLevel(stack, getFluidLevel(stack) - amount);
+        return removed;
+    }
+
+    /**
+     * Adds fluid to this container.
+     * Returns the remaining levels.
+     */
+    default int deposit(ItemStack stack, int amount, SimpleFluid fluid) {
+        int newLevel = Math.min(getMaxCapacity(stack), getFluidLevel(stack) + amount);
+        if (getFluid(stack).isEmpty()) {
+            setFluid(stack, fluid);
+        } else if (getFluid(stack) != fluid) {
+            return amount;
+        }
+        setLevel(stack, newLevel);
+        return amount - newLevel;
+    }
+
+    /**
+     * Copies the fluid information from another stack to this one.
+     */
+    default ItemStack fill(ItemStack stack, ItemStack from) {
+        stack = stack.copy();
+        if (of(from).getFluid(from).isEmpty()) {
+            return stack;
+        }
+        NbtCompound source = from.getNbt() != null && from.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE) ? from.getSubNbt("fluid") : new NbtCompound();
+        SimpleFluid fluid = getFluid(stack);
+        int level = getFluidLevel(stack) + of(from).getFluidLevel(from);
+        stack.getOrCreateSubNbt("fluid").copyFrom(source);
+        return setLevel(setFluid(stack, fluid), level);
     }
 
     @Override

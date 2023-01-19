@@ -3,8 +3,8 @@ package ivorius.psychedelicraft.recipe;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ivorius.psychedelicraft.fluid.FluidContainerItem;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.item.FluidContainerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;

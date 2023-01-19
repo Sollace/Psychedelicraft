@@ -28,10 +28,12 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
     protected AbstractFluidContraptionScreen(T handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+        titleY = 10;
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        titleX = 83 - textRenderer.getWidth(title) / 2;
         super.render(matrices, mouseX, mouseY, delta);
         drawMouseoverTooltip(matrices, mouseX, mouseY);
     }
@@ -49,7 +51,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         int level = tank.getLevel();
 
         float fluidHeight = MathHelper.clamp((float) level / (float) tank.getCapacity(), 0, 1);
-        int fluidHeightPixels = MathHelper.ceil(fluidHeight * height + 0.5f);
+        int fluidHeightPixels = MathHelper.ceil(fluidHeight * height);
 
         Identifier texture = fluid.getStationaryTexture();
 

@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.item.FluidContainerItem;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;

@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.item;
 
+import ivorius.psychedelicraft.fluid.FluidContainerItem;
 import net.minecraft.block.*;
 import net.minecraft.item.*;
 

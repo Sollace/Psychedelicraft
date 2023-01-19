@@ -5,9 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.JsonObject;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.fluid.AlcoholicFluid;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.item.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.player.PlayerEntity;

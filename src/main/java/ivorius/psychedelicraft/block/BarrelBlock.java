@@ -7,8 +7,8 @@ package ivorius.psychedelicraft.block;
 
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
+import ivorius.psychedelicraft.fluid.FluidContainerItem;
 import ivorius.psychedelicraft.fluid.FluidHelper;
-import ivorius.psychedelicraft.item.FluidContainerItem;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;

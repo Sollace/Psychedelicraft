@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.item.FluidContainerItem;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;

@@ -4,7 +4,6 @@ import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.AlcoholicDrinkTypes.StatePredicate;
-import ivorius.psychedelicraft.item.FluidContainerItem;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -210,9 +209,6 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     public static class Settings extends DrugFluid.Settings {
-        // TODO: (Sollace) This existed to map a fluid to a ore dictionary value with forge.
-        //                 Unused for now, but may still need its values when we eventually connect into a fluids api
-        @SuppressWarnings("unused")
         private AlcoholicDrinkTypes types;
 
         int fermentationSteps;

@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 import com.google.gson.*;
 
-import ivorius.psychedelicraft.item.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.FluidContainerItem;
 
 /**
  * Created from "RecipeFillDrink" by Sollace on 5 Jan 2023

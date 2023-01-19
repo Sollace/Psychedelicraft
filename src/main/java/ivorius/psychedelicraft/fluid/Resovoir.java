@@ -1,10 +1,14 @@
 package ivorius.psychedelicraft.fluid;
 
-import ivorius.psychedelicraft.item.FluidContainerItem;
+import java.util.function.IntConsumer;
+
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 
 /**
@@ -14,7 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 public class Resovoir implements Inventory, NbtSerialisable {
     private int capacity;
 
-    private ItemStack stack = ItemStack.EMPTY;
+    private ItemStack stack = Items.STONE.getDefaultStack();
 
     private final ChangeListener changeCallback;
 
@@ -70,54 +74,48 @@ public class Resovoir implements Inventory, NbtSerialisable {
         return deposit(FluidContainerItem.of(stack).getMaxCapacity(stack), stack);
     }
 
-    public ItemStack deposit(int levels, ItemStack stack) {
-        var incoming = FluidContainerItem.of(stack);
-        SimpleFluid fluid = incoming.getFluid(stack);
-
-        if (fluid.isEmpty() || (!isEmpty() && getFluidType() != fluid)) {
-            return stack;
-        }
-
-        int available = Math.min(levels, incoming.getFluidLevel(stack));
-        int newLevel = Math.min(getCapacity(), getLevel() + available);
-        if (newLevel > getLevel()) {
-            changeCallback.onFill(this, newLevel - getLevel());
-        }
-        ItemStack copy = stack.copy();
-        incoming.setLevel(copy, Math.max(0, incoming.getFluidLevel(stack) - available));
-        FluidContainerItem.DEFAULT.setLevel(this.stack, newLevel);
-        if (getFluidType().isEmpty()) {
-            FluidContainerItem.DEFAULT.setFluid(this.stack, fluid);
-        }
-
-        return copy;
+    public ItemStack deposit(int levels, ItemStack input) {
+        return deposit(levels, input, null);
     }
 
-    public ItemStack drain(int levels) {
-        ItemStack stack = this.stack.copy();
-        int withdrawn = Math.min(levels, getLevel());
-        FluidContainerItem.DEFAULT.setLevel(stack, withdrawn);
-        FluidContainerItem.DEFAULT.setLevel(this.stack, getLevel() - withdrawn);
-        changeCallback.onDrain(this);
-        return stack;
+    public ItemStack deposit(int levels, ItemStack input, @Nullable IntConsumer changeCallback) {
+        return FluidTransferUtils.transfer(Math.min(getCapacity() - getLevel(), levels),
+                FluidContainerItem.of(input), input,
+                FluidContainerItem.DEFAULT, stack, levelsChange -> {
+            this.changeCallback.onFill(this, levelsChange);
+            if (changeCallback != null) {
+                changeCallback.accept(levelsChange);
+            }
+        });
     }
 
-    public ItemStack drain(int levels, ItemStack container) {
-        ItemStack stack = container.copy();
-        int withdrawn = Math.min(FluidContainerItem.of(stack).getMaxCapacity(stack), Math.min(levels, getLevel()));
-        FluidContainerItem c = FluidContainerItem.of(stack);
-        if (c.getFluid(stack).isEmpty()) {
-            c.setFluid(stack, getFluidType());
+    public ItemStack drain(int levels, ItemStack output) {
+        return drain(levels, output, null);
+    }
+
+    public ItemStack drain(int levels, ItemStack output, @Nullable IntConsumer changeCallback) {
+        output = output.copy();
+
+        ItemStack stack = this.stack;
+        this.stack = FluidTransferUtils.transfer(levels,
+                FluidContainerItem.DEFAULT, this.stack,
+                FluidContainerItem.of(output), output, levelsChange -> {
+                    if (levelsChange < 0) {
+                        this.changeCallback.onDrain(this);
+                    }
+                    if (changeCallback != null) {
+                        changeCallback.accept(levelsChange);
+                    }
+        });
+        if (stack != this.stack) {
+            this.changeCallback.onDrain(this);
         }
-        c.setLevel(stack, withdrawn);
-        FluidContainerItem.DEFAULT.setLevel(this.stack, getLevel() - withdrawn);
-        changeCallback.onDrain(this);
-        return stack;
+        return output;
     }
 
     @Override
     public void clear() {
-        stack = ItemStack.EMPTY;
+        stack = Items.STONE.getDefaultStack();
         changeCallback.onDrain(this);
     }
 
@@ -132,8 +130,13 @@ public class Resovoir implements Inventory, NbtSerialisable {
     }
 
     @Override
-    public ItemStack removeStack(int slot, int count) {
-        return drain(count);
+    public ItemStack removeStack(int slot, int levels) {
+        levels = Math.min(getLevel(), levels);
+        ItemStack drained = FluidContainerItem.DEFAULT.drain(stack, levels);
+        if (levels > 0) {
+            this.changeCallback.onDrain(this);
+        }
+        return drained;
     }
 
     @Override

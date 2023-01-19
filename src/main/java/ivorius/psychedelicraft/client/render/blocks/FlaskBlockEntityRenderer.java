@@ -39,7 +39,8 @@ public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements Blo
         if (!fluid.isEmpty()) {
             float fluidHeight = 2.8f * MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
 
-            FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance().scale(1F / 16F)
+            FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance()
+                    .scale(1)
                     .texture(vertices, tank)
                     .light(light).overlay(overlay)
                     .position(matrices);
