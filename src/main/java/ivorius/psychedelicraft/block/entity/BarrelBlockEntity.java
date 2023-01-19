@@ -5,16 +5,16 @@
 
 package ivorius.psychedelicraft.block.entity;
 
-import static ivorius.psychedelicraft.fluid.FluidHelper.MILLIBUCKETS_PER_LITER;
-
 import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 
 public class BarrelBlockEntity extends FluidProcessingBlockEntity {
-    public static final int BARREL_CAPACITY = MILLIBUCKETS_PER_LITER * 16;
+    public static final int BARREL_CAPACITY = FluidHelper.MILLIBUCKETS_PER_LITER * 16;
 
     public int timeFermented;
 
@@ -42,6 +42,10 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
 
         if (timeLeftTapOpen == 0 && tapRotation > 0) {
             tapRotation -= MathHelper.PI * 0.1F;
+        }
+
+        if (timeLeftTapOpen > 0 && timeLeftTapOpen % 5 == 0) {
+            world.playSound(null, getPos(), SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.025F, 0.5F);
         }
     }
 
