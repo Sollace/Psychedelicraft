@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.client.sound.DrugMusicManager;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.mixin.MixinLivingEntity;
 import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgDrugProperties;
@@ -23,6 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -149,6 +151,10 @@ public class DrugProperties implements NbtSerialisable {
                 }
                 return false;
             });
+        }
+
+        if (entity.getActiveItem().isOf(PSItems.BONG) && entity.world.random.nextInt(3) == 0) {
+            entity.playSound(SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, 1, 1);
         }
 
         drugs.values().forEach(drug -> drug.update(this));
