@@ -20,7 +20,7 @@ public abstract class AbstractEntityHallucination extends Hallucination {
 
     protected int maxAge;
 
-    protected float[] color;
+    protected float[] color = {1, 1, 1, 1};
 
     protected float scale;
 
