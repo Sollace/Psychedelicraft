@@ -88,11 +88,13 @@ class LoadedShader extends PostEffectProcessor {
                 replay.clear();
                 var programBindings = bindings.programBindings.getOrDefault(pass.getName(), UniformBinding.EMPTY);
                 bindings.global.bindUniforms(this, tickDelta, width, height, () -> {
-                    programBindings.bindUniforms(this, tickDelta, width, height, () -> replay.add(pass::render));
+                    programBindings.bindUniforms(this, tickDelta, width, height, () -> {
+                        replay.add(pass::render);
+                    });
                 });
             }
 
-            updateCount = (updateCount + 1) % 20;
+            updateCount = (updateCount + 1) % 2;
             for (FloatConsumer action : replay) {
                 action.accept(passRenderTime);
             }

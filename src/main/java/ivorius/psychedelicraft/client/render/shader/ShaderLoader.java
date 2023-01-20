@@ -32,8 +32,8 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         setter.set("ticks", MinecraftClient.getInstance().player.age + tickDelta);
                         pass.run();
                     }
-                })/*
-                .program("blur", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                })
+                .program("ps_blur", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                     float menuBlur = DrugRenderer.INSTANCE.getMenuBlur();
                     float vBlur = DrugProperties.of(MinecraftClient.getInstance().player).getDrugValue(DrugType.POWER) + menuBlur;
                     float hBlur = menuBlur;
@@ -52,7 +52,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                             }
                         }
                     }
-                })
+                })/*
                 .program("bloom", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                     float bloom = DrugProperties.of(MinecraftClient.getInstance().player).getHallucinations().getBloom(tickDelta);
                     setter.set("pixelSize", 1F / screenWidth * 2F, 1F / screenHeight * 2F);
@@ -110,6 +110,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
 
     @Override
     public void reload(ResourceManager manager) {
+        renderer.onShadersLoaded(List.of());
         renderer.onShadersLoaded(activeShaderIds.entrySet().stream().map(this::loadShader).filter(Objects::nonNull).toList());
     }
 

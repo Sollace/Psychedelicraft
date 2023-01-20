@@ -4,17 +4,20 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "psychadelicraft:post/basic",
-    "fragment": "psychadelicraft:post/simple_effects",
+    "vertex": "basic",
+    "fragment": "simple_effects",
     "attributes": [ "Position" ],
     "samplers": [
-        { "name": "tex0" }
+        { "name": "DiffuseSampler" }
     ],
     "uniforms": [
-        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "ticks", "type": "float", "count": 1, "values": [ 1.0 ] },
         { "name": "slowColorRotation", "type": "float", "count": 1, "values": [ 0.0 ] },
         { "name": "quickColorRotation", "type": "float", "count": 1, "values": [ 0.0 ] },
         { "name": "colorIntensification", "type": "float", "count": 1, "values": [ 0.0 ] },
-        { "name": "desaturation", "type": "float", "count": 1, "values": [ 0.0 ] }
+        { "name": "desaturation", "type": "float", "count": 1, "values": [ 0.0 ] },
+
+        { "name": "ProjMat",       "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+        { "name": "OutSize",       "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }
     ]
 }

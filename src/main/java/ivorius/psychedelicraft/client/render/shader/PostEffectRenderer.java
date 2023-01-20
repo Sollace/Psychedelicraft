@@ -22,7 +22,7 @@ public class PostEffectRenderer {
     }
 
     public void onShadersLoaded(List<LoadedShader> shaders) {
-        List<LoadedShader> oldShaders = shaders;
+        List<LoadedShader> oldShaders = this.shaders;
         this.shaders = shaders;
         oldShaders.forEach(PostEffectProcessor::close);
     }

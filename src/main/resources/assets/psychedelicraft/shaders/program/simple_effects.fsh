@@ -1,7 +1,9 @@
-#version 120
+#version 150
 #moj_import <psychedelicraft:utils.glsl>
 
-uniform sampler2D tex0;
+uniform sampler2D DiffuseSampler;
+
+in vec2 texCoord;
 
 uniform float ticks;
 
@@ -10,19 +12,27 @@ uniform float quickColorRotation;
 uniform float colorIntensification;
 uniform float desaturation;
 
-void main()
-{
-	gl_FragColor = texture2D(tex0, gl_TexCoord[0].st);
+out vec4 fragColor;
 
-	if(slowColorRotation > 0.0)
-		gl_FragColor.rgb = mix(gl_FragColor.rgb, getRotatedColor(gl_FragColor.rgb, mod(ticks, 300.0) / 300.0), slowColorRotation / 2.0);
+void main() {
+  vec4 texel = texture(DiffuseSampler, texCoord);
+  vec3 outcolor = texel.rgb;
 
-    if(quickColorRotation > 0.0)
-        gl_FragColor.rgb = mix(gl_FragColor.rgb, getRotatedColor(gl_FragColor.rgb, mod(ticks + gl_FogFragCoord, 50.0) / 50.0), clamp(quickColorRotation * 1.5, 0.0, 1.0));
+  if (slowColorRotation > 0.0) {
+    outcolor = mix(outcolor, getRotatedColor(outcolor, mod(ticks, 300.0) / 300.0), slowColorRotation / 2.0);
+  }
 
-	if (colorIntensification != 0.0)
-		gl_FragColor.rgb = mix(gl_FragColor.rgb, getIntensifiedColor(gl_FragColor.rgb), colorIntensification);
+  if (quickColorRotation > 0.0) {
+     outcolor = mix(outcolor, getRotatedColor(outcolor, mod(ticks/* + fogFragCoord[0]*/, 50.0) / 50.0), clamp(quickColorRotation * 1.5, 0.0, 1.0));
+  }
 
-	if (desaturation != 0.0)
-		gl_FragColor.rgb = mix(gl_FragColor.rgb, getDesaturatedColor(gl_FragColor.rgb), desaturation);
+  if (colorIntensification != 0.0) {
+    outcolor = mix(outcolor, getIntensifiedColor(outcolor), colorIntensification);
+  }
+
+  if (desaturation != 0.0) {
+    outcolor = mix(outcolor, getDesaturatedColor(outcolor), desaturation);
+  }
+
+  fragColor = vec4(outcolor, 1.0);
 }

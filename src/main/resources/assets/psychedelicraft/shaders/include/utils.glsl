@@ -1,4 +1,4 @@
-#version 120
+#version 150
 
 vec3 getRotatedColor(vec3 color, float rot)
 {

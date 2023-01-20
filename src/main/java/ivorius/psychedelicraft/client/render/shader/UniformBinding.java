@@ -18,9 +18,9 @@ public interface UniformBinding {
         void set(String name, Vector3f values);
 
         default boolean setIfNonZero(String name, float value) {
-            if (value <= 0) {
-                return false;
-            }
+            //if (value <= 0) {
+            //    return false;
+            //}
             set(name, value);
             return true;
         }
@@ -41,6 +41,7 @@ public interface UniformBinding {
         }
 
         public Set program(String programName, UniformBinding binding) {
+            programBindings.put(programName, binding);
             return this;
         }
     }
