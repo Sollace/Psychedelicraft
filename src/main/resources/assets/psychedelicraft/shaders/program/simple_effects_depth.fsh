@@ -1,4 +1,5 @@
 #version 120
+#moj_import <psychedelicraft:utils.glsl>
 
 uniform sampler2D tex0;
 uniform sampler2D depthTex;

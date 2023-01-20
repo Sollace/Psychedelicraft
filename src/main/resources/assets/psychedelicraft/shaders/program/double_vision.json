@@ -4,8 +4,8 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "psychadelicraft:post/basic",
-    "fragment": "psychadelicraft:post/double_vision",
+    "vertex": "basic",
+    "fragment": "double_vision",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "tex0" }

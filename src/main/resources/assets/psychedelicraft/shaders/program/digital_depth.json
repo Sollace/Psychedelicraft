@@ -4,8 +4,8 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "psychadelicraft:post/basic",
-    "fragment": "psychadelicraft:post/digital_depth",
+    "vertex": "basic",
+    "fragment": "digital_depth",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "depthTex" },

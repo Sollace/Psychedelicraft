@@ -1,4 +1,5 @@
 #version 120
+#moj_import <psychedelicraft:utils.glsl>
 
 #define MAX_LIGHTS 3
 

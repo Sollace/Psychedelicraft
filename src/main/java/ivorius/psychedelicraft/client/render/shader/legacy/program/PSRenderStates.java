@@ -138,12 +138,12 @@ public class PSRenderStates {
         effectWrappers.add(new WrapperHeatDistortion(utils));
         effectWrappers.add(new WrapperUnderwaterDistortion(utils));
         effectWrappers.add(new WrapperWaterOverlay(utils));
-        effectWrappers.add(new WrapperSimpleEffects(utils));
-        effectWrappers.add(new WrapperBlur(utils));
+       // effectWrappers.add(new WrapperSimpleEffects(utils));
+       // effectWrappers.add(new WrapperBlur(utils));
         effectWrappers.add(new WrapperDoF(utils));
         effectWrappers.add(new WrapperRadialBlur(utils));
-        effectWrappers.add(new WrapperBloom(utils));
-        effectWrappers.add(new WrapperColorBloom(utils));
+       // effectWrappers.add(new WrapperBloom(utils));
+       // effectWrappers.add(new WrapperColorBloom(utils));
         effectWrappers.add(new WrapperDoubleVision(utils));
         effectWrappers.add(new WrapperBlurNoise(utils));
         effectWrappers.add(new WrapperDigital(utils));

@@ -4,8 +4,8 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "psychadelicraft:post/basic",
-    "fragment": "psychadelicraft:post/blur_noise",
+    "vertex": "basic",
+    "fragment": "blur_noise",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "tex0" }

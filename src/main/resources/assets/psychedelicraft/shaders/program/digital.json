@@ -4,8 +4,8 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "psychadelicraft:post/basic",
-    "fragment": "psychadelicraft:post/digital",
+    "vertex": "basic",
+    "fragment": "digital",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "tex0" },

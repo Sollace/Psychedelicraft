@@ -4,14 +4,17 @@ import java.util.function.Supplier;
 
 import ivorius.psychedelicraft.client.item.PSModelPredicates;
 import ivorius.psychedelicraft.client.render.*;
+import ivorius.psychedelicraft.client.render.shader.ShaderLoader;
 import ivorius.psychedelicraft.client.screen.PSScreens;
 import ivorius.psychedelicraft.config.JsonConfig;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.resource.ResourceType;
 
 /**
  * @author Sollace
@@ -41,6 +44,8 @@ public class PsychedelicraftClient implements ClientModInitializer {
                 DrugRenderer.INSTANCE.renderAllHallucinations(context.matrixStack(), context.consumers(), context.camera(), context.tickDelta(), properties);
             });
         });
+
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ShaderLoader.POST_EFFECTS);
 
         PSRenderers.bootstrap();
         PSModelPredicates.bootstrap();

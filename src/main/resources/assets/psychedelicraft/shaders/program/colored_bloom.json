@@ -4,8 +4,8 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "psychadelicraft:post/basic",
-    "fragment": "psychadelicraft:post/colored_bloom",
+    "vertex": "basic",
+    "fragment": "colored_bloom",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "tex0" }

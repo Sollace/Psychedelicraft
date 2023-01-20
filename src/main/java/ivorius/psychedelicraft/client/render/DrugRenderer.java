@@ -5,7 +5,9 @@
 
 package ivorius.psychedelicraft.client.render;
 
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.effect.*;
+import ivorius.psychedelicraft.client.render.shader.PostEffectRenderer;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.hallucination.Hallucination;
@@ -39,15 +41,33 @@ public class DrugRenderer {
             new MotionBlurScreenEffect()
     );
 
+    private final PostEffectRenderer postEffects = new PostEffectRenderer();
+
+    private float screenBackgroundBlur;
+
     public ScreenEffect getScreenEffects() {
         return screenEffects;
+    }
+
+    public PostEffectRenderer getPostEffects() {
+        return postEffects;
     }
 
     public EnvironmentalScreenEffect getEnvironmentalEffects() {
         return environmentalEffects;
     }
 
+    public float getMenuBlur() {
+        return PsychedelicraftClient.getConfig().visual.pauseMenuBlur * screenBackgroundBlur * screenBackgroundBlur * screenBackgroundBlur;
+    }
+
     public void update(DrugProperties drugProperties, LivingEntity entity) {
+        if (MinecraftClient.getInstance().isPaused()) {
+            screenBackgroundBlur = Math.min(1, screenBackgroundBlur + 0.25F);
+        } else {
+            screenBackgroundBlur = Math.max(0, screenBackgroundBlur - 0.25F);
+        }
+
         screenEffects.update(MinecraftClient.getInstance().getTickDelta());
     }
 

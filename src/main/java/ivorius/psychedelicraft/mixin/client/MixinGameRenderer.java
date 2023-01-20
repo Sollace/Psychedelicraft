@@ -22,4 +22,19 @@ abstract class MixinGameRenderer {
     public void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
         DrugRenderer.INSTANCE.distortScreen(matrices, tickDelta);
     }
+
+    @Inject(method = "render",
+            at = @At(
+                value = "INVOKE",
+                target = "net/minecraft/client/gl/Framebuffer.beginWrite(Z)V",
+                shift = Shift.BEFORE)
+    )
+    private void onBeforeFrameEnd(float tickDelta, long startTime, boolean tick, CallbackInfo info) {
+        DrugRenderer.INSTANCE.getPostEffects().render(tickDelta);
+    }
+
+    @Inject(method = "onResized", at = @At("HEAD"))
+    private void onResized(int width, int height, CallbackInfo info) {
+        DrugRenderer.INSTANCE.getPostEffects().setupDimensions(width, height);
+    }
 }

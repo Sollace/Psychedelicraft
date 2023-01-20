@@ -4,8 +4,8 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "psychadelicraft:post/3d",
-    "fragment": "psychadelicraft:post/3d_depth",
+    "vertex": "3d",
+    "fragment": "3d_depth",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "tex0" }

@@ -4,8 +4,8 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "psychadelicraft:post/basic",
-    "fragment": "psychadelicraft:post/distortion_map",
+    "vertex": "basic",
+    "fragment": "distortion_map",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "tex0" },
