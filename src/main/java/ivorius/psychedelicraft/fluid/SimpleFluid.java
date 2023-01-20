@@ -155,7 +155,7 @@ public class SimpleFluid {
             return VANILLA_FLUIDS.computeIfAbsent(id, i -> {
                 return Registries.FLUID.getOrEmpty(i)
                         .map(SimpleFluid::toStill)
-                        .map(fluid -> new SimpleFluid(i, 0, fluid))
+                        .map(fluid -> new SimpleFluid(Registries.FLUID.getId(fluid), 0xFFFFFFFF, fluid))
                         .orElse(PSFluids.EMPTY);
             });
         });
