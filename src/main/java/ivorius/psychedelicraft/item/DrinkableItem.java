@@ -17,7 +17,7 @@ import net.minecraft.world.World;
  * Created by Sollace on Jan 1 2023
  */
 public class DrinkableItem extends Item implements FluidContainerItem {
-    public static final int FLUID_PER_DRINKING = FluidHelper.MILLIBUCKETS_PER_LITER / 4;
+    public static final int FLUID_PER_DRINKING = FluidVolumes.BUCKET / 4;
 
     private final int capacity;
 

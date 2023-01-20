@@ -18,12 +18,10 @@ import net.minecraft.util.math.*;
  * Created by lukas on 27.10.14.
  */
 public class MashTubBlockEntity extends FluidProcessingBlockEntity {
-    public static final int MASH_TUB_CAPACITY = FluidHelper.MILLIBUCKETS_PER_LITER * 16;
-
     public ItemStack solidContents = ItemStack.EMPTY;
 
     public MashTubBlockEntity(BlockPos pos, BlockState state) {
-        super(PSBlockEntities.MASH_TUB, pos, state, MASH_TUB_CAPACITY, Processable.ProcessType.FERMENT);
+        super(PSBlockEntities.MASH_TUB, pos, state, FluidVolumes.MASH_TUB, Processable.ProcessType.FERMENT);
     }
 
     @Override

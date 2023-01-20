@@ -14,7 +14,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 
 public class BarrelBlockEntity extends FluidProcessingBlockEntity {
-    public static final int BARREL_CAPACITY = FluidHelper.MILLIBUCKETS_PER_LITER * 16;
 
     public int timeFermented;
 
@@ -22,7 +21,7 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     public int timeLeftTapOpen = 0;
 
     public BarrelBlockEntity(BlockPos pos, BlockState state) {
-        super(PSBlockEntities.BARREL, pos, state, BARREL_CAPACITY, Processable.ProcessType.FERMENT);
+        super(PSBlockEntities.BARREL, pos, state, FluidVolumes.BARREL, Processable.ProcessType.FERMENT);
     }
 
     @Override

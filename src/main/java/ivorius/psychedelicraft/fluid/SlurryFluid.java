@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
  * Created by lukas on 27.10.14.
  */
 public class SlurryFluid extends SimpleFluid implements Processable {
-    public static final int FLUID_PER_DIRT = FluidHelper.MILLIBUCKETS_PER_LITER * 4;
+    public static final int FLUID_PER_DIRT = FluidVolumes.BUCKET * 4;
 
     public SlurryFluid(Identifier id, Settings settings) {
         super(id, settings);

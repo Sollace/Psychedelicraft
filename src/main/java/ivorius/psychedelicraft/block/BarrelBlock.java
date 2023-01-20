@@ -32,7 +32,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
-    public static final int MAX_TAP_AMOUNT = FluidHelper.MILLIBUCKETS_PER_LITER;
+    public static final int MAX_TAP_AMOUNT = FluidVolumes.BUCKET;
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     private static final VoxelShape X_ORIENTED_SHAPE = VoxelShapes.union(

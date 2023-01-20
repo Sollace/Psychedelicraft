@@ -203,7 +203,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
             Resovoir tank = be.getTank(Direction.UP);
             return (tank.isEmpty()
                 || tank.getFluidType().getFluidState(0).isOf(fluid))
-                && tank.getCapacity() - tank.getLevel() >=  FluidHelper.MILLIBUCKETS_PER_LITER;
+                && tank.getCapacity() - tank.getLevel() >=  FluidVolumes.BUCKET;
         }).isPresent();
     }
 
@@ -214,12 +214,12 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
             Resovoir tank = be.getTank(Direction.UP);
 
-            if (tank.getCapacity() - tank.getLevel() <  FluidHelper.MILLIBUCKETS_PER_LITER) {
+            if (tank.getCapacity() - tank.getLevel() <  FluidVolumes.BUCKET) {
                 return false;
             }
 
-            ItemStack overflow = tank.deposit(f.getDefaultStack(FluidHelper.MILLIBUCKETS_PER_LITER));
-            if (!FluidContainerItem.DEFAULT.getFluid(overflow).isEmpty()) {
+            ItemStack overflow = tank.deposit(f.getDefaultStack(FluidVolumes.BUCKET));
+            if (!FluidContainerItem.UNLIMITED.getFluid(overflow).isEmpty()) {
                 if (world instanceof World) {
                     Block.dropStack((World)world, pos, overflow);
                 }

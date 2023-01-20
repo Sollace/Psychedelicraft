@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.item;
 
-import static ivorius.psychedelicraft.fluid.FluidHelper.MILLIBUCKETS_PER_LITER;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
 import ivorius.psychedelicraft.block.entity.*;
@@ -14,6 +12,7 @@ import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.influence.HarmoniumDrugInfluence;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
+import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.*;
@@ -26,18 +25,18 @@ import net.minecraft.registry.Registry;
  * Updated by Sollace on 1 Jan 2023
  */
 public interface PSItems {
-    DrinkableItem WOODEN_MUG = register("wooden_mug", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER / 2, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem STONE_CUP = register("stone_cup", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER / 20, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem GLASS_CHALICE = register("glass_chalice", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER / 5, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem WOODEN_MUG = register("wooden_mug", new DrinkableItem(new Settings(), FluidVolumes.MUG, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem STONE_CUP = register("stone_cup", new DrinkableItem(new Settings(), FluidVolumes.CUP, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem GLASS_CHALICE = register("glass_chalice", new DrinkableItem(new Settings(), FluidVolumes.CHALLICE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
 
-    FlaskItem OAK_BARREL = register("oak_barrel", new FlaskItem(PSBlocks.OAK_BARREL, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
-    FlaskItem SPRUCE_BARREL = register("spruce_barrel", new FlaskItem(PSBlocks.SPRUCE_BARREL, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
-    FlaskItem BIRCH_BARREL = register("birch_barrel", new FlaskItem(PSBlocks.BIRCH_BARREL, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
-    FlaskItem JUNGLE_BARREL = register("jungle_barrel", new FlaskItem(PSBlocks.JUNGLE_BARREL, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
-    FlaskItem ACACIA_BARREL = register("acacia_barrel", new FlaskItem(PSBlocks.ACACIA_BARREL, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
-    FlaskItem DARK_OAK_BARREL = register("dark_oak_barrel", new FlaskItem(PSBlocks.DARK_OAK_BARREL, new Settings().maxCount(16), BarrelBlockEntity.BARREL_CAPACITY));
+    FlaskItem OAK_BARREL = register("oak_barrel", new FlaskItem(PSBlocks.OAK_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
+    FlaskItem SPRUCE_BARREL = register("spruce_barrel", new FlaskItem(PSBlocks.SPRUCE_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
+    FlaskItem BIRCH_BARREL = register("birch_barrel", new FlaskItem(PSBlocks.BIRCH_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
+    FlaskItem JUNGLE_BARREL = register("jungle_barrel", new FlaskItem(PSBlocks.JUNGLE_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
+    FlaskItem ACACIA_BARREL = register("acacia_barrel", new FlaskItem(PSBlocks.ACACIA_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
+    FlaskItem DARK_OAK_BARREL = register("dark_oak_barrel", new FlaskItem(PSBlocks.DARK_OAK_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
 
-    FlaskItem MASH_TUB = register("mash_tub", new MashTubItem(PSBlocks.MASH_TUB, new Settings().maxCount(16)));
+    FlaskItem MASH_TUB = register("mash_tub", new FlaskItem(PSBlocks.MASH_TUB, new Settings().maxCount(16), FluidVolumes.MASH_TUB));
     FlaskItem FLASK = register("flask", new FlaskItem(PSBlocks.FLASK, new Settings().maxCount(16), FlaskBlockEntity.FLASK_CAPACITY));
     FlaskItem DISTILLERY = register("distillery", new FlaskItem(PSBlocks.DISTILLERY, new Settings().maxCount(16), DistilleryBlockEntity.DISTILLERY_CAPACITY));
     RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings()));
@@ -45,8 +44,8 @@ public interface PSItems {
     Item WINE_GRAPES = register("wine_grapes", new WineGrapesItem(new Settings().food(
             new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()
     ), 15));
-    DrinkableItem BOTTLE = register("bottle", new DrinkableItem(new Settings(), MILLIBUCKETS_PER_LITER * 2, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings().maxCount(16), MILLIBUCKETS_PER_LITER * 2));
+    DrinkableItem BOTTLE = register("bottle", new DrinkableItem(new Settings(), FluidVolumes.BOTTLE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings().maxCount(16), FluidVolumes.BOTTLE));
 
     Item CANNABIS_SEEDS = register("cannabis_seeds", new AliasedBlockItem(PSBlocks.CANNABIS, new Settings()));
     Item CANNABIS_LEAF = register("cannabis_leaf");
@@ -93,7 +92,7 @@ public interface PSItems {
     Item DRIED_COCA_LEAVES = register("dried_coca_leaves");
     Item COCAINE_POWDER = register("cocaine_powder", new CocainePowderItem(new Settings(), new DrugInfluence(DrugType.COCAINE, 0, 0.002, 0.003, 0.35f)));
 
-    InjectableItem SYRINGE = register("syringe", new InjectableItem(new Settings(), MILLIBUCKETS_PER_LITER / 100));
+    InjectableItem SYRINGE = register("syringe", new InjectableItem(new Settings(), FluidVolumes.SYRINGE));
 
     Item JUNIPER_LEAVES = register("juniper_leaves", PSBlocks.JUNIPER_LEAVES);
     Item FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", PSBlocks.FRUITING_JUNIPER_LEAVES);

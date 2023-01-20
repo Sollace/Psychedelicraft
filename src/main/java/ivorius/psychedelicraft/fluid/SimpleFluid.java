@@ -111,11 +111,11 @@ public class SimpleFluid {
     }
 
     public final ItemStack getDefaultStack() {
-        return getDefaultStack(FluidContainerItem.DEFAULT);
+        return getDefaultStack(FluidContainerItem.UNLIMITED);
     }
 
     public final ItemStack getDefaultStack(int level) {
-        return getDefaultStack(FluidContainerItem.DEFAULT, level);
+        return getDefaultStack(FluidContainerItem.UNLIMITED, level);
     }
 
     public ItemStack getDefaultStack(FluidContainerItem container, int level) {

@@ -37,7 +37,7 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
     private static final int[] INPUT_SLOT_ID = {0};
     private static final int[] OUTPUT_SLOT_ID = {1};
 
-    public static final int FLASK_CAPACITY = FluidHelper.MILLIBUCKETS_PER_LITER * 8;
+    public static final int FLASK_CAPACITY = FluidVolumes.BUCKET * 8;
 
     private final Resovoir tank;
     private boolean pendingSync;

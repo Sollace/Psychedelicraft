@@ -1,10 +1,12 @@
 package ivorius.psychedelicraft.fluid;
 
-import ivorius.psychedelicraft.recipe.Pourable;
+import java.util.*;
+
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -12,20 +14,46 @@ import net.minecraft.util.math.MathHelper;
  * @author Sollace
  * @since 1 Jan 2023
  */
-public interface FluidContainerItem extends Pourable, ItemConvertible {
-    FluidContainerItem DEFAULT = new FluidContainerItem() {
+public interface FluidContainerItem extends ItemConvertible {
+    Map<Item, FluidContainerItem> DYNAMIC_CONTAINERS = new HashMap<>();
+    Map<TagKey<Item>, FluidContainerItem> DYNAMIC_CONTAINER_TAGS = new HashMap<>();
+    FluidContainerItem UNLIMITED = new FluidContainerItem() {
         @Override
         public Item asItem() {
-            return Items.AIR;
+            return Items.STONE;
         }
         @Override
         public int getMaxCapacity() {
             return Integer.MAX_VALUE;
         }
     };
+    FluidContainerItem BUCKET = create(Items.BUCKET, FluidVolumes.BUCKET);
+    FluidContainerItem BOWL = create(Items.BOWL, FluidVolumes.BOWL);
+    FluidContainerItem GLASS_BOTTLE = create(Items.GLASS_BOTTLE, FluidVolumes.GLASS_BOTTLE);
+    FluidContainerItem CAULDRON = create(Items.CAULDRON, FluidVolumes.CAULDRON);
+
+    static FluidContainerItem create(Item item, int capacity) {
+        FluidContainerItem container = new FluidContainerItem() {
+            @Override
+            public Item asItem() {
+                return item;
+            }
+
+            @Override
+            public int getMaxCapacity() {
+                return capacity;
+            }
+        };
+        DYNAMIC_CONTAINERS.put(item, container);
+        return container;
+    }
 
     static FluidContainerItem of(ItemStack stack) {
-        return stack.getItem() instanceof FluidContainerItem c ? c : DEFAULT;
+        return of(stack, UNLIMITED);
+    }
+
+    static FluidContainerItem of(ItemStack stack, FluidContainerItem fallback) {
+        return stack.getItem() instanceof FluidContainerItem c ? c : fallback;
     }
 
     int getMaxCapacity();
@@ -39,7 +67,7 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
     }
 
     default ItemStack getDefaultStack(SimpleFluid fluid) {
-        Item bucketItem = this != DEFAULT || fluid.getFluidState(0).getFluid() == Fluids.EMPTY ? asItem() : fluid.getFluidState(0).getFluid().getBucketItem();
+        Item bucketItem = this != UNLIMITED || fluid.getFluidState(0).getFluid() == Fluids.EMPTY ? asItem() : fluid.getFluidState(0).getFluid().getBucketItem();
         return setLevel(setFluid(bucketItem.getDefaultStack(), fluid), getMaxCapacity());
     }
 
@@ -117,18 +145,5 @@ public interface FluidContainerItem extends Pourable, ItemConvertible {
         int level = getFluidLevel(stack) + of(from).getFluidLevel(from);
         stack.getOrCreateSubNbt("fluid").copyFrom(source);
         return setLevel(setFluid(stack, fluid), level);
-    }
-
-    @Override
-    default boolean canPour(ItemStack stack, ItemStack destination) {
-        SimpleFluid myFluid = getFluid(stack);
-        return !myFluid.isEmpty()
-            && myFluid == getFluid(destination)
-            && getFluidLevel(destination) < getMaxCapacity(destination);
-    }
-
-    @Override
-    default boolean canReceivePour(ItemStack stack, ItemStack src) {
-        return canPour(src, stack);
     }
 }
