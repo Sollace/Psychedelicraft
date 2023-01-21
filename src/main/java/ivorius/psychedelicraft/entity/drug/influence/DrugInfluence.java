@@ -34,7 +34,11 @@ public class DrugInfluence implements NbtSerialisable {
     private final InfluenceType type;
 
     public DrugInfluence(DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence) {
-        this(InfluenceType.DEFAULT);
+        this(InfluenceType.DEFAULT, drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
+    }
+
+    public DrugInfluence(InfluenceType type, DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence) {
+        this(type);
         this.drugType = drugType;
 
         this.delay = delay;

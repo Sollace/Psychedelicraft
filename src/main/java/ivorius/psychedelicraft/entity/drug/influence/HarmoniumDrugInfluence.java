@@ -14,15 +14,16 @@ import net.minecraft.util.math.MathHelper;
  * Created by lukas on 10.03.14.
  */
 public class HarmoniumDrugInfluence extends DrugInfluence {
-    public float[] color;
+
+    private float[] color;
 
     public HarmoniumDrugInfluence(int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color) {
-        super(DrugType.HARMONIUM, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
+        super(InfluenceType.HARMONIUM, DrugType.HARMONIUM, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
         this.color = color;
     }
 
-    public HarmoniumDrugInfluence() {
-        super(InfluenceType.HARMONIUM);
+    public HarmoniumDrugInfluence(InfluenceType type) {
+        super(type);
         color = new float[3];
     }
 
