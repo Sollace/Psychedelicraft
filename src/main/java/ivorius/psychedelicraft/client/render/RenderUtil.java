@@ -66,7 +66,13 @@ public class RenderUtil {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.setShaderTexture(0, texture);
-        drawQuad(matrices, -offset, -offset, width + offset, height + offset, SCREEN_Z_OFFSET);
+        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        fastVertex(buffer, matrices, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1).next();
+        fastVertex(buffer, matrices, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1).next();
+        fastVertex(buffer, matrices, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0).next();
+        fastVertex(buffer, matrices, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0).next();
+        Tessellator.getInstance().draw();
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
