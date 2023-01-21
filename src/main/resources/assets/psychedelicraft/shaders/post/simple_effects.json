@@ -1,13 +1,12 @@
 {
     "targets": [
-        "swap",
-        "temp"
+        "swap"
     ],
     "passes": [
         {
             "name": "simple_effects",
             "intarget": "minecraft:main",
-            "outtarget": "temp",
+            "outtarget": "swap",
             "uniforms": [
                 { "name": "ticks", "values": [ 1.0 ] },
                 { "name": "slowColorRotation", "values": [ 0.0 ] },
@@ -17,18 +16,8 @@
             ]
         },
         {
-            "name": "ps_blur",
-            "intarget": "minecraft:main",
-            "outtarget": "temp",
-            "uniforms": [
-                { "name": "pixelSize",  "values": [ 1.0, 1.0 ] },
-                { "name": "vertical",  "values": [ 1.0 ] },
-                { "name": "totalAlpha",  "values": [ 1.0 ] }
-            ]
-        },
-        {
             "name": "blit",
-            "intarget": "temp",
+            "intarget": "swap",
             "outtarget": "minecraft:main"
         }
     ]

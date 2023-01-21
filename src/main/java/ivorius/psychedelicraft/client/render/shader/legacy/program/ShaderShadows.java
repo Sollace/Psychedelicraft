@@ -65,6 +65,11 @@ public class ShaderShadows extends IvShaderInstance3D implements ShaderWorld {
     }
 
     @Override
+    public boolean shouldApply(float tickDelta) {
+        return true;
+    }
+
+    @Override
     public void deactivate() {
         if (isShaderActive()) {
             depthBuffer.delete();

@@ -4,7 +4,7 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "basic",
+    "vertex": "blit",
     "fragment": "simple_effects",
     "attributes": [ "Position" ],
     "samplers": [

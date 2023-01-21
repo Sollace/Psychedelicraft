@@ -1,23 +1,22 @@
 #version 150
-#moj_import <psychedelicraft:utils.glsl>
 
 uniform sampler2D DiffuseSampler;
 
 in vec2 texCoord;
+in vec2 oneTexel;
 
 uniform vec2 pixelSize;
-uniform float vertical;
-uniform float totalAlpha;
+uniform float hBlur;
+uniform float vBlur;
+uniform float repeats;
 
 out vec4 fragColor;
 
-void main() {
-  vec4 texel = texture(DiffuseSampler, texCoord);
-  vec3 outcolor = texel.rgb;
+vec3 blurPass(vec3 outcolor, int i, float totalAlpha) {
   vec3 newColor = outcolor * 0.2;
 
-  float xMul = (vertical == 0) ? pixelSize.x : 0.0;
-  float yMul = (vertical == 1) ? pixelSize.y : 0.0;
+  float xMul = (i == 0) ? pixelSize.x * hBlur : 0.0;
+  float yMul = (i == 1) ? pixelSize.y * vBlur : 0.0;
 
   for (float i = -1.0; i < 2.0; i += 2.0) {
     newColor += texture(DiffuseSampler, clamp(vec2(texCoord[0] + 1.0 * i * xMul, texCoord[1] + 1.0 * i * yMul), 0.0, 1.0)).rgb * 0.15;
@@ -26,5 +25,29 @@ void main() {
     newColor += texture(DiffuseSampler, clamp(vec2(texCoord[0] + 4.0 * i * xMul, texCoord[1] + 4.0 * i * yMul), 0.0, 1.0)).rgb * 0.05;
   }
 
-  fragColor = vec4(mix(outcolor, newColor, totalAlpha), 1.0);
+  return mix(outcolor, newColor, totalAlpha);
 }
+
+void main() {
+  vec4 texel = texture(DiffuseSampler, texCoord);
+  vec3 outcolor = texel.rgb;
+
+  for (int n = 0; n < repeats; n++) {
+    float activeHBlur = min(1, hBlur - n);
+    float activeVBlur = min(1, vBlur - n);
+
+    if (activeHBlur > 0 && activeVBlur > 0) {
+      outcolor = mix(blurPass(outcolor, 0, activeHBlur), blurPass(outcolor, 1, activeVBlur), 0.5);
+    } else {
+      if (activeHBlur > 0) {
+        outcolor = blurPass(outcolor, 0, activeHBlur);
+      }
+      if (activeVBlur > 0) {
+        outcolor = blurPass(outcolor, 1, activeVBlur);
+      }
+    }
+  }
+
+  fragColor = vec4(outcolor, 1.0);
+}
+

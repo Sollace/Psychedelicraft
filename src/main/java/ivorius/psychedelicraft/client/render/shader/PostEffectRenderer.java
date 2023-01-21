@@ -4,17 +4,20 @@ import java.util.*;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import net.minecraft.client.gl.PostEffectProcessor;
 
 public class PostEffectRenderer {
     private List<LoadedShader> shaders = new ArrayList<>();
 
     public void render(float tickDelta) {
-        RenderSystem.disableBlend();
-        RenderSystem.disableDepthTest();
-        RenderSystem.enableTexture();
-        RenderSystem.resetTextureMatrix();
-        shaders.forEach(shader -> shader.render(tickDelta));
+        if (PsychedelicraftClient.getConfig().visual.shader2DEnabled) {
+            RenderSystem.disableBlend();
+            RenderSystem.disableDepthTest();
+            RenderSystem.enableTexture();
+            RenderSystem.resetTextureMatrix();
+            shaders.forEach(shader -> shader.render(tickDelta));
+        }
     }
 
     public void setupDimensions(int width, int height) {

@@ -10,7 +10,7 @@ import net.minecraft.client.render.VertexFormat.DrawMode;
  * Created by Sollace on 4 Jan 2023
  */
 @Deprecated
-public class IvShaderInstance2D implements AutoCloseable {
+public abstract class IvShaderInstance2D implements AutoCloseable {
     static void drawScreen(int screenWidth, int screenHeight) {
         BufferBuilder renderer = Tessellator.getInstance().getBuffer();
         renderer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
@@ -43,9 +43,7 @@ public class IvShaderInstance2D implements AutoCloseable {
 
     }
 
-    public boolean shouldApply(float tickDelta) {
-        return false;
-    }
+    public abstract boolean shouldApply(float tickDelta);
 
     protected void drawFullScreen(int width, int height, PingPong pingPong) {}
 

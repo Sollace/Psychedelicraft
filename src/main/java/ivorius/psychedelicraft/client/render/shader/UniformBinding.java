@@ -7,7 +7,6 @@ import org.joml.Vector3f;
 public interface UniformBinding {
     UniformBinding EMPTY = (uniforms, tickDelta, screenWidth, screenHeight, pass) -> pass.run();
 
-
     void bindUniforms(UniformSetter uniforms, float tickDelta, int screenWidth, int screenHeight, Runnable pass);
 
     public interface UniformSetter {
@@ -18,11 +17,8 @@ public interface UniformBinding {
         void set(String name, Vector3f values);
 
         default boolean setIfNonZero(String name, float value) {
-            //if (value <= 0) {
-            //    return false;
-            //}
             set(name, value);
-            return true;
+            return value > 0;
         }
     }
 

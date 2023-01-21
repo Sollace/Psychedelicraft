@@ -48,9 +48,10 @@ class LoadedShader extends PostEffectProcessor {
             time -= 20;
         }
 
+        boolean rendered = false;
         final float passRenderFrame = time / 20F;
         for (Pass pass : passes) {
-            pass.render(passRenderFrame, tickDelta);
+            rendered |= pass.render(passRenderFrame, tickDelta, rendered);
         }
     }
 
@@ -78,26 +79,40 @@ class LoadedShader extends PostEffectProcessor {
         private final List<FloatConsumer> replay = new ArrayList<>();
         private int updateCount;
 
+        private boolean rendered;
+
         public Pass(PostEffectPass pass) {
             this.pass = pass;
             this.program = pass.getProgram();
         }
 
-        public void render(float passRenderTime, float tickDelta) {
+        public boolean render(float passRenderTime, float tickDelta, boolean rendered) {
+            if (pass.getName().equals("blit") && !rendered) {
+                return false;
+            }
+
             if (updateCount == 0) {
                 replay.clear();
                 var programBindings = bindings.programBindings.getOrDefault(pass.getName(), UniformBinding.EMPTY);
                 bindings.global.bindUniforms(this, tickDelta, width, height, () -> {
                     programBindings.bindUniforms(this, tickDelta, width, height, () -> {
-                        replay.add(pass::render);
+                        replay.add(this::renderPass);
                     });
                 });
             }
 
             updateCount = (updateCount + 1) % 2;
+            this.rendered = false;
             for (FloatConsumer action : replay) {
                 action.accept(passRenderTime);
             }
+            return this.rendered;
+        }
+
+        private void renderPass(float passRenderTime) {
+            pass.render(passRenderTime);
+            passes.get(passes.size() - 1).pass.render(passRenderTime);
+            rendered = true;
         }
 
         @Override

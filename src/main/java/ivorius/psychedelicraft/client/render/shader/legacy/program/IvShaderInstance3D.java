@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by Sollace on 4 Jan 2023
  */
-public class IvShaderInstance3D extends IvShaderInstance2D {
+public abstract class IvShaderInstance3D extends IvShaderInstance2D {
     protected IvShaderInstance3D(Logger logger) {
         super(logger);
     }

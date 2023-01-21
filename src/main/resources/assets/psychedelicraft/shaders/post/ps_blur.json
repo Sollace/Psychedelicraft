@@ -1,0 +1,23 @@
+{
+    "targets": [
+        "swap"
+    ],
+    "passes": [
+        {
+            "name": "ps_blur",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "uniforms": [
+                { "name": "pixelSize", "values": [ 1.0, 1.0 ] },
+                { "name": "hBlur",     "values": [ 1.0 ] },
+                { "name": "vBlur",     "values": [ 1.0 ] },
+                { "name": "repeats",   "values": [ 1.0 ] }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}

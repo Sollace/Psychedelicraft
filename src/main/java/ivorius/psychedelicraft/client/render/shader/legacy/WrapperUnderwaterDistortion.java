@@ -11,18 +11,17 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.GLStateProxy;
-import ivorius.psychedelicraft.client.render.shader.legacy.program.ShaderHeatDistortions;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.util.Identifier;
 
 /**
  * Created by lukas on 26.04.14.
  */
-public class WrapperUnderwaterDistortion extends ShaderWrapper<ShaderHeatDistortions> {
+public class WrapperUnderwaterDistortion extends ShaderWrapper<WrapperHeatDistortion.ShaderHeatDistortions> {
     public Identifier heatDistortionNoiseTexture = Psychedelicraft.id("textures/environment/heat_distortion_noise.png");
 
     public WrapperUnderwaterDistortion(String utils) {
-        super(new ShaderHeatDistortions(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderHeatDistortion.frag"), utils);
+        super(new WrapperHeatDistortion.ShaderHeatDistortions(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderHeatDistortion.frag"), utils);
     }
 
     @Override
@@ -47,4 +46,6 @@ public class WrapperUnderwaterDistortion extends ShaderWrapper<ShaderHeatDistort
     public boolean wantsDepthBuffer(float partialTicks) {
         return PsychedelicraftClient.getConfig().visual.doWaterDistortion && getStrength() > 0;
     }
+
+
 }

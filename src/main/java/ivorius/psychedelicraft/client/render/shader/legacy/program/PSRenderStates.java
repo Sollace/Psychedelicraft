@@ -141,7 +141,6 @@ public class PSRenderStates {
        // effectWrappers.add(new WrapperSimpleEffects(utils));
        // effectWrappers.add(new WrapperBlur(utils));
         effectWrappers.add(new WrapperDoF(utils));
-        effectWrappers.add(new WrapperRadialBlur(utils));
        // effectWrappers.add(new WrapperBloom(utils));
        // effectWrappers.add(new WrapperColorBloom(utils));
         effectWrappers.add(new WrapperDoubleVision(utils));

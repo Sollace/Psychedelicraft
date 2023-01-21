@@ -1,0 +1,23 @@
+{
+    "targets": [
+        "swap"
+    ],
+    "passes": [
+        {
+            "name": "ps_colored_bloom",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "uniforms": [
+                { "name": "pixelSize", "values": [ 1.0, 1.0 ] },
+                { "name": "bloomColor", "values": [ 1.0, 1.0, 1.0 ] },
+                { "name": "vertical", "values": [ 1.0 ] },
+                { "name": "totalAlpha", "values": [ 1.0 ] }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}

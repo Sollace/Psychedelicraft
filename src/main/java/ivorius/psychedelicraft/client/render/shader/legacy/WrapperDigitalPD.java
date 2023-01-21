@@ -5,9 +5,12 @@
 
 package ivorius.psychedelicraft.client.render.shader.legacy;
 
+import org.apache.logging.log4j.Logger;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.GLStateProxy;
-import ivorius.psychedelicraft.client.render.shader.legacy.program.ShaderDigitalDepth;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.client.MinecraftClient;
@@ -16,7 +19,7 @@ import net.minecraft.client.gl.Framebuffer;
 /**
  * Created by lukas on 26.04.14.
  */
-public class WrapperDigitalPD extends ShaderWrapper<ShaderDigitalDepth> {
+public class WrapperDigitalPD extends ShaderWrapper<WrapperDigitalPD.ShaderDigitalDepth> {
     public WrapperDigitalPD(String utils) {
         super(new ShaderDigitalDepth(Psychedelicraft.LOGGER), getRL("shaderBasic.vert"), getRL("shaderDigitalDepth.frag"), utils);
     }
@@ -41,5 +44,38 @@ public class WrapperDigitalPD extends ShaderWrapper<ShaderDigitalDepth> {
     @Override
     public boolean wantsDepthBuffer(float partialTicks) {
         return DrugProperties.of(MinecraftClient.getInstance().player).getDrugValue(DrugType.ZERO) > 0;
+    }
+
+    public static class ShaderDigitalDepth extends WrapperDigital.ShaderDigital {
+        public int depthTextureIndex;
+
+        public float zNear;
+        public float zFar;
+
+        public ShaderDigitalDepth(Logger logger) {
+            super(logger);
+        }
+
+        @Override
+        public boolean shouldApply(float ticks) {
+            return depthTextureIndex > 0 && super.shouldApply(ticks);
+        }
+
+        @Override
+        protected void uploadTextures() {
+            RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE + 2, depthTextureIndex);
+            setUniformInts("depthTex", 3);
+            RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE, digitalTextTexture);
+            setUniformInts("asciiTex", 2);
+            RenderSystem.activeTexture(GLStateProxy.DEFAULT_TEXTURE);
+            setUniformInts("tex", 0);
+        }
+
+
+        @Override
+        protected void uploadUniforms(int screenWidth, int screenHeight) {
+            super.uploadUniforms(screenWidth, screenHeight);
+            setUniformFloats("depthRange", zNear, zFar);
+        }
     }
 }

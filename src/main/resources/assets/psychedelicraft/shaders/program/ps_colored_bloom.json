@@ -5,16 +5,16 @@
         "dstrgb": "zero"
     },
     "vertex": "blit",
-    "fragment": "ps_blur",
+    "fragment": "ps_colored_bloom",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "DiffuseSampler" }
     ],
     "uniforms": [
-        { "name": "pixelSize",  "type": "float", "count": 2,  "values": [ 1.0, 1.0 ] },
-        { "name": "hBlur",   "type": "float", "count": 1,  "values": [ 1.0 ] },
-        { "name": "vBlur", "type": "float", "count": 1,  "values": [ 1.0 ] },
-        { "name": "repeats", "type": "float", "count": 1,  "values": [ 1.0 ] },
+        { "name": "pixelSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+        { "name": "bloomColor", "type": "float", "count": 3, "values": [ 1.0, 1.0, 1.0 ] },
+        { "name": "vertical", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
 
         { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
         { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }
