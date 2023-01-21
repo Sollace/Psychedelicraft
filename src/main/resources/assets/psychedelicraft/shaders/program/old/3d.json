@@ -45,6 +45,9 @@
         { "name": "sunDepthRange", "type": "int", "count": 2, "values": [ 0.0, 1.0 ] },
         { "name": "shadowBias", "type": "float", "count": 1, "values": [ 1.0 ] },
 
-        { "name": "doShadows", "type": "int", "count": 1, "values": [ 1.0 ] }
+        { "name": "doShadows", "type": "int", "count": 1, "values": [ 1.0 ] },
+
+        { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+        { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }
     ]
 }
