@@ -65,13 +65,34 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         pass.run();
                     }))
             .addShader("simple_effects", UniformBinding.start()
+                    .bind((setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                        setter.set("ticks", ShaderContext.ticks());
+                        pass.run();
+                    })
                     .program("simple_effects", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var h = ShaderContext.hallucinations();
                         if (setter.setIfNonZero("quickColorRotation", h.getQuickColorRotation(tickDelta))
                          || setter.setIfNonZero("slowColorRotation", h.getSlowColorRotation(tickDelta))
                          || setter.setIfNonZero("desaturation", h.getDesaturation(tickDelta))
-                         || setter.setIfNonZero("colorIntensification", h.getColorIntensification(tickDelta))) {
-                            setter.set("ticks", ShaderContext.ticks());
+                         || setter.setIfNonZero("colorIntensification", h.getColorIntensification(tickDelta))
+                         || h.getPulseColor(tickDelta)[3] > 0
+                         || h.getContrastColorization(tickDelta)[3] > 0) {
+                            pass.run();
+                        }
+                    })
+                    .program("simple_effects_depth", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                        var h = ShaderContext.hallucinations();
+                        var pulses = h.getPulseColor(tickDelta);
+                        var worldColorization = h.getContrastColorization(tickDelta);
+                        if (h.getQuickColorRotation(tickDelta) > 0
+                         || h.getSlowColorRotation(tickDelta) > 0
+                         || h.getDesaturation(tickDelta) > 0
+                         || h.getColorIntensification(tickDelta) > 0
+                         || pulses[3] > 0
+                         || worldColorization[3] > 0) {
+                            setter.set("pulses", pulses);
+                            setter.set("colorSafeMode", 0);
+                            setter.set("worldColorization", worldColorization);
                             pass.run();
                         }
                     }))

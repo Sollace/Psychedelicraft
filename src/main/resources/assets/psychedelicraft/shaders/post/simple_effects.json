@@ -1,18 +1,33 @@
 {
     "targets": [
+        "temp",
         "swap"
     ],
     "passes": [
         {
             "name": "simple_effects",
             "intarget": "minecraft:main",
-            "outtarget": "swap",
+            "outtarget": "temp",
             "uniforms": [
                 { "name": "ticks", "values": [ 1.0 ] },
                 { "name": "slowColorRotation", "values": [ 0.0 ] },
                 { "name": "quickColorRotation", "values": [ 0.0 ] },
                 { "name": "colorIntensification", "values": [ 0.0 ] },
                 { "name": "desaturation", "values": [ 0.0 ] }
+            ]
+        },
+        {
+            "name": "simple_effects_depth",
+            "intarget": "temp",
+            "outtarget": "swap",
+            "auxTargets": [
+                { "name": "DepthSampler", "id": "minecraft:main:depth" }
+            ],
+            "uniforms": [
+              { "name": "ticks", "values": [ 0.0 ] },
+              { "name": "pulses", "values": [ 1.0, 1.0, 1.0, 0.0 ] },
+              { "name": "colorSafeMode", "values": [ 0.0 ] },
+              { "name": "worldColorization", "values": [ 0.0, 0.0, 0.0, 0.0 ] }
             ]
         },
         {
