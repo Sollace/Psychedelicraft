@@ -8,7 +8,7 @@
     "fragment": "double_vision",
     "attributes": [ "Position" ],
     "samplers": [
-        { "name": "tex0" }
+        { "name": "DiffuseSampler" }
     ],
     "uniforms": [
         { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },

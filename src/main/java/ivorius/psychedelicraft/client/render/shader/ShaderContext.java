@@ -4,7 +4,7 @@ import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import net.minecraft.client.MinecraftClient;
 
-interface ShaderContext {
+public interface ShaderContext {
     static HallucinationManager hallucinations() {
         return DrugProperties.of(MinecraftClient.getInstance().player).getHallucinations();
     }
@@ -23,6 +23,10 @@ interface ShaderContext {
 
     static float ticks() {
         return MinecraftClient.getInstance().player.age + MinecraftClient.getInstance().getTickDelta();
+    }
+
+    static long time() {
+        return MinecraftClient.getInstance().world.getTime();
     }
 
     static float viewDistace() {

@@ -16,7 +16,12 @@ public class PostEffectRenderer {
             RenderSystem.disableDepthTest();
             RenderSystem.enableTexture();
             RenderSystem.resetTextureMatrix();
-            shaders.forEach(shader -> shader.render(tickDelta));
+
+            if (shaders.size() == 1) {
+                shaders.get(0).render(tickDelta);
+            } else {
+                shaders.forEach(shader -> shader.render(tickDelta));
+            }
         }
     }
 

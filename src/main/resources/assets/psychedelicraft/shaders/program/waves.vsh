@@ -1,36 +1,22 @@
 #version 120
 // TODO: Needs updating
-#moj_import <psychedelicraft:utils.glsl>
 
 uniform float ticks;
 uniform int worldTime;
-
-uniform int fogMode;
-uniform int lightmapEnabled;
-uniform int texture2DEnabled;
-uniform vec4 overrideColor;
-
-uniform vec4 fractal0TexCoords;
-varying vec2 texFractal0Coords;
+uniform vec3 playerPos;
 
 uniform float bigWaves;
 uniform float smallWaves;
 uniform float wiggleWaves;
 uniform float distantWorldDeformation;
+
+uniform vec4 fractal0TexCoords;
 uniform float surfaceFractal;
 
-uniform vec3 playerPos;
-
+varying vec2 texFractal0Coords;
 varying vec3 relativeVertex;
 varying vec3 normalVector;
 varying vec4 projGLPos;
-
-uniform int glLightEnabled;
-uniform float glLightAmbient;
-uniform vec3 glLightPos0;
-uniform vec2 glLightStrength0;
-uniform vec3 glLightPos1;
-uniform vec2 glLightStrength1;
 
 void main() {
   gl_Position = ftransform();

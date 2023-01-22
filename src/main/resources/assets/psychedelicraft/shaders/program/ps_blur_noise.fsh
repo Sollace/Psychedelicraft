@@ -1,4 +1,4 @@
-#version 120
+#version 150
 #moj_import <psychedelicraft:random_from_vec.glsl>
 #moj_import <psychedelicraft:random_from_seed.glsl>
 
@@ -18,7 +18,7 @@ void main() {
 	newTexCoords.t += (mod(randomFromSeed(seed), 1.0) - 0.5) * strength * 0.04;
 
   vec4 texel = texture(DiffuseSampler, newTexCoords);
-  vec2 newColor = texel;
+  vec3 newColor = texel.rgb;
 
   float blurChance = strength * 0.01;
 
@@ -30,11 +30,11 @@ void main() {
 				float randomOne = randomFromVec(vec2(bTexCoords.s, bTexCoords.t + seed));
 
 				if (randomOne < blurChance) {
-					newColor = mix(newColor, texture(DiffuseSampler, bTexCoords), 1.0 / (f * f * 0.004 + 1.0));
+					newColor = mix(newColor, texture(DiffuseSampler, bTexCoords).rgb, 1.0 / (f * f * 0.004 + 1.0));
 				}
 			}
 		}
 	}
 
-  fragColor = mix(texel, newColor, totalAlpha);
+  fragColor = vec4(mix(texel.rgb, newColor, totalAlpha), 1.0);
 }

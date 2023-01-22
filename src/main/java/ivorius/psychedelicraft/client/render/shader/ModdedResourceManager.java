@@ -35,7 +35,6 @@ class ModdedResourceManager implements ResourceManager {
                     return new ByteArrayInputStream(reader.lines().toList().stream()
                             .flatMap(this::processImport)
                             .collect(ByteArrayOutputStream::new, (buf, line) -> {
-                                System.out.println("[SHADER SOURCES] " + line);
                                 for (byte b : line.getBytes(StandardCharsets.UTF_8)) {
                                     buf.write(b);
                                 }

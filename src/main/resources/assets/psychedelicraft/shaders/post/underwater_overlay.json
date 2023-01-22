@@ -4,17 +4,19 @@
     ],
     "passes": [
         {
-            "name": "heat_distortion",
+            "name": "distortion_map",
             "intarget": "minecraft:main",
             "outtarget": "swap",
-            "auxTargets": [
-                { "name": "OverlaySampler1", "id": "psychedelicraft/water_distortion" },
-                { "name": "OverlaySampler2", "id": "psychedelicraft/water_distortion" }
+            "auxtargets": [
+                { "name": "DepthSampler", "id": "minecraft:main:depth" },
+                { "name": "OverlaySampler1", "id": "psychedelicraft/water_distortion", "width": 800, "height": 600, "bilinear": false },
+                { "name": "OverlaySampler2", "id": "psychedelicraft/water_distortion", "width": 800, "height": 600, "bilinear": false }
             ],
             "uniforms": [
               { "name": "totalAlpha", "values": [ 1.0 ] },
-              { "name": "ticks", "values": [ 1.0 ] },
-              { "name": "strength", "values": [ 1.0 ] }
+              { "name": "strength", "values": [ 0.0 ] },
+              { "name": "texTranslation0", "values": [ 0.0, 0.0 ] },
+              { "name": "texTranslation1", "values": [ 0.0, 0.0 ] }
             ]
         },
         {

@@ -10,6 +10,7 @@ import com.mojang.logging.LogUtils;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.DrugRenderer;
+import ivorius.psychedelicraft.client.render.GLStateProxy;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -24,11 +25,11 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
 
     public static final ShaderLoader POST_EFFECTS = new ShaderLoader(DrugRenderer.INSTANCE.getPostEffects())
             // Add order = Application order!
-            .addShader("heat_distortion_noise", UniformBinding.start()
-                    .program("heat_distortion_noise", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+            .addShader("heat_distortion", UniformBinding.start()
+                    .program("heat_distortion", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getHeatDistortion();
 
-                        if (strength <= 0) {
+                        if (strength <= 0 || !PsychedelicraftClient.getConfig().visual.doHeatDistortion) {
                             return;
                         }
 
@@ -38,7 +39,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         pass.run();
                     }))
             .addShader("underwater_distortion", UniformBinding.start()
-                    .program("underwater_distortion", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program("heat_distortion", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterDistortion();
 
                         if (strength <= 0 || !PsychedelicraftClient.getConfig().visual.doWaterDistortion) {
@@ -51,7 +52,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         pass.run();
                     }))
             .addShader("underwater_overlay", UniformBinding.start()
-                    .program("underwater_overlay", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program("distortion_map", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterScreenDistortion();
 
                         if (strength <= 0 || !PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {
@@ -91,7 +92,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                          || pulses[3] > 0
                          || worldColorization[3] > 0) {
                             setter.set("pulses", pulses);
-                            setter.set("colorSafeMode", 0);
+                            setter.set("colorSafeMode", GLStateProxy.isColorSafeMode() ? 1 : 0);
                             setter.set("worldColorization", worldColorization);
                             pass.run();
                         }
@@ -113,7 +114,6 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("depth_of_field", UniformBinding.start()
                     .program("depth_of_field", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-
                         var config = PsychedelicraftClient.getConfig().visual;
 
                         if ((config.dofFocalBlurFar <= 0 && config.dofFocalBlurNear <= 0)

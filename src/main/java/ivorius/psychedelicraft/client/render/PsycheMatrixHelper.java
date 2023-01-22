@@ -20,10 +20,6 @@ public class PsycheMatrixHelper {
         return new Matrix4f().rotate(new Quaternionf(camera.getRotation()).invert());
     }
 
-    public static Matrix4f getProjectionMatrix() {
-        return getProjectionMatrix(MinecraftClient.getInstance().gameRenderer.getCamera());
-    }
-
     private static Vector3f projectPointView(Camera camera, Vector3f point) {
         return to3F(getProjectionMatrix(camera).transform(new Vector4f(point, 1)));
     }

@@ -1,9 +1,10 @@
 package ivorius.psychedelicraft.client.render;
 
-import org.lwjgl.opengl.GL11;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+
+import org.lwjgl.opengl.*;
 
 import com.mojang.blaze3d.platform.GlConst;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -25,9 +26,15 @@ public class GLStateProxy {
     private static boolean resolutionSet;
     private static final float[] resolution = new float[2];
 
-    public static boolean isEnabled(int cap) {
+    public static boolean isColorSafeMode() {
         RenderSystem.assertOnRenderThread();
-        return GL11.glIsEnabled(cap);
+        return (GL11.glIsEnabled(GL_BLEND) && getBlendDFactor() != GL11.GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    private static int getBlendDFactor() {
+        // XXXX: (Sollace) accessor to GlStateManager.BLEND.dstFactorRGB;
+        RenderSystem.assertOnRenderThread();
+        return GL14.glGetInteger(GL14.GL_BLEND_DST_RGB);
     }
 
     public static void setResolution(float width, float height) {
@@ -71,17 +78,6 @@ public class GLStateProxy {
 
     public static boolean getUsesScreenTexCoords() {
         return usesScreenTexCoords;
-    }
-
-    public static boolean isTextureEnabled(int textureUnit) {
-        RenderSystem.enableTexture();
-        // XXX: (Sollace) accessor to GlStateManager.TEXTURES[textureUnit - GlConst.GL_TEXTURE0].capState;
-        return GlStateManager._getTextureId(textureUnit - GlConst.GL_TEXTURE0) != 0;
-    }
-
-    public static int getBlendDFactor() {
-        // TODO: (Sollace) accessor to GlStateManager.BLEND.dstFactorRGB;
-        return 0;
     }
 
     public static int getTextureId(Identifier texture) {

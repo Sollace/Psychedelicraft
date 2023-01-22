@@ -101,10 +101,18 @@ class LoadedShader extends PostEffectProcessor {
                 });
             }
 
-            updateCount = (updateCount + 1) % 10;
+            updateCount = (updateCount + 1) % 2;
             this.rendered = false;
-            for (FloatConsumer action : replay) {
-                action.accept(passRenderTime);
+            if (replay.isEmpty()) {
+                return this.rendered;
+            }
+
+            try {
+                for (FloatConsumer action : replay) {
+                    action.accept(passRenderTime);
+                }
+            } catch (Throwable t) {
+                throw new RuntimeException("Exception rendering shader " + pass.getName(), t);
             }
             return this.rendered;
         }
@@ -119,7 +127,7 @@ class LoadedShader extends PostEffectProcessor {
         public void set(String name, float value) {
             var uniform = program.getUniformByName(name);
             if (uniform != null) {
-                replay.add(f -> uniform.set(value));
+                replay.add(uniformSetter(name, f -> uniform.set(value)));
             }
         }
 
@@ -128,7 +136,7 @@ class LoadedShader extends PostEffectProcessor {
             var uniform = program.getUniformByName(name);
             if (uniform != null) {
                 var copy = Arrays.copyOf(values, values.length);
-                replay.add(f -> uniform.set(copy));
+                replay.add(uniformSetter(name, f -> uniform.set(copy)));
             }
         }
 
@@ -137,8 +145,18 @@ class LoadedShader extends PostEffectProcessor {
             var uniform = program.getUniformByName(name);
             if (uniform != null) {
                 var copy = new Vector3f(values);
-                replay.add(f -> uniform.set(copy));
+                replay.add(uniformSetter(name, f -> uniform.set(copy)));
             }
+        }
+
+        private static FloatConsumer uniformSetter(String name, FloatConsumer consumer) {
+            return f -> {
+                try {
+                    consumer.accept(f);
+                } catch (Throwable t) {
+                    throw new RuntimeException("Exception setting uniform: " + name, t);
+                }
+            };
         }
     }
 }

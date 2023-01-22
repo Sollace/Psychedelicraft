@@ -7,7 +7,7 @@
             "name": "depth_of_field",
             "intarget": "minecraft:main",
             "outtarget": "swap",
-            "auxTargets": [
+            "auxtargets": [
                 { "name": "DepthSampler", "id": "minecraft:main:depth" }
             ],
             "uniforms": [

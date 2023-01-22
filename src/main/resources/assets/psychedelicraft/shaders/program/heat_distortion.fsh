@@ -1,4 +1,4 @@
-#version 120
+#version 150
 
 uniform sampler2D DiffuseSampler;
 uniform sampler2D DepthSampler;
@@ -20,11 +20,11 @@ void main() {
   vec4 joinedNoise = noisePixel1 + noisePixel2 - 1.0;
 
   float depthMul = min(0.4 / sqrt(sqrt(sqrt(1.0 - depthPixel.r))) - 0.4, 1.0);
-  vec4 newColor = texture(DiffuseSampler, clamp(texCoord.st + joinedNoise.rg * strength * depthMul, 0.0, 1.0));
+  vec3 newColor = texture(DiffuseSampler, clamp(texCoord.st + joinedNoise.rg * strength * depthMul, 0.0, 1.0)).rgb;
 
   if (totalAlpha == 1.0) {
-    fragColor = newColor;
+    fragColor = vec4(newColor, 1.0);
   } else {
-    fragColor = mix(texture(DiffuseSampler, texCoord.st), newColor, totalAlpha);
+    fragColor = vec4(mix(texture(DiffuseSampler, texCoord.st).rgb, newColor, totalAlpha), 1.0);
   }
 }

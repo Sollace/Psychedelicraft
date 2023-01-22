@@ -7,9 +7,9 @@
             "name": "heat_distortion",
             "intarget": "minecraft:main",
             "outtarget": "swap",
-            "auxTargets": [
+            "auxtargets": [
                 { "name": "DepthSampler", "id": "minecraft:main:depth" },
-                { "name": "NoiseSampler", "id": "psychedelicraft/heat_distortion_noise" }
+                { "name": "NoiseSampler", "id": "psychedelicraft/heat_distortion_noise", "width": 128, "height": 128, "bilinear": false }
             ],
             "uniforms": [
               { "name": "totalAlpha", "values": [ 1.0 ] },
