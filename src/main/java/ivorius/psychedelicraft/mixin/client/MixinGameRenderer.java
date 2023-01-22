@@ -1,14 +1,25 @@
 package ivorius.psychedelicraft.mixin.client;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import com.mojang.datafixers.util.Pair;
 
 import ivorius.psychedelicraft.client.render.DrugRenderer;
+import ivorius.psychedelicraft.client.render.shader.CoreShaderRegistrationCallback;
+import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.gl.ShaderStage;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.ResourceFactory;
 
 @Mixin(GameRenderer.class)
 abstract class MixinGameRenderer {
@@ -36,5 +47,16 @@ abstract class MixinGameRenderer {
     @Inject(method = "onResized", at = @At("HEAD"))
     private void onResized(int width, int height, CallbackInfo info) {
         DrugRenderer.INSTANCE.getPostEffects().setupDimensions(width, height);
+    }
+
+    @Inject(method = "loadPrograms", at = @At(
+                value = "INVOKE",
+                target = "java/util/ArrayList.add(Ljava/lang/Object;)Z",
+                ordinal = 0
+            ),
+            locals = LocalCapture.CAPTURE_FAILSOFT
+    )
+    void loadPrograms(ResourceFactory factory, CallbackInfo info, ArrayList<ShaderStage> stages, ArrayList<Pair<ShaderProgram, Consumer<ShaderProgram>>> programs) throws IOException {
+        CoreShaderRegistrationCallback.EVENT.invoker().call(factory, programs);
     }
 }

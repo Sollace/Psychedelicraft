@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.render.shader.PSShaders;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -21,12 +22,14 @@ public class ZeroScreen extends RenderLayer {
 
     private static final Random RNG = new Random(0L);
 
+    protected static final ShaderProgram ZERO_MATTER_PROGRAM = new ShaderProgram(PSShaders::getRenderTypeZeroMatterProgram);
+
     private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> of("ps_zero_screen",
             VertexFormats.POSITION,
             VertexFormat.DrawMode.QUADS, 256, false, false, MultiPhaseParameters.builder()
             .transparency(TRANSLUCENT_TRANSPARENCY)
             .lightmap(DISABLE_LIGHTMAP)
-            .program(END_GATEWAY_PROGRAM)
+            .program(ZERO_MATTER_PROGRAM)
             .texture(new RenderPhase.Texture(texture, false, false))
             .build(false)
     ));
