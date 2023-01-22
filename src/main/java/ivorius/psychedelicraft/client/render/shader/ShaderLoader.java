@@ -36,6 +36,26 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
                         setter.set("strength", strength);
                         setter.set("ticks", ShaderContext.ticks() * 0.15f);
+
+                       /* for the 3d shaders
+                        MinecraftClient mc = MinecraftClient.getInstance();
+
+                        setter.set("worldTicks", ShaderContext.ticks());
+                        setter.set("worldTime", ShaderContext.time());
+                        setter.set("playerPos", (float) mc.player.getX(), (float) mc.player.getY(), (float) mc.player.getZ());
+                        setter.set("bigWaves", ShaderContext.hallucinations().getBigWaveStrength(tickDelta));
+                        setter.set("smallWaves", ShaderContext.hallucinations().getSmallWaveStrength(tickDelta));
+                        setter.set("wiggleWaves", ShaderContext.hallucinations().getWiggleWaveStrength(tickDelta));
+                        setter.set("distantWorldDeformation", ShaderContext.hallucinations().getDistantWorldDeformationStrength(tickDelta));
+
+                        float surfaceFractalStrength = MathHelper.clamp(ShaderContext.hallucinations().getSurfaceFractalStrength(tickDelta), 0, 1);
+                        if (surfaceFractalStrength > 0) {
+                            RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE + 1, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
+                            Sprite sprite = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
+                            setter.set("fractal0TexCoords", sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
+                        }
+                        setter.set("surfaceFractal", surfaceFractalStrength); */
+
                         pass.run();
                     }))
             .addShader("underwater_distortion", UniformBinding.start()
