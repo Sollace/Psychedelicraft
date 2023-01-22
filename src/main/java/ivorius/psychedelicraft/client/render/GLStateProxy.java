@@ -84,18 +84,6 @@ public class GLStateProxy {
         return 0;
     }
 
-    public static void copyTexture(int offsetX, int offsetY, int x, int y, int width, int height) {
-        if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> _copyTexture(offsetX, offsetY, x, y, width, height));
-        } else {
-            _copyTexture(offsetX, offsetY, x, y, width, height);
-        }
-    }
-
-    private static void _copyTexture(int offsetX, int offsetY, int x, int y, int width, int height) {
-        GlStateManager._glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, offsetX, offsetY, x, y, width, height);
-    }
-
     public static int getTextureId(Identifier texture) {
         RenderSystem.assertOnRenderThread();
         TEXURE_MANAGER.bindTexture(texture); // Allocate texture. MOJANG!

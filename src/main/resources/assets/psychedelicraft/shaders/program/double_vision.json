@@ -4,18 +4,16 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "basic",
-    "fragment": "blur_noise",
+    "vertex": "blit",
+    "fragment": "double_vision",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "tex0" }
     ],
     "uniforms": [
-        { "name": "pixelSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
-        { "name": "strength", "type": "float", "count": 1, "values": [ 0.0 ] },
-        { "name": "vertical", "type": "int", "count": 1, "values": [ 1.0 ] },
-        { "name": "seed", "type": "float", "count": 1, "values": [ 0.0 ] },
         { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "distance", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "stretch", "type": "float", "count": 1, "values": [ 0.0 ] },
 
         { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
         { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }

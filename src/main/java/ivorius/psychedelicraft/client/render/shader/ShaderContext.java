@@ -1,7 +1,6 @@
 package ivorius.psychedelicraft.client.render.shader;
 
-import ivorius.psychedelicraft.entity.drug.DrugProperties;
-import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import net.minecraft.client.MinecraftClient;
 
@@ -16,5 +15,17 @@ interface ShaderContext {
 
     static float drug(DrugType type) {
         return properties().getDrugValue(type);
+    }
+
+    static float modifier(Drug.AggregateModifier type) {
+        return properties().getModifier(type);
+    }
+
+    static float ticks() {
+        return MinecraftClient.getInstance().player.age + MinecraftClient.getInstance().getTickDelta();
+    }
+
+    static float viewDistace() {
+        return MinecraftClient.getInstance().options.getViewDistance().getValue() * 16;
     }
 }

@@ -4,19 +4,20 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "basic",
-    "fragment": "heat_distortion",
+    "vertex": "blit",
+    "fragment": "distortion_map",
     "attributes": [ "Position" ],
     "samplers": [
-        { "name": "tex0" },
+        { "name": "DiffuseSampler" },
         { "name": "tex1" },
-        { "name": "tex2" },
-        { "name": "noiseTex" }
+        { "name": "noiseTex0" },
+        { "name": "noiseTex1" }
     ],
     "uniforms": [
         { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
-        { "name": "ticks", "type": "float", "count": 1, "values": [ 1.0 ] },
-        { "name": "stretch", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "strength", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "texTranslation0", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "texTranslation1", "type": "float", "count": 1, "values": [ 0.0 ] },
 
         { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
         { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }

@@ -1,5 +1,7 @@
 #version 150
-#moj_import <psychedelicraft:utils.glsl>
+#moj_import <psychedelicraft:get_rotated_color.glsl>
+#moj_import <psychedelicraft:get_intensified_color.glsl>
+#moj_import <psychedelicraft:get_desaturated_color.glsl>
 
 uniform sampler2D DiffuseSampler;
 

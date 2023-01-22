@@ -4,16 +4,18 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "basic",
-    "fragment": "double_vision",
+    "vertex": "blit",
+    "fragment": "heat_distortion",
     "attributes": [ "Position" ],
     "samplers": [
-        { "name": "tex0" }
+        { "name": "DiffuseSampler" },
+        { "name": "DepthSampler" },
+        { "name": "NoiseSampler" }
     ],
     "uniforms": [
         { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
-        { "name": "distance", "type": "float", "count": 1, "values": [ 1.0 ] },
-        { "name": "stretch", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "ticks", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "strength", "type": "float", "count": 1, "values": [ 1.0 ] },
 
         { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
         { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }

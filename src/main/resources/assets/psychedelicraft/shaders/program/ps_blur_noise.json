@@ -4,20 +4,17 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "basic",
-    "fragment": "distortion_map",
+    "vertex": "blit",
+    "fragment": "ps_blur_noise",
     "attributes": [ "Position" ],
     "samplers": [
-        { "name": "tex0" },
-        { "name": "tex1" },
-        { "name": "noiseTex0" },
-        { "name": "noiseTex1" }
+        { "name": "DiffuseSampler" }
     ],
     "uniforms": [
-        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "pixelSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
         { "name": "strength", "type": "float", "count": 1, "values": [ 0.0 ] },
-        { "name": "texTranslation0", "type": "float", "count": 1, "values": [ 0.0 ] },
-        { "name": "texTranslation1", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "seed", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
 
         { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
         { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }

@@ -1,10 +1,9 @@
 #version 120
 
 uniform sampler2D DiffuseSampler;
-uniform sampler2D tex1;
 
-uniform sampler2D noiseTex0;
-uniform sampler2D noiseTex1;
+uniform sampler2D OverlaySampler1;
+uniform sampler2D OverlaySampler2;
 
 in vec2 texCoord;
 
@@ -16,8 +15,8 @@ uniform vec2 texTranslation1;
 out vec4 fragColor;
 
 void main() {
-  vec4 noisePixel0 = texture(noiseTex0, texCoord + texTranslation0);
-  vec4 noisePixel1 = texture(noiseTex1, texCoord + texTranslation1);
+  vec4 noisePixel0 = texture(OverlaySampler1, texCoord + texTranslation0);
+  vec4 noisePixel1 = texture(OverlaySampler2, texCoord + texTranslation1);
   vec2 joinedTranslation = clamp(noisePixel0.rg + noisePixel1.rg - 1.0, 0.0, 1.0);
 
   vec2 water1 = abs(noisePixel0.rg - 0.5) * 2.0;
@@ -29,8 +28,8 @@ void main() {
   vec4 newColor = texture(DiffuseSampler, texCoord + joinedTranslation * strength);
 
 	if (totalAlpha == 1.0) {
-	  fragColor = vec4(newColor, 1.0);
+	  fragColor = newColor;
 	} else {
-	  fragColor = vec4(mix(texture2D(tex0, gl_TexCoord[0].st), newColor, totalAlpha), 1.0);
+	  fragColor = mix(texture(DiffuseSampler, texCoord.st), newColor, totalAlpha);
   }
 }

@@ -87,7 +87,7 @@ class LoadedShader extends PostEffectProcessor {
         }
 
         public boolean render(float passRenderTime, float tickDelta, boolean rendered) {
-            if (pass.getName().equals("blit") && !rendered) {
+            if (pass.getName().equals("blit")) {
                 return false;
             }
 
@@ -101,7 +101,7 @@ class LoadedShader extends PostEffectProcessor {
                 });
             }
 
-            updateCount = (updateCount + 1) % 2;
+            updateCount = (updateCount + 1) % 10;
             this.rendered = false;
             for (FloatConsumer action : replay) {
                 action.accept(passRenderTime);

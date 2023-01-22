@@ -1,0 +1,26 @@
+{
+    "targets": [
+        "swap"
+    ],
+    "passes": [
+        {
+            "name": "heat_distortion",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "auxTargets": [
+                { "name": "DepthSampler", "id": "minecraft:main:depth" },
+                { "name": "NoiseSampler", "id": "psychedelicraft/heat_distortion_noise" }
+            ],
+            "uniforms": [
+              { "name": "totalAlpha", "values": [ 1.0 ] },
+              { "name": "ticks", "values": [ 1.0 ] },
+              { "name": "strength", "values": [ 1.0 ] }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}

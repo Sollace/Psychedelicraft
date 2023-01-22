@@ -1,0 +1,29 @@
+{
+    "targets": [
+        "swap"
+    ],
+    "passes": [
+        {
+            "name": "depth_of_field",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "auxTargets": [
+                { "name": "DepthSampler", "id": "minecraft:main:depth" }
+            ],
+            "uniforms": [
+              { "name": "pixelSize", "values": [ 1.0, 1.0 ] },
+              { "name": "focalPointNear", "values": [ 0.0 ] },
+              { "name": "focalPointFar", "values": [ 0.0 ] },
+              { "name": "focalBlurNear", "values": [ 0.0 ] },
+              { "name": "focalBlurFar", "values": [ 0.0 ] },
+              { "name": "vertical", "values": [ 1.0 ] },
+              { "name": "depthRange", "values": [ 0.0, 1.0 ] }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}

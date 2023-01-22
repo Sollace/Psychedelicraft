@@ -1,0 +1,22 @@
+{
+    "targets": [
+        "swap"
+    ],
+    "passes": [
+        {
+            "name": "double_vision",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "uniforms": [
+              { "name": "totalAlpha", "values": [ 1.0 ] },
+              { "name": "distance", "values": [ 0.0 ] },
+              { "name": "stretch", "values": [ 0.0 ] }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}

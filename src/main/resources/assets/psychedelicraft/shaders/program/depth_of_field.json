@@ -4,12 +4,12 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "basic",
+    "vertex": "blit",
     "fragment": "depth_of_field",
     "attributes": [ "Position" ],
     "samplers": [
-        { "name": "depthTex" },
-        { "name": "tex" }
+        { "name": "DiffuseSampler" },
+        { "name": "DepthSampler" }
     ],
     "uniforms": [
         { "name": "pixelSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },

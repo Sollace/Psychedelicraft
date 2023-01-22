@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.client.render.shader.legacy;
 
-import ivorius.psychedelicraft.client.render.shader.legacy.program.IvShaderInstance2D;
 import net.minecraft.client.gl.Framebuffer;
 
 /**
