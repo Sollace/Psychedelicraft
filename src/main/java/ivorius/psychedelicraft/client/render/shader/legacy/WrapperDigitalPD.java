@@ -46,7 +46,7 @@ public class WrapperDigitalPD extends ShaderWrapper<WrapperDigitalPD.ShaderDigit
         return DrugProperties.of(MinecraftClient.getInstance().player).getDrugValue(DrugType.ZERO) > 0;
     }
 
-    public static class ShaderDigitalDepth extends WrapperDigital.ShaderDigital {
+    public static class ShaderDigitalDepth extends WrapperDigitalMD.ShaderDigital {
         public int depthTextureIndex;
 
         public float zNear;
@@ -70,7 +70,6 @@ public class WrapperDigitalPD extends ShaderWrapper<WrapperDigitalPD.ShaderDigit
             RenderSystem.activeTexture(GLStateProxy.DEFAULT_TEXTURE);
             setUniformInts("tex", 0);
         }
-
 
         @Override
         protected void uploadUniforms(int screenWidth, int screenHeight) {

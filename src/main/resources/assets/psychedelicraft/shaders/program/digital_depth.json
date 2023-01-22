@@ -4,7 +4,7 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "basic",
+    "vertex": "blit",
     "fragment": "digital_depth",
     "attributes": [ "Position" ],
     "samplers": [
