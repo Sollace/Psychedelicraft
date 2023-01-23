@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.client.render;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.client.render.blocks.*;
+import ivorius.psychedelicraft.client.render.shader.PSShaders;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -35,5 +36,6 @@ public interface PSRenderers {
                 PSBlocks.MASH_TUB);
 
         BuiltinItemRendererRegistry.INSTANCE.register(PSItems.RIFT_JAR, RiftJarBlockEntityRenderer::renderStack);
+        PSShaders.bootstrap();
     }
 }

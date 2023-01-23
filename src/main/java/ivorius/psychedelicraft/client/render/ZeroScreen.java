@@ -25,7 +25,7 @@ public class ZeroScreen extends RenderLayer {
     protected static final ShaderProgram ZERO_MATTER_PROGRAM = new ShaderProgram(PSShaders::getRenderTypeZeroMatterProgram);
 
     private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> of("ps_zero_screen",
-            VertexFormats.POSITION,
+            VertexFormats.POSITION_COLOR,
             VertexFormat.DrawMode.QUADS, 256, false, false, MultiPhaseParameters.builder()
             .transparency(TRANSLUCENT_TRANSPARENCY)
             .lightmap(DISABLE_LIGHTMAP)
@@ -35,19 +35,13 @@ public class ZeroScreen extends RenderLayer {
     ));
 
     public static void render(float ticks, Renderable action) {
-        GLStateProxy.enableTexCoords();
-        GLStateProxy.setResolution(ZeroScreen.X_PIXELS, ZeroScreen.Y_PIXELS);
         int seed = MathHelper.floor(ticks * 0.5F);
         RNG.setSeed(seed);
-
         action.render(
-                RenderLayer.getEntityTranslucentEmissive(TEXTURES[seed % TEXTURES.length]),
-                //PS_ZERO_SCREEN.apply(TEXTURES[seed % TEXTURES.length]),
+                PS_ZERO_SCREEN.apply(TEXTURES[seed % TEXTURES.length]),
                 RNG.nextInt(10) * 0.1F * ZeroScreen.X_PIXELS,
                 RNG.nextInt(8) * 0.125f * ZeroScreen.Y_PIXELS
         );
-        GLStateProxy.clearResolution();
-        GLStateProxy.disableScreenTexCoords();
     }
 
     @FunctionalInterface

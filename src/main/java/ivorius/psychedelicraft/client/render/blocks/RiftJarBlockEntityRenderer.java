@@ -82,8 +82,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
             matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(180));
             matrices.scale(0.9F, 0.9F, 0.9F);
             ZeroScreen.render(ticks, (layer, u, v) -> {
-                model.renderInterior(matrices, vertices.getBuffer(layer), 0, 0,
-                        1, 1, 1, Math.min(entity.currentRiftFraction * 2, 1));
+                model.renderInterior(matrices, vertices.getBuffer(layer), 0, 0, 1, 1, 1, Math.min(entity.currentRiftFraction * 2, 1));
             });
             matrices.pop();
         }

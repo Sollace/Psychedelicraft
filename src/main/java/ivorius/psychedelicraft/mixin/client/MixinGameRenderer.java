@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.mixin.client;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,14 +49,16 @@ abstract class MixinGameRenderer {
         DrugRenderer.INSTANCE.getPostEffects().setupDimensions(width, height);
     }
 
-    @Inject(method = "loadPrograms", at = @At(
+    @Inject(method = "loadPrograms(Lnet/minecraft/resource/ResourceFactory;)V", at = @At(
                 value = "INVOKE",
-                target = "java/util/ArrayList.add(Ljava/lang/Object;)Z",
+                target = "java/util/List.add(Ljava/lang/Object;)Z",
                 ordinal = 0
             ),
-            locals = LocalCapture.CAPTURE_FAILSOFT
+            locals = LocalCapture.CAPTURE_FAILEXCEPTION
     )
-    void loadPrograms(ResourceFactory factory, CallbackInfo info, ArrayList<ShaderStage> stages, ArrayList<Pair<ShaderProgram, Consumer<ShaderProgram>>> programs) throws IOException {
+    private void onLoadPrograms(ResourceFactory factory, CallbackInfo info,
+            List<ShaderStage> stages,
+            List<Pair<ShaderProgram, Consumer<ShaderProgram>>> programs) throws IOException {
         CoreShaderRegistrationCallback.EVENT.invoker().call(factory, programs);
     }
 }

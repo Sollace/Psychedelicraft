@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.client.render.shader;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.mojang.datafixers.util.Pair;
@@ -20,5 +20,5 @@ public interface CoreShaderRegistrationCallback {
         };
     });
 
-    void call(ResourceFactory factory, ArrayList<Pair<ShaderProgram, Consumer<ShaderProgram>>> shaderList) throws IOException;
+    void call(ResourceFactory factory, List<Pair<ShaderProgram, Consumer<ShaderProgram>>> shaderList) throws IOException;
 }
