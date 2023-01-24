@@ -23,7 +23,10 @@ public class GeometryShader {
     private String name;
     private Type type;
 
-    private final ResourceManager manager = MinecraftClient.getInstance().getResourceManager();
+    private boolean enabled;
+
+    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final ResourceManager manager = client.getResourceManager();
 
     private final Map<Identifier, Optional<String>> loadedPrograms = new HashMap<>();
 
@@ -32,28 +35,55 @@ public class GeometryShader {
         this.type = type;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled && client.world != null && client.player != null;
+    }
+
+    /* for the 3d shaders
+     MinecraftClient mc = MinecraftClient.getInstance();
+
+     float surfaceFractalStrength = MathHelper.clamp(ShaderContext.hallucinations().getSurfaceFractalStrength(tickDelta), 0, 1);
+     if (surfaceFractalStrength > 0) {
+         RenderSystem.setShaderTexture(GLStateProxy.LIGHTMAP_TEXTURE + 1, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
+         Sprite sprite = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
+         setter.set("fractal0TexCoords", sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
+     }
+     setter.set("surfaceFractal", surfaceFractalStrength); */
+
     public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
         register.accept(new BoundUniform("PS_PlayerPosition", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> {
-            Vec3d pos = MinecraftClient.getInstance().player == null ? Vec3d.ZERO : MinecraftClient.getInstance().player.getPos();
-            uniform.set((float)pos.getX(), (float)pos.getY(), (float)pos.getZ());
+            if (!client.isPaused()) {
+                Vec3d pos = isEnabled() ? MinecraftClient.getInstance().player.getPos() : Vec3d.ZERO;
+                uniform.set((float)pos.getX(), (float)pos.getY(), (float)pos.getZ());
+            }
         }));
         register.accept(new BoundUniform("PS_WorldTicks", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(MinecraftClient.getInstance().world == null ? 0 : MinecraftClient.getInstance().player.age + MinecraftClient.getInstance().getTickDelta());
+            if (!client.isPaused()) {
+                uniform.set(isEnabled() ? MinecraftClient.getInstance().player.age + MinecraftClient.getInstance().getTickDelta() : 0);
+            }
         }));
         register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> {
-            if (MinecraftClient.getInstance().world == null) {
-                uniform.set(0F, 0F, 0F);
-            } else {
-                float tickDelta = MinecraftClient.getInstance().getTickDelta();
-                uniform.set(
-                    ShaderContext.hallucinations().getSmallWaveStrength(tickDelta),
-                    ShaderContext.hallucinations().getBigWaveStrength(tickDelta),
-                    ShaderContext.hallucinations().getWiggleWaveStrength(tickDelta)
-                );
+            if (!client.isPaused()) {
+                if (isEnabled()) {
+                    float tickDelta = client.getTickDelta();
+                    uniform.set(
+                        ShaderContext.hallucinations().getSmallWaveStrength(tickDelta),
+                        ShaderContext.hallucinations().getBigWaveStrength(tickDelta),
+                        ShaderContext.hallucinations().getWiggleWaveStrength(tickDelta)
+                    );
+                } else {
+                    uniform.set(0F, 0F, 0F);
+                }
             }
         }));
         register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(MinecraftClient.getInstance().world == null ? 0 : ShaderContext.hallucinations().getDistantWorldDeformationStrength(MinecraftClient.getInstance().getTickDelta()));
+            if (!client.isPaused()) {
+                uniform.set(isEnabled() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength(MinecraftClient.getInstance().getTickDelta()) : 0);
+            }
         }));
     }
 
@@ -70,9 +100,7 @@ public class GeometryShader {
 
     private String combineSources(String vertexSources, String geometrySources) {
         String newline = System.lineSeparator();
-        String result = vertexSources.replace("void main()", "void __vertex_shaders__main()" + newline) + newline + geometrySources;
-        System.out.println(result);
-        return result;
+        return vertexSources.replace("void main()", "void __vertex_shaders__main()" + newline) + newline + geometrySources;
     }
 
     private Optional<String> loadProgram(Identifier id) {

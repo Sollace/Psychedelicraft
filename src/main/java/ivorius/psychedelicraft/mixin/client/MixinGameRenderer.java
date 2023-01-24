@@ -15,6 +15,7 @@ import com.mojang.datafixers.util.Pair;
 
 import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.shader.CoreShaderRegistrationCallback;
+import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.ShaderStage;
 import net.minecraft.client.render.GameRenderer;
@@ -27,11 +28,20 @@ abstract class MixinGameRenderer {
             at = @At(
                 value = "INVOKE",
                 target = "net/minecraft/client/render/Camera.update(Lnet/minecraft/world/BlockView;Lnet/minecraft/entity/Entity;ZZF)V",
-                shift = Shift.AFTER),
-            cancellable = true
+                shift = Shift.AFTER)
     )
-    public void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
+    private void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
         DrugRenderer.INSTANCE.distortScreen(matrices, tickDelta);
+    }
+
+    @Inject(method = "renderWorld", at = @At("HEAD"))
+    private void beforeRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
+        GeometryShader.INSTANCE.setEnabled(true);
+    }
+
+    @Inject(method = "renderWorld", at = @At("RETURN"))
+    private void afterRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
+        GeometryShader.INSTANCE.setEnabled(false);
     }
 
     @Inject(method = "render",
