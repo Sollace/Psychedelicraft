@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.GLStateProxy;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
@@ -208,7 +209,31 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         setter.set("seed", new Random((long) (ShaderContext.ticks() * 1000.0)).nextFloat() * 9 + 1);
                         pass.run();
                     }))
-            // effectWrappers.add(new WrapperDigital(utils));
+            .addShader("digital", UniformBinding.start()
+                    .program("digital_depth", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                        float digital = ShaderContext.drug(DrugType.ZERO);
+                        if (digital <= 0) {
+                            return;
+                        }
+
+                        float[] maxDownscale = PsychedelicraftClient.getConfig().visual.getDigitalEffectPixelResize();
+                        float downscale = MathUtils.mixEaseInOut(0, 0.95F, Math.min(digital * 3, 1));
+                        downscale += digital * 0.05f; //Bigger pixels!
+
+                        float textProgress = MathUtils.easeZeroToOne((digital - 0.2F) * 5);
+                        float binaryProgress = MathUtils.easeZeroToOne((digital - 0.8F) * 10);
+
+                        setter.set("newResolution",
+                                screenWidth * (1 + (maxDownscale[0] - 1) * downscale),
+                                screenHeight * (1 + (maxDownscale[1] - 1) * downscale)
+                        );
+                        setter.set("totalAlpha", 1F);
+                        setter.set("textProgress", textProgress + binaryProgress);
+                        setter.set("maxColors", digital > 0.4F ? (Math.max(256F / ((digital - 0.4F) * 640 + 1), 2)) : -1); //Step 3, 0.2 is enough for only 2 colors
+                        setter.set("saturation", 1 - MathUtils.easeZeroToOne((digital - 0.6F) * 5));
+                        setter.set("depthRange", 0.05F, ShaderContext.viewDistace());
+                        pass.run();
+                    }))
         ;
 
 

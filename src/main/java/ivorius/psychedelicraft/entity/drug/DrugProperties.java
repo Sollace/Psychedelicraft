@@ -267,11 +267,6 @@ public class DrugProperties implements NbtSerialisable {
         return modifier.get(this);
     }
 
-    public float[] getDigitalEffectPixelResize() {
-        // TODO: (Sollace) Shouldn't this be stored? Why is it even here?
-        return PsychedelicraftClient.getConfig().visual.getDigitalEffectPixelResize();
-    }
-
     private void changeDrugModifierMultiply(LivingEntity entity, EntityAttribute attribute, double value) {
         // 2: ret *= 1.0 + value
         changeDrugModifier(entity, attribute, value - 1.0, Operation.MULTIPLY_TOTAL);

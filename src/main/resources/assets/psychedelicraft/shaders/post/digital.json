@@ -1,0 +1,29 @@
+{
+    "targets": [
+        "swap"
+    ],
+    "passes": [
+        {
+            "name": "digital_depth",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "auxtargets": [
+                { "name": "DepthSampler", "id": "minecraft:main:depth" },
+                { "name": "AsciiSampler", "id": "psychedelicraft/bits", "width": 128, "height": 128, "bilinear": false }
+            ],
+            "uniforms": [
+              { "name": "newResolution", "values": [ 1.0, 1.0 ] },
+              { "name": "textProgress", "values": [ 0.0 ] },
+              { "name": "maxColors", "values": [ 0.0 ] },
+              { "name": "saturation", "values": [ 0.0 ] },
+              { "name": "totalAlpha", "values": [ 0.0 ] },
+              { "name": "depthRange", "values": [ 0.0, 1.0 ] }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}

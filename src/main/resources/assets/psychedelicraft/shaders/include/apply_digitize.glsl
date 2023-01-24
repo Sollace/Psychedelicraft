@@ -1,5 +1,18 @@
 #version 150
 
+uniform sampler2D DiffuseSampler;
+uniform sampler2D AsciiSampler;
+
+in vec2 texCoord;
+
+uniform vec2 newResolution;
+uniform float textProgress;
+uniform float maxColors;
+uniform float saturation;
+uniform float totalAlpha;
+
+out vec4 fragColor;
+
 void apply_digitize() {
   vec2 newUV = (newResolution.x > 0.0 && newResolution.y > 0.0)
        ? pixelate(texCoord.st, newResolution)
@@ -33,7 +46,7 @@ void apply_digitize() {
       
       vec2 innerUV = (newUV - texCoord.st) * newResolution;
       innerUV.x = 1.0 - innerUV.x;
-      vec4 textTexturePixel = texture(asciiTex, vec2(pixelDensityPart + innerUV.x / pixelDensityParts, innerUV.y * 0.5 + (isBinary ? 0.5 : 0.0)));
+      vec4 textTexturePixel = texture(AsciiSampler, vec2(pixelDensityPart + innerUV.x / pixelDensityParts, innerUV.y * 0.5 + (isBinary ? 0.5 : 0.0)));
       
       newColor.rgb = mix(newColor.rgb, textTexturePixel.rgb * newColor.rgb, clamp(0.0, max(textProg * textProg * textProg, 1.0 - bgMaxAlpha), 1.0));
     }

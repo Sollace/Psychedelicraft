@@ -8,9 +8,8 @@
     "fragment": "digital",
     "attributes": [ "Position" ],
     "samplers": [
-        { "name": "tex0" },
-        { "name": "tex1" },
-        { "name": "tex2" }
+        { "name": "DiffuseSampler" },
+        { "name": "AsciiSampler" }
     ],
     "uniforms": [
         { "name": "newResolution", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },

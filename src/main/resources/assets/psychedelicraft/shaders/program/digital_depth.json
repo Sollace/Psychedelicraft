@@ -8,9 +8,9 @@
     "fragment": "digital_depth",
     "attributes": [ "Position" ],
     "samplers": [
-        { "name": "depthTex" },
-        { "name": "asciiTex" },
-        { "name": "tex" }
+        { "name": "DiffuseSampler" },
+        { "name": "DepthSampler" },
+        { "name": "AsciiSampler" }
     ],
     "uniforms": [
         { "name": "newResolution", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
