@@ -1,25 +1,3 @@
-
-item.harmonium.dye0.name=Black Harmonium
-item.harmonium.dye1.name=Red Harmonium
-item.harmonium.dye2.name=Green Harmonium
-item.harmonium.dye3.name=Brown Harmonium
-item.harmonium.dye4.name=Blue Harmonium
-item.harmonium.dye5.name=Purple Harmonium
-item.harmonium.dye6.name=Cyan Harmonium
-item.harmonium.dye7.name=Silver Harmonium
-item.harmonium.dye8.name=Gray Harmonium
-item.harmonium.dye9.name=Pink Harmonium
-item.harmonium.dye10.name=Lime Harmonium
-item.harmonium.dye11.name=Yellow Harmonium
-item.harmonium.dye12.name=Light Blue Harmonium
-item.harmonium.dye13.name=Magenta Harmonium
-item.harmonium.dye14.name=Orange Harmonium
-item.harmonium.dye15.name=White Harmonium
-
-fluid.status.maturing=Maturing
-fluid.status.fermenting=Fermenting
-fluid.status.distilling=Distilling
-
 commands.drug.usage=/drug <player> <drug> <set|lock|unlock> [value]
 commands.drug.success=%s's %s set to %s
 commands.drug.success.lock=%s's %s locked to %s
