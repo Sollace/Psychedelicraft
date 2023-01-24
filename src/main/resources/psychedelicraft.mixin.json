@@ -11,6 +11,9 @@
     ],
     "client": [
       "client.MixinMouse",
+      "client.MixinGLImportProcessor",
+      "client.MixinShaderProgram",
+      "client.MixinShaderStage",
       "client.MixinSoundSystem",
       "client.MixinGameRenderer",
       "client.MixinInGameHud"

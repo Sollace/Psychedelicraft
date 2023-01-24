@@ -1,34 +1,23 @@
-#version 150
 
-in vec4 Position;
+uniform float PS_WorldTicks;
+uniform vec3 PS_WavesMatrix;
+uniform float PS_DistantWorldDeformation;
 
-uniform float worldTicks;
-uniform int worldTime;
-uniform vec3 playerPos;
-uniform float bigWaves;
-uniform float smallWaves;
-uniform float wiggleWaves;
-uniform float distantWorldDeformation;
-uniform vec4 fractal0TexCoords;
-uniform float surfaceFractal;
-
-uniform mat4 ProjMat;
-uniform mat4 ModelViewMat;
-
-out vec2 texFractal0Coords;
+uniform vec3 PS_PlayerPosition;
 
 void main() {
-  gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
+  __vertex_shaders__main();
 
-  if (surfaceFractal > 0.0) {
-    texFractal0Coords = vec2(
-        mix(fractal0TexCoords[0], fractal0TexCoords[2], (mod(Position.x + Position.y, 4.0)) / 4.0),
-        mix(fractal0TexCoords[1], fractal0TexCoords[3], (mod(Position.z + Position.y, 4.0)) / 4.0)
-    );
-  }
+  float worldTicks = PS_WorldTicks;
 
-  vec3 vVertex = vec3(ModelViewMat * Position);
-  gl_FogFragCoord = length(vVertex);
+  float smallWaves = PS_WavesMatrix[0];
+  float bigWaves = PS_WavesMatrix[1];
+  float wiggleWaves = PS_WavesMatrix[2];
+  float distantWorldDeformation;
+
+  vec3 playerPos = PS_PlayerPosition;
+
+  float FogFragCoord = 1;
 
   if (smallWaves > 0.0) {
     float w1 = 8.0;
@@ -41,8 +30,8 @@ void main() {
     gl_Position.y += sin((Position.x + worldTicks / 8.0) / w2 * 3.14159 * 2.0) * sin((Position.z) / w2 * 3.14159 * 2.0) * smallWaves * 3.0;
     gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w2 * 3.14159 * 2.0) * sin((playerPos.z) / w2 * 3.14159 * 2.0) * smallWaves * 3.0;
 
-    gl_Position.x = mix(gl_Position.x, gl_Position[0] * (1.0 + gl_FogFragCoord / 20.0), smallWaves);
-    gl_Position.y = mix(gl_Position.y, gl_Position[1] * (1.0 + gl_FogFragCoord / 20.0), smallWaves);
+    gl_Position.x = mix(gl_Position.x, gl_Position[0] * (1.0 + FogFragCoord / 20.0), smallWaves);
+    gl_Position.y = mix(gl_Position.y, gl_Position[1] * (1.0 + FogFragCoord / 20.0), smallWaves);
   }
 
   if (wiggleWaves > 0.0) {
@@ -52,10 +41,10 @@ void main() {
                     * wiggleWaves;
   }
 
-  if (distantWorldDeformation > 0.0 && gl_FogFragCoord > 5.0) {
-    gl_Position.y += (sin(gl_FogFragCoord / 8.0 * 3.14159 * 2.0) + 1.0)
+  if (distantWorldDeformation > 0.0 && FogFragCoord > 5.0) {
+    gl_Position.y += (sin(FogFragCoord / 8.0 * 3.14159 * 2.0) + 1.0)
                      * distantWorldDeformation
-                     * (gl_FogFragCoord - 5.0) / 8.0;
+                     * (FogFragCoord - 5.0) / 8.0;
   }
 
   if (bigWaves > 0.0) {
