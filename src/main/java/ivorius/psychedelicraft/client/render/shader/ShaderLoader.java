@@ -52,20 +52,6 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         setter.set("ticks", ShaderContext.ticks() * 0.03f);
                         pass.run();
                     }))
-            .addShader("underwater_overlay", UniformBinding.start()
-                    .program("distortion_map", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterScreenDistortion();
-
-                        if (strength <= 0 || !PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {
-                            return;
-                        }
-
-                        setter.set("totalAlpha", strength);
-                        setter.set("strength", strength * 0.2F);
-                        setter.set("texTranslation0", 0, ShaderContext.ticks() * 0.005F);
-                        setter.set("texTranslation1", 0.5F, ShaderContext.ticks() * 0.007F);
-                        pass.run();
-                    }))
             .addShader("simple_effects", UniformBinding.start()
                     .bind((setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         setter.set("ticks", ShaderContext.ticks());
@@ -207,6 +193,20 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
                         setter.set("strength", strength);
                         setter.set("seed", new Random((long) (ShaderContext.ticks() * 1000.0)).nextFloat() * 9 + 1);
+                        pass.run();
+                    }))
+            .addShader("underwater_overlay", UniformBinding.start()
+                    .program("distortion_map", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                        float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterScreenDistortion();
+
+                        if (strength <= 0 || !PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {
+                            return;
+                        }
+
+                        setter.set("totalAlpha", strength);
+                        setter.set("strength", strength * 0.2F);
+                        setter.set("texTranslation0", 0, ShaderContext.ticks() * 0.005F);
+                        setter.set("texTranslation1", 0.5F, ShaderContext.ticks() * 0.007F);
                         pass.run();
                     }))
             .addShader("digital", UniformBinding.start()
