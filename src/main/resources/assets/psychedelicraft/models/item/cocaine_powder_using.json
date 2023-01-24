@@ -1,0 +1,6 @@
+{
+    "parent": "psychedelicraft:item/joint_using",
+    "textures": {
+        "layer0": "psychedelicraft:item/cocaine_powder"
+    }
+}

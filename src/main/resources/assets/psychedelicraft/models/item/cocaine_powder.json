@@ -2,5 +2,13 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "psychedelicraft:item/cocaine_powder"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:using": 1
+            },
+            "model": "psychedelicraft:item/cocaine_powder_using"
+        }
+    ]
 }

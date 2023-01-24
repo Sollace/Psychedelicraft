@@ -90,7 +90,10 @@ public interface PSItems {
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));
     Item COCA_LEAVES = register("coca_leaves");
     Item DRIED_COCA_LEAVES = register("dried_coca_leaves");
-    Item COCAINE_POWDER = register("cocaine_powder", new CocainePowderItem(new Settings(), new DrugInfluence(DrugType.COCAINE, 0, 0.002, 0.003, 0.35f)));
+    Item COCAINE_POWDER = register("cocaine_powder", new CocainePowderItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.COCAINE, 0, 0.002, 0.003, 0.35f)
+    ));
 
     InjectableItem SYRINGE = register("syringe", new InjectableItem(new Settings(), FluidVolumes.SYRINGE));
 

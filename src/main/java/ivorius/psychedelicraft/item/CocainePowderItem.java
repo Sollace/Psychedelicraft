@@ -14,7 +14,7 @@ public class CocainePowderItem extends EdibleItem {
 
     @Override
     public UseAction getUseAction(ItemStack par1ItemStack) {
-        return UseAction.BOW;
+        return UseAction.TOOT_HORN;
     }
 
     @Override
