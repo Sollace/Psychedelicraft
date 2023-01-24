@@ -13,11 +13,19 @@ void main() {
   float smallWaves = PS_WavesMatrix[0];
   float bigWaves = PS_WavesMatrix[1];
   float wiggleWaves = PS_WavesMatrix[2];
-  float distantWorldDeformation;
+  float distantWorldDeformation = PS_DistantWorldDeformation;
 
   vec3 playerPos = PS_PlayerPosition;
 
-  float FogFragCoord = 1;
+  float fogFragCoord = length(gl_Position);
+
+ /* if (surfaceFractal > 0.0) {
+    texFractal0Coords = vec2(
+        mix(fractal0TexCoords[0], fractal0TexCoords[2], (mod(Position.x + Position.y, 4.0)) / 4.0),
+        mix(fractal0TexCoords[1], fractal0TexCoords[3], (mod(Position.z + Position.y, 4.0)) / 4.0)
+    );
+  }
+ */
 
   if (smallWaves > 0.0) {
     float w1 = 8.0;
@@ -30,8 +38,8 @@ void main() {
     gl_Position.y += sin((Position.x + worldTicks / 8.0) / w2 * 3.14159 * 2.0) * sin((Position.z) / w2 * 3.14159 * 2.0) * smallWaves * 3.0;
     gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w2 * 3.14159 * 2.0) * sin((playerPos.z) / w2 * 3.14159 * 2.0) * smallWaves * 3.0;
 
-    gl_Position.x = mix(gl_Position.x, gl_Position[0] * (1.0 + FogFragCoord / 20.0), smallWaves);
-    gl_Position.y = mix(gl_Position.y, gl_Position[1] * (1.0 + FogFragCoord / 20.0), smallWaves);
+    gl_Position.x = mix(gl_Position.x, gl_Position[0] * (1.0 + fogFragCoord / 20.0), smallWaves);
+    gl_Position.y = mix(gl_Position.y, gl_Position[1] * (1.0 + fogFragCoord / 20.0), smallWaves);
   }
 
   if (wiggleWaves > 0.0) {
@@ -41,10 +49,10 @@ void main() {
                     * wiggleWaves;
   }
 
-  if (distantWorldDeformation > 0.0 && FogFragCoord > 5.0) {
-    gl_Position.y += (sin(FogFragCoord / 8.0 * 3.14159 * 2.0) + 1.0)
+  if (distantWorldDeformation > 0.0 && fogFragCoord > 5.0) {
+    gl_Position.y += (sin(fogFragCoord / 8.0 * 3.14159 * 2.0) + 1.0)
                      * distantWorldDeformation
-                     * (FogFragCoord - 5.0) / 8.0;
+                     * (fogFragCoord - 5.0) / 8.0;
   }
 
   if (bigWaves > 0.0) {
