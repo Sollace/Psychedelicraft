@@ -6,8 +6,6 @@
 package ivorius.psychedelicraft.entity.drug;
 
 import ivorius.psychedelicraft.*;
-import ivorius.psychedelicraft.client.PsychedelicraftClient;
-import ivorius.psychedelicraft.client.screen.TickableContainer;
 import ivorius.psychedelicraft.client.sound.DrugMusicManager;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
@@ -210,10 +208,6 @@ public class DrugProperties implements NbtSerialisable {
             if (random.nextInt(Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn) == 0) {
                 RealityRiftEntity.spawn(entity);
             }
-        }
-
-        if (entity.currentScreenHandler instanceof TickableContainer updateable) {
-            updateable.onClientTick();
         }
     }
 
