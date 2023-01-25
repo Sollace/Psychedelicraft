@@ -48,9 +48,6 @@ dependencies {
     modApi "net.fabricmc:fabric-loader:${project.loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // provides networking and mod handshaking.
-    //   https://github.com/Sollace/Fabwork
-    // > gradlew build publishToMavenLocal
     modApi "com.sollace:fabwork:${project.fabwork_version}"
     include "com.sollace:fabwork:${project.fabwork_version}"
 
