@@ -21,6 +21,11 @@ public class JuniperLeavesBlock extends LeavesBlock {
     }
 
     @Override
+    public boolean hasRandomTicks(BlockState state) {
+        return !state.get(PERSISTENT);
+    }
+
+    @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
         if (this == PSBlocks.JUNIPER_LEAVES && random.nextFloat() < 0.01F && !state.get(WATERLOGGED)) {
@@ -35,7 +40,10 @@ public class JuniperLeavesBlock extends LeavesBlock {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (this == PSBlocks.FRUITING_JUNIPER_LEAVES) {
             Block.dropStack(world, pos, PSItems.JUNIPER_BERRIES.getDefaultStack());
-            world.setBlockState(pos, PSBlocks.JUNIPER_LEAVES.getDefaultState());
+            world.setBlockState(pos, PSBlocks.JUNIPER_LEAVES.getDefaultState()
+                    .with(DISTANCE, state.get(DISTANCE))
+                    .with(PERSISTENT, state.get(PERSISTENT))
+                    .with(WATERLOGGED, state.get(WATERLOGGED)));
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
