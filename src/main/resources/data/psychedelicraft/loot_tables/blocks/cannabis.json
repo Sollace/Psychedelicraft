@@ -48,7 +48,7 @@
           ]
         }
       ],
-      "rolls": 2.0
+      "rolls": 1.0
     },
     {
       "bonus_rolls": 0.0,
@@ -75,7 +75,7 @@
               }
             }
           ],
-          "name": "psychedelicraft:cannabis_buds"
+          "name": "psychedelicraft:cannabis_seeds"
         }
       ],
       "rolls": 1.0

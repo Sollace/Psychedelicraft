@@ -35,7 +35,7 @@
           ]
         }
       ],
-      "rolls": 2.0
+      "rolls": 1.0
     },
     {
       "bonus_rolls": 0.0,
@@ -65,7 +65,7 @@
               }
             }
           ],
-          "name": "psychedelicraft:coca_leaves"
+          "name": "psychedelicraft:coca_seeds"
         }
       ],
       "rolls": 1.0
