@@ -107,6 +107,7 @@ public class DrugRenderer {
         );
     }
 
+    // TODO: Hook required
     public void distortHand(MatrixStack matrices) {
         MinecraftClient client = MinecraftClient.getInstance();
         int rendererUpdateCount = client.inGameHud.getTicks();
