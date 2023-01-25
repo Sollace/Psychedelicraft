@@ -1,13 +1,10 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "##",
-    "##"
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "psychedelicraft:juniper_log" }
   ],
-  "key": {
-    "#": { "item": "psychedelicraft:juniper_log" }
-  },
   "result": {
-    "item": "psychedelicraft:juniper_planks"
+    "item": "psychedelicraft:juniper_planks",
+    "count": 4
   }
 }
