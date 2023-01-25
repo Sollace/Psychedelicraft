@@ -22,7 +22,11 @@ public interface ShaderContext {
     }
 
     static float ticks() {
-        return MinecraftClient.getInstance().player.age + MinecraftClient.getInstance().getTickDelta();
+        return MinecraftClient.getInstance().player.age + tickDelta();
+    }
+
+    static float tickDelta() {
+        return MinecraftClient.getInstance().getTickDelta();
     }
 
     static long time() {

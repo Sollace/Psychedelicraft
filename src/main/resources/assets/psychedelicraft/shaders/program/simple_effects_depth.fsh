@@ -16,11 +16,11 @@ void main() {
 	vec3 outcolor = texture(DiffuseSampler, texCoord).rgb;
 	float fogCoord = texture(DepthSampler, texCoord).r;
 
-	if (pulses.a > 0.0) {
-		float pulseA = (sin((fogCoord - ticks) / 5.0) - 0.4) * pulses.a;
+	if (pulses.r > 0.0) {
+		float pulseA = (sin((fogCoord - ticks) / 5.0) - 0.4) * pulses.r;
 
 		if (pulseA > 0.0) {
-		  outcolor = mix(outcolor, (outcolor + 1.0) * pulses.rgb, pulseA);
+		  outcolor.r = mix(outcolor.r, (outcolor.r + 1.0) * pulses.r, pulseA);
 		}
 	}
 

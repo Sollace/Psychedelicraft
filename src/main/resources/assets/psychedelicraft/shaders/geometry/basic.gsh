@@ -1,9 +1,19 @@
 
+ps_in vec2 texCoord0;
+
+ps_uniform sampler2D DepthSampler;
+uniform sampler2D PS_SurfaceFractalSampler;
+
 uniform float PS_WorldTicks;
 uniform vec3 PS_WavesMatrix;
 uniform float PS_DistantWorldDeformation;
+uniform vec4 PS_SurfaceFractalCoords;
+uniform float PS_SurfaceFractalStrength;
+uniform vec4 PS_Pulses;
 
 uniform vec3 PS_PlayerPosition;
+
+ps_out vec4 vertexColor;
 
 void main() {
   __vertex_shaders__main();
@@ -14,18 +24,32 @@ void main() {
   float bigWaves = PS_WavesMatrix[1];
   float wiggleWaves = PS_WavesMatrix[2];
   float distantWorldDeformation = PS_DistantWorldDeformation;
+  float surfaceFractalStrength = PS_SurfaceFractalStrength;
 
   vec3 playerPos = PS_PlayerPosition;
 
   float fogFragCoord = length(gl_Position);
 
- /* if (surfaceFractal > 0.0) {
-    texFractal0Coords = vec2(
-        mix(fractal0TexCoords[0], fractal0TexCoords[2], (mod(Position.x + Position.y, 4.0)) / 4.0),
-        mix(fractal0TexCoords[1], fractal0TexCoords[3], (mod(Position.z + Position.y, 4.0)) / 4.0)
-    );
+  if (surfaceFractalStrength > 0.0) {
+    vertexColor = vec4(mix(vertexColor.rgb, texture(PS_SurfaceFractalSampler, vec2(
+        mix(PS_SurfaceFractalCoords[0], PS_SurfaceFractalCoords[2], (mod(Position.x + Position.y, 4.0)) / 4.0),
+        mix(PS_SurfaceFractalCoords[1], PS_SurfaceFractalCoords[3], (mod(Position.z + Position.y, 4.0)) / 4.0)
+    )).rgb, surfaceFractalStrength), vertexColor.a);
   }
- */
+
+  vec3 outcolor = vertexColor.rgb;
+  float fogCoord = texture(DepthSampler, texCoord0).r;
+  vec4 pulses = PS_Pulses;
+
+  if (pulses.a > 0.0) {
+    float pulseA = (sin((fogCoord - worldTicks) / 5.0) - 0.4) * pulses.a;
+
+    if (pulseA > 0.0) {
+      outcolor = mix(outcolor, (outcolor + 1.0) * pulses.rgb, pulseA);
+    }
+
+    vertexColor = vec4(outcolor, 1.0);
+  }
 
   if (smallWaves > 0.0) {
     float w1 = 8.0;
