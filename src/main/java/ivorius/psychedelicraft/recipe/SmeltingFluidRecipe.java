@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,8 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     private final FluidIngredient fluid;
     private final Map<String, Modification> outputModifications;
 
+    private WeakReference<Inventory> lastQueriedInventory = new WeakReference<>(null);
+
     public SmeltingFluidRecipe(
             Identifier id, String group, CookingRecipeCategory category,
             FluidIngredient fluid, Ingredient inputStack,
@@ -70,11 +73,22 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
 
     @Override
     public boolean matches(Inventory inventory, World world) {
+        lastQueriedInventory = new WeakReference<>(inventory);
         return (input.isEmpty() || input.test(inventory.getStack(0))) && fluid.test(inventory.getStack(0));
     }
 
     @Override
+    public ItemStack getOutput() {
+        Inventory inventory = lastQueriedInventory.get();
+        if (inventory == null) {
+            return super.getOutput();
+        }
+        return craft(inventory);
+    }
+
+    @Override
     public ItemStack craft(Inventory inventory) {
+        lastQueriedInventory = new WeakReference<>(inventory);
         ItemStack stack = output.isEmpty() ? inventory.getStack(0).copyWithCount(
                 output.getItem() == Items.AIR ? 1 : output.getCount()
             ) : output.copy();
