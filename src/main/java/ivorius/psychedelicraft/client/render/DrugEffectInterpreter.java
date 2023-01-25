@@ -7,8 +7,6 @@ package ivorius.psychedelicraft.client.render;
 
 import net.minecraft.util.math.MathHelper;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 
@@ -17,7 +15,6 @@ import java.util.Random;
 /**
  * Created by lukas on 25.02.14.
  */
-@ParametersAreNonnullByDefault
 public interface DrugEffectInterpreter {
     static float getCameraShiftY(DrugProperties drugProperties, float ticks) {
         float amplitude = drugProperties.getModifier(Drug.VIEW_TREMBLE_STRENGTH);
