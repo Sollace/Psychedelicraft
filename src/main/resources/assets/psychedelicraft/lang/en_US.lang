@@ -1,9 +1,3 @@
-commands.drug.usage=/drug <player> <drug> <set|lock|unlock> [value]
-commands.drug.success=%s's %s set to %s
-commands.drug.success.lock=%s's %s locked to %s
-commands.drug.success.unlock=%s's %s unlocked at %s
-commands.drug.nodrug=%s is not a known drug!
-
 psychedelicraft.configgui.title=Psychedelicraft Config
 psychedelicraft.configgui.ctgy.general=General
 psychedelicraft.configgui.ctgy.general.tooltip=General Settings
