@@ -13,9 +13,9 @@
     "issues": "https://github.com/Sollace/Psychedelicraft/issues"
   },
   "license": "MIT",
-  "icon": "gfx/psychedelicraft/logo.png",
+  "icon": "logo.png",
   "accessWidener": "psychedelicraft.aw",
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "ivorius.psychedelicraft.Psychedelicraft"
@@ -36,5 +36,15 @@
   },
   "suggests": {
     "modmenu": "*"
+  },
+  "custom": {
+    "fabwork": {
+      "requiredOn": "*"
+    },
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/mt7uwQ4"
+      }
+    }
   }
 }
