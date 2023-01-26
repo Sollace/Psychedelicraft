@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.util;
 
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import net.minecraft.util.math.MathHelper;
@@ -39,6 +40,9 @@ public interface MathUtils {
         return value;
     }
 
+    static Vector3f unpackRgbVector(int left) {
+        return new Vector3f(r(left), g(left), b(left));
+    }
 
     static float[] unpackRgb(int left) {
         return new float[] {r(left), g(left), b(left)};

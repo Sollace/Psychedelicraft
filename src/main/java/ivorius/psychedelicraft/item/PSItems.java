@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.item;
 
+import org.joml.Vector3f;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
 import ivorius.psychedelicraft.block.entity.*;
@@ -75,15 +77,15 @@ public interface PSItems {
     Item DRIED_TOBACCO = register("dried_tobacco");
 
     SmokeableItem CIGARETTE = register("cigarette", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(1), 2,
+            new Settings().maxCount(1).maxDamage(1), 2, SmokeableItem.WHITE,
             new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.7f)
     ));
     SmokeableItem CIGAR = register("cigar", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(3), 4,
+            new Settings().maxCount(1).maxDamage(3), 4, new Vector3f(0.6F, 0.6F, 0.5F),
             new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.7f)
     ));
     SmokeableItem JOINT = register("joint", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(2), 2,
+            new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.9F, 0.9F, 0.9F),
             new DrugInfluence(DrugType.CANNABIS, 20, 0.002, 0.001, 0.20f)
     ));
 
@@ -117,7 +119,7 @@ public interface PSItems {
             new DrugInfluence(DrugType.PEYOTE, 15, 0.005, 0.003, 0.5f)
     ));
     Item PEYOTE_JOINT = register("peyote_joint", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(2), 2,
+            new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.5F, 0.9F, 0.4F),
             new DrugInfluence(DrugType.PEYOTE, 20, 0.003, 0.0015, 0.4f),
             new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.1f)
     ));

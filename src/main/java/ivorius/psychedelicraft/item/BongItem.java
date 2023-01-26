@@ -20,6 +20,8 @@ import net.minecraft.world.World;
 import java.util.*;
 import java.util.function.Function;
 
+import org.joml.Vector3f;
+
 /**
  * Created by calebmanley on 4/05/2014.
  *
@@ -108,14 +110,14 @@ public class BongItem extends Item {
     public record Consumable (
             ItemStack consumedItem,
             Function<ItemStack, List<DrugInfluence>> drugInfluences,
-            float[] smokeColor
+            Vector3f smokeColor
     ) {
         public Consumable(ItemStack consumedItem, DrugInfluence...drugInfluences) {
-            this(consumedItem, stack -> List.of(drugInfluences), new float[]{ 1, 1, 1 });
+            this(consumedItem, stack -> List.of(drugInfluences), SmokeableItem.WHITE);
         }
 
         public Consumable(ItemStack consumedItem, Function<ItemStack, DrugInfluence> drugInfluences) {
-            this(consumedItem, stack -> List.of(drugInfluences.apply(stack)), new float[]{ 1, 1, 1 });
+            this(consumedItem, stack -> List.of(drugInfluences.apply(stack)), SmokeableItem.WHITE);
         }
     }
 }

@@ -7,6 +7,8 @@ package ivorius.psychedelicraft.item;
 
 import java.util.List;
 
+import org.joml.Vector3f;
+
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import net.minecraft.entity.EquipmentSlot;
@@ -18,20 +20,19 @@ import net.minecraft.util.*;
 import net.minecraft.world.World;
 
 public class SmokeableItem extends Item {
-    public final List<DrugInfluence> drugEffects;
+    public static Vector3f WHITE = new Vector3f(1, 1, 1);
 
-    public float[] smokeColor;
+    private final List<DrugInfluence> drugEffects;
+
+    private final Vector3f smokeColor;
 
     private final int useStages;
 
-    public SmokeableItem(Settings settings, int useStages, DrugInfluence... drugEffects) {
-        this(settings, useStages, List.of(drugEffects));
-    }
-
-    protected SmokeableItem(Settings settings, int useStages, List<DrugInfluence> drugEffects) {
+    public SmokeableItem(Settings settings, int useStages, Vector3f smokeColor, DrugInfluence... drugEffects) {
         super(settings);
+        this.smokeColor = smokeColor;
         this.useStages = useStages;
-        this.drugEffects = drugEffects;
+        this.drugEffects = List.of(drugEffects);
     }
 
     @Override

@@ -15,6 +15,7 @@ import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.item.PSItemGroups;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.network.Channel;
+import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import ivorius.psychedelicraft.world.gen.PSWorldGen;
@@ -57,5 +58,6 @@ public class Psychedelicraft implements ModInitializer {
         PSScreenHandlers.bootstrap();
         Channel.bootstrap();
         PSCriteria.bootstrap();
+        PSParticles.bootstrap();
     }
 }

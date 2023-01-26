@@ -32,6 +32,9 @@ import net.minecraft.util.math.random.Random;
 import java.util.*;
 import java.util.stream.*;
 
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+
 public class DrugProperties implements NbtSerialisable {
     public static final UUID DRUG_EFFECT_UUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1");
 
@@ -46,7 +49,8 @@ public class DrugProperties implements NbtSerialisable {
     private final DrugMusicManager soundManager = new DrugMusicManager(this);
 
     private int timeBreathingSmoke;
-    private float[] breathSmokeColor;
+    @Nullable
+    private Vector3f breathSmokeColor;
 
     private final PlayerEntity entity;
 
@@ -128,8 +132,8 @@ public class DrugProperties implements NbtSerialisable {
         return drugs.keySet();
     }
 
-    public void startBreathingSmoke(int time, float[] color) {
-        this.breathSmokeColor = color == null ? new float[]{1.0f, 1.0f, 1.0f} : color;
+    public void startBreathingSmoke(int time, Vector3f color) {
+        this.breathSmokeColor = color;
         this.timeBreathingSmoke = time + 10; //10 is the time spent breathing in
         markDirty();
 
