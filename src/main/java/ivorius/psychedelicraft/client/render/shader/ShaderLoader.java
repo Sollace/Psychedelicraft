@@ -42,11 +42,13 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
             .addShader("underwater_distortion", UniformBinding.start()
                     .program("heat_distortion", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterDistortion();
+                        float peyote = ShaderContext.drug(DrugType.PEYOTE);
 
-                        if (strength <= 0 || !PsychedelicraftClient.getConfig().visual.doWaterDistortion) {
+                        if (peyote <= 0 && (strength <= 0 || !PsychedelicraftClient.getConfig().visual.doWaterDistortion)) {
                             return;
                         }
 
+                        strength = Math.max(peyote * 0.01073F, strength);
                         setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
                         setter.set("strength", strength);
                         setter.set("ticks", ShaderContext.ticks() * 0.03f);
