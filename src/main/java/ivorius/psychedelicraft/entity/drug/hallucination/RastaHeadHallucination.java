@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.entity.drug.hallucination;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RastaHeadModel;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,10 +17,7 @@ import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-
-import org.joml.Quaternionf;
+import net.minecraft.util.math.*;
 
 public class RastaHeadHallucination extends AbstractEntityHallucination {
     private static final Identifier TEXTURE = Psychedelicraft.id("textures/drug/cannabis/rasta_head_hallucination.png");
@@ -31,6 +29,7 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
     public RastaHeadHallucination(PlayerEntity playerEntity) {
         super(playerEntity);
         this.maxAge = (playerEntity.getRandom().nextInt(59) + 120) * 20;
+        this.scale = 1;
 
         this.entity = EntityType.PIG.create(playerEntity.world);
         this.entity.setPosition(playerEntity.getPos());
@@ -44,28 +43,34 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
         this.lookControl.lookAt(player);
         this.lookControl.tick();
 
-        Vec3d wanted = player.getPos().add(
-            MathHelper.sin(player.age / 50.0f) * 5.0f,
-            0,
-            MathHelper.cos(player.age / 50.0f) * 5.0f
+        double radius = 5;
+        int seed = player.age + (entity.getId() * 3);
+        Vec3d wanted = player.getEyePos().add(
+            MathHelper.sin(seed / 50F) * radius,
+            MathHelper.sin(seed / 10F) + (entity.getId() % 5) - 1,
+            MathHelper.cos(seed / 50F) * radius
         );
 
         double totalDist = wanted.distanceTo(entity.getPos());
 
-        if (totalDist > 3) {
-            entity.setVelocity(wanted.subtract(entity.getPos()).multiply(0.05D / totalDist));
-        } else {
-            entity.setVelocity(entity.getVelocity().multiply(0.9D));
-        }
+        Vec3d vel = entity.getVelocity().multiply(0.9D);
 
-        this.entity.setPosition(this.entity.getPos().add(entity.getVelocity()));
+        vel = wanted.subtract(entity.getPos()).normalize().multiply(Math.log((float)totalDist));
+
+        entity.setVelocity(vel);
+        entity.setPosition(entity.getPos().add(vel));
     }
 
     @Override
     protected void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, double x, double y, double z, float pitch, float yaw, float tickDelta) {
-        yaw = -MathHelper.lerp(tickDelta, ((LivingEntity)entity).prevHeadYaw, ((LivingEntity)entity).headYaw);
+        yaw = 180 - MathHelper.lerp(tickDelta, ((LivingEntity)entity).prevHeadYaw, ((LivingEntity)entity).headYaw);
+
         matrices.translate(x, y, z);
-        matrices.multiply(new Quaternionf().rotateXYZ(180, yaw, pitch));
-        modelRastaHead.render(matrices, vertices.getBuffer(modelRastaHead.getLayer(TEXTURE)), 0, 0, 1, 1, 1, 1);
+        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(180));
+        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(pitch));
+        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
+
+        var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+        modelRastaHead.render(matrices, vertices.getBuffer(modelRastaHead.getLayer(TEXTURE)), dispatcher.getLight(entity, tickDelta), 0, 1, 1, 1, 1);
     }
 }

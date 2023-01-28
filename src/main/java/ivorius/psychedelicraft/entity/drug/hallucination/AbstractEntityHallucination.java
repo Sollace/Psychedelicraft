@@ -12,6 +12,8 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import ivorius.psychedelicraft.client.render.PassThroughVertexConsumer;
 
 public abstract class AbstractEntityHallucination extends Hallucination {
@@ -47,12 +49,17 @@ public abstract class AbstractEntityHallucination extends Hallucination {
     public void update() {
         super.update();
 
+        entity.age++;
         entity.prevX = entity.getX();
         entity.prevY = entity.getY();
         entity.prevZ = entity.getZ();
 
         entity.prevYaw = entity.getYaw();
         entity.prevPitch = entity.getPitch();
+
+        if (entity instanceof LivingEntity living) {
+            living.prevHeadYaw = living.headYaw;
+        }
 
         animateEntity();
 
@@ -70,7 +77,7 @@ public abstract class AbstractEntityHallucination extends Hallucination {
                         (float) Math.min(age, maxAge - 2) / (float) (maxAge - 2)
                         * MathHelper.PI) * 18) * dAlpha;
 
-        if (this.dAlpha <= 0) {
+        if (MathHelper.approximatelyEquals(this.dAlpha, 0)) {
             return;
         }
 
@@ -91,27 +98,31 @@ public abstract class AbstractEntityHallucination extends Hallucination {
         matrices.scale(scale, scale, scale);
         matrices.translate(-x, -y, -z);
 
-        renderModel(matrices, layer -> {
-            var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-
-            var renderer = dispatcher.getRenderer(entity);
-            layer = RenderLayer.getEntityTranslucent(renderer.getTexture(entity));
-
-            return PassThroughVertexConsumer.of(
-                    vertices.getBuffer(layer),
-                    colourSpace
-            );
-        }, x, y, z, pitch, yaw, tickDelta);
+        renderModel(matrices, vertices, x, y, z, pitch, yaw, tickDelta);
         matrices.pop();
     }
 
     protected void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, double x, double y, double z, float pitch, float yaw, float tickDelta) {
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+        dispatcher.setRenderShadows(false);
         dispatcher.render(
                 entity,
                 x, y, z, yaw, tickDelta, matrices,
-                vertices,
+                layer -> {
+                    var dispatcher2 = MinecraftClient.getInstance().getEntityRenderDispatcher();
+
+                    var renderer = dispatcher2.getRenderer(entity);
+                    if (renderer != null) {
+                        layer = RenderLayer.getEntityTranslucent(renderer.getTexture(entity));
+                    }
+
+                    return PassThroughVertexConsumer.of(
+                            vertices.getBuffer(layer),
+                            colourSpace
+                    );
+                },
                 dispatcher.getLight(entity, tickDelta)
         );
+        dispatcher.setRenderShadows(true);
     }
 }
