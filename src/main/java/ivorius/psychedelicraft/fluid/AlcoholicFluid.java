@@ -57,7 +57,8 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     public void getDrugInfluencesPerLiter(ItemStack fluidStack, List<DrugInfluence> list) {
         super.getDrugInfluencesPerLiter(fluidStack, list);
 
-        double alcohol = getFermentation(fluidStack) / (double) settings.fermentationSteps * settings.fermentationAlcohol
+        double alcohol =
+                  settings.fermentationAlcohol * (getFermentation(fluidStack) / (double) settings.fermentationSteps)
                 + settings.distillationAlcohol * MathUtils.progress(getDistillation(fluidStack))
                 + settings.maturationAlcohol * MathUtils.progress(getMaturation(fluidStack) * 0.2F);
 
@@ -67,7 +68,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     @Override
     public int getProcessingTime(ItemStack stack, ProcessType type, boolean openContainer) {
         if (type == ProcessType.DISTILL) {
-            if (getFermentation(stack) < settings.fermentationSteps || getMaturation(stack) != 0) {
+            if (getFermentation(stack) >= settings.fermentationSteps || getMaturation(stack) != 0) {
                 return UNCONVERTABLE;
             }
 
@@ -75,7 +76,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         }
 
         if (type == ProcessType.FERMENT) {
-            if (getFermentation(stack) < settings.fermentationSteps) {
+            if (getFermentation(stack) >= settings.fermentationSteps) {
                 return openContainer ? settings.tickInfo.get().ticksPerFermentation : UNCONVERTABLE;
             }
             return openContainer ? settings.tickInfo.get().ticksUntilAcetification : settings.tickInfo.get().ticksPerMaturation;

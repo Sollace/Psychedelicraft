@@ -58,7 +58,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
 
         for (DrugInfluence influence : influencesPerLiter) {
             DrugInfluence clone = influence.clone();
-            clone.setMaxInfluence(clone.getMaxInfluence() * fluidStack.getCount() / FluidContainerItem.of(fluidStack, FluidContainerItem.BUCKET).getMaxCapacity(fluidStack));
+            clone.setMaxInfluence(clone.getMaxInfluence() * FluidContainerItem.of(fluidStack).getFluidLevel(fluidStack) / FluidVolumes.BUCKET);
             list.add(clone);
         }
     }
@@ -97,12 +97,12 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
 
     @Override
     public float getFireStrength(ItemStack fluidStack) {
-        return getAlcohol(fluidStack) * fluidStack.getCount() / FluidContainerItem.of(fluidStack, FluidContainerItem.BUCKET).getMaxCapacity(fluidStack) * 2.0f;
+        return getAlcohol(fluidStack) * FluidContainerItem.of(fluidStack).getFluidLevel(fluidStack) / FluidVolumes.BUCKET * 2.0f;
     }
 
     @Override
     public float getExplosionStrength(ItemStack fluidStack) {
-        return getAlcohol(fluidStack) * fluidStack.getCount() / FluidContainerItem.of(fluidStack, FluidContainerItem.BUCKET).getMaxCapacity(fluidStack) * 0.6f;
+        return getAlcohol(fluidStack) * FluidContainerItem.of(fluidStack).getFluidLevel(fluidStack) / FluidVolumes.BUCKET * 0.6f;
     }
 
     private float getAlcohol(ItemStack fluidStack) {
