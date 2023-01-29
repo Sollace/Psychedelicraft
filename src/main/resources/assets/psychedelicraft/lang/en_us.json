@@ -234,6 +234,11 @@
   "death.attack.heart_failure": "%1$s's heart stopped beating",
   "death.attack.respiratory_failure": "%1$s lungs collapsed",
 
+  "death.attack.molotov": "%1$s was toasted by %2$s",
+  "death.attack.molotov.item": "%1$s was toasted by %2$s using %3$s",
+  "death.attack.molotov.self": "%1$s tried to drink from the wrong bottle",
+  "death.attack.molotov.self.item": "%1$s tried to drink from the wrong bottle",
+
   "commands.drug.success.get.other": "%1$s %2$s level is %3$s",
   "commands.drug.success.get.self": "Your %1$s level is %2$s",
   "commands.drug.fail.get": "%1$s is not a valid drug type",

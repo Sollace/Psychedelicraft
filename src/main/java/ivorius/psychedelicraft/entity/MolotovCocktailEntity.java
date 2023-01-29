@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.entity;
 
+import ivorius.psychedelicraft.PSDamageSources;
 import ivorius.psychedelicraft.fluid.Combustable;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.BlockState;
@@ -75,11 +76,24 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     @Override
     protected void onEntityHit(EntityHitResult hit) {
         super.onEntityHit(hit);
-        //ExplodingFluid fluid = ItemMolotovCocktail.getExplodingFluid(getItem());
-        // TODO Implement hit damage
-        //       (Sollace edit "I assume based on the explosion strength and velocity, right? Right??)
-        //        It was already implemented with 4 hit damage so that's the only thing I can imagine...
-        hit.getEntity().damage(DamageSource.thrownProjectile(this, getOwner()), 4);
+        damageEntity(hit.getEntity(), 1);
+        float explosionStrength = Combustable.fromStack(getItem()).getExplosionStrength(getItem());
+        if (explosionStrength > 0) {
+            world.getOtherEntities(this, getBoundingBox().expand(explosionStrength), i -> i.distanceTo(this) <= explosionStrength).forEach(e -> {
+                damageEntity(hit.getEntity(), 1 - (e.distanceTo(this) / explosionStrength));
+            });
+        }
+    }
+
+    private void damageEntity(Entity entity, float percentageScale) {
+        Combustable combustable = Combustable.fromStack(getItem());
+        float explosionStrength = combustable.getExplosionStrength(getItem());
+        float fireStrength = combustable.getFireStrength(getItem());
+        entity.damage(PSDamageSources.molotov(this, entity, getOwner()), percentageScale * Math.max(4, explosionStrength * 0.6F + fireStrength * 0.3F));
+        if (fireStrength > 0) {
+            entity.isOnFire();
+            entity.setFireTicks((int)Math.max(10, 3 * fireStrength));
+        }
     }
 
     @Override

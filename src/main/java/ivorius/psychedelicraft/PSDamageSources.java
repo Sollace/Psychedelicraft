@@ -1,6 +1,10 @@
 package ivorius.psychedelicraft;
 
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.ProjectileDamageSource;
 
 /**
  * @author Sollace
@@ -11,4 +15,8 @@ public interface PSDamageSources {
     DamageSource RESPIRATORY_FAILURE = new DamageSource("respiratory_failure").setBypassesArmor().setUnblockable();
     DamageSource STROKE = new DamageSource("stroke").setBypassesArmor().setUnblockable();
     DamageSource HEART_FAILURE = new DamageSource("heart_failure").setBypassesArmor().setUnblockable();
+
+    static DamageSource molotov(Entity projectile, Entity target, @Nullable Entity attacker) {
+        return new ProjectileDamageSource(target == attacker ? "molotov.self" : "molotov", projectile, attacker).setProjectile();
+    }
 }

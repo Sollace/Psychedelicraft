@@ -12,8 +12,6 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.client.render.PassThroughVertexConsumer;
 
 public abstract class AbstractEntityHallucination extends Hallucination {
