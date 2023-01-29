@@ -1,7 +1,6 @@
 
 ps_in vec2 texCoord0;
 
-ps_uniform sampler2D DepthSampler;
 uniform sampler2D PS_SurfaceFractalSampler;
 
 uniform float PS_WorldTicks;
@@ -16,7 +15,7 @@ uniform vec3 PS_PlayerPosition;
 ps_out vec4 vertexColor;
 
 void main() {
-  __vertex_shaders__main();
+  __parent_shaders__main();
 
   float worldTicks = PS_WorldTicks;
 
@@ -38,11 +37,10 @@ void main() {
   }
 
   vec3 outcolor = vertexColor.rgb;
-  float fogCoord = texture(DepthSampler, texCoord0).r;
   vec4 pulses = PS_Pulses;
 
   if (pulses.a > 0.0) {
-    float pulseA = (sin((fogCoord - worldTicks) / 5.0) - 0.4) * pulses.a;
+    float pulseA = (sin((fogFragCoord - worldTicks) / 5.0) - 0.4) * pulses.a;
 
     if (pulseA > 0.0) {
       outcolor = mix(outcolor, (outcolor + 1.0) * pulses.rgb, pulseA);

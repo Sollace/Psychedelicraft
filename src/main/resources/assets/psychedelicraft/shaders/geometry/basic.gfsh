@@ -1,0 +1,34 @@
+
+ps_in vec2 texCoord0;
+
+ps_uniform sampler2D DepthSampler;
+
+uniform float PS_WorldTicks;
+uniform vec4 PS_Pulses;
+
+uniform vec3 PS_PlayerPosition;
+
+ps_out vec4 fragColor;
+
+void main() {
+  __parent_shaders__main();
+
+  float worldTicks = PS_WorldTicks;
+
+  float distantWorldDeformation = PS_DistantWorldDeformation;
+
+  float fogFragCoord = length(gl_Position);
+
+  vec3 outcolor = fragColor.rgb;
+  vec4 pulses = PS_Pulses;
+
+  if (pulses.a > 0.0) {
+    float pulseA = (sin((fogFragCoord - worldTicks) / 5.0) - 0.4) * pulses.a;
+
+    if (pulseA > 0.0) {
+      outcolor = mix(outcolor, (outcolor + 1.0) * pulses.rgb, pulseA);
+    }
+
+    fragColor = vec4(outcolor, 1.0);
+  }
+}

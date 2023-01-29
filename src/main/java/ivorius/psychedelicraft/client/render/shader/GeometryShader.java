@@ -116,12 +116,21 @@ public class GeometryShader {
 
     public String injectShaderSources(String source) {
         if (type == Type.VERTEX) {
-            return loadProgram(new Identifier(GEO_DIRECTORY + name + ".gsh")).or(() -> {
-                return loadProgram(BASIC.withPath(p -> GEO_DIRECTORY + p + ".gsh"));
+            return loadProgram(new Identifier(GEO_DIRECTORY + name + ".gvsh")).or(() -> {
+                return loadProgram(BASIC.withPath(p -> GEO_DIRECTORY + p + ".gvsh"));
             }).map(geometryShaderSources -> {
                 return combineSources(source, geometryShaderSources);
             }).orElse(source);
         }
+        /*
+        if (type == Type.FRAGMENT) {
+            return loadProgram(new Identifier(GEO_DIRECTORY + name + ".gfsh")).or(() -> {
+                return loadProgram(BASIC.withPath(p -> GEO_DIRECTORY + p + ".gfsh"));
+            }).map(geometryShaderSources -> {
+                return combineSources(source, geometryShaderSources);
+            }).orElse(source);
+        }
+        */
         return source;
     }
 
@@ -135,7 +144,7 @@ public class GeometryShader {
         });
 
         String newline = System.lineSeparator();
-        return vertexSources.replace("void main()", "void __vertex_shaders__main()" + newline) + newline + geometrySources;
+        return vertexSources.replace("void main()", "void __parent_shaders__main()" + newline) + newline + geometrySources;
     }
 
     private Optional<String> loadProgram(Identifier id) {
