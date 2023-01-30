@@ -122,7 +122,7 @@ public class GeometryShader {
                 return combineSources(source, geometryShaderSources);
             }).orElse(source);
         }
-        /*
+
         if (type == Type.FRAGMENT) {
             return loadProgram(new Identifier(GEO_DIRECTORY + name + ".gfsh")).or(() -> {
                 return loadProgram(BASIC.withPath(p -> GEO_DIRECTORY + p + ".gfsh"));
@@ -130,7 +130,7 @@ public class GeometryShader {
                 return combineSources(source, geometryShaderSources);
             }).orElse(source);
         }
-        */
+
         return source;
     }
 

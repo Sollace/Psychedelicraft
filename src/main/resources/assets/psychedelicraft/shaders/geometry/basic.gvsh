@@ -8,11 +8,11 @@ uniform vec3 PS_WavesMatrix;
 uniform float PS_DistantWorldDeformation;
 uniform vec4 PS_SurfaceFractalCoords;
 uniform float PS_SurfaceFractalStrength;
-uniform vec4 PS_Pulses;
 
 uniform vec3 PS_PlayerPosition;
 
 ps_out vec4 vertexColor;
+ps_out float vertexDistance;
 
 void main() {
   __parent_shaders__main();
@@ -34,19 +34,6 @@ void main() {
         mix(PS_SurfaceFractalCoords[0], PS_SurfaceFractalCoords[2], (mod(Position.x + Position.y, 4.0)) / 4.0),
         mix(PS_SurfaceFractalCoords[1], PS_SurfaceFractalCoords[3], (mod(Position.z + Position.y, 4.0)) / 4.0)
     )).rgb, surfaceFractalStrength), vertexColor.a);
-  }
-
-  vec3 outcolor = vertexColor.rgb;
-  vec4 pulses = PS_Pulses;
-
-  if (pulses.a > 0.0) {
-    float pulseA = (sin((fogFragCoord - worldTicks) / 5.0) - 0.4) * pulses.a;
-
-    if (pulseA > 0.0) {
-      outcolor = mix(outcolor, (outcolor + 1.0) * pulses.rgb, pulseA);
-    }
-
-    vertexColor = vec4(outcolor, 1.0);
   }
 
   if (smallWaves > 0.0) {

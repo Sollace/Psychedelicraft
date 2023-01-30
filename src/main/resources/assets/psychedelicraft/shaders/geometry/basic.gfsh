@@ -1,12 +1,8 @@
 
-ps_in vec2 texCoord0;
-
-ps_uniform sampler2D DepthSampler;
-
 uniform float PS_WorldTicks;
 uniform vec4 PS_Pulses;
 
-uniform vec3 PS_PlayerPosition;
+ps_in float vertexDistance;
 
 ps_out vec4 fragColor;
 
@@ -15,9 +11,7 @@ void main() {
 
   float worldTicks = PS_WorldTicks;
 
-  float distantWorldDeformation = PS_DistantWorldDeformation;
-
-  float fogFragCoord = length(gl_Position);
+  float fogFragCoord = vertexDistance;
 
   vec3 outcolor = fragColor.rgb;
   vec4 pulses = PS_Pulses;
@@ -29,6 +23,6 @@ void main() {
       outcolor = mix(outcolor, (outcolor + 1.0) * pulses.rgb, pulseA);
     }
 
-    fragColor = vec4(outcolor, 1.0);
+    fragColor = vec4(outcolor, fragColor.a);
   }
 }
