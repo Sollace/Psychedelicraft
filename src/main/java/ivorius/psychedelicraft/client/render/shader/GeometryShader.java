@@ -3,8 +3,7 @@ package ivorius.psychedelicraft.client.render.shader;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -18,6 +17,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.resource.*;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -37,6 +37,13 @@ public class GeometryShader {
     private final ResourceManager manager = client.getResourceManager();
 
     private final Map<Identifier, Optional<String>> loadedPrograms = new HashMap<>();
+
+
+    private final Map<String, Supplier<Object>> samplers = Util.make(new HashMap<>(), map -> {
+        map.put("PS_DepthSampler", () -> MinecraftClient.getInstance().getFramebuffer().getDepthAttachment());
+        map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
+    });
+
 
     public void setup(Type type, String name, InputStream stream, String domain, GLImportProcessor loader) {
         this.name = name;
@@ -104,14 +111,8 @@ public class GeometryShader {
         }));
     }
 
-    public void addSamplers(Consumer<String> register) {
-        register.accept("PS_DepthSampler");
-        register.accept("PS_SurfaceFractalSampler");
-    }
-
-    public void bindSamplers(BiConsumer<String, Object> register) {
-        register.accept("PS_DepthSampler", MinecraftClient.getInstance().getFramebuffer().getDepthAttachment());
-        register.accept("PS_SurfaceFractalSampler", MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
+    public Map<String, Supplier<Object>> getSamplers() {
+        return samplers;
     }
 
     public String injectShaderSources(String source) {
@@ -173,9 +174,5 @@ public class GeometryShader {
             valueGetter.accept(this);
             super.upload();
         }
-    }
-
-    public interface ModifyableShaderProgram {
-
     }
 }

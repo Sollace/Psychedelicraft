@@ -10,14 +10,14 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.gl.ShaderStage.Type;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.resource.ResourceFactory;
 
 @Mixin(ShaderProgram.class)
-abstract class MixinShaderProgram implements ShaderProgramSetupView, AutoCloseable, GeometryShader.ModifyableShaderProgram {
+abstract class MixinShaderProgram implements ShaderProgramSetupView, AutoCloseable {
     @Shadow
     private @Final List<GlUniform> uniforms;
     @Shadow
@@ -25,21 +25,25 @@ abstract class MixinShaderProgram implements ShaderProgramSetupView, AutoCloseab
     @Shadow
     private @Final List<String> samplerNames;
 
-    @Inject(method = "<init>", at = @At(
-            value = "INVOKE",
-            target = "net/minecraft/client/gl/ShaderProgram.readBlendState(Lcom/google/gson/JsonObject;)Lnet/minecraft/client/gl/GlBlendState;"
-    ))
-    private void onInit(ResourceFactory factory, String name, VertexFormat format, CallbackInfo info) throws IOException {
-        GeometryShader.INSTANCE.addUniforms(this, uniform -> uniforms.add(uniform));
-        GeometryShader.INSTANCE.addSamplers(samplerName -> {
-            samplerNames.add(samplerName);
-            samplers.put(samplerName, null);
-        });
+    @Inject(method = "bind()V", at = @At("HEAD"))
+    private void onBind(CallbackInfo info) {
+        GeometryShader.INSTANCE.getSamplers().forEach((name, sampler) -> samplers.put(name, sampler.get()));
     }
 
-    @Inject(method = "bind()V", at = @At("HEAD"))
-    public void onBind(CallbackInfo info) {
-        GeometryShader.INSTANCE.bindSamplers((name, sampler) -> samplers.put(name, sampler));
+    @Inject(method = "loadReferences()V", at = @At("HEAD"))
+    private void onLoadReferences(CallbackInfo info) {
+        RenderSystem.assertOnRenderThread();
+        GeometryShader.INSTANCE.getSamplers().keySet().forEach(samplerName -> {
+            if (GlUniform.getUniformLocation(getGlRef(), samplerName) != -1) {
+                samplerNames.add(samplerName);
+                samplers.put(samplerName, null);
+            }
+        });
+        GeometryShader.INSTANCE.addUniforms(this, uniform -> {
+            if (GlUniform.getUniformLocation(getGlRef(), uniform.getName()) != -1) {
+                uniforms.add(uniform);
+            }
+        });
     }
 }
 

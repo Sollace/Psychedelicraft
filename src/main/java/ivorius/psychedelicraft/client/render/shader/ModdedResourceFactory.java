@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Stream;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
 
@@ -29,7 +30,7 @@ class ModdedResourceFactory implements ResourceFactory {
     private Resource loadShader(Resource resource, Identifier id) {
         if (id.getPath().endsWith(".vsh") || id.getPath().endsWith(".fsh")) {
             return new Resource(resource.getPack(), () -> {
-                System.out.println("[BEGIN SHADER] " + id);
+                id.getClass();
                 try (var reader = resource.getReader()) {
                     return new ByteArrayInputStream(reader.lines().toList().stream()
                             .flatMap(this::processImport)
@@ -55,7 +56,7 @@ class ModdedResourceFactory implements ResourceFactory {
                 importPath = importPath.withPrefixedPath("shaders/include/");
                 return loadedImports.computeIfAbsent(importPath, p -> {
                     return parent.getResource(p).or(() -> {
-                        System.out.println("Failed to locate import: " + line);
+                        Psychedelicraft.LOGGER.error("Failed to locate import: {}", line);
                         return Optional.empty();
                     }).stream().filter(Objects::nonNull).flatMap(resource -> {
                         try (var reader = resource.getReader()) {
