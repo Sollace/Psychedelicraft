@@ -2,6 +2,8 @@ package ivorius.psychedelicraft.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -37,6 +39,7 @@ public class BottleRackBlockEntity extends BlockEntityWithInventory {
             int slot = getSlot(pos);
             if (slot >= 0 && slot < 9 && getStack(slot).isEmpty() && isValid(slot, stack)) {
                 setStack(slot, stack.split(1));
+                getWorld().playSound(null, getPos(), SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1, 1.5F);
                 return ActionResult.SUCCESS;
             }
             return ActionResult.FAIL;
@@ -45,6 +48,7 @@ public class BottleRackBlockEntity extends BlockEntityWithInventory {
 
     public TypedActionResult<ItemStack> extractItem(BlockHitResult hit, Direction facing) {
         return getHitPos(hit, facing).map(pos -> {
+            getWorld().playSound(null, getPos(), SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1, 1);
             return TypedActionResult.success(removeStack(getSlot(pos)));
         }).orElse(TypedActionResult.fail(ItemStack.EMPTY));
     }
