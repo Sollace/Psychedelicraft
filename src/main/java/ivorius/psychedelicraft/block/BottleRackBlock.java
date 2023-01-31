@@ -1,6 +1,13 @@
 package ivorius.psychedelicraft.block;
 
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
+import ivorius.psychedelicraft.client.render.blocks.VoxelShapeUtil;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import ivorius.psychedelicraft.block.entity.BottleRackBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,7 +20,10 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
 
 /**
@@ -22,16 +32,30 @@ import net.minecraft.world.*;
 public class BottleRackBlock extends BlockWithEntity {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
-    // TODO: (Sollace) rotations
-    private static final VoxelShape[] SHAPES = new VoxelShape[] {
-            Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6),
-            Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6),
-            Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6),
-            Block.createCuboidShape(-8, -8, -1.6, 16, 16, 9.6)
-    };
+    private static final Map<Direction, VoxelShape> SHAPES = Arrays.stream(Direction.values())
+            .filter(d -> d.getAxis() != Axis.Y)
+            .collect(Collectors.toMap(
+                    Function.identity(),
+                    VoxelShapeUtil.rotator(VoxelShapes.union(
+                            Block.createCuboidShape(0, 0, 3, 1, 16, 11),
+                            Block.createCuboidShape(5, 0, 3, 6, 16, 11),
+                            Block.createCuboidShape(10, 0, 3, 11, 16, 11),
+                            Block.createCuboidShape(15, 0, 3, 16, 16, 11),
+
+                            Block.createCuboidShape(1, 0, 2.75F, 15, 1, 12.35F),
+                            Block.createCuboidShape(1, 5, 2.75F, 15, 6, 12.35F),
+                            Block.createCuboidShape(1, 10, 2.75F, 15, 11, 12.35F),
+                            Block.createCuboidShape(1, 15, 2.75F, 15, 16, 12.35F)
+                    )))
+            );
 
     public BottleRackBlock(Settings settings) {
         super(settings.nonOpaque());
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 
     @Override
@@ -48,7 +72,7 @@ public class BottleRackBlock extends BlockWithEntity {
     @Override
     @Deprecated
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return SHAPES[state.get(FACING).getHorizontal()];
+        return SHAPES.getOrDefault(state.get(FACING), VoxelShapes.fullCube());
     }
 
     @Override
@@ -75,7 +99,7 @@ public class BottleRackBlock extends BlockWithEntity {
                 return extracted.getResult();
             }
 
-            return be.insertItem(player.getStackInHand(hand), hit, state.get(FACING));
+            return be.insertItem(heldStack, hit, state.get(FACING));
         }).orElse(ActionResult.FAIL);
     }
 
