@@ -63,9 +63,6 @@ class FillDrinkContainerRecipe extends ShapelessRecipe {
         RecipeMatcher recipeMatcher = new RecipeMatcher();
         return RecipeUtils.recepticals(inventory).count() == 1
                 && RecipeUtils.stacks(inventory).filter(stack -> {
-                    if (stack.getItem() instanceof FluidContainerItem) {
-                        return false;
-                    }
                     recipeMatcher.addInput(stack, 1);
                     return true;
                 }).count() == getIngredients().size()
@@ -75,7 +72,7 @@ class FillDrinkContainerRecipe extends ShapelessRecipe {
     @Override
     public ItemStack craft(CraftingInventory inventory) {
         return RecipeUtils.recepticals(inventory).findFirst().map(receptical -> {
-            ItemStack stack = output.fluid().getDefaultStack(receptical.getKey(), output.level());
+            ItemStack stack = output.fluid().getDefaultStack(receptical.getKey(), output.level() <= 0 ? receptical.getKey().getMaxCapacity(receptical.getValue()) : output.level());
             stack.getOrCreateSubNbt("fluid").copyFrom(output.attributes());
             return stack;
         }).orElse(ItemStack.EMPTY);

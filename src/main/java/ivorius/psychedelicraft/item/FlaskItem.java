@@ -6,8 +6,10 @@
 package ivorius.psychedelicraft.item;
 
 import ivorius.psychedelicraft.fluid.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.*;
 import net.minecraft.item.*;
+import net.minecraft.text.Text;
 
 /**
  * Created by lukas on 25.10.14.
@@ -20,6 +22,17 @@ public class FlaskItem extends BlockItem implements FluidContainerItem {
     public FlaskItem(Block block, Settings settings, int capacity) {
         super(block, settings);
         this.capacity = capacity;
+    }
+
+    @Override
+    public Text getName(ItemStack stack) {
+        SimpleFluid fluid = getFluid(stack);
+
+        if (!fluid.isEmpty()) {
+            return Text.translatable(getTranslationKey() + ".filled", fluid.getName(stack));
+        }
+
+        return super.getName(stack);
     }
 
     @Override
