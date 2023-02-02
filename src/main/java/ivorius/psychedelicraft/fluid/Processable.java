@@ -30,7 +30,7 @@ public interface Processable {
      * @param stack The fluid currently being distilled.
      * @return The stack left over in the distillery.
      */
-    ItemStack process(ItemStack stack, ProcessType type, boolean openContainer);
+    ItemStack process(Resovoir tank, ProcessType type, boolean openContainer);
 
     enum ProcessType {
         DISTILL,

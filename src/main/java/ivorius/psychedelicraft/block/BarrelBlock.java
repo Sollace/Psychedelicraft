@@ -79,9 +79,9 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
 
         ItemStack stack = player.getStackInHand(hand);
-        if (stack.getItem() instanceof FluidContainerItem container) {
+        if (stack.getItem() instanceof FluidContainer container) {
 
-            if (container.getFluidLevel(stack) < container.getMaxCapacity(stack)) {
+            if (container.getLevel(stack) < container.getMaxCapacity(stack)) {
 
                 Resovoir tank = blockEntity.getTank(Direction.DOWN);
                 if (tank.getLevel() > 0 && tank.getFluidType().isSuitableContainer(container)) {

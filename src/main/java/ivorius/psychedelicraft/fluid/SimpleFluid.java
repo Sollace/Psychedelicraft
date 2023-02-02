@@ -13,8 +13,6 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
@@ -106,23 +104,23 @@ public class SimpleFluid {
         return Util.createTranslationKey(fluid == Fluids.EMPTY ? "fluid" : "block", id);
     }
 
-    public final ItemStack getDefaultStack(FluidContainerItem container) {
+    public final ItemStack getDefaultStack(FluidContainer container) {
         return getDefaultStack(container, container.getMaxCapacity());
     }
 
     public final ItemStack getDefaultStack() {
-        return getDefaultStack(FluidContainerItem.UNLIMITED);
+        return getDefaultStack(FluidContainer.UNLIMITED);
     }
 
     public final ItemStack getDefaultStack(int level) {
-        return getDefaultStack(FluidContainerItem.UNLIMITED, level);
+        return getDefaultStack(FluidContainer.UNLIMITED, level);
     }
 
-    public ItemStack getDefaultStack(FluidContainerItem container, int level) {
-        return container.setLevel(container.getDefaultStack(this), level);
+    public ItemStack getDefaultStack(FluidContainer container, int level) {
+        return container.toMutable(container.getDefaultStack(this)).withLevel(level).asStack();
     }
 
-    public void getDefaultStacks(FluidContainerItem container, Consumer<ItemStack> consumer) {
+    public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
         consumer.accept(getDefaultStack(container));
     }
 
@@ -130,21 +128,8 @@ public class SimpleFluid {
         return Text.translatable(getTranslationKey());
     }
 
-    public boolean isSuitableContainer(FluidContainerItem container) {
+    public boolean isSuitableContainer(FluidContainer container) {
         return !container.asItem().getDefaultStack().isIn(PSTags.Items.BARRELS);
-    }
-
-    private static final NbtCompound EMPTY_NBT = new NbtCompound();
-
-    protected NbtCompound getFluidTag(ItemStack stack, boolean readOnly) {
-        if (!readOnly) {
-            return stack.getOrCreateSubNbt("fluid");
-        }
-
-        if (stack.hasNbt() && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE)) {
-            return stack.getSubNbt("fluid");
-        }
-        return EMPTY_NBT;
     }
 
     public static SimpleFluid byId(Identifier id) {

@@ -29,9 +29,9 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     }
 
     @Override
-    public ItemStack process(ItemStack stack, ProcessType type, boolean openContainer) {
+    public ItemStack process(Resovoir tank, ProcessType type, boolean openContainer) {
         if (type == ProcessType.FERMENT) {
-            return new ItemStack(Items.DIRT, stack.getCount() / FLUID_PER_DIRT);
+            return new ItemStack(Items.DIRT, tank.getStack().getCount() / FLUID_PER_DIRT);
         }
         return ItemStack.EMPTY;
     }

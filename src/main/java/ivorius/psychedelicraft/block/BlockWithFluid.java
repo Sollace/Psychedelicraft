@@ -8,7 +8,7 @@ package ivorius.psychedelicraft.block;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
-import ivorius.psychedelicraft.fluid.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.FluidContainer;
 import ivorius.psychedelicraft.fluid.Resovoir;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -54,7 +54,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (!world.isClient && stack.getItem() instanceof FluidContainerItem container) {
+        if (!world.isClient && stack.getItem() instanceof FluidContainer container) {
             pos = getBlockEntityPos(world, state, pos);
             world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
                 be.getTank(Direction.UP).deposit(stack);

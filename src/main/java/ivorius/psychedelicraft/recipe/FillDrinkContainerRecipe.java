@@ -17,8 +17,6 @@ import net.minecraft.world.World;
 
 import com.google.gson.*;
 
-import ivorius.psychedelicraft.fluid.FluidContainerItem;
-
 /**
  * Created from "RecipeFillDrink" by Sollace on 5 Jan 2023
  * Original by lukas on 21.10.14.
@@ -45,7 +43,7 @@ import ivorius.psychedelicraft.fluid.FluidContainerItem;
  *  }
  *
  */
-class FillDrinkContainerRecipe extends ShapelessRecipe {
+public class FillDrinkContainerRecipe extends ShapelessRecipe {
     private final FluidIngredient output;
 
     public FillDrinkContainerRecipe(Identifier id, String group, CraftingRecipeCategory category, FluidIngredient output, DefaultedList<Ingredient> input) {
@@ -76,6 +74,10 @@ class FillDrinkContainerRecipe extends ShapelessRecipe {
             stack.getOrCreateSubNbt("fluid").copyFrom(output.attributes());
             return stack;
         }).orElse(ItemStack.EMPTY);
+    }
+
+    public FluidIngredient getOutputFluid() {
+        return output;
     }
 
     static class Serializer implements RecipeSerializer<FillDrinkContainerRecipe> {

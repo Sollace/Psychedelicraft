@@ -31,29 +31,30 @@ public interface ConsumableFluid {
     void consume(ItemStack stack, LivingEntity entity, ConsumptionType type);
 
     static boolean canConsume(ItemStack stack, LivingEntity entity, int maxConsumed, ConsumptionType type) {
-        return stack.getItem() instanceof FluidContainerItem container
-                && container.getFluidLevel(stack) >= maxConsumed
+        return stack.getItem() instanceof FluidContainer container
+                && container.getLevel(stack) >= maxConsumed
                 && container.getFluid(stack) instanceof ConsumableFluid consumable
                 && consumable.canConsume(stack, entity, type);
     }
 
     static ItemStack consume(ItemStack stack, LivingEntity entity, int maxConsumed, boolean consume, ConsumptionType type) {
-        if (stack.getItem() instanceof FluidContainerItem container) {
-            if (container.getFluidLevel(stack) >= maxConsumed) {
+        if (stack.getItem() instanceof FluidContainer container) {
+            if (container.getLevel(stack) >= maxConsumed) {
                 if (container.getFluid(stack) instanceof ConsumableFluid consumable && consumable.canConsume(stack, entity, type)) {
-                    ItemStack drained = container.drain(stack, maxConsumed);
+                    MutableFluidContainer mutable = container.toMutable(stack);
+                    MutableFluidContainer drained = mutable.drain(maxConsumed);
                     if (consume) {
-                        consumable.consume(drained, entity, type);
+                        consumable.consume(drained.asStack(), entity, type);
                         if (entity instanceof ServerPlayerEntity player) {
                             Criteria.CONSUME_ITEM.trigger(player, stack);
                         }
                     }
-                    return drained;
+                    return mutable.asStack();
                 }
             }
         }
 
-        return ItemStack.EMPTY;
+        return stack;
     }
 
     public enum ConsumptionType {

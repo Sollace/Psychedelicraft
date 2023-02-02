@@ -3,7 +3,7 @@ package ivorius.psychedelicraft.recipe;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ivorius.psychedelicraft.fluid.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.FluidContainer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -12,7 +12,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
-record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
+public record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
     public static FluidIngredient fromJson(JsonObject json) {
         SimpleFluid fluid = SimpleFluid.byId(Identifier.tryParse(JsonHelper.getString(json, "fluid")));
         int level = JsonHelper.getInt(json, "level", -1);
@@ -38,13 +38,13 @@ record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
     }
 
     public boolean test(ItemStack stack) {
-        if (!(stack.getItem() instanceof FluidContainerItem)) {
+        if (!(stack.getItem() instanceof FluidContainer)) {
             return false;
         }
         boolean result = true;
-        result &= fluid.isEmpty() || FluidContainerItem.of(stack).getFluid(stack) == fluid;
+        result &= fluid.isEmpty() || FluidContainer.of(stack).getFluid(stack) == fluid;
         result &= !stack.hasNbt() || attributes.isEmpty() || (stack.getNbt().contains("fluid") && NbtHelper.matches(attributes, stack.getSubNbt("fluid"), true));
-        result &= level <= 0 || FluidContainerItem.of(stack).getFluidLevel(stack) >= level;
+        result &= level <= 0 || FluidContainer.of(stack).getLevel(stack) >= level;
         return result;
     }
 }

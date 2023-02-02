@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 /**
  * Created by Sollace on Jan 1 2023
  */
-public class DrinkableItem extends Item implements FluidContainerItem {
+public class DrinkableItem extends Item implements FluidContainer {
     public static final int FLUID_PER_DRINKING = FluidVolumes.BUCKET / 4;
 
     private final int capacity;
@@ -46,8 +46,7 @@ public class DrinkableItem extends Item implements FluidContainerItem {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        ConsumableFluid.consume(stack, entity, consumptionVolume, !(entity instanceof PlayerEntity p && p.isCreative()), consumptionType);
-        return stack;
+        return ConsumableFluid.consume(stack, entity, consumptionVolume, !(entity instanceof PlayerEntity p && p.isCreative()), consumptionType);
     }
 
     @Override

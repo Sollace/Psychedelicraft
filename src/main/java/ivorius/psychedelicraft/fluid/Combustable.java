@@ -40,7 +40,7 @@ public interface Combustable {
     float getExplosionStrength(ItemStack stack);
 
     static Combustable fromStack(ItemStack stack) {
-        if (FluidContainerItem.of(stack).getFluid(stack) instanceof Combustable exploder) {
+        if (FluidContainer.of(stack).getFluid(stack) instanceof Combustable exploder) {
             return exploder;
         }
 

@@ -71,7 +71,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
 
             if (canProcess(world, getTimeNeeded())) {
                 if (getTimeProcessed() >= getTimeNeeded()) {
-                    onProcessCompleted(world, tank, p.process(tank.getStack(), processType, open));
+                    onProcessCompleted(world, tank, p.process(tank, processType, open));
                 } else {
                     setTimeProcessed(getTimeProcessed() + 1);
                 }

@@ -87,17 +87,19 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
     public void tick(ServerWorld world) {
         ItemStack output = outputSlot.getStack();
         boolean playSound = false;
-        if (output.getItem() instanceof FluidContainerItem container && container.getFillPercentage(output) < 1) {
-            int oldLevel = container.getFluidLevel(output);
+        FluidContainer container = FluidContainer.of(output, null);
+        if (container != null && container.getFillPercentage(output) < 1) {
+            int oldLevel = container.getLevel(output);
             ioInventory.setStack(1, tank.drain(50, output, outputSlot::incrementLevelsTransferred));
-            playSound |= oldLevel != container.getFluidLevel(outputSlot.getStack());
+            playSound |= oldLevel != FluidContainer.of(outputSlot.getStack()).getLevel(outputSlot.getStack());
         }
 
         ItemStack input = inputSlot.getStack();
-        if (input.getItem() instanceof FluidContainerItem container && container.getFillPercentage(input) > 0) {
-            int oldLevel = container.getFluidLevel(input);
+        container = FluidContainer.of(input, null);
+        if (container != null && container.getFillPercentage(input) > 0) {
+            int oldLevel = container.getLevel(input);
             ioInventory.setStack(0, tank.deposit(50, input, inputSlot::incrementLevelsTransferred));
-            playSound |= oldLevel != container.getFluidLevel(inputSlot.getStack());
+            playSound |= oldLevel != FluidContainer.of(inputSlot.getStack()).getLevel(inputSlot.getStack());
         }
 
         if (playSound && world.getTime() % 9 == 0) {
@@ -110,7 +112,7 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
         }
     }
 
-    protected FluidContainerItem getContainerType() {
+    protected FluidContainer getContainerType() {
         return PSItems.FLASK;
     }
 
@@ -232,11 +234,11 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
         }
 
         if (slot == OUTPUT_SLOT_ID[0]) {
-            return ioInventory.isValid(slot, stack) && FluidContainerItem.of(stack).getFillPercentage(stack) < 1;
+            return ioInventory.isValid(slot, stack) && FluidContainer.of(stack).getFillPercentage(stack) < 1;
         }
 
         if (slot == INPUT_SLOT_ID[0]) {
-            return ioInventory.isValid(slot, stack) && FluidContainerItem.of(stack).getFillPercentage(stack) > 0;
+            return ioInventory.isValid(slot, stack) && FluidContainer.of(stack).getFillPercentage(stack) > 0;
         }
 
         return false;
@@ -273,7 +275,7 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
 
         @Override
         public boolean isValid(int slot, ItemStack stack) {
-            return stack.getItem() instanceof FluidContainerItem;
+            return FluidContainer.of(stack, null) != null;
         }
     }
 
@@ -299,8 +301,8 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
 
         public void onChange() {
             ItemStack stack = ioInventory.getStack(index);
-            var container = FluidContainerItem.of(stack);
-            int levels = container.getFluidLevel(stack);
+            var container = FluidContainer.of(stack);
+            int levels = container.getLevel(stack);
             if (index == 1) {
                 levels = container.getMaxCapacity(stack) - levels;
             }
@@ -314,7 +316,7 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
 
         public float getFillPercentage(float def) {
             ItemStack stack = getStack();
-            return stack.getItem() instanceof FluidContainerItem container ? container.getFillPercentage(stack) : def;
+            return stack.getItem() instanceof FluidContainer container ? container.getFillPercentage(stack) : def;
         }
 
         @Override

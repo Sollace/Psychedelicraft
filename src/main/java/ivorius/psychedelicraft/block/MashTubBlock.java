@@ -114,6 +114,18 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
     @Override
     protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
+
+        ItemStack heldStack = player.getStackInHand(hand);
+        if (!heldStack.isEmpty()) {
+            TypedActionResult<ItemStack> result = blockEntity.depositIngredient(heldStack);
+            if (!player.isCreative()) {
+                player.setStackInHand(hand, result.getValue());
+            }
+            if (result.getResult().isAccepted()) {
+                return result.getResult();
+            }
+        }
+
         if (!blockEntity.solidContents.isEmpty()) {
             PSCriteria.SIMPLY_MASHING.trigger(player, blockEntity.solidContents);
             Block.dropStack(world, pos, blockEntity.solidContents);
@@ -164,7 +176,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         }
         BlockPos.iterateOutwards(center, 1, 0, 1).forEach(p -> {
             if (world.getBlockState(p).isOf(this)) {
-                world.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                world.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
             }
         });
     }
@@ -219,7 +231,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
             }
 
             ItemStack overflow = tank.deposit(f.getDefaultStack(FluidVolumes.BUCKET));
-            if (!FluidContainerItem.UNLIMITED.getFluid(overflow).isEmpty()) {
+            if (!FluidContainer.UNLIMITED.getFluid(overflow).isEmpty()) {
                 if (world instanceof World) {
                     Block.dropStack((World)world, pos, overflow);
                 }

@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.item;
 
-import ivorius.psychedelicraft.fluid.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.FluidContainer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.*;
 import net.minecraft.item.*;
@@ -15,7 +15,7 @@ import net.minecraft.text.Text;
  * Created by lukas on 25.10.14.
  * Updated by Sollace on 1 Jan 2023
  */
-public class FlaskItem extends BlockItem implements FluidContainerItem {
+public class FlaskItem extends BlockItem implements FluidContainer {
 
     private final int capacity;
 

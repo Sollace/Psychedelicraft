@@ -25,6 +25,11 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
+    protected FluidContainer getContainerType() {
+        return FluidContainer.of(getCachedState().getBlock().asItem());
+    }
+
+    @Override
     public void tick(ServerWorld world) {
         super.tick(world);
         tickAnimations();

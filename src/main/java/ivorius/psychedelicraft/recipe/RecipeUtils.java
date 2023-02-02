@@ -16,13 +16,13 @@ import java.util.stream.Stream;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
 
-import ivorius.psychedelicraft.fluid.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.FluidContainer;
 
 public interface RecipeUtils {
-    static Stream<Map.Entry<FluidContainerItem, ItemStack>> recepticals(Inventory inventory) {
+    static Stream<Map.Entry<FluidContainer, ItemStack>> recepticals(Inventory inventory) {
         return stacks(inventory)
-            .filter(stack -> stack.getItem() instanceof FluidContainerItem)
-            .map(stack -> Map.entry(FluidContainerItem.of(stack), stack));
+            .filter(stack -> stack.getItem() instanceof FluidContainer)
+            .map(stack -> Map.entry(FluidContainer.of(stack), stack));
     }
 
     static Stream<ItemStack> stacks(Inventory inventory) {

@@ -41,23 +41,23 @@ public class CoffeeFluid extends DrugFluid {
     }
 
     public ItemStack setTemperature(ItemStack stack, int temperature) {
-        getFluidTag(stack, false).putInt("temperature", temperature);
+        FluidContainer.getFluidAttributesTag(stack, false).putInt("temperature", temperature);
         return stack;
     }
 
     public int getTemperature(ItemStack stack) {
-        return MathHelper.clamp(getFluidTag(stack, true).getInt("temperature"), 0, WARMTH_STEPS);
+        return MathHelper.clamp(FluidContainer.getFluidAttributesTag(stack, true).getInt("temperature"), 0, WARMTH_STEPS);
     }
 
     @Override
-    public void getDefaultStacks(FluidContainerItem container, Consumer<ItemStack> consumer) {
+    public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
         super.getDefaultStacks(container, consumer);
         consumer.accept(setTemperature(getDefaultStack(container), 1));
         consumer.accept(setTemperature(getDefaultStack(container), 2));
     }
 
     @Override
-    public boolean isSuitableContainer(FluidContainerItem container) {
+    public boolean isSuitableContainer(FluidContainer container) {
         return container == PSItems.STONE_CUP;
     }
 }

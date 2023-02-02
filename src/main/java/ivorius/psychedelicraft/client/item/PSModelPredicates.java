@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.client.item;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.fluid.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.FluidContainer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.*;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
@@ -30,14 +30,14 @@ public interface PSModelPredicates {
             if (stack.getItem() instanceof BongItem item) {
                 return item.hasUsableConsumable(entity) ? 1 : 0;
             }
-            return FluidContainerItem.of(stack).getFluid(stack).isEmpty() ? 0 : 1;
+            return FluidContainer.of(stack).getFluid(stack).isEmpty() ? 0 : 1;
         });
         ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : PSItems.HARMONIUM.getColor(stack), PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
             if (layer == 0 && stack.getItem() instanceof DyeableItem dyeable) {
                 return ((DyeableItem)stack.getItem()).getColor(stack);
             }
-            if (layer == 1 && stack.getItem() instanceof FluidContainerItem container) {
+            if (layer == 1 && stack.getItem() instanceof FluidContainer container) {
                 SimpleFluid fluid = container.getFluid(stack);
                 if (!fluid.isEmpty()) {
                     return fluid.getTranslucentColor(stack);

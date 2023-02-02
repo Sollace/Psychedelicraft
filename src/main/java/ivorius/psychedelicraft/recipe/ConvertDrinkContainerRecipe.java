@@ -13,7 +13,8 @@ import net.minecraft.world.World;
 
 import com.google.gson.*;
 
-import ivorius.psychedelicraft.fluid.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.FluidContainer;
+import ivorius.psychedelicraft.fluid.MutableFluidContainer;
 
 /**
  * Created by lukas on 10.11.14.
@@ -45,11 +46,12 @@ class ConvertDrinkContainerRecipe extends ShapelessRecipe {
         return RecipeUtils.recepticals(inventory).findFirst().map(pair -> {
             // copy bottle contents to the new stack
             ItemStack inputFluidStack = pair.getValue().copy();
-            ItemStack drained = pair.getKey().drain(inputFluidStack, pair.getKey().getMaxCapacity(inputFluidStack));
+
+            MutableFluidContainer drained = pair.getKey().toMutable(inputFluidStack).drain(pair.getKey().getMaxCapacity(inputFluidStack));
 
             ItemStack output = getOutput().copy();
-            if (!pair.getKey().getFluid(drained).isEmpty() && output.getItem() instanceof FluidContainerItem container) {
-                output = container.fill(output, drained);
+            if (!drained.isEmpty() && output.getItem() instanceof FluidContainer container) {
+                output = container.toMutable(output).fillFrom(drained).asStack();
             }
             if (output.getItem() instanceof DyeableItem) {
 

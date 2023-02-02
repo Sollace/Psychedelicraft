@@ -8,7 +8,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.BottleRackBlock;
 import ivorius.psychedelicraft.block.entity.BottleRackBlockEntity;
 import ivorius.psychedelicraft.client.render.RenderUtil;
-import ivorius.psychedelicraft.fluid.FluidContainerItem;
+import ivorius.psychedelicraft.fluid.FluidContainer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.model.*;
@@ -31,6 +31,7 @@ import net.minecraft.util.math.RotationAxis;
 public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<BottleRackBlockEntity> {
     public static final Identifier TEXTURE = Psychedelicraft.id("textures/entity/bottle.png");
 
+    // TODO: (Sollace) Add bottles as a placeable block
     private final ModelPart bottleModel = getBottleModelData().createModel();
 
     private static TexturedModelData getBottleModelData() {
@@ -72,7 +73,7 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
             if (!bottle.isEmpty()) {
                 int fluidColor = -1;
                 int dyeColor = -1;
-                if (bottle.getItem() instanceof FluidContainerItem container) {
+                if (bottle.getItem() instanceof FluidContainer container) {
                     SimpleFluid fluid = container.getFluid(bottle);
                     fluidColor = fluid.getTranslucentColor(bottle);
                 }

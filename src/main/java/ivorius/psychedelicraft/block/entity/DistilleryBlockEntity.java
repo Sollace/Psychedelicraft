@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.block.entity;
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.DistilleryBlock;
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -24,6 +25,11 @@ public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
 
     public DistilleryBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.DISTILLERY, pos, state, DISTILLERY_CAPACITY, Processable.ProcessType.DISTILL);
+    }
+
+    @Override
+    protected FluidContainer getContainerType() {
+        return PSItems.DISTILLERY;
     }
 
     @Override
