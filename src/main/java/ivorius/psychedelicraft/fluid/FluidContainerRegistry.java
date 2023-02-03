@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
 
+import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtElement;
@@ -28,7 +29,7 @@ public class FluidContainerRegistry {
         }
     }
 
-    public static void registerFillableContainer(Item emptyForm, int capacity, SimpleFluid fluid, Item... items) {
+    public static void registerFillableContainer(Item emptyForm, Item dynamicFilledForm, int capacity, SimpleFluid fluid, Item... items) {
         registerFillableContainer(i -> {
             return new FluidContainer() {
                 @Override
@@ -43,7 +44,7 @@ public class FluidContainerRegistry {
 
                 @Override
                 public Item asFilled(SimpleFluid fluid) {
-                    return REFILL_MAPPING.getOrDefault(asEmpty(), Map.of()).getOrDefault(fluid, asEmpty());
+                    return REFILL_MAPPING.getOrDefault(asEmpty(), Map.of()).getOrDefault(fluid, dynamicFilledForm);
                 }
 
                 @Override
@@ -54,7 +55,7 @@ public class FluidContainerRegistry {
                 @Override
                 public int getLevel(ItemStack stack) {
                     if (stack.getItem() == asEmpty()) {
-                        return 0;
+                        return FluidContainer.super.getLevel(stack);
                     }
                     return stack.getNbt() != null
                         && stack.getNbt().contains("fluid", NbtElement.COMPOUND_TYPE)
@@ -73,16 +74,17 @@ public class FluidContainerRegistry {
     }
 
     static {
-        registerFillableContainer(Items.BUCKET, FluidVolumes.BUCKET, SimpleFluid.forVanilla(Fluids.WATER), Items.WATER_BUCKET, Items.COD_BUCKET, Items.SALMON_BUCKET, Items.TADPOLE_BUCKET, Items.TROPICAL_FISH_BUCKET);
-        registerFillableContainer(Items.BUCKET, FluidVolumes.BUCKET, SimpleFluid.forVanilla(Fluids.LAVA), Items.LAVA_BUCKET);
-        registerFillableContainer(Items.BUCKET, FluidVolumes.BUCKET, PSFluids.MILK, Items.MILK_BUCKET);
-        registerFillableContainer(Items.BUCKET, FluidVolumes.BUCKET, PSFluids.EMPTY, Items.BUCKET);
-        registerFillableContainer(Items.BOWL, FluidVolumes.BOWL, PSFluids.EMPTY, Items.BOWL);
-        registerFillableContainer(Items.GLASS_BOTTLE, FluidVolumes.BOTTLE, SimpleFluid.forVanilla(Fluids.WATER), Items.POTION);
-        registerFillableContainer(Items.GLASS_BOTTLE, FluidVolumes.BOTTLE, PSFluids.HONEY, Items.HONEY_BOTTLE);
-        registerFillableContainer(Items.GLASS_BOTTLE, FluidVolumes.BOTTLE, PSFluids.EMPTY, Items.GLASS_BOTTLE);
+        registerFillableContainer(Items.BUCKET, PSItems.FILLED_BUCKET, FluidVolumes.BUCKET, SimpleFluid.forVanilla(Fluids.WATER), Items.WATER_BUCKET, Items.COD_BUCKET, Items.SALMON_BUCKET, Items.TADPOLE_BUCKET, Items.TROPICAL_FISH_BUCKET);
+        registerFillableContainer(Items.BUCKET, PSItems.FILLED_BUCKET, FluidVolumes.BUCKET, SimpleFluid.forVanilla(Fluids.LAVA), Items.LAVA_BUCKET);
+        registerFillableContainer(Items.BUCKET, PSItems.FILLED_BUCKET, FluidVolumes.BUCKET, PSFluids.MILK, Items.MILK_BUCKET);
+        registerFillableContainer(Items.BUCKET, PSItems.FILLED_BUCKET, FluidVolumes.BUCKET, PSFluids.EMPTY, Items.BUCKET);
+        registerFillableContainer(Items.BOWL, PSItems.FILLED_BOWL, FluidVolumes.BOWL, PSFluids.EMPTY, Items.BOWL);
+        registerFillableContainer(Items.GLASS_BOTTLE, PSItems.FILLED_GLASS_BOTTLE, FluidVolumes.GLASS_BOTTLE, SimpleFluid.forVanilla(Fluids.WATER), Items.POTION);
+        registerFillableContainer(Items.GLASS_BOTTLE, PSItems.FILLED_GLASS_BOTTLE, FluidVolumes.GLASS_BOTTLE, PSFluids.HONEY, Items.HONEY_BOTTLE);
+        registerFillableContainer(Items.GLASS_BOTTLE, PSItems.FILLED_GLASS_BOTTLE, FluidVolumes.GLASS_BOTTLE, PSFluids.EMPTY, Items.GLASS_BOTTLE);
         registerRefillMapping(Items.BUCKET, SimpleFluid.forVanilla(Fluids.WATER), Items.WATER_BUCKET);
         registerRefillMapping(Items.BUCKET, SimpleFluid.forVanilla(Fluids.LAVA), Items.LAVA_BUCKET);
+        registerRefillMapping(Items.BUCKET, PSFluids.MILK, Items.MILK_BUCKET);
         registerRefillMapping(Items.GLASS_BOTTLE, SimpleFluid.forVanilla(Fluids.WATER), Items.POTION);
         registerRefillMapping(Items.GLASS_BOTTLE, PSFluids.HONEY, Items.HONEY_BOTTLE);
     }

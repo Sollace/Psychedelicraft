@@ -2,8 +2,6 @@ package ivorius.psychedelicraft.client.render.blocks;
 
 import java.util.Random;
 
-import com.ibm.icu.text.DateTimePatternGenerator;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.BottleRackBlock;
 import ivorius.psychedelicraft.block.entity.BottleRackBlockEntity;

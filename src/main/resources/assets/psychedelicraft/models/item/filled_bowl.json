@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:item/bowl",
+    "textures": {
+        "layer1": "psychedelicraft:item/bowl_liquid"
+    }
+}

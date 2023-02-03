@@ -43,6 +43,10 @@ public interface PSItems {
     FlaskItem DISTILLERY = register("distillery", new FlaskItem(PSBlocks.DISTILLERY, new Settings().maxCount(16), DistilleryBlockEntity.DISTILLERY_CAPACITY));
     RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings()));
 
+    DrinkableItem FILLED_GLASS_BOTTLE = register("filled_glass_bottle", new ProxyDrinkableItem(Items.GLASS_BOTTLE, new Settings(), FluidVolumes.GLASS_BOTTLE, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem FILLED_BUCKET = register("filled_bucket", new ProxyDrinkableItem(Items.BUCKET, new Settings(), FluidVolumes.BUCKET, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem FILLED_BOWL = register("filled_bowl", new ProxyDrinkableItem(Items.BOWL, new Settings(), FluidVolumes.BOWL, ConsumableFluid.ConsumptionType.DRINK));
+
     Item WINE_GRAPES = register("wine_grapes", new WineGrapesItem(new Settings().food(
             new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()
     ), 15));

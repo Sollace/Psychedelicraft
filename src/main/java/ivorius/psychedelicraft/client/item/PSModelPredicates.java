@@ -37,13 +37,22 @@ public interface PSModelPredicates {
             if (layer == 0 && stack.getItem() instanceof DyeableItem dyeable) {
                 return ((DyeableItem)stack.getItem()).getColor(stack);
             }
-            if (layer == 1 && stack.getItem() instanceof FluidContainer container) {
-                SimpleFluid fluid = container.getFluid(stack);
+            if (layer == 1) {
+                SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);
                 if (!fluid.isEmpty()) {
                     return fluid.getTranslucentColor(stack);
                 }
             }
             return -1;
-        }, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.GLASS_CHALICE, PSItems.STONE_CUP, PSItems.WOODEN_MUG);
+        }, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.GLASS_CHALICE, PSItems.STONE_CUP, PSItems.WOODEN_MUG, PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL);
+        ColorProviderRegistry.ITEM.register((stack, layer) -> {
+            if (layer == 0) {
+                SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);
+                if (!fluid.isEmpty()) {
+                    return fluid.getTranslucentColor(stack);
+                }
+            }
+            return -1;
+        }, PSItems.FILLED_GLASS_BOTTLE);
     }
 }
