@@ -99,9 +99,7 @@ public class Resovoir implements Inventory, NbtSerialisable {
     public ItemStack drain(int levels, ItemStack output, @Nullable IntConsumer changeCallback) {
         MutableFluidContainer outputContainer = FluidContainer.of(output).toMutable(output.copy());
         stack.transfer(levels, outputContainer, levelsChange -> {
-            if (levelsChange < 0) {
-                this.changeCallback.onDrain(this);
-            }
+            this.changeCallback.onDrain(this);
             if (changeCallback != null) {
                 changeCallback.accept(levelsChange);
             }
