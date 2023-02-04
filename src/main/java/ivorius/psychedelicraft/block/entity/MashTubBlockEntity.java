@@ -7,8 +7,11 @@ package ivorius.psychedelicraft.block.entity;
 
 import java.util.*;
 
+import com.google.common.base.Suppliers;
+
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.recipe.FillDrinkContainerRecipe;
@@ -16,15 +19,19 @@ import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Created by lukas on 27.10.14.
@@ -33,6 +40,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     public ItemStack solidContents = ItemStack.EMPTY;
 
     private Optional<FillDrinkContainerRecipe> expectedRecipe = Optional.empty();
+
     private final Object2IntMap<Item> suppliedIngredients = new Object2IntOpenHashMap<>();
 
     public MashTubBlockEntity(BlockPos pos, BlockState state) {
@@ -59,10 +67,20 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         super.onProcessCompleted(world, tank, solids);
     }
 
+    @Override
+    public void tick(ServerWorld world) {
+        super.tick(world);
+        if (!suppliedIngredients.isEmpty() && world.getTime() % 10 == 0) {
+            spawnBubbles(1 + (int)(suppliedIngredients.size() * 1.5));
+        }
+    }
+
     public TypedActionResult<ItemStack> depositIngredient(ItemStack stack) {
         if (!FluidContainer.of(stack).getFluid(stack).isEmpty()) {
             Resovoir tank = getTank(Direction.UP);
             if (tank.getLevel() < tank.getCapacity()) {
+                getWorld().playSound(null, getPos(), SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1, 1);
+                onIdle(getTank(Direction.UP));
                 return TypedActionResult.success(getTank(Direction.UP).deposit(stack));
             }
             return TypedActionResult.fail(stack);
@@ -71,6 +89,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         if (isValidIngredient(stack)) {
             suppliedIngredients.computeInt(stack.getItem(), (s, i) -> i == null ? 1 : (i + 1));
             checkIngredients();
+            spawnBubbles(20);
+            getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
+            onIdle(getTank(Direction.UP));
             return TypedActionResult.success(stack);
         }
         return TypedActionResult.pass(stack);
@@ -87,61 +108,32 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     private void checkIngredients() {
-        if (suppliedIngredients.isEmpty()) {
+        if (suppliedIngredients.isEmpty() || getWorld().isClient()) {
             return;
         }
 
-        expectedRecipe = expectedRecipe.filter(this::testRecipe);
-
-
-        List<FillDrinkContainerRecipe> matchedRecipes = world.getRecipeManager().listAllOfType(RecipeType.CRAFTING).stream()
+        var expectedRecipeMatchPair = expectedRecipe.map(recipe -> Map.entry(recipe, recipe.matchPartially(suppliedIngredients)));
+        var matchedRecipes = world.getRecipeManager().listAllOfType(RecipeType.CRAFTING).stream()
                 .filter(recipe -> recipe.getSerializer() == PSRecipes.FILL_DRINK_CONTAINER)
                 .map(recipe -> (FillDrinkContainerRecipe)recipe)
-                .filter(this::testRecipe)
+                .map(recipe -> Map.entry(recipe, recipe.matchPartially(suppliedIngredients)))
+                .filter(pair -> pair.getValue().isMatch())
                 .toList();
 
-        expectedRecipe = expectedRecipe.or(() -> matchedRecipes.stream().findFirst());
+        expectedRecipeMatchPair = expectedRecipeMatchPair.or(() -> matchedRecipes.stream().findFirst());
+        expectedRecipe = expectedRecipeMatchPair.filter(pair -> pair.getValue().isMatch()).map(Map.Entry::getKey);
 
-        if (expectedRecipe.isEmpty()) {
+        if (expectedRecipeMatchPair.isEmpty()) {
             onCraftingFailed();
             return;
         }
 
         if (matchedRecipes.size() == 1) {
-            expectedRecipe.ifPresentOrElse(this::onCraftingSucceeded, this::onCraftingFailed);
+            expectedRecipeMatchPair
+                .filter(pair -> pair.getValue().isCraftable())
+                .map(Map.Entry::getKey)
+                .ifPresent(this::onCraftingSucceeded);
         }
-    }
-
-    private boolean testRecipe(FillDrinkContainerRecipe recipe) {
-        final List<Ingredient> expectedInputs = new ArrayList<>(recipe.getIngredients());
-        final Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(suppliedIngredients);
-
-        for (Item item : suppliedIngredients.keySet()) {
-            ItemStack stack = item.getDefaultStack();
-
-            if (expectedInputs.isEmpty()) {
-                // fail match as the supplied ingredients exceeds the expected inputs
-                return false;
-            }
-
-            for (Ingredient ingredient : expectedInputs) {
-                if (ingredient.test(stack)) {
-                    expectedInputs.remove(ingredient);
-                    unmatchedInputs.computeInt(item, (s, i) -> i <= 1 ? null : i - 1);
-
-                    if (unmatchedInputs.isEmpty()) {
-                        // succeed if all supplied inputs are matched.
-                        // The recipe might be expecting more additional inputs.
-                        // We don't actually care. Crafting is done when only one recipe fits our current selection.
-                        return true;
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        return unmatchedInputs.isEmpty();
     }
 
     private void onCraftingSucceeded(FillDrinkContainerRecipe recipe) {
@@ -149,12 +141,30 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         getTank(Direction.UP).getContents()
             .withFluid(recipe.getOutputFluid().fluid())
             .withAttributes(recipe.getOutputFluid().attributes());
+        onIdle(getTank(Direction.UP));
     }
 
     private void onCraftingFailed() {
         suppliedIngredients.clear();
         getTank(Direction.UP).getContents()
             .withFluid(PSFluids.SLURRY);
+        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_MUD_BREAK, SoundCategory.BLOCKS, 1, 1);
+        spawnBubbles(90);
+        onIdle(getTank(Direction.UP));
+    }
+
+    private void spawnBubbles(int count) {
+        Random random = getWorld().getRandom();
+        Vec3d center = ParticleHelper.apply(getPos().toCenterPos(), x -> random.nextTriangular(x, 0.25));
+        ParticleHelper.spawnParticles(getWorld(), ParticleTypes.BUBBLE_POP,
+                () -> ParticleHelper.apply(center, x -> random.nextTriangular(x, 0.5)).add(0, 0.5, 0),
+                Suppliers.ofInstance(new Vec3d(
+                        random.nextTriangular(0, 0.125),
+                        random.nextTriangular(0.5, 0.125),
+                        random.nextTriangular(0, 0.125)
+                )),
+                count
+        );
     }
 
     @Override
@@ -188,6 +198,11 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         if (!solidContents.isEmpty()) {
             compound.put("solidContents", solidContents.writeNbt(new NbtCompound()));
         }
+        NbtCompound suppliedIngredsTag = new NbtCompound();
+        suppliedIngredients.forEach((item, count) -> {
+            suppliedIngredsTag.putInt(Registries.ITEM.getId(item).toString(), count);
+        });
+        compound.put("suppliedIngredients", suppliedIngredsTag);
     }
 
     @Override
@@ -196,5 +211,12 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         solidContents = compound.contains("solidContents", NbtElement.COMPOUND_TYPE)
                 ? ItemStack.fromNbt(compound.getCompound("solidContents"))
                 : ItemStack.EMPTY;
+        NbtCompound suppliedIngredsTag = compound.getCompound("suppliedIngredients");
+        suppliedIngredients.clear();
+        suppliedIngredsTag.getKeys().forEach(key -> {
+            Optional.ofNullable(Identifier.tryParse(key)).map(Registries.ITEM::get).filter(Objects::nonNull).ifPresent(item -> {
+                suppliedIngredients.put(item, compound.getInt(key));
+            });
+        });
     }
 }

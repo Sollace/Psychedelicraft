@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import ivorius.psychedelicraft.particle.ExhaledSmokeParticleEffect;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.*;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -25,7 +26,11 @@ public interface ParticleHelper {
         for (int i = 0; i < count; i++) {
             Vec3d position = pos.get();
             Vec3d velocity = vel.get();
-            world.addParticle(effect, position.x, position.y, position.z, velocity.x, velocity.y, velocity.z);
+            if (world instanceof ServerWorld sw) {
+                sw.spawnParticles(effect, position.x, position.y, position.z, 1, velocity.x, velocity.y, velocity.z, 0);
+            } else {
+                world.addParticle(effect, position.x, position.y, position.z, velocity.x, velocity.y, velocity.z);
+            }
         }
     }
 

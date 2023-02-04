@@ -20,6 +20,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.fluid.*;
 import net.minecraft.item.*;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -202,11 +204,15 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         builder.add(MASTER);
     }
 
-    public FluidState getFluidState(World world, BlockState state, BlockPos pos) {
-        if (state.get(MASTER) && world.getBlockEntity(pos, getBlockEntityType()).filter(be -> !be.getTank(Direction.UP).isEmpty()).isPresent()) {
-            return Fluids.WATER.getDefaultState();
+    public int getFluidHeight(World world, BlockState state, BlockPos pos, TagKey<Fluid> tag) {
+        if (state.get(MASTER)) {
+            return world.getBlockEntity(pos, getBlockEntityType())
+                    .map(be -> be.getTank(Direction.UP))
+                    .filter(tank -> tank.getFluidType().isIn(tag) || (tag == FluidTags.WATER && tank.getFluidType().isCustomFluid()))
+                    .map(tank -> (int)(((float)tank.getLevel() / tank.getCapacity()) * 8))
+                    .orElse(-1);
         }
-        return Fluids.EMPTY.getDefaultState();
+        return -1;
     }
 
     @Override
@@ -214,7 +220,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         return world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).filter(be -> {
             Resovoir tank = be.getTank(Direction.UP);
             return (tank.isEmpty()
-                || tank.getFluidType().getFluidState(0).isOf(fluid))
+                || tank.getFluidType().getStandingFluid() == fluid)
                 && tank.getCapacity() - tank.getLevel() >=  FluidVolumes.BUCKET;
         }).isPresent();
     }

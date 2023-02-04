@@ -10,9 +10,7 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import ivorius.psychedelicraft.block.MashTubBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.fluid.*;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.*;
 
@@ -23,15 +21,12 @@ abstract class MixinEntity {
 
     @Inject(method = "updateMovementInFluid", at = @At("RETURN"), cancellable = true)
     private void onUpdateMovementInFluid(TagKey<Fluid> tag, double speed, CallbackInfoReturnable<Boolean> info) {
-        if (tag == FluidTags.WATER && !info.getReturnValueZ()) {
+        if (!info.getReturnValueZ()) {
             Entity self = (Entity)(Object)this;
             BlockPos.stream(self.getBoundingBox().contract(0.001)).map(pos -> {
                 BlockState state = self.world.getBlockState(pos);
                 if (state.getBlock() instanceof MashTubBlock tub) {
-                    FluidState fluid = tub.getFluidState(self.world, state, pos);
-                    if (fluid.isIn(FluidTags.WATER)) {
-                        return fluid.getLevel();
-                    }
+                    return tub.getFluidHeight(self.world, state, pos, tag);
                 }
                 return -1;
             }).filter(l -> l > 0).findFirst().ifPresent(level -> {
