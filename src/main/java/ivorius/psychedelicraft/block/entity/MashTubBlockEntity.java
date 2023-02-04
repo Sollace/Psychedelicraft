@@ -215,7 +215,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         suppliedIngredients.clear();
         suppliedIngredsTag.getKeys().forEach(key -> {
             Optional.ofNullable(Identifier.tryParse(key)).map(Registries.ITEM::get).filter(Objects::nonNull).ifPresent(item -> {
-                suppliedIngredients.put(item, compound.getInt(key));
+                suppliedIngredients.put(item, suppliedIngredsTag.getInt(key));
             });
         });
     }
