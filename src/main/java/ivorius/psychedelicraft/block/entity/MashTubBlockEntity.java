@@ -57,6 +57,10 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         return PSItems.MASH_TUB;
     }
 
+    public Object2IntMap<Item> getSuppliedIngredients() {
+        return suppliedIngredients;
+    }
+
     @Override
     protected void onProcessCompleted(ServerWorld world, Resovoir tank, ItemStack solids) {
         if (!solids.isEmpty()) {
