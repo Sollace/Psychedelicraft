@@ -1,18 +1,16 @@
 package ivorius.psychedelicraft.client.screen;
 
+import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -53,19 +51,10 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         float fluidHeight = MathHelper.clamp((float) level / (float) tank.getCapacity(), 0, 1);
         int fluidHeightPixels = MathHelper.ceil(fluidHeight * height);
 
-        Identifier texture = fluid.getStationaryTexture(tank.getStack());
+        FluidBoxRenderer.FluidAppearance appearance = FluidBoxRenderer.FluidAppearance.of(fluid, tank.getStack());
 
-        if (fluid.getFluidState(0).isIn(FluidTags.WATER)) {
-            RenderUtil.setColor(BiomeColors.getWaterColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos()), false);
-        }
-
-        if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
-            RenderSystem.enableBlend();
-            RenderUtil.setColor(fluid.getColor(tank.getStack()), false);
-            texture = new Identifier("textures/block/water_still.png");
-        }
-
-        RenderSystem.setShaderTexture(0, texture);
+        RenderUtil.setColor(appearance.color(), false);
+        RenderSystem.setShaderTexture(0, appearance.texture());
 
         int frameSize = 32;
         int frameCount = 32;

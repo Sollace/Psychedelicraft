@@ -5,6 +5,9 @@ import java.util.function.IntConsumer;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.util.NbtSerialisable;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -15,7 +18,7 @@ import net.minecraft.nbt.NbtCompound;
  * @author Sollace
  * @since 3 Jan 2023
  */
-public class Resovoir implements Inventory, NbtSerialisable {
+public class Resovoir implements Inventory, NbtSerialisable, SingleSlotStorage<FluidVariant> {
 
     private FluidContainer container;
     private MutableFluidContainer stack;
@@ -44,7 +47,8 @@ public class Resovoir implements Inventory, NbtSerialisable {
         return stack;
     }
 
-    public int getCapacity() {
+    @Override
+    public long getCapacity() {
         return stack.getCapacity();
     }
 
@@ -84,7 +88,7 @@ public class Resovoir implements Inventory, NbtSerialisable {
     }
 
     public ItemStack deposit(int levels, ItemStack input, @Nullable IntConsumer changeCallback) {
-        return FluidContainer.of(input).toMutable(input).transfer(Math.min(getCapacity() - getLevel(), levels), stack, levelsChange -> {
+        return FluidContainer.of(input).toMutable(input).transfer((int)Math.min(getCapacity() - getLevel(), levels), stack, levelsChange -> {
             this.changeCallback.onFill(this, levelsChange);
             if (changeCallback != null) {
                 changeCallback.accept(levelsChange);
@@ -194,5 +198,51 @@ public class Resovoir implements Inventory, NbtSerialisable {
         default void onIdle(Resovoir resovoir) {
 
         }
+    }
+
+    @Override
+    public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        SimpleFluid fluid = SimpleFluid.forVanilla(resource.getFluid());
+
+        if (!isEmpty() && fluid != getFluidType()) {
+            return 0;
+        }
+
+        MutableFluidContainer inputContainer = FluidContainer.UNLIMITED.toMutable(Items.STONE.getDefaultStack())
+                .withFluid(fluid)
+                .withLevel((int)maxAmount);
+
+        inputContainer.transfer((int)maxAmount, stack, levelsChange -> {
+            this.changeCallback.onFill(this, levelsChange);
+        });
+        return maxAmount - inputContainer.getLevel();
+    }
+
+    @Override
+    public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        if (SimpleFluid.forVanilla(resource.getFluid()) != getFluidType()) {
+            return 0;
+        }
+
+        MutableFluidContainer outputContainer = FluidContainer.UNLIMITED.toMutable(Items.STONE.getDefaultStack());
+        stack.transfer((int)maxAmount, outputContainer, levelsChange -> {
+            this.changeCallback.onDrain(this);
+        });
+        return outputContainer.getLevel();
+    }
+
+    @Override
+    public boolean isResourceBlank() {
+        return isEmpty();
+    }
+
+    @Override
+    public FluidVariant getResource() {
+        return FluidVariant.of(stack.getFluid().getStandingFluid(), stack.getAttributes());
+    }
+
+    @Override
+    public long getAmount() {
+        return this.getLevel();
     }
 }

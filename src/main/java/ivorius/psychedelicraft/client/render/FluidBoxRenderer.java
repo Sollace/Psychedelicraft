@@ -5,13 +5,13 @@
 
 package ivorius.psychedelicraft.client.render;
 
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -87,30 +87,10 @@ public class FluidBoxRenderer {
 
             sprite = new TextureBounds(0, spriteWidth, ticks * spriteHeight, (1 + ticks) * spriteHeight);
 
-            Identifier texture = fluid.getStationaryTexture(tank.getStack());
+            FluidAppearance appearance = FluidAppearance.of(fluid, tank.getStack());
 
-            if (fluid.getFluidState(0).isIn(FluidTags.WATER)) {
-                int color = BiomeColors.getWaterColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos());
-                this.color = new float[] {
-                        MathUtils.r(color),
-                        MathUtils.g(color),
-                        MathUtils.b(color),
-                        1
-                };
-            }
-
-            if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
-                int color = fluid.getColor(tank.getStack());
-                this.color = new float[] {
-                        MathUtils.r(color),
-                        MathUtils.g(color),
-                        MathUtils.b(color),
-                        1
-                };
-                texture = new Identifier("textures/block/water_still.png");
-            }
-
-            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(texture));
+            color = appearance.rgba();
+            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(appearance.texture()));
         }
 
         return this;
@@ -185,6 +165,37 @@ public class FluidBoxRenderer {
     record TextureBounds(float x0, float x1, float y0, float y1) {
         TextureBounds(Sprite sprite) {
             this(sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
+        }
+    }
+
+    public record FluidAppearance(Identifier texture, int color) {
+        public static FluidAppearance of(SimpleFluid fluid, ItemStack stack) {
+
+            Identifier texture = fluid.getStationaryTexture(stack);
+            int color = fluid.getColor(stack);
+
+            if (!fluid.isCustomFluid()) {
+                FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getStandingFluid());
+                if (handler != null) {
+                    color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), fluid.getStandingFluid().getDefaultState());
+                    texture = new Identifier("textures/block/water_still.png");
+                }
+            }
+
+            if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
+                texture = new Identifier("textures/block/water_still.png");
+            }
+
+            return new FluidAppearance(texture, color);
+        }
+
+        public float[] rgba() {
+            return new float[] {
+                    MathUtils.r(color),
+                    MathUtils.g(color),
+                    MathUtils.b(color),
+                    1
+            };
         }
     }
 

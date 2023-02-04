@@ -15,6 +15,7 @@ import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -34,30 +35,30 @@ public class SimpleFluid {
     private final Identifier flowingTexture;
 
     private int color;
-    private boolean translucent;
 
-    private final Fluid fluid;
+    private final Fluid standing;
+    private final Fluid flowing;
 
     public SimpleFluid(Identifier id, Settings settings) {
         this.id = id;
         this.color = settings.color;
-        this.translucent = settings.translucent;
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.stationaryTexture = id.withPath(p -> "textures/block/fluid/" + p + "_still.png");
         this.flowingTexture = id.withPath(p -> "textures/block/fluid/" + p + "_flow.png");
-        this.fluid = Fluids.EMPTY;
 
         Registry.register(REGISTRY, id, this);
+        standing = Registry.register(Registries.FLUID, id, new WaterFluid.Still());
+        flowing = Registry.register(Registries.FLUID, id.withPath(p -> "flowing_" + p), new WaterFluid.Flowing());
     }
 
-    public SimpleFluid(Identifier id, int color, Fluid fluid) {
+    public SimpleFluid(Identifier id, int color, Fluid standing) {
         this.id = id;
         this.color = color;
-        this.translucent = true;
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.stationaryTexture = id.withPath(p -> "textures/block/" + p + "_still.png");
         this.flowingTexture = id.withPath(p -> "textures/block/" + p + "_flow.png");
-        this.fluid = fluid;
+        this.standing = standing;
+        this.flowing = null;
     }
 
     public final boolean isEmpty() {
@@ -81,27 +82,28 @@ public class SimpleFluid {
     }
 
     public FluidState getFluidState(int level) {
-        return fluid.getDefaultState().withIfExists(FlowableFluid.LEVEL, level);
+        return getStandingFluid().getDefaultState().with(FlowableFluid.LEVEL, level);
+    }
+
+    public Fluid getStandingFluid() {
+        return standing;
+    }
+
+    @SuppressWarnings("deprecation")
+    public boolean isIn(TagKey<Fluid> tag) {
+        return getStandingFluid().isIn(tag);
+    }
+
+    public boolean isCustomFluid() {
+        return flowing != null;
     }
 
     public int getColor(ItemStack stack) {
         return color;
     }
 
-    public final int getTranslucentColor(ItemStack stack) {
-        int color = getColor(stack);
-        if (!isTranslucent()) {
-            return color | 0xFF000000;
-        }
-        return color;
-    }
-
-    public boolean isTranslucent() {
-        return translucent;
-    }
-
     protected String getTranslationKey() {
-        return Util.createTranslationKey(fluid == Fluids.EMPTY ? "fluid" : "block", id);
+        return Util.createTranslationKey(isCustomFluid() ? "fluid" : "block", id);
     }
 
     public final ItemStack getDefaultStack(FluidContainer container) {
@@ -165,15 +167,9 @@ public class SimpleFluid {
 
     public static class Settings {
         private int color;
-        private boolean translucent;
 
         public Settings color(int color) {
             this.color = color;
-            return this;
-        }
-
-        public Settings translucent() {
-            translucent = true;
             return this;
         }
     }

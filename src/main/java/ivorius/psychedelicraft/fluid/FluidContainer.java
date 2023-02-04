@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.fluid;
 
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -76,7 +75,7 @@ public interface FluidContainer extends ItemConvertible {
     }
 
     default ItemStack getDefaultStack(SimpleFluid fluid) {
-        Item bucketItem = this != UNLIMITED || fluid.getFluidState(0).getFluid() == Fluids.EMPTY ? asItem() : of(fluid.getFluidState(0).getFluid().getBucketItem()).asItem();
+        Item bucketItem = this != UNLIMITED || !fluid.isCustomFluid() ? asItem() : of(fluid.getStandingFluid().getBucketItem()).asItem();
         return of(bucketItem).toMutable(bucketItem.getDefaultStack())
                 .withFluid(fluid)
                 .withLevel(getMaxCapacity())

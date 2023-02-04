@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.recipe;
 
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
@@ -15,7 +16,13 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
+import java.util.*;
+
 import com.google.gson.*;
+
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import ivorius.psychedelicraft.fluid.FluidContainer;
 
 /**
  * Created from "RecipeFillDrink" by Sollace on 5 Jan 2023
@@ -67,6 +74,43 @@ public class FillDrinkContainerRecipe extends ShapelessRecipe {
                 && recipeMatcher.match(this, null);
     }
 
+    public MatchResult matchPartially(Object2IntMap<Item> inputs) {
+        final List<Ingredient> expectedInputs = new ArrayList<>(getIngredients());
+        final Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(inputs);
+
+        expectedInputs.removeIf(ingredient -> {
+            return Arrays.stream(ingredient.getMatchingStacks()).anyMatch(stack -> FluidContainer.of(stack, null) != null);
+        });
+
+        for (Item item : inputs.keySet()) {
+            ItemStack stack = item.getDefaultStack();
+
+            if (expectedInputs.isEmpty()) {
+                // fail match as the supplied ingredients exceeds the expected inputs
+                return MatchResult.NONE;
+            }
+
+            Iterator<Ingredient> iter = expectedInputs.iterator();
+
+            while (iter.hasNext()) {
+                Ingredient ingredient = iter.next();
+                if (ingredient.test(stack)) {
+                    iter.remove();
+                    unmatchedInputs.computeInt(item, (s, i) -> i <= 1 ? null : i - 1);
+
+                    if (unmatchedInputs.isEmpty()) {
+                        // succeed if all supplied inputs are matched.
+                        // The recipe might be expecting more additional inputs.
+                        // We don't actually care. Crafting is done when only one recipe fits our current selection.
+                        return MatchResult.of(true, expectedInputs.isEmpty());
+                    }
+                }
+            }
+        }
+
+        return MatchResult.of(unmatchedInputs.isEmpty(), expectedInputs.isEmpty());
+    }
+
     @Override
     public ItemStack craft(CraftingInventory inventory) {
         return RecipeUtils.recepticals(inventory).findFirst().map(receptical -> {
@@ -110,5 +154,24 @@ public class FillDrinkContainerRecipe extends ShapelessRecipe {
             buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
         }
 
+    }
+
+    public enum MatchResult {
+        NONE,
+        INPUTS_ONLY,
+        INGREDIENTS_ONLY,
+        BOTH;
+
+        public boolean isMatch() {
+            return this == INPUTS_ONLY || this == BOTH;
+        }
+
+        public boolean isCraftable() {
+            return this == BOTH;
+        }
+
+        public static MatchResult of(boolean inputs, boolean ingredients) {
+            return inputs && ingredients ? BOTH : inputs ? INPUTS_ONLY : ingredients ? INGREDIENTS_ONLY : NONE;
+        }
     }
 }

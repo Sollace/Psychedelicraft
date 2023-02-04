@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.client.item;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.fluid.FluidContainer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.*;
@@ -40,7 +41,7 @@ public interface PSModelPredicates {
             if (layer == 1) {
                 SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);
                 if (!fluid.isEmpty()) {
-                    return fluid.getTranslucentColor(stack);
+                    return FluidBoxRenderer.FluidAppearance.of(fluid, stack).color();
                 }
             }
             return -1;
@@ -49,7 +50,7 @@ public interface PSModelPredicates {
             if (layer == 0) {
                 SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);
                 if (!fluid.isEmpty()) {
-                    return fluid.getTranslucentColor(stack);
+                    return FluidBoxRenderer.FluidAppearance.of(fluid, stack).color();
                 }
             }
             return -1;

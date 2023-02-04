@@ -4,6 +4,9 @@
  */
 package ivorius.psychedelicraft.block.entity;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -32,7 +35,10 @@ import ivorius.psychedelicraft.util.NbtSerialisable;
  * Created by lukas on 25.10.14.
  * Updated by Sollace on 2 Jan 2023
  */
-public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener, SidedInventory {
+public class FlaskBlockEntity extends BlockEntity
+        implements BlockWithFluid.DirectionalFluidResovoir,
+                   Resovoir.ChangeListener, SidedInventory,
+                   SidedStorageBlockEntity {
     private static final int[] NO_SLOT_ID = {};
     private static final int[] INPUT_SLOT_ID = {0};
     private static final int[] OUTPUT_SLOT_ID = {1};
@@ -261,6 +267,11 @@ public class FlaskBlockEntity extends BlockEntity implements BlockWithFluid.Dire
         }
 
         return false;
+    }
+
+    @Override
+    public Storage<FluidVariant> getFluidStorage(Direction side) {
+        return getTank(side);
     }
 
     class IoInventory extends SimpleInventory {

@@ -59,6 +59,10 @@ public final class MutableFluidContainer {
         return container.getMaxCapacity();
     }
 
+    public NbtCompound getAttributes() {
+        return attributes.copy();
+    }
+
     public MutableFluidContainer withLevel(int level) {
         this.level = MathHelper.clamp(level, 0, getCapacity());
         if (this.level == 0) {
