@@ -81,10 +81,6 @@ public class SimpleFluid {
         return flowingTexture;
     }
 
-    public FluidState getFluidState(int level) {
-        return getStandingFluid().getDefaultState().with(FlowableFluid.LEVEL, level);
-    }
-
     public Fluid getStandingFluid() {
         return standing;
     }

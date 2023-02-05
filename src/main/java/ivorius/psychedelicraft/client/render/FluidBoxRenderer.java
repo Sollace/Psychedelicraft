@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.client.render;
 
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
@@ -15,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.util.MathUtils;
 
@@ -78,17 +80,9 @@ public class FluidBoxRenderer {
         if (fluid.isEmpty()) {
             texture(vertices, tank.getStack());
         } else {
-            float frameSize = 1F / 8F;
-            int frameCount = 20;
-            int ticks = ((MinecraftClient.getInstance().player.age / 3) % frameCount);
-
-            float spriteWidth = frameSize * frameCount;
-            float spriteHeight = frameSize;
-
-            sprite = new TextureBounds(0, spriteWidth, ticks * spriteHeight, (1 + ticks) * spriteHeight);
-
             FluidAppearance appearance = FluidAppearance.of(fluid, tank.getStack());
 
+            sprite = appearance.frame();
             color = appearance.rgba();
             buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(appearance.texture()));
         }
@@ -162,31 +156,32 @@ public class FluidBoxRenderer {
         }
     }
 
-    record TextureBounds(float x0, float x1, float y0, float y1) {
+    public record TextureBounds(float x0, float x1, float y0, float y1) {
         TextureBounds(Sprite sprite) {
             this(sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
         }
     }
 
-    public record FluidAppearance(Identifier texture, int color) {
+    public record FluidAppearance(Identifier texture, @Nullable Sprite sprite, int color) {
         public static FluidAppearance of(SimpleFluid fluid, ItemStack stack) {
 
             Identifier texture = fluid.getStationaryTexture(stack);
             int color = fluid.getColor(stack);
+            Sprite sprite = null;
 
             if (!fluid.isCustomFluid()) {
                 FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getStandingFluid());
                 if (handler != null) {
                     color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), fluid.getStandingFluid().getDefaultState());
-                    texture = new Identifier("textures/block/water_still.png");
+                    sprite = handler.getFluidSprites(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), fluid.getStandingFluid().getDefaultState())[0];
+                    texture = sprite.getAtlasId();
                 }
+            } else if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
+                sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
+                texture = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
             }
 
-            if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
-                texture = new Identifier("textures/block/water_still.png");
-            }
-
-            return new FluidAppearance(texture, color);
+            return new FluidAppearance(texture, sprite, color);
         }
 
         public float[] rgba() {
@@ -196,6 +191,37 @@ public class FluidBoxRenderer {
                     MathUtils.b(color),
                     1
             };
+        }
+
+        public TextureBounds frame() {
+            if (sprite == null) {
+                float frameSize = 1F / 8F;
+                int frameCount = 20;
+                int ticks = ((MinecraftClient.getInstance().player.age / 3) % frameCount);
+
+                float spriteWidth = frameSize * frameCount;
+                float spriteHeight = frameSize;
+
+                return new TextureBounds(0, spriteWidth, ticks * spriteHeight, (1 + ticks) * spriteHeight);
+            }
+
+            float x0 = sprite.getFrameU(0);
+            float x1 = sprite.getFrameU(16);
+
+            float y0 = sprite.getFrameV(0);
+            float y1 = sprite.getFrameV(16);
+
+            float delta = sprite.getAnimationFrameDelta();
+
+            float totalX = (x0 + x1) / 2F;
+            float totalY = (y0 + y1) / 2F;
+
+            return new TextureBounds(
+                MathHelper.lerp(delta, x0, totalX),
+                MathHelper.lerp(delta, x1, totalX),
+                MathHelper.lerp(delta, y0, totalY),
+                MathHelper.lerp(delta, y1, totalY)
+            );
         }
     }
 

@@ -7,8 +7,6 @@ package ivorius.psychedelicraft.client.render.blocks;
 
 import java.util.Random;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
