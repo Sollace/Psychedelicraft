@@ -49,7 +49,7 @@ public interface FluidContainer extends ItemConvertible {
     }
 
     static FluidContainer of(Item item, FluidContainer fallback) {
-        return FluidContainerRegistry.getContainer(item).orElseGet(() -> item instanceof FluidContainer c ? c : fallback);
+        return item instanceof FluidContainer c ? c : FluidContainerRegistry.getContainer(item).orElse(fallback);
     }
 
     int getMaxCapacity();
@@ -75,7 +75,7 @@ public interface FluidContainer extends ItemConvertible {
     }
 
     default ItemStack getDefaultStack(SimpleFluid fluid) {
-        Item bucketItem = this != UNLIMITED || !fluid.isCustomFluid() ? asItem() : of(fluid.getStandingFluid().getBucketItem()).asItem();
+        Item bucketItem = this != UNLIMITED || !fluid.isCustomFluid() ? asItem() : of(fluid.getPhysical().getFluid().getBucketItem()).asItem();
         return of(bucketItem).toMutable(bucketItem.getDefaultStack())
                 .withFluid(fluid)
                 .withLevel(getMaxCapacity())

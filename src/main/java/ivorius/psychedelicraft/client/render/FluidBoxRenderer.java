@@ -12,6 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
@@ -162,26 +163,19 @@ public class FluidBoxRenderer {
         }
     }
 
-    public record FluidAppearance(Identifier texture, @Nullable Sprite sprite, int color) {
+    public record FluidAppearance(Identifier texture, Sprite sprite, int color) {
         public static FluidAppearance of(SimpleFluid fluid, ItemStack stack) {
-
-            Identifier texture = fluid.getStationaryTexture(stack);
             int color = fluid.getColor(stack);
-            Sprite sprite = null;
+            Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
 
-            if (!fluid.isCustomFluid()) {
-                FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getStandingFluid());
-                if (handler != null) {
-                    color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), fluid.getStandingFluid().getDefaultState());
-                    sprite = handler.getFluidSprites(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), fluid.getStandingFluid().getDefaultState())[0];
-                    texture = sprite.getAtlasId();
-                }
-            } else if (MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
-                sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
-                texture = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
+            FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getPhysical().getFluid());
+            if (handler != null) {
+                FluidState state = fluid.getFluidState(stack);
+                color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
+                sprite = handler.getFluidSprites(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state)[0];
             }
 
-            return new FluidAppearance(texture, sprite, color);
+            return new FluidAppearance(sprite.getAtlasId(), sprite, color);
         }
 
         public float[] rgba() {
@@ -194,17 +188,6 @@ public class FluidBoxRenderer {
         }
 
         public TextureBounds frame() {
-            if (sprite == null) {
-                float frameSize = 1F / 8F;
-                int frameCount = 20;
-                int ticks = ((MinecraftClient.getInstance().player.age / 3) % frameCount);
-
-                float spriteWidth = frameSize * frameCount;
-                float spriteHeight = frameSize;
-
-                return new TextureBounds(0, spriteWidth, ticks * spriteHeight, (1 + ticks) * spriteHeight);
-            }
-
             float x0 = sprite.getFrameU(0);
             float x1 = sprite.getFrameU(16);
 

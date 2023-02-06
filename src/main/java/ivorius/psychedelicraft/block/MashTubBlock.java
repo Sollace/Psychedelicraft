@@ -208,7 +208,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         if (state.get(MASTER)) {
             return world.getBlockEntity(pos, getBlockEntityType())
                     .map(be -> be.getTank(Direction.UP))
-                    .filter(tank -> tank.getFluidType().isIn(tag) || (tag == FluidTags.WATER && tank.getFluidType().isCustomFluid()))
+                    .filter(tank -> tank.getFluidType().getPhysical().isIn(tag) || (tag == FluidTags.WATER && tank.getFluidType().isCustomFluid()))
                     .map(tank -> (int)(((float)tank.getLevel() / tank.getCapacity()) * 8))
                     .orElse(-1);
         }
@@ -220,7 +220,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         return world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).filter(be -> {
             Resovoir tank = be.getTank(Direction.UP);
             return (tank.isEmpty()
-                || tank.getFluidType().getStandingFluid() == fluid)
+                || tank.getFluidType().getPhysical().getFluid() == fluid)
                 && tank.getCapacity() - tank.getLevel() >=  FluidVolumes.BUCKET;
         }).isPresent();
     }

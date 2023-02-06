@@ -48,9 +48,9 @@ public record AlcoholicDrinkTypes (List<Entry<String>> names, List<Entry<Icons>>
 
     @Nullable
     public <T> Entry<T> getMatchedValue(ItemStack stack, AlcoholicFluid fluid, List<Entry<T>> values) {
-        int fermentation = fluid.getFermentation(stack);
-        int distillation = fluid.getDistillation(stack);
-        int maturation = fluid.getMaturation(stack);
+        int fermentation = fluid.FERMENTATION.get(stack);
+        int distillation = AlcoholicFluid.DISTILLATION.get(stack);
+        int maturation = AlcoholicFluid.MATURATION.get(stack);
 
         for (Entry<T> alc : values) {
             if (alc.predicate.matches(fermentation, fluid.settings.fermentationSteps, distillation, maturation)) {

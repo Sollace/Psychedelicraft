@@ -8,18 +8,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
-public final class MutableFluidContainer {
+public class MutableFluidContainer {
     public static MutableFluidContainer of(FluidContainer container, ItemStack stack) {
         return new MutableFluidContainer(container, container.getFluid(stack), container.getLevel(stack), FluidContainer.getFluidAttributesTag(stack, true));
     }
 
-    private FluidContainer container;
+    protected FluidContainer container;
 
-    private SimpleFluid fluid;
-    private int level;
-    private NbtCompound attributes;
+    protected SimpleFluid fluid;
+    protected int level;
+    protected NbtCompound attributes;
 
-    private MutableFluidContainer(FluidContainer container, SimpleFluid fluid, int level, NbtCompound attributes) {
+    protected MutableFluidContainer(FluidContainer container, SimpleFluid fluid, int level, NbtCompound attributes) {
         this.container = container;
         this.fluid = fluid;
         this.level = level;
@@ -27,7 +27,7 @@ public final class MutableFluidContainer {
     }
 
     public MutableFluidContainer copy() {
-        return new MutableFluidContainer(container, fluid, level, attributes.copy());
+        return new MutableFluidContainer(container, getFluid(), getLevel(), attributes.copy());
     }
 
     public ItemStack asStack() {
@@ -35,16 +35,16 @@ public final class MutableFluidContainer {
             return container.asEmpty().getDefaultStack();
         }
 
-        ItemStack stack = container.asFilled(fluid).getDefaultStack();
+        ItemStack stack = container.asFilled(getFluid()).getDefaultStack();
         NbtCompound fluidTag = stack.getOrCreateSubNbt("fluid");
-        fluidTag.putInt("level", level);
-        fluidTag.putString("id", fluid.getId().toString());
+        fluidTag.putInt("level", getLevel());
+        fluidTag.putString("id", getFluid().getId().toString());
         fluidTag.put("attributes", (isEmpty() ? FluidContainer.EMPTY_NBT : attributes).copy());
         return stack;
     }
 
     public boolean isEmpty() {
-        return level <= 0 || fluid.isEmpty();
+        return getLevel() <= 0 || getFluid().isEmpty();
     }
 
     public int getLevel() {

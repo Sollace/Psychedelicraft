@@ -64,9 +64,9 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
 
         public boolean test(ServerPlayerEntity player, ItemStack stack) {
             return FluidContainer.of(stack).getFluid(stack) == fluid
-                    && fermentation.test(fluid.getFermentation(stack))
-                    && maturation.test(fluid.getMaturation(stack))
-                    && distillation.test(fluid.getDistillation(stack));
+                    && fermentation.test(fluid.FERMENTATION.get(stack))
+                    && maturation.test(AlcoholicFluid.MATURATION.get(stack))
+                    && distillation.test(AlcoholicFluid.DISTILLATION.get(stack));
         }
 
         @Override
