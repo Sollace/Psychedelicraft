@@ -96,6 +96,10 @@ public class FillDrinkContainerRecipe extends ShapelessRecipe {
                 Ingredient ingredient = iter.next();
                 if (ingredient.test(stack)) {
                     iter.remove();
+                    if (!unmatchedInputs.containsKey(item)) {
+                        return MatchResult.of(unmatchedInputs.isEmpty(), expectedInputs.isEmpty());
+                    }
+
                     unmatchedInputs.computeInt(item, (s, i) -> i <= 1 ? null : i - 1);
 
                     if (unmatchedInputs.isEmpty()) {
