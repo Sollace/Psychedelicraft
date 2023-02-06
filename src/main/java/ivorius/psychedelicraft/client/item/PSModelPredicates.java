@@ -41,7 +41,7 @@ public interface PSModelPredicates {
             if (layer == 1) {
                 SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);
                 if (!fluid.isEmpty()) {
-                    return FluidBoxRenderer.FluidAppearance.of(fluid, stack).color();
+                    return FluidBoxRenderer.FluidAppearance.getItemColor(fluid, stack);
                 }
             }
             return -1;
@@ -50,7 +50,7 @@ public interface PSModelPredicates {
             if (layer == 0) {
                 SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);
                 if (!fluid.isEmpty()) {
-                    return FluidBoxRenderer.FluidAppearance.of(fluid, stack).color();
+                    return FluidBoxRenderer.FluidAppearance.getItemColor(fluid, stack);
                 }
             }
             return -1;

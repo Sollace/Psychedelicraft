@@ -72,7 +72,7 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
                 int fluidColor = -1;
                 int dyeColor = -1;
                 if (bottle.getItem() instanceof FluidContainer container) {
-                    fluidColor = FluidBoxRenderer.FluidAppearance.of(container.getFluid(bottle), bottle).color();
+                    fluidColor = FluidBoxRenderer.FluidAppearance.getItemColor(container.getFluid(bottle), bottle);
                 }
                 if (bottle.getItem() instanceof DyeableItem dyeable) {
                     dyeColor = dyeable.getColor(bottle);

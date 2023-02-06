@@ -52,11 +52,11 @@ public class SimpleFluid {
         Registry.register(REGISTRY, id, this);
     }
 
-    SimpleFluid(Identifier id, int color, PhysicalFluid physical, boolean custom) {
+    private SimpleFluid(Identifier id, int color, PhysicalFluid physical) {
         this.id = id;
         this.settings = new Settings().color(color);
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
-        this.custom = custom;
+        this.custom = false;
         this.physical = physical;
     }
 
@@ -141,8 +141,7 @@ public class SimpleFluid {
         Fluid still = toStill(fluid);
         Identifier id = Registries.FLUID.getId(fluid);
         return VANILLA_FLUIDS.computeIfAbsent(id, i -> new SimpleFluid(i, 0xFFFFFFFF,
-                new PhysicalFluid(still, toFlowing(still), (FluidBlock)still.getDefaultState().getBlockState().getBlock()),
-                true
+                new PhysicalFluid(still, toFlowing(still), (FluidBlock)still.getDefaultState().getBlockState().getBlock())
         ));
     }
 

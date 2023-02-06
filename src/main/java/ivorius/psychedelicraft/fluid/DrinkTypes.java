@@ -19,11 +19,14 @@ public interface DrinkTypes {
             .add(IntRange.ANY, IntRange.atMost(3), IntRange.atLeast(2), "clear")
             .add(IntRange.ANY, IntRange.between(4, 13), IntRange.ANY, "rum_semi_mature")
             .add(IntRange.ANY, IntRange.atLeast(14), IntRange.ANY, "rum_mature");
-    VariantSet<Icons> CLEAR_ICONS = new IconSet()
-            .add(IntRange.ANY, IntRange.ANY, IntRange.ANY, "clear");
+    VariantSet<Icons> CLEAR_ICONS = only("clear");
+
+    VariantSet<Icons> BEER_ICONS = maturable("beer");
 
     VariantSet<String> BEER = new NameSet().add("beer", IntRange.ANY, IntRange.ANY);
     VariantSet<String> RUM = new NameSet().add("rum", IntRange.ANY, IntRange.ANY);
+
+    VariantSet<String> NONE = new NameSet();
 
     VariantSet<String> VODKA_WHISKEY = new NameSet()
             .add("vodka", IntRange.exactly(0), IntRange.atLeast(1))
@@ -39,6 +42,24 @@ public interface DrinkTypes {
     VariantSet<String> RED_WINE = new NameSet().add("red_wine", IntRange.ANY, IntRange.ANY);
     VariantSet<String> RICE_WINE = new NameSet().add("rice_wine", IntRange.ANY, IntRange.ANY);
 
+    static VariantSet<Icons> only(String juvenileName) {
+        return new IconSet().add(IntRange.ANY, IntRange.ANY, IntRange.ANY, juvenileName);
+    }
+
+    static VariantSet<Icons> maturable(String juvenileName) {
+        return new IconSet()
+                .add(IntRange.ANY, IntRange.atMost(2), IntRange.atMost(1), "clear")
+                .add(IntRange.ANY, IntRange.atMost(3), IntRange.atLeast(2), "clear")
+                .add(IntRange.ANY, IntRange.between(4, 13), IntRange.ANY, "rum_semi_mature")
+                .add(IntRange.ANY, IntRange.atLeast(14), IntRange.ANY, "rum_mature");
+    }
+
+    static VariantSet<Icons> clear(String juvenileName) {
+        return new IconSet()
+                .add(IntRange.ANY, IntRange.ANY, IntRange.atMost(1), juvenileName)
+                .add(IntRange.ANY, IntRange.ANY, IntRange.atLeast(2), "clear");
+    }
+
     interface VariantSet<T> {
         VariantSet<?> EMPTY = List::of;
 
@@ -51,9 +72,12 @@ public interface DrinkTypes {
 
         @Nullable
         default T find(ItemStack stack) {
-            for (Entry<T> alc : variants()) {
-                if (alc.predicate.test(stack)) {
-                    return alc.value();
+
+            if (!variants().isEmpty()) {
+                for (Entry<T> variant : variants()) {
+                    if (variant.predicate.test(stack)) {
+                        return variant.value();
+                    }
                 }
             }
 
@@ -118,7 +142,11 @@ public interface DrinkTypes {
         }
     }
 
-    public record Icons (String still, String flowing) {}
+    public record Icons (String still, String flowing) {
+        public static Icons of(String name) {
+            return new Icons(name + "_still", name + "_flow");
+        }
+    }
 
     public record Entry<T> (T value, StatePredicate predicate) { }
 }

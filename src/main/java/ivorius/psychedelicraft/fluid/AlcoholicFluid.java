@@ -12,9 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -32,19 +30,16 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     final Settings settings;
 
-    private final Map<String, Identifier> flowTextures = new HashMap<>();
-
     public AlcoholicFluid(Identifier id, Settings settings) {
         super(id, settings.drinkable());
         this.settings = settings;
     }
 
-    protected int getDistilledColor(ItemStack stack) {
-        getColor(stack);
+    protected int getDistilledColor() {
         return settings.distilledColor;
     }
 
-    protected int getMatureColor(ItemStack stack) {
+    protected int getMatureColor() {
         return settings.matureColor;
     }
 
@@ -154,10 +149,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         return MathUtils.mixColors(
                 MathUtils.mixColors(
                         super.getColor(stack),
-                        getDistilledColor(stack),
+                        getDistilledColor(),
                         MathUtils.progress(DISTILLATION.get(stack))
                 ),
-                getMatureColor(stack),
+                getMatureColor(),
                 MathUtils.progress(MATURATION.get(stack) * 0.2F)
         );
     }
@@ -176,10 +171,6 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         return Optional.ofNullable(settings.textures.find(stack))
                 .map(DrinkTypes.Icons::still)
                 .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
-    }
-
-    private Identifier getFlowTexture(String name) {
-        return getId().withPath(p -> "textures/block/fluid/" + name + ".png");
     }
 
     @Override

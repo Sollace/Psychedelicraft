@@ -18,19 +18,19 @@ public interface PSFluids {
     AlcoholicFluid WHEAT_HOP = new AlcoholicFluid(Psychedelicraft.id("wheat_hop"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoWheatHop)
-            .variants(DrinkTypes.BEER, DrinkTypes.MATURABLE_ICONS)
+            .variants(DrinkTypes.BEER, DrinkTypes.BEER_ICONS)
             .color(0xaafeaa08)
     );
     AlcoholicFluid WHEAT = new AlcoholicFluid(Psychedelicraft.id("wheat"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoWheat)
-            .variants(DrinkTypes.VODKA_WHISKEY, DrinkTypes.MATURABLE_ICONS)
+            .variants(DrinkTypes.VODKA_WHISKEY, DrinkTypes.BEER_ICONS)
             .color(0xaafeaa08)
     );
     AlcoholicFluid POTATO = new AlcoholicFluid(Psychedelicraft.id("potato"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.45, 1.9, 0.15)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoPotato)
-            .variants(DrinkTypes.BEER_VODKA_WHISKEY, DrinkTypes.MATURABLE_ICONS)
+            .variants(DrinkTypes.BEER_VODKA_WHISKEY, DrinkTypes.BEER_ICONS)
             .color(0xaafeaa08)
     );
     AlcoholicFluid RED_GRAPES = new AlcoholicFluid(Psychedelicraft.id("red_grapes"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
@@ -38,20 +38,20 @@ public interface PSFluids {
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoRedGrapes)
             .distilledColor(0x993f0822)
             .matureColor(0xee3f0822)
-            .variants(DrinkTypes.RED_WINE, DrinkTypes.MATURABLE_ICONS)
+            .variants(DrinkTypes.RED_WINE, DrinkTypes.only("wine"))
             .color(0xaafeaa08)
     );
     AlcoholicFluid RICE = new AlcoholicFluid(Psychedelicraft.id("rice"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoRice)
             .matureColor(0x88D6BC90)
-            .variants(DrinkTypes.RICE_WINE, DrinkTypes.CLEAR_ICONS)
+            .variants(DrinkTypes.RICE_WINE, DrinkTypes.clear("rice_wine"))
             .color(0xeecac4b2)
     );
     AlcoholicFluid JUNIPER = new AlcoholicFluid(Psychedelicraft.id("juniper"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.4, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoJuniper)
-            .variants(DrinkTypes.JENEVER, DrinkTypes.MATURABLE_ICONS)
+            .variants(DrinkTypes.JENEVER, DrinkTypes.maturable("slurry"))
             .color(0xcc704E21)
     );
     AlcoholicFluid HONEY = new AlcoholicFluid(Psychedelicraft.id("honey"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
@@ -59,25 +59,26 @@ public interface PSFluids {
             .distilledColor(0x99e9ae3b)
             .matureColor(0xaaD1984D)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoHoney)
-            .variants(DrinkTypes.MEAD, DrinkTypes.MATURABLE_ICONS)
+            .variants(DrinkTypes.MEAD, DrinkTypes.only("mead"))
             .color(0xbbe9ae3b)
     );
     AlcoholicFluid SUGAR_CANE = new AlcoholicFluid(Psychedelicraft.id("sugar_cane"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
-            .variants(DrinkTypes.RUM, DrinkTypes.MATURABLE_ICONS)
+            .variants(DrinkTypes.RUM, DrinkTypes.maturable("clear"))
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoSugarCane)
             .color(0xaafeaa08)
     );
     AlcoholicFluid CORN = new AlcoholicFluid(Psychedelicraft.id("corn"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoCorn)
-            .variants(DrinkTypes.BEER_VODKA_WHISKEY, DrinkTypes.MATURABLE_ICONS)
+            .variants(DrinkTypes.BEER_VODKA_WHISKEY, DrinkTypes.BEER_ICONS)
             .color(0xaafeaa08)
     );
     AlcoholicFluid APPLE = new AlcoholicFluid(Psychedelicraft.id("apple"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x66EDC13B)
             .matureColor(0x88EDC13B)
+            .variants(DrinkTypes.NONE, DrinkTypes.only("cider"))
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoApple)
             .color(0x99EDC13B)
     );
@@ -85,6 +86,7 @@ public interface PSFluids {
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x66EDC13B)
             .matureColor(0x88EDC13B)
+            .variants(DrinkTypes.NONE, DrinkTypes.only("cider"))
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoPineapple)
             .color(0x99EDC13B)
     );
@@ -92,6 +94,7 @@ public interface PSFluids {
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x99e9ae3b)
             .matureColor(0xaaD1984D)
+            .variants(DrinkTypes.NONE, DrinkTypes.only("mead"))
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoBanana)
             .color(0xbbe9ae3b)
     );
@@ -99,6 +102,7 @@ public interface PSFluids {
             .alcohol(0.35, 1.7, 0.1)
             //.distilledColor(0x77cac4b2)
             .matureColor(0x88D6BC90)
+            .variants(DrinkTypes.NONE, DrinkTypes.only("rice_wine"))
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoMilk)
             .color(0xeecac4b2)
             // TODO: (Sollace) Color for milk was set twice. Second time set to 0x77cac4b2 Should it be the distilled colour?
@@ -106,6 +110,7 @@ public interface PSFluids {
 
     DrugFluid COFFEE = new CoffeeFluid(Psychedelicraft.id("coffee"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
+            .appearance(DrinkTypes.Icons.of("coffee"))
             .color(0xffa77d55)
     );
     DrugFluid COCA_TEA = new DrugFluid(Psychedelicraft.id("coca_tea"), (DrugFluid.Settings)new DrugFluid.Settings()
@@ -115,22 +120,26 @@ public interface PSFluids {
     );
     DrugFluid CANNABIS_TEA = new DrugFluid(Psychedelicraft.id("cannabis_tea"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
+            .appearance(DrinkTypes.Icons.of("tea"))
             .influence(new DrugInfluence(DrugType.CANNABIS, 60, 0.005, 0.002, 0.25f))
             .color(0x446d6f3c)
     );
     DrugFluid PEYOTE_JUICE = new DrugFluid(Psychedelicraft.id("peyote_juice"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
             .influence(new DrugInfluence(DrugType.PEYOTE, 15, 0.005, 0.003, 2.0f))
+            .appearance(DrinkTypes.Icons.of("tea"))
             .color(0x779bab62)
     );
 
     DrugFluid COCAINE = new DrugFluid(Psychedelicraft.id("cocaine"), (DrugFluid.Settings)new DrugFluid.Settings()
             .injectable()
+            .appearance(DrinkTypes.Icons.of("clear"))
             .influence(new DrugInfluence(DrugType.COCAINE, 0, 0.005, 0.01, 50.0f))
             .color(0x44e8f4f8)
     );
     DrugFluid CAFFEINE = new DrugFluid(Psychedelicraft.id("caffeine"), (DrugFluid.Settings)new DrugFluid.Settings()
             .injectable()
+            .appearance(DrinkTypes.Icons.of("clear"))
             .influence(new DrugInfluence(DrugType.CAFFEINE, 0, 0.005, 0.01, 85.0f))
             .color(0x66eee2d3)
     );

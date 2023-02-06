@@ -19,7 +19,10 @@ import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.item.PSItems;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by lukas on 22.10.14.
@@ -28,23 +31,23 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
     protected final List<DrugInfluence> drugInfluences;
     protected final FoodComponent foodLevel;
 
-    private final boolean drinkable;
-    private final boolean injectable;
+    private final Settings settings;
+
+    protected final Map<String, Identifier> flowTextures = new HashMap<>();
 
     public DrugFluid(Identifier id, Settings settings) {
         super(id, settings);
-        drinkable = settings.drinkable;
-        injectable = settings.injectable;
-        drugInfluences = settings.drugInfluences;
-        foodLevel = settings.foodLevel;
+        this.settings = settings;
+        this.foodLevel = settings.foodLevel;
+        this.drugInfluences = settings.drugInfluences;
     }
 
     public boolean isDrinkable() {
-        return drinkable;
+        return settings.drinkable;
     }
 
     public boolean isInjectable() {
-        return injectable;
+        return settings.injectable;
     }
 
     @Nullable
@@ -105,6 +108,17 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
         return getAlcohol(fluidStack) * FluidContainer.of(fluidStack).getLevel(fluidStack) / FluidVolumes.BUCKET * 0.6f;
     }
 
+    @Override
+    public Optional<Identifier> getFlowTexture(ItemStack stack) {
+        return Optional.ofNullable(settings.icons)
+                .map(DrinkTypes.Icons::still)
+                .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
+    }
+
+    protected Identifier getFlowTexture(String name) {
+        return getId().withPath(p -> "block/fluid/" + name);
+    }
+
     private float getAlcohol(ItemStack fluidStack) {
         float alcohol = 0.0f;
 
@@ -131,6 +145,9 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
         private List<DrugInfluence> drugInfluences = new ArrayList<>();
         private FoodComponent foodLevel;
 
+        @Nullable
+        private DrinkTypes.Icons icons;
+
         public Settings drinkable() {
             drinkable = true;
             return this;
@@ -148,6 +165,11 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
 
         public Settings food(FoodComponent food) {
             this.foodLevel = food;
+            return this;
+        }
+
+        public Settings appearance(DrinkTypes.Icons icons) {
+            this.icons = icons;
             return this;
         }
     }

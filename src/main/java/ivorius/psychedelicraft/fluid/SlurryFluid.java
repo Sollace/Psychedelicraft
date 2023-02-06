@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.fluid;
 
+import java.util.Optional;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -16,8 +18,16 @@ import net.minecraft.util.Identifier;
 public class SlurryFluid extends SimpleFluid implements Processable {
     public static final int FLUID_PER_DIRT = FluidVolumes.BUCKET * 4;
 
+    private final Optional<Identifier> flowTexture;
+
     public SlurryFluid(Identifier id, Settings settings) {
         super(id, settings);
+        this.flowTexture = Optional.of(getId().withPath(p -> "textures/block/fluid/" + p + ".png"));
+    }
+
+    @Override
+    public Optional<Identifier> getFlowTexture(ItemStack stack) {
+        return flowTexture;
     }
 
     @Override
