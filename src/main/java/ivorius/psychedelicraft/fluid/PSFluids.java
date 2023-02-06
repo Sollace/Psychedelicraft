@@ -32,6 +32,7 @@ public interface PSFluids {
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoPotato)
             .variants(DrinkTypes.BEER_VODKA_WHISKEY, DrinkTypes.BEER_ICONS)
             .color(0xaafeaa08)
+            .viscocity(2)
     );
     AlcoholicFluid RED_GRAPES = new AlcoholicFluid(Psychedelicraft.id("red_grapes"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.55, 1.7, 0.2)
@@ -61,6 +62,7 @@ public interface PSFluids {
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoHoney)
             .variants(DrinkTypes.MEAD, DrinkTypes.only("mead"))
             .color(0xbbe9ae3b)
+            .viscocity(5)
     );
     AlcoholicFluid SUGAR_CANE = new AlcoholicFluid(Psychedelicraft.id("sugar_cane"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
@@ -89,6 +91,7 @@ public interface PSFluids {
             .variants(DrinkTypes.NONE, DrinkTypes.only("cider"))
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoPineapple)
             .color(0x99EDC13B)
+            .viscocity(2)
     );
     AlcoholicFluid BANANA = new AlcoholicFluid(Psychedelicraft.id("banana"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
@@ -97,6 +100,7 @@ public interface PSFluids {
             .variants(DrinkTypes.NONE, DrinkTypes.only("mead"))
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoBanana)
             .color(0xbbe9ae3b)
+            .viscocity(3)
     );
     AlcoholicFluid MILK = new AlcoholicFluid(Psychedelicraft.id("milk"), (AlcoholicFluid.Settings)new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
@@ -105,6 +109,7 @@ public interface PSFluids {
             .variants(DrinkTypes.NONE, DrinkTypes.only("rice_wine"))
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoMilk)
             .color(0xeecac4b2)
+            .viscocity(2)
             // TODO: (Sollace) Color for milk was set twice. Second time set to 0x77cac4b2 Should it be the distilled colour?
     );
 
@@ -129,6 +134,7 @@ public interface PSFluids {
             .influence(new DrugInfluence(DrugType.PEYOTE, 15, 0.005, 0.003, 2.0f))
             .appearance(DrinkTypes.Icons.of("tea"))
             .color(0x779bab62)
+            .viscocity(2)
     );
 
     DrugFluid COCAINE = new DrugFluid(Psychedelicraft.id("cocaine"), (DrugFluid.Settings)new DrugFluid.Settings()
@@ -144,7 +150,7 @@ public interface PSFluids {
             .color(0x66eee2d3)
     );
 
-    SimpleFluid SLURRY = new SlurryFluid(Psychedelicraft.id("slurry"), new SimpleFluid.Settings().color(0xcc704E21));
+    SimpleFluid SLURRY = new SlurryFluid(Psychedelicraft.id("slurry"), new SimpleFluid.Settings().color(0xcc704E21).viscocity(4));
 
     static void bootstrap() {}
 }

@@ -22,7 +22,10 @@ import net.minecraft.state.State;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 /**
  * Created by lukas on 29.10.14.
@@ -92,6 +95,10 @@ public class SimpleFluid {
         return settings.color;
     }
 
+    public int getViscocity() {
+        return settings.viscocity;
+    }
+
     protected String getTranslationKey() {
         return Util.createTranslationKey(isCustomFluid() ? "fluid" : "block", id);
     }
@@ -122,6 +129,9 @@ public class SimpleFluid {
 
     public boolean isSuitableContainer(FluidContainer container) {
         return !container.asItem().getDefaultStack().isIn(PSTags.Items.BARRELS);
+    }
+
+    public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
     }
 
     public static SimpleFluid byId(@Nullable Identifier id) {
@@ -160,9 +170,15 @@ public class SimpleFluid {
     @SuppressWarnings("unchecked")
     public static class Settings {
         private int color;
+        private int viscocity = 1;
 
         public <T extends Settings> T color(int color) {
             this.color = color;
+            return (T)this;
+        }
+
+        public <T extends Settings> T viscocity(int viscocity) {
+            this.viscocity = viscocity;
             return (T)this;
         }
     }

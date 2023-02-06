@@ -21,7 +21,10 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 public class PhysicalFluid {
     private final Fluid standing;
@@ -115,8 +118,24 @@ public class PhysicalFluid {
         }
 
         @Override
+        public BlockState toBlockState(FluidState state) {
+            return getPysicalFluid().block.getDefaultState().with(FluidBlock.LEVEL, getBlockStateLevel(state));
+        }
+
+        @Override
+        public int getLevelDecreasePerBlock(WorldView world) {
+            return getType().getViscocity();
+        }
+
+        @Override
         public boolean matchesType(Fluid fluid) {
             return fluid == getStill() || fluid == getFlowing();
+        }
+
+        @Override
+        public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
+            super.randomDisplayTick(world, pos, state, random);
+            getType().randomDisplayTick(world, pos, state, random);
         }
 
         static PlacedFluid still(PhysicalFluid physical) {
