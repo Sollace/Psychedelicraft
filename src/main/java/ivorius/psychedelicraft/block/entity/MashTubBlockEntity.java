@@ -14,15 +14,16 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.particle.BubbleParticleEffect;
 import ivorius.psychedelicraft.recipe.FillDrinkContainerRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
@@ -160,11 +161,14 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     private void spawnBubbles(int count) {
         Random random = getWorld().getRandom();
         Vec3d center = ParticleHelper.apply(getPos().toCenterPos(), x -> random.nextTriangular(x, 0.25));
-        ParticleHelper.spawnParticles(getWorld(), ParticleTypes.BUBBLE_POP,
+
+        Resovoir tank = getTank(Direction.UP);
+        ParticleHelper.spawnParticles(getWorld(),
+                new BubbleParticleEffect(MathUtils.unpackRgbVector(tank.getFluidType().getColor(tank.getStack())), 1F),
                 () -> ParticleHelper.apply(center, x -> random.nextTriangular(x, 0.5)).add(0, 0.5, 0),
                 Suppliers.ofInstance(new Vec3d(
                         random.nextTriangular(0, 0.125),
-                        random.nextTriangular(0.5, 0.125),
+                        random.nextTriangular(0.1, 0.125),
                         random.nextTriangular(0, 0.125)
                 )),
                 count

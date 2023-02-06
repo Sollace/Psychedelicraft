@@ -8,6 +8,7 @@ import net.minecraft.registry.Registry;
 
 public interface PSParticles {
     ParticleType<ExhaledSmokeParticleEffect> EXHALED_SMOKE = register("exhaled_smoke", FabricParticleTypes.complex(ExhaledSmokeParticleEffect.FACTORY));
+    ParticleType<BubbleParticleEffect> BUBBLE = register("bubble", FabricParticleTypes.complex(BubbleParticleEffect.FACTORY));
 
     static <T extends ParticleType<?>> T register(String name, T type) {
         return Registry.register(Registries.PARTICLE_TYPE, Psychedelicraft.id(name), type);

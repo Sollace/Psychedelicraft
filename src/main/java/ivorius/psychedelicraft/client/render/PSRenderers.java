@@ -4,26 +4,19 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.*;
-import ivorius.psychedelicraft.client.particle.ExhaledSmokeParticle;
+import ivorius.psychedelicraft.client.particle.PSParticleFactories;
 import ivorius.psychedelicraft.client.render.blocks.*;
 import ivorius.psychedelicraft.client.render.shader.PSShaders;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
-import ivorius.psychedelicraft.particle.PSParticles;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.PendingParticleFactory;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
@@ -33,8 +26,6 @@ import net.minecraft.world.BlockRenderView;
  */
 public interface PSRenderers {
     static void bootstrap() {
-        ParticleFactoryRegistry.getInstance().register(PSParticles.EXHALED_SMOKE, createFactory(ExhaledSmokeParticle::new));
-
         EntityRendererRegistry.register(PSEntities.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
         EntityRendererRegistry.register(PSEntities.REALITY_RIFT, RealityRiftEntityRenderer::new);
 
@@ -64,14 +55,7 @@ public interface PSRenderers {
             });
         });
 
+        PSParticleFactories.bootstrap();
         PSShaders.bootstrap();
-    }
-
-    private static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {
-        return provider -> (effect, world, x, y, z, dx, dy, dz) -> supplier.get(effect, provider, world, x, y, z, dx, dy, dz);
-    }
-
-    interface ParticleSupplier<T extends ParticleEffect> {
-        Particle get(T effect, SpriteProvider provider, ClientWorld world, double x, double y, double z, double dx, double dy, double dz);
     }
 }
