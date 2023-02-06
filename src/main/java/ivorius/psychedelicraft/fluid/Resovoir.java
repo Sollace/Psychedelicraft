@@ -5,11 +5,7 @@ import java.util.function.IntConsumer;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.util.NbtSerialisable;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
-import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -18,8 +14,7 @@ import net.minecraft.nbt.NbtCompound;
  * @author Sollace
  * @since 3 Jan 2023
  */
-public class Resovoir implements Inventory, NbtSerialisable, SingleSlotStorage<FluidVariant> {
-
+public class Resovoir implements NbtSerialisable, VariantMarshal.StorageMarshal, FluidStore {
     private FluidContainer container;
     private MutableFluidContainer stack;
 
@@ -35,26 +30,9 @@ public class Resovoir implements Inventory, NbtSerialisable, SingleSlotStorage<F
         return stack.getFluid();
     }
 
-    public int getLevel() {
-        return stack.getLevel();
-    }
-
-    public ItemStack getStack() {
-        return stack.asStack();
-    }
-
+    @Override
     public MutableFluidContainer getContents() {
         return stack;
-    }
-
-    @Override
-    public long getCapacity() {
-        return stack.getCapacity();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return getLevel() == 0 || getFluidType().isEmpty();
     }
 
     public ItemStack setCapacity(int capacity) {
@@ -79,36 +57,25 @@ public class Resovoir implements Inventory, NbtSerialisable, SingleSlotStorage<F
         return 1;
     }
 
-    public ItemStack deposit(ItemStack stack) {
-        return deposit(FluidContainer.of(stack).getMaxCapacity(stack), stack);
-    }
-
-    public ItemStack deposit(int levels, ItemStack input) {
-        return deposit(levels, input, null);
-    }
-
-    public ItemStack deposit(int levels, ItemStack input, @Nullable IntConsumer changeCallback) {
-        return FluidContainer.of(input).toMutable(input).transfer((int)Math.min(getCapacity() - getLevel(), levels), stack, levelsChange -> {
+    @Override
+    public MutableFluidContainer deposit(int levels, MutableFluidContainer input, @Nullable IntConsumer changeCallback) {
+        return input.transfer((int)Math.min(getCapacity() - getLevel(), levels), stack, levelsChange -> {
             this.changeCallback.onFill(this, levelsChange);
             if (changeCallback != null) {
                 changeCallback.accept(levelsChange);
             }
-        }).asStack();
+        });
     }
 
-    public ItemStack drain(int levels, ItemStack output) {
-        return drain(levels, output, null);
-    }
-
-    public ItemStack drain(int levels, ItemStack output, @Nullable IntConsumer changeCallback) {
-        MutableFluidContainer outputContainer = FluidContainer.of(output).toMutable(output.copy());
-        stack.transfer(levels, outputContainer, levelsChange -> {
+    @Override
+    public MutableFluidContainer drain(int levels, MutableFluidContainer output, @Nullable IntConsumer changeCallback) {
+        stack.transfer(levels, output, levelsChange -> {
             this.changeCallback.onDrain(this);
             if (changeCallback != null) {
                 changeCallback.accept(levelsChange);
             }
         });
-        return outputContainer.asStack();
+        return output;
     }
 
     @Override
@@ -124,24 +91,17 @@ public class Resovoir implements Inventory, NbtSerialisable, SingleSlotStorage<F
 
     @Override
     public ItemStack getStack(int slot) {
-        return stack.asStack();
+        return getStack();
     }
 
     @Override
-    public ItemStack removeStack(int slot, int levels) {
-        levels = Math.min(getLevel(), levels);
-        ItemStack drained = stack.drain(levels).asStack();
-        if (levels > 0) {
-            this.changeCallback.onDrain(this);
-        }
-        return drained;
+    public ItemStack removeStack(int slot, int count) {
+        return ItemStack.EMPTY;
     }
 
     @Override
     public ItemStack removeStack(int slot) {
-        ItemStack s = stack.asStack();
-        clear();
-        return s;
+        return ItemStack.EMPTY;
     }
 
     @Override
@@ -198,51 +158,5 @@ public class Resovoir implements Inventory, NbtSerialisable, SingleSlotStorage<F
         default void onIdle(Resovoir resovoir) {
 
         }
-    }
-
-    @Override
-    public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-        SimpleFluid fluid = SimpleFluid.forVanilla(resource.getFluid());
-
-        if (!isEmpty() && fluid != getFluidType()) {
-            return 0;
-        }
-
-        MutableFluidContainer inputContainer = FluidContainer.UNLIMITED.toMutable(Items.STONE.getDefaultStack())
-                .withFluid(fluid)
-                .withLevel((int)maxAmount);
-
-        inputContainer.transfer((int)maxAmount, stack, levelsChange -> {
-            this.changeCallback.onFill(this, levelsChange);
-        });
-        return maxAmount - inputContainer.getLevel();
-    }
-
-    @Override
-    public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-        if (SimpleFluid.forVanilla(resource.getFluid()) != getFluidType()) {
-            return 0;
-        }
-
-        MutableFluidContainer outputContainer = FluidContainer.UNLIMITED.toMutable(Items.STONE.getDefaultStack());
-        stack.transfer((int)maxAmount, outputContainer, levelsChange -> {
-            this.changeCallback.onDrain(this);
-        });
-        return outputContainer.getLevel();
-    }
-
-    @Override
-    public boolean isResourceBlank() {
-        return isEmpty();
-    }
-
-    @Override
-    public FluidVariant getResource() {
-        return FluidVariant.of(stack.getFluid().getStandingFluid(), stack.getAttributes());
-    }
-
-    @Override
-    public long getAmount() {
-        return this.getLevel();
     }
 }
