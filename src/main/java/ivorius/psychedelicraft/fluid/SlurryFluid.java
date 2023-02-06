@@ -22,7 +22,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
 
     public SlurryFluid(Identifier id, Settings settings) {
         super(id, settings);
-        this.flowTexture = Optional.of(getId().withPath(p -> "textures/block/fluid/" + p + ".png"));
+        this.flowTexture = Optional.of(getId().withPath(p -> "block/fluid/" + p + "_still"));
     }
 
     @Override
