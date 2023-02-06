@@ -41,22 +41,29 @@ public class SimpleFluid {
     private final Identifier symbol;
 
     private final boolean custom;
+    private final boolean empty;
 
     private final Settings settings;
 
     private final PhysicalFluid physical;
 
     public SimpleFluid(Identifier id, Settings settings) {
+        this(id, settings, false);
+    }
+
+    public SimpleFluid(Identifier id, Settings settings, boolean empty) {
         this.id = id;
         this.settings = settings;
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.custom = true;
+        this.empty = empty;
         physical = new PhysicalFluid(id, this);
         Registry.register(REGISTRY, id, this);
     }
 
     private SimpleFluid(Identifier id, int color, PhysicalFluid physical) {
         this.id = id;
+        this.empty = false;
         this.settings = new Settings().color(color);
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.custom = false;
@@ -64,7 +71,7 @@ public class SimpleFluid {
     }
 
     public final boolean isEmpty() {
-        return this == PSFluids.EMPTY;
+        return empty;
     }
 
     public final Identifier getId() {

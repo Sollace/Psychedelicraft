@@ -15,6 +15,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.WaterFluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.tag.TagKey;
@@ -29,7 +30,7 @@ import net.minecraft.world.WorldView;
 public class PhysicalFluid {
     private final Fluid standing;
     private final Fluid flowing;
-    private final FluidBlock block;
+    private final Block block;
 
     @Nullable
     private final SimpleFluid type;
@@ -45,7 +46,7 @@ public class PhysicalFluid {
         this.type = type;
         standing = Registry.register(Registries.FLUID, id, PlacedFluid.still(this));
         flowing = Registry.register(Registries.FLUID, id.withPath(p -> "flowing_" + p), PlacedFluid.flowing(this));
-        block = Registry.register(Registries.BLOCK, id, new PlacedFluidBlock((FlowableFluid)flowing) {
+        block = type.isEmpty() ? Blocks.AIR : Registry.register(Registries.BLOCK, id, new PlacedFluidBlock((FlowableFluid)flowing) {
             @Override
             protected PhysicalFluid getPysicalFluid() {
                 return PhysicalFluid.this;
@@ -59,10 +60,6 @@ public class PhysicalFluid {
 
     public Fluid getFlowingFluid() {
         return flowing;
-    }
-
-    public FluidBlock getBlock() {
-        return block;
     }
 
     public FluidState getDefaultState() {
@@ -114,12 +111,12 @@ public class PhysicalFluid {
 
         @Override
         public Item getBucketItem() {
-            return PSItems.FILLED_BUCKET;
+            return getType().isEmpty() ? Items.BUCKET : PSItems.FILLED_BUCKET;
         }
 
         @Override
         public BlockState toBlockState(FluidState state) {
-            return getPysicalFluid().block.getDefaultState().with(FluidBlock.LEVEL, getBlockStateLevel(state));
+            return getPysicalFluid().block.getDefaultState().withIfExists(FluidBlock.LEVEL, getBlockStateLevel(state));
         }
 
         @Override
