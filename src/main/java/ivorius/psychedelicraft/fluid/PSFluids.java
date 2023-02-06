@@ -120,6 +120,7 @@ public interface PSFluids {
     );
     DrugFluid COCA_TEA = new DrugFluid(Psychedelicraft.id("coca_tea"), (DrugFluid.Settings)new DrugFluid.Settings()
             .drinkable()
+            .appearance(DrinkTypes.Icons.of("tea"))
             .influence(new DrugInfluence(DrugType.COCAINE, 60, 0.005, 0.002, 0.2f))
             .color(0x44787a36)
     );
