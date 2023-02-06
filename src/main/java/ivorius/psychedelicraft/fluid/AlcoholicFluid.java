@@ -4,7 +4,6 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import ivorius.psychedelicraft.fluid.AlcoholicDrinkTypes.StatePredicate;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
@@ -13,7 +12,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -21,18 +23,19 @@ import java.util.function.Supplier;
  * Created by lukas on 25.11.14.
  */
 public class AlcoholicFluid extends DrugFluid implements Processable {
-    public static final Attribute<Integer> DISTILLATION = Attribute.ofInt("distillation", 0, 80);
-    public static final Attribute<Integer> MATURATION = Attribute.ofInt("maturation", 0, 80);
+    public static final Attribute<Integer> DISTILLATION = Attribute.ofInt("distillation", 0, 16);
+    public static final Attribute<Integer> MATURATION = Attribute.ofInt("maturation", 0, 16);
+
+    private static final int FERMENTATION_STEPS = 2;
+    public static final Attribute<Integer> FERMENTATION = Attribute.ofInt("fermentation", 0, FERMENTATION_STEPS);
     public static final Attribute<Boolean> VINEGAR = Attribute.ofBoolean("vinegar");
 
     final Settings settings;
 
-    public final Attribute<Integer> FERMENTATION;
+    private final Map<String, Identifier> flowTextures = new HashMap<>();
 
     public AlcoholicFluid(Identifier id, Settings settings) {
         super(id, settings.drinkable());
-        FERMENTATION = Attribute.ofInt("fermentation", 0, settings.fermentationSteps);
-        settings.attr(DISTILLATION).attr(FERMENTATION).attr(MATURATION).attr(VINEGAR);
         this.settings = settings;
     }
 
@@ -50,7 +53,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         super.getDrugInfluencesPerLiter(fluidStack, list);
 
         double alcohol =
-                  settings.fermentationAlcohol * (FERMENTATION.get(fluidStack) / (double) settings.fermentationSteps)
+                  settings.fermentationAlcohol * (FERMENTATION.get(fluidStack) / (double) FERMENTATION_STEPS)
                 + settings.distillationAlcohol * MathUtils.progress(DISTILLATION.get(fluidStack))
                 + settings.maturationAlcohol * MathUtils.progress(MATURATION.get(fluidStack) * 0.2F);
 
@@ -60,7 +63,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     @Override
     public int getProcessingTime(ItemStack stack, ProcessType type, boolean openContainer) {
         if (type == ProcessType.DISTILL) {
-            if (FERMENTATION.get(stack) >= settings.fermentationSteps || MATURATION.get(stack) != 0) {
+            if (FERMENTATION.get(stack) >= FERMENTATION_STEPS || MATURATION.get(stack) != 0) {
                 return UNCONVERTABLE;
             }
 
@@ -68,7 +71,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         }
 
         if (type == ProcessType.FERMENT) {
-            if (FERMENTATION.get(stack) >= settings.fermentationSteps) {
+            if (FERMENTATION.get(stack) >= FERMENTATION_STEPS) {
                 return openContainer ? settings.tickInfo.get().ticksPerFermentation : UNCONVERTABLE;
             }
             return openContainer ? settings.tickInfo.get().ticksUntilAcetification : settings.tickInfo.get().ticksPerMaturation;
@@ -82,7 +85,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         if (type == ProcessType.DISTILL) {
             int fermentation = FERMENTATION.get(tank.getStack());
 
-            if (fermentation < settings.fermentationSteps) {
+            if (fermentation < FERMENTATION_STEPS) {
                 return ItemStack.EMPTY;
             }
 
@@ -104,7 +107,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             int fermentation = FERMENTATION.get(stack);
 
             if (openContainer) {
-                if (fermentation < settings.fermentationSteps) {
+                if (fermentation < FERMENTATION_STEPS) {
                     FERMENTATION.set(stack, fermentation + 1);
                 } else {
                     VINEGAR.set(stack, true);
@@ -161,23 +164,31 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public Identifier getSymbol(ItemStack stack) {
-        var specialName = settings.types.getSpecialName(stack, this);
+        var specialName = settings.displayNames.find(stack);
         if (specialName != null) {
-            return getId().withPath(p -> "textures/fluid/" + specialName.value() + ".png");
+            return getId().withPath(p -> "textures/fluid/" + specialName + ".png");
         }
         return super.getSymbol(stack);
     }
 
     @Override
+    public Optional<Identifier> getFlowTexture(ItemStack stack) {
+        return Optional.ofNullable(settings.textures.find(stack))
+                .map(DrinkTypes.Icons::still)
+                .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
+    }
+
+    private Identifier getFlowTexture(String name) {
+        return getId().withPath(p -> "textures/block/fluid/" + name + ".png");
+    }
+
+    @Override
     public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
         super.getDefaultStacks(container, consumer);
-        settings.types.names().forEach(namedAlcohol -> {
+        settings.displayNames.variants().forEach(namedAlcohol -> {
             ItemStack stack = getDefaultStack(container);
-            if (DISTILLATION.set(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().distillationRange().getMin())) != 0
-                && MATURATION.set(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().maturationRange().getMin())) != 0
-                && FERMENTATION.set(stack, StatePredicate.getUnboxedMin(namedAlcohol.predicate().fermentationRange().getMin())) != 0) {
-                consumer.accept(stack);
-            }
+            namedAlcohol.predicate().applyTo(stack);
+            consumer.accept(stack);
         });
     }
 
@@ -189,9 +200,8 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     public static class Settings extends DrugFluid.Settings {
-        private AlcoholicDrinkTypes types;
-
-        int fermentationSteps;
+        private DrinkTypes.VariantSet<String> displayNames = DrinkTypes.VariantSet.empty();
+        private DrinkTypes.VariantSet<DrinkTypes.Icons> textures = DrinkTypes.VariantSet.empty();
 
         private double fermentationAlcohol;
         private double distillationAlcohol;
@@ -212,13 +222,9 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             return this;
         }
 
-        public Settings types(AlcoholicDrinkTypes types) {
-            this.types = types;
-            return this;
-        }
-
-        public Settings fermentation(int fermentationSteps) {
-            this.fermentationSteps = fermentationSteps;
+        public Settings variants(DrinkTypes.VariantSet<String> names, DrinkTypes.VariantSet<DrinkTypes.Icons> textures) {
+            this.displayNames = names;
+            this.textures = textures;
             return this;
         }
 
@@ -234,5 +240,4 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             return this;
         }
     }
-
 }

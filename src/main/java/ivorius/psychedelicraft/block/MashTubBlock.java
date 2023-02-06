@@ -220,7 +220,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         return world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).filter(be -> {
             Resovoir tank = be.getTank(Direction.UP);
             return (tank.isEmpty()
-                || tank.getFluidType().getPhysical().getFluid() == fluid)
+                || tank.getFluidType().getPhysical().isOf(fluid))
                 && tank.getCapacity() - tank.getLevel() >=  FluidVolumes.BUCKET;
         }).isPresent();
     }

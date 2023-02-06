@@ -165,17 +165,26 @@ public class FluidBoxRenderer {
 
     public record FluidAppearance(Identifier texture, Sprite sprite, int color) {
         public static FluidAppearance of(SimpleFluid fluid, ItemStack stack) {
-            int color = fluid.getColor(stack);
-            Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
+            return fluid.getFlowTexture(stack)
+                    .filter(texture -> MinecraftClient.getInstance().getResourceManager().getResource(texture).isPresent())
+                    .map(texture -> {
+                Sprite sprite = MinecraftClient.getInstance().getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(texture);
+                return new FluidAppearance(sprite.getAtlasId(), sprite, 0xFFFFFFFF);
+            }).orElseGet(() -> {
+                int color = fluid.getColor(stack);
+                Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
 
-            FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getPhysical().getFluid());
-            if (handler != null) {
-                FluidState state = fluid.getFluidState(stack);
-                color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
-                sprite = handler.getFluidSprites(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state)[0];
-            }
+                if (!fluid.isCustomFluid()) {
+                    FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getPhysical().getFluid());
+                    if (handler != null) {
+                        FluidState state = fluid.getPhysical().getFluid().getDefaultState();
+                        color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
+                        sprite = handler.getFluidSprites(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state)[0];
+                    }
+                }
 
-            return new FluidAppearance(sprite.getAtlasId(), sprite, color);
+                return new FluidAppearance(sprite.getAtlasId(), sprite, color);
+            });
         }
 
         public float[] rgba() {

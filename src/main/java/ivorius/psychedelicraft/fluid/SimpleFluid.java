@@ -19,10 +19,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.state.State;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntProperty;
-import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -41,18 +37,18 @@ public class SimpleFluid {
 
     private final Identifier symbol;
 
-    private final PhysicalFluid physical;
-
     private final boolean custom;
 
     private final Settings settings;
+
+    private final PhysicalFluid physical;
 
     public SimpleFluid(Identifier id, Settings settings) {
         this.id = id;
         this.settings = settings;
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.custom = true;
-        this.physical = new PhysicalFluid(id, this, settings.attributes);
+        physical = new PhysicalFluid(id, this);
         Registry.register(REGISTRY, id, this);
     }
 
@@ -60,8 +56,8 @@ public class SimpleFluid {
         this.id = id;
         this.settings = new Settings().color(color);
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
-        this.physical = physical;
         this.custom = custom;
+        this.physical = physical;
     }
 
     public final boolean isEmpty() {
@@ -76,8 +72,8 @@ public class SimpleFluid {
         return symbol;
     }
 
-    public FluidState getFluidState(ItemStack stack) {
-        return physical.getDefaultState();
+    public Optional<Identifier> getFlowTexture(ItemStack stack) {
+        return Optional.empty();
     }
 
     public ItemStack getStack(State<?, ?> state, FluidContainer container) {
@@ -162,43 +158,23 @@ public class SimpleFluid {
         return REGISTRY;
     }
 
+    @SuppressWarnings("unchecked")
     public static class Settings {
         private int color;
 
-        private List<Attribute<?>> attributes;
-
-        public Settings color(int color) {
+        public <T extends Settings> T color(int color) {
             this.color = color;
-            return this;
-        }
-
-        public Settings attr(Attribute<?> attribute) {
-            this.attributes.add(attribute);
-            return this;
+            return (T)this;
         }
     }
 
     public abstract static class Attribute<T extends Comparable<T>> {
-        private final Property<T> property;
-
-        Attribute(Property<T> property) {
-            this.property = property;
-        }
-
-        public T get(State<?, ?> state) {
-            return state.get(property);
-        }
-
-        void append(StateManager.Builder<?, ? extends State<?, ?>> builder) {
-            builder.add(property);
-        }
-
         public abstract T get(ItemStack stack);
 
         public abstract T set(ItemStack stack, T value);
 
         public static Attribute<Integer> ofInt(String name, int min, int max) {
-            return new Attribute<>(IntProperty.of(name, min, max)) {
+            return new Attribute<>() {
                 @Override
                 public Integer get(ItemStack stack) {
                     return MathHelper.clamp(FluidContainer.getFluidAttributesTag(stack, true).getInt(name), min, max);
@@ -212,9 +188,8 @@ public class SimpleFluid {
             };
         }
 
-
         public static Attribute<Boolean> ofBoolean(String name) {
-            return new Attribute<>(BooleanProperty.of(name)) {
+            return new Attribute<>() {
                 @Override
                 public Boolean get(ItemStack stack) {
                     return FluidContainer.getFluidAttributesTag(stack, true).getBoolean(name);
