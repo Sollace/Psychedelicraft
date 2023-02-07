@@ -146,6 +146,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     private void onCraftingFailed() {
         suppliedIngredients.clear();
+        currentStew = Optional.empty();
         getTank(Direction.UP).getContents()
             .withFluid(PSFluids.SLURRY);
         spawnBubbles(90, 0.5F, SoundEvents.BLOCK_MUD_BREAK);
