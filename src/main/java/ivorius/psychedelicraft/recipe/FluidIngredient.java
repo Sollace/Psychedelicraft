@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ivorius.psychedelicraft.fluid.FluidContainer;
 import ivorius.psychedelicraft.fluid.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.Resovoir;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
@@ -61,7 +60,7 @@ public record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attribu
     }
 
     public boolean test(ItemStack stack) {
-        return stack.getItem() instanceof FluidContainer container && test(container.toMutable(stack));
+        return test(MutableFluidContainer.of(stack));
     }
 }
 

@@ -93,7 +93,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
             ItemStack result = tank.drain(distilledAmount, new ItemStack(Items.STONE));
 
-            return FluidContainer.of(result).toMutable(result).withFluid(PSFluids.SLURRY).withLevel(1).asStack();
+            return MutableFluidContainer.of(result).withFluid(PSFluids.SLURRY).withLevel(1).asStack();
         }
 
         if (type == ProcessType.FERMENT) {

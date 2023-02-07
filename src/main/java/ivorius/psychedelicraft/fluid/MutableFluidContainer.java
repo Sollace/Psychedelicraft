@@ -9,8 +9,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
 public class MutableFluidContainer {
-    public static MutableFluidContainer of(FluidContainer container, ItemStack stack) {
-        return new MutableFluidContainer(container, container.getFluid(stack), container.getLevel(stack), FluidContainer.getFluidAttributesTag(stack, true));
+
+    public static MutableFluidContainer of(ItemStack stack) {
+        return FluidContainer.of(stack).toMutable(stack);
     }
 
     protected FluidContainer container;

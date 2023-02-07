@@ -35,23 +35,6 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.StorageMarshal,
         return stack;
     }
 
-    public ItemStack setCapacity(int capacity) {
-        this.container = FluidContainer.withCapacity(container.asItem(), capacity);
-        this.stack = container.toMutable(getStack());
-
-        int level = getLevel();
-
-        if (level > capacity) {
-            int expunged = level - capacity;
-            ItemStack clone = FluidContainer.UNLIMITED.toMutable(stack.asStack().copy()).withLevel(expunged).asStack();
-            stack.withLevel(capacity);
-            changeCallback.onDrain(this);
-            return clone;
-        }
-
-        return ItemStack.EMPTY;
-    }
-
     @Override
     public int getMaxCountPerStack() {
         return 1;
@@ -80,7 +63,7 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.StorageMarshal,
 
     @Override
     public void clear() {
-        stack = MutableFluidContainer.of(FluidContainer.UNLIMITED, Items.STONE.getDefaultStack());
+        stack = FluidContainer.UNLIMITED.toMutable(Items.STONE.getDefaultStack());
         changeCallback.onDrain(this);
     }
 
@@ -108,7 +91,7 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.StorageMarshal,
     public void setStack(int slot, ItemStack stack) {
         boolean wasEmpty = isEmpty();
         int oldLevel = getLevel();
-        this.stack = MutableFluidContainer.of(FluidContainer.UNLIMITED, stack);
+        this.stack = FluidContainer.UNLIMITED.toMutable(stack);
         if (isEmpty() != wasEmpty) {
             if (wasEmpty) {
                 changeCallback.onFill(this, getLevel());

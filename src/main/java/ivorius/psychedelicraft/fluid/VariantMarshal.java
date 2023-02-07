@@ -64,8 +64,7 @@ final class VariantMarshal {
     }
 
     public static MutableFluidContainer unpackFluid(ItemVariant item) {
-        ItemStack stack = unpackStack(item);
-        return FluidContainer.of(stack).toMutable(stack);
+        return MutableFluidContainer.of(unpackStack(item));
     }
 
     public static FluidVariant packFluid(MutableFluidContainer contents) {
@@ -73,8 +72,7 @@ final class VariantMarshal {
     }
 
     public static MutableFluidContainer unpackFluid(ItemVariant container, FluidVariant contents, long level) {
-        return FluidContainer.of(container.getItem())
-            .toMutable(container.getItem().getDefaultStack())
+        return MutableFluidContainer.of(container.getItem().getDefaultStack())
             .withFluid(SimpleFluid.forVanilla(contents.getFluid()))
             .withLevel((int)level)
             .withAttributes(contents.copyNbt());

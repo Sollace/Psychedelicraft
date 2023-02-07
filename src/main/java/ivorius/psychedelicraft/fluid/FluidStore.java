@@ -39,7 +39,7 @@ public interface FluidStore {
     }
 
     default ItemStack deposit(int levels, ItemStack input, @Nullable IntConsumer changeCallback) {
-        return deposit(levels, FluidContainer.of(input).toMutable(input), changeCallback).asStack();
+        return deposit(levels, MutableFluidContainer.of(input), changeCallback).asStack();
     }
 
     default ItemStack drain(int levels, ItemStack output) {
@@ -47,6 +47,6 @@ public interface FluidStore {
     }
 
     default ItemStack drain(int levels, ItemStack output, @Nullable IntConsumer changeCallback) {
-        return drain(levels, FluidContainer.of(output).toMutable(output.copy()), changeCallback).asStack();
+        return drain(levels, MutableFluidContainer.of(output.copy()), changeCallback).asStack();
     }
 }
