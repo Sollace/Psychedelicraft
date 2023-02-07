@@ -1,7 +1,9 @@
 package ivorius.psychedelicraft.fluid;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
+
+import com.google.common.base.Suppliers;
 
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
@@ -12,7 +14,6 @@ import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.InsertionOnlyStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.inventory.Inventory;
@@ -28,7 +29,7 @@ final class VariantMarshal {
     static void bootstrap() {
         FluidStorage.GENERAL_COMBINED_PROVIDER.register(context -> {
             if (context.getItemVariant().getItem() instanceof FluidContainer container) {
-                MutableFluidContainer contents = unpackFluid(context.getItemVariant());
+                MutableFluidContainer contents = MutableFluidContainer.of(context.getItemVariant().toStack());
                 if (!contents.isEmpty()) {
                     return new FullItemFluidStorage(context, v -> ItemVariant.of(container.asEmpty()), packFluid(contents), contents.getLevel());
                 }
@@ -42,7 +43,7 @@ final class VariantMarshal {
                     if (resource.getFluid() instanceof PhysicalFluid.PlacedFluid) {
                         ItemStack stack = VariantMarshal.unpackFluid(context.getItemVariant(), resource, FluidVolumes.BUCKET).asStack();
 
-                        if (context.exchange(packStack(stack), 1, transaction) == 1) {
+                        if (context.exchange(ItemVariant.of(stack), 1, transaction) == 1) {
                             return FluidVolumes.BUCKET;
                         }
                     }
@@ -50,21 +51,6 @@ final class VariantMarshal {
                 }
             };
         });
-
-    }
-
-    public static ItemStack unpackStack(ItemVariant item) {
-        ItemStack stack = item.getItem().getDefaultStack();
-        stack.getOrCreateNbt().put("fluid", item.copyNbt());
-        return stack;
-    }
-
-    public static ItemVariant packStack(ItemStack stack) {
-        return ItemVariant.of(stack.getItem(), FluidContainer.getFluidTag(stack, false));
-    }
-
-    public static MutableFluidContainer unpackFluid(ItemVariant item) {
-        return MutableFluidContainer.of(unpackStack(item));
     }
 
     public static FluidVariant packFluid(MutableFluidContainer contents) {
@@ -72,132 +58,124 @@ final class VariantMarshal {
     }
 
     public static MutableFluidContainer unpackFluid(ItemVariant container, FluidVariant contents, long level) {
-        return MutableFluidContainer.of(container.getItem().getDefaultStack())
+        return MutableFluidContainer.of(container.toStack())
             .withFluid(SimpleFluid.forVanilla(contents.getFluid()))
             .withLevel((int)level)
             .withAttributes(contents.copyNbt());
     }
 
     public static Optional<ViewBasedFluidContainer> probeContents(ItemStack stack) {
-        final ItemStack[] currentStack = { stack.copy() };
-        Storage<FluidVariant> storage = FluidStorage.ITEM.find(stack, new ContainerItemContext() {
-            @Override
-            public SingleSlotStorage<ItemVariant> getMainSlot() {
-                return new SingleVariantStorage<>() {
-                    @Override
-                    protected ItemVariant getBlankVariant() {
-                        return ItemVariant.blank();
-                    }
-
-                    @Override
-                    protected long getCapacity(ItemVariant variant) {
-                        return Long.MAX_VALUE;
-                    }
-                };
-            }
-
-            @Override
-            public long exchange(ItemVariant newVariant, long maxAmount, TransactionContext transaction) {
-                currentStack[0] = unpackStack(newVariant);
-                return 1;
-            }
-
-            @Override
-            public long insertOverflow(ItemVariant itemVariant, long maxAmount, TransactionContext transactionContext) {
-                return 0;
-            }
-
-            @Override
-            public List<SingleSlotStorage<ItemVariant>> getAdditionalSlots() {
-                return List.of();
-            }
-        });
-        if (storage == null) {
-            return Optional.empty();
-        }
-        StorageView<FluidVariant> view = storage.exactView(FluidVariant.blank());
-
-        return Optional.of(new ViewBasedFluidContainer(currentStack, storage, view));
+        return Optional.of(stack).filter(s -> {
+            var storage = FluidStorage.ITEM.find(s, ContainerItemContext.withInitial(s.copy()));
+            return storage != null && storage.iterator().hasNext();
+        }).map(ViewBasedFluidContainer::new);
     }
 
-    public static class ViewBasedFluidContainer extends MutableFluidContainer implements FluidContainer {
-        private ItemStack[] currentStack;
-        private Storage<FluidVariant> storage;
-        private StorageView<FluidVariant> view;
+    public static class ViewBasedFluidContainer implements FluidContainer {
+        private final Item item;
+        private final Supplier<MutableFluidContainer> blankView;
+        private final Supplier<Item> empty;
 
-        ViewBasedFluidContainer(ItemStack[] currentStack, Storage<FluidVariant> storage, StorageView<FluidVariant> view) {
-            super(FluidContainer.UNLIMITED, SimpleFluid.forVanilla(view.getResource().getFluid()), (int)view.getAmount(), view.getResource().copyNbt());
-            this.storage = storage;
-            this.view = view;
+        ViewBasedFluidContainer(ItemStack stack) {
+            this.item = stack.getItem();
+            this.blankView = Suppliers.memoize(() -> toMutable(stack.copy()));
+            empty = Suppliers.memoize(() -> toMutable(stack.copy()).drain(getMaxCapacity()).asStack().getItem());
         }
 
         @Override
         public MutableFluidContainer toMutable(ItemStack stack) {
-            return probeContents(stack).orElse(this);
+            var context = ContainerItemContext.withInitial(stack.copy());
+            var storage = FluidStorage.ITEM.find(stack, context);
+            var view = storage.iterator().next();
+            return new Mutable(this, context, storage, view);
         }
 
         @Override
-        public MutableFluidContainer copy() {
-            return probeContents(asStack()).map(i -> (MutableFluidContainer)i).orElseGet(() -> super.copy());
+        public SimpleFluid getFluid(ItemStack stack) {
+            return toMutable(stack).getFluid();
         }
 
         @Override
-        public ItemStack asStack() {
-            return currentStack[0].copy();
-        }
-
-        @Override
-        public int getLevel() {
-            return (int)view.getAmount();
-        }
-
-        @Override
-        public int getCapacity() {
-            return (int)view.getCapacity();
-        }
-
-        @Override
-        public SimpleFluid getFluid() {
-            return SimpleFluid.forVanilla(view.getResource().getFluid());
-        }
-
-        @Override
-        public NbtCompound getAttributes() {
-            return attributes;
-        }
-
-        @Override
-        public MutableFluidContainer withAttributes(NbtCompound attributes) {
-            this.attributes = attributes;
-            return this;
-        }
-
-        @Override
-        public MutableFluidContainer drain(int amount) {
-            try (var transaction = Transaction.openOuter()) {
-                view.extract(view.getResource(), amount, transaction);
-                transaction.commit();
-            }
-            return this;
-        }
-
-        @Override
-        public int deposit(int amount, SimpleFluid fluid) {
-            try (var transaction = Transaction.openOuter()) {
-                storage.insert(FluidVariant.of(fluid.getPhysical().getFluid()), amount, transaction);
-                transaction.commit();
-            }
-            return 0;
-        }
-
-        @Override
-        public Item asItem() {
-            return currentStack[0].getItem();
+        public int getLevel(ItemStack stack) {
+            return toMutable(stack).getLevel();
         }
 
         @Override
         public int getMaxCapacity() {
-            return Integer.MAX_VALUE;
+            return blankView.get().getCapacity();
+        }
+
+        @Override
+        public Item asEmpty() {
+            return empty.get();
+        }
+
+        @Override
+        public Item asItem() {
+            return item;
+        }
+
+        private static class Mutable extends MutableFluidContainer {
+            private ContainerItemContext context;
+            private Storage<FluidVariant> storage;
+            private StorageView<FluidVariant> view;
+
+            Mutable(ViewBasedFluidContainer container, ContainerItemContext context, Storage<FluidVariant> storage, StorageView<FluidVariant> view) {
+                super(container,
+                        SimpleFluid.forVanilla(view.getResource().getFluid()),
+                        (int)view.getAmount(),
+                        FluidContainer.EMPTY_NBT
+                );
+                this.context = context;
+                this.storage = storage;
+                this.view = view;
+            }
+
+            @Override
+            public MutableFluidContainer copy() {
+                ItemStack stack = asStack();
+                return probeContents(stack).map(i -> i.toMutable(stack)).orElseGet(() -> super.copy());
+            }
+
+            @Override
+            public int getCapacity() {
+                return (int)view.getCapacity();
+            }
+
+            @Override
+            public ItemStack asStack() {
+                commitChanges();
+                // convert whatever it is into a stack
+                return context.getItemVariant().toStack((int)context.getAmount());
+            }
+
+            @Override
+            public MutableFluidContainer withAttributes(NbtCompound attributes) {
+                // Attribute transfers not supported
+                return this;
+            }
+
+            private void commitChanges() {
+                long oldLevel = view.getAmount();
+                FluidVariant oldFluid = view.getResource();
+
+                long newLevel = getLevel();
+                FluidVariant newFluid = FluidVariant.of(getFluid().getPhysical().getFluid());
+
+                if (oldLevel != newLevel || !oldFluid.equals(newFluid)) {
+                    try (var transaction = Transaction.openOuter()) {
+                        // drain everything out
+                        view.extract(oldFluid, oldLevel, transaction);
+                        // insert new contents
+                        if (!isEmpty()) {
+                            storage.insert(newFluid, newLevel, transaction);
+                        }
+                        view = storage.exactView(newFluid);
+                        // transaction
+                        transaction.commit();
+                    }
+                }
+            }
         }
     }
 
