@@ -62,11 +62,11 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     .program("simple_effects", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var h = ShaderContext.hallucinations();
                         if (setter.setIfNonZero("quickColorRotation", h.getQuickColorRotation(tickDelta))
-                         || setter.setIfNonZero("slowColorRotation", h.getSlowColorRotation(tickDelta))
-                         || setter.setIfNonZero("desaturation", h.getDesaturation(tickDelta))
-                         || setter.setIfNonZero("colorIntensification", h.getColorIntensification(tickDelta))
-                         || h.getPulseColor(tickDelta)[3] > 0
-                         || h.getContrastColorization(tickDelta)[3] > 0) {
+                         | setter.setIfNonZero("slowColorRotation", h.getSlowColorRotation(tickDelta))
+                         | setter.setIfNonZero("desaturation", h.getDesaturation(tickDelta))
+                         | setter.setIfNonZero("colorIntensification", h.getColorIntensification(tickDelta))
+                         | h.getPulseColor(tickDelta)[3] > 0
+                         | h.getContrastColorization(tickDelta)[3] > 0) {
                             pass.run();
                         }
                     })
@@ -75,11 +75,11 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         var pulses = h.getPulseColor(tickDelta);
                         var worldColorization = h.getContrastColorization(tickDelta);
                         if (h.getQuickColorRotation(tickDelta) > 0
-                         || h.getSlowColorRotation(tickDelta) > 0
-                         || h.getDesaturation(tickDelta) > 0
-                         || h.getColorIntensification(tickDelta) > 0
-                         || pulses[3] > 0
-                         || worldColorization[3] > 0) {
+                         | h.getSlowColorRotation(tickDelta) > 0
+                         | h.getDesaturation(tickDelta) > 0
+                         | h.getColorIntensification(tickDelta) > 0
+                         | pulses[3] > 0
+                         | worldColorization[3] > 0) {
                             setter.set("pulses", pulses);
                             setter.set("colorSafeMode", GLStateProxy.isColorSafeMode() ? 1 : 0);
                             setter.set("worldColorization", worldColorization);
@@ -90,7 +90,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     .program("ps_blur", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float menuBlur = DrugRenderer.INSTANCE.getMenuBlur();
                         float vBlur = ShaderContext.drug(DrugType.POWER) + menuBlur;
-                        float hBlur = menuBlur;
+                        float hBlur = menuBlur + (ShaderContext.drug(DrugType.BATH_SALTS) * 6F + ShaderContext.drug(DrugType.BATH_SALTS) * (ShaderContext.ticks() % 5));
                         if (vBlur <= 0 && hBlur <= 0) {
                             return;
                         }
