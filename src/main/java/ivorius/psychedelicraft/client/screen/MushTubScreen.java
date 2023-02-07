@@ -32,7 +32,9 @@ public class MushTubScreen extends FlaskScreen<MashTubBlockEntity> {
     protected void drawAdditionalInfo(MatrixStack matrices, int baseX, int baseY) {
         float progress = handler.getBlockEntity().getProgress();
         if (progress > 0 && progress < 1) {
-            drawTexture(matrices, baseX + 23, baseY + 14, 176, 0, 24 - (int)(progress * 24), 17);
+            drawTexture(matrices, baseX + 140, baseY + 14, 233, 22, 23, 22);
+            int barHeight = (int)(22 * (1 - progress));
+            drawTexture(matrices, baseX + 140, baseY + 14 + barHeight, 233, barHeight, 23, 23 - barHeight);
         }
     }
 
