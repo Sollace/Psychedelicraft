@@ -32,7 +32,7 @@ class ConvertDrinkContainerRecipe extends ShapelessRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PSRecipes.FILL_DRINK_CONTAINER;
+        return PSRecipes.CONVERT_DRINK_CONTAINER;
     }
 
     @Override

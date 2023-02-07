@@ -13,7 +13,8 @@
                 { "name": "slowColorRotation", "values": [ 0.0 ] },
                 { "name": "quickColorRotation", "values": [ 0.0 ] },
                 { "name": "colorIntensification", "values": [ 0.0 ] },
-                { "name": "desaturation", "values": [ 0.0 ] }
+                { "name": "desaturation", "values": [ 0.0 ] },
+                { "name": "inversion", "values": [ 0.0 ] }
             ]
         },
         {

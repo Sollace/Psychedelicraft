@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.recipe;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -13,18 +14,26 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
-    public static FluidIngredient fromJson(JsonObject json) {
-        SimpleFluid fluid = SimpleFluid.byId(Identifier.tryParse(JsonHelper.getString(json, "fluid")));
-        int level = JsonHelper.getInt(json, "level", -1);
+    public static FluidIngredient fromJson(JsonElement element) {
 
-        NbtCompound nbt = new NbtCompound();
+        if (element.isJsonObject()) {
+            JsonObject json = element.getAsJsonObject();
+            SimpleFluid fluid = SimpleFluid.byId(Identifier.tryParse(JsonHelper.getString(json, "fluid")));
+            int level = JsonHelper.getInt(json, "level", -1);
 
-        if (json.has("attributes")) {
-            try {
-                nbt = NbtHelper.fromNbtProviderString(json.get("attributes").toString());
-            } catch (CommandSyntaxException ignored) {}
+            NbtCompound nbt = new NbtCompound();
+
+            if (json.has("attributes")) {
+                try {
+                    nbt = NbtHelper.fromNbtProviderString(json.get("attributes").toString());
+                } catch (CommandSyntaxException ignored) {}
+            }
+            return new FluidIngredient(fluid, level, nbt);
         }
-        return new FluidIngredient(fluid, level, nbt);
+
+        SimpleFluid fluid = SimpleFluid.byId(Identifier.tryParse(JsonHelper.asString(element, "fluid")));
+
+        return new FluidIngredient(fluid, -1, new NbtCompound());
     }
 
     public FluidIngredient(PacketByteBuf buffer) {

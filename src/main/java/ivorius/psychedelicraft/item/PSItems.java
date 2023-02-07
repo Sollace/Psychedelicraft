@@ -136,6 +136,12 @@ public interface PSItems {
 
     HarmoniumItem HARMONIUM = register("harmonium", new HarmoniumItem(new Settings()));
 
+    Item OBSIDIAN_BOTTLE = register("obsidian_bottle", new Item(new Settings().maxCount(16)));
+    Item OBSIDIAN_DUST = register("obsidian_dust", new CocainePowderItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.BATH_SALTS, 0, 0.002, 0.003, 0.35f)
+    ));
+
     BongItem SMOKING_PIPE = register("smoking_pipe", new BongItem(new Settings().maxDamage(50)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, 20, 0.002, 0.001, 0.25F)))
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.8f)))

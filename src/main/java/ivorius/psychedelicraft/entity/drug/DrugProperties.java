@@ -249,7 +249,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public boolean onAwoken() {
-        drugs.values().forEach(drug -> drug.reset(this));
+        drugs.values().forEach(drug -> drug.onWakeUp(this));
         influences.clear();
         dirty = true;
 

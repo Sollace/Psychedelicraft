@@ -35,6 +35,7 @@ public interface Drug extends NbtSerialisable {
 
     AggregateModifier SUPER_SATURATION_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::superSaturationHallucinationStrength, AggregateModifier.Combiner.INVERSE_MUL);
     AggregateModifier DESATURATION_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::desaturationHallucinationStrength, AggregateModifier.Combiner.INVERSE_MUL);
+    AggregateModifier INVERSION_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::colorInversionHallucinationStrength, AggregateModifier.Combiner.SUM);
     AggregateModifier BLOOM_HALLUCINATION_STRENGTH = AggregateModifier.create(0, Drug::bloomHallucinationStrength, AggregateModifier.Combiner.SUM);
     AggregateModifier MOTION_BLUR = AggregateModifier.create(0, Drug::motionBlur, AggregateModifier.Combiner.INVERSE_MUL);
 
@@ -43,9 +44,11 @@ public interface Drug extends NbtSerialisable {
 
     DrugType getType();
 
-    void update(DrugProperties drugProperties);
+    void update(DrugProperties properties);
 
-    void reset(DrugProperties drugProperties);
+    void reset(DrugProperties properties);
+
+    void onWakeUp(DrugProperties properties);
 
     /**
      * A value from 0 to 1 indicating the strength of this particular effect.
@@ -110,6 +113,10 @@ public interface Drug extends NbtSerialisable {
     }
 
     default float superSaturationHallucinationStrength() {
+        return 0;
+    }
+
+    default float colorInversionHallucinationStrength() {
         return 0;
     }
 

@@ -65,6 +65,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                          | setter.setIfNonZero("slowColorRotation", h.getSlowColorRotation(tickDelta))
                          | setter.setIfNonZero("desaturation", h.getDesaturation(tickDelta))
                          | setter.setIfNonZero("colorIntensification", h.getColorIntensification(tickDelta))
+                         | setter.setIfNonZero("inversion", ShaderContext.modifier(Drug.INVERSION_HALLUCINATION_STRENGTH))
                          | h.getPulseColor(tickDelta)[3] > 0
                          | h.getContrastColorization(tickDelta)[3] > 0) {
                             pass.run();
@@ -78,6 +79,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                          | h.getSlowColorRotation(tickDelta) > 0
                          | h.getDesaturation(tickDelta) > 0
                          | h.getColorIntensification(tickDelta) > 0
+                         | ShaderContext.modifier(Drug.INVERSION_HALLUCINATION_STRENGTH) > 0
                          | pulses[3] > 0
                          | worldColorization[3] > 0) {
                             setter.set("pulses", pulses);

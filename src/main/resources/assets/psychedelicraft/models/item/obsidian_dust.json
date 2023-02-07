@@ -1,0 +1,14 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "psychedelicraft:item/obsidian_dust"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:using": 1
+            },
+            "model": "psychedelicraft:item/obsidian_dust_using"
+        }
+    ]
+}

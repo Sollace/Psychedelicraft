@@ -2,6 +2,7 @@
 #moj_import <psychedelicraft:get_rotated_color.glsl>
 #moj_import <psychedelicraft:get_intensified_color.glsl>
 #moj_import <psychedelicraft:get_desaturated_color.glsl>
+#moj_import <psychedelicraft:get_inverted_color.glsl>
 
 uniform sampler2D DiffuseSampler;
 
@@ -13,6 +14,7 @@ uniform float slowColorRotation;
 uniform float quickColorRotation;
 uniform float colorIntensification;
 uniform float desaturation;
+uniform float inversion;
 
 out vec4 fragColor;
 
@@ -34,6 +36,10 @@ void main() {
 
   if (desaturation != 0.0) {
     outcolor = mix(outcolor, getDesaturatedColor(outcolor), desaturation);
+  }
+
+  if (inversion > 0) {
+    outcolor = mix(outcolor, getInvertedColor(outcolor), inversion);
   }
 
   fragColor = vec4(outcolor, 1.0);

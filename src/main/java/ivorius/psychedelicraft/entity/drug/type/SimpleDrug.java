@@ -94,6 +94,11 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
+    public void onWakeUp(DrugProperties drugProperties) {
+        reset(drugProperties);
+    }
+
+    @Override
     public void reset(DrugProperties drugProperties) {
         if (!locked) {
             effect = 0;
