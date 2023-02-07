@@ -28,6 +28,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
@@ -111,6 +112,14 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return super.getPlacementState(ctx).with(MASTER, true);
+    }
+
+    @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).ifPresent(be -> {
+            SimpleFluid fluid = be.getTank(Direction.UP).getFluidType();
+            fluid.randomDisplayTick(world, pos, fluid.getPhysical().getDefaultState(), random);
+        });
     }
 
     @Override

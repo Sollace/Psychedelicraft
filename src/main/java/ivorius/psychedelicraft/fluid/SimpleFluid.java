@@ -140,6 +140,9 @@ public class SimpleFluid {
     }
 
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
+        if (!custom) {
+            state.randomDisplayTick(world, pos, random);
+        }
     }
 
     public static SimpleFluid byId(@Nullable Identifier id) {
