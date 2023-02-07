@@ -12,9 +12,9 @@ import net.minecraft.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import ivorius.psychedelicraft.item.PSItems;
 
 /**
  * Created by lukas on 22.10.14.
@@ -51,8 +51,9 @@ public class CoffeeFluid extends DrugFluid {
         consumer.accept(setTemperature(getDefaultStack(container), 2));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isSuitableContainer(FluidContainer container) {
-        return container == PSItems.STONE_CUP;
+        return container.asItem().getRegistryEntry().isIn(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);
     }
 }

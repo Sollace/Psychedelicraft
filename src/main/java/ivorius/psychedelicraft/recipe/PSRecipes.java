@@ -13,11 +13,14 @@ import net.minecraft.util.Identifier;
  * @since 5 Jan 2023
  */
 public interface PSRecipes {
-    RecipeSerializer<FillDrinkContainerRecipe> FILL_DRINK_CONTAINER = RecipeSerializer.register("psychedelicraft:fill_drink_container", new FillDrinkContainerRecipe.Serializer());
-    RecipeSerializer<ConvertDrinkContainerRecipe> CONVERT_DRINK_CONTAINER = RecipeSerializer.register("psychedelicraft:convert_drink_container", new ConvertDrinkContainerRecipe.Serializer());
-    RecipeSerializer<SmeltingFluidRecipe> SMELTING_FLUID = RecipeSerializer.register("psychedelicraft:smelting_fluid", new SmeltingFluidRecipe.Serializer());
+    RecipeSerializer<FillRecepticalRecipe> FILL_RECEPTICAL = RecipeSerializer.register("psychedelicraft:fill_receptical", new FillRecepticalRecipe.Serializer());
+    RecipeSerializer<ChangeRecepticalRecipe> CHANGE_RECEPTICAL = RecipeSerializer.register("psychedelicraft:change_receptical", new ChangeRecepticalRecipe.Serializer());
+    RecipeSerializer<SmeltingFluidRecipe> SMELTING_RECEPTICAL = RecipeSerializer.register("psychedelicraft:smelting_receptical", new SmeltingFluidRecipe.Serializer());
 
     RecipeSerializer<FluidAwareShapelessRecipe> SHAPELESS_FLUID = RecipeSerializer.register("psychedelicraft:shapeless_fluid", new FluidAwareShapelessRecipe.Serializer());
+
+    RecipeType<MashingRecipe> MASHING_TYPE = RecipeType.register("psychedelicraft:mashing");
+    RecipeSerializer<MashingRecipe> MASHING = RecipeSerializer.register("psychedelicraft:mashing", new MashingRecipe.Serializer());
 
     RecipeType<DryingRecipe> DRYING_TYPE = RecipeType.register("psychedelicraft:drying");
     RecipeSerializer<DryingRecipe> DRYING = RecipeSerializer.register("psychedelicraft:drying", new DryingRecipe.Serializer(200));

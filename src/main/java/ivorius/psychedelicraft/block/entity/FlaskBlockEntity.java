@@ -64,6 +64,10 @@ public class FlaskBlockEntity extends BlockEntity
         tank = new Resovoir(capacity, this);
     }
 
+    public void markForUpdate() {
+        pendingSync = true;
+    }
+
     protected int getTotalProperties() {
         return 4;
     }
@@ -80,8 +84,7 @@ public class FlaskBlockEntity extends BlockEntity
 
     @Override
     public void onIdle(Resovoir resovoir) {
-        markDirty();
-        pendingSync = true;
+        markForUpdate();
     }
 
     @Override
@@ -114,6 +117,7 @@ public class FlaskBlockEntity extends BlockEntity
 
         if (pendingSync) {
             pendingSync = false;
+            markDirty();
             world.getChunkManager().markForUpdate(getPos());
         }
     }

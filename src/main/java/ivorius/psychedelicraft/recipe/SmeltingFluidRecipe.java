@@ -68,7 +68,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PSRecipes.SMELTING_FLUID;
+        return PSRecipes.SMELTING_RECEPTICAL;
     }
 
     @Override

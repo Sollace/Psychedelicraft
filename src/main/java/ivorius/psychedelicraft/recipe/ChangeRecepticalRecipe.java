@@ -25,14 +25,14 @@ import ivorius.psychedelicraft.fluid.MutableFluidContainer;
  * Used to change the container a fluid is in without losing any of its contents.
  *
  */
-class ConvertDrinkContainerRecipe extends ShapelessRecipe {
-    public ConvertDrinkContainerRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
+class ChangeRecepticalRecipe extends ShapelessRecipe {
+    public ChangeRecepticalRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
         super(id, group, category, output, input);
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PSRecipes.CONVERT_DRINK_CONTAINER;
+        return PSRecipes.CHANGE_RECEPTICAL;
     }
 
     @Override
@@ -60,11 +60,11 @@ class ConvertDrinkContainerRecipe extends ShapelessRecipe {
         }).orElseGet(getOutput()::copy);
     }
 
-    static class Serializer implements RecipeSerializer<ConvertDrinkContainerRecipe> {
+    static class Serializer implements RecipeSerializer<ChangeRecepticalRecipe> {
         @SuppressWarnings("deprecation")
         @Override
-        public ConvertDrinkContainerRecipe read(Identifier id, JsonObject json) {
-            return new ConvertDrinkContainerRecipe(id,
+        public ChangeRecepticalRecipe read(Identifier id, JsonObject json) {
+            return new ChangeRecepticalRecipe(id,
                     JsonHelper.getString(json, "group", ""),
                     CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC),
                     ShapedRecipe.outputFromJson(JsonHelper.getObject(json, "result")),
@@ -73,8 +73,8 @@ class ConvertDrinkContainerRecipe extends ShapelessRecipe {
         }
 
         @Override
-        public ConvertDrinkContainerRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new ConvertDrinkContainerRecipe(id,
+        public ChangeRecepticalRecipe read(Identifier id, PacketByteBuf buffer) {
+            return new ChangeRecepticalRecipe(id,
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     buffer.readItemStack(),
@@ -83,7 +83,7 @@ class ConvertDrinkContainerRecipe extends ShapelessRecipe {
         }
 
         @Override
-        public void write(PacketByteBuf buffer, ConvertDrinkContainerRecipe recipe) {
+        public void write(PacketByteBuf buffer, ChangeRecepticalRecipe recipe) {
             buffer.writeString(recipe.getGroup());
             buffer.writeEnumConstant(recipe.getCategory());
             buffer.writeItemStack(recipe.getOutput());

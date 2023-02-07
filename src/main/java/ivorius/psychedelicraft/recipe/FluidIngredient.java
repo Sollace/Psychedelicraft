@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ivorius.psychedelicraft.fluid.FluidContainer;
+import ivorius.psychedelicraft.fluid.MutableFluidContainer;
+import ivorius.psychedelicraft.fluid.Resovoir;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -46,15 +48,20 @@ public record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attribu
         buffer.writeNbt(attributes);
     }
 
-    public boolean test(ItemStack stack) {
-        if (!(stack.getItem() instanceof FluidContainer)) {
-            return false;
-        }
+    public boolean test(Resovoir tank) {
+        return test(tank.getContents());
+    }
+
+    public boolean test(MutableFluidContainer container) {
         boolean result = true;
-        result &= fluid.isEmpty() || FluidContainer.of(stack).getFluid(stack) == fluid;
-        result &= !stack.hasNbt() || attributes.isEmpty() || (stack.getNbt().contains("fluid") && NbtHelper.matches(attributes, stack.getSubNbt("fluid"), true));
-        result &= level <= 0 || FluidContainer.of(stack).getLevel(stack) >= level;
+        result &= fluid.isEmpty() || container.getFluid() == fluid;
+        result &= attributes.isEmpty() || NbtHelper.matches(attributes, container.getAttributes(), true);
+        result &= level <= 0 || container.getLevel() >= level;
         return result;
+    }
+
+    public boolean test(ItemStack stack) {
+        return stack.getItem() instanceof FluidContainer container && test(container.toMutable(stack));
     }
 }
 

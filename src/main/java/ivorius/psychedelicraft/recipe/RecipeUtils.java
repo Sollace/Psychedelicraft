@@ -42,6 +42,14 @@ public interface RecipeUtils {
         return defaultedList;
     }
 
+    static DefaultedList<Ingredient> union(DefaultedList<Ingredient> list, Ingredient...additional) {
+        for (Ingredient ingredient : additional) {
+            if (ingredient.isEmpty()) continue;
+            list.add(ingredient);
+        }
+        return list;
+    }
+
     static <T> DefaultedList<T> checkLength(DefaultedList<T> ingredients) {
         if (ingredients.isEmpty()) {
             throw new JsonParseException("No ingredients for shapeless recipe");

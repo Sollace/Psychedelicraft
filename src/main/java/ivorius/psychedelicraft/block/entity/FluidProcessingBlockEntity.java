@@ -91,8 +91,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
         setTimeProcessed(0);
         setTimeNeeded(Processable.UNCONVERTABLE);
 
-        world.getChunkManager().markForUpdate(getPos());
-        markDirty();
+        markForUpdate();
     }
 
     @Override

@@ -134,8 +134,9 @@ public class SimpleFluid {
         return Text.translatable(getTranslationKey());
     }
 
+    @SuppressWarnings("deprecation")
     public boolean isSuitableContainer(FluidContainer container) {
-        return !container.asItem().getDefaultStack().isIn(PSTags.Items.BARRELS);
+        return !container.asItem().getRegistryEntry().isIn(PSTags.Items.BARRELS);
     }
 
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {

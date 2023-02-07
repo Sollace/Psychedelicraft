@@ -23,7 +23,6 @@ import net.minecraft.item.*;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.*;
@@ -132,10 +131,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
             PSCriteria.SIMPLY_MASHING.trigger(player, blockEntity.solidContents);
             Block.dropStack(world, pos, blockEntity.solidContents);
             blockEntity.solidContents = ItemStack.EMPTY;
-            blockEntity.markDirty();
-            if (!world.isClient) {
-                ((ServerWorld)world).getChunkManager().markForUpdate(pos);
-            }
+            blockEntity.markForUpdate();
             return ActionResult.SUCCESS;
         }
 
@@ -243,11 +239,14 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
                 }
             }
 
-            if (world instanceof ServerWorld sw) {
-                sw.getChunkManager().markForUpdate(pos);
-                be.markDirty();
-            }
+            be.markForUpdate();
             return true;
         }).isPresent();
+    }
+
+    @Override
+    @Nullable
+    public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
+        return world.isClient ? checkType(type, getBlockEntityType(), (w, p, s, entity) -> entity.tickAnimations()) : super.getTicker(world, state, type);
     }
 }

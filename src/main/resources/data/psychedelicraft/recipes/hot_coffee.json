@@ -1,5 +1,5 @@
 {
-  "type": "psychedelicraft:smelting_fluid",
+  "type": "psychedelicraft:smelting_receptical",
   "cookingtime": 200,
   "experience": 0.2,
   "input": {

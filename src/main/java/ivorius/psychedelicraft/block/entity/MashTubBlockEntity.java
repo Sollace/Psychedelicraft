@@ -15,19 +15,19 @@ import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.particle.BubbleParticleEffect;
-import ivorius.psychedelicraft.recipe.FillDrinkContainerRecipe;
+import ivorius.psychedelicraft.recipe.MashingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.util.MathUtils;
+import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -40,8 +40,9 @@ import net.minecraft.util.math.random.Random;
 public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     public ItemStack solidContents = ItemStack.EMPTY;
 
-    private Optional<FillDrinkContainerRecipe> expectedRecipe = Optional.empty();
+    private Optional<Stew> currentStew = Optional.empty();
 
+    private Optional<MashingRecipe> expectedRecipe = Optional.empty();
     private final Object2IntMap<Item> suppliedIngredients = new Object2IntOpenHashMap<>();
 
     public MashTubBlockEntity(BlockPos pos, BlockState state) {
@@ -75,8 +76,12 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     @Override
     public void tick(ServerWorld world) {
         super.tick(world);
-        if (!suppliedIngredients.isEmpty() && world.getTime() % 10 == 0) {
-            spawnBubbles(1 + (int)(suppliedIngredients.size() * 1.5));
+        currentStew = currentStew.filter(Stew::tick);
+    }
+
+    public void tickAnimations() {
+        if (!suppliedIngredients.isEmpty() && world.getRandom().nextFloat() < 0.33F && world.getTime() % 3 == 0) {
+            spawnBubbles(1 + (int)(suppliedIngredients.size() * 1.5), 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
         }
     }
 
@@ -94,7 +99,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         if (isValidIngredient(stack)) {
             suppliedIngredients.computeInt(stack.getItem(), (s, i) -> i == null ? 1 : (i + 1));
             checkIngredients();
-            spawnBubbles(20);
+            spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
             getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
             onIdle(getTank(Direction.UP));
             return TypedActionResult.success(stack);
@@ -104,10 +109,8 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     public boolean isValidIngredient(ItemStack stack) {
         return FluidContainer.of(stack, null) == null
-            && getTank(Direction.UP).getFluidType() == SimpleFluid.forVanilla(Fluids.WATER)
-            && world.getRecipeManager().listAllOfType(RecipeType.CRAFTING).stream()
-                .filter(recipe -> recipe.getSerializer() == PSRecipes.FILL_DRINK_CONTAINER)
-                .map(recipe -> (FillDrinkContainerRecipe)recipe)
+            && world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream()
+                .filter(recipe -> recipe.getPoolFluid().test(getTank(Direction.UP)))
                 .flatMap(recipe -> recipe.getIngredients().stream())
                 .anyMatch(ingredient -> ingredient.test(stack));
     }
@@ -118,9 +121,8 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
 
         var expectedRecipeMatchPair = expectedRecipe.map(recipe -> Map.entry(recipe, recipe.matchPartially(suppliedIngredients)));
-        var matchedRecipes = world.getRecipeManager().listAllOfType(RecipeType.CRAFTING).stream()
-                .filter(recipe -> recipe.getSerializer() == PSRecipes.FILL_DRINK_CONTAINER)
-                .map(recipe -> (FillDrinkContainerRecipe)recipe)
+        var matchedRecipes = world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream()
+                .filter(recipe -> recipe.getPoolFluid().test(getTank(Direction.UP)))
                 .map(recipe -> Map.entry(recipe, recipe.matchPartially(suppliedIngredients)))
                 .filter(pair -> pair.getValue().isMatch())
                 .toList();
@@ -134,38 +136,30 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
 
         if (matchedRecipes.size() == 1) {
-            expectedRecipeMatchPair
+            currentStew = expectedRecipeMatchPair
                 .filter(pair -> pair.getValue().isCraftable())
                 .map(Map.Entry::getKey)
-                .ifPresent(this::onCraftingSucceeded);
+                .map(Stew::new);
+            markForUpdate();
         }
-    }
-
-    private void onCraftingSucceeded(FillDrinkContainerRecipe recipe) {
-        suppliedIngredients.clear();
-        getTank(Direction.UP).getContents()
-            .withFluid(recipe.getOutputFluid().fluid())
-            .withAttributes(recipe.getOutputFluid().attributes());
-        onIdle(getTank(Direction.UP));
     }
 
     private void onCraftingFailed() {
         suppliedIngredients.clear();
         getTank(Direction.UP).getContents()
             .withFluid(PSFluids.SLURRY);
-        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_MUD_BREAK, SoundCategory.BLOCKS, 1, 1);
-        spawnBubbles(90);
+        spawnBubbles(90, 0.5F, SoundEvents.BLOCK_MUD_BREAK);
         onIdle(getTank(Direction.UP));
     }
 
-    private void spawnBubbles(int count) {
+    private void spawnBubbles(int count, float spread, SoundEvent sound) {
         Random random = getWorld().getRandom();
         Vec3d center = ParticleHelper.apply(getPos().toCenterPos(), x -> random.nextTriangular(x, 0.25));
 
         Resovoir tank = getTank(Direction.UP);
         ParticleHelper.spawnParticles(getWorld(),
                 new BubbleParticleEffect(MathUtils.unpackRgbVector(tank.getFluidType().getColor(tank.getStack())), 1F),
-                () -> ParticleHelper.apply(center, x -> random.nextTriangular(x, 0.5)).add(0, 0.5, 0),
+                () -> ParticleHelper.apply(center, x -> random.nextTriangular(x, 0.5 + spread)).add(0, 0.5, 0),
                 Suppliers.ofInstance(new Vec3d(
                         random.nextTriangular(0, 0.125),
                         random.nextTriangular(0.1, 0.125),
@@ -173,6 +167,17 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
                 )),
                 count
         );
+
+        if (getWorld() instanceof ServerWorld sw) {
+            getWorld().playSound(null, getPos(), sound, SoundCategory.BLOCKS,
+                    0.5F + getWorld().getRandom().nextFloat(),
+                    0.3F + getWorld().getRandom().nextFloat()
+            );
+        } else {
+            getWorld().playSoundAtBlockCenter(getPos(), sound, SoundCategory.BLOCKS,
+                    0.5F + getWorld().getRandom().nextFloat(),
+                    0.3F + getWorld().getRandom().nextFloat(), true);
+        }
     }
 
     @Override
@@ -226,5 +231,54 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
                 suppliedIngredients.put(item, suppliedIngredsTag.getInt(key));
             });
         });
+    }
+
+    class Stew implements NbtSerialisable {
+
+        private MashingRecipe recipe;
+        private int stewTime;
+
+        public Stew(MashingRecipe recipe) {
+            this.recipe = recipe;
+            this.stewTime = -(2 + world.getRandom().nextInt(4));
+        }
+
+        public boolean tick() {
+            markDirty();
+
+            if (recipe == null) {
+                return false;
+            }
+            if (world.getTime() % 30 == 0) {
+                spawnBubbles(9, 0.5F, SoundEvents.BLOCK_BUBBLE_COLUMN_UPWARDS_INSIDE);
+
+                if (++stewTime >= recipe.getStewTime()) {
+                    suppliedIngredients.clear();
+                    getTank(Direction.UP).getContents()
+                        .withFluid(recipe.getOutputFluid().fluid())
+                        .withAttributes(recipe.getOutputFluid().attributes());
+                    onIdle(getTank(Direction.UP));
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public void toNbt(NbtCompound compound) {
+            compound.putInt("stewTime", stewTime);
+            compound.putString("recipe", recipe.getId().toString());
+        }
+
+        @Override
+        public void fromNbt(NbtCompound compound) {
+            stewTime = compound.getInt("stewTime");
+            recipe = (MashingRecipe)Optional
+                    .ofNullable(Identifier.tryParse(compound.getString("recipe")))
+                    .flatMap(world.getRecipeManager()::get)
+                    .orElse(null);
+        }
     }
 }

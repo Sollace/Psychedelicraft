@@ -55,6 +55,9 @@ public interface PSItemGroups {
                 entries.add(PSItems.COFFEA_CHERRIES);
                 entries.add(PSItems.COFFEE_BEANS);
 
+                entries.add(PSItems.OBSIDIAN_BOTTLE);
+                entries.add(PSItems.OBSIDIAN_DUST);
+
                 entries.add(PSItems.TOBACCO_SEEDS);
                 entries.add(PSItems.TOBACCO_LEAVES);
                 entries.add(PSItems.DRIED_TOBACCO);
@@ -111,6 +114,9 @@ public interface PSItemGroups {
                 appendAllFluids(PSItems.WOODEN_MUG, entries);
                 appendAllFluids(PSItems.GLASS_CHALICE, entries);
                 appendAllFluids(PSItems.BOTTLE, entries);
+                appendAllFluids(PSItems.FILLED_BUCKET, entries);
+                appendAllFluids(PSItems.FILLED_BOWL, entries);
+                appendAllFluids(PSItems.FILLED_GLASS_BOTTLE, entries);
             })
             .build();
     ItemGroup weaponsTab = FabricItemGroup.builder(Psychedelicraft.id("weapons"))

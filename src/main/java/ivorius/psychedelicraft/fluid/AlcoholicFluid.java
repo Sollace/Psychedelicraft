@@ -4,7 +4,6 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -183,11 +182,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         });
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isSuitableContainer(FluidContainer container) {
-        return container == PSItems.GLASS_CHALICE
-            || container == PSItems.WOODEN_MUG
-            || container.asItem().getDefaultStack().isIn(PSTags.Items.BOTTLES);
+        return container.asItem().getRegistryEntry().isIn(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS);
     }
 
     public static class Settings extends DrugFluid.Settings {

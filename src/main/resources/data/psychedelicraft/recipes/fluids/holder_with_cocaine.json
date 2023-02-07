@@ -1,7 +1,7 @@
 {
-  "type": "psychedelicraft:fill_drink_container",
+  "type": "psychedelicraft:fill_receptical",
+  "receptical": { "tag": "psychedelicraft:drug_recepticals" },
   "ingredients": [
-    { "tag": "psychedelicraft:drink_holder" },
     { "item": "minecraft:water_bucket" },
     { "item": "psychedelicraft:cocaine_powder" }
   ],

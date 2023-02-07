@@ -1,8 +1,11 @@
 {
-  "type": "psychedelicraft:fill_drink_container",
+  "type": "psychedelicraft:mashing",
+  "stew_time": 0,
+  "base_fluid": {
+    "fluid": "minecraft:water"
+  },
   "ingredients": [
-    { "item": "psychedelicraft:mash_tub" },
-    { "item": "minecraft:water_bucket" },
+    { "tag": "psychedelicraft:honey" },
     { "tag": "psychedelicraft:honey" },
     { "tag": "psychedelicraft:honey" },
     { "tag": "psychedelicraft:honey" },

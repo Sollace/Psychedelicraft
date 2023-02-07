@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -14,7 +13,6 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
 
 import java.util.*;
 
@@ -22,65 +20,45 @@ import com.google.gson.*;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import ivorius.psychedelicraft.fluid.FluidContainer;
 
 /**
- * Created from "RecipeFillDrink" by Sollace on 5 Jan 2023
- * Original by lukas on 21.10.14.
- * Recipe that takes as a config:
- * - Input Ingrediences (unshaped)
- * - Input Container
- * - Preconfigured fluid+level
+ * Created from by Sollace on 7 Feb 2023
  *
- * Outputs:
- * - Original Container filled with assigned fluid and level
- *
- *
- *  {
- *    "type": "psychedelicraft:fill_drink_container",
- *    "ingredients": [
- *       { "item": "..." },
- *       ...
- *    ],
- *    "result": {
- *      "fluid": "psychedelicraft:coffee",
- *      "level": 500,
- *      "attributes": {}
- *    }
- *  }
- *
+ * Used by the mash table to produce a particular fluid from items dropped in.
  */
-public class FillDrinkContainerRecipe extends ShapelessRecipe {
-    private final FluidIngredient output;
+public class MashingRecipe extends FillRecepticalRecipe {
 
-    public FillDrinkContainerRecipe(Identifier id, String group, CraftingRecipeCategory category, FluidIngredient output, DefaultedList<Ingredient> input) {
-        super(id, group, category, ItemStack.EMPTY, input);
-        this.output = output;
+    private final int stewTime;
+
+    private final FluidIngredient fluid;
+
+    public MashingRecipe(Identifier id, String group, CraftingRecipeCategory category, FluidIngredient output, FluidIngredient fluid, DefaultedList<Ingredient> input, int stewTime) {
+        super(id, group, category, output, input);
+        this.fluid = fluid;
+        this.stewTime = stewTime;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PSRecipes.FILL_DRINK_CONTAINER;
+        return PSRecipes.MASHING;
     }
 
     @Override
-    public boolean matches(CraftingInventory inventory, World world) {
-        RecipeMatcher recipeMatcher = new RecipeMatcher();
-        return RecipeUtils.recepticals(inventory).count() == 1
-                && RecipeUtils.stacks(inventory).filter(stack -> {
-                    recipeMatcher.addInput(stack, 1);
-                    return true;
-                }).count() == getIngredients().size()
-                && recipeMatcher.match(this, null);
+    public RecipeType<?> getType() {
+        return PSRecipes.MASHING_TYPE;
+    }
+
+    public int getStewTime() {
+        return stewTime;
+    }
+
+    public FluidIngredient getPoolFluid() {
+        return fluid;
     }
 
     public MatchResult matchPartially(Object2IntMap<Item> inputs) {
         final List<Ingredient> expectedInputs = new ArrayList<>(getIngredients());
         final Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(inputs);
-
-        expectedInputs.removeIf(ingredient -> {
-            return Arrays.stream(ingredient.getMatchingStacks()).anyMatch(stack -> FluidContainer.of(stack, null) != null);
-        });
 
         for (Item item : inputs.keySet()) {
             ItemStack stack = item.getDefaultStack();
@@ -115,50 +93,43 @@ public class FillDrinkContainerRecipe extends ShapelessRecipe {
         return MatchResult.of(unmatchedInputs.isEmpty(), expectedInputs.isEmpty());
     }
 
-    @Override
-    public ItemStack craft(CraftingInventory inventory) {
-        return RecipeUtils.recepticals(inventory).findFirst().map(receptical -> {
-            ItemStack stack = output.fluid().getDefaultStack(receptical.getKey(), output.level() <= 0 ? receptical.getKey().getMaxCapacity(receptical.getValue()) : output.level());
-            stack.getOrCreateSubNbt("fluid").copyFrom(output.attributes());
-            return stack;
-        }).orElse(ItemStack.EMPTY);
-    }
-
-    public FluidIngredient getOutputFluid() {
-        return output;
-    }
-
-    static class Serializer implements RecipeSerializer<FillDrinkContainerRecipe> {
+    static class Serializer implements RecipeSerializer<MashingRecipe> {
         @SuppressWarnings("deprecation")
         @Override
-        public FillDrinkContainerRecipe read(Identifier id, JsonObject json) {
-            return new FillDrinkContainerRecipe(id,
+        public MashingRecipe read(Identifier id, JsonObject json) {
+            return new MashingRecipe(id,
                     JsonHelper.getString(json, "group", ""),
                     CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC),
                     FluidIngredient.fromJson(JsonHelper.getObject(json, "result")),
-                    RecipeUtils.checkLength(RecipeUtils.getIngredients(JsonHelper.getArray(json, "ingredients")))
+                    FluidIngredient.fromJson(JsonHelper.getObject(json, "base_fluid")),
+                    RecipeUtils.getIngredients(JsonHelper.getArray(json, "ingredients")),
+                    JsonHelper.getInt(json, "stew_time", 0)
             );
         }
 
         @Override
-        public FillDrinkContainerRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new FillDrinkContainerRecipe(id,
+        public MashingRecipe read(Identifier id, PacketByteBuf buffer) {
+            return new MashingRecipe(id,
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     new FluidIngredient(buffer),
-                    buffer.readCollection(i -> DefaultedList.ofSize(i, Ingredient.EMPTY), Ingredient::fromPacket)
+                    new FluidIngredient(buffer),
+                    buffer.readCollection(i -> DefaultedList.ofSize(i, Ingredient.EMPTY), Ingredient::fromPacket),
+                    buffer.readVarInt()
             );
         }
 
         @Override
-        public void write(PacketByteBuf buffer, FillDrinkContainerRecipe recipe) {
+        public void write(PacketByteBuf buffer, MashingRecipe recipe) {
             buffer.writeString(recipe.getGroup());
             buffer.writeEnumConstant(recipe.getCategory());
-            recipe.output.write(buffer);
+            recipe.getOutputFluid().write(buffer);
+            recipe.getPoolFluid().write(buffer);
             buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
+            buffer.writeVarInt(recipe.getStewTime());
         }
-
     }
+
 
     public enum MatchResult {
         NONE,
