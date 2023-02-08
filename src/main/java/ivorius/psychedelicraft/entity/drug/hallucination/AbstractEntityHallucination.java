@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
 
 import ivorius.psychedelicraft.client.render.PassThroughVertexConsumer;
+import ivorius.psychedelicraft.client.render.RenderLayerUtil;
 
 public abstract class AbstractEntityHallucination extends Hallucination {
 
@@ -96,31 +97,24 @@ public abstract class AbstractEntityHallucination extends Hallucination {
         matrices.scale(scale, scale, scale);
         matrices.translate(-x, -y, -z);
 
-        renderModel(matrices, vertices, x, y, z, pitch, yaw, tickDelta);
+        renderModel(matrices, layer -> {
+            return PassThroughVertexConsumer.of(vertices.getBuffer(getRenderLayer(layer)), colourSpace);
+        }, x, y, z, pitch, yaw, tickDelta);
         matrices.pop();
+    }
+
+    protected RenderLayer getRenderLayer(RenderLayer layer) {
+        var renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity);
+        if (renderer != null) {
+            return RenderLayerUtil.getTexture(layer).map(RenderLayer::getEntityTranslucent).orElseGet(RenderLayer::getTranslucent);
+        }
+        return layer;
     }
 
     protected void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, double x, double y, double z, float pitch, float yaw, float tickDelta) {
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadows(false);
-        dispatcher.render(
-                entity,
-                x, y, z, yaw, tickDelta, matrices,
-                layer -> {
-                    var dispatcher2 = MinecraftClient.getInstance().getEntityRenderDispatcher();
-
-                    var renderer = dispatcher2.getRenderer(entity);
-                    if (renderer != null) {
-                        layer = RenderLayer.getEntityTranslucent(renderer.getTexture(entity));
-                    }
-
-                    return PassThroughVertexConsumer.of(
-                            vertices.getBuffer(layer),
-                            colourSpace
-                    );
-                },
-                dispatcher.getLight(entity, tickDelta)
-        );
+        dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, vertices, dispatcher.getLight(entity, tickDelta));
         dispatcher.setRenderShadows(true);
     }
 }

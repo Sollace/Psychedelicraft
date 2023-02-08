@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RastaHeadModel;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityType;
@@ -20,6 +21,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 
 public class RastaHeadHallucination extends AbstractEntityHallucination {
     private static final Identifier TEXTURE = Psychedelicraft.id("textures/drug/cannabis/rasta_head_hallucination.png");
@@ -28,16 +30,26 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
 
     private final Model modelRastaHead = new RastaHeadModel();
 
+    private final float distance;
+
+    private final float planeRotationX;
+    private final float planeRotationZ;
+
     public RastaHeadHallucination(PlayerEntity playerEntity) {
         super(playerEntity);
-        this.maxAge = (playerEntity.getRandom().nextInt(59) + 120) * 20;
-        this.scale = 1;
+        Random random = playerEntity.getRandom();
+        maxAge = (random.nextInt(59) + 120) * 20;
+        scale = 1 + random.nextFloat() / 2F;
+        distance = 2 + random.nextFloat() * 5;
 
-        this.entity = EntityType.PIG.create(playerEntity.world);
-        this.entity.setPosition(playerEntity.getPos());
-        this.lookControl = ((MobEntity)entity).getLookControl();
+        planeRotationX = random.nextFloat() * MathHelper.HALF_PI;
+        planeRotationZ = random.nextFloat() * MathHelper.HALF_PI;
 
-        this.chatBot = Optional.of(new ChatBot(new RastaheadPersonality(), playerEntity));
+        entity = EntityType.PIG.create(playerEntity.world);
+        entity.setPosition(playerEntity.getPos());
+        lookControl = ((MobEntity)entity).getLookControl();
+
+        chatBot = Optional.of(new ChatBot(new RastaheadPersonality(), playerEntity));
     }
 
     @Override
@@ -45,13 +57,15 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
         this.lookControl.lookAt(player);
         this.lookControl.tick();
 
-        double radius = 5;
         int seed = player.age + (entity.getId() * 3);
-        Vec3d wanted = player.getEyePos().add(
-            MathHelper.sin(seed / 50F) * radius,
-            MathHelper.sin(seed / 10F) + (entity.getId() % 5) - 1,
-            MathHelper.cos(seed / 50F) * radius
-        );
+
+        Vec3d offset = new Vec3d(
+                MathHelper.sin(seed / 50F) * distance,
+                MathHelper.sin(seed / 10F) + (entity.getId() % 5) - 1,
+                MathHelper.cos(seed / 50F) * distance
+        ).rotateY(planeRotationX).rotateZ(planeRotationZ);
+
+        Vec3d wanted = player.getEyePos().add(offset);
 
         double totalDist = wanted.distanceTo(entity.getPos());
 
@@ -61,6 +75,11 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
 
         entity.setVelocity(vel);
         entity.setPosition(entity.getPos().add(vel));
+    }
+
+    @Override
+    protected RenderLayer getRenderLayer(RenderLayer layer) {
+        return layer;
     }
 
     @Override
