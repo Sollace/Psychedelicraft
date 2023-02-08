@@ -11,8 +11,10 @@ import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
+import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
@@ -21,6 +23,7 @@ import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -30,6 +33,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.RaycastContext;
@@ -44,6 +48,17 @@ public class FilledBucketItem extends Item implements FluidContainer {
 
     public FilledBucketItem(Settings settings) {
         super(settings.recipeRemainder(Items.BUCKET));
+        DispenserBlock.registerBehavior(this, new ItemDispenserBehavior(){
+            @Override
+            public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+                BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+                ServerWorld world = pointer.getWorld();
+                if (placeFluid(getFluid(stack).getPhysical().getFluid(), null, world, blockPos, null)) {
+                    return new ItemStack(asEmpty());
+                }
+                return super.dispenseSilently(pointer, stack);
+            }
+        });
     }
 
     @Override
@@ -66,7 +81,6 @@ public class FilledBucketItem extends Item implements FluidContainer {
 
         return Items.BUCKET.getName(stack);
     }
-
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
