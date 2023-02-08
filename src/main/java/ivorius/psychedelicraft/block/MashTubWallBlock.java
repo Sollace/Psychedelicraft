@@ -24,7 +24,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -67,7 +66,7 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
 
     @Override
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        return getMasterPosition(world, pos).map(center -> {
+        return getValidMasterPosition(world, pos).map(center -> {
             BlockState masterState = world.getBlockState(center);
             return masterState.getBlock().getPickStack(world, center, masterState);
         }).orElse(ItemStack.EMPTY);
@@ -75,14 +74,14 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return getMasterPosition(world, pos)
+        return getValidMasterPosition(world, pos)
                 .map(center -> MashTubBlock.COLLISSION_SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ()))
                 .orElseGet(VoxelShapes::empty);
     }
 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-        getMasterPosition(world, pos).ifPresent(p -> {
+        getValidMasterPosition(world, pos).ifPresent(p -> {
             BlockState masterState = world.getBlockState(p);
             masterState.getBlock().randomDisplayTick(masterState, world, pos, random);
         });
@@ -90,14 +89,14 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        return getMasterPosition(world, pos).map(p -> {
+        return getValidMasterPosition(world, pos).map(p -> {
             return world.getBlockState(p).onUse(world, player, hand, new BlockHitResult(hit.getPos(), hit.getSide(), p, hit.isInsideBlock()));
         }).orElse(ActionResult.PASS);
     }
 
     @Override
     public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-        return getMasterPosition(world, pos).filter(center -> {
+        return getValidMasterPosition(world, pos).filter(center -> {
             BlockState masterState = world.getBlockState(center);
             return masterState.getBlock() instanceof FluidFillable fillable && fillable.canFillWithFluid(world, center, masterState, fluid);
         }).isPresent();
@@ -105,16 +104,10 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
 
     @Override
     public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
-        return getMasterPosition(world, pos).filter(center -> {
+        return getValidMasterPosition(world, pos).filter(center -> {
             BlockState masterState = world.getBlockState(center);
             return masterState.getBlock() instanceof FluidFillable fillable && fillable.tryFillWithFluid(world, center, masterState, fluidState);
         }).isPresent();
-    }
-
-    @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-
-        return state;
     }
 
     @Deprecated
@@ -133,6 +126,10 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
 
     private Optional<BlockPos> getMasterPosition(BlockView world, BlockPos pos) {
         return world.getBlockEntity(pos, PSBlockEntities.MASH_TUB_EDGE).map(MasterPosition::getMasterPos).filter(p -> !p.equals(pos));
+    }
+
+    private Optional<BlockPos> getValidMasterPosition(BlockView world, BlockPos pos) {
+        return getMasterPosition(world, pos).filter(p -> world.getBlockState(p).isOf(PSBlocks.MASH_TUB));
     }
 
     @Override

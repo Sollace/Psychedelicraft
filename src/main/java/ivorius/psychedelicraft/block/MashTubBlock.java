@@ -5,18 +5,16 @@
 
 package ivorius.psychedelicraft.block;
 
-import java.util.*;
-
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.item.MashTubItem;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.fluid.*;
 import net.minecraft.item.*;
@@ -133,32 +131,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        return getPlacementPosition(world, state, pos, false).isPresent();
-    }
-
-    private Optional<BlockPos> getPlacementPosition(WorldView world, BlockState state, BlockPos pos, boolean premitOverlap) {
-        return BlockPos.streamOutwards(pos, 1, 0, 1)
-                .filter(center -> BlockPos.streamOutwards(center, 1, 0, 1).allMatch(p -> {
-                    BlockState s = world.getBlockState(p);
-                    return world.isAir(p) || s.isReplaceable() || (premitOverlap && s.isOf(this));
-                }))
-                .findFirst()
-                .map(p -> p.toImmutable());
-    }
-
-    @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        getPlacementPosition(world, state, pos, true).ifPresent(center -> {
-            world.setBlockState(center, getDefaultState(), Block.NOTIFY_ALL);
-            BlockPos.iterateOutwards(center, 1, 0, 1).forEach(p -> {
-                if (!p.equals(center)) {
-                    world.setBlockState(p, PSBlocks.MASH_TUB_EDGE.getDefaultState(), Block.NOTIFY_ALL);
-                    world.getBlockEntity(p, PSBlockEntities.MASH_TUB_EDGE).ifPresent(be -> be.setMasterPos(center));
-                }
-            });
-
-            super.onPlaced(world, center, state, placer, stack);
-        });
+        return MashTubItem.findPlacementPosition(world, pos).isPresent();
     }
 
     @Override
