@@ -13,6 +13,7 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 /**
@@ -29,12 +30,14 @@ public class HallucinateCommand {
                 Identifier type = IdentifierArgumentType.getIdentifier(ctx, "type");
                 ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
                 Channel.HALLUCINATE.sendToPlayer(new MsgHallucinate(player.getId(), type), player);
+                ctx.getSource().sendFeedback(Text.translatable("commands.hallucinate.success"), true);
                 return 0;
             })
             .then(CommandManager.argument("target", EntityArgumentType.players()).executes(ctx -> {
                 Identifier type = IdentifierArgumentType.getIdentifier(ctx, "type");
                 ServerPlayerEntity player = EntityArgumentType.getPlayer(ctx, "target");
                 Channel.HALLUCINATE.sendToPlayer(new MsgHallucinate(player.getId(), type), player);
+                ctx.getSource().sendFeedback(Text.translatable("commands.hallucinate.success"), true);
                 return 0;
             }))));
     }

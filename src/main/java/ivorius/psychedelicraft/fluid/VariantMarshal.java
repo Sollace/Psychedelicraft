@@ -78,7 +78,7 @@ final class VariantMarshal {
 
         ViewBasedFluidContainer(ItemStack stack) {
             this.item = stack.getItem();
-            this.blankView = Suppliers.memoize(() -> toMutable(stack.copy()));
+            this.blankView = Suppliers.memoize(() -> toMutable(item.getDefaultStack()));
             empty = Suppliers.memoize(() -> toMutable(stack.copy()).drain(getMaxCapacity()).asStack().getItem());
         }
 

@@ -2,8 +2,10 @@ package ivorius.psychedelicraft.entity.drug.hallucination;
 
 import java.util.*;
 
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 
 public class ChatBot {
@@ -37,12 +39,24 @@ public class ChatBot {
     }
 
     private void emitMessage(String sender, Text message) {
-        player.sendMessage(message);
-        incomingMessageQueue.add(() -> onMessageReceived(sender, message));
+        HallucinationManager hallucinations = DrugProperties.of(player).getHallucinations();
+
+        if (hallucinations.getEntities().getForcedAlpha(1) > 0 || hallucinations.getHallucinationStrength(1) > 0) {
+            player.sendMessage(message);
+            incomingMessageQueue.add(() -> {
+                getResponsiveCharacters(sender, message).forEach(character -> character.wakeUp(sender, message, false));
+            });
+
+            if (player.world.getRandom().nextFloat() < 0.3F || message.getString().contains("!")) {
+                player.animateDamage();
+                player.playSound(SoundEvents.ENTITY_PLAYER_HURT, 1, 1);
+                player.takeKnockback(0.2F, player.world.getRandom().nextFloat(), player.world.getRandom().nextFloat());
+            }
+        }
     }
 
     public void onMessageReceived(String sender, Text message) {
-        getResponsiveCharacters(sender, message).forEach(character -> character.wakeUp(message));
+        getResponsiveCharacters(sender, message).forEach(character -> character.wakeUp(sender, message, true));
     }
 
     private List<Character> getResponsiveCharacters(String sender, Text message) {
@@ -62,7 +76,7 @@ public class ChatBot {
         private int idleTicks;
         private int sleepTicks;
 
-        private final Queue<Text> messageQueue = new LinkedList<>();
+        private final Queue<DelayedMessage> messageQueue = new LinkedList<>();
 
         private final Text name = personality.getName(player.getRandom());
         private final MessageType.Parameters parameters = MessageType.params(MessageType.CHAT, player.world.getRegistryManager(), name);
@@ -78,26 +92,50 @@ public class ChatBot {
                         return true;
                     }
 
-                    personality.supplyMessage(player.getRandom(), messageQueue::add);
-                    sleepTicks = player.getRandom().nextBetween(2, 20);
+                    personality.supplyMessage(player.getRandom(), line -> {
+                        messageQueue.add(new DelayedMessage(line));
+                    });
+                    sleepTicks = player.getRandom().nextBetween(5, 100);
                     idleTicks = 0;
                 }
             }
 
-            Text message = messageQueue.poll();
+            DelayedMessage message = messageQueue.peek();
             if (message != null) {
-                emitMessage(name.getString(), parameters.applyChatDecoration(message));
+                if (message.tick()) {
+                    messageQueue.poll();
+                }
                 sleepTicks = player.getRandom().nextBetween(2, 20);
             }
 
             return false;
         }
 
-        public void wakeUp(Text message) {
+        public void wakeUp(String sender, Text message, boolean fromPlayer) {
             messageQueue.clear();
-            personality.supplyMessage(player.getRandom(), messageQueue::add);
+            personality.onMessageReceived(sender, message, player.getRandom(), fromPlayer, line -> {
+                messageQueue.add(new DelayedMessage(line));
+            });
             idleTicks = 0;
             sleepTicks = player.getRandom().nextBetween(1, 5);
+        }
+
+        class DelayedMessage {
+            Text message;
+            int delay;
+
+            public DelayedMessage(Text message) {
+                this.message = message;
+                this.delay = player.getRandom().nextBetween(2, 20);
+            }
+
+            public boolean tick() {
+                if (--delay <= 0) {
+                    emitMessage(name.getString(), parameters.applyChatDecoration(message));
+                    return true;
+                }
+                return false;
+            }
         }
     }
 }

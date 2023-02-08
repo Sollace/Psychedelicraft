@@ -25,7 +25,7 @@ public record MsgHallucinate (
     @Override
     public void handle(PlayerEntity sender) {
         DrugProperties.of(sender.world.getEntityById(entityId)).ifPresent(properties -> {
-            properties.getHallucinations().getEntities().addHallucination(type);
+            properties.getHallucinations().getEntities().addHallucination(type, true);
         });
     }
 }
