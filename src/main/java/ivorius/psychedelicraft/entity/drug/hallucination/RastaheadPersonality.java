@@ -12,17 +12,37 @@ import java.util.function.Consumer;
 public class RastaheadPersonality implements Personality {
     private static final String[][] RANDOM_STATEMENTS = {
             {"Did you ever notice, like...", "Sorry, I forgot what I was trying to say"},
-            {"Want another joint? I got so many, like, 2 or 3 more..."}
+            {"Want another joint? I got so many, like, 2 or 3 more..."},
+            {"Duuuude...", "DuuuuuuuuuuuuuuuuuuDe!", "DuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuDe!", "Yo dudeliodude!"},
+            {"Woah, like, woah", "That's, like, so, rad, dude"},
+            {"You know what would go excellently with this?", "DIRT"},
+            {"Like, hear me out","Just this once","Come on, come oon"},
+            {"I am SO high right now","Look at me flyyyyy..."},
+            {"OoOoOOowOoOoOo", "SpooOoOoOoOky floating Head"},
+            {"Creeper!"},
+            {"Behind you"},
+            {"Get him"},
+            {"Ahahahahaaaa"},
+            {"My minds is, like, so opened right now", "I'm like a can of beans","If you... yknow..Used a can opener on me","I'm like. My mind is like an opened can of beans","Like a can of beans you opened"},
+            {"You not gonna eat my beans, are you?"},
+            {"Don't look now, but I think this guy's a little bit sus"},
+            {"It's aaaaalll natural, babey"}
     };
 
     private static final String[][] RESPONSES_TO_PLAYER = {
             {"Haha, you're so right."},
             {"Haha, he's so right."},
-            {"Yes."}
+            {"Yes."},
+            {"Great idea"},
+            {"Wooooooooah", "That's, like, dued", "Are you, like, a genie or something?"},
+            {"Wooooooah"},
+            {"My minds is, like, so opened right now"}
     };
 
     private static final String[][] RESPONSES_OTHER = {
-            {"Haha, he's so right."}
+            {"Haha, he's so right."},
+            {"This guy, I like this guy"},
+            {"Don't look now, but I think this guy's a little sus"}
     };
 
     @Override
@@ -36,38 +56,19 @@ public class RastaheadPersonality implements Personality {
             responseSender.accept(Text.literal(line));
         }
     }
-/*
+
     @Override
-    public void updateIdle() {
-        if (random.nextInt(300) == 0) {
-            addMessagesToSendQueue();
-        }
-    }
-*/
-    @Override
-    public void onMessageReceived(Text text, Random random, boolean fromPlayer, Consumer<Text> responseSender) {
-        String message = text.getString();
-        int tagEndIndex = message.indexOf(">");
-        boolean hasSender = message.indexOf("<") == 0 && tagEndIndex > 0;
-
-        if (hasSender) {
-            String sender = message.substring(1, tagEndIndex);
-
-            boolean responded = false;
-
-            if (!responded && random.nextFloat() < 0.4f) {
-                if (fromPlayer) {
-                    for (String response : RESPONSES_TO_PLAYER[random.nextInt(RESPONSES_TO_PLAYER.length)]) {
-                        responseSender.accept(Text.literal(response));
-                    }
-
-                } else if (!sender.equals("Reggie")) {
-                    for (String response : RESPONSES_OTHER[random.nextInt(RESPONSES_OTHER.length)]) {
-                        responseSender.accept(Text.literal(response));
-                    }
+    public void onMessageReceived(String sender, Text message, Random random, boolean fromPlayer, Consumer<Text> responseSender) {
+        if (random.nextFloat() < 0.4f) {
+            if (fromPlayer) {
+                for (String response : RESPONSES_TO_PLAYER[random.nextInt(RESPONSES_TO_PLAYER.length)]) {
+                    responseSender.accept(Text.literal(response));
                 }
 
-                responded = true;
+            } else {
+                for (String response : RESPONSES_OTHER[random.nextInt(RESPONSES_OTHER.length)]) {
+                    responseSender.accept(Text.literal(response));
+                }
             }
         }
     }

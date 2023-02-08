@@ -10,5 +10,5 @@ public interface Personality {
 
     void supplyMessage(Random random, Consumer<Text> responseSender);
 
-    void onMessageReceived(Text message, Random random, boolean fromPlayer, Consumer<Text> responseSender);
+    void onMessageReceived(String sender, Text message, Random random, boolean fromPlayer, Consumer<Text> responseSender);
 }
