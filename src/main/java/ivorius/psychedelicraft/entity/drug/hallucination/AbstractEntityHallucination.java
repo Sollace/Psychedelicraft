@@ -11,13 +11,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
-
+import net.minecraft.util.math.random.Random;
 import ivorius.psychedelicraft.client.render.PassThroughVertexConsumer;
 import ivorius.psychedelicraft.client.render.RenderLayerUtil;
 
 public abstract class AbstractEntityHallucination extends Hallucination {
 
-    protected Entity entity;
+    protected final Random random;
+    protected final Entity entity;
 
     protected int maxAge;
 
@@ -30,8 +31,10 @@ public abstract class AbstractEntityHallucination extends Hallucination {
         parent.color(color[0], color[1], color[2], dAlpha);
     });
 
-    public AbstractEntityHallucination(PlayerEntity player) {
+    public AbstractEntityHallucination(PlayerEntity player, Entity entity) {
         super(player);
+        this.random = player.getRandom();
+        this.entity = entity;
     }
 
     @Override

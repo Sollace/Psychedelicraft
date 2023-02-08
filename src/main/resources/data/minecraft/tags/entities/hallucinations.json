@@ -1,0 +1,27 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:creeper",
+    "minecraft:zombie",
+    "minecraft:blaze",
+    "minecraft:enderman",
+    "minecraft:cow",
+    "minecraft:sheep",
+    "minecraft:pig",
+    "minecraft:ocelot",
+    "minecraft:wolf",
+    "minecraft:silverfish",
+    "minecraft:villager",
+    "minecraft:iron_golem",
+    "minecraft:snow_golem",
+    "minecraft:horse",
+    "minecraft:allay",
+    "minecraft:bee",
+    "minecraft:axolotl",
+    "minecraft:camel",
+    "minecraft:dolphin",
+    "minecraft:wither",
+    "minecraft:warden",
+    "minecraft:glow_squid"
+  ]
+}

@@ -21,7 +21,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
-import net.minecraft.util.math.random.Random;
 
 public class RastaHeadHallucination extends AbstractEntityHallucination {
     private static final Identifier TEXTURE = Psychedelicraft.id("textures/drug/cannabis/rasta_head_hallucination.png");
@@ -36,8 +35,8 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
     private final float planeRotationZ;
 
     public RastaHeadHallucination(PlayerEntity playerEntity) {
-        super(playerEntity);
-        Random random = playerEntity.getRandom();
+        super(playerEntity, EntityType.PIG.create(playerEntity.world));
+
         maxAge = (random.nextInt(59) + 120) * 20;
         scale = 1 + random.nextFloat() / 2F;
         distance = 2 + random.nextFloat() * 5;
@@ -45,7 +44,6 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
         planeRotationX = random.nextFloat() * MathHelper.HALF_PI;
         planeRotationZ = random.nextFloat() * MathHelper.HALF_PI;
 
-        entity = EntityType.PIG.create(playerEntity.world);
         entity.setPosition(playerEntity.getPos());
         lookControl = ((MobEntity)entity).getLookControl();
 

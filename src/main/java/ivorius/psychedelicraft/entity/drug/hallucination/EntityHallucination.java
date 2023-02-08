@@ -5,59 +5,48 @@
 
 package ivorius.psychedelicraft.entity.drug.hallucination;
 
+import ivorius.psychedelicraft.PSTags;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.*;
-import net.minecraft.util.math.random.Random;
 
 public class EntityHallucination extends AbstractEntityHallucination {
-    public static final EntityType<?>[] ENTITIES = new EntityType<?>[] {
-        EntityType.CREEPER,
-        EntityType.ZOMBIE,
-        EntityType.BLAZE,
-        EntityType.ENDERMAN,
-        EntityType.COW,
-        EntityType.SHEEP,
-        EntityType.PIG,
-        EntityType.OCELOT,
-        EntityType.WOLF,
-        EntityType.SILVERFISH,
-        EntityType.VILLAGER,
-        EntityType.IRON_GOLEM,
-        EntityType.SNOW_GOLEM,
-        EntityType.HORSE
-    };
+    private float rotationYawPlus;
 
-    public float rotationYawPlus;
-
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public EntityHallucination(PlayerEntity player) {
-        super(player);
-        Random rand = player.getRandom();
+        super(player, player.world.getRegistryManager().get(RegistryKeys.ENTITY_TYPE)
+                .getOrCreateEntryList(PSTags.Entities.HALLUCINATIONS)
+                .getRandom(player.world.random)
+                .map(RegistryEntry::value)
+                .orElse((EntityType)EntityType.PIG)
+                .create(player.world));
 
-        entity = ENTITIES[player.world.random.nextInt(ENTITIES.length)].create(player.world);
         entity.setPosition(
-                player.getX() + rand.nextDouble() * 50D - 25D,
-                player.getY() + rand.nextDouble() * 10D - 5D,
-                player.getZ() + rand.nextDouble() * 50D - 25D
+                player.getX() + random.nextDouble() * 50D - 25D,
+                player.getY() + random.nextDouble() * 10D - 5D,
+                player.getZ() + random.nextDouble() * 50D - 25D
         );
         entity.setVelocity(
-                (rand.nextDouble() - 0.5D) / 10D,
-                (rand.nextDouble() - 0.5D) / 10D,
-                (rand.nextDouble() - 0.5D) / 10D
+                (random.nextDouble() - 0.5D) / 10D,
+                (random.nextDouble() - 0.5D) / 10D,
+                (random.nextDouble() - 0.5D) / 10D
         );
-        entity.setYaw(rand.nextInt(360));
-        maxAge = (rand.nextInt(59) + 3) * 20;
-        rotationYawPlus = rand.nextFloat() * 10 * (rand.nextBoolean() ? 0 : 1);
+        entity.setYaw(random.nextInt(360));
+        maxAge = (random.nextInt(59) + 3) * 20;
+        rotationYawPlus = random.nextFloat() * 10 * (random.nextBoolean() ? 0 : 1);
 
         color = new float[] {
-            rand.nextFloat(),
-            rand.nextFloat(),
-            rand.nextFloat()
+            random.nextFloat(),
+            random.nextFloat(),
+            random.nextFloat()
         };
 
         scale = 1;
-        while (rand.nextFloat() < 0.3F) {
-            scale *= rand.nextFloat() * 2.7f + 0.3F;
+        while (random.nextFloat() < 0.3F) {
+            scale *= random.nextFloat() * 2.7f + 0.3F;
         }
         scale = Math.min(scale, 20);
     }

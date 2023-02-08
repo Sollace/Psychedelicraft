@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft;
 
 import net.minecraft.block.*;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
@@ -27,6 +28,14 @@ public interface PSTags {
 
         static TagKey<Item> of(String name) {
             return TagKey.of(RegistryKeys.ITEM, Psychedelicraft.id(name));
+        }
+    }
+
+    interface Entities {
+        TagKey<EntityType<?>> HALLUCINATIONS = of("hallucinations");
+
+        static TagKey<EntityType<?>> of(String name) {
+            return TagKey.of(RegistryKeys.ENTITY_TYPE, Psychedelicraft.id(name));
         }
     }
 
