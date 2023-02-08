@@ -15,14 +15,12 @@ public class PSConfig {
         public boolean enableRiftJars = false;
         public Generation worldGeneration = new Generation();
         public FluidProperties fluidAttributes = new FluidProperties();
-        //public MessageDistortion messageDistortion = new MessageDistortion();
+        public MessageDistortion messageDistortion = new MessageDistortion();
 
-        // TODO: (Sollace) reimplement message distortion
-        /*
         public static class MessageDistortion {
             public boolean incoming = true;
             public boolean outgoing = true;
-        }*/
+        }
 
         public static class FluidProperties {
             static TickInfo DEFAULT = new TickInfo(40, 40, 30, 30);

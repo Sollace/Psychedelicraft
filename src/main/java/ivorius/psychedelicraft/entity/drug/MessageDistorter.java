@@ -5,10 +5,10 @@
 
 package ivorius.psychedelicraft.entity.drug;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
-
-import java.util.Random;
+import net.minecraft.util.math.random.Random;
+import ivorius.psychedelicraft.Psychedelicraft;
 
 /**
  * Created by lukas on 22.05.14.
@@ -16,42 +16,58 @@ import java.util.Random;
 public class MessageDistorter {
     public static final MessageDistorter INSTANCE = new MessageDistorter();
 
- // TODO: (Sollace) reimplement chat distortion
     private static final String[] FILLER_WORDS = {
             ", like, ", "... like, ", ", uhm, ", ", uhhhh, "
     };
-    private static final String[] START_FILLTER_WORDS = {
+    private static final String[] HICS = { "*hic*", "*hiuc*", "*burp*", "*h-cup*", "*hup*" };
+    private static final String[] START_FILLER_WORDS = {
             "Dude, ", "Dood, ", "Dewd, ", "Dude, like, ", "Dood, like, ", "Dewd, like, ", "Yeah... ", "And, "
     };
 
-    public String distortIncomingMessage(DrugProperties drugProperties, Entity entity, Random random, String message) {
-        return message;
+    public String distortIncomingMessage(PlayerEntity player, String message) {
+        if (player == null || !Psychedelicraft.getConfig().balancing.messageDistortion.incoming) {
+            return message;
+        }
+        return distortMessage(DrugProperties.of(player), message);
     }
 
-    public String distortOutgoingMessage(DrugProperties drugProperties, Entity entity, Random random, String message) {
+    public String distortOutgoingMessage(PlayerEntity player, String message) {
+        if (player == null || !Psychedelicraft.getConfig().balancing.messageDistortion.outgoing) {
+            return message;
+        }
+
         if (message.indexOf("/") == 0) {
             return message;
         }
 
-        float alcohol = drugProperties.getDrugValue(DrugType.ALCOHOL);
-        float zero = drugProperties.getDrugValue(DrugType.ZERO);
-        float cannabis = drugProperties.getDrugValue(DrugType.CANNABIS);
-        if (alcohol > 0.0f || zero > 0.0f || cannabis > 0.0f) {
-            return distortIncomingMessage(message, random, alcohol, zero, cannabis);
+        return distortMessage(DrugProperties.of(player), message);
+    }
+
+    private String distortMessage(DrugProperties properties, String message) {
+
+        float alcohol = properties.getDrugValue(DrugType.ALCOHOL);
+        float zero = properties.getDrugValue(DrugType.ZERO);
+        float cannabis = properties.getDrugValue(DrugType.CANNABIS);
+        if (alcohol > 0 || zero > 0 || cannabis > 0) {
+            return distortMessage(message, properties.asEntity().getRandom(), alcohol, zero, cannabis);
         }
         return message;
     }
 
-    public String distortIncomingMessage(String message, Random random, float alcohol, float zero, float cannabis) {
+    private String pickOne(String[] options, Random random) {
+        return options[random.nextInt(options.length)];
+    }
+
+    public String distortMessage(String message, Random random, float alcohol, float zero, float cannabis) {
         StringBuilder builder = new StringBuilder();
 
-        float randomCaseChance = MathHelper.lerp(alcohol, 0.3f, 1.0f) * 0.06f + MathHelper.lerp(zero, 0.0f, 0.3f);
-        float randomLetterChance = MathHelper.lerp(alcohol, 0.5f, 1.0f) * 0.015f;
+        float randomCaseChance = MathHelper.lerp(alcohol, 0.3f, 1) * 0.06f + MathHelper.lerp(zero, 0, 0.3f);
+        float randomLetterChance = MathHelper.lerp(alcohol, 0.5f, 1) * 0.015f;
         float sToShChance = MathHelper.lerp(alcohol, 0.2f, 0.6f);
         float longShChance = alcohol * 0.8f;
-        float hicChance = MathHelper.lerp(alcohol, 0.5f, 1.0f) * 0.04f;
+        float hicChance = MathHelper.lerp(alcohol, 0.5f, 1) * 0.04f;
         float rewindChance = MathHelper.lerp(alcohol, 0.4f, 0.9f) * 0.03f;
-        float longCharChance = MathHelper.lerp(alcohol, 0.3f, 1.0f) * 0.025f;
+        float longCharChance = MathHelper.lerp(alcohol, 0.3f, 1) * 0.025f;
 
         float oneZeroChance = MathHelper.lerp(zero, 0.6f, 0.95f);
         float randomCharChance = MathHelper.lerp(zero, 0.2f, 0.95f);
@@ -83,9 +99,9 @@ public class MessageDistorter {
             if ((curChar == 's' || curChar == 'S') && random.nextFloat() < sToShChance) {
                 builder.append(curChar).append(random.nextFloat() < longShChance ? "hh" : "h");
             } else if (curChar == ' ' && random.nextFloat() < fillerWordChance) {
-                builder.append(FILLER_WORDS[random.nextInt(FILLER_WORDS.length)]);
+                builder.append(pickOne(FILLER_WORDS, random));
             } else if (wasPoint && random.nextFloat() < startFillerWordChance) {
-                builder.append(START_FILLTER_WORDS[random.nextInt(START_FILLTER_WORDS.length)]).append(curChar);
+                builder.append(pickOne(START_FILLER_WORDS, random)).append(curChar);
             } else {
                 builder.append(curChar);
             }
@@ -93,7 +109,7 @@ public class MessageDistorter {
             wasPoint = false; // Grammar and stuff... I'd rather be safe
 
             if (random.nextFloat() < longCharChance) {
-                float moreChance = 0.6f * 2.0f;
+                float moreChance = 0.6f * 2;
                 do {
                     moreChance *= 0.5f;
                     builder.append(curChar);
@@ -101,7 +117,7 @@ public class MessageDistorter {
             }
 
             if (random.nextFloat() < hicChance) {
-                builder.append("*hic*");
+                builder.append(pickOne(HICS, random));
             }
 
             if (random.nextFloat() < rewindChance) {

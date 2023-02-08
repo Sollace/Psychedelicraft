@@ -10,6 +10,8 @@
       "MixinLivingEntity"
     ],
     "client": [
+      "client.MixinChatMessages",
+      "client.MixinChatScreen",
       "client.MixinMouse",
       "client.MixinGLImportProcessor",
       "client.MixinShaderProgram",
