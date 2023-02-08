@@ -37,19 +37,17 @@ public interface ConsumableFluid {
                 && consumable.canConsume(stack, entity, type);
     }
 
-    static ItemStack consume(ItemStack stack, LivingEntity entity, int maxConsumed, boolean consume, ConsumptionType type) {
+    static ItemStack consume(ItemStack stack, LivingEntity entity, int maxConsumed, boolean consumeItem, ConsumptionType type) {
         if (stack.getItem() instanceof FluidContainer container) {
             if (container.getLevel(stack) >= maxConsumed) {
                 if (container.getFluid(stack) instanceof ConsumableFluid consumable && consumable.canConsume(stack, entity, type)) {
                     MutableFluidContainer mutable = container.toMutable(stack);
                     MutableFluidContainer drained = mutable.drain(maxConsumed);
-                    if (consume) {
-                        consumable.consume(drained.asStack(), entity, type);
-                        if (entity instanceof ServerPlayerEntity player) {
-                            Criteria.CONSUME_ITEM.trigger(player, stack);
-                        }
+                    consumable.consume(drained.asStack(), entity, type);
+                    if (entity instanceof ServerPlayerEntity player) {
+                        Criteria.CONSUME_ITEM.trigger(player, stack);
                     }
-                    return mutable.asStack();
+                    return consumeItem ? mutable.asStack() : stack;
                 }
             }
         }
