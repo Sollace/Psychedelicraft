@@ -10,6 +10,7 @@ public interface PSCommands {
     static void bootstrap() {
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> {
             DrugCommand.register(dispatcher, access);
+            HallucinateCommand.register(dispatcher, access);
         });
     }
 }

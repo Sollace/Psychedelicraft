@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
  */
 public interface Channel {
     S2CPacketType<MsgDrugProperties> UPDATE_DRUG_PROPERTIES = SimpleNetworking.serverToClient(Psychedelicraft.id("update_drug_properties"), MsgDrugProperties::new);
+    S2CPacketType<MsgHallucinate> HALLUCINATE = SimpleNetworking.serverToClient(Psychedelicraft.id("hallucinate"), MsgHallucinate::new);
 
     static void bootstrap() { }
 

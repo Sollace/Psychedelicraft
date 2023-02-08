@@ -12,6 +12,8 @@ public class ChatBot {
 
     private final List<Character> characters = new ArrayList<>();
 
+    private final Queue<Runnable> incomingMessageQueue = new LinkedList<>();
+
     public ChatBot(Personality personality, PlayerEntity player) {
         this.personality = personality;
         this.player = player;
@@ -26,11 +28,34 @@ public class ChatBot {
             characters.add(new Character());
         }
 
+        Runnable action;
+        while ((action = incomingMessageQueue.poll()) != null) {
+            action.run();
+        }
+
         characters.removeIf(Character::tick);
     }
 
-    public void onMessageReceived(Text message) {
+    private void emitMessage(String sender, Text message) {
+        player.sendMessage(message);
+        incomingMessageQueue.add(() -> onMessageReceived(sender, message));
+    }
 
+    public void onMessageReceived(String sender, Text message) {
+        getResponsiveCharacters(sender, message).forEach(character -> character.wakeUp(message));
+    }
+
+    private List<Character> getResponsiveCharacters(String sender, Text message) {
+        String txt = message.getString();
+        var allCharacters = characters.stream().filter(character -> !sender.contentEquals(character.name.getString())).toList();
+        if (allCharacters.isEmpty()) {
+            return allCharacters;
+        }
+        var mentionedCharacters = characters.stream().filter(character -> txt.contains(character.name.getString())).toList();
+        if (mentionedCharacters.isEmpty()) {
+            return List.of(allCharacters.get(player.getRandom().nextInt(allCharacters.size())));
+        }
+        return mentionedCharacters;
     }
 
     final class Character {
@@ -61,11 +86,18 @@ public class ChatBot {
 
             Text message = messageQueue.poll();
             if (message != null) {
-                player.sendMessage(parameters.applyChatDecoration(message));
+                emitMessage(name.getString(), parameters.applyChatDecoration(message));
                 sleepTicks = player.getRandom().nextBetween(2, 20);
             }
 
             return false;
+        }
+
+        public void wakeUp(Text message) {
+            messageQueue.clear();
+            personality.supplyMessage(player.getRandom(), messageQueue::add);
+            idleTicks = 0;
+            sleepTicks = player.getRandom().nextBetween(1, 5);
         }
     }
 }

@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.entity.drug.hallucination;
 
+import java.util.Optional;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RastaHeadModel;
 import net.minecraft.client.MinecraftClient;
@@ -35,7 +37,7 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
         this.entity.setPosition(playerEntity.getPos());
         this.lookControl = ((MobEntity)entity).getLookControl();
 
-//        this.chatBot = new ChatBotRastahead(playerEntity.getRNG(), playerEntity);
+        this.chatBot = Optional.of(new ChatBot(new RastaheadPersonality(), playerEntity));
     }
 
     @Override
