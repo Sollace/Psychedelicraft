@@ -12,6 +12,7 @@ import com.google.common.base.Suppliers;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ivorius.psychedelicraft.ParticleHelper;
+import ivorius.psychedelicraft.block.MashTubBlock;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.particle.BubbleParticleEffect;
@@ -77,6 +78,17 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     public void tick(ServerWorld world) {
         super.tick(world);
         currentStew = currentStew.filter(Stew::tick);
+    }
+
+    @Override
+    public void onIdle(Resovoir resovoir) {
+        super.onIdle(resovoir);
+        int luminance = resovoir.getFluidType().getPhysical().getDefaultState().getBlockState().getLuminance();
+
+        int currentLuminance = getCachedState().get(MashTubBlock.LIGHT);
+        if (luminance != currentLuminance) {
+            world.setBlockState(getPos(), getCachedState().with(MashTubBlock.LIGHT, luminance));
+        }
     }
 
     public void tickAnimations() {
@@ -183,7 +195,12 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     public void onDestroyed(ServerWorld world) {
-        super.onDestroyed(world);
+
+        SimpleFluid fluid = getTank(Direction.UP).getFluidType();
+        if (!fluid.isEmpty()) {
+            world.setBlockState(getPos(), fluid.getPhysical().getFluid().getDefaultState().getBlockState());
+        }
+
         if (!solidContents.isEmpty()) {
             Block.dropStack(world, pos, solidContents);
         }

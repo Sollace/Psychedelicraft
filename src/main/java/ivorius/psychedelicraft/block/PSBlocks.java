@@ -20,6 +20,7 @@ public interface PSBlocks {
     Block MASH_TUB = register("mash_tub", new MashTubBlock(Settings.of(Material.WOOD)
             .sounds(BlockSoundGroup.WOOD)
             .hardness(2).nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never)));
+    Block MASH_TUB_EDGE = register("mash_tub_edge", new MashTubWallBlock(Settings.copy(MASH_TUB)));
 
     Block OAK_BARREL = register("oak_barrel", new BarrelBlock(Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2)));
     Block SPRUCE_BARREL = register("spruce_barrel", new BarrelBlock(Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2)));

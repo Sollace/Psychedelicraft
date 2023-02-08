@@ -5,8 +5,8 @@
 
 package ivorius.psychedelicraft.block.entity;
 
-import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.DistilleryBlock;
+import ivorius.psychedelicraft.block.MashTubWallBlock;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.Block;
@@ -54,8 +54,8 @@ public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
     private BlockEntity getOutput(ServerWorld world, BlockPos pos) {
         pos = getOutputPos();
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() instanceof BlockWithFluid<?> f) {
-            pos = f.getBlockEntityPos(world, state, pos);
+        if (state.getBlock() instanceof MashTubWallBlock f) {
+            pos = world.getBlockEntity(pos, PSBlockEntities.MASH_TUB_EDGE).map(p -> p.getMasterPos()).orElse(pos);
         }
         return world.getBlockEntity(pos);
     }

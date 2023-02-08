@@ -24,7 +24,8 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.IntProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -42,31 +43,28 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     public static final int BORDER_SIZE = 1;
     public static final int HEIGHT = 16;
 
-    public static final BooleanProperty MASTER = BooleanProperty.of("master");
+    public static final IntProperty LIGHT = Properties.LEVEL_15;
 
-    private static final VoxelShape COLLISSION_SHAPE = VoxelShapes.union(
+    static final VoxelShape COLLISSION_SHAPE = VoxelShapes.union(
             createShape(-8, -0.5F, -8, 32, 16,  1),
             createShape(-8, -0.5F, 23, 32, 16,  1),
             createShape(23, -0.5F, -8,  1, 16, 32),
             createShape(-8, -0.5F, -8,  1, 16, 32),
             createShape(-8, -0.5F, -8, 32,  1, 32)
     );
-    private static final VoxelShape RAYCAST_SHAPE = createShape(-8, -0.5F, -8, 32, 16, 32);
+    static final VoxelShape RAYCAST_SHAPE = createShape(-8, -0.5F, -8, 32, 16, 32);
 
     private static VoxelShape createShape(double x, double y, double z, double width, double height, double depth) {
         return Block.createCuboidShape(x, y, z, x + width, y + height, z + depth);
     }
 
     public MashTubBlock(Settings settings) {
-        super(settings);
+        super(settings.luminance(LightBlock.STATE_TO_LUMINANCE));
     }
 
     @Override
     @Deprecated
     public BlockRenderType getRenderType(BlockState state) {
-        if (!state.get(MashTubBlock.MASTER)) {
-            return BlockRenderType.INVISIBLE;
-        }
         return BlockRenderType.MODEL;
     }
 
@@ -77,26 +75,18 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
     @Override
     public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
-        return state.get(MASTER) ? 0.2F : 1;
+        return 0.2F;
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        if (state.get(MASTER)) {
-            return COLLISSION_SHAPE;
-        }
-        BlockPos center = getBlockEntityPos(world, state, pos);
-        if (center.equals(pos)) {
-            return VoxelShapes.fullCube();
-        }
-
-        return COLLISSION_SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ());
+        return COLLISSION_SHAPE;
     }
 
     @Override
     @Deprecated
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
-        return state.get(MASTER) ? RAYCAST_SHAPE : VoxelShapes.empty();
+        return VoxelShapes.fullCube();
     }
 
     @Override
@@ -110,13 +100,8 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return super.getPlacementState(ctx).with(MASTER, true);
-    }
-
-    @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-        world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).ifPresent(be -> {
+        world.getBlockEntity(getBlockEntityPosition(world, pos), getBlockEntityType()).ifPresent(be -> {
             SimpleFluid fluid = be.getTank(Direction.UP).getFluidType();
             fluid.randomDisplayTick(world, pos, fluid.getPhysical().getDefaultState(), random);
         });
@@ -124,7 +109,6 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
     @Override
     protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
-
         ItemStack heldStack = player.getStackInHand(hand);
         if (!heldStack.isEmpty()) {
             TypedActionResult<ItemStack> result = blockEntity.depositIngredient(heldStack);
@@ -165,64 +149,34 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         getPlacementPosition(world, state, pos, true).ifPresent(center -> {
+            world.setBlockState(center, getDefaultState(), Block.NOTIFY_ALL);
             BlockPos.iterateOutwards(center, 1, 0, 1).forEach(p -> {
-                world.setBlockState(p, getDefaultState().with(MASTER, false));
-                world.removeBlockEntity(p);
+                if (!p.equals(center)) {
+                    world.setBlockState(p, PSBlocks.MASH_TUB_EDGE.getDefaultState(), Block.NOTIFY_ALL);
+                    world.getBlockEntity(p, PSBlockEntities.MASH_TUB_EDGE).ifPresent(be -> be.setMasterPos(center));
+                }
             });
-            world.setBlockState(center, getDefaultState().with(MASTER, true));
+
+            super.onPlaced(world, center, state, placer, stack);
         });
-
-        super.onPlaced(world, pos, state, placer, stack);
-    }
-
-    @Override
-    public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
-        BlockPos center = getBlockEntityPos(world, state, pos);
-        if (center.equals(pos) && !state.get(MASTER)) {
-            return;
-        }
-        BlockPos.iterateOutwards(center, 1, 0, 1).forEach(p -> {
-            if (world.getBlockState(p).isOf(this)) {
-                world.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-            }
-        });
-    }
-
-    @Override
-    public BlockPos getBlockEntityPos(BlockView world, BlockState state, BlockPos pos) {
-        return BlockPos.findClosest(pos, 1, 0, p -> {
-            BlockState s = world.getBlockState(p);
-            return s.isOf(this) && s.get(MASTER);
-         }).orElse(pos);
-    }
-
-    @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        if (!state.get(MASTER)) {
-            return null;
-        }
-        return super.createBlockEntity(pos, state);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(MASTER);
+        builder.add(LIGHT);
     }
 
     public int getFluidHeight(World world, BlockState state, BlockPos pos, TagKey<Fluid> tag) {
-        if (state.get(MASTER)) {
-            return world.getBlockEntity(pos, getBlockEntityType())
-                    .map(be -> be.getTank(Direction.UP))
-                    .filter(tank -> tank.getFluidType().getPhysical().isIn(tag) || (tag == FluidTags.WATER && tank.getFluidType().isCustomFluid()))
-                    .map(tank -> (int)(((float)tank.getLevel() / tank.getCapacity()) * 8))
-                    .orElse(-1);
-        }
-        return -1;
+        return world.getBlockEntity(pos, getBlockEntityType())
+                .map(be -> be.getTank(Direction.UP))
+                .filter(tank -> tank.getFluidType().getPhysical().isIn(tag) || (tag == FluidTags.WATER && tank.getFluidType().isCustomFluid()))
+                .map(tank -> (int)(((float)tank.getLevel() / tank.getCapacity()) * 8))
+                .orElse(-1);
     }
 
     @Override
     public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-        return world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).filter(be -> {
+        return world.getBlockEntity(pos, getBlockEntityType()).filter(be -> {
             Resovoir tank = be.getTank(Direction.UP);
             return (tank.isEmpty()
                 || tank.getFluidType().getPhysical().isOf(fluid))
@@ -230,9 +184,25 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         }).isPresent();
     }
 
+    @Deprecated
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock()) && !world.isClient) {
+            BlockPos.iterateOutwards(pos, 1, 0, 1).forEach(p -> {
+                BlockState neighbourState = world.getBlockState(p);
+                var o = this;
+                if (neighbourState.isOf(PSBlocks.MASH_TUB_EDGE)) {
+                    world.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                }
+            });
+        }
+        world.setBlockState(pos, newState);
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
     @Override
     public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
-        return world.getBlockEntity(getBlockEntityPos(world, state, pos), getBlockEntityType()).filter(be -> {
+        return world.getBlockEntity(getBlockEntityPosition(world, pos), getBlockEntityType()).filter(be -> {
             SimpleFluid f = SimpleFluid.forVanilla(fluidState.getFluid());
 
             Resovoir tank = be.getTank(Direction.UP);
@@ -251,6 +221,10 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
             be.markForUpdate();
             return true;
         }).isPresent();
+    }
+
+    protected BlockPos getBlockEntityPosition(BlockView world, BlockPos pos) {
+        return world.getBlockEntity(pos, PSBlockEntities.MASH_TUB_EDGE).map(p -> p.getMasterPos()).orElse(pos);
     }
 
     @Override

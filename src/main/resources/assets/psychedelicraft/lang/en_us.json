@@ -64,6 +64,7 @@
   "block.psychedelicraft.distillery": "Distillery",
   "block.psychedelicraft.distillery.filled": "Distillery (Filled with %s)",
   "block.psychedelicraft.mash_tub": "Wooden Vat",
+  "block.psychedelicraft.mash_tub_edge": "Wooden Vat",
   "block.psychedelicraft.mash_tub.filled": "Wooden Vat (Filled with %s)",
   "block.psychedelicraft.bottle_rack": "Bottle Rack",
   "block.psychedelicraft.rift_jar": "Rift Jar",
