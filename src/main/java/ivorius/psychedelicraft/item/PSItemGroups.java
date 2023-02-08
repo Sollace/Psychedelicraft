@@ -51,6 +51,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.SYRINGE);
                 entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.COCAINE));
                 entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.CAFFEINE));
+                entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.BATH_SALTS));
 
                 entries.add(PSItems.COFFEA_CHERRIES);
                 entries.add(PSItems.COFFEE_BEANS);

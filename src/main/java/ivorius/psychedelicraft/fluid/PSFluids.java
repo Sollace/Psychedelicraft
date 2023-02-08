@@ -150,6 +150,12 @@ public interface PSFluids {
             .influence(new DrugInfluence(DrugType.CAFFEINE, 0, 0.005, 0.01, 85.0f))
             .color(0x66eee2d3)
     );
+    DrugFluid BATH_SALTS = new DrugFluid(Psychedelicraft.id("bath_salts"), (DrugFluid.Settings)new DrugFluid.Settings()
+            .injectable()
+            .appearance(DrinkTypes.Icons.of("clear"))
+            .influence(new DrugInfluence(DrugType.BATH_SALTS, 0, 0.005, 0.01, 50.0f))
+            .color(0x2233f4f8)
+    );
 
     SimpleFluid SLURRY = new SlurryFluid(Psychedelicraft.id("slurry"), new SimpleFluid.Settings().color(0xcc704E21).viscocity(4));
 
