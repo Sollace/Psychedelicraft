@@ -32,7 +32,8 @@ public interface PSTags {
     }
 
     interface Entities {
-        TagKey<EntityType<?>> HALLUCINATIONS = of("hallucinations");
+        TagKey<EntityType<?>> MULTIPLE_ENTITY_HALLUCINATIONS = of("multiple_entity_hallucinations");
+        TagKey<EntityType<?>> SINGLE_ENTITY_HALLUCINATIONS = of("single_entity_hallucinations");
 
         static TagKey<EntityType<?>> of(String name) {
             return TagKey.of(RegistryKeys.ENTITY_TYPE, Psychedelicraft.id(name));

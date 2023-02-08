@@ -13,10 +13,12 @@ import net.minecraft.util.math.random.Random;
 
 public class EntityHallucinationList implements Iterable<Hallucination> {
     public static final Identifier TYPE_RASTA = Psychedelicraft.id("rasta_head");
-    public static final Identifier TYPE_MOB = Psychedelicraft.id("mob");
+    public static final Identifier TYPE_MULTIPLE = Psychedelicraft.id("multiple_entity");
+    public static final Identifier TYPE_SINLGE = Psychedelicraft.id("single_entity");
     public static final Map<Identifier, Function<PlayerEntity, Hallucination>> TYPES = Map.of(
             TYPE_RASTA, RastaHeadHallucination::new,
-            TYPE_MOB, EntityHallucination::new
+            TYPE_SINLGE, EntityHallucination::new,
+            TYPE_MULTIPLE, MultipleEntityHallucination::new
     );
 
     private final List<Hallucination> entities = new ArrayList<>();
@@ -86,7 +88,7 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
         Random random = properties.asEntity().getRandom();
         addHallucination((getNumberOfHallucinations(a -> a instanceof RastaHeadHallucination) == 0
                 && random.nextFloat() < 0.1f
-                && properties.getDrugValue(DrugType.CANNABIS) > 0.4f) ? TYPE_RASTA : TYPE_MOB,
+                && properties.getDrugValue(DrugType.CANNABIS) > 0.4f) ? TYPE_RASTA : random.nextFloat() > 0.5F ? TYPE_MULTIPLE : TYPE_SINLGE,
                 false
         );
     }

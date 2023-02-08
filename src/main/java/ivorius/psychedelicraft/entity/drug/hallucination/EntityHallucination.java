@@ -6,19 +6,25 @@
 package ivorius.psychedelicraft.entity.drug.hallucination;
 
 import ivorius.psychedelicraft.PSTags;
+import ivorius.psychedelicraft.entity.TouchingWaterAccessor;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.*;
 
 public class EntityHallucination extends AbstractEntityHallucination {
     private float rotationYawPlus;
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public EntityHallucination(PlayerEntity player) {
+        this(player, PSTags.Entities.SINGLE_ENTITY_HALLUCINATIONS);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public EntityHallucination(PlayerEntity player, TagKey<EntityType<?>> entityTypes) {
         super(player, player.world.getRegistryManager().get(RegistryKeys.ENTITY_TYPE)
-                .getOrCreateEntryList(PSTags.Entities.HALLUCINATIONS)
+                .getOrCreateEntryList(entityTypes)
                 .getRandom(player.world.random)
                 .map(RegistryEntry::value)
                 .orElse((EntityType)EntityType.PIG)
@@ -55,5 +61,8 @@ public class EntityHallucination extends AbstractEntityHallucination {
     protected void animateEntity() {
         entity.setPosition(entity.getPos().add(entity.getVelocity()));
         entity.setYaw(MathHelper.wrapDegrees(entity.getYaw() + rotationYawPlus));
+        if (entity instanceof LivingEntity l && l.canBreatheInWater()) {
+           ((TouchingWaterAccessor)entity).setTouchingWater(true);
+        }
     }
 }
