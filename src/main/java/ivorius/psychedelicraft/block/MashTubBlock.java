@@ -189,10 +189,11 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock()) && !world.isClient) {
             BlockPos.iterateOutwards(pos, 1, 0, 1).forEach(p -> {
-                BlockState neighbourState = world.getBlockState(p);
-                var o = this;
-                if (neighbourState.isOf(PSBlocks.MASH_TUB_EDGE)) {
-                    world.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                if (!p.equals(pos)) {
+                    BlockState neighbourState = world.getBlockState(p);
+                    if (neighbourState.isOf(PSBlocks.MASH_TUB_EDGE)) {
+                        world.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                    }
                 }
             });
         }

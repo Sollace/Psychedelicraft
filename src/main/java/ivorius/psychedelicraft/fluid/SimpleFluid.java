@@ -152,15 +152,15 @@ public class SimpleFluid {
         return REGISTRY.getOrEmpty(id).orElseGet(() -> Registries.FLUID.getOrEmpty(id).map(SimpleFluid::forVanilla).orElse(PSFluids.EMPTY));
     }
 
-    public static SimpleFluid forVanilla(Fluid fluid) {
+    public static SimpleFluid forVanilla(@Nullable Fluid fluid) {
         if (fluid instanceof PhysicalFluid.PlacedFluid pf) {
             return pf.getType();
         }
-        if (fluid == Fluids.EMPTY) {
+        if (fluid == null || fluid == Fluids.EMPTY) {
             return PSFluids.EMPTY;
         }
         Fluid still = toStill(fluid);
-        Identifier id = Registries.FLUID.getId(fluid);
+        Identifier id = Registries.FLUID.getId(still);
         return VANILLA_FLUIDS.computeIfAbsent(id, i -> new SimpleFluid(i, 0xFFFFFFFF,
                 new PhysicalFluid(still, toFlowing(still), (FluidBlock)still.getDefaultState().getBlockState().getBlock())
         ));
