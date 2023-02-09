@@ -10,6 +10,7 @@ import ivorius.psychedelicraft.client.render.effect.*;
 import ivorius.psychedelicraft.client.render.shader.PostEffectRenderer;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.hallucination.DriftingCamera;
 import ivorius.psychedelicraft.entity.drug.hallucination.Hallucination;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import net.minecraft.client.MinecraftClient;
@@ -20,6 +21,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 
 import java.lang.Math;
 
@@ -81,6 +84,30 @@ public class DrugRenderer {
 
         int frame = properties.asEntity().age;
         float tick = frame + tickDelta;
+
+        Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+        DriftingCamera driftingCam = properties.getHallucinations().getCamera();
+
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0f));
+
+        Vec3d cameraOffset = driftingCam.getPosition();
+        Vec3d prevCameraOffset = driftingCam.getPrevPosition();
+        matrices.translate(
+             MathHelper.lerp(tickDelta, prevCameraOffset.x, cameraOffset.x),
+             MathHelper.lerp(tickDelta, prevCameraOffset.y, cameraOffset.y),
+             MathHelper.lerp(tickDelta, prevCameraOffset.z, cameraOffset.z)
+        );
+        Vec3d cameraRoll = driftingCam.getRotation();
+        Vec3d prevCameraRoll = driftingCam.getPrevRotation();
+        matrices.multiply(new Quaternionf().rotateXYZ(
+                (float)MathHelper.lerp(tickDelta, prevCameraRoll.x, cameraRoll.x),
+                (float)MathHelper.lerp(tickDelta, prevCameraRoll.y, cameraRoll.y),
+                (float)MathHelper.lerp(tickDelta, prevCameraRoll.z, cameraRoll.z)
+        ));
+
+        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(camera.getYaw() + 180.0f));
+        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
 
         if (wobblyness > 0) {
             float f4 = MathHelper.square(5F / (wobblyness * wobblyness + 5F) - wobblyness * 0.04F);

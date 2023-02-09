@@ -24,6 +24,8 @@ public class HallucinationManager {
     private final DrugProperties properties;
     private final EntityHallucinationList entities = new EntityHallucinationList(this);
 
+    private final DriftingCamera camera = new DriftingCamera();
+
     public HallucinationManager(DrugProperties properties) {
         this.properties = properties;
     }
@@ -36,8 +38,13 @@ public class HallucinationManager {
         return entities;
     }
 
+    public DriftingCamera getCamera() {
+        return camera;
+    }
+
     public void update() {
         entities.update();
+        camera.update(properties);
 
         float totalHallucinationValue = hallucinationTypes.getTotal(properties);
         int desiredHallucinations = Math.max(0, MathHelper.floor(totalHallucinationValue * 4F + 0.9f));

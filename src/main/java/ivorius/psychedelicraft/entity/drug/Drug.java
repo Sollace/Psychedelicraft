@@ -23,6 +23,7 @@ public interface Drug extends NbtSerialisable {
     AggregateModifier JUMP_CHANCE = AggregateModifier.create(0, Drug::randomJumpChance, AggregateModifier.Combiner.SUM);
     AggregateModifier PUNCH_CHANCE = AggregateModifier.create(0, Drug::randomPunchChance, AggregateModifier.Combiner.SUM);
 
+    AggregateModifier WEIGHTLESSNESS = AggregateModifier.create(0, Drug::weightlessness, AggregateModifier.Combiner.SUM);
     AggregateModifier HEAD_MOTION_INERTNESS = AggregateModifier.create(0, Drug::headMotionInertness, AggregateModifier.Combiner.SUM);
     AggregateModifier VIEW_TREMBLE_STRENGTH = AggregateModifier.create(0, Drug::viewTrembleStrength, AggregateModifier.Combiner.INVERSE_MUL);
     AggregateModifier VIEW_WOBBLYNESS = AggregateModifier.create(0, Drug::viewWobblyness, AggregateModifier.Combiner.SUM);
@@ -157,6 +158,10 @@ public interface Drug extends NbtSerialisable {
     }
 
     default float motionBlur() {
+        return 0;
+    }
+
+    default float weightlessness() {
         return 0;
     }
 
