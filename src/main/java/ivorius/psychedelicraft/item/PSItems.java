@@ -16,6 +16,7 @@ import ivorius.psychedelicraft.entity.drug.influence.HarmoniumDrugInfluence;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
@@ -163,5 +164,13 @@ public interface PSItems {
         return Registry.register(Registries.ITEM, Psychedelicraft.id(name), item);
     }
 
-    static void bootstrap() { }
+    static void bootstrap() {
+        FuelRegistry.INSTANCE.add(LATTICE, 700);
+        FuelRegistry.INSTANCE.add(SMOKING_PIPE, 200);
+        FuelRegistry.INSTANCE.add(JOINT, 20);
+        FuelRegistry.INSTANCE.add(PEYOTE_JOINT, 20);
+        FuelRegistry.INSTANCE.add(CIGAR, 80);
+        FuelRegistry.INSTANCE.add(CIGARETTE, 50);
+        FuelRegistry.INSTANCE.add(WOODEN_MUG, 50);
+    }
 }

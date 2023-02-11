@@ -7,7 +7,8 @@
     "mixins": [
       "MixinEntity",
       "MixinPlayerEntity",
-      "MixinLivingEntity"
+      "MixinLivingEntity",
+      "MixinAbstractFurnaceBlockEntity"
     ],
     "client": [
       "client.MixinChatMessages",
