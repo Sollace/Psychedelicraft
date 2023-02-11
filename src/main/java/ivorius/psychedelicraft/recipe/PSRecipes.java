@@ -17,7 +17,7 @@ public interface PSRecipes {
     RecipeSerializer<ChangeRecepticalRecipe> CHANGE_RECEPTICAL = RecipeSerializer.register("psychedelicraft:change_receptical", new ChangeRecepticalRecipe.Serializer());
     RecipeSerializer<PouringRecipe> POUR_DRINK = RecipeSerializer.register("psychedelicraft:pour_drink", new SpecialRecipeSerializer<>(PouringRecipe::new));
     RecipeSerializer<SmeltingFluidRecipe> SMELTING_RECEPTICAL = RecipeSerializer.register("psychedelicraft:smelting_receptical", new SmeltingFluidRecipe.Serializer());
-
+    RecipeSerializer<ShapedRecipe> CRAFTING_SHAPED = RecipeSerializer.register("psychedelicraft:crafting_shaped", new BottleRecipe.Serializer());
     RecipeSerializer<FluidAwareShapelessRecipe> SHAPELESS_FLUID = RecipeSerializer.register("psychedelicraft:shapeless_fluid", new FluidAwareShapelessRecipe.Serializer());
 
     RecipeType<MashingRecipe> MASHING_TYPE = RecipeType.register("psychedelicraft:mashing");

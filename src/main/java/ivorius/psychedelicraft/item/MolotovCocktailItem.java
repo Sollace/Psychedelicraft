@@ -19,7 +19,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class MolotovCocktailItem extends DrinkableItem {
+public class MolotovCocktailItem extends BottleItem {
     public MolotovCocktailItem(Settings settings, int capacity) {
         super(settings, capacity, 0, ConsumptionType.DRINK);
     }

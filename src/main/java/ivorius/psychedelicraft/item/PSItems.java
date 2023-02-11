@@ -50,7 +50,7 @@ public interface PSItems {
     Item WINE_GRAPES = register("wine_grapes", new WineGrapesItem(new Settings().food(
             new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()
     ), 15));
-    DrinkableItem BOTTLE = register("bottle", new DrinkableItem(new Settings(), FluidVolumes.BOTTLE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem BOTTLE = register("bottle", new BottleItem(new Settings(), FluidVolumes.BOTTLE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
     MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings().maxCount(16), FluidVolumes.BOTTLE));
 
     Item CANNABIS_SEEDS = register("cannabis_seeds", new AliasedBlockItem(PSBlocks.CANNABIS, new Settings()));
