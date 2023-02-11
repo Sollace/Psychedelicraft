@@ -11,6 +11,9 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonArray;
@@ -26,11 +29,22 @@ public interface RecipeUtils {
     }
 
     static Stream<ItemStack> stacks(Inventory inventory) {
-        return Stream.iterate(0, i -> i < inventory.size(), i -> i + 1)
-                .map(inventory::getStack)
+        return IntStream.range(0, inventory.size())
+                .mapToObj(inventory::getStack)
                 .filter(s -> !s.isEmpty());
     }
 
+    static Stream<Slot<Map.Entry<FluidContainer, ItemStack>>> recepticalSlots(Inventory inventory) {
+        return slots(inventory, stack -> stack.getItem() instanceof FluidContainer, stack -> {
+            return Map.entry(FluidContainer.of(stack), stack);
+        });
+    }
+
+    static <T> Stream<Slot<T>> slots(Inventory inventory, Predicate<ItemStack> filter, Function<ItemStack, T> func) {
+        return IntStream.range(0, inventory.size())
+                .filter(i -> filter.test(inventory.getStack(i)))
+                .mapToObj(i -> new Slot<>(inventory, func.apply(inventory.getStack(i)), i));
+    }
 
     static DefaultedList<Ingredient> getIngredients(JsonArray json) {
         DefaultedList<Ingredient> defaultedList = DefaultedList.of();
@@ -58,5 +72,15 @@ public interface RecipeUtils {
             throw new JsonParseException("Too many ingredients for shapeless recipe");
         }
         return ingredients;
+    }
+
+    record Slot<T>(Inventory inventory, T content, int slot) {
+        public void set(ItemStack stack) {
+            inventory.setStack(slot, stack);
+        }
+
+        public <V> V map(Function<T, V> func) {
+            return func.apply(content);
+        }
     }
 }

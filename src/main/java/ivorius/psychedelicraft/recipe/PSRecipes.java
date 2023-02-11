@@ -15,6 +15,7 @@ import net.minecraft.util.Identifier;
 public interface PSRecipes {
     RecipeSerializer<FillRecepticalRecipe> FILL_RECEPTICAL = RecipeSerializer.register("psychedelicraft:fill_receptical", new FillRecepticalRecipe.Serializer());
     RecipeSerializer<ChangeRecepticalRecipe> CHANGE_RECEPTICAL = RecipeSerializer.register("psychedelicraft:change_receptical", new ChangeRecepticalRecipe.Serializer());
+    RecipeSerializer<PouringRecipe> POUR_DRINK = RecipeSerializer.register("psychedelicraft:pour_drink", new SpecialRecipeSerializer<>(PouringRecipe::new));
     RecipeSerializer<SmeltingFluidRecipe> SMELTING_RECEPTICAL = RecipeSerializer.register("psychedelicraft:smelting_receptical", new SmeltingFluidRecipe.Serializer());
 
     RecipeSerializer<FluidAwareShapelessRecipe> SHAPELESS_FLUID = RecipeSerializer.register("psychedelicraft:shapeless_fluid", new FluidAwareShapelessRecipe.Serializer());
