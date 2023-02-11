@@ -20,15 +20,19 @@ public class MutableFluidContainer {
     protected int level;
     protected NbtCompound attributes;
 
-    protected MutableFluidContainer(FluidContainer container, SimpleFluid fluid, int level, NbtCompound attributes) {
+    @Nullable
+    protected NbtCompound stackNbt;
+
+    protected MutableFluidContainer(FluidContainer container, SimpleFluid fluid, int level, NbtCompound attributes, @Nullable NbtCompound stackNbt) {
         this.container = container;
         this.fluid = fluid;
         this.level = level;
         this.attributes = attributes;
+        this.stackNbt = stackNbt;
     }
 
     public MutableFluidContainer copy() {
-        return new MutableFluidContainer(container, getFluid(), getLevel(), attributes.copy());
+        return new MutableFluidContainer(container, getFluid(), getLevel(), attributes.copy(), stackNbt == null ? null : stackNbt.copy());
     }
 
     public ItemStack asStack() {
@@ -37,6 +41,7 @@ public class MutableFluidContainer {
         }
 
         ItemStack stack = container.asFilled(getFluid()).getDefaultStack();
+        stack.setNbt(stackNbt == null ? null : stackNbt.copy());
         NbtCompound fluidTag = stack.getOrCreateSubNbt("fluid");
         fluidTag.putInt("level", getLevel());
         fluidTag.putString("id", getFluid().getId().toString());
@@ -124,7 +129,7 @@ public class MutableFluidContainer {
         }
 
         attributes = other.attributes;
-        return withFluid(getFluid()).withLevel(getLevel() + other.getLevel());
+        return withFluid(other.getFluid()).withLevel(getLevel() + other.getLevel());
     }
 
     /**
@@ -157,5 +162,12 @@ public class MutableFluidContainer {
             changeCallback.accept(levels);
         }
         return this;
+    }
+
+    public boolean canReceive(SimpleFluid fluid) {
+        return !fluid.isEmpty()
+            && (isEmpty() || getFluid() == fluid)
+            && getLevel() < getCapacity()
+            && fluid.isSuitableContainer(container);
     }
 }

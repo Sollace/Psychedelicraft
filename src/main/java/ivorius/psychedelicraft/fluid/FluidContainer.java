@@ -63,7 +63,7 @@ public interface FluidContainer extends ItemConvertible {
     }
 
     default MutableFluidContainer toMutable(ItemStack stack) {
-        return new MutableFluidContainer(this, getFluid(stack), getLevel(stack), getFluidAttributesTag(stack, true));
+        return new MutableFluidContainer(this, getFluid(stack), getLevel(stack), getFluidAttributesTag(stack, true), stack.getNbt());
     }
 
     default int getMaxCapacity(ItemStack stack) {
@@ -121,5 +121,4 @@ public interface FluidContainer extends ItemConvertible {
         }
         return EMPTY_NBT;
     }
-
 }

@@ -14,7 +14,6 @@ import net.minecraft.world.World;
 import com.google.gson.*;
 
 import ivorius.psychedelicraft.fluid.FluidContainer;
-import ivorius.psychedelicraft.fluid.MutableFluidContainer;
 
 /**
  * Created by lukas on 10.11.14.
@@ -37,24 +36,21 @@ class ChangeRecepticalRecipe extends ShapelessRecipe {
 
     @Override
     public boolean matches(CraftingInventory inventory, World world) {
-        return RecipeUtils.recepticals(inventory).count() == 1
-            && super.matches(inventory, world);
+        return RecipeUtils.recepticals(inventory).count() == 1 && super.matches(inventory, world);
     }
 
     @Override
     public ItemStack craft(CraftingInventory inventory) {
         return RecipeUtils.recepticals(inventory).findFirst().map(pair -> {
             // copy bottle contents to the new stack
-            ItemStack inputFluidStack = pair.getValue().copy();
-
-            MutableFluidContainer drained = pair.getKey().toMutable(inputFluidStack).drain(pair.getKey().getMaxCapacity(inputFluidStack));
-
+            ItemStack input = pair.getValue().copy();
             ItemStack output = getOutput().copy();
-            if (!drained.isEmpty() && output.getItem() instanceof FluidContainer container) {
-                output = container.toMutable(output).fillFrom(drained).asStack();
+            FluidContainer outputContainer = FluidContainer.of(output, null);
+            if (outputContainer != null) {
+                output = outputContainer.toMutable(output).fillFrom(pair.getKey().toMutable(input)).asStack();
             }
-            if (output.getItem() instanceof DyeableItem) {
-
+            if (output.getItem() instanceof DyeableItem outDyable && input.getItem() instanceof DyeableItem inDyable) {
+                outDyable.setColor(output, inDyable.getColor(input));
             }
             return output;
         }).orElseGet(getOutput()::copy);

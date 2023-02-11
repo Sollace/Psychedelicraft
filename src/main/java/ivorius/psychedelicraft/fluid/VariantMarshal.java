@@ -124,6 +124,7 @@ final class VariantMarshal {
                 super(container,
                         SimpleFluid.forVanilla(view.getResource().getFluid()),
                         (int)view.getAmount(),
+                        FluidContainer.EMPTY_NBT,
                         FluidContainer.EMPTY_NBT
                 );
                 this.context = context;
