@@ -2,7 +2,7 @@
   "type": "psychedelicraft:fill_receptical",
   "receptical": { "tag": "psychedelicraft:drug_recepticals" },
   "ingredients": [
-    { "item": "minecraft:water_bucket" },
+    { "item": "minecraft:lava_bucket" },
     { "item": "psychedelicraft:obsidian_dust" }
   ],
   "result": {
