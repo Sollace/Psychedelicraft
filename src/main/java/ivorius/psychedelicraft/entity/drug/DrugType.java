@@ -27,6 +27,7 @@ public record DrugType (Identifier id, Function<DrugType, Drug> constructor) {
     public static final DrugType COCAINE = register("coccaine", type -> new CocaineDrug(1, 0.0003d));
     public static final DrugType CAFFEINE = register("caffeine", type -> new CaffeineDrug(1, 0.0002d));
     public static final DrugType BATH_SALTS = register("bath_salts", type -> new BathSaltsDrug(1, 0.00012d));
+    public static final DrugType ACID = register("acid", type -> new AcidDrug(1, 0.0003d));
     public static final DrugType WARMTH = register("warmth", type -> new WarmthDrug(1, 0.004d));
     public static final DrugType PEYOTE = register("peyote", type -> new PeyoteDrug(1, 0.0002d));
     public static final DrugType ZERO = register("zero", type -> new SimpleDrug(type, 1, 0.0001d));
