@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.client.render;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.effect.*;
 import ivorius.psychedelicraft.client.render.shader.PostEffectRenderer;
@@ -164,7 +165,12 @@ public class DrugRenderer {
             alpha /= 2F;
         }
         for (Hallucination h : hallucinations.getEntities()) {
-            h.render(matrices, vertices, camera, tickDelta, alpha);
+            try {
+                h.render(matrices, vertices, camera, tickDelta, alpha);
+            } catch (Throwable t) {
+                Psychedelicraft.LOGGER.fatal("Exception occured whilst rendering hallucination ", t);
+                h.setDead();
+            }
         }
     }
 

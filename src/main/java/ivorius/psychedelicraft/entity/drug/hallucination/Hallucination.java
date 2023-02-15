@@ -39,5 +39,9 @@ public abstract class Hallucination {
 
     public abstract boolean isDead();
 
+    public void setDead() {
+        age = Integer.MAX_VALUE;
+    }
+
     public abstract int getMaxHallucinations();
 }
