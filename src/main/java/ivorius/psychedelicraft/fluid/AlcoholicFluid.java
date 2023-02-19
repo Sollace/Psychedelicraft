@@ -6,7 +6,6 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -55,9 +54,9 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getProcessingTime(ItemStack stack, ProcessType type, boolean openContainer) {
+    public int getProcessingTime(Resovoir tank, ProcessType type, boolean openContainer) {
         if (type == ProcessType.DISTILL) {
-            if (FERMENTATION.get(stack) >= FERMENTATION_STEPS || MATURATION.get(stack) != 0) {
+            if (FERMENTATION.get(tank.getContents()) >= FERMENTATION_STEPS || MATURATION.get(tank.getContents()) != 0) {
                 return UNCONVERTABLE;
             }
 
@@ -65,7 +64,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         }
 
         if (type == ProcessType.FERMENT) {
-            if (FERMENTATION.get(stack) >= FERMENTATION_STEPS) {
+            if (FERMENTATION.get(tank.getContents()) >= FERMENTATION_STEPS) {
                 return openContainer ? settings.tickInfo.get().ticksPerFermentation : UNCONVERTABLE;
             }
             return openContainer ? settings.tickInfo.get().ticksUntilAcetification : settings.tickInfo.get().ticksPerMaturation;
@@ -76,40 +75,38 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public ItemStack process(Resovoir tank, ProcessType type, boolean openContainer) {
+        MutableFluidContainer contents = tank.getContents();
+
         if (type == ProcessType.DISTILL) {
-            int fermentation = FERMENTATION.get(tank.getStack());
+            int fermentation = FERMENTATION.get(contents);
+
 
             if (fermentation < FERMENTATION_STEPS) {
                 return ItemStack.EMPTY;
             }
 
-            int distillation = DISTILLATION.get(tank.getStack());
+            int distillation = DISTILLATION.get(contents);
 
-            DISTILLATION.set(tank.getStack(), distillation + 1);
+            DISTILLATION.set(contents, distillation + 1);
 
-            MutableFluidContainer contents = tank.getContents();
-
-            int distilledAmount = MathHelper.floor(contents.getLevel() * MathUtils.progress(distillation, 0.5F));
-
-            ItemStack result = tank.drain(distilledAmount, new ItemStack(Items.STONE));
-
-            return MutableFluidContainer.of(result).withFluid(PSFluids.SLURRY).withLevel(1).asStack();
+            contents.drain(MathHelper.floor(contents.getLevel() * MathUtils.progress(distillation, 0.5F)));
+            return PSFluids.SLURRY.getDefaultStack(1);
         }
 
         if (type == ProcessType.FERMENT) {
-            ItemStack stack = tank.getStack();
-            int fermentation = FERMENTATION.get(stack);
+            int fermentation = FERMENTATION.get(contents);
 
             if (openContainer) {
                 if (fermentation < FERMENTATION_STEPS) {
-                    FERMENTATION.set(stack, fermentation + 1);
+                    FERMENTATION.set(contents, fermentation + 1);
                 } else {
-                    VINEGAR.set(stack, true);
+                    VINEGAR.set(contents, true);
                 }
             } else {
-                MATURATION.set(stack, MATURATION.get(stack) + 1);
+                MATURATION.set(contents, MATURATION.get(contents) + 1);
             }
         }
+
         return ItemStack.EMPTY;
     }
 

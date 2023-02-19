@@ -67,7 +67,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
         Resovoir tank = getTank(Direction.UP);
         if (tank.getFluidType() instanceof Processable p) {
             boolean open = isOpen();
-            setTimeNeeded(p.getProcessingTime(tank.getStack(), processType, open));
+            setTimeNeeded(p.getProcessingTime(tank, processType, open));
 
             if (canProcess(world, getTimeNeeded())) {
                 if (getTimeProcessed() >= getTimeNeeded()) {

@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.state.State;
@@ -199,6 +200,10 @@ public class SimpleFluid {
 
         public abstract T set(ItemStack stack, T value);
 
+        public abstract T get(MutableFluidContainer stack);
+
+        public abstract T set(MutableFluidContainer stack, T value);
+
         public static Attribute<Integer> ofInt(String name, int min, int max) {
             return new Attribute<>() {
                 @Override
@@ -209,6 +214,19 @@ public class SimpleFluid {
                 @Override
                 public Integer set(ItemStack stack, Integer value) {
                     FluidContainer.getFluidAttributesTag(stack, false).putInt(name, value);
+                    return value;
+                }
+
+                @Override
+                public Integer get(MutableFluidContainer stack) {
+                    return MathHelper.clamp(stack.attributes.getInt(name), min, max);
+                }
+
+                @Override
+                public Integer set(MutableFluidContainer stack, Integer value) {
+                    NbtCompound attributes = stack.getAttributes();
+                    attributes.putInt(name, value);
+                    stack.withAttributes(attributes);
                     return value;
                 }
             };
@@ -224,6 +242,19 @@ public class SimpleFluid {
                 @Override
                 public Boolean set(ItemStack stack, Boolean value) {
                     FluidContainer.getFluidAttributesTag(stack, false).putBoolean(name, value);
+                    return value;
+                }
+
+                @Override
+                public Boolean get(MutableFluidContainer stack) {
+                    return stack.attributes.getBoolean(name);
+                }
+
+                @Override
+                public Boolean set(MutableFluidContainer stack, Boolean value) {
+                    NbtCompound attributes = stack.getAttributes();
+                    attributes.putBoolean(name, value);
+                    stack.withAttributes(attributes);
                     return value;
                 }
             };

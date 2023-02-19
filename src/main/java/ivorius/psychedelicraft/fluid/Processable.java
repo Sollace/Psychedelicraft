@@ -22,7 +22,7 @@ public interface Processable {
      * @param stack The fluid currently being processed.
      * @return The time it needs to distill, in ticks.
      */
-    int getProcessingTime(ItemStack stack, ProcessType type, boolean openContainer);
+    int getProcessingTime(Resovoir tank, ProcessType type, boolean openContainer);
 
     /**
      * Notifies the fluid that the stack has distilled, and is expected to apply this change to the stack.
