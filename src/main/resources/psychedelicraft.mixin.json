@@ -19,6 +19,7 @@
       "client.MixinShaderStage",
       "client.MixinSoundSystem",
       "client.MixinGameRenderer",
+      "client.MixinHeldItemRenderer",
       "client.MixinInGameHud"
     ]
 }

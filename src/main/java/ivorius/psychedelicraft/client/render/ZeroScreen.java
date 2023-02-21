@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.client.render;
 
-import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -20,8 +19,6 @@ public class ZeroScreen extends RenderLayer {
     public static final float X_PIXELS = 140 / 2F;
     public static final float Y_PIXELS = 224 / 2F;
 
-    private static final Random RNG = new Random(0L);
-
     protected static final ShaderProgram ZERO_MATTER_PROGRAM = new ShaderProgram(PSShaders::getRenderTypeZeroMatterProgram);
 
     private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> of("ps_zero_screen",
@@ -30,17 +27,18 @@ public class ZeroScreen extends RenderLayer {
             .transparency(TRANSLUCENT_TRANSPARENCY)
             .lightmap(DISABLE_LIGHTMAP)
             .program(ZERO_MATTER_PROGRAM)
+            .cull(DISABLE_CULLING)
             .texture(new RenderPhase.Texture(texture, false, false))
             .build(false)
     ));
 
     public static void render(float ticks, Renderable action) {
         int seed = MathHelper.floor(ticks * 0.5F);
-        RNG.setSeed(seed);
+        var rng = RenderUtil.random(seed);
         action.render(
                 PS_ZERO_SCREEN.apply(TEXTURES[seed % TEXTURES.length]),
-                RNG.nextInt(10) * 0.1F * ZeroScreen.X_PIXELS,
-                RNG.nextInt(8) * 0.125f * ZeroScreen.Y_PIXELS
+                rng.nextInt(10) * 0.1F * ZeroScreen.X_PIXELS,
+                rng.nextInt(8) * 0.125f * ZeroScreen.Y_PIXELS
         );
     }
 

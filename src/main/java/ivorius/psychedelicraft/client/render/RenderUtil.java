@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.client.render;
 
+import java.util.Random;
+
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -25,6 +27,12 @@ public class RenderUtil {
     private static final Vector4f POSITION_VECTOR = new Vector4f();
     private static final Vector3f NORMAL_VECTOR = new Vector3f();
     public static final int SCREEN_Z_OFFSET = -90;
+    private static final Random RNG = new Random(0L);
+
+    public static Random random(long seed) {
+        RNG.setSeed(seed);
+        return RNG;
+    }
 
     public static void setColor(int color, boolean hasAlpha) {
         RenderSystem.setShaderColor(

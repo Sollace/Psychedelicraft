@@ -10,8 +10,6 @@ import net.minecraft.util.math.MathHelper;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 
-import java.util.Random;
-
 /**
  * Created by lukas on 25.02.14.
  */
@@ -29,7 +27,7 @@ public interface DrugEffectInterpreter {
         if (amplitude <= 0) {
             return 0;
         }
-        return (new Random((long) (ticks * 1000)).nextFloat() - 0.5F) * 0.05F * amplitude;
+        return (RenderUtil.random((long)(ticks * 1000)).nextFloat() - 0.5F) * 0.05F * amplitude;
     }
 
     static float getHandShiftY(DrugProperties drugProperties, float ticks) {
@@ -41,6 +39,6 @@ public interface DrugEffectInterpreter {
         if (amplitude <= 0) {
             return 0;
         }
-        return (new Random((long) (ticks * 1000.0f)).nextFloat() - 0.5f) * 0.015f * amplitude;
+        return (RenderUtil.random((long)(ticks * 1000)).nextFloat() - 0.5f) * 0.015f * amplitude;
     }
 }
