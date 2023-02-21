@@ -163,12 +163,17 @@ public class DrugRenderer {
             alpha += forcedAlpha;
             alpha /= 2F;
         }
+
         for (Hallucination h : hallucinations.getEntities()) {
             try {
                 h.render(matrices, vertices, camera, tickDelta, alpha);
             } catch (Throwable t) {
                 Psychedelicraft.LOGGER.fatal("Exception occured whilst rendering hallucination ", t);
                 h.setDead();
+                // clean up the matrix stack after an error
+                while (!matrices.isEmpty()) {
+                    matrices.pop();
+                }
             }
         }
     }
