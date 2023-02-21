@@ -53,7 +53,17 @@ public interface PSBlocks {
 
     Block LATTICE = register("lattice", new LatticeBlock(Block.Settings.of(Material.WOOD)
             .sounds(BlockSoundGroup.WOOD).hardness(0.3F).nonOpaque()));
-    Block WINE_GRAPE_LATTICE = register("wine_grape_lattice", new WineGrapeLatticeBlock(Block.Settings.of(Material.WOOD)
+    Block WINE_GRAPE_LATTICE = register("wine_grape_lattice", new BurdenedLatticeBlock(true, null, 1, Block.Settings.of(Material.WOOD)
+            .sounds(BlockSoundGroup.WOOD).hardness(0.3F).ticksRandomly().nonOpaque()
+    ));
+    Block MORNING_GLORY = register("morning_glory", new VineStemBlock(() -> PSBlocks.MORNING_GLORY_LATTICE, Block.Settings.of(Material.PLANT)
+            .noCollision()
+            .breakInstantly()
+            .ticksRandomly()
+            .sounds(BlockSoundGroup.GRASS)
+            .offsetType(AbstractBlock.OffsetType.XZ)
+    ));
+    Block MORNING_GLORY_LATTICE = register("morning_glory_lattice", new BurdenedLatticeBlock(true, MORNING_GLORY, 2, Block.Settings.of(Material.WOOD)
             .sounds(BlockSoundGroup.WOOD).hardness(0.3F).ticksRandomly().nonOpaque()
     ));
 
@@ -77,6 +87,7 @@ public interface PSBlocks {
         FlammableBlockRegistry.getDefaultInstance().add(JUNIPER_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(LATTICE, 5, 20);
         FlammableBlockRegistry.getDefaultInstance().add(WINE_GRAPE_LATTICE, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(MORNING_GLORY_LATTICE, 5, 20);
 
         StrippableBlockRegistry.register(JUNIPER_LOG, STRIPPED_JUNIPER_LOG);
         StrippableBlockRegistry.register(JUNIPER_WOOD, STRIPPED_JUNIPER_WOOD);

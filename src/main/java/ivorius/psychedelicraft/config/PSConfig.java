@@ -26,6 +26,7 @@ public class PSConfig {
             static TickInfo DEFAULT = new TickInfo(40, 40, 30, 30);
 
             public TickInfo alcInfoWheatHop = new TickInfo(30, 60, 100, 30);
+            public TickInfo alcInfoKava = DEFAULT;
             public TickInfo alcInfoWheat = DEFAULT;
             public TickInfo alcInfoCorn = DEFAULT;
             public TickInfo alcInfoPotato = DEFAULT;
@@ -38,6 +39,7 @@ public class PSConfig {
             public TickInfo alcInfoPineapple = DEFAULT;
             public TickInfo alcInfoBanana = DEFAULT;
             public TickInfo alcInfoMilk = DEFAULT;
+            public TickInfo alcInfoFlowerExtract = DEFAULT;
 
             public static class TickInfo {
                 public int ticksPerFermentation;

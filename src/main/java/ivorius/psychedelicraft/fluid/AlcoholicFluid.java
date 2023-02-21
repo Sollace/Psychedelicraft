@@ -10,7 +10,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -42,15 +41,15 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getDrugInfluencesPerLiter(ItemStack fluidStack, List<DrugInfluence> list) {
-        super.getDrugInfluencesPerLiter(fluidStack, list);
+    public void getDrugInfluencesPerLiter(ItemStack fluidStack, Consumer<DrugInfluence> consumer) {
+        super.getDrugInfluencesPerLiter(fluidStack, consumer);
 
         double alcohol =
                   settings.fermentationAlcohol * (FERMENTATION.get(fluidStack) / (double) FERMENTATION_STEPS)
                 + settings.distillationAlcohol * MathUtils.progress(DISTILLATION.get(fluidStack))
                 + settings.maturationAlcohol * MathUtils.progress(MATURATION.get(fluidStack) * 0.2F);
 
-        list.add(new DrugInfluence(DrugType.ALCOHOL, 20, 0.003, 0.002, alcohol));
+        consumer.accept(new DrugInfluence(settings.drugType, 20, 0.003, 0.002, alcohol));
     }
 
     @Override
@@ -196,7 +195,14 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         private int matureColor = 0xcc592518;
         private int distilledColor = 0x33ffffff;
 
+        DrugType drugType = DrugType.ALCOHOL;
+
         public Supplier<PSConfig.Balancing.FluidProperties.TickInfo> tickInfo;
+
+        public Settings drug(DrugType drug) {
+            this.drugType = drug;
+            return this;
+        }
 
         public Settings matureColor(int matureColor) {
             this.matureColor = matureColor;

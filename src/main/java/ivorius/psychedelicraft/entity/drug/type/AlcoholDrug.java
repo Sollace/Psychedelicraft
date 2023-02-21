@@ -8,7 +8,6 @@ package ivorius.psychedelicraft.entity.drug.type;
 import ivorius.psychedelicraft.PSDamageSources;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -57,25 +56,11 @@ public class AlcoholDrug extends SimpleDrug {
 
             double motionEffect = Math.min(activeValue, 0.8);
 
-//            player.motionX += MathHelper.sin(ticksExisted / 10.0F * (float) Math.PI) / 40.0F * motionEffect * (random.nextFloat() + 0.5F);
-//            player.motionZ += MathHelper.cos(ticksExisted / 10.0F * (float) Math.PI) / 40.0F * motionEffect * (random.nextFloat() + 0.5F);
-//
-//            player.motionX *= (random.nextFloat() - 0.5F) * 2 * motionEffect + 1.0F;
-//            player.motionZ *= (random.nextFloat() - 0.5F) * 2 * motionEffect + 1.0F;
-
             rotateEntityPitch(entity, MathHelper.sin(ticksExisted / 600F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
             rotateEntityYaw(entity, MathHelper.cos(ticksExisted / 500F * (float) Math.PI) / 1.3F * motionEffect * (random.nextFloat() + 0.5F));
 
             rotateEntityPitch(entity, MathHelper.sin(ticksExisted / 180F * (float) Math.PI) / 3F * motionEffect * (random.nextFloat() + 0.5F));
             rotateEntityYaw(entity, MathHelper.cos(ticksExisted / 150F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
         }
-    }
-
-    public static void rotateEntityPitch(Entity entity, double amount) {
-        entity.setPitch((float)MathHelper.clamp(entity.getPitch() + amount, -90, 90));
-    }
-
-    public static void rotateEntityYaw(Entity entity, double amount) {
-        entity.setYaw(entity.getYaw() + (float)amount);
     }
 }

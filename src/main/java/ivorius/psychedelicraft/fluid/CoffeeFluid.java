@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import ivorius.psychedelicraft.PSTags;
@@ -27,11 +26,11 @@ public class CoffeeFluid extends DrugFluid {
     }
 
     @Override
-    public void getDrugInfluencesPerLiter(ItemStack stack, List<DrugInfluence> list) {
-        super.getDrugInfluencesPerLiter(stack, list);
+    public void getDrugInfluencesPerLiter(ItemStack stack, Consumer<DrugInfluence> consumer) {
+        super.getDrugInfluencesPerLiter(stack, consumer);
         float warmth = (float)WARMTH.get(stack) / 2F;
-        list.add(new DrugInfluence(DrugType.CAFFEINE, 20, 0.002, 0.001, 0.25F + warmth * 0.05F));
-        list.add(new DrugInfluence(DrugType.WARMTH, 0, 0, 0.1, 0.8F * warmth));
+        consumer.accept(new DrugInfluence(DrugType.CAFFEINE, 20, 0.002, 0.001, 0.25F + warmth * 0.05F));
+        consumer.accept(new DrugInfluence(DrugType.WARMTH, 0, 0, 0.1, 0.8F * warmth));
     }
 
     @Override

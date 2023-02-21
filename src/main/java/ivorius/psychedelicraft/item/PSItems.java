@@ -131,6 +131,7 @@ public interface PSItems {
 
     Item LATTICE = register("lattice", PSBlocks.LATTICE);
     Item WINE_GRAPE_LATTICE = register("wine_grape_lattice", PSBlocks.WINE_GRAPE_LATTICE);
+    Item MORNING_GLORY_LATTICE = register("morning_glory_lattice", PSBlocks.MORNING_GLORY_LATTICE);
     Item BOTTLE_RACK = register("bottle_rack", PSBlocks.BOTTLE_RACK);
     Item DRYING_TABLE = register("drying_table", PSBlocks.DRYING_TABLE);
     Item IRON_DRYING_TABLE = register("iron_drying_table", PSBlocks.IRON_DRYING_TABLE);
@@ -141,6 +142,17 @@ public interface PSItems {
     Item OBSIDIAN_DUST = register("obsidian_dust", new CocainePowderItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.BATH_SALTS, 0, 0.002, 0.003, 0.35f)
+    ));
+
+    Item MORNING_GLORY = register("morning_glory");
+    Item MORNING_GLORY_SEEDS = register("morning_glory_seeds", new AliasedBlockItem(PSBlocks.MORNING_GLORY, new Settings()));
+    Item LSD_SQUARE = register("lsd_square", new EdibleItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.LSD, 6, 0.05, 0.003, 0.3F)
+    ));
+    Item LSD_PILL = register("lsd_pill", new EdibleItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.LSD, 6, 0.05, 0.003, 0.6F)
     ));
 
     BongItem SMOKING_PIPE = register("smoking_pipe", new BongItem(new Settings().maxDamage(50)))

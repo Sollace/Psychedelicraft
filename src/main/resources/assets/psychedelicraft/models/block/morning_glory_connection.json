@@ -1,0 +1,26 @@
+{
+  "ambientocclusion": false,
+	"textures": {
+		"connection": "psychedelicraft:block/morning_glory_connection"
+	},
+	"elements": [
+		{
+			"from": [8, -3, 7],
+			"to": [25, -3, 9],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [0, 0, 0]},
+			"faces": {
+				"up": {"uv": [0, 6, 16, 8], "texture": "#connection"},
+				"down": {"uv": [0, 6, 16, 8], "rotation": 180, "texture": "#connection"}
+			}
+		},
+		{
+			"from": [8, -5, 8],
+			"to": [25, 3, 8],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [0, 0, 0]},
+			"faces": {
+				"north": {"uv": [0, 8, 16, 16], "texture": "#connection"},
+				"south": {"uv": [0, 8, 16, 16], "texture": "#connection"}
+			}
+		}
+	]
+}

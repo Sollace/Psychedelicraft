@@ -11,9 +11,9 @@ import net.minecraft.util.math.MathHelper;
 /**
  * Created by Sollace on Feb 6 2023.
  */
-public class AcidDrug extends SimpleDrug {
-    public AcidDrug(double decSpeed, double decSpeedPlus) {
-        super(DrugType.ACID, decSpeed, decSpeedPlus);
+public class LsdDrug extends SimpleDrug {
+    public LsdDrug(double decSpeed, double decSpeedPlus) {
+        super(DrugType.LSD, decSpeed, decSpeedPlus);
     }
 
     @Override
@@ -38,12 +38,8 @@ public class AcidDrug extends SimpleDrug {
 
     @Override
     public float soundVolumeModifier() {
-        return 1 - (float) getActiveValue();
-    }
-
-    @Override
-    public float motionBlur() {
-        return 0;//(float) getActiveValue() * 0.03F;
+        float strength = (MathHelper.clamp(getTicksActive(), 50, 250) - 50) / 200F;
+        return 1 + (float)getActiveValue() * 1.75f * strength;
     }
 
     @Override
@@ -59,6 +55,11 @@ public class AcidDrug extends SimpleDrug {
     @Override
     public float bloomHallucinationStrength() {
         return (float) getActiveValue() * 0.12F;
+    }
+
+    @Override
+    public float superSaturationHallucinationStrength() {
+        return (float)getActiveValue() * 0.8F;
     }
 
     @Override

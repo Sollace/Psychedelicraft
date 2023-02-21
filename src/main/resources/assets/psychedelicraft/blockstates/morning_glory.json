@@ -1,0 +1,79 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_stage_0"
+      },
+      "when": {
+        "age": 0
+      }
+    },
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_stage_1"
+      },
+      "when": {
+        "age": 1
+      }
+    },
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_stage_2"
+      },
+      "when": {
+        "age": 2
+      }
+    },
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_stage_3"
+      },
+      "when": {
+        "age": 3
+      }
+    },
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_stage_3"
+      },
+      "when": {
+        "age": 4
+      }
+    },
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_connection",
+        "y": 270
+      },
+      "when": {
+        "north": true
+      }
+    },
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_connection",
+        "y": 90
+      },
+      "when": {
+        "south": true
+      }
+    },
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_connection"
+      },
+      "when": {
+        "east": true
+      }
+    },
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_connection",
+        "y": 180
+      },
+      "when": {
+        "west": true
+      }
+    }
+  ]
+}

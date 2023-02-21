@@ -1,0 +1,6 @@
+{
+  "parent": "psychedelicraft:block/morning_glory_lattice_0",
+  "textures": {
+    "grapes": "psychedelicraft:block/morning_glory_lattice_2"
+  }
+}

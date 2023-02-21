@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Created by lukas on 22.10.14.
@@ -42,45 +43,34 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
         this.drugInfluences = settings.drugInfluences;
     }
 
-    public boolean isDrinkable() {
-        return settings.drinkable;
-    }
-
-    public boolean isInjectable() {
-        return settings.injectable;
-    }
-
     @Nullable
     public FoodComponent getFoodLevel(ItemStack fluidStack) {
         return foodLevel;
     }
 
     public void getDrugInfluences(ItemStack fluidStack, List<DrugInfluence> list) {
-        List<DrugInfluence> influencesPerLiter = new ArrayList<>();
-        getDrugInfluencesPerLiter(fluidStack, influencesPerLiter);
-
-        for (DrugInfluence influence : influencesPerLiter) {
+        getDrugInfluencesPerLiter(fluidStack, influence -> {
             DrugInfluence clone = influence.clone();
             clone.setMaxInfluence(clone.getMaxInfluence() * FluidContainer.of(fluidStack).getLevel(fluidStack) / FluidVolumes.BUCKET);
             list.add(clone);
-        }
+        });
     }
 
-    public void getDrugInfluencesPerLiter(ItemStack fluidStack, List<DrugInfluence> list) {
-        list.addAll(drugInfluences);
+    public void getDrugInfluencesPerLiter(ItemStack stack, Consumer<DrugInfluence> consumer) {
+        drugInfluences.forEach(consumer);
     }
 
     @Override
     public boolean canConsume(ItemStack fluidStack, LivingEntity entity, ConsumptionType type) {
         if (type == ConsumptionType.DRINK) {
-            return isDrinkable() && (
+            return settings.drinkable && (
                     !(entity instanceof PlayerEntity)
                     || getFoodLevel(fluidStack) == null
                     || ((PlayerEntity) entity).getHungerManager().isNotFull()
                 );
         }
 
-        return isInjectable();
+        return settings.injectable;
     }
 
     @Override
@@ -135,7 +125,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
 
     @Override
     public boolean isSuitableContainer(FluidContainer container) {
-        return container != PSItems.WOODEN_MUG && !isInjectable();
+        return container != PSItems.WOODEN_MUG && !settings.injectable;
     }
 
     public static class Settings extends SimpleFluid.Settings {

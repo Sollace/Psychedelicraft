@@ -12,6 +12,8 @@
   "item.psychedelicraft.wine_grapes": "Wine Grapes",
   "item.psychedelicraft.hop_cones": "Hop Cones",
   "item.psychedelicraft.hop_seeds": "Hop Seeds",
+  "item.psychedelicraft.morning_glory": "Morning Glory",
+  "item.psychedelicraft.morning_glory_seeds": "Morning Glory Seeds",
   "item.psychedelicraft.cannabis_seeds": "Cannabis Seeds",
   "item.psychedelicraft.cannabis_leaf": "Cannabis Leaf",
   "item.psychedelicraft.dried_cannabis_leaf": "Dried Cannabis Leaf",
@@ -75,6 +77,8 @@
   "block.psychedelicraft.rift_jar.over_filled": "Overflowing",
   "block.psychedelicraft.lattice": "Wooden Lattice",
   "block.psychedelicraft.wine_grape_lattice": "Wooden Lattice with Grapes",
+  "block.psychedelicraft.morning_glory_lattice": "Wooden Lattice with Morning Glories",
+  "block.psychedelicraft.morning_glory": "Morning Glory",
   "block.psychedelicraft.oak_barrel": "Oak Barrel",
   "block.psychedelicraft.birch_barrel": "Birch Barrel",
   "block.psychedelicraft.spruce_barrel": "Spruce Barrel",
@@ -109,6 +113,18 @@
   "psychedelicraft.sleep.fail.caffiene": "You do not feel tired",
 
   "fluid.psychedelicraft.empty": "Empty",
+
+  "fluid.psychedelicraft.morning_glory_extract.distilled.0": "Morning Glory Extract",
+  "fluid.psychedelicraft.morning_glory_extract.distilled.1": "Morning Glory Perfume",
+  "fluid.psychedelicraft.morning_glory_extract.distilled.2": "Morning Glory Concentrate",
+
+  "fluid.psychedelicraft.belladonna_extract.distilled.0": "Belladonna Extract",
+  "fluid.psychedelicraft.belladonna_extract.distilled.1": "Belladonna Perfume",
+  "fluid.psychedelicraft.belladonna_extract.distilled.2": "Belladonna Concentrate",
+
+  "fluid.psychedelicraft.jimsonweede.distilled.0": "Jimsonweed Extract",
+  "fluid.psychedelicraft.jimsonweede.distilled.1": "Jimsonweed Perfume",
+  "fluid.psychedelicraft.jimsonweede.distilled.2": "Jimsonweed Concentrate",
 
   "fluid.psychedelicraft.wheat_hop": "Bitter Wheat Wort",
   "fluid.psychedelicraft.wheat_hop.vinegar": "Bitter Beer Vinegar",
@@ -237,7 +253,7 @@
   "death.attack.coma": "%1$s fell into a coma",
   "death.attack.heart_failure": "%1$s's heart stopped beating",
   "death.attack.kidney_failure": "%1$s's kidneys exploded",
-  "death.attack.respiratory_failure": "%1$s lungs collapsed",  
+  "death.attack.respiratory_failure": "%1$s lungs collapsed",
   "death.attack.in_sleep": "%1$s died in their sleep",
 
   "death.attack.molotov": "%1$s was toasted by %2$s",

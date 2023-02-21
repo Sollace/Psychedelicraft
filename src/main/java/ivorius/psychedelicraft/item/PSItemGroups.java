@@ -52,6 +52,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.COCAINE));
                 entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.CAFFEINE));
                 entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.BATH_SALTS));
+                entries.add(ChemicalExtractFluid.DISTILLATION.set(PSItems.SYRINGE.getDefaultStack(PSFluids.MORNING_GLORY_EXTRACT), 2));
 
                 entries.add(PSItems.COFFEA_CHERRIES);
                 entries.add(PSItems.COFFEE_BEANS);
@@ -59,6 +60,10 @@ public interface PSItemGroups {
                 entries.add(PSItems.OBSIDIAN_BOTTLE);
                 entries.add(PSItems.OBSIDIAN_DUST);
 
+                entries.add(PSItems.MORNING_GLORY);
+                entries.add(PSItems.MORNING_GLORY_SEEDS);
+                entries.add(PSItems.LSD_SQUARE);
+                entries.add(PSItems.LSD_PILL);
                 entries.add(PSItems.TOBACCO_SEEDS);
                 entries.add(PSItems.TOBACCO_LEAVES);
                 entries.add(PSItems.DRIED_TOBACCO);

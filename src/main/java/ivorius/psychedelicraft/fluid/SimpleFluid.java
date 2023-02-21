@@ -198,11 +198,11 @@ public class SimpleFluid {
     public abstract static class Attribute<T extends Comparable<T>> {
         public abstract T get(ItemStack stack);
 
-        public abstract T set(ItemStack stack, T value);
+        public abstract ItemStack set(ItemStack stack, T value);
 
         public abstract T get(MutableFluidContainer stack);
 
-        public abstract T set(MutableFluidContainer stack, T value);
+        public abstract MutableFluidContainer set(MutableFluidContainer stack, T value);
 
         public static Attribute<Integer> ofInt(String name, int min, int max) {
             return new Attribute<>() {
@@ -212,9 +212,9 @@ public class SimpleFluid {
                 }
 
                 @Override
-                public Integer set(ItemStack stack, Integer value) {
+                public ItemStack set(ItemStack stack, Integer value) {
                     FluidContainer.getFluidAttributesTag(stack, false).putInt(name, value);
-                    return value;
+                    return stack;
                 }
 
                 @Override
@@ -223,11 +223,11 @@ public class SimpleFluid {
                 }
 
                 @Override
-                public Integer set(MutableFluidContainer stack, Integer value) {
+                public MutableFluidContainer set(MutableFluidContainer stack, Integer value) {
                     NbtCompound attributes = stack.getAttributes();
                     attributes.putInt(name, value);
                     stack.withAttributes(attributes);
-                    return value;
+                    return stack;
                 }
             };
         }
@@ -240,9 +240,9 @@ public class SimpleFluid {
                 }
 
                 @Override
-                public Boolean set(ItemStack stack, Boolean value) {
+                public ItemStack set(ItemStack stack, Boolean value) {
                     FluidContainer.getFluidAttributesTag(stack, false).putBoolean(name, value);
-                    return value;
+                    return stack;
                 }
 
                 @Override
@@ -251,11 +251,11 @@ public class SimpleFluid {
                 }
 
                 @Override
-                public Boolean set(MutableFluidContainer stack, Boolean value) {
+                public MutableFluidContainer set(MutableFluidContainer stack, Boolean value) {
                     NbtCompound attributes = stack.getAttributes();
                     attributes.putBoolean(name, value);
                     stack.withAttributes(attributes);
-                    return value;
+                    return stack;
                 }
             };
         }

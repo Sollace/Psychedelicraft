@@ -1,0 +1,14 @@
+{
+  "type": "psychedelicraft:fill_receptical",
+  "receptical": { "tag": "psychedelicraft:drink_recepticals" },
+  "ingredients": [
+    { "item": "minecraft:water_bucket" },
+    { "tag": "psychedelicraft:morning_glories" },
+    { "tag": "psychedelicraft:morning_glories" },
+    { "tag": "psychedelicraft:morning_glories" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:morning_glory_extract",
+    "level": 500
+  }
+}

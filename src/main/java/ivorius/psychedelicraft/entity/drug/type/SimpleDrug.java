@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -24,6 +25,8 @@ public class SimpleDrug implements Drug {
     private final boolean invisible;
 
     private final DrugType type;
+
+    private int ticksActive;
 
     public SimpleDrug(DrugType type, double decSpeed, double decSpeedPlus) {
         this(type, decSpeed, decSpeedPlus, false);
@@ -55,6 +58,10 @@ public class SimpleDrug implements Drug {
         return effect;
     }
 
+    public int getTicksActive() {
+        return ticksActive;
+    }
+
     @Override
     public void setDesiredValue(double value) {
         effect = value;
@@ -84,6 +91,12 @@ public class SimpleDrug implements Drug {
 
     @Override
     public void update(DrugProperties drugProperties) {
+        if (getActiveValue() > 0) {
+            ticksActive++;
+        } else {
+            ticksActive = 0;
+        }
+
         if (!locked) {
             effect *= decreaseSpeed;
             effect -= decreaseSpeedPlus;
@@ -106,10 +119,11 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
-    public void fromNbt(NbtCompound par1NBTTagCompound) {
-        setDesiredValue(par1NBTTagCompound.getDouble("effect"));
-        setActiveValue(par1NBTTagCompound.getDouble("effectActive"));
-        setLocked(par1NBTTagCompound.getBoolean("locked"));
+    public void fromNbt(NbtCompound compound) {
+        setDesiredValue(compound.getDouble("effect"));
+        setActiveValue(compound.getDouble("effectActive"));
+        setLocked(compound.getBoolean("locked"));
+        ticksActive = compound.getInt("ticksActive");
     }
 
     @Override
@@ -117,6 +131,7 @@ public class SimpleDrug implements Drug {
         compound.putDouble("effect", getDesiredValue());
         compound.putDouble("effectActive", getActiveValue());
         compound.putBoolean("locked", isLocked());
+        compound.putInt("ticksActive", ticksActive);
     }
 
     @Override
@@ -132,5 +147,13 @@ public class SimpleDrug implements Drug {
     @Override
     public void applyColorBloom(float[] rgba) {
 
+    }
+
+    protected static void rotateEntityPitch(Entity entity, double amount) {
+        entity.setPitch((float)MathHelper.clamp(entity.getPitch() + amount, -90, 90));
+    }
+
+    protected static void rotateEntityYaw(Entity entity, double amount) {
+        entity.setYaw(entity.getYaw() + (float)amount);
     }
 }
