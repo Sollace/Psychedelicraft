@@ -27,6 +27,7 @@ public interface Drug extends NbtSerialisable {
     AggregateModifier HEAD_MOTION_INERTNESS = AggregateModifier.create(0, Drug::headMotionInertness, AggregateModifier.Combiner.SUM);
     AggregateModifier VIEW_TREMBLE_STRENGTH = AggregateModifier.create(0, Drug::viewTrembleStrength, AggregateModifier.Combiner.INVERSE_MUL);
     AggregateModifier VIEW_WOBBLYNESS = AggregateModifier.create(0, Drug::viewWobblyness, AggregateModifier.Combiner.SUM);
+    AggregateModifier DROWSYNESS = AggregateModifier.create(0, Drug::drowsyness, AggregateModifier.Combiner.SUM);
     AggregateModifier HAND_TREMBLE_STRENGTH = AggregateModifier.create(0, Drug::handTrembleStrength, AggregateModifier.Combiner.INVERSE_MUL);
     AggregateModifier DOUBLE_VISION = AggregateModifier.create(0, Drug::doubleVision, AggregateModifier.Combiner.INVERSE_MUL);
 
@@ -150,6 +151,11 @@ public interface Drug extends NbtSerialisable {
     }
 
     default float viewWobblyness() {
+        return 0;
+    }
+
+    default float drowsyness() {
+        // TODO
         return 0;
     }
 

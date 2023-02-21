@@ -137,6 +137,11 @@ public interface PSFluids {
             .color(0x779bab62)
             .viscocity(2)
     );
+    DrugFluid KAVA = new DrugFluid(Psychedelicraft.id("kava"), new DrugFluid.Settings()
+            .drinkable()
+            .influence(new DrugInfluence(DrugType.KAVA, 20, 0.005, 0.003, 2.0f))
+            .color(0x779bab62)
+    );
 
     DrugFluid COCAINE = new DrugFluid(Psychedelicraft.id("cocaine"), new DrugFluid.Settings()
             .injectable()

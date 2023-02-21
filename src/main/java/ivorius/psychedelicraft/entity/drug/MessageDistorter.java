@@ -45,7 +45,7 @@ public class MessageDistorter {
 
     private String distortMessage(DrugProperties properties, String message) {
 
-        float alcohol = properties.getDrugValue(DrugType.ALCOHOL);
+        float alcohol = Math.min(properties.getDrugValue(DrugType.ALCOHOL) + properties.getDrugValue(DrugType.KAVA), 1);
         float zero = properties.getDrugValue(DrugType.ZERO);
         float cannabis = properties.getDrugValue(DrugType.CANNABIS);
         if (alcohol > 0 || zero > 0 || cannabis > 0) {
