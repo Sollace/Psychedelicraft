@@ -9,18 +9,23 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.effect.*;
 import ivorius.psychedelicraft.client.render.shader.PostEffectRenderer;
+import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.hallucination.DriftingCamera;
 import ivorius.psychedelicraft.entity.drug.hallucination.Hallucination;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -83,8 +88,7 @@ public class DrugRenderer {
 
         float wobblyness = Math.min(1, properties.getModifier(Drug.VIEW_WOBBLYNESS));
 
-        int frame = properties.asEntity().age;
-        float tick = frame + tickDelta;
+        float tick = properties.asEntity().age + tickDelta;
 
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
         DriftingCamera driftingCam = properties.getHallucinations().getCamera();
@@ -137,14 +141,44 @@ public class DrugRenderer {
 
     public void distortHand(MatrixStack matrices) {
         MinecraftClient client = MinecraftClient.getInstance();
-        int rendererUpdateCount = client.inGameHud.getTicks();
-        float partialTicks = client.getTickDelta();
+        if (client == null) {
+            return;
+        }
+        float ticks = ShaderContext.ticks();
 
         DrugProperties.of((Entity)client.player).ifPresent(drugProperties -> {
-            float shiftX = DrugEffectInterpreter.getHandShiftX(drugProperties, rendererUpdateCount + partialTicks);
-            float shiftY = DrugEffectInterpreter.getHandShiftY(drugProperties, rendererUpdateCount + partialTicks);
+            float shiftX = DrugEffectInterpreter.getHandShiftX(drugProperties, ticks);
+            float shiftY = DrugEffectInterpreter.getHandShiftY(drugProperties, ticks);
             matrices.translate(shiftX, shiftY, 0);
         });
+    }
+
+    public void poseModel(PlayerEntity player, BipedEntityModel<?> model) {
+        ModelPart head = model.getHead();
+        ModelPart leftArm = model.leftArm;
+        ModelPart rightArm = model.rightArm;
+
+        DrugProperties properties = DrugProperties.of(player);
+        float tick = player.age + MinecraftClient.getInstance().getTickDelta();
+        float shiftX = DrugEffectInterpreter.getHandShiftX(properties, tick) * 2;
+
+        leftArm.pitch += shiftX;
+        rightArm.pitch -= shiftX;
+
+        float shiftY = DrugEffectInterpreter.getHandShiftY(properties, tick);
+
+        leftArm.roll += shiftY;
+        rightArm.roll -= shiftY;
+
+        head.pitch += DrugEffectInterpreter.getCameraShiftX(properties, tick);
+        head.yaw += DrugEffectInterpreter.getCameraShiftY(properties, tick);
+        head.roll = DrugEffectInterpreter.getAlcohol(properties);
+
+        if (model instanceof PlayerEntityModel<?> pem) {
+            pem.hat.copyTransform(head);
+            pem.leftSleeve.copyTransform(leftArm);
+            pem.rightSleeve.copyTransform(rightArm);
+        }
     }
 
     public void onRenderOverlay(MatrixStack matrices, float tickDelta) {

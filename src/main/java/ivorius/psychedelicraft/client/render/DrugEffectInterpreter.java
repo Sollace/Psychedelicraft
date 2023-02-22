@@ -9,6 +9,7 @@ import net.minecraft.util.math.MathHelper;
 
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.DrugType;
 
 /**
  * Created by lukas on 25.02.14.
@@ -40,5 +41,9 @@ public interface DrugEffectInterpreter {
             return 0;
         }
         return (RenderUtil.random((long)(ticks * 1000)).nextFloat() - 0.5f) * 0.015f * amplitude;
+    }
+
+    static float getAlcohol(DrugProperties properties) {
+        return MathHelper.clamp(properties.getDrugValue(DrugType.ALCOHOL) + properties.getDrugValue(DrugType.KAVA), 0, 1);
     }
 }
