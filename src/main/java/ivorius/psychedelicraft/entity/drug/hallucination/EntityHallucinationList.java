@@ -64,7 +64,7 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
     }
 
     public float getForcedAlpha(float tickDelta) {
-        float ticks = manager.getProperties().age + tickDelta;
+        float ticks = manager.getProperties().getAge() + tickDelta;
         float percent = MathHelper.lerp(tickDelta, prevForcedTicks, forcedTicks) / 400F;
         if (percent <= 0.01F) {
             return 0;

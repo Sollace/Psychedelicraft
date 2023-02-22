@@ -43,7 +43,7 @@ public class DriftingCamera {
         prevPosition = position;
         prevRotation = rotation;
 
-        float weightlessness = properties.getModifier(Drug.WEIGHTLESSNESS) * MathHelper.sin(properties.age / 100F);//
+        float weightlessness = properties.getModifier(Drug.WEIGHTLESSNESS) * MathHelper.sin(properties.getAge() / 100F);//
 
         if (weightlessness != 0) {
             PlayerEntity player = properties.asEntity();
@@ -75,9 +75,9 @@ public class DriftingCamera {
                     rotation.y % MathHelper.PI,
                     rotation.z % MathHelper.PI
             ).add(
-                    0.001 * MathHelper.sin(properties.age / 200F),
-                    0.001 * MathHelper.sin(properties.age / 300F),
-                    0.001 * MathHelper.sin(properties.age / 400F)
+                    0.001 * MathHelper.sin(player.age / 200F),
+                    0.001 * MathHelper.sin(player.age / 300F),
+                    0.001 * MathHelper.sin(player.age / 400F)
             );
             totalRotation = rotation.lengthSquared();
 

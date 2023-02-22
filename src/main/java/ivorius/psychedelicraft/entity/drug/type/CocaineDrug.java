@@ -33,12 +33,10 @@ public class CocaineDrug extends SimpleDrug {
         if (getActiveValue() > 0) {
             PlayerEntity entity = drugProperties.asEntity();
             Random random = entity.world.random;
-            int ticksExisted = drugProperties.age;
-
             if (!entity.world.isClient) {
                 double chance = (getActiveValue() - 0.8F) * 0.1F;
 
-                if (ticksExisted % 20 == 0 && random.nextFloat() < chance) {
+                if (entity.age % 20 == 0 && random.nextFloat() < chance) {
                     entity.damage(random.nextFloat() < 0.4F
                             ? PSDamageSources.STROKE
                             : random.nextFloat() < 0.5F

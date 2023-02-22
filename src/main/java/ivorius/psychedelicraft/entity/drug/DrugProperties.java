@@ -30,6 +30,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.*;
 
 import org.jetbrains.annotations.Nullable;
@@ -38,10 +39,8 @@ import org.joml.Vector3f;
 public class DrugProperties implements NbtSerialisable {
     public static final UUID DRUG_EFFECT_UUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1");
 
-    public int age = 0;
-
-    private Map<DrugType, Drug> drugs = new HashMap<>();
-    private List<DrugInfluence> influences = new ArrayList<>();
+    private final Map<DrugType, Drug> drugs = DrugType.REGISTRY.stream().collect(Collectors.toMap(Function.identity(), DrugType::create));
+    private final List<DrugInfluence> influences = new ArrayList<>();
 
     private boolean dirty;
 
@@ -144,8 +143,12 @@ public class DrugProperties implements NbtSerialisable {
         return timeBreathingSmoke > 0;
     }
 
+    public int getAge() {
+        return entity.age;
+    }
+
     public void onTick() {
-        if (age % 5 == 0) { //4 times / sec is enough
+        if (entity.age % 5 == 0) { //4 times / sec is enough
             influences.removeIf(influence -> {
                 if (influence.update(this)) {
                     markDirty();
@@ -197,15 +200,9 @@ public class DrugProperties implements NbtSerialisable {
 
         changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_MOVEMENT_SPEED, getModifier(Drug.SPEED));
 
-        age++;
-
         if (dirty) {
             dirty = false;
-
-            if (!entity.world.isClient) {
-                Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this), entity);
-                Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this), (ServerPlayerEntity)entity);
-            }
+            sendCapabilities();
         }
 
         if (!entity.world.isClient && Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0) {
@@ -215,20 +212,26 @@ public class DrugProperties implements NbtSerialisable {
         }
     }
 
+    public void sendCapabilities() {
+        if (!entity.world.isClient) {
+            Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this), entity);
+            Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this), (ServerPlayerEntity)entity);
+        }
+    }
+
     @Override
     public void fromNbt(NbtCompound tagCompound) {
         NbtCompound drugData = tagCompound.getCompound("Drugs");
-        drugs = new HashMap<>();
+        drugs.clear();
         drugData.getKeys().forEach(key -> {
             DrugType.REGISTRY.getOrEmpty(Identifier.tryParse(key)).ifPresent(type -> {
                 getDrug(type).fromNbt(drugData.getCompound(key));
             });
         });
-        influences = new ArrayList<>();
+        influences.clear();
         tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE).forEach(tag -> {
             DrugInfluence.loadFromNbt((NbtCompound)tag).ifPresent(this::addToDrug);
         });
-        age = tagCompound.getInt("age");
         dirty = false;
     }
 
@@ -245,7 +248,6 @@ public class DrugProperties implements NbtSerialisable {
             influenceTagList.add(influence.toNbt());
         }
         compound.put("drugInfluences", influenceTagList);
-        compound.putInt("age", age);
     }
 
     public boolean onAwoken() {

@@ -40,27 +40,26 @@ public class AlcoholDrug extends SimpleDrug {
         super.update(drugProperties);
 
         if (getActiveValue() > 0) {
-            int ticksExisted = drugProperties.age;
             PlayerEntity entity = drugProperties.asEntity();
             Random random = entity.getRandom();
 
             double activeValue = getActiveValue();
 
-            if ((ticksExisted % 20) == 0) {
+            if ((entity.age % 20) == 0) {
                 double damageChance = (activeValue - 0.9F) * 2;
 
-                if (ticksExisted % 20 == 0 && random.nextFloat() < damageChance) {
+                if (entity.age % 20 == 0 && random.nextFloat() < damageChance) {
                     entity.damage(PSDamageSources.ALCOHOL_POISONING, (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
                 }
             }
 
             double motionEffect = Math.min(activeValue, 0.8);
 
-            rotateEntityPitch(entity, MathHelper.sin(ticksExisted / 600F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
-            rotateEntityYaw(entity, MathHelper.cos(ticksExisted / 500F * (float) Math.PI) / 1.3F * motionEffect * (random.nextFloat() + 0.5F));
+            rotateEntityPitch(entity, MathHelper.sin(entity.age / 600F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
+            rotateEntityYaw(entity, MathHelper.cos(entity.age / 500F * (float) Math.PI) / 1.3F * motionEffect * (random.nextFloat() + 0.5F));
 
-            rotateEntityPitch(entity, MathHelper.sin(ticksExisted / 180F * (float) Math.PI) / 3F * motionEffect * (random.nextFloat() + 0.5F));
-            rotateEntityYaw(entity, MathHelper.cos(ticksExisted / 150F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
+            rotateEntityPitch(entity, MathHelper.sin(entity.age / 180F * (float) Math.PI) / 3F * motionEffect * (random.nextFloat() + 0.5F));
+            rotateEntityYaw(entity, MathHelper.cos(entity.age / 150F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
         }
     }
 }

@@ -72,7 +72,7 @@ public class HallucinationManager {
             float val = hallucinationStrengths.get(hKey);
 
             if (activeHallucinations.contains(hKey)) {
-                float desiredValue = MathUtils.randomColor(random, properties.age, hallucinationTypes.getMultiplier(hKey), 0.5f, 0.00121f, 0.0019318f);
+                float desiredValue = MathUtils.randomColor(random, properties.getAge(), hallucinationTypes.getMultiplier(hKey), 0.5f, 0.00121f, 0.0019318f);
 
                 val = MathUtils.nearValue(val, desiredValue, 0.002f, 0.002f);
                 hallucinationStrengths.put(hKey, val);
@@ -82,9 +82,9 @@ public class HallucinationManager {
             }
         }
 
-        currentMindColor[0] = MathUtils.nearValue(currentMindColor[0], MathUtils.randomColor(random, properties.age, 0.5f, 0.5f, 0.0012371f, 0.0017412f), 0.002f, 0.002f);
-        currentMindColor[1] = MathUtils.nearValue(currentMindColor[1], MathUtils.randomColor(random, properties.age, 0.5f, 0.5f, 0.0011239f, 0.0019321f), 0.002f, 0.002f);
-        currentMindColor[2] = MathUtils.nearValue(currentMindColor[2], MathUtils.randomColor(random, properties.age, 0.5f, 0.5f, 0.0011541f, 0.0018682f), 0.002f, 0.002f);
+        currentMindColor[0] = MathUtils.nearValue(currentMindColor[0], MathUtils.randomColor(random, properties.getAge(), 0.5f, 0.5f, 0.0012371f, 0.0017412f), 0.002f, 0.002f);
+        currentMindColor[1] = MathUtils.nearValue(currentMindColor[1], MathUtils.randomColor(random, properties.getAge(), 0.5f, 0.5f, 0.0011239f, 0.0019321f), 0.002f, 0.002f);
+        currentMindColor[2] = MathUtils.nearValue(currentMindColor[2], MathUtils.randomColor(random, properties.getAge(), 0.5f, 0.5f, 0.0011541f, 0.0018682f), 0.002f, 0.002f);
     }
 
     private void removeRandomHallucination(Random random) {
