@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.command.*;
 import ivorius.psychedelicraft.config.JsonConfig;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.PSEntities;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.item.PSItemGroups;
 import ivorius.psychedelicraft.item.PSItems;
@@ -20,6 +21,9 @@ import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import ivorius.psychedelicraft.world.gen.PSWorldGen;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.Identifier;
 
 import java.util.function.Supplier;
@@ -29,9 +33,6 @@ import org.apache.logging.log4j.Logger;
 
 public class Psychedelicraft implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
-
-    @Deprecated
-    public static final String SHADERS_PATH = "shaders/";
 
     private static final Supplier<JsonConfig.Loader<PSConfig>> CONFIG_LOADER = JsonConfig.create("psychedelicraft.json", PSConfig::new);
 
@@ -45,6 +46,16 @@ public class Psychedelicraft implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+            DrugProperties.of(player).sendCapabilities();
+        });
+        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+            DrugProperties.of(newPlayer).copyFrom(DrugProperties.of(oldPlayer), alive);
+        });
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            DrugProperties.of(handler.player).sendCapabilities();
+        });
+
         PSBlocks.bootstrap();
         PSItems.bootstrap();
         PSTags.bootstrap();

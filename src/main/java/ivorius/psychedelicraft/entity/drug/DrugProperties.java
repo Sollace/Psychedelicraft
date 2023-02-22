@@ -250,6 +250,18 @@ public class DrugProperties implements NbtSerialisable {
         compound.put("drugInfluences", influenceTagList);
     }
 
+    public void copyFrom(DrugProperties old, boolean alive) {
+        if (alive) {
+            influences.clear();
+            influences.addAll(old.influences);
+            drugs.clear();
+            drugs.putAll(old.drugs);
+            timeBreathingSmoke = old.timeBreathingSmoke;
+            breathSmokeColor = old.breathSmokeColor;
+            dirty = true;
+        }
+    }
+
     public boolean onAwoken() {
         drugs.values().forEach(drug -> drug.onWakeUp(this));
         influences.clear();
