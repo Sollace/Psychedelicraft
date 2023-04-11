@@ -19,6 +19,7 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.Heightmap.Type;
 
 /**
  * @author Sollace
@@ -57,8 +58,9 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         }
 
         wasInWater = entity.world.getFluidState(new BlockPos(entity.getEyePos())).isIn(FluidTags.WATER);
-        // TODO: (Sollace) The year is 2023. Can the client handle rain? I think it can now
-        //wasInRain = player.worldObj.getRainStrength(1.0f) > 0.0f && player.worldObj.getPrecipitationHeight(MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY)) <= player.posY; //Client can't handle rain
+        wasInRain = entity.world.getRainGradient(tickDelta) > 0
+                && entity.world.getBiome(entity.getBlockPos()).value().getDownfall() > 0
+                && entity.world.getTopPosition(Type.MOTION_BLOCKING, entity.getBlockPos()).getY() <= entity.getY();
 
         if (PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {
             timeScreenWet--;
