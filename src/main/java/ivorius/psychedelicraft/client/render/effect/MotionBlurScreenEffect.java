@@ -8,7 +8,10 @@ package ivorius.psychedelicraft.client.render.effect;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import com.mojang.blaze3d.platform.*;
+import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.platform.GlConst;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -18,9 +21,9 @@ import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 
 /**
@@ -75,11 +78,6 @@ public class MotionBlurScreenEffect implements ScreenEffect {
                 previousTicks += SAMPLE_FREQUENCY;
             }
 
-            if (pingPong != null) {
-                pingPong.pingPong();
-                ScreenEffect.drawScreen(screenWidth, screenHeight);
-            }
-
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
             textures.drawToScreen(currentSample);
@@ -107,7 +105,9 @@ public class MotionBlurScreenEffect implements ScreenEffect {
         public GlTextureSet(int samples, int width, int height) {
             this.width = width;
             this.height = height;
-            textures = IntStream.range(1, samples + 1).mapToObj(i -> new GlTexture(i, width, height)).toList();
+            textures = IntStream.range(1, samples + 1)
+                    .mapToObj(i -> new GlTexture(i, width, height))
+                    .toList();
         }
 
         public GlTexture getTexture(int sample) {
@@ -131,31 +131,29 @@ public class MotionBlurScreenEffect implements ScreenEffect {
     }
 
     private class GlTexture implements AutoCloseable {
-        private int id;
+
+        private final SimpleFramebuffer output;
 
         private final int sample;
-        private final int width;
-        private final int height;
 
         private boolean prepared;
 
         public GlTexture(int sample, int width, int height) {
             this.sample = sample;
-            this.width = width;
-            this.height = height;
-            id = TextureUtil.generateTextureId();
-            TextureUtil.prepareImage(id, width, height);
+            output = new SimpleFramebuffer(width, height, true, MinecraftClient.IS_SYSTEM_MAC);
+            output.viewportWidth = width;
+            output.viewportHeight = height;
         }
 
         public void sample() {
-            Framebuffer buffer = MinecraftClient.getInstance().getFramebuffer();
-            NativeImage copy = new NativeImage(buffer.textureWidth, buffer.textureHeight, false);
-            RenderSystem.bindTexture(buffer.getColorAttachment());
-            copy.loadFromTextureImage(0, true);
+            Framebuffer input = MinecraftClient.getInstance().getFramebuffer();
 
-            TextureUtil.prepareImage(id, buffer.textureWidth, buffer.textureHeight);
-            RenderSystem.bindTexture(id);
-            copy.upload(0, 0, 0, true);
+            GlStateManager._glBindFramebuffer(GlConst.GL_READ_FRAMEBUFFER, input.fbo);
+            GlStateManager._glBindFramebuffer(GlConst.GL_DRAW_FRAMEBUFFER, output.fbo);
+            GlStateManager._glBlitFrameBuffer(0, 0, input.textureWidth, input.textureHeight, 0, 0, output.textureWidth, output.textureHeight, GL11.GL_COLOR_BUFFER_BIT, GlConst.GL_NEAREST);
+            GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, 0);
+
+            input.beginWrite(true);
 
             prepared = true;
         }
@@ -165,21 +163,20 @@ public class MotionBlurScreenEffect implements ScreenEffect {
         }
 
         public void drawToScreen() {
-            float alpha = Math.min(1, sample * 0.02f * motionBlur);
+            float alpha = Math.min(1, sample * 0.002f * motionBlur);
 
             if (prepared && alpha > 0) {
                 RenderSystem.setShader(GameRenderer::getPositionTexProgram);
                 RenderSystem.setShaderColor(1, 1, 1, alpha);
                 RenderSystem.enableBlend();
-                RenderSystem.setShaderTexture(0, id);
-                ScreenEffect.drawScreen(width, height);
+                RenderSystem.setShaderTexture(0, output.getColorAttachment());
+                ScreenEffect.drawScreen(output.viewportWidth, output.viewportHeight);
             }
         }
 
         @Override
         public void close() {
-            TextureUtil.releaseTextureId(id);
-            id = -1;
+            output.delete();
         }
     }
 }
