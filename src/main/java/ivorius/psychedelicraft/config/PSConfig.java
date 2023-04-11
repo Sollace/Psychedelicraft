@@ -1,5 +1,10 @@
 package ivorius.psychedelicraft.config;
 
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
+
 public class PSConfig {
     public static int MINUTE = 20 * 60;
 
@@ -57,17 +62,38 @@ public class PSConfig {
         }
 
         public static class Generation {
-            public boolean genJuniper = true;
-            public boolean genCannabis = true;
-            public boolean genHop = true;
-            public boolean genTobacco = true;
-            public boolean genMorningGlories = true;
-            public boolean genCoffea = true;
-            public boolean genCoca = true;
-            public boolean genPeyote = true;
+            public FeatureConfig juniper = new FeatureConfig();
+            public FeatureConfig cannabis = new FeatureConfig();
+            public FeatureConfig hop = new FeatureConfig();
+            public FeatureConfig tobacco = new FeatureConfig();
+            public FeatureConfig morningGlories = new FeatureConfig();
+            public FeatureConfig coffea = new FeatureConfig();
+            public FeatureConfig coca = new FeatureConfig();
+            public FeatureConfig peyote = new FeatureConfig();
+
             public boolean farmerDrugDeals = true;
             public boolean dungeonChests = true;
             public boolean villageChests = true;
+
+            public static class FeatureConfig {
+                public boolean enabled = true;
+                public InclusionFilter spawnableBiomes = new InclusionFilter();
+
+                public void ifEnabled(Consumer<InclusionFilter> register) {
+                    if (enabled) {
+                        register.accept(spawnableBiomes);
+                    }
+                }
+            }
+
+            public static class InclusionFilter {
+                public String[] included;
+                public String[] excluded;
+
+                public Predicate<BiomeSelectionContext> createPredicate(Predicate<BiomeSelectionContext> inherentPredicate) {
+                    return BiomeSelector.compile(included, excluded, inherentPredicate);
+                }
+            }
         }
     }
 }

@@ -11,12 +11,14 @@ import java.util.function.Predicate;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.CannabisPlantBlock;
 import ivorius.psychedelicraft.block.PSBlocks;
+import ivorius.psychedelicraft.config.BiomeSelector;
+import ivorius.psychedelicraft.config.PSConfig;
 import net.fabricmc.fabric.api.biome.v1.*;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.*;
@@ -36,14 +38,6 @@ public class PSWorldGen {
     public static final RegistryKey<ConfiguredFeature<?, ?>> JUNIPER_TREE_CONFIG = createConfiguredFeature("juniper_tree");
     public static final RegistryKey<PlacedFeature> JUNIPER_TREE_PLACEMENT = createPlacement("juniper_tree_checked");
 
-    private static final Predicate<BiomeSelectionContext> IS_COLD = ctx -> {
-        return ctx.getBiome().getPrecipitation() == Biome.Precipitation.SNOW;
-    };
-
-    private static final Predicate<BiomeSelectionContext> IS_DRY = ctx -> {
-        return ctx.getBiome().getPrecipitation() == Biome.Precipitation.NONE;
-    };
-
     public static RegistryKey<ConfiguredFeature<?, ?>> createConfiguredFeature(String name) {
         return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, Psychedelicraft.id(name));
     }
@@ -52,7 +46,7 @@ public class PSWorldGen {
         return RegistryKey.of(RegistryKeys.PLACED_FEATURE, Psychedelicraft.id(id));
     }
 
-    private static void registerFilledPatch(String id, CannabisPlantBlock crop, boolean requireWater) {
+    private static void registerTilledPatch(String id, CannabisPlantBlock crop, boolean requireWater, PSConfig.Balancing.Generation.FeatureConfig config) {
         var cannabisPatch = createConfiguredFeature(id + "_tilled_patch");
         FeatureRegistry.registerConfiguredFeature(cannabisPatch, () -> {
             return new ConfiguredFeature<>(TILLED_PATCH_FEATURE, new TilledPatchFeature.Config(requireWater, crop));
@@ -63,19 +57,52 @@ public class PSWorldGen {
             return new PlacedFeature(feature, List.of(RarityFilterPlacementModifier.of(1), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of()));
         });
 
-        BiomeModifications.addFeature(
-                BiomeSelectors.foundInOverworld().and(
-                        IS_COLD
-                        .or(BiomeSelectors.tag(BiomeTags.IS_HILL))
-                        .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
-                        .or(ctx -> ctx.getBiomeKey() == BiomeKeys.PLAINS)
-                ),
-                GenerationStep.Feature.VEGETAL_DECORATION,
-                placement
-        );
+        config.ifEnabled(spawnableBiomes -> {
+            BiomeModifications.addFeature(
+                    spawnableBiomes.createPredicate(BiomeSelectors.foundInOverworld().and(
+                            BiomeSelector.COLD
+                            .or(BiomeSelectors.tag(BiomeTags.IS_HILL))
+                            .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
+                            .or(ctx -> ctx.getBiomeKey() == BiomeKeys.PLAINS)
+                    )),
+                    GenerationStep.Feature.VEGETAL_DECORATION,
+                    placement
+            );
+        });
     }
 
+    private static void registerUnTilledPatch(String id, Block plant, Predicate<BiomeSelectionContext> builtinBiomePredicate, PSConfig.Balancing.Generation.FeatureConfig config) {
+        var patch = createConfiguredFeature(id + "_patch");
+
+        FeatureRegistry.registerConfiguredFeature(patch, () -> {
+            return new ConfiguredFeature<>(Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(
+                    1,
+                    PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK,
+                    new SimpleBlockFeatureConfig(BlockStateProvider.of(plant)))
+            ));
+        });
+
+        var placement = createPlacement(id + "_patch_checked");
+
+        FeatureRegistry.registerPlacedFeature(placement, patch, feature -> {
+            return new PlacedFeature(feature, List.of(
+                    RarityFilterPlacementModifier.of(1),
+                    SquarePlacementModifier.of(),
+                    PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
+                    BiomePlacementModifier.of()));
+        });
+
+        config.ifEnabled(spawnableBiomes -> {
+            BiomeModifications.addFeature(
+                    spawnableBiomes.createPredicate(builtinBiomePredicate),
+                    GenerationStep.Feature.VEGETAL_DECORATION,
+                    placement
+            );
+        });
+    }
     public static void bootstrap() {
+        var genConf = Psychedelicraft.getConfig().balancing.worldGeneration;
+
         FeatureRegistry.registerConfiguredFeature(JUNIPER_TREE_CONFIG, () -> {
             return new ConfiguredFeature<>(Feature.TREE, new TreeFeatureConfig.Builder(
                     BlockStateProvider.of(PSBlocks.JUNIPER_LOG),
@@ -98,97 +125,36 @@ public class PSWorldGen {
             );
         });
 
-        if (Psychedelicraft.getConfig().balancing.worldGeneration.genJuniper) {
+        genConf.juniper.ifEnabled(spawnableBiomes -> {
             BiomeModifications.addFeature(
-                    BiomeSelectors.foundInOverworld().and(IS_COLD).and(
-                        BiomeSelectors.tag(BiomeTags.IS_HILL).or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
+                    spawnableBiomes.createPredicate(
+                        BiomeSelectors.foundInOverworld().and(BiomeSelector.DRY).and(
+                                BiomeSelectors.tag(BiomeTags.IS_HILL)
+                            .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
+                        )
                     ),
                     GenerationStep.Feature.VEGETAL_DECORATION,
                     JUNIPER_TREE_PLACEMENT
             );
-        }
+        });
 
-        if (Psychedelicraft.getConfig().balancing.worldGeneration.genCannabis) {
-            registerFilledPatch("cannabis", PSBlocks.CANNABIS, false);
-        }
-
-        if (Psychedelicraft.getConfig().balancing.worldGeneration.genHop) {
-            registerFilledPatch("hop", PSBlocks.HOP, false);
-        }
-
-        if (Psychedelicraft.getConfig().balancing.worldGeneration.genTobacco) {
-            registerFilledPatch("tobacco", PSBlocks.TOBACCO, false);
-        }
-
-        if (Psychedelicraft.getConfig().balancing.worldGeneration.genCoffea) {
-            registerFilledPatch("coffea", PSBlocks.COFFEA, false);
-        }
-
-        if (Psychedelicraft.getConfig().balancing.worldGeneration.genCoca) {
-            registerFilledPatch("coca", PSBlocks.COCA, true);
-        }
-
-        if (Psychedelicraft.getConfig().balancing.worldGeneration.genMorningGlories) {
-            var gloriesPatch = createConfiguredFeature("morning_glory_patch");
-
-            FeatureRegistry.registerConfiguredFeature(gloriesPatch, () -> {
-                return new ConfiguredFeature<>(Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(
-                        1,
-                        PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK,
-                        new SimpleBlockFeatureConfig(BlockStateProvider.of(PSBlocks.MORNING_GLORY)))
-                ));
-            });
-
-            var placement = createPlacement("morning_glory_patch_checked");
-
-            FeatureRegistry.registerPlacedFeature(placement, gloriesPatch, feature -> {
-                return new PlacedFeature(feature, List.of(
-                        RarityFilterPlacementModifier.of(1),
-                        SquarePlacementModifier.of(),
-                        PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
-                        BiomePlacementModifier.of()));
-            });
-
-            BiomeModifications.addFeature(
-                    BiomeSelectors.foundInOverworld().and(
-                        BiomeSelectors.tag(BiomeTags.IS_HILL)
-                    ),
-                    GenerationStep.Feature.VEGETAL_DECORATION,
-                    placement
-            );
-        }
-
-        if (Psychedelicraft.getConfig().balancing.worldGeneration.genPeyote) {
-            var peyotePatch = createConfiguredFeature("peyote_patch");
-
-            FeatureRegistry.registerConfiguredFeature(peyotePatch, () -> {
-                return new ConfiguredFeature<>(Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(
-                        1,
-                        PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK,
-                        new SimpleBlockFeatureConfig(BlockStateProvider.of(PSBlocks.PEYOTE)))
-                ));
-            });
-
-            var placement = createPlacement("peyote_patch_checked");
-
-            FeatureRegistry.registerPlacedFeature(placement, peyotePatch, feature -> {
-                return new PlacedFeature(feature, List.of(
-                        RarityFilterPlacementModifier.of(1),
-                        SquarePlacementModifier.of(),
-                        PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
-                        BiomePlacementModifier.of()));
-            });
-
-            BiomeModifications.addFeature(
-                    BiomeSelectors.foundInOverworld().and(
-                        BiomeSelectors.tag(BiomeTags.IS_SAVANNA)
-                        .or(BiomeSelectors.tag(BiomeTags.IS_BADLANDS))
-                        .or(BiomeSelectors.tag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE))
-                        .or(IS_DRY)
-                    ),
-                    GenerationStep.Feature.VEGETAL_DECORATION,
-                    placement
-            );
-        }
+        registerTilledPatch("cannabis", PSBlocks.CANNABIS, false, genConf.cannabis);
+        registerTilledPatch("hop", PSBlocks.HOP, false, genConf.hop);
+        registerTilledPatch("tobacco", PSBlocks.TOBACCO, false, genConf.tobacco);
+        registerTilledPatch("coffea", PSBlocks.COFFEA, false, genConf.coffea);
+        registerTilledPatch("coca", PSBlocks.COCA, true, genConf.coca);
+        registerUnTilledPatch("morning_glory", PSBlocks.MORNING_GLORY, BiomeSelectors.includeByKey(
+                BiomeKeys.FLOWER_FOREST,
+                BiomeKeys.SUNFLOWER_PLAINS,
+                BiomeKeys.MEADOW,
+                BiomeKeys.LUSH_CAVES
+        ), genConf.morningGlories);
+        registerUnTilledPatch("peyote", PSBlocks.PEYOTE, BiomeSelectors.foundInOverworld().and(
+                    BiomeSelectors.tag(BiomeTags.IS_SAVANNA)
+                .or(BiomeSelectors.tag(BiomeTags.IS_BADLANDS))
+                .or(BiomeSelectors.tag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE))
+                .or(BiomeSelector.DRY)
+        ), genConf.peyote);
     }
+
 }
