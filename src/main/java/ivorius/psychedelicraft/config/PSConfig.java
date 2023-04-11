@@ -61,6 +61,7 @@ public class PSConfig {
             public boolean genCannabis = true;
             public boolean genHop = true;
             public boolean genTobacco = true;
+            public boolean genMorningGlories = true;
             public boolean genCoffea = true;
             public boolean genCoca = true;
             public boolean genPeyote = true;

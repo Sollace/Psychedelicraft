@@ -128,6 +128,36 @@ public class PSWorldGen {
             registerFilledPatch("coca", PSBlocks.COCA, true);
         }
 
+        if (Psychedelicraft.getConfig().balancing.worldGeneration.genMorningGlories) {
+            var gloriesPatch = createConfiguredFeature("morning_glory_patch");
+
+            FeatureRegistry.registerConfiguredFeature(gloriesPatch, () -> {
+                return new ConfiguredFeature<>(Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(
+                        1,
+                        PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK,
+                        new SimpleBlockFeatureConfig(BlockStateProvider.of(PSBlocks.MORNING_GLORY)))
+                ));
+            });
+
+            var placement = createPlacement("morning_glory_patch_checked");
+
+            FeatureRegistry.registerPlacedFeature(placement, gloriesPatch, feature -> {
+                return new PlacedFeature(feature, List.of(
+                        RarityFilterPlacementModifier.of(1),
+                        SquarePlacementModifier.of(),
+                        PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
+                        BiomePlacementModifier.of()));
+            });
+
+            BiomeModifications.addFeature(
+                    BiomeSelectors.foundInOverworld().and(
+                        BiomeSelectors.tag(BiomeTags.IS_HILL)
+                    ),
+                    GenerationStep.Feature.VEGETAL_DECORATION,
+                    placement
+            );
+        }
+
         if (Psychedelicraft.getConfig().balancing.worldGeneration.genPeyote) {
             var peyotePatch = createConfiguredFeature("peyote_patch");
 
