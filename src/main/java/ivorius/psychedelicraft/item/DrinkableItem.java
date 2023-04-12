@@ -5,7 +5,12 @@
 
 package ivorius.psychedelicraft.item;
 
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.fluid.*;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -73,6 +78,13 @@ public class DrinkableItem extends Item implements FluidContainer {
         }
 
         return super.getName(stack);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        if (context.isAdvanced()) {
+            tooltip.add(Text.literal(getLevel(stack) + "/" + getMaxCapacity(stack)));
+        }
     }
 
     @Override
