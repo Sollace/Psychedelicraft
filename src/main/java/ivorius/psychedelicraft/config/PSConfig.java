@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 
 public class PSConfig {
-    public static int MINUTE = 20 * 60;
+    public static final int MINUTE = 20 * 60;
 
     public Balancing balancing = new Balancing();
 
@@ -28,7 +28,7 @@ public class PSConfig {
         }
 
         public static class FluidProperties {
-            static TickInfo DEFAULT = new TickInfo(40, 40, 30, 30);
+            static final TickInfo DEFAULT = new TickInfo(40, 40, 30, 30);
 
             public TickInfo alcInfoWheatHop = new TickInfo(30, 60, 100, 30);
             public TickInfo alcInfoKava = DEFAULT;
@@ -44,7 +44,7 @@ public class PSConfig {
             public TickInfo alcInfoPineapple = DEFAULT;
             public TickInfo alcInfoBanana = DEFAULT;
             public TickInfo alcInfoMilk = DEFAULT;
-            public TickInfo alcInfoFlowerExtract = DEFAULT;
+            public TickInfo alcInfoFlowerExtract = new TickInfo(40, 1, 30, 30);
 
             public static class TickInfo {
                 public int ticksPerFermentation;

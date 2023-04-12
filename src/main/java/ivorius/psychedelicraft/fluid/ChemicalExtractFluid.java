@@ -39,8 +39,9 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
 
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type, boolean openContainer) {
-        if (type == ProcessType.DISTILL && DISTILLATION.get(tank.getContents()) < 16) {
-            return Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract.ticksPerDistillation;
+        int distillation = DISTILLATION.get(tank.getContents());
+        if (type == ProcessType.DISTILL && distillation < 2) {
+            return Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract.ticksPerDistillation * (1 + distillation);
         }
 
         return UNCONVERTABLE;
