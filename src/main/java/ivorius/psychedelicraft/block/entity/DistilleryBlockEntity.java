@@ -13,7 +13,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.Direction.Axis;
 
@@ -42,9 +45,21 @@ public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     protected void onProcessCompleted(ServerWorld world, Resovoir tank, ItemStack results) {
+        world.spawnParticles(ParticleTypes.CLOUD,
+                pos.getX() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                pos.getY() + 0.6F,
+                pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                2, 0, 0, 0, 0);
+        if (world.getRandom().nextInt(10) == 0) {
+            world.playSound(null, getPos(), SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.25F, 0.02F);
+        }
+
         BlockPos outputPos = getOutputPos();
         if (getOutput(world, getPos()) instanceof FlaskBlockEntity destination) {
-            Block.dropStack(world, outputPos, destination.getTank(getFacing().getOpposite()).deposit(results));
+            ItemStack overflow = destination.getTank(getFacing().getOpposite()).deposit(results);
+            if (FluidContainer.of(overflow).getLevel(overflow) > 0) {
+                Block.dropStack(world, outputPos, overflow);
+            }
         } else {
             Block.dropStack(world, outputPos, results);
         }

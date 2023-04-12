@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class MutableFluidContainer {
@@ -142,7 +143,7 @@ public class MutableFluidContainer {
 
         if (isEmpty()
                 || (!outputFluid.isEmpty() && outputFluid != inputFluid)
-                || !(outputContainer.attributes.isEmpty() || outputContainer.attributes.equals(attributes))) {
+                || !(outputFluid.isEmpty() || outputContainer.attributes.isEmpty() || NbtHelper.matches(attributes, outputContainer.attributes, true))) {
             return this;
         }
 
@@ -155,9 +156,9 @@ public class MutableFluidContainer {
             return this;
         }
 
+        outputContainer.attributes = attributes.copy();
         drain(levels);
         outputContainer.deposit(levels, inputFluid);
-        outputContainer.attributes = attributes;
         if (changeCallback != null) {
             changeCallback.accept(levels);
         }
