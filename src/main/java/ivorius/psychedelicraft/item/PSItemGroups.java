@@ -60,10 +60,22 @@ public interface PSItemGroups {
                 entries.add(PSItems.OBSIDIAN_BOTTLE);
                 entries.add(PSItems.OBSIDIAN_DUST);
 
+               // entries.add(PSItems.KAVA_SEEDS);
+               // entries.add(PSItems.KAVA_ROOT);
+
                 entries.add(PSItems.MORNING_GLORY);
                 entries.add(PSItems.MORNING_GLORY_SEEDS);
                 entries.add(PSItems.LSA_SQUARE);
                 entries.add(PSItems.LSD_PILL);
+
+               // entries.add(PSItems.JIMSONWEED_SEEDS);
+               // entries.add(PSItems.JIMSONWEED_LEAVES);
+               // entries.add(PSItems.JIMSONWEED_PODS);
+
+               // entries.add(PSItems.BELLADONNA_SEEDS);
+               // entries.add(PSItems.BELLADONNA_LEAVES);
+               // entries.add(PSItems.BELLADONNA_BERRIES);
+
                 entries.add(PSItems.TOBACCO_SEEDS);
                 entries.add(PSItems.TOBACCO_LEAVES);
                 entries.add(PSItems.DRIED_TOBACCO);

@@ -143,4 +143,12 @@ public class DrugInfluence implements NbtSerialisable {
         compound.putDouble("influenceSpeedPlus", influenceSpeedPlus);
         compound.putDouble("maxInfluence", maxInfluence);
     }
+
+    public interface DelayType {
+        int IMMEDIATE = 0;
+        int INGESTED = 15;
+        int INHALED = 20;
+        int CONTACT = 30;
+        int METABOLISED = 60;
+    }
 }

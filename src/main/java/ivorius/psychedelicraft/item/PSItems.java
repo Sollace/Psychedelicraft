@@ -62,7 +62,7 @@ public interface PSItems {
 
     Item HASH_MUFFIN = register("hash_muffin", new EdibleItem(
             new Settings().food(EdibleItem.HAS_MUFFIN),
-            new DrugInfluence(DrugType.CANNABIS, 60, 0.004, 0.002, 0.7f)
+            new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.METABOLISED, 0.004, 0.002, 0.7f)
     ));
 
     Item HOP_CONES = register("hop_cones");
@@ -70,11 +70,16 @@ public interface PSItems {
 
     Item BROWN_MAGIC_MUSHROOMS = register("brown_magic_mushrooms", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.BROWN_SHROOMS, 15, 0.005, 0.003, 0.5f)
+            new DrugInfluence(DrugType.BROWN_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
     ));
     Item RED_MAGIC_MUSHROOMS = register("red_magic_mushrooms", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.RED_SHROOMS, 15, 0.005, 0.003, 0.5f)
+            new DrugInfluence(DrugType.RED_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+    ));
+
+    Item JOLLY_RANCHER = register("jolly_rancher", new EdibleItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.SUGAR, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.05f)
     ));
 
     Item TOBACCO_LEAVES = register("tobacco");
@@ -83,15 +88,15 @@ public interface PSItems {
 
     SmokeableItem CIGARETTE = register("cigarette", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(1), 2, SmokeableItem.WHITE,
-            new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.7f)
+            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7f)
     ));
     SmokeableItem CIGAR = register("cigar", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(3), 4, new Vector3f(0.6F, 0.6F, 0.5F),
-            new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.7f)
+            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7f)
     ));
     SmokeableItem JOINT = register("joint", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.9F, 0.9F, 0.9F),
-            new DrugInfluence(DrugType.CANNABIS, 20, 0.002, 0.001, 0.20f)
+            new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20f)
     ));
 
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));
@@ -99,7 +104,7 @@ public interface PSItems {
     Item DRIED_COCA_LEAVES = register("dried_coca_leaves");
     Item COCAINE_POWDER = register("cocaine_powder", new CocainePowderItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.COCAINE, 0, 0.002, 0.003, 0.35f)
+            new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)
     ));
 
     InjectableItem SYRINGE = register("syringe", new InjectableItem(new Settings(), FluidVolumes.SYRINGE));
@@ -121,12 +126,12 @@ public interface PSItems {
     Item PEYOTE = register("peyote", PSBlocks.PEYOTE);
     Item DRIED_PEYOTE = register("dried_peyote", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.PEYOTE, 15, 0.005, 0.003, 0.5f)
+            new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
     ));
     Item PEYOTE_JOINT = register("peyote_joint", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.5F, 0.9F, 0.4F),
-            new DrugInfluence(DrugType.PEYOTE, 20, 0.003, 0.0015, 0.4f),
-            new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.1f)
+            new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INHALED, 0.003, 0.0015, 0.4f),
+            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.1f)
     ));
 
     Item LATTICE = register("lattice", PSBlocks.LATTICE);
@@ -141,28 +146,44 @@ public interface PSItems {
     Item OBSIDIAN_BOTTLE = register("obsidian_bottle", new Item(new Settings().maxCount(16)));
     Item OBSIDIAN_DUST = register("obsidian_dust", new CocainePowderItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.BATH_SALTS, 0, 0.002, 0.003, 0.35f)
+            new DrugInfluence(DrugType.BATH_SALTS, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)
     ));
+
+    // TODO: https://www.erowid.org/plants/kava/kava.shtml
+    //Item KAVA_SEEDS = register("kava_seeds", new Item(new Settings()));
+    //Item KAVA_ROOT = register("kava_root", new Item(new Settings()));
 
     Item MORNING_GLORY = register("morning_glory");
     Item MORNING_GLORY_SEEDS = register("morning_glory_seeds", new AliasedBlockItem(PSBlocks.MORNING_GLORY, new Settings()));
     Item LSA_SQUARE = register("lsd_square", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.LSD, 6, 0.05, 0.003, 0.3F)
+            new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.CONTACT, 0.05, 0.003, 0.1F)
     ));
     Item LSD_PILL = register("lsd_pill", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.LSD, 6, 0.05, 0.003, 0.6F)
+            new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.INGESTED, 0.05, 0.003, 0.6F)
     ));
 
+    // TODO: https://en.wikipedia.org/wiki/Datura_stramonium
+    //Item JIMSONWEED_SEEDS = register("jimsonweed_seeds", new Item(new Settings()));
+    //Item JIMSONWEED_LEAVES = register("jimsonweed_leaves", new Item(new Settings()));
+    //Item JIMSONWEED_PODS = register("jimsonweed_pods", new Item(new Settings()));
+
+    // TODO: https://www.erowid.org/plants/belladonna/belladonna.shtml
+    //Item BELLADONNA_SEEDS = register("belladonna_seeds", new Item(new Settings()));
+    //Item BELLADONNA_LEAVES = register("belladonna_leaves", new Item(new Settings()));
+    //Item BELLADONNA_BERRIES = register("belladonna_berries", new Item(new Settings()
+    //        .food(new FoodComponent.Builder().hunger(1).saturationModifier(1.5F).alwaysEdible().build())
+    //));
+
     BongItem SMOKING_PIPE = register("smoking_pipe", new BongItem(new Settings().maxDamage(50)))
-            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, 20, 0.002, 0.001, 0.25F)))
-            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.8f)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(0, 0.04, 0.01, 0.65f, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
+            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.25F)))
+            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.8f)))
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.65f, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
     // TODO: Play around with the bongs benefits
     BongItem BONG = register("bong", new BongItem(new Settings().maxDamage(128)))
-            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, 20, 0.002, 0.001, 0.2F)))
-            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, 0, 0.1, 0.02, 0.6F)));
+            .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.2F)))
+            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)));
 
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Item.Settings()));
