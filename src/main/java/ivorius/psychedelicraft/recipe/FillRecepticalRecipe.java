@@ -55,7 +55,10 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     @Override
     public ItemStack craft(CraftingInventory inventory) {
         return RecipeUtils.recepticals(inventory).findFirst().map(receptical -> {
-            ItemStack stack = output.fluid().getDefaultStack(receptical.getKey(), output.level() <= 0 ? receptical.getKey().getMaxCapacity(receptical.getValue()) : output.level());
+            ItemStack stack = output.fluid().getDefaultStack(receptical.getKey(), output.level() <= 0
+                ? receptical.getKey().getMaxCapacity(receptical.getValue())
+                : (output.level() + receptical.getKey().getLevel(receptical.getValue()))
+            );
             stack.getOrCreateSubNbt("fluid").copyFrom(output.attributes());
             return stack;
         }).orElse(ItemStack.EMPTY);
