@@ -53,7 +53,7 @@ public class CannabisPlantBlock extends CropBlock {
         return 3;
     }
 
-    protected float getRandomGrothChance() {
+    protected float getRandomGrowthChance() {
         return 0.12F;
     }
 
@@ -69,7 +69,7 @@ public class CannabisPlantBlock extends CropBlock {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (world.getBaseLightLevel(pos.up(), 0) >= 9 && random.nextFloat() < getRandomGrothChance()) {
+        if (world.getBaseLightLevel(pos.up(), 0) >= 9 && random.nextFloat() < getRandomGrowthChance()) {
             if (isFertilizable(world, pos, state, false)) {
                 applyGrowth(world, pos, state, false);
             }

@@ -46,7 +46,7 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
     }
 
     @Override
-    protected float getRandomGrothChance() {
+    protected float getRandomGrowthChance() {
         return 0.1F;
     }
 
