@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.recipe;
 
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
@@ -21,14 +22,23 @@ import java.util.stream.Collectors;
 
 import com.google.gson.*;
 
+import ivorius.psychedelicraft.fluid.MutableFluidContainer;
+
 public class FluidAwareShapelessRecipe extends ShapelessRecipe {
 
     private final DefaultedList<OptionalFluidIngredient> ingredients;
+    private final List<OptionalFluidIngredient> fluidRestrictions;
 
     public FluidAwareShapelessRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output,
             DefaultedList<OptionalFluidIngredient> input) {
-        super(id, group, category, output, input.stream().map(i -> i.receptical().orElse(Ingredient.EMPTY)).collect(Collectors.toCollection(DefaultedList::of)));
+        super(id, group, category, output,
+                // parent expects regular ingredients but we don't actually use them
+                input.stream()
+                .map(i -> i.receptical().orElse(Ingredient.EMPTY))
+                .collect(Collectors.toCollection(DefaultedList::of))
+        );
         this.ingredients = input;
+        this.fluidRestrictions = ingredients.stream().filter(i -> i.fluid().filter(f -> f.level() > 0).isPresent()).toList();
     }
 
     @Override
@@ -45,6 +55,27 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
                         .findFirst()
                         .map(unmatchedInputs::remove)
                         .orElse(false)).count() == ingredients.size() && unmatchedInputs.isEmpty();
+    }
+
+    @Override
+    public DefaultedList<ItemStack> getRemainder(CraftingInventory inventory) {
+        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
+
+        for (int i = 0; i < defaultedList.size(); ++i) {
+            ItemStack stack = inventory.getStack(i);
+            Item item = stack.getItem();
+
+            defaultedList.set(i, item.hasRecipeRemainder()
+                ? new ItemStack(item.getRecipeRemainder())
+                : fluidRestrictions.stream()
+                        .filter(t -> t.test(stack))
+                        .findFirst()
+                        .flatMap(OptionalFluidIngredient::fluid)
+                        .map(fluid -> MutableFluidContainer.of(stack).drain(fluid.level()).asStack())
+                        .orElse(ItemStack.EMPTY)
+            );
+        }
+        return defaultedList;
     }
 
     static class Serializer implements RecipeSerializer<FluidAwareShapelessRecipe> {
