@@ -11,6 +11,7 @@
       "MixinAbstractFurnaceBlockEntity"
     ],
     "client": [
+      "client.MixinCamera",
       "client.MixinChatMessages",
       "client.MixinChatScreen",
       "client.MixinMouse",

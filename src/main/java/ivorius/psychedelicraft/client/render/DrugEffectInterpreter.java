@@ -46,4 +46,8 @@ public interface DrugEffectInterpreter {
     static float getAlcohol(DrugProperties properties) {
         return MathHelper.clamp(properties.getDrugValue(DrugType.ALCOHOL) + properties.getDrugValue(DrugType.KAVA), 0, 1);
     }
+
+    static boolean getOOB(DrugProperties properties) {
+        return properties.getHallucinations().getCamera().getPosition().length() > 0.5F;
+    }
 }

@@ -9,6 +9,8 @@ import net.minecraft.util.math.random.Random;
 
 public class DriftingCamera {
 
+    private float intensity;
+
     private double distance;
     private double totalRotation;
 
@@ -24,26 +26,27 @@ public class DriftingCamera {
     private double accellerationZ;
 
     public Vec3d getPosition() {
-        return position;
+        return position.multiply(intensity);
     }
 
     public Vec3d getRotation() {
-        return rotation;
+        return rotation.multiply(intensity);
     }
 
     public Vec3d getPrevPosition() {
-        return prevPosition;
+        return prevPosition.multiply(intensity);
     }
 
     public Vec3d getPrevRotation() {
-        return prevRotation;
+        return prevRotation.multiply(intensity);
     }
 
     public void update(DrugProperties properties) {
         prevPosition = position;
         prevRotation = rotation;
 
-        float weightlessness = properties.getModifier(Drug.WEIGHTLESSNESS) * MathHelper.sin(properties.getAge() / 100F);//
+        intensity = MathHelper.clamp(properties.getModifier(Drug.WEIGHTLESSNESS), 0, 1);
+        float weightlessness = properties.getModifier(Drug.WEIGHTLESSNESS) * MathHelper.sin(properties.getAge() / 100F);
 
         if (weightlessness != 0) {
             PlayerEntity player = properties.asEntity();
