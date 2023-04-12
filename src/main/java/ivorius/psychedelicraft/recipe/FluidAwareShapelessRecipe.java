@@ -71,7 +71,8 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
                         .filter(t -> t.test(stack))
                         .findFirst()
                         .flatMap(OptionalFluidIngredient::fluid)
-                        .map(fluid -> MutableFluidContainer.of(stack).drain(fluid.level()).asStack())
+                        .map(fluid -> MutableFluidContainer.of(stack).decrement(fluid.level()))
+                        .map(MutableFluidContainer::asStack)
                         .orElse(ItemStack.EMPTY)
             );
         }

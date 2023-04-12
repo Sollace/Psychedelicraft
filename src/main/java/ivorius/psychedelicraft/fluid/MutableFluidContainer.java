@@ -78,6 +78,10 @@ public class MutableFluidContainer {
         return this;
     }
 
+    public MutableFluidContainer decrement(int levels) {
+        return withLevel(getLevel() - levels);
+    }
+
     public MutableFluidContainer withFluid(SimpleFluid fluid) {
         this.fluid = fluid;
         if (fluid.isEmpty()) {
@@ -102,7 +106,7 @@ public class MutableFluidContainer {
     public MutableFluidContainer drain(int amount) {
         amount = Math.min(getLevel(), amount);
         MutableFluidContainer removed = copy().withLevel(amount);
-        withLevel(getLevel() - amount);
+        decrement(amount);
         return removed;
     }
 
