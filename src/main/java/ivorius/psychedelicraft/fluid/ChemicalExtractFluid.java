@@ -10,14 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-/*
- * - Jimsonweed, Belladona (Nightshade) -----> Atrophine
- *      1-2 blocks talls
- *      Produces berries
- * - Morning Glory -----> LSD
- *      Fast growing
- *      Flowering Vine (use lattices)
- */
 public class ChemicalExtractFluid extends DrugFluid implements Processable {
     public static final Attribute<Integer> DISTILLATION = Attribute.ofInt("distillation", 0, 2);
 

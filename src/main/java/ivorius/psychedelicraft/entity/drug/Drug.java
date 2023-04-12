@@ -155,7 +155,7 @@ public interface Drug extends NbtSerialisable {
     }
 
     default float drowsyness() {
-        // TODO
+        // TODO: Implement comas/longer sleeping times
         return 0;
     }
 
