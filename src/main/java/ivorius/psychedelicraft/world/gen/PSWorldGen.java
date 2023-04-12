@@ -54,7 +54,12 @@ public class PSWorldGen {
 
         var placement = createPlacement(id + "_tilled_patch_checked");
         FeatureRegistry.registerPlacedFeature(placement, cannabisPatch, feature -> {
-            return new PlacedFeature(feature, List.of(RarityFilterPlacementModifier.of(1), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of()));
+            return new PlacedFeature(feature, List.of(
+                    RarityFilterPlacementModifier.of(190),
+                    SquarePlacementModifier.of(),
+                    PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
+                    BiomePlacementModifier.of()
+            ));
         });
 
         config.ifEnabled(spawnableBiomes -> {
@@ -86,7 +91,7 @@ public class PSWorldGen {
 
         FeatureRegistry.registerPlacedFeature(placement, patch, feature -> {
             return new PlacedFeature(feature, List.of(
-                    RarityFilterPlacementModifier.of(1),
+                    RarityFilterPlacementModifier.of(300),
                     SquarePlacementModifier.of(),
                     PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
                     BiomePlacementModifier.of()));
