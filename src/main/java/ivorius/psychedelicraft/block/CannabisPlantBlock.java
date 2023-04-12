@@ -9,18 +9,22 @@ import net.minecraft.block.*;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
 public class CannabisPlantBlock extends CropBlock {
     public static final int MAX_AGE = 15;
-    public static final int MATURATION_AGE = 11;
+    public static final int MAX_AGE_WHILE_COVERED = 11;
 
     private static final VoxelShape SHAPE = Block.createCuboidShape(2, 0, 2, 14, 16, 14);
+
+    public static final BooleanProperty GROWING = BooleanProperty.of("growing");
 
     public CannabisPlantBlock(Settings settings) {
         super(settings.ticksRandomly().nonOpaque());
@@ -37,7 +41,7 @@ public class CannabisPlantBlock extends CropBlock {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(getAgeProperty());
+        builder.add(getAgeProperty(), GROWING);
     }
 
     @Override
@@ -64,7 +68,12 @@ public class CannabisPlantBlock extends CropBlock {
 
     @Override
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-        return floor.isOf(Blocks.FARMLAND) || floor.isOf(this);
+        return floor.isOf(this) || super.canPlantOnTop(floor, world, pos);
+    }
+
+    @Override
+    public boolean isMature(BlockState state) {
+        return state.get(getAgeProperty()) >= getMaxAge(state) && !state.get(GROWING);
     }
 
     @Override
@@ -80,27 +89,15 @@ public class CannabisPlantBlock extends CropBlock {
         int number = bonemeal ? world.random.nextInt(4) + 1 : 1;
 
         for (int i = 0; i < number; i++) {
-            final int age = state.get(getAgeProperty());
-            final boolean freeOver = world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight();
-
-            if ((age < getMaxAge(state) && freeOver) || (!freeOver && age < MATURATION_AGE)) {
+            if (state.get(getAgeProperty()) < getMaxAge(state)) {
                 state = state.cycle(getAgeProperty());
                 world.setBlockState(pos, state, Block.NOTIFY_ALL);
-            } else if (world.isAir(pos.up()) && freeOver && age == getMaxAge(state)) {
-                world.setBlockState(pos.up(), getDefaultState(), Block.NOTIFY_ALL);
+            } else if (canGrowUpwards(world, pos, state)) {
+                pos = pos.up();
+                state = getDefaultState();
+                world.setBlockState(pos, state, Block.NOTIFY_ALL);
             }
         }
-    }
-
-    @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
-        final boolean freeOver = getPlantSize(world, pos) < getMaxHeight();
-        final int age = state.get(getAgeProperty());
-        boolean ret = (age < getMaxAge(state) && freeOver)
-            || (!freeOver && age < MATURATION_AGE)
-            || (world.isAir(pos.up()) && freeOver && age == getMaxAge(state));
-
-        return ret;
     }
 
     protected int getPlantSize(WorldView world, BlockPos pos) {
@@ -111,13 +108,22 @@ public class CannabisPlantBlock extends CropBlock {
         return plantSize;
     }
 
-    @Override
-    public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
-        return true;
+    protected boolean canGrowUpwards(World world, BlockPos pos, BlockState state) {
+        return world.isAir(pos.up())
+                && getPlantSize(world, pos) < getMaxHeight()
+                && state.get(getAgeProperty()) > MAX_AGE_WHILE_COVERED;
     }
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         applyGrowth(world, pos, state, true);
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (direction == Direction.UP) {
+            return state.with(GROWING, neighborState.isAir() && getPlantSize(world, pos) < getMaxHeight());
+        }
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 }

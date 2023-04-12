@@ -55,45 +55,28 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
         return floor.isOf(Blocks.FARMLAND) || floor.isOf(this) || floor.isOf(Blocks.DIRT) || floor.isOf(Blocks.GRASS_BLOCK);
     }
 
-/*
-    @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune)
-    {
-        ArrayList<ItemStack> drops = new ArrayList<>();
-
-        int countL = world.rand.nextInt(meta / 3 + 1) + meta / 5;
-        for (int i = 0; i < countL; i++)
-            drops.add(new ItemStack(PSItems.tobaccoLeaf, 1, 0));
-
-        int countS = meta / 8;
-        for (int i = 0; i < countS; i++)
-            drops.add(new ItemStack(PSItems.tobaccoSeeds, 1, 0));
-
-        return drops;
-    }*/
-
     @Override
     public void applyGrowth(World world, BlockPos pos, BlockState state, boolean bonemeal) {
         int number = bonemeal ? world.random.nextInt(2) + 1 : 1;
 
         for (int i = 0; i < number; i++) {
-            final int age = state.get(getAgeProperty());
             final boolean freeOver = world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight();
 
-            if (age < getMaxAge(state)) {
-                world.setBlockState(pos, state.cycle(getAgeProperty()), Block.NOTIFY_ALL);
+            if (state.get(getAgeProperty()) < getMaxAge(state)) {
+                state = state.cycle(getAgeProperty());
+                world.setBlockState(pos, state, Block.NOTIFY_ALL);
             }
-            if (freeOver && age >= getMaxAge(state)) {
-                world.setBlockState(pos.up(), getDefaultState().with(TOP, true), Block.NOTIFY_ALL);
+            if (freeOver && state.get(getAgeProperty()) >= getMaxAge(state)) {
+                pos = pos.up();
+                state = getDefaultState().with(TOP, true);
+                world.setBlockState(pos, state, Block.NOTIFY_ALL);
             }
         }
     }
 
     @Override
     public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
-        final boolean freeOver = world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight();
-        final int age = state.get(getAgeProperty());
-        return (age < getMaxAge(state))
-            || (freeOver && age >= getMaxAge(state));
+        return (world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight())
+                || state.get(getAgeProperty()) < getMaxAge(state);
     }
 }
