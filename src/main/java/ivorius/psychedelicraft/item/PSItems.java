@@ -146,7 +146,7 @@ public interface PSItems {
 
     Item MORNING_GLORY = register("morning_glory");
     Item MORNING_GLORY_SEEDS = register("morning_glory_seeds", new AliasedBlockItem(PSBlocks.MORNING_GLORY, new Settings()));
-    Item LSD_SQUARE = register("lsd_square", new EdibleItem(
+    Item LSA_SQUARE = register("lsd_square", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.LSD, 6, 0.05, 0.003, 0.3F)
     ));
