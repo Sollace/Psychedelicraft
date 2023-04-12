@@ -8,11 +8,18 @@ uniform vec3 PS_WavesMatrix;
 uniform float PS_DistantWorldDeformation;
 uniform vec4 PS_SurfaceFractalCoords;
 uniform float PS_SurfaceFractalStrength;
+uniform float PS_FractalFractureStrength;
 
 uniform vec3 PS_PlayerPosition;
 
 ps_out vec4 vertexColor;
 ps_out float vertexDistance;
+
+float PHI = 1.61803398874989484820459;
+
+float gold_noise(vec2 xy, float seed) {
+  return fract(tan(distance(xy * PHI, xy) * seed) * xy.x);
+}
 
 void main() {
   __parent_shaders__main();
@@ -49,6 +56,14 @@ void main() {
 
     gl_Position.x = mix(gl_Position.x, gl_Position[0] * (1.0 + fogFragCoord / 20.0), smallWaves);
     gl_Position.y = mix(gl_Position.y, gl_Position[1] * (1.0 + fogFragCoord / 20.0), smallWaves);
+  }
+
+  float fractalFractureStrength = PS_FractalFractureStrength;
+
+  if (fractalFractureStrength > 0) {
+    float fractalScollSpeed = worldTicks / 100;
+    gl_Position.x += sin(gold_noise(Position.xy, Position.x + fractalScollSpeed)) * fractalFractureStrength;
+    gl_Position.y += sin(gold_noise(Position.xy, Position.y + fractalScollSpeed)) * fractalFractureStrength;
   }
 
   if (wiggleWaves > 0.0) {

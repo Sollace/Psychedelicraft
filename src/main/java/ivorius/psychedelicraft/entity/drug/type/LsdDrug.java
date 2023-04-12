@@ -44,12 +44,12 @@ public class LsdDrug extends SimpleDrug {
 
     @Override
     public float colorHallucinationStrength() {
-        return (float) getActiveValue() * 1.8F;
+        return (float) Math.max(0, getActiveValue() - 0.6F) * 2.8F;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return (float) getActiveValue() * 0.9F;
+        return (float) Math.max(0, getActiveValue() - 0.6F) * 1.9F;
     }
 
     @Override
@@ -64,6 +64,9 @@ public class LsdDrug extends SimpleDrug {
 
     @Override
     public float weightlessness() {
+        if (getActiveValue() > 0.6F) {
+            return (float) getActiveValue() * 0.8F;
+        }
         return (float) getActiveValue() * 0.2F;
     }
 }

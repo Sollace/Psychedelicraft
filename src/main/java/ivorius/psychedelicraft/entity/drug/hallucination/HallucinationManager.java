@@ -160,6 +160,10 @@ public class HallucinationManager {
         return getMultiplier(HallucinationTypes.DISTANT_WORLD_DEFORMATION);
     }
 
+    public float getSurfaceShatteringStrength(float tickDelta) {
+        return properties.getDrugValue(DrugType.LSD) * 0.06F;
+    }
+
     public float[] getPulseColor(float tickDelta) {
         return new float[] {
                 currentMindColor[0],

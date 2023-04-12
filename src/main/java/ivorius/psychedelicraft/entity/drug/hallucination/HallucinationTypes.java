@@ -22,12 +22,13 @@ public class HallucinationTypes {
     public static final int PULSES = 8;
     public static final int SURFACE_FRACTALS = 9;
     public static final int DISTANT_WORLD_DEFORMATION = 10;
-    public static final int BLOOM = 11;
-    public static final int COLOR_BLOOM = 12;
-    public static final int COLOR_CONTRAST = 13;
+    public static final int SHATTERING_FRACTALS = 11;
+    public static final int BLOOM = 101;
+    public static final int COLOR_BLOOM = 102;
+    public static final int COLOR_CONTRAST = 103;
 
     private static final List<Integer> COLOR = List.of(DESATURATION, SUPER_SATURATION, SLOW_COLOR_ROTATION, QUICK_COLOR_ROTATION, PULSES, SURFACE_FRACTALS, BLOOM, COLOR_BLOOM, COLOR_CONTRAST);
-    private static final List<Integer> MOVEMENT = List.of(BIG_WAVES, SMALL_WAVES, WIGGLE_WAVES, DISTANT_WORLD_DEFORMATION);
+    private static final List<Integer> MOVEMENT = List.of(BIG_WAVES, SMALL_WAVES, WIGGLE_WAVES, DISTANT_WORLD_DEFORMATION, SHATTERING_FRACTALS);
     private static final List<Integer> CONTEXTUAL = List.of(ENTITIES);
     public static final List<Integer> ALL = Stream.of(COLOR, MOVEMENT, CONTEXTUAL).flatMap(List::stream).toList();
 

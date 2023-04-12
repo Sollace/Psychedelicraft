@@ -109,6 +109,9 @@ public class GeometryShader {
                 uniform.set(isEnabled() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength(MinecraftClient.getInstance().getTickDelta()) : 0);
             }
         }));
+        register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
+            uniform.set(isEnabled() ? ShaderContext.hallucinations().getSurfaceShatteringStrength(MinecraftClient.getInstance().getTickDelta()) : 0F);
+        }));
     }
 
     public Map<String, Supplier<Object>> getSamplers() {
