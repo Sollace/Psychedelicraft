@@ -15,6 +15,7 @@ public interface PSDamageSources {
     DamageSource RESPIRATORY_FAILURE = new DamageSource("respiratory_failure").setBypassesArmor().setUnblockable();
     DamageSource STROKE = new DamageSource("stroke").setBypassesArmor().setUnblockable();
     DamageSource HEART_FAILURE = new DamageSource("heart_failure").setBypassesArmor().setUnblockable();
+    DamageSource HEART_ATTACK = new DamageSource("heart_attack").setBypassesArmor().setUnblockable();
     DamageSource KIDNEY_FAILURE = new DamageSource("kidney_failure").setBypassesArmor().setUnblockable();
     DamageSource IN_SLEEP = new DamageSource("in_sleep").setBypassesArmor().setUnblockable();
 

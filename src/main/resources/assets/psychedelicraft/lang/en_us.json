@@ -256,6 +256,7 @@
   "death.attack.seizure": "%1$s has a seizure",
   "death.attack.coma": "%1$s fell into a coma",
   "death.attack.heart_failure": "%1$s's heart stopped beating",
+  "death.attack.heart_attack": "%1$s's heart exploded",
   "death.attack.kidney_failure": "%1$s's kidneys exploded",
   "death.attack.respiratory_failure": "%1$s lungs collapsed",
   "death.attack.in_sleep": "%1$s died in their sleep",

@@ -49,12 +49,12 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float heartbeatVolume() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1), 0, 1) * 1.2F;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1) + (getTicksActive() * 0.0001F), 0, 1) * 1.2F;
     }
 
     @Override
     public float heartbeatSpeed() {
-        return (float) getActiveValue() * 0.1f;
+        return (float) getActiveValue() * 0.1F + (getTicksActive() * 0.0001F);
     }
 
     @Override
