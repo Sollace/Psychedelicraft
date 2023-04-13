@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "psychedelicraft:cannabis_seeds",
+    "psychedelicraft:hop_seeds",
+    "psychedelicraft:tobacco_seeds",
+    "psychedelicraft:coca_seeds",
+    "psychedelicraft:coffea_cherries",
+    "psychedelicraft:morning_glory_seeds"
+  ]
+}

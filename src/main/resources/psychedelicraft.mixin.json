@@ -5,10 +5,12 @@
     "refmap": "psychedelicraft.mixin.refmap.json",
     "compatibilityLevel": "JAVA_16",
     "mixins": [
+      "MixinAbstractFurnaceBlockEntity",
       "MixinEntity",
-      "MixinPlayerEntity",
       "MixinLivingEntity",
-      "MixinAbstractFurnaceBlockEntity"
+      "MixinLoseJobOnSiteLossTask",
+      "MixinPlayerEntity",
+      "MixinVillagerTaskListProvider"
     ],
     "client": [
       "client.MixinCamera",

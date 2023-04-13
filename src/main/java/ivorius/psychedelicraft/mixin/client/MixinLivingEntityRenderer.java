@@ -5,8 +5,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import ivorius.psychedelicraft.client.render.DrugRenderer;
+import ivorius.psychedelicraft.entity.PSTradeOffers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -16,6 +18,7 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.village.VillagerDataContainer;
 
 @Mixin(LivingEntityRenderer.class)
 abstract class MixinLivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
@@ -35,6 +38,13 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, M extends Entit
             CallbackInfo into) {
         if (entity instanceof PlayerEntity player) {
             DrugRenderer.INSTANCE.poseModel(player, (BipedEntityModel<?>)getModel());
+        }
+    }
+
+    @Inject(method = "isShaking", at = @At("HEAD"), cancellable = true)
+    private void onIsShaking(T entity, CallbackInfoReturnable<Boolean> info) {
+        if (entity instanceof VillagerDataContainer v && v.getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION) {
+            info.setReturnValue(true);
         }
     }
 }

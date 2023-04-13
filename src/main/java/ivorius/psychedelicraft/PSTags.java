@@ -25,6 +25,7 @@ public interface PSTags {
         TagKey<Item> DRINK_RECEPTICALS = of("drink_recepticals");
         TagKey<Item> SUITABLE_HOT_DRINK_RECEPTICALS = of("suitable_hot_drink_recepticals");
         TagKey<Item> SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS = of("suitable_alcoholic_drink_recepticals");
+        TagKey<Item> DRUG_CROP_SEEDS = of("drug_crop_seeds");
 
         static TagKey<Item> of(String name) {
             return TagKey.of(RegistryKeys.ITEM, Psychedelicraft.id(name));

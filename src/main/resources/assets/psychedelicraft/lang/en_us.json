@@ -111,6 +111,7 @@
   "itemGroup.psychedelicraft.weapons": "Psychedelicraft - Weapons",
 
   "entity.minecraft.villager.drug_dealer": "Drug Dealer",
+  "entity.minecraft.villager.drug_addict": "Drug Addict",
 
   "psychedelicraft.sleep.fail.coccaine": "The drugs in your system keep you awake",
   "psychedelicraft.sleep.fail.caffiene": "You do not feel tired",

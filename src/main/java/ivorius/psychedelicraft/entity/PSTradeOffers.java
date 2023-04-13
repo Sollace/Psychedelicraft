@@ -36,9 +36,25 @@ public interface PSTradeOffers {
     VillagerProfession DRUG_DEALER_PROFESSION = register("drug_dealer",
             type -> type.matchesKey(DRUG_DEALER_POI),
             type -> type.matchesKey(DRUG_DEALER_POI),
-            ImmutableSet.of(PSItems.CANNABIS_SEEDS, PSItems.COCA_SEEDS, PSItems.HOP_SEEDS, PSItems.TOBACCO_SEEDS, Items.BONE_MEAL),
+            ImmutableSet.of(
+                    PSItems.CANNABIS_SEEDS, PSItems.HOP_SEEDS, PSItems.TOBACCO_SEEDS,
+                    PSItems.COCA_SEEDS, PSItems.COFFEA_CHERRIES, PSItems.MORNING_GLORY_SEEDS,
+                    PSItems.CANNABIS_BUDS, PSItems.CANNABIS_LEAF,
+                    PSItems.TOBACCO_LEAVES, PSItems.COCA_LEAVES,
+                    PSItems.PEYOTE, PSItems.COFFEA_CHERRIES,
+                    Items.BONE_MEAL
+            ),
             ImmutableSet.of(Blocks.FARMLAND),
-            SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION);
+            SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION
+    );
+
+    VillagerProfession DRUG_ADDICT_PROFESSION = register("drug_addict",
+            PointOfInterestType.NONE,
+            VillagerProfession.IS_ACQUIRABLE_JOB_SITE,
+            ImmutableSet.of(),
+            ImmutableSet.of(),
+            null
+    );
 
     static void bootstrap() {
         TradeOfferHelper.registerVillagerOffers(DRUG_DEALER_PROFESSION, 1, factories -> {
@@ -78,6 +94,21 @@ public interface PSTradeOffers {
             }
         });
 
+        TradeOfferHelper.registerVillagerOffers(DRUG_ADDICT_PROFESSION, 1, factories -> {
+            factories.add(buy(5, PSItems.BROWN_MAGIC_MUSHROOMS, 8, 3, 3, 0.5f));
+            factories.add(buy(2, PSItems.RED_MAGIC_MUSHROOMS, 8, 3, 3, 0.5f));
+            factories.add(buy(2, PSItems.LSD_PILL, 3, 2, 3, 0.5f));
+            factories.add(buy(1, PSItems.JOINT, 2, 2, 3, 0.5f));
+            factories.add(buy(1, PSItems.CIGARETTE, 4, 2, 3, 0.8f));
+            factories.add(buy(1, PSItems.CIGAR, 5, 2, 3, 0.5f));
+            factories.add(buy(1, PSItems.HASH_MUFFIN, 2, 3, 1, 0.7f));
+
+            factories.add(buy(4, PSItems.DRIED_CANNABIS_BUDS, 2, 8, 2, 0.9f));
+            factories.add(buy(4, PSItems.DRIED_CANNABIS_LEAF, 2, 5, 3, 0.8f));
+            factories.add(buy(5, PSItems.DRIED_PEYOTE, 10, 2, 2, 0.5f));
+            factories.add(buy(5, PSItems.DRIED_COCA_LEAVES, 20, 3, 2, 0.5f));
+        });
+
         PointOfInterestTypes.register(Registries.POINT_OF_INTEREST_TYPE, DRUG_DEALER_POI, Stream.concat(
                         PSBlocks.DRYING_TABLE.getStateManager().getStates().stream(),
                         PSBlocks.IRON_DRYING_TABLE.getStateManager().getStates().stream()
@@ -97,6 +128,10 @@ public interface PSTradeOffers {
                 factories.add(sell(1, PSItems.COFFEA_CHERRIES, 1, 4, 1, 0.6F));
             });
         }
+    }
+
+    private static TradeOffers.Factory buy(int cost, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
+        return (e, rng) -> new TradeOffer(new ItemStack(returnItem, returnCount), new ItemStack(Items.EMERALD, cost), maxUses, experience, priceChange);
     }
 
     private static TradeOffers.Factory sell(int cost, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {

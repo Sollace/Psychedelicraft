@@ -11,6 +11,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -72,6 +73,13 @@ public interface RecipeUtils {
             throw new JsonParseException("Too many ingredients for shapeless recipe");
         }
         return ingredients;
+    }
+
+    static Optional<ItemStack> consume(Inventory inventory, Predicate<ItemStack> filter) {
+        return IntStream.range(0, inventory.size())
+                .filter(i -> filter.test(inventory.getStack(i)))
+                .mapToObj(i -> inventory.getStack(i).split(1))
+                .findFirst();
     }
 
     record Slot<T>(Inventory inventory, T content, int slot) {
