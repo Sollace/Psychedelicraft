@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.entity.PSTradeOffers;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.entity.passive.MerchantEntity;
@@ -41,6 +42,7 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
                     );
                     setVillagerData(getVillagerData().withProfession(PSTradeOffers.DRUG_ADDICT_PROFESSION));
                     ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)world);
+                    PSCriteria.FEED_VILLAGER.trigger(player);
                 }
                 info.setReturnValue(ActionResult.SUCCESS);
             } else {
