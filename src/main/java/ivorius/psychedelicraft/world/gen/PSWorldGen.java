@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.block.CannabisPlantBlock;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.config.BiomeSelector;
 import ivorius.psychedelicraft.config.PSConfig;
+import ivorius.psychedelicraft.world.gen.structure.MutableStructurePool;
 import net.fabricmc.fabric.api.biome.v1.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -160,6 +161,8 @@ public class PSWorldGen {
                 .or(BiomeSelectors.tag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE))
                 .or(BiomeSelector.DRY)
         ), genConf.peyote);
+
+        MutableStructurePool.bootstrap();
     }
 
 }
