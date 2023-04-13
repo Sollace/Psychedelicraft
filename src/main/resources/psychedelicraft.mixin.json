@@ -11,6 +11,7 @@
       "MixinLoseJobOnSiteLossTask",
       "MixinPlayerEntity",
       "MixinStructurePool",
+      "MixinVillagerEntity",
       "MixinVillagerTaskListProvider"
     ],
     "client": [
