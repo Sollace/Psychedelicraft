@@ -6,6 +6,7 @@ import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.entity.drug.*;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,6 +32,10 @@ public class DrugMusicManager {
     private int delayUntilHeartbeat;
     private int delayUntilBreath;
     private boolean lastBreathWasIn;
+
+    private float prevHeartbeatPulseStrength;
+    private float heartbeatPulseStrength;
+    private float targetHeartbeatPulseStrength;
 
     public DrugMusicManager(DrugProperties properties) {
         this.properties = properties;
@@ -70,12 +75,19 @@ public class DrugMusicManager {
             delayUntilBreath--;
         }
 
+        prevHeartbeatPulseStrength = heartbeatPulseStrength;
+        heartbeatPulseStrength = MathUtils.approach(heartbeatPulseStrength, targetHeartbeatPulseStrength, 0.2F);
+        if (targetHeartbeatPulseStrength > 0) {
+            targetHeartbeatPulseStrength -= 0.02F;
+        }
+
         if (delayUntilHeartbeat == 0) {
             float heartbeatVolume = properties.getModifier(Drug.HEART_BEAT_VOLUME);
             if (heartbeatVolume > 0) {
                 float speed = properties.getModifier(Drug.HEART_BEAT_SPEED);
 
-                delayUntilHeartbeat = MathHelper.floor(35.0f / (speed - 1.0f));
+                delayUntilHeartbeat = speed <= 1 ? 1 : MathHelper.floor(35F / (speed - 1F));
+                targetHeartbeatPulseStrength = 1;
                 entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(),
                         PSSounds.ENTITY_PLAYER_HEARTBEAT,
                         SoundCategory.AMBIENT, heartbeatVolume, speed, false);
@@ -95,6 +107,10 @@ public class DrugMusicManager {
                 );
             }
         }
+    }
+
+    public float getHeartbeatPulseStrength(float delta) {
+        return MathHelper.lerp(delta, prevHeartbeatPulseStrength, heartbeatPulseStrength);
     }
 
     private DrugType startPlayingSound(DrugType type) {

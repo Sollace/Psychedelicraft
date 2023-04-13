@@ -10,6 +10,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.RenderUtil;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -91,10 +92,13 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
 
         MinecraftClient client = MinecraftClient.getInstance();
         PlayerEntity entity = client.player;
+        DrugProperties properties = DrugProperties.of(entity);
 
-        if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled && entity.hurtTime > 0 || experiencedHealth < 5) {
-            float p1 = (float) entity.hurtTime / (float) entity.maxHurtTime;
-            float p2 = (5 - experiencedHealth) / 6F;
+        float pulseStrength = properties.getMusicManager().getHeartbeatPulseStrength(ticks);
+
+        if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled && (entity.hurtTime > 0 || experiencedHealth < 5 || pulseStrength > 0)) {
+            float p1 = Math.max((float)entity.hurtTime / entity.maxHurtTime, pulseStrength);
+            float p2 = (5 - (experiencedHealth * (1 - pulseStrength))) / 6F;
 
             float p = p1 > 0 ? p1 : p2 > 0 ? p2 : 0;
             RenderUtil.drawOverlay(matrices, p, screenWidth, screenHeight, HURT_OVERLAY, 0, 0, 1, 1, (int) ((1 - p) * 40));
