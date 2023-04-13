@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.command;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Streams;
@@ -81,7 +81,7 @@ public class DrugCommand {
 
     private static int lockDrugs(CommandContext<ServerCommandSource> context, Identifier drugName) throws CommandSyntaxException {
         boolean locked = BoolArgumentType.getBool(context, "locked");
-        applyDrugChange(context, drugName, drug -> drug.setLocked(locked), (player, type) -> {
+        applyDrugChange(context, drugName, (properties, type) -> properties.getDrug(type).setLocked(locked), (player, type) -> {
             if (type == UpdateType.NONE) {
                 sendFeedback(context.getSource(), player, false, "none", drugName);
             } else if (type == UpdateType.ALL) {
@@ -95,7 +95,7 @@ public class DrugCommand {
 
     private static int setDrugs(CommandContext<ServerCommandSource> context, Identifier drugName) throws CommandSyntaxException {
         double value = DoubleArgumentType.getDouble(context, "value");
-        applyDrugChange(context, drugName, drug -> drug.setDesiredValue(value), (player, type) -> {
+        applyDrugChange(context, drugName, (properties, type) -> properties.setDrugValue(type, value), (player, type) -> {
             if (type == UpdateType.NONE) {
                 sendFeedback(context.getSource(), player, false, "set", drugName);
             } else if (type == UpdateType.ALL) {
@@ -110,7 +110,7 @@ public class DrugCommand {
 
     private static int addToDrugs(CommandContext<ServerCommandSource> context, Identifier drugName) throws CommandSyntaxException {
         double value = DoubleArgumentType.getDouble(context, "value");
-        applyDrugChange(context, drugName, drug -> drug.addToDesiredValue(value), (player, type) -> {
+        applyDrugChange(context, drugName, (properties, type) -> properties.addToDrug(type, value), (player, type) -> {
             if (type == UpdateType.NONE) {
                 sendFeedback(context.getSource(), player, false, "add", drugName);
             } else if (type == UpdateType.ALL) {
@@ -123,18 +123,18 @@ public class DrugCommand {
         return 0;
     }
 
-    static void applyDrugChange(CommandContext<ServerCommandSource> context, Identifier drugName, Consumer<Drug> change, FeedbackConsumer feedback) throws CommandSyntaxException {
+    static void applyDrugChange(CommandContext<ServerCommandSource> context, Identifier drugName, BiConsumer<DrugProperties, DrugType> change, FeedbackConsumer feedback) throws CommandSyntaxException {
         ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "target");
         DrugProperties properties = DrugProperties.of(player);
 
         if ("all".equals(drugName.getPath())) {
             DrugType.REGISTRY.forEach(type -> {
-                change.accept(properties.getDrug(type));
+                change.accept(properties, type);
             });
             feedback.accept(player, UpdateType.ALL);
         } else {
-            DrugType.REGISTRY.getOrEmpty(drugName).map(properties::getDrug).ifPresentOrElse(drug -> {
-                change.accept(drug);
+            DrugType.REGISTRY.getOrEmpty(drugName).ifPresentOrElse(type -> {
+                change.accept(properties, type);
                 feedback.accept(player, UpdateType.ONE);
             }, () -> feedback.accept(player, UpdateType.NONE));
         }

@@ -1,0 +1,49 @@
+{
+  "parent": "psychedelicraft:root",
+  "display": {
+    "icon": {
+      "item": "psychedelicraft:jolly_rancher"
+    },
+    "title": {
+      "translate": "advancements.psychedelicraft.all_drugs.title"
+    },
+    "description": {
+      "translate": "advancements.psychedelicraft.all_drugs.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "experience": 1000
+  },
+  "criteria": {
+    "have_all_effects": {
+      "trigger": "psychedelicraft:drug_effects_changed",
+      "conditions": {
+        "drugs": [
+          "psychedelicraft:alcohol",
+          "psychedelicraft:cannabis",
+          "psychedelicraft:brown_shrooms",
+          "psychedelicraft:red_shrooms",
+          "psychedelicraft:tobacco",
+          "psychedelicraft:coccaine",
+          "psychedelicraft:caffeine",
+          "psychedelicraft:sugar",
+          "psychedelicraft:bath_salts",
+          "psychedelicraft:lsd",
+          "psychedelicraft:kava",
+          "psychedelicraft:warmth",
+          "psychedelicraft:peyote",
+          "psychedelicraft:zero",
+          "psychedelicraft:power",
+          "psychedelicraft:harmonium"
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "have_all_effects" ]
+  ]
+}

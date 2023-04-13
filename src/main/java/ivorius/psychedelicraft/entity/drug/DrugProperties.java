@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.entity.drug;
 
 import ivorius.psychedelicraft.*;
+import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.client.sound.DrugMusicManager;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
@@ -96,20 +97,25 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public float getDrugValue(DrugType type) {
+        if (!drugs.containsKey(type)) {
+            return 0F;
+        }
         return (float) getDrug(type).getActiveValue();
     }
 
     public boolean isDrugActive(DrugType type) {
-        return drugs.containsKey(type) && getDrugValue(type) > 0;
+        return drugs.containsKey(type) && getDrugValue(type) > MathHelper.EPSILON;
     }
 
     public void addToDrug(DrugType type, double effect) {
         getDrug(type).addToDesiredValue(effect);
+        PSCriteria.DRUG_EFFECTS_CHANGED.trigger(this);
         markDirty();
     }
 
     public void setDrugValue(DrugType type, double effect) {
         getDrug(type).setDesiredValue(effect);
+        PSCriteria.DRUG_EFFECTS_CHANGED.trigger(this);
         markDirty();
     }
 
