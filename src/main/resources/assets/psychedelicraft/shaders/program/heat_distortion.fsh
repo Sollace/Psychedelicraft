@@ -13,6 +13,7 @@ uniform float strength;
 out vec4 fragColor;
 
 void main() {
+  vec4 texel = texture(DiffuseSampler, texCoord.st);
   vec4 depthPixel = texture(DepthSampler, texCoord.st);
   vec4 noisePixel1 = texture(NoiseSampler, texCoord.st * 4.0 + vec2(ticks * 0.324823048, ticks * 0.48913801));
   vec4 noisePixel2 = texture(NoiseSampler, texCoord.ts * 4.0 + vec2(ticks * 0.52890348, ticks * 0.6318212));
@@ -23,8 +24,8 @@ void main() {
   vec3 newColor = texture(DiffuseSampler, clamp(texCoord.st + joinedNoise.rg * strength * depthMul, 0.0, 1.0)).rgb;
 
   if (totalAlpha == 1.0) {
-    fragColor = vec4(newColor, 1.0);
+    fragColor = vec4(newColor, texel.a);
   } else {
-    fragColor = vec4(mix(texture(DiffuseSampler, texCoord.st).rgb, newColor, totalAlpha), 1.0);
+    fragColor = vec4(mix(texel.rgb, newColor, totalAlpha), texel.a);
   }
 }

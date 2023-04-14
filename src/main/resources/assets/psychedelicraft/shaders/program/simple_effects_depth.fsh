@@ -13,16 +13,17 @@ uniform vec4 worldColorization;
 out vec4 fragColor;
 
 void main() {
-	vec3 outcolor = texture(DiffuseSampler, texCoord).rgb;
+	vec4 incolor = texture(DiffuseSampler, texCoord);
+	vec3 outcolor = incolor.rgb;
 	float fogCoord = texture(DepthSampler, texCoord).r;
 
-	// if (pulses.r > 0.0) {
+	if (pulses.r > 0.0) {
 		// float pulseA = (sin((fogCoord - ticks) / 5.0) - 0.4) * pulses.r;
 
 		// if (pulseA > 0.0) {
 		//  outcolor.r = mix(outcolor.r, (outcolor.r + 1.0) * pulses.r, pulseA);
 		// }
-	// }
+  }
 
 	if (worldColorization.a > 0.0) {
 		vec3 c1 = outcolor;
@@ -58,5 +59,5 @@ void main() {
 		outcolor = mix(outcolor, harmonizedColor, worldColorization.a);
 	}
 
-	fragColor = vec4(outcolor, 1.0);
+	fragColor = vec4(outcolor, incolor.a);
 }

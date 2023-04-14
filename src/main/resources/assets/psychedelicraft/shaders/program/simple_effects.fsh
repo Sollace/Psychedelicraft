@@ -42,5 +42,5 @@ void main() {
     outcolor = mix(outcolor, getInvertedColor(outcolor), inversion);
   }
 
-  fragColor = vec4(outcolor, 1.0);
+  fragColor = vec4(outcolor, texel.a);
 }

@@ -50,5 +50,5 @@ void main() {
     newColor = mix(texel.rgb, newColor, focalDepth);
   }
   
-  fragColor = vec4(newColor, 1.0);
+  fragColor = vec4(newColor, texel.a);
 }

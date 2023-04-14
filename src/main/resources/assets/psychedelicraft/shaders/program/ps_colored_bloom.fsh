@@ -45,5 +45,5 @@ void main() {
 
   newColor = mix(newColor, bloomColor, clamp(bloomInfluence, 0.0, 1.0));
 
-  fragColor = vec4(mix(texel.rgb, newColor, totalAlpha), 1.0);
+  fragColor = vec4(mix(texel.rgb, newColor, totalAlpha), texel.a);
 }
