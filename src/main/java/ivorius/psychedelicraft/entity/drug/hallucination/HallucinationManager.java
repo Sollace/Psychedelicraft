@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.util.math.MathHelper;
@@ -169,7 +170,7 @@ public class HallucinationManager {
                 currentMindColor[0],
                 currentMindColor[1],
                 currentMindColor[2],
-                MathHelper.clamp(getMultiplier(HallucinationTypes.PULSES), 0, 1)
+                RenderPhase.current() == RenderPhase.SKY ? 0 : MathHelper.clamp(getMultiplier(HallucinationTypes.PULSES), 0, 1)
         };
     }
 
