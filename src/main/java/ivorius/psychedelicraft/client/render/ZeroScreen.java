@@ -28,7 +28,7 @@ public class ZeroScreen extends RenderLayer {
             .lightmap(DISABLE_LIGHTMAP)
             .program(ZERO_MATTER_PROGRAM)
             .cull(DISABLE_CULLING)
-            .texture(new RenderPhase.Texture(texture, false, false))
+            .texture(new Texture(texture, false, false))
             .build(false)
     ));
 

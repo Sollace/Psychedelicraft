@@ -24,6 +24,7 @@
       "client.MixinShaderStage",
       "client.MixinSoundSystem",
       "client.MixinGameRenderer",
+      "client.MixinWorldRenderer",
       "client.MixinHeldItemRenderer",
       "client.MixinInGameHud",
       "client.MixinLivingEntityRenderer"

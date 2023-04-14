@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.render.RenderPhase;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
@@ -31,8 +32,6 @@ public class GeometryShader {
     private String name;
     private Type type;
 
-    private boolean enabled;
-
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final ResourceManager manager = client.getResourceManager();
 
@@ -50,12 +49,12 @@ public class GeometryShader {
         this.type = type;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public boolean isEnabled() {
+        return RenderPhase.current() != RenderPhase.NORMAL && client.world != null && client.player != null;
     }
 
-    public boolean isEnabled() {
-        return enabled && client.world != null && client.player != null;
+    public boolean isWorld() {
+        return RenderPhase.current() == RenderPhase.WORLD && client.world != null && client.player != null;
     }
 
     public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
@@ -92,7 +91,7 @@ public class GeometryShader {
         }));
         register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> {
             if (!client.isPaused()) {
-                if (isEnabled()) {
+                if (isWorld()) {
                     float tickDelta = client.getTickDelta();
                     uniform.set(
                         ShaderContext.hallucinations().getSmallWaveStrength(tickDelta),
@@ -106,11 +105,11 @@ public class GeometryShader {
         }));
         register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
             if (!client.isPaused()) {
-                uniform.set(isEnabled() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength(MinecraftClient.getInstance().getTickDelta()) : 0);
+                uniform.set(isWorld() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength(MinecraftClient.getInstance().getTickDelta()) : 0);
             }
         }));
         register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isEnabled() ? ShaderContext.hallucinations().getSurfaceShatteringStrength(MinecraftClient.getInstance().getTickDelta()) : 0F);
+            uniform.set(isWorld() ? ShaderContext.hallucinations().getSurfaceShatteringStrength(MinecraftClient.getInstance().getTickDelta()) : 0F);
         }));
     }
 

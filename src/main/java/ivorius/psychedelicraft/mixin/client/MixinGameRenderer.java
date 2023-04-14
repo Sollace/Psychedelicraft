@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import com.mojang.datafixers.util.Pair;
 
 import ivorius.psychedelicraft.client.render.DrugRenderer;
+import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.client.render.shader.CoreShaderRegistrationCallback;
-import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.ShaderStage;
 import net.minecraft.client.render.GameRenderer;
@@ -36,12 +36,12 @@ abstract class MixinGameRenderer {
 
     @Inject(method = "renderWorld", at = @At("HEAD"))
     private void beforeRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
-        GeometryShader.INSTANCE.setEnabled(true);
+        RenderPhase.WORLD.push();
     }
 
     @Inject(method = "renderWorld", at = @At("RETURN"))
     private void afterRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
-        GeometryShader.INSTANCE.setEnabled(false);
+        RenderPhase.pop();
     }
 
     @Inject(method = "render",
