@@ -164,6 +164,13 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        ItemStack stack = super.getPickStack(world, pos, state);
+        stack.setDamage(state.get(AGE));
+        return stack;
+    }
+
+    @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockState state = super.getPlacementState(ctx)
                 .with(AGE, ctx.getStack().getDamage() % (MAX_AGE + 1))
