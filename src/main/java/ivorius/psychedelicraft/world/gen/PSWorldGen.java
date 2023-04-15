@@ -82,7 +82,7 @@ public class PSWorldGen {
 
         FeatureRegistry.registerConfiguredFeature(patch, () -> {
             return new ConfiguredFeature<>(Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(
-                    1,
+                    5,
                     PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK,
                     new SimpleBlockFeatureConfig(BlockStateProvider.of(plant)))
             ));
