@@ -24,9 +24,8 @@ public interface PSModelPredicates {
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("flying"), (stack, world, entity, seed) -> {
             return stack.hasNbt() && stack.getNbt().getBoolean("flying") ? 1 : 0;
         });
-        ModelPredicateProviderRegistry.register(PSItems.WINE_GRAPE_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> {
-            return stack.getDamage() / 10F;
-        });
+        ModelPredicateProviderRegistry.register(PSItems.WINE_GRAPE_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> stack.getDamage() / 10F);
+        ModelPredicateProviderRegistry.register(PSItems.MORNING_GLORY_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> stack.getDamage() / 10F);
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
             if (stack.getItem() instanceof BongItem item) {
                 return item.hasUsableConsumable(entity) ? 1 : 0;
