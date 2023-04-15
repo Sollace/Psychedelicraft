@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.block;
 
 import net.minecraft.block.*;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -25,6 +26,7 @@ public class CannabisPlantBlock extends CropBlock {
     private static final VoxelShape SHAPE = Block.createCuboidShape(2, 0, 2, 14, 16, 14);
 
     public static final BooleanProperty GROWING = BooleanProperty.of("growing");
+    public static final BooleanProperty NATURAL = BooleanProperty.of("natural");
 
     public CannabisPlantBlock(Settings settings) {
         super(settings.ticksRandomly().nonOpaque());
@@ -41,7 +43,7 @@ public class CannabisPlantBlock extends CropBlock {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(getAgeProperty(), GROWING);
+        builder.add(getAgeProperty(), GROWING, NATURAL);
     }
 
     @Override
@@ -69,6 +71,15 @@ public class CannabisPlantBlock extends CropBlock {
     @Override
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
         return floor.isOf(this) || super.canPlantOnTop(floor, world, pos);
+    }
+
+    @Override
+    public final boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        if (state.get(NATURAL)) {
+            BlockState floor = world.getBlockState(pos.down());
+            return floor.isOf(this) || floor.isOf(Blocks.GRASS_BLOCK) || floor.isIn(BlockTags.DIRT);
+        }
+        return super.canPlaceAt(state, world, pos);
     }
 
     @Override

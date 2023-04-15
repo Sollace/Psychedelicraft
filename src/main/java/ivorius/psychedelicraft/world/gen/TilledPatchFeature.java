@@ -61,8 +61,12 @@ public class TilledPatchFeature extends Feature<TilledPatchFeature.Config> {
                     mutablePos.move(Direction.DOWN);
 
                     if (isSoil(world, mutablePos) && random.nextInt(3) == 0) {
-                        setBlockState(world, mutablePos, Blocks.FARMLAND.getDefaultState().with(FarmlandBlock.MOISTURE, config.needsWater ? 7 : 0));
                         placeCrop(world, config, random, mutablePos);
+                        mutablePos.move(Direction.DOWN);
+                        BlockState roots = world.getBlockState(mutablePos);
+                        if (isSoil(roots) || isStone(roots)) {
+                            setBlockState(world, mutablePos, Blocks.ROOTED_DIRT.getDefaultState());
+                        }
                     }
                 }
             }
@@ -77,7 +81,7 @@ public class TilledPatchFeature extends Feature<TilledPatchFeature.Config> {
         int plantHeight = Math.min(2 + random.nextInt(random.nextInt(3) + 1), config.block.getMaxHeight());
 
         for (int i = 0; i < plantHeight; ++i) {
-            BlockState state = config.block.getStateForHeight(i);
+            BlockState state = config.block.getStateForHeight(i).with(CannabisPlantBlock.NATURAL, true);
 
             int age = config.block.getMaxAge(state);
             if (i == plantHeight - 1) {
@@ -101,8 +105,7 @@ public class TilledPatchFeature extends Feature<TilledPatchFeature.Config> {
     }
 
     static boolean isWaterNearby(StructureWorldAccess world, BlockPos pos) {
-        return BlockPos.findClosest(pos, 1, 1, p -> world.getFluidState(p).isIn(FluidTags.WATER) && pos != null)
-                .isPresent();
+        return BlockPos.findClosest(pos, 1, 1, p -> world.getFluidState(p).isIn(FluidTags.WATER) && pos != null).isPresent();
     }
 
     static void findTerrainLevel(StructureWorldAccess world, BlockPos.Mutable mutablePos) {
