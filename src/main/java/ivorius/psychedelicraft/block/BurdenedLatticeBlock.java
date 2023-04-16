@@ -20,6 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.loot.context.*;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
@@ -54,6 +55,14 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
         builder.add(AGE, PERSISTENT);
+    }
+
+    @Override
+    public BlockSoundGroup getSoundGroup(BlockState state) {
+        if (state.get(AGE) > 0) {
+            return BlockSoundGroup.GRASS;
+        }
+        return super.getSoundGroup(state);
     }
 
     @Override
