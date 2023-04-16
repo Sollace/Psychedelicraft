@@ -1,23 +1,23 @@
 {
-    "parent": "psychedelicraft:block/morning_glory_lattice_0",
+    "parent": "psychedelicraft:item/morning_glory_lattice_0",
     "overrides": [
         {
             "predicate": {
                 "psychedelicraft:age": 0.1
             },
-            "model": "psychedelicraft:block/morning_glory_lattice_1"
+            "model": "psychedelicraft:item/morning_glory_lattice_1"
         },
         {
             "predicate": {
                 "psychedelicraft:age": 0.2
             },
-            "model": "psychedelicraft:block/morning_glory_lattice_2"
+            "model": "psychedelicraft:item/morning_glory_lattice_2"
         },
         {
             "predicate": {
                 "psychedelicraft:age": 0.3
             },
-            "model": "psychedelicraft:block/morning_glory_lattice_3"
+            "model": "psychedelicraft:item/morning_glory_lattice_3"
         }
     ]
 }

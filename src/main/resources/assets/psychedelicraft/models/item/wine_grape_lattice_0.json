@@ -1,0 +1,36 @@
+{
+	"parent": "minecraft:block/block",
+	"textures": {
+		"particle": "#lattice",
+		"lattice": "psychedelicraft:block/lattice",
+		"grapes": "psychedelicraft:block/wine_grape_lattice_0"
+	},
+	"elements": [
+		{
+			"name": "lattice",
+			"from": [7, 0, 0],
+			"to": [9, 16, 16],
+			"faces": {
+				"north": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#lattice"},
+				"south": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#lattice"},
+				"up": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
+				"down": {"uv": [7, 0, 9, 16], "texture": "#lattice"}
+			}
+		},
+		{
+			"name": "seeds",
+			"from": [5.9, -0.1, -0.1],
+			"to": [10.1, 16.1, 16.1],
+			"faces": {
+				"north": {"uv": [6, 0, 10, 16], "texture": "#grapes"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#grapes"},
+				"south": {"uv": [6, 0, 10, 16], "texture": "#grapes"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#grapes"},
+				"up": {"uv": [6, 0, 10, 16], "texture": "#grapes"},
+				"down": {"uv": [6, 0, 10, 16], "texture": "#grapes"}
+			}
+		}
+	]
+}
