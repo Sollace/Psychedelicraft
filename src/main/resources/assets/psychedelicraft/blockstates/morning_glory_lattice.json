@@ -1,60 +1,176 @@
 {
-  "variants": {
-    "facing=east,age=0": {
-      "model": "psychedelicraft:block/morning_glory_lattice_0",
-      "y": 90
+  "multipart": [
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_0",
+        "uvlock": true
+      },
+      "when": {
+        "north": "true",
+        "age": 0
+      }
     },
-    "facing=north,age=0": {
-      "model": "psychedelicraft:block/morning_glory_lattice_0"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_0",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "true",
+        "age": 0
+      }
     },
-    "facing=south,age=0": {
-      "model": "psychedelicraft:block/morning_glory_lattice_0"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_0",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "south": "true",
+        "age": 0
+      }
     },
-    "facing=west,age=0": {
-      "model": "psychedelicraft:block/morning_glory_lattice_0",
-      "y": 90
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_0",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "west": "true",
+        "age": 0
+      }
     },
-    "facing=east,age=1": {
-      "model": "psychedelicraft:block/morning_glory_lattice_1",
-      "y": 90
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_1",
+        "uvlock": true
+      },
+      "when": {
+        "north": "true",
+        "age": 1
+      }
     },
-    "facing=north,age=1": {
-      "model": "psychedelicraft:block/morning_glory_lattice_1"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_1",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "true",
+        "age": 1
+      }
     },
-    "facing=south,age=1": {
-      "model": "psychedelicraft:block/morning_glory_lattice_1"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_1",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "south": "true",
+        "age": 1
+      }
     },
-    "facing=west,age=1": {
-      "model": "psychedelicraft:block/morning_glory_lattice_1",
-      "y": 90
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_1",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "west": "true",
+        "age": 1
+      }
     },
-    "facing=east,age=2": {
-      "model": "psychedelicraft:block/morning_glory_lattice_2",
-      "y": 90
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_2",
+        "uvlock": true
+      },
+      "when": {
+        "north": "true",
+        "age": 2
+      }
     },
-    "facing=north,age=2": {
-      "model": "psychedelicraft:block/morning_glory_lattice_2"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_2",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "true",
+        "age": 2
+      }
     },
-    "facing=south,age=2": {
-      "model": "psychedelicraft:block/morning_glory_lattice_2"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_2",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "south": "true",
+        "age": 2
+      }
     },
-    "facing=west,age=2": {
-      "model": "psychedelicraft:block/morning_glory_lattice_2",
-      "y": 90
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_2",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "west": "true",
+        "age": 2
+      }
     },
-    "facing=east,age=3": {
-      "model": "psychedelicraft:block/morning_glory_lattice_3",
-      "y": 90
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_3",
+        "uvlock": true
+      },
+      "when": {
+        "north": "true",
+        "age": 3
+      }
     },
-    "facing=north,age=3": {
-      "model": "psychedelicraft:block/morning_glory_lattice_3"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_3",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "true",
+        "age": 3
+      }
     },
-    "facing=south,age=3": {
-      "model": "psychedelicraft:block/morning_glory_lattice_3"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_3",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "south": "true",
+        "age": 3
+      }
     },
-    "facing=west,age=3": {
-      "model": "psychedelicraft:block/morning_glory_lattice_3",
-      "y": 90
+    {
+      "apply": {
+        "model": "psychedelicraft:block/morning_glory_lattice_3",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "west": "true",
+        "age": 3
+      }
     }
-  }
+  ]
 }

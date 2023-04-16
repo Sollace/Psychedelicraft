@@ -1,35 +1,35 @@
 {
-  "parent": "minecraft:block/block",
+	"parent": "minecraft:block/block",
 	"textures": {
+		"particle": "#lattice",
 		"lattice": "psychedelicraft:block/lattice",
-		"grapes": "psychedelicraft:block/wine_grape_lattice_0",
-		"particle": "#lattice"
+		"grapes": "psychedelicraft:block/wine_grape_lattice_0"
 	},
 	"elements": [
 		{
 			"name": "lattice",
-			"from": [0, 0, 7],
-			"to": [16, 16, 9],
+			"from": [7, 0, 0],
+			"to": [9, 16, 8],
 			"faces": {
-				"north": {"uv": [0, 0, 16, 16], "texture": "#lattice"},
-				"east": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
-				"south": {"uv": [0, 0, 16, 16], "texture": "#lattice"},
-				"west": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
-				"up": {"uv": [0, 7, 16, 9], "texture": "#lattice"},
-				"down": {"uv": [0, 7, 16, 9], "texture": "#lattice"}
+				"north": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
+				"east": {"uv": [0, 0, 8, 16], "texture": "#lattice"},
+				"south": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
+				"west": {"uv": [8, 0, 16, 16], "texture": "#lattice"},
+				"up": {"uv": [7, 7, 9, 16], "texture": "#lattice"},
+				"down": {"uv": [7, 7, 9, 16], "texture": "#lattice"}
 			}
 		},
 		{
 			"name": "seeds",
-      "from": [-0.1, -0.1, 5.9],
-      "to": [16.1, 16.1, 10.1],
+			"from": [5.9, -0.1, -0.1],
+			"to": [10, 16.1, 8.1],
 			"faces": {
-        "north": {"uv": [0, 0, 16, 16], "texture": "#grapes"},
-        "east": {"uv": [6, 0, 10, 16], "texture": "#grapes"},
-        "south": {"uv": [0, 0, 16, 16], "texture": "#grapes"},
-        "west": {"uv": [6, 0, 10, 16], "texture": "#grapes"},
-        "up": {"uv": [0, 6, 16, 10], "texture": "#grapes"},
-        "down": {"uv": [0, 6, 16, 10], "texture": "#grapes"}
+				"north": {"uv": [6, 0, 10, 16], "texture": "#grapes"},
+				"east": {"uv": [0, 0, 8, 16], "texture": "#grapes"},
+				"south": {"uv": [6, 0, 10, 16], "texture": "#grapes"},
+				"west": {"uv": [8, 0, 16, 16], "texture": "#grapes"},
+				"up": {"uv": [6, 6, 10, 16], "texture": "#grapes"},
+				"down": {"uv": [6, 6, 10, 16], "texture": "#grapes"}
 			}
 		}
 	]

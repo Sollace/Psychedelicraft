@@ -1,18 +1,43 @@
 {
-  "variants": {
-    "facing=east": {
-      "model": "psychedelicraft:block/lattice",
-      "y": 90
+  "multipart": [
+    {
+      "apply": {
+        "model": "psychedelicraft:block/lattice",
+        "uvlock": true
+      },
+      "when": {
+        "north": "true"
+      }
     },
-    "facing=north": {
-      "model": "psychedelicraft:block/lattice"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/lattice",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "true"
+      }
     },
-    "facing=south": {
-      "model": "psychedelicraft:block/lattice"
+    {
+      "apply": {
+        "model": "psychedelicraft:block/lattice",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "south": "true"
+      }
     },
-    "facing=west": {
-      "model": "psychedelicraft:block/lattice",
-      "y": 90
+    {
+      "apply": {
+        "model": "psychedelicraft:block/lattice",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "west": "true"
+      }
     }
-  }
+  ]
 }

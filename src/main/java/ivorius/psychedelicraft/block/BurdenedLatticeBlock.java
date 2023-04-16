@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.block;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +26,6 @@ import net.minecraft.state.property.*;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
@@ -33,7 +33,6 @@ import net.minecraft.world.*;
 public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     public static final IntProperty AGE = Properties.AGE_3;
     public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
-    public static final BooleanProperty STABLE = BooleanProperty.of("stable");
     public static final int MAX_AGE = 3;
 
     private boolean spreads;
@@ -48,13 +47,13 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
         this.spreads = spreads;
         this.stem = stem;
         this.shearedAge = shearedAge;
-        setDefaultState(getDefaultState().with(AGE, 0).with(PERSISTENT, false).with(STABLE, true));
+        setDefaultState(getDefaultState().with(AGE, 0).with(PERSISTENT, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
-        builder.add(AGE, PERSISTENT, STABLE);
+        builder.add(AGE, PERSISTENT);
     }
 
     @Override
@@ -121,14 +120,6 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
             }
         } else if (state.get(AGE) > 0) {
             world.setBlockState(pos, state.with(AGE, state.get(AGE) - 1), Block.NOTIFY_ALL);
-            //world.scheduleBlockTick(pos, this, world.getRandom().nextBetween(2, 6));
-        }
-    }
-
-    @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (!state.get(PERSISTENT) && state.get(AGE) > 0 && !state.get(STABLE)) {
-          //  world.setBlockState(pos, state.with(AGE, state.get(AGE) - 1), Block.NOTIFY_ALL);
         }
     }
 
@@ -151,18 +142,6 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
         }
     }
 
-    @Deprecated
-    @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        state = super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
-        //        .with(STABLE, checkConnectivity(world, state, pos));
-        //if (!state.get(STABLE)) {
-        //    world.scheduleBlockTick(pos, this, world.getRandom().nextBetween(2, 6));
-        //}
-        //System.out.println("Neighbour update stable=" + state.get(STABLE));
-        return state;
-    }
-
     @Override
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         ItemStack stack = super.getPickStack(world, pos, state);
@@ -172,41 +151,23 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        BlockState state = super.getPlacementState(ctx)
+        return super.getPlacementState(ctx)
                 .with(AGE, ctx.getStack().getDamage() % (MAX_AGE + 1))
                 .with(PERSISTENT, true);
-        return state;//.with(STABLE, checkConnectivity(ctx.getWorld(), state, ctx.getBlockPos()));
     }
 
     private void trySpread(BlockState state, World world, BlockPos pos) {
         if (!spreads) {
             return;
         }
-
-        Direction facing = state.get(FACING);
-        for (BlockPos mPos : iterateInPlane(state, pos)) {
-            BlockState s = world.getBlockState(mPos);
-            if (s.isOf(PSBlocks.LATTICE) && s.get(FACING).getAxis() == facing.getAxis()) {
-                world.setBlockState(mPos, getDefaultState().with(FACING, s.get(FACING)));
-                return;
-            }
-        }
+        visitNeighbours(state, pos)
+            .filter(mPos -> world.getBlockState(mPos).isOf(PSBlocks.LATTICE))
+            .findFirst()
+            .ifPresent(mPos -> world.setBlockState(mPos, copyStateProperties(getDefaultState(), world.getBlockState(mPos))));
     }
 
     private boolean canSpread(BlockState state, WorldView world, BlockPos pos) {
-        if (!spreads) {
-            return false;
-        }
-
-        Direction facing = state.get(FACING);
-        for (BlockPos mPos : iterateInPlane(state, pos)) {
-            BlockState s = world.getBlockState(mPos);
-            if (s.isOf(PSBlocks.LATTICE) && s.get(FACING).getAxis() == facing.getAxis()) {
-                return true;
-            }
-        }
-
-        return false;
+        return spreads && visitNeighbours(state, pos).anyMatch(mPos -> world.getBlockState(mPos).isOf(PSBlocks.LATTICE));
     }
 
     public boolean checkConnectivity(WorldView world, BlockState state, BlockPos pos) {
@@ -229,28 +190,23 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
             return false;
         }
 
-        Direction facing = state.get(FACING);
-        if (world.getBlockState(pos.offset(facing)).isOf(stem)
-         || world.getBlockState(pos.offset(facing, -1)).isOf(stem)) {
+        if (getFreeConnections(state).anyMatch(facing -> world.getBlockState(pos.offset(facing)).isOf(stem))) {
             return true;
         }
 
         if (maxDepth > 1) {
-            for (BlockPos.Mutable mPos : iterateInPlane(state, pos)) {
-                BlockPos imPos = mPos.toImmutable();
-                if (visitedPositions.add(imPos)) {
-                    if (checkConnectivity(world, world.getBlockState(imPos), imPos, visitedPositions, maxDepth - 1)) {
-                        return true;
-                    }
-                }
-            }
+            return visitNeighbours(state, pos)
+                    .filter(visitedPositions::add)
+                    .anyMatch(neighbourPos -> checkConnectivity(world, world.getBlockState(neighbourPos), neighbourPos, visitedPositions, maxDepth - 1));
         }
 
         return false;
     }
 
-    private static Iterable<BlockPos.Mutable> iterateInPlane(BlockState state, BlockPos pos) {
-        Direction facing = state.get(FACING);
-        return BlockPos.iterateInSquare(pos, 1, facing.rotateYClockwise(), Direction.UP);
+    private static Stream<BlockPos> visitNeighbours(BlockState state, BlockPos pos) {
+        return getConnections(state).flatMap(d -> {
+            BlockPos onLevel = pos.offset(d);
+            return Stream.of(onLevel.up(), onLevel, onLevel.down());
+        });
     }
 }

@@ -30,10 +30,7 @@ public class WineGrapesItem extends SpecialFoodItem {
         if (state.isOf(PSBlocks.LATTICE)) {
 
             context.getWorld().playSoundFromEntity(null, context.getPlayer(), SoundEvents.BLOCK_AZALEA_LEAVES_HIT, context.getPlayer().getSoundCategory(), 1, 1);
-            context.getWorld().setBlockState(pos, PSBlocks.WINE_GRAPE_LATTICE.getDefaultState()
-                    .with(LatticeBlock.FACING, state.get(LatticeBlock.FACING))
-                    .with(LatticeBlock.WATERLOGGED, state.get(LatticeBlock.WATERLOGGED))
-            );
+            context.getWorld().setBlockState(pos, LatticeBlock.copyStateProperties(PSBlocks.WINE_GRAPE_LATTICE.getDefaultState(), state));
             return ActionResult.SUCCESS;
         }
 

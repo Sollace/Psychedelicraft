@@ -45,7 +45,7 @@ public class VineStemBlock extends FlowerBlock {
         for (BlockPos mPos : BlockPos.iterateInSquare(pos, 1, Direction.NORTH, Direction.EAST)) {
             BlockState s = world.getBlockState(mPos);
             if (s.isOf(PSBlocks.LATTICE)) {
-                world.setBlockState(mPos, lattice.get().getDefaultState().with(LatticeBlock.FACING, s.get(LatticeBlock.FACING)));
+                world.setBlockState(mPos, LatticeBlock.copyStateProperties(lattice.get().getDefaultState(), s));
                 return;
             }
         }
