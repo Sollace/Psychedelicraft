@@ -30,6 +30,7 @@ public class CannabisPlantBlock extends CropBlock {
 
     public CannabisPlantBlock(Settings settings) {
         super(settings.ticksRandomly().nonOpaque());
+        setDefaultState(getDefaultState().with(NATURAL, false));
     }
 
     public BlockState getStateForHeight(int y) {
