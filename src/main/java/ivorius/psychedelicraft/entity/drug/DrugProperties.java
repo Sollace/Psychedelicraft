@@ -92,6 +92,10 @@ public class DrugProperties implements NbtSerialisable {
         return soundManager;
     }
 
+    public LockableHungerManager getStomach() {
+        return (LockableHungerManager)entity.getHungerManager();
+    }
+
     public Drug getDrug(DrugType type) {
         return drugs.computeIfAbsent(type, DrugType::create);
     }
@@ -170,6 +174,29 @@ public class DrugProperties implements NbtSerialisable {
 
         drugs.values().forEach(drug -> drug.update(this));
 
+        LockableHungerManager.State stomachState = getStomach().getLockedState();
+        final float caffeinated = getDrugValue(DrugType.CAFFEINE);
+        final boolean shouldLockHunger = (
+                  getDrugValue(DrugType.LSD)
+                + getDrugValue(DrugType.RED_SHROOMS)
+                + getDrugValue(DrugType.BROWN_SHROOMS)
+                + caffeinated
+        ) > 0;
+
+        if (shouldLockHunger != (stomachState  != null)) {
+            if (shouldLockHunger) {
+                if (caffeinated > 0) {
+                    getStomach().lockHunger(0, 0, true);
+                } else {
+                    getStomach().lockHunger(true);
+                }
+            } else {
+                getStomach().unlockHunger();
+            }
+
+            markDirty();
+        }
+
         Random random = entity.getRandom();
 
         if (entity.world.isClient) {
@@ -238,6 +265,9 @@ public class DrugProperties implements NbtSerialisable {
         tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE).forEach(tag -> {
             DrugInfluence.loadFromNbt((NbtCompound)tag).ifPresent(this::addToDrug);
         });
+        if (tagCompound.contains("stomach", NbtElement.COMPOUND_TYPE)) {
+            getStomach().setLockedState(LockableHungerManager.State.fromNbt(tagCompound.getCompound("stomach")));
+        }
         dirty = false;
     }
 
@@ -254,6 +284,10 @@ public class DrugProperties implements NbtSerialisable {
             influenceTagList.add(influence.toNbt());
         }
         compound.put("drugInfluences", influenceTagList);
+        LockableHungerManager.State lockedHungerState = getStomach().getLockedState();
+        if (lockedHungerState != null) {
+            compound.put("stomach", lockedHungerState.toNbt());
+        }
     }
 
     public void copyFrom(DrugProperties old, boolean alive) {

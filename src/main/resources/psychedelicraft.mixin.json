@@ -12,7 +12,8 @@
       "MixinPlayerEntity",
       "MixinStructurePool",
       "MixinVillagerEntity",
-      "MixinVillagerTaskListProvider"
+      "MixinVillagerTaskListProvider",
+      "MixinHungerManager"
     ],
     "client": [
       "client.MixinCamera",
