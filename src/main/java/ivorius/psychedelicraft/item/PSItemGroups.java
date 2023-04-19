@@ -115,6 +115,8 @@ public interface PSItemGroups {
                 entries.add(PSItems.JUNIPER_SAPLING);
                 entries.add(PSItems.JUNIPER_BERRIES);
 
+                entries.add(PSItems.PAPER_BAG);
+
                 if (Psychedelicraft.getConfig().balancing.enableHarmonium) {
                     for (DyeColor dye : DyeColor.values()) {
                         float[] color = dye.getColorComponents();

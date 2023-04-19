@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "P P",
+    "P P",
+    "PPP"
+  ],
+  "key": {
+    "P": { "item": "minecraft:paper" }
+  },
+  "result": {
+    "item": "psychedelicraft:paper_bag"
+  }
+}
