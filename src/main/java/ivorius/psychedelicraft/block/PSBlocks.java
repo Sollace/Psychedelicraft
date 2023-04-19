@@ -67,6 +67,14 @@ public interface PSBlocks {
             .sounds(BlockSoundGroup.WOOD).hardness(0.3F).ticksRandomly().nonOpaque()
     ));
 
+    Block POTTED_MORNING_GLORY = register("potted_morning_glory", new FlowerPotBlock(MORNING_GLORY, BlockConstructionUtils.pottedPlant()));
+    Block POTTED_JUNIPER_SAPLING = register("potted_juniper_sapling", new FlowerPotBlock(JUNIPER_SAPLING, BlockConstructionUtils.pottedPlant()));
+    Block POTTED_CANNABIS = register("potted_cannabis", new FlowerPotBlock(CANNABIS, BlockConstructionUtils.pottedPlant()));
+    Block POTTED_HOP = register("potted_hop", new FlowerPotBlock(HOP, BlockConstructionUtils.pottedPlant()));
+    Block POTTED_TOBACCO = register("potted_tobacco", new FlowerPotBlock(TOBACCO, BlockConstructionUtils.pottedPlant()));
+    Block POTTED_COCA = register("potted_coca", new FlowerPotBlock(COCA, BlockConstructionUtils.pottedPlant()));
+    Block POTTED_COFFEA = register("potted_coffea", new FlowerPotBlock(COFFEA, BlockConstructionUtils.pottedPlant()));
+
     Block RIFT_JAR = register("rift_jar", new RiftJarBlock(Settings.of(Material.ORGANIC_PRODUCT).hardness(0.5F).sounds(BlockSoundGroup.GLASS).nonOpaque()));
     Block GLITCH = register("glitch", new GlitchedBlock(Settings.of(Material.DECORATION).breakInstantly().hardness(0)
             .emissiveLighting(BlockConstructionUtils::always)

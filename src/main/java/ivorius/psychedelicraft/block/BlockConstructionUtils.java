@@ -30,6 +30,10 @@ public interface BlockConstructionUtils {
         return Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(soundGroup);
     }
 
+    static AbstractBlock.Settings pottedPlant() {
+        return Settings.of(Material.DECORATION).breakInstantly().nonOpaque();
+    }
+
     static Boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
         return false;
     }

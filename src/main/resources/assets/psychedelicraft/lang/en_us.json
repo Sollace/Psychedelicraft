@@ -104,6 +104,13 @@
   "block.psychedelicraft.stripped_juniper_log": "Stripped Juniper Log",
   "block.psychedelicraft.stripped_juniper_wood": "Stripped Juniper Wood",
   "block.psychedelicraft.juniper_sapling": "Juniper Sapling",
+  "block.psychedelicraft.potted_morning_glory": "Potted Morning Glory",
+  "block.psychedelicraft.potted_juniper_sapling": "Potted Juniper Sapling",
+  "block.psychedelicraft.potted_cannabis": "Potted Cannabis",
+  "block.psychedelicraft.potted_hop": "Potted Hop",
+  "block.psychedelicraft.potted_tobacco": "Potted Tobacco",
+  "block.psychedelicraft.potted_coca": "Potted Coca",
+  "block.psychedelicraft.potted_coffea": "Potted Coffea",
   "block.psychedelicraft.glitch": "Block $__0",
 
   "entity.psychedelicraft.molotov_cocktail": "Molotov Cocktail",
