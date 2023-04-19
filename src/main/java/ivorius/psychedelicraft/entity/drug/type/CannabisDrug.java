@@ -65,4 +65,9 @@ public class CannabisDrug extends SimpleDrug {
     public float viewWobblyness() {
         return (float)getActiveValue() * 0.02F;
     }
+
+    @Override
+    public float hungerSuppression() {
+        return (float)getActiveValue() * -0.2F;
+    }
 }

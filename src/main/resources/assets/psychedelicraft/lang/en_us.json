@@ -52,6 +52,9 @@
   "item.psychedelicraft.molotov_cocktail.quality.5": "Excellent Molotov Cocktail",
   "item.psychedelicraft.molotov_cocktail.quality.6": "Perfect Molotov Cocktail",
   "item.psychedelicraft.molotov_cocktail.quality.7": "Unreal Molotov Cocktail",
+  "item.psychedelicraft.vomit": "Vomit",
+  "item.psychedelicraft.paper_bag": "Empty Paper Bag",
+  "item.psychedelicraft.bag_o_vomit": "Bag of Vomit",
   "item.psychedelicraft.harmonium": "Harmonium",
   "item.psychedelicraft.lsd_square": "LSA Square",
   "item.psychedelicraft.lsd_pill": "LSD Tablet",
@@ -260,6 +263,7 @@
   "death.attack.kidney_failure": "%1$s's kidneys exploded",
   "death.attack.respiratory_failure": "%1$s lungs collapsed",
   "death.attack.in_sleep": "%1$s died in their sleep",
+  "death.attack.over_eating": "%1$s ate too much",
 
   "death.attack.molotov": "%1$s was toasted by %2$s",
   "death.attack.molotov.item": "%1$s was toasted by %2$s using %3$s",

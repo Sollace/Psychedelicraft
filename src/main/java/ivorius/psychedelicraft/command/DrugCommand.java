@@ -29,7 +29,7 @@ import net.minecraft.world.GameRules;
  * @author Sollace
  * @since 5 Jan 2023
  */
-public class DrugCommand {
+class DrugCommand {
     private static final Identifier ALL = Psychedelicraft.id("all");
     public static final SimpleCommandExceptionType INVALID_DRUG_NAME = new SimpleCommandExceptionType(Text.translatable("commands.drug.nodrug"));
     private static final SuggestionProvider<ServerCommandSource> DRUG_NAME_SUGGESTIONS = (context, builder) -> CommandSource.suggestIdentifiers(DrugType.REGISTRY.getIds(), builder);

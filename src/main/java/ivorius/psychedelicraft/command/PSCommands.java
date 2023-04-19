@@ -11,6 +11,7 @@ public interface PSCommands {
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> {
             DrugCommand.register(dispatcher, access);
             HallucinateCommand.register(dispatcher, access);
+            VomitCommand.register(dispatcher, access);
         });
     }
 }

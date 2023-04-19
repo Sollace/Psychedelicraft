@@ -54,8 +54,11 @@ public class DrugProperties implements NbtSerialisable {
 
     private final PlayerEntity entity;
 
+    private final Stomach stomach;
+
     public DrugProperties(PlayerEntity entity) {
         this.entity = entity;
+        this.stomach = new Stomach(this);
     }
 
     public static DrugProperties of(PlayerEntity player) {
@@ -80,6 +83,10 @@ public class DrugProperties implements NbtSerialisable {
         return entity;
     }
 
+    public Stomach getStomach() {
+        return stomach;
+    }
+
     public void markDirty() {
         dirty = true;
     }
@@ -90,10 +97,6 @@ public class DrugProperties implements NbtSerialisable {
 
     public DrugMusicManager getMusicManager() {
         return soundManager;
-    }
-
-    public LockableHungerManager getStomach() {
-        return (LockableHungerManager)entity.getHungerManager();
     }
 
     public Drug getDrug(DrugType type) {
@@ -109,6 +112,13 @@ public class DrugProperties implements NbtSerialisable {
 
     public boolean isDrugActive(DrugType type) {
         return drugs.containsKey(type) && getDrugValue(type) > MathHelper.EPSILON;
+    }
+
+    public boolean isTripping() {
+        float f = getModifier(Drug.MOVEMENT_HALLUCINATION_STRENGTH)
+                + getModifier(Drug.CONTEXTUAL_HALLUCINATION_STRENGTH)
+                + getModifier(Drug.COLOR_HALLUCINATION_STRENGTH);
+        return f > 0.7F;
     }
 
     public void addToDrug(DrugType type, double effect) {
@@ -174,28 +184,7 @@ public class DrugProperties implements NbtSerialisable {
 
         drugs.values().forEach(drug -> drug.update(this));
 
-        LockableHungerManager.State stomachState = getStomach().getLockedState();
-        final float caffeinated = getDrugValue(DrugType.CAFFEINE);
-        final boolean shouldLockHunger = (
-                  getDrugValue(DrugType.LSD)
-                + getDrugValue(DrugType.RED_SHROOMS)
-                + getDrugValue(DrugType.BROWN_SHROOMS)
-                + caffeinated
-        ) > 0;
-
-        if (shouldLockHunger != (stomachState  != null)) {
-            if (shouldLockHunger) {
-                if (caffeinated > 0) {
-                    getStomach().lockHunger(0, 0, true);
-                } else {
-                    getStomach().lockHunger(true);
-                }
-            } else {
-                getStomach().unlockHunger();
-            }
-
-            markDirty();
-        }
+        stomach.onTick();
 
         Random random = entity.getRandom();
 
@@ -210,6 +199,10 @@ public class DrugProperties implements NbtSerialisable {
 
             if (!entity.handSwinging && random.nextFloat() < getModifier(Drug.PUNCH_CHANCE)) {
                 entity.swingHand(Hand.MAIN_HAND);
+            }
+        } else {
+            if (random.nextFloat() < getModifier(Drug.DROWSYNESS)) {
+                entity.addExhaustion(0.05F);
             }
         }
 
@@ -265,9 +258,7 @@ public class DrugProperties implements NbtSerialisable {
         tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE).forEach(tag -> {
             DrugInfluence.loadFromNbt((NbtCompound)tag).ifPresent(this::addToDrug);
         });
-        if (tagCompound.contains("stomach", NbtElement.COMPOUND_TYPE)) {
-            getStomach().setLockedState(LockableHungerManager.State.fromNbt(tagCompound.getCompound("stomach")));
-        }
+        stomach.fromNbt(tagCompound.getCompound("stomach"));
         dirty = false;
     }
 
@@ -284,10 +275,7 @@ public class DrugProperties implements NbtSerialisable {
             influenceTagList.add(influence.toNbt());
         }
         compound.put("drugInfluences", influenceTagList);
-        LockableHungerManager.State lockedHungerState = getStomach().getLockedState();
-        if (lockedHungerState != null) {
-            compound.put("stomach", lockedHungerState.toNbt());
-        }
+        compound.put("stomach", stomach.toNbt());
     }
 
     public void copyFrom(DrugProperties old, boolean alive) {

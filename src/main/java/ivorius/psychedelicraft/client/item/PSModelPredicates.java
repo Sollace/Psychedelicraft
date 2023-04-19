@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.client.item;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.fluid.FluidContainer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.*;
@@ -23,6 +24,9 @@ public interface PSModelPredicates {
         });
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("flying"), (stack, world, entity, seed) -> {
             return stack.hasNbt() && stack.getNbt().getBoolean("flying") ? 1 : 0;
+        });
+        ModelPredicateProviderRegistry.register(Psychedelicraft.id("tripping"), (stack, world, entity, seed) -> {
+            return DrugProperties.of(entity).filter(DrugProperties::isTripping).isPresent() ? 1 : 0;
         });
         ModelPredicateProviderRegistry.register(PSItems.WINE_GRAPE_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> stack.getDamage() / 10F);
         ModelPredicateProviderRegistry.register(PSItems.MORNING_GLORY_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> stack.getDamage() / 10F);

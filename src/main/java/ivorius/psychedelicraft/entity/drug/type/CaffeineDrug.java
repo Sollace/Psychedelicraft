@@ -101,4 +101,9 @@ public class CaffeineDrug extends SimpleDrug {
     public float contextualHallucinationStrength() {
         return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.05F;
     }
+
+    @Override
+    public float hungerSuppression() {
+        return (float)getActiveValue() * 0.15F;
+    }
 }

@@ -1,26 +1,13 @@
 package ivorius.psychedelicraft.entity.drug.hallucination;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.*;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 
 public class EntityHallucinationList implements Iterable<Hallucination> {
-    public static final Identifier TYPE_RASTA = Psychedelicraft.id("rasta_head");
-    public static final Identifier TYPE_MULTIPLE = Psychedelicraft.id("multiple_entity");
-    public static final Identifier TYPE_SINLGE = Psychedelicraft.id("single_entity");
-    public static final Map<Identifier, Function<PlayerEntity, Hallucination>> TYPES = Map.of(
-            TYPE_RASTA, RastaHeadHallucination::new,
-            TYPE_SINLGE, EntityHallucination::new,
-            TYPE_MULTIPLE, MultipleEntityHallucination::new
-    );
-
     private final List<Hallucination> entities = new ArrayList<>();
     private final List<Hallucination> pending = new ArrayList<>();
 
@@ -31,6 +18,14 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
 
     EntityHallucinationList(HallucinationManager manager) {
         this.manager = manager;
+    }
+
+    public DrugProperties getProperties() {
+        return manager.getProperties();
+    }
+
+    public HallucinationManager getManager() {
+        return manager;
     }
 
     public void update() {
@@ -54,6 +49,12 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
             });
         }
         swap();
+    }
+
+    public <T extends Hallucination> List<T> getHallucinations(Class<T> type) {
+        synchronized (entities) {
+            return entities.stream().filter(a -> a.getClass() == type).map(type::cast).toList();
+        }
     }
 
     private void swap() {
@@ -80,17 +81,9 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
     }
 
     public void spawnHallucination() {
-        DrugProperties properties = manager.getProperties();
-        if (!properties.asEntity().world.isClient) {
-            return;
+        if (getProperties().asEntity().world.isClient) {
+            EntityHallucinationType.getCandidates(this).findFirst().ifPresent(type -> addHallucination(type, false));
         }
-
-        Random random = properties.asEntity().getRandom();
-        addHallucination((getNumberOfHallucinations(a -> a instanceof RastaHeadHallucination) == 0
-                && random.nextFloat() < 0.1f
-                && properties.getDrugValue(DrugType.CANNABIS) > 0.4f) ? TYPE_RASTA : random.nextFloat() > 0.5F ? TYPE_MULTIPLE : TYPE_SINLGE,
-                false
-        );
     }
 
     public void addHallucination(Identifier type, boolean force) {
@@ -98,13 +91,22 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
             forcedTicks = 400;
             prevForcedTicks = 400;
         }
-        var factory = TYPES.get(type);
+        var factory = EntityHallucinationType.REGISTRY.get(type);
         if (factory != null) {
-            pending.add(factory.apply(manager.getProperties().asEntity()));
+            addHallucination(factory, false);
         }
     }
 
-    private int getNumberOfHallucinations(Predicate<Hallucination> test) {
+    public void addHallucination(EntityHallucinationType type, boolean force) {
+        if (force) {
+            forcedTicks = 400;
+            prevForcedTicks = 400;
+        }
+
+        pending.add(type.factory().apply(manager.getProperties().asEntity()));
+    }
+
+    public int getNumberOfHallucinations(Predicate<Hallucination> test) {
         int count = 0;
         for (Hallucination hallucination : this) {
             if (test.test(hallucination)) {

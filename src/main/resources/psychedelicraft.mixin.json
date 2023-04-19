@@ -18,6 +18,7 @@
     "client": [
       "client.MixinCamera",
       "client.MixinChatMessages",
+      "client.MixinEntityRenderDispatcher",
       "client.MixinChatScreen",
       "client.MixinMouse",
       "client.MixinGLImportProcessor",
@@ -28,6 +29,7 @@
       "client.MixinWorldRenderer",
       "client.MixinHeldItemRenderer",
       "client.MixinInGameHud",
+      "client.MixinItemModels",
       "client.MixinLivingEntityRenderer"
     ]
 }

@@ -185,6 +185,12 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.2F)))
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)));
 
+    Item VOMIT = register("vomit", new Item(new Settings()));
+    Item PAPER_BAG = register("paper_bag", new Item(new Settings()));
+    Item BAG_O_VOMIT = register("bag_o_vomit", new SuspiciousItem(new Settings()
+            .food(new FoodComponent.Builder().hunger(8).saturationModifier(0.8f).meat().alwaysEdible().build()
+    ), SuspiciousItem.createForms(Items.COOKIE, Items.MUSHROOM_STEW, Items.GOLDEN_APPLE, Items.COOKED_BEEF, Items.COOKED_CHICKEN)));
+
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Item.Settings()));
     }

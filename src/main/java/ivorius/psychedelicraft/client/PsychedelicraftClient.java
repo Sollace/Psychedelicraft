@@ -1,7 +1,9 @@
 package ivorius.psychedelicraft.client;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.item.PSModelPredicates;
 import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.ShaderLoader;
@@ -29,6 +31,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        Psychedelicraft.globalDrugProperties = () -> Optional.of(DrugProperties.of(MinecraftClient.getInstance().player));
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             if (!client.isPaused()) {
                 DrugProperties.of((Entity)client.player).ifPresent(properties -> {

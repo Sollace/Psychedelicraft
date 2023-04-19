@@ -26,6 +26,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.Identifier;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +36,12 @@ public class Psychedelicraft implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
 
     private static final Supplier<JsonConfig.Loader<PSConfig>> CONFIG_LOADER = JsonConfig.create("psychedelicraft.json", PSConfig::new);
+
+    public static Supplier<Optional<DrugProperties>> globalDrugProperties = Optional::empty;
+
+    public static Optional<DrugProperties> getGlobalDrugProperties() {
+        return globalDrugProperties.get();
+    }
 
     public static PSConfig getConfig() {
         return CONFIG_LOADER.get().getData();

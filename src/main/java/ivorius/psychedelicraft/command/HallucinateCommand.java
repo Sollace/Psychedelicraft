@@ -3,7 +3,7 @@ package ivorius.psychedelicraft.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.suggestion.*;
 
-import ivorius.psychedelicraft.entity.drug.hallucination.EntityHallucinationList;
+import ivorius.psychedelicraft.entity.drug.hallucination.EntityHallucinationType;
 import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgHallucinate;
 import net.minecraft.command.CommandRegistryAccess;
@@ -20,8 +20,8 @@ import net.minecraft.util.Identifier;
  * @author Sollace
  * @since 5 Jan 2023
  */
-public class HallucinateCommand {
-    private static final SuggestionProvider<ServerCommandSource> SUGGESTIONS = (context, builder) -> CommandSource.suggestIdentifiers(EntityHallucinationList.TYPES.keySet(), builder);
+class HallucinateCommand {
+    private static final SuggestionProvider<ServerCommandSource> SUGGESTIONS = (context, builder) -> CommandSource.suggestIdentifiers(EntityHallucinationType.REGISTRY.keySet(), builder);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
         dispatcher.register(CommandManager.literal("hallucinate")

@@ -34,4 +34,9 @@ public class RedShroomsDrug extends SimpleDrug {
     public float viewWobblyness() {
         return (float) getActiveValue() * 0.03F;
     }
+
+    @Override
+    public float hungerSuppression() {
+        return (float)getActiveValue() * 0.1F;
+    }
 }

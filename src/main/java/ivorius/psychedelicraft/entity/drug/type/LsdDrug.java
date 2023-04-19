@@ -63,6 +63,11 @@ public class LsdDrug extends SimpleDrug {
     }
 
     @Override
+    public float hungerSuppression() {
+        return (float)getActiveValue() * 0.2F;
+    }
+
+    @Override
     public float weightlessness() {
         if (getActiveValue() > 0.6F) {
             return (float) getActiveValue() * 0.8F;
