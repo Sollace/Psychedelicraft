@@ -147,6 +147,7 @@ public class MotionBlurScreenEffect implements ScreenEffect {
 
         public void sample() {
             Framebuffer input = MinecraftClient.getInstance().getFramebuffer();
+            // TODO: https://en.wikibooks.org/wiki/OpenGL_Programming/Motion_Blur
 
             GlStateManager._glBindFramebuffer(GlConst.GL_READ_FRAMEBUFFER, input.fbo);
             GlStateManager._glBindFramebuffer(GlConst.GL_DRAW_FRAMEBUFFER, output.fbo);

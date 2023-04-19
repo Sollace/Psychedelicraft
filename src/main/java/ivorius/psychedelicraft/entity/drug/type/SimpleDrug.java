@@ -109,7 +109,7 @@ public class SimpleDrug implements Drug {
         }
 
         effect = MathHelper.clamp(effect, 0, 1);
-        effectActive = MathUtils.nearValue(effectActive, effect, 0.05, 0.005);
+        setActiveValue(MathUtils.nearValue(effectActive, effect, 0.05, 0.005));
     }
 
     @Override

@@ -90,9 +90,13 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("ps_blur", UniformBinding.start()
                     .program("ps_blur", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        float menuBlur = DrugRenderer.INSTANCE.getMenuBlur();
+                        float menuBlur = DrugRenderer.INSTANCE.getMenuBlur() + Math.max(0, ShaderContext.drug(DrugType.SLEEP_DEPRIVATION) - 0.7F) * ShaderContext.tickDelta() * 15;
                         float vBlur = ShaderContext.drug(DrugType.POWER) + menuBlur;
-                        float hBlur = menuBlur + (ShaderContext.drug(DrugType.BATH_SALTS) * 6F + ShaderContext.drug(DrugType.BATH_SALTS) * (ShaderContext.ticks() % 5));
+                        float hBlur = menuBlur + (
+                              ShaderContext.drug(DrugType.BATH_SALTS) * 6F
+                            + ShaderContext.drug(DrugType.BATH_SALTS) * (ShaderContext.ticks() % 5)
+                        );
+
                         if (vBlur <= 0 && hBlur <= 0) {
                             return;
                         }

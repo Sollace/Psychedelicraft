@@ -225,6 +225,7 @@ public class DrugProperties implements NbtSerialisable {
         }
 
         changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_MOVEMENT_SPEED, getModifier(Drug.SPEED));
+        changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_ATTACK_SPEED, getModifier(Drug.SPEED));
 
         if (dirty) {
             dirty = false;

@@ -112,5 +112,4 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
     public void close() {
 
     }
-
 }
