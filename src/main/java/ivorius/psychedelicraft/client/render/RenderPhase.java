@@ -6,7 +6,9 @@ import java.util.LinkedList;
 public enum RenderPhase {
     NORMAL,
     WORLD,
-    SKY;
+    SKY,
+    CLOUDS,
+    SCREEN;
 
     private static final Deque<RenderPhase> STACK = new LinkedList<>();
 

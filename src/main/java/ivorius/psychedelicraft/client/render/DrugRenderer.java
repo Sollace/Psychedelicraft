@@ -185,9 +185,17 @@ public class DrugRenderer {
     public void onRenderOverlay(MatrixStack matrices, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         Window window = client.getWindow();
+
+        RenderPhase.SCREEN.push();
+
         getScreenEffects().render(matrices,
                 client.getBufferBuilders().getEntityVertexConsumers(),
                 window.getScaledWidth(), window.getScaledHeight(), tickDelta, null);
+
+        postEffects.render(tickDelta);
+        client.getFramebuffer().beginWrite(true);
+
+        RenderPhase.pop();
     }
 
     public void renderAllHallucinations(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, DrugProperties drugProperties) {

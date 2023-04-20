@@ -44,16 +44,6 @@ abstract class MixinGameRenderer {
         RenderPhase.pop();
     }
 
-    @Inject(method = "render",
-            at = @At(
-                value = "INVOKE",
-                target = "net/minecraft/client/gl/Framebuffer.beginWrite(Z)V",
-                shift = Shift.BEFORE)
-    )
-    private void onBeforeFrameEnd(float tickDelta, long startTime, boolean tick, CallbackInfo info) {
-        DrugRenderer.INSTANCE.getPostEffects().render(tickDelta);
-    }
-
     @Inject(method = "onResized", at = @At("HEAD"))
     private void onResized(int width, int height, CallbackInfo info) {
         DrugRenderer.INSTANCE.getPostEffects().setupDimensions(width, height);

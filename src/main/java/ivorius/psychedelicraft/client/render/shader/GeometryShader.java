@@ -54,59 +54,43 @@ public class GeometryShader {
     }
 
     public boolean isWorld() {
-        return RenderPhase.current() == RenderPhase.WORLD && client.world != null && client.player != null;
+        return (RenderPhase.current() == RenderPhase.WORLD || RenderPhase.current() == RenderPhase.CLOUDS) && client.world != null && client.player != null;
     }
 
     public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
         register.accept(new BoundUniform("PS_SurfaceFractalStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            if (!client.isPaused()) {
-                uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().getSurfaceFractalStrength(ShaderContext.tickDelta()), 0, 1) : 0);
-            }
+            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().getSurfaceFractalStrength(ShaderContext.tickDelta()), 0, 1) : 0);
         }));
         register.accept(new BoundUniform("PS_Pulses", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
-            if (isEnabled()) {
-                if (!client.isPaused()) {
-                    uniform.set(ShaderContext.hallucinations().getPulseColor(ShaderContext.tickDelta()));
-                }
-            }
+            uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor(ShaderContext.tickDelta()) : new float[4]);
         }));
         register.accept(new BoundUniform("PS_SurfaceFractalCoords", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
             if (isEnabled()) {
                 Sprite sprite = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
-                if (!client.isPaused()) {
-                    uniform.set(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
-                }
+                uniform.set(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
             }
         }));
         register.accept(new BoundUniform("PS_PlayerPosition", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> {
-            if (!client.isPaused()) {
-                Vec3d pos = isEnabled() ? MinecraftClient.getInstance().player.getPos() : Vec3d.ZERO;
-                uniform.set((float)pos.getX(), (float)pos.getY(), (float)pos.getZ());
-            }
+            Vec3d pos = isEnabled() ? MinecraftClient.getInstance().player.getPos() : Vec3d.ZERO;
+            uniform.set((float)pos.getX(), (float)pos.getY(), (float)pos.getZ());
         }));
         register.accept(new BoundUniform("PS_WorldTicks", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            if (!client.isPaused()) {
-                uniform.set(isEnabled() ? ShaderContext.ticks() : 0);
-            }
+            uniform.set(isEnabled() ? ShaderContext.ticks() : 0);
         }));
         register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> {
-            if (!client.isPaused()) {
-                if (isWorld()) {
-                    float tickDelta = client.getTickDelta();
-                    uniform.set(
-                        ShaderContext.hallucinations().getSmallWaveStrength(tickDelta),
-                        ShaderContext.hallucinations().getBigWaveStrength(tickDelta),
-                        ShaderContext.hallucinations().getWiggleWaveStrength(tickDelta)
-                    );
-                } else {
-                    uniform.set(0F, 0F, 0F);
-                }
+            if (isWorld()) {
+                float tickDelta = ShaderContext.tickDelta();
+                uniform.set(
+                    ShaderContext.hallucinations().getSmallWaveStrength(tickDelta),
+                    ShaderContext.hallucinations().getBigWaveStrength(tickDelta),
+                    ShaderContext.hallucinations().getWiggleWaveStrength(tickDelta)
+                );
+            } else {
+                uniform.set(0F, 0F, 0F);
             }
         }));
         register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            if (!client.isPaused()) {
-                uniform.set(isWorld() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength(MinecraftClient.getInstance().getTickDelta()) : 0);
-            }
+            uniform.set(isWorld() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength(MinecraftClient.getInstance().getTickDelta()) : 0);
         }));
         register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
             uniform.set(isWorld() ? ShaderContext.hallucinations().getSurfaceShatteringStrength(MinecraftClient.getInstance().getTickDelta()) : 0F);
@@ -173,7 +157,9 @@ public class GeometryShader {
 
         @Override
         public void upload() {
-            valueGetter.accept(this);
+            if (!MinecraftClient.getInstance().isPaused()) {
+                valueGetter.accept(this);
+            }
             super.upload();
         }
     }
