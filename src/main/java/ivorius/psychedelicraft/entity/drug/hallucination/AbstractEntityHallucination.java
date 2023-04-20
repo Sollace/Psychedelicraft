@@ -37,6 +37,10 @@ public abstract class AbstractEntityHallucination extends Hallucination {
         this.entity = entity;
     }
 
+    public Entity getEntity() {
+        return entity;
+    }
+
     @Override
     public int getMaxHallucinations() {
         return UNLIMITED;

@@ -3,6 +3,8 @@ package ivorius.psychedelicraft.entity.drug.hallucination;
 import java.util.*;
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.entity.drug.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -86,24 +88,29 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
         }
     }
 
-    public void addHallucination(Identifier type, boolean force) {
+    @Nullable
+    public Hallucination addHallucination(Identifier type, boolean force) {
         if (force) {
             forcedTicks = 400;
             prevForcedTicks = 400;
         }
         var factory = EntityHallucinationType.REGISTRY.get(type);
         if (factory != null) {
-            addHallucination(factory, false);
+            return addHallucination(factory, false);
         }
+
+        return null;
     }
 
-    public void addHallucination(EntityHallucinationType type, boolean force) {
+    public Hallucination addHallucination(EntityHallucinationType type, boolean force) {
         if (force) {
             forcedTicks = 400;
             prevForcedTicks = 400;
         }
 
-        pending.add(type.factory().apply(manager.getProperties().asEntity()));
+        Hallucination hallucination = type.factory().apply(manager.getProperties().asEntity());
+        pending.add(hallucination);
+        return hallucination;
     }
 
     public int getNumberOfHallucinations(Predicate<Hallucination> test) {
