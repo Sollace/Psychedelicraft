@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.block;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
+import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.world.gen.JuniperTreeSaplingGenerator;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
@@ -22,12 +23,12 @@ public interface PSBlocks {
             .hardness(2).nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never)));
     Block MASH_TUB_EDGE = register("mash_tub_edge", new MashTubWallBlock(Settings.copy(MASH_TUB)));
 
-    Block OAK_BARREL = register("oak_barrel", new BarrelBlock(Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2)));
-    Block SPRUCE_BARREL = register("spruce_barrel", new BarrelBlock(Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2)));
-    Block BIRCH_BARREL = register("birch_barrel", new BarrelBlock(Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2)));
-    Block JUNGLE_BARREL = register("jungle_barrel", new BarrelBlock(Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2)));
-    Block ACACIA_BARREL = register("acacia_barrel", new BarrelBlock(Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2)));
-    Block DARK_OAK_BARREL = register("dark_oak_barrel", new BarrelBlock(Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2)));
+    Block OAK_BARREL = register("oak_barrel", new BarrelBlock(BlockConstructionUtils.barrel()));
+    Block SPRUCE_BARREL = register("spruce_barrel", new BarrelBlock(BlockConstructionUtils.barrel()));
+    Block BIRCH_BARREL = register("birch_barrel", new BarrelBlock(BlockConstructionUtils.barrel()));
+    Block JUNGLE_BARREL = register("jungle_barrel", new BarrelBlock(BlockConstructionUtils.barrel()));
+    Block ACACIA_BARREL = register("acacia_barrel", new BarrelBlock(BlockConstructionUtils.barrel()));
+    Block DARK_OAK_BARREL = register("dark_oak_barrel", new BarrelBlock(BlockConstructionUtils.barrel()));
 
     Block FLASK = register("flask", new FlaskBlock(Settings.of(Material.GLASS).sounds(BlockSoundGroup.WOOD).hardness(1)));
     Block DISTILLERY = register("distillery", new DistilleryBlock(Settings.of(Material.GLASS).sounds(BlockSoundGroup.GLASS).hardness(1)));
@@ -50,6 +51,14 @@ public interface PSBlocks {
     CocaPlantBlock COCA = register("coca", new CocaPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     CoffeaPlantBlock COFFEA = register("coffea", new CoffeaPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     PeyoteBlock PEYOTE = register("peyote", new PeyoteBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
+    NightshadeBlock JIMSONWEEED = register("jimsonweed", new NightshadeBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS),
+            () -> PSItems.JIMSONWEED_SEED_POD,
+            () -> PSItems.JIMSONWEED_LEAF
+    ));
+    NightshadeBlock BELLADONNA = register("belladonna", new NightshadeBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS),
+            () -> PSItems.BELLADONNA_BERRIES,
+            () -> PSItems.BELLADONNA_LEAF
+    ));
 
     Block LATTICE = register("lattice", new LatticeBlock(Block.Settings.of(Material.WOOD)
             .sounds(BlockSoundGroup.WOOD).hardness(0.3F).nonOpaque()));

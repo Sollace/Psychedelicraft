@@ -20,6 +20,10 @@ public interface BlockConstructionUtils {
                 .blockVision(BlockConstructionUtils::never);
     }
 
+    static Settings barrel() {
+        return Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2);
+    }
+
     static PillarBlock log(MapColor topColor, MapColor sideColor) {
         return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD,
                 state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topColor : sideColor)

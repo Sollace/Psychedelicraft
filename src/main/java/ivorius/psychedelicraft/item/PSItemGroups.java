@@ -68,13 +68,15 @@ public interface PSItemGroups {
                 entries.add(PSItems.LSA_SQUARE);
                 entries.add(PSItems.LSD_PILL);
 
-               // entries.add(PSItems.JIMSONWEED_SEEDS);
-               // entries.add(PSItems.JIMSONWEED_LEAVES);
-               // entries.add(PSItems.JIMSONWEED_PODS);
+                entries.add(PSItems.JIMSONWEED_SEEDS);
+                entries.add(PSItems.JIMSONWEED_SEED_POD);
+                entries.add(PSItems.JIMSONWEED_LEAF);
+                entries.add(PSItems.DRIED_JIMSONWEED_LEAF);
 
-               // entries.add(PSItems.BELLADONNA_SEEDS);
-               // entries.add(PSItems.BELLADONNA_LEAVES);
-               // entries.add(PSItems.BELLADONNA_BERRIES);
+                entries.add(PSItems.BELLADONNA_SEEDS);
+                entries.add(PSItems.BELLADONNA_BERRIES);
+                entries.add(PSItems.BELLADONNA_LEAF);
+                entries.add(PSItems.DRIED_BELLADONNA_LEAF);
 
                 entries.add(PSItems.TOBACCO_SEEDS);
                 entries.add(PSItems.TOBACCO_LEAVES);

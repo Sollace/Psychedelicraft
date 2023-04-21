@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "age=0": { "model": "psychedelicraft:block/jimsonweed_stage0" },
+    "age=1": { "model": "psychedelicraft:block/jimsonweed_stage1" },
+    "age=2": { "model": "psychedelicraft:block/jimsonweed_stage2" },
+    "age=3": { "model": "psychedelicraft:block/jimsonweed_stage3" },
+    "age=4": { "model": "psychedelicraft:block/jimsonweed_stage4" },
+    "age=5": { "model": "psychedelicraft:block/jimsonweed_stage5" },
+    "age=6": { "model": "psychedelicraft:block/jimsonweed_stage6" },
+    "age=7": { "model": "psychedelicraft:block/jimsonweed_stage7" }
+  }
+}

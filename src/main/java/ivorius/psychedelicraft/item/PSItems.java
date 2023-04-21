@@ -164,21 +164,24 @@ public interface PSItems {
             new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.INGESTED, 0.05, 0.003, 0.6F)
     ));
 
-    // TODO: https://en.wikipedia.org/wiki/Datura_stramonium
-    //Item JIMSONWEED_SEEDS = register("jimsonweed_seeds", new Item(new Settings()));
-    //Item JIMSONWEED_LEAVES = register("jimsonweed_leaves", new Item(new Settings()));
-    //Item JIMSONWEED_PODS = register("jimsonweed_pods", new Item(new Settings()));
+    Item JIMSONWEED_SEEDS = register("jimsonweed_seeds", new AliasedBlockItem(PSBlocks.JIMSONWEEED, new Settings()));
+    Item JIMSONWEED_SEED_POD = register("jimsonweed_seed_pod");
+    Item JIMSONWEED_LEAF = register("jimsonweed_leaf");
+    Item DRIED_JIMSONWEED_LEAF = register("dried_jimsonweed_leaf");
 
-    // TODO: https://www.erowid.org/plants/belladonna/belladonna.shtml
-    //Item BELLADONNA_SEEDS = register("belladonna_seeds", new Item(new Settings()));
-    //Item BELLADONNA_LEAVES = register("belladonna_leaves", new Item(new Settings()));
-    //Item BELLADONNA_BERRIES = register("belladonna_berries", new Item(new Settings()
-    //        .food(new FoodComponent.Builder().hunger(1).saturationModifier(1.5F).alwaysEdible().build())
-    //));
+    Item BELLADONNA_SEEDS = register("belladonna_seeds", new AliasedBlockItem(PSBlocks.BELLADONNA, new Settings()));
+    Item BELLADONNA_LEAF = register("belladonna_leaf");
+    Item DRIED_BELLADONNA_LEAF = register("dried_belladonna_leaf");
+    Item BELLADONNA_BERRIES = register("belladonna_berries", new EdibleItem(
+            new Settings().food(new FoodComponent.Builder().hunger(1).saturationModifier(1.5F).alwaysEdible().build()),
+            new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+    ));
 
     BongItem SMOKING_PIPE = register("smoking_pipe", new BongItem(new Settings().maxDamage(50)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.25F)))
-            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.8f)))
+            .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.8F)))
+            .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.4, 0.1, 0.9F)))
+            .consumes(new BongItem.Consumable(JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.5, 0.1, 0.2F)))
             .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.65f, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
     // TODO: Play around with the bongs benefits
     BongItem BONG = register("bong", new BongItem(new Settings().maxDamage(128)))
