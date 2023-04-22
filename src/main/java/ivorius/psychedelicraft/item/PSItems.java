@@ -194,6 +194,9 @@ public interface PSItems {
             .food(new FoodComponent.Builder().hunger(8).saturationModifier(0.8f).meat().alwaysEdible().build()
     ), SuspiciousItem.createForms(Items.COOKIE, Items.MUSHROOM_STEW, Items.GOLDEN_APPLE, Items.COOKED_BEEF, Items.COOKED_CHICKEN)));
 
+    Item TRAY = register("tray", PSBlocks.TRAY);
+    Item BUNSEN_BURNER = register("bunsen_burner", PSBlocks.BUNSEN_BURNER);
+
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Item.Settings()));
     }

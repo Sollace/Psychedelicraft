@@ -42,6 +42,9 @@ public interface PSItemGroups {
                     entries.add(RiftJarItem.createFilledRiftJar(0.9F, PSItems.RIFT_JAR));
                 }
 
+                entries.add(PSItems.TRAY);
+                entries.add(PSItems.BUNSEN_BURNER);
+
                 entries.add(PSItems.SMOKING_PIPE);
                 entries.add(PSItems.CIGARETTE);
                 entries.add(PSItems.CIGAR);

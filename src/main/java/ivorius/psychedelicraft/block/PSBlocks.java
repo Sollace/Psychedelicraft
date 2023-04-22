@@ -90,6 +90,9 @@ public interface PSBlocks {
             .air().nonOpaque().noBlockBreakParticles().dropsNothing()
     ));
 
+    Block TRAY = register("tray", new TrayBlock(Settings.of(Material.METAL).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
+    Block BUNSEN_BURNER = register("bunsen_burner", new BurnerBlock(Settings.of(Material.METAL).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
+
     static <T extends Block> T register(String name, T block) {
         return Registry.register(Registries.BLOCK, Psychedelicraft.id(name), block);
     }

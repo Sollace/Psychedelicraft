@@ -37,19 +37,15 @@ public class NightshadeBlock extends PlantBlock implements Fertilizable {
     public static final int MAX_AGE = Properties.AGE_7_MAX;
 
     private static final VoxelShape[] SHAPES = {
-            createCenteredShape(1, 2, 1),
-            createCenteredShape(1.5, 4, 1.5),
-            createCenteredShape(2, 6, 2),
-            createCenteredShape(3, 9, 3),
-            createCenteredShape(6, 10, 6),
-            createCenteredShape(6, 14, 6),
-            createCenteredShape(7, 15, 7),
-            createCenteredShape(7, 15, 7)
+            ShapeUtil.createCenteredShape(1, 2, 1),
+            ShapeUtil.createCenteredShape(1.5, 4, 1.5),
+            ShapeUtil.createCenteredShape(2, 6, 2),
+            ShapeUtil.createCenteredShape(3, 9, 3),
+            ShapeUtil.createCenteredShape(6, 10, 6),
+            ShapeUtil.createCenteredShape(6, 14, 6),
+            ShapeUtil.createCenteredShape(7, 15, 7),
+            ShapeUtil.createCenteredShape(7, 15, 7)
     };
-
-    private static VoxelShape createCenteredShape(double x, double y, double z) {
-        return createCuboidShape(8 - x, 0, 8 - z, 8 + x, y, 8 + z);
-    }
 
     private final ItemConvertible fruit;
     private final ItemConvertible leaf;
