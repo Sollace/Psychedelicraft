@@ -24,7 +24,7 @@ abstract class MixinHungerManager implements LockableHungerManager, GluttonyMana
 
     private float overeating;
 
-    @Inject(method = "add(IF)Z", at = @At("HEAD"))
+    @Inject(method = "add(IF)V", at = @At("HEAD"))
     private void onAdd(int food, float saturationModifier, CallbackInfo info) {
         if (lockedState != null && !lockedState.full() && foodLevel + food > 20) {
             overeating += food / 8F;
