@@ -7,7 +7,7 @@ ps_in float vertexDistance;
 ps_out vec4 fragColor;
 
 void main() {
-  __parent_shaders__main();
+  i_parent_shaders_main();
 
   float worldTicks = PS_WorldTicks;
 

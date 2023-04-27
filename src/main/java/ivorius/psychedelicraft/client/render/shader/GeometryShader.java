@@ -131,7 +131,7 @@ public class GeometryShader {
         });
 
         String newline = System.lineSeparator();
-        return vertexSources.replace("void main()", "void __parent_shaders__main()" + newline) + newline + geometrySources;
+        return vertexSources.replace("void main()", "void i_parent_shaders_main()" + newline) + newline + geometrySources;
     }
 
     private Optional<String> loadProgram(Identifier id) {

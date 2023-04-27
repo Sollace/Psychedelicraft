@@ -22,7 +22,7 @@ float gold_noise(vec2 xy, float seed) {
 }
 
 void main() {
-  __parent_shaders__main();
+  i_parent_shaders_main();
 
   float worldTicks = PS_WorldTicks;
 
