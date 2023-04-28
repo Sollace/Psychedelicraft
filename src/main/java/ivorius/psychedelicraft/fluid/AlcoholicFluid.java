@@ -63,7 +63,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         }
 
         if (type == ProcessType.FERMENT) {
-            if (FERMENTATION.get(tank.getContents()) >= FERMENTATION_STEPS) {
+            if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS) {
                 return openContainer ? settings.tickInfo.get().ticksPerFermentation : UNCONVERTABLE;
             }
             return openContainer ? settings.tickInfo.get().ticksUntilAcetification : settings.tickInfo.get().ticksPerMaturation;
