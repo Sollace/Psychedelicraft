@@ -2,6 +2,9 @@ package ivorius.psychedelicraft.client.render;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
+
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.client.particle.PSParticleFactories;
@@ -42,7 +45,7 @@ public interface PSRenderers {
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),
                 PSBlocks.JUNIPER_SAPLING, PSBlocks.JUNIPER_LEAVES, PSBlocks.FRUITING_JUNIPER_LEAVES, PSBlocks.LATTICE, PSBlocks.WINE_GRAPE_LATTICE, PSBlocks.MORNING_GLORY_LATTICE,
                 PSBlocks.CANNABIS, PSBlocks.HOP, PSBlocks.TOBACCO, PSBlocks.COCA, PSBlocks.COFFEA, PSBlocks.MORNING_GLORY, PSBlocks.JIMSONWEEED, PSBlocks.BELLADONNA,
-                PSBlocks.MASH_TUB,
+                PSBlocks.MASH_TUB, PSBlocks.JUNIPER_DOOR, PSBlocks.JUNIPER_TRAPDOOR,
                 PSBlocks.POTTED_CANNABIS, PSBlocks.POTTED_JUNIPER_SAPLING, PSBlocks.POTTED_MORNING_GLORY,
                 PSBlocks.POTTED_HOP, PSBlocks.POTTED_TOBACCO, PSBlocks.POTTED_COCA, PSBlocks.POTTED_COFFEA);
 
@@ -56,6 +59,8 @@ public interface PSRenderers {
                 }
             });
         });
+
+        TerraformBoatClientHelper.registerModelLayers(Psychedelicraft.id("juniper"), false);
 
         PSParticleFactories.bootstrap();
         PSShaders.bootstrap();

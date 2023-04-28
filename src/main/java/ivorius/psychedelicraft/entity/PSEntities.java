@@ -5,7 +5,11 @@
 
 package ivorius.psychedelicraft.entity;
 
+import com.terraformersmc.terraform.boat.api.TerraformBoatType;
+import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
+
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.*;
 import net.minecraft.registry.Registries;
@@ -24,6 +28,11 @@ public interface PSEntities {
             .trackedUpdateRate(3).trackRangeBlocks(80)
             .dimensions(EntityDimensions.fixed(2F, 2F)));
 
+    TerraformBoatType JUNIPER_BOAT_TYPE = Registry.register(TerraformBoatTypeRegistry.INSTANCE, Psychedelicraft.id("juniper"), new TerraformBoatType.Builder()
+            .planks(PSItems.JUNIPER_PLANKS)
+            .item(PSItems.JUNIPER_BOAT)
+            .build());
+
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
         return Registry.register(Registries.ENTITY_TYPE, Psychedelicraft.id(name), type);
@@ -31,5 +40,8 @@ public interface PSEntities {
 
     static void bootstrap() {
         PSTradeOffers.bootstrap();
+
+
+
     }
 }

@@ -120,6 +120,20 @@ public interface PSItemGroups {
                 entries.add(PSItems.JUNIPER_SAPLING);
                 entries.add(PSItems.JUNIPER_BERRIES);
 
+                entries.add(PSItems.JUNIPER_PLANKS);
+                entries.add(PSItems.JUNIPER_STAIRS);
+                entries.add(PSItems.JUNIPER_SIGN);
+                entries.add(PSItems.JUNIPER_DOOR);
+                entries.add(PSItems.JUNIPER_HANGING_SIGN);
+                entries.add(PSItems.JUNIPER_PRESSURE_PLATE);
+                entries.add(PSItems.JUNIPER_FENCE);
+                entries.add(PSItems.JUNIPER_TRAPDOOR);
+                entries.add(PSItems.JUNIPER_FENCE_GATE);
+                entries.add(PSItems.JUNIPER_BUTTON);
+                entries.add(PSItems.JUNIPER_SLAB);
+                entries.add(PSItems.JUNIPER_BOAT);
+                entries.add(PSItems.JUNIPER_CHEST_BOAT);
+
                 entries.add(PSItems.PAPER_BAG);
 
                 if (Psychedelicraft.getConfig().balancing.enableHarmonium) {

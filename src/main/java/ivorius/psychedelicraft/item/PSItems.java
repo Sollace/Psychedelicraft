@@ -7,6 +7,9 @@ package ivorius.psychedelicraft.item;
 
 import org.joml.Vector3f;
 
+import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
+import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
 import ivorius.psychedelicraft.block.entity.*;
@@ -119,6 +122,19 @@ public interface PSItems {
             new Settings().food(new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()), 15
     ));
     Item JUNIPER_SAPLING = register("juniper_sapling", PSBlocks.JUNIPER_SAPLING);
+    Item JUNIPER_PLANKS = register("juniper_planks", PSBlocks.JUNIPER_PLANKS);
+    Item JUNIPER_STAIRS = register("juniper_stairs", PSBlocks.JUNIPER_STAIRS);
+    Item JUNIPER_SIGN = register("juniper_sign", new SignItem(new Settings().maxCount(16), PSBlocks.JUNIPER_SIGN, PSBlocks.JUNIPER_WALL_SIGN));
+    Item JUNIPER_DOOR = register("juniper_door", PSBlocks.JUNIPER_DOOR);
+    Item JUNIPER_HANGING_SIGN = register("juniper_hanging_sign", new HangingSignItem(PSBlocks.JUNIPER_HANGING_SIGN, PSBlocks.JUNIPER_WALL_HANGING_SIGN, new Settings().maxCount(16)));
+    Item JUNIPER_PRESSURE_PLATE = register("juniper_pressure_plate", PSBlocks.JUNIPER_PRESSURE_PLATE);
+    Item JUNIPER_FENCE = register("juniper_fence", PSBlocks.JUNIPER_FENCE);
+    Item JUNIPER_TRAPDOOR = register("juniper_trapdoor", PSBlocks.JUNIPER_TRAPDOOR);
+    Item JUNIPER_FENCE_GATE = register("juniper_fence_gate", PSBlocks.JUNIPER_FENCE_GATE);
+    Item JUNIPER_BUTTON = register("juniper_button", PSBlocks.JUNIPER_BUTTON);
+    Item JUNIPER_SLAB = register("juniper_slab", PSBlocks.JUNIPER_SLAB);
+    Item JUNIPER_BOAT = TerraformBoatItemHelper.registerBoatItem(Psychedelicraft.id("juniper_boat"), TerraformBoatTypeRegistry.createKey(Psychedelicraft.id("juniper")), false);
+    Item JUNIPER_CHEST_BOAT = TerraformBoatItemHelper.registerBoatItem(Psychedelicraft.id("juniper_chest_boat"), TerraformBoatTypeRegistry.createKey(Psychedelicraft.id("juniper")), true);
 
     Item COFFEA_CHERRIES = register("coffea_cherries", new AliasedBlockItem(PSBlocks.COFFEA, new Settings()));
     Item COFFEE_BEANS = register("coffee_beans");
@@ -198,11 +214,11 @@ public interface PSItems {
     Item BUNSEN_BURNER = register("bunsen_burner", PSBlocks.BUNSEN_BURNER);
 
     static Item register(String name, Block block) {
-        return register(name, new BlockItem(block, new Item.Settings()));
+        return register(name, new BlockItem(block, new Settings()));
     }
 
     static Item register(String name) {
-        return register(name, new Item(new Item.Settings()));
+        return register(name, new Item(new Settings()));
     }
 
     static <T extends Item> T register(String name, T item) {

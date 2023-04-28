@@ -40,6 +40,7 @@ repositories {
     //mavenLocal()
     maven { name 'modmenu'; url 'https://maven.terraformersmc.com/releases' }
     maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
+    maven { name 'TerraformersMC'; url 'https://maven.terraformersmc.com/' }
 }
 
 dependencies {
@@ -52,6 +53,9 @@ dependencies {
     include "com.sollace:fabwork:${project.fabwork_version}"
 
     modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
+
+    modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
+    include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
 }
 
 processResources {

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "psychedelicraft:block/juniper_planks",
+    "side": "psychedelicraft:block/juniper_planks",
+    "top": "psychedelicraft:block/juniper_planks"
+  }
+}

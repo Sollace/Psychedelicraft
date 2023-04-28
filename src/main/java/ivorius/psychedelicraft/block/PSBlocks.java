@@ -6,16 +6,22 @@
 package ivorius.psychedelicraft.block;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.entity.BlockEntityTypeSupportHelper;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.mixin.SignTypeAccessor;
 import ivorius.psychedelicraft.world.gen.JuniperTreeSaplingGenerator;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.SignType;
 
 public interface PSBlocks {
     Block MASH_TUB = register("mash_tub", new MashTubBlock(Settings.of(Material.WOOD)
@@ -39,11 +45,27 @@ public interface PSBlocks {
 
     JuniperLeavesBlock JUNIPER_LEAVES = register("juniper_leaves", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
     JuniperLeavesBlock FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
-    Block JUNIPER_LOG = register("juniper_log", BlockConstructionUtils.log(MapColor.CYAN, MapColor.BLUE));
-    Block JUNIPER_WOOD = register("juniper_wood", BlockConstructionUtils.log(MapColor.CYAN, MapColor.BLUE));
-    Block STRIPPED_JUNIPER_LOG = register("stripped_juniper_log", BlockConstructionUtils.log(MapColor.CYAN, MapColor.BLUE));
-    Block STRIPPED_JUNIPER_WOOD = register("stripped_juniper_wood", BlockConstructionUtils.log(MapColor.CYAN, MapColor.BLUE));
+    Block JUNIPER_LOG = register("juniper_log", BlockConstructionUtils.log(MapColor.CYAN, MapColor.LIGHT_BLUE_GRAY));
+    Block JUNIPER_WOOD = register("juniper_wood", BlockConstructionUtils.log(MapColor.CYAN, MapColor.LIGHT_BLUE_GRAY));
+    Block STRIPPED_JUNIPER_LOG = register("stripped_juniper_log", BlockConstructionUtils.log(MapColor.CYAN, MapColor.LIGHT_BLUE_GRAY));
+    Block STRIPPED_JUNIPER_WOOD = register("stripped_juniper_wood", BlockConstructionUtils.log(MapColor.CYAN, MapColor.LIGHT_BLUE_GRAY));
     Block JUNIPER_SAPLING = register("juniper_sapling", new SaplingBlock(new JuniperTreeSaplingGenerator(), BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
+
+    SignType JUNIPER_SIGN_TYPE = SignTypeAccessor.callRegister(new SignType("juniper") {});
+
+    Block JUNIPER_PLANKS = register("juniper_planks", new Block(Settings.of(Material.WOOD, MapColor.LIGHT_BLUE_GRAY).strength(2, 3).sounds(BlockSoundGroup.WOOD)));
+    Block JUNIPER_STAIRS = register("juniper_stairs", new StairsBlock(JUNIPER_PLANKS.getDefaultState(), Settings.copy(JUNIPER_PLANKS)));
+    Block JUNIPER_SIGN = register("juniper_sign", new SignBlock(Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), JUNIPER_SIGN_TYPE));
+    Block JUNIPER_DOOR = register("juniper_door", new DoorBlock(Settings.of(Material.WOOD, JUNIPER_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque(), SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, SoundEvents.BLOCK_WOODEN_DOOR_OPEN));
+    Block JUNIPER_WALL_SIGN = register("juniper_wall_sign", new WallSignBlock(Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(JUNIPER_SIGN), JUNIPER_SIGN_TYPE));
+    Block JUNIPER_HANGING_SIGN = register("juniper_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, JUNIPER_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), JUNIPER_SIGN_TYPE));
+    Block JUNIPER_WALL_HANGING_SIGN = register("juniper_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, JUNIPER_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20).dropsLike(JUNIPER_HANGING_SIGN), JUNIPER_SIGN_TYPE));
+    Block JUNIPER_PRESSURE_PLATE = register("juniper_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, Settings.of(Material.WOOD, JUNIPER_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD), SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON));
+    Block JUNIPER_FENCE = register("juniper_fence", new FenceBlock(Settings.of(Material.WOOD, JUNIPER_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD)));
+    Block JUNIPER_TRAPDOOR = register("juniper_trapdoor", new TrapdoorBlock(Settings.of(Material.WOOD, JUNIPER_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(BlockConstructionUtils::never), SoundEvents.BLOCK_WOODEN_TRAPDOOR_CLOSE, SoundEvents.BLOCK_WOODEN_TRAPDOOR_OPEN));
+    Block JUNIPER_FENCE_GATE = register("juniper_fence_gate", new FenceGateBlock(Settings.of(Material.WOOD, JUNIPER_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD), SoundEvents.BLOCK_FENCE_GATE_CLOSE, SoundEvents.BLOCK_FENCE_GATE_OPEN));
+    Block JUNIPER_BUTTON = register("juniper_button", BlockConstructionUtils.woodenButton());
+    Block JUNIPER_SLAB = register("juniper_slab", new SlabBlock(Settings.of(Material.WOOD, JUNIPER_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD)));
 
     CannabisPlantBlock CANNABIS = register("cannabis", new CannabisPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     HopPlantBlock HOP = register("hop", new HopPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
@@ -99,6 +121,9 @@ public interface PSBlocks {
 
     static void bootstrap() {
         PSBlockEntities.bootstrap();
+
+        BlockEntityTypeSupportHelper.of(BlockEntityType.SIGN).addSupportedBlocks(JUNIPER_SIGN, JUNIPER_WALL_SIGN);
+        BlockEntityTypeSupportHelper.of(BlockEntityType.HANGING_SIGN).addSupportedBlocks(JUNIPER_HANGING_SIGN, JUNIPER_WALL_HANGING_SIGN);
 
         FlammableBlockRegistry.getDefaultInstance().add(JUNIPER_LOG, 5, 5);
         FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_JUNIPER_LOG, 5, 5);

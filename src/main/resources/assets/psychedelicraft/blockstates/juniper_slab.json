@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "psychedelicraft:block/juniper_slab"
+    },
+    "type=double": {
+      "model": "psychedelicraft:block/juniper_planks"
+    },
+    "type=top": {
+      "model": "psychedelicraft:block/juniper_slab_top"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "wooden_button",
+  "ingredients": [
+    {
+      "item": "psychedelicraft:juniper_planks"
+    }
+  ],
+  "result": {
+    "item": "psychedelicraft:juniper_button"
+  }
+}
