@@ -55,7 +55,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type, boolean openContainer) {
         if (type == ProcessType.DISTILL) {
-            if (FERMENTATION.get(tank.getContents()) >= FERMENTATION_STEPS || MATURATION.get(tank.getContents()) != 0) {
+            if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS || MATURATION.get(tank.getContents()) != 0) {
                 return UNCONVERTABLE;
             }
 
