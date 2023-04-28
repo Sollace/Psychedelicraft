@@ -5,7 +5,12 @@
 
 package ivorius.psychedelicraft.fluid;
 
+import java.util.Locale;
+
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 
 /**
  * A fluid that can processed in the correct container, e.g. distillery.
@@ -22,7 +27,7 @@ public interface Processable {
      * @param stack The fluid currently being processed.
      * @return The time it needs to distill, in ticks.
      */
-    int getProcessingTime(Resovoir tank, ProcessType type, boolean openContainer);
+    int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement);
 
     /**
      * Notifies the fluid that the stack has distilled, and is expected to apply this change to the stack.
@@ -30,10 +35,34 @@ public interface Processable {
      * @param stack The fluid currently being distilled.
      * @return The stack left over in the distillery.
      */
-    ItemStack process(Resovoir tank, ProcessType type, boolean openContainer);
+    ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement);
 
     enum ProcessType {
+        /**
+         * When processed in a distillery, used to increase the purity (proof) of existing liquers.
+         */
         DISTILL,
-        FERMENT
+        /**
+         * When processed in a barrel, used to age grape juice into wines of increasing quality.
+         */
+        MATURE,
+        /**
+         * When processed in a vat/mash tub, used to ferment sugars into alcohol
+         */
+        FERMENT,
+        /**
+         * When processed in the evaporator, used to chemically extract purified substances
+         */
+        PURIFY,
+        /**
+         * When fluids of differing types are mixed in a flask, used to change their properties when they combine.
+         */
+        REACT;
+
+        private final Text status = Text.translatable("fluid.status." + name().toLowerCase(Locale.ROOT));
+
+        public Text getStatus() {
+            return status;
+        }
     }
 }

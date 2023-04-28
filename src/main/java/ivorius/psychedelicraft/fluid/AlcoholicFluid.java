@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Created by lukas on 25.11.14.
  */
@@ -53,7 +55,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getProcessingTime(Resovoir tank, ProcessType type, boolean openContainer) {
+    public int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
         if (type == ProcessType.DISTILL) {
             if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS || MATURATION.get(tank.getContents()) != 0) {
                 return UNCONVERTABLE;
@@ -62,18 +64,25 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             return settings.tickInfo.get().ticksPerDistillation;
         }
 
+        if (type == ProcessType.MATURE) {
+            if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS) {
+                return UNCONVERTABLE;
+            }
+            return settings.tickInfo.get().ticksPerMaturation;
+        }
+
         if (type == ProcessType.FERMENT) {
             if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS) {
-                return openContainer ? settings.tickInfo.get().ticksPerFermentation : UNCONVERTABLE;
+                return settings.tickInfo.get().ticksPerFermentation;
             }
-            return openContainer ? settings.tickInfo.get().ticksUntilAcetification : settings.tickInfo.get().ticksPerMaturation;
+            return settings.tickInfo.get().ticksUntilAcetification;
         }
 
         return UNCONVERTABLE;
     }
 
     @Override
-    public ItemStack process(Resovoir tank, ProcessType type, boolean openContainer) {
+    public ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
         MutableFluidContainer contents = tank.getContents();
 
         if (type == ProcessType.DISTILL) {
@@ -92,17 +101,17 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             return PSFluids.SLURRY.getDefaultStack(1);
         }
 
+        if (type == ProcessType.MATURE) {
+            MATURATION.set(contents, MATURATION.get(contents) + 1);
+        }
+
         if (type == ProcessType.FERMENT) {
             int fermentation = FERMENTATION.get(contents);
 
-            if (openContainer) {
-                if (fermentation < FERMENTATION_STEPS) {
-                    FERMENTATION.set(contents, fermentation + 1);
-                } else {
-                    VINEGAR.set(contents, true);
-                }
+            if (fermentation < FERMENTATION_STEPS) {
+                FERMENTATION.set(contents, fermentation + 1);
             } else {
-                MATURATION.set(contents, MATURATION.get(contents) + 1);
+                VINEGAR.set(contents, true);
             }
         }
 

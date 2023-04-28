@@ -30,6 +30,11 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.StorageMarshal,
         return stack.getFluid();
     }
 
+    public void transferTo(Resovoir tank) {
+        tank.stack = stack;
+        stack = container.toMutable(Items.STONE.getDefaultStack());
+    }
+
     @Override
     public MutableFluidContainer getContents() {
         return stack;
@@ -63,7 +68,7 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.StorageMarshal,
 
     @Override
     public void clear() {
-        stack = FluidContainer.UNLIMITED.toMutable(Items.STONE.getDefaultStack());
+        stack = container.toMutable(Items.STONE.getDefaultStack());
         changeCallback.onDrain(this);
     }
 
@@ -91,7 +96,7 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.StorageMarshal,
     public void setStack(int slot, ItemStack stack) {
         boolean wasEmpty = isEmpty();
         int oldLevel = getLevel();
-        this.stack = FluidContainer.UNLIMITED.toMutable(stack);
+        this.stack = container.toMutable(stack);
         if (isEmpty() != wasEmpty) {
             if (wasEmpty) {
                 changeCallback.onFill(this, getLevel());

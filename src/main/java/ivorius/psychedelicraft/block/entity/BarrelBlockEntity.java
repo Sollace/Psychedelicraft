@@ -21,7 +21,7 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     public int timeLeftTapOpen = 0;
 
     public BarrelBlockEntity(BlockPos pos, BlockState state) {
-        super(PSBlockEntities.BARREL, pos, state, FluidVolumes.BARREL, Processable.ProcessType.FERMENT);
+        super(PSBlockEntities.BARREL, pos, state, FluidVolumes.BARREL, Processable.ProcessType.MATURE);
     }
 
     @Override

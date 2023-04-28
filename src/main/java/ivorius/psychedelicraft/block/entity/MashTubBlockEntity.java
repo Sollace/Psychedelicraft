@@ -51,11 +51,6 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    protected boolean isOpen() {
-        return true;
-    }
-
-    @Override
     protected FluidContainer getContainerType() {
         return PSItems.MASH_TUB;
     }

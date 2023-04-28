@@ -2,6 +2,8 @@ package ivorius.psychedelicraft.fluid;
 
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
@@ -30,7 +32,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getProcessingTime(Resovoir tank, ProcessType type, boolean openContainer) {
+    public int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
         int distillation = DISTILLATION.get(tank.getContents());
         if (type == ProcessType.DISTILL && distillation < 2) {
             return Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract.ticksPerDistillation * (1 + distillation);
@@ -40,7 +42,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public ItemStack process(Resovoir tank, ProcessType type, boolean openContainer) {
+    public ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
         MutableFluidContainer contents = tank.getContents();
 
         if (type == ProcessType.DISTILL) {

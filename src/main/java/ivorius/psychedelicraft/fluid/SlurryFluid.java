@@ -7,6 +7,8 @@ package ivorius.psychedelicraft.fluid;
 
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.particle.BubbleParticleEffect;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -50,16 +52,16 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     }
 
     @Override
-    public int getProcessingTime(Resovoir tank, ProcessType type, boolean openContainer) {
-        if (type == ProcessType.FERMENT) {
+    public int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
+        if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
             return tank.getLevel() >= FLUID_PER_DIRT ? Psychedelicraft.getConfig().balancing.slurryHardeningTime : UNCONVERTABLE;
         }
         return UNCONVERTABLE;
     }
 
     @Override
-    public ItemStack process(Resovoir tank, ProcessType type, boolean openContainer) {
-        if (type == ProcessType.FERMENT) {
+    public ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
+        if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
             return new ItemStack(Items.DIRT, tank.getStack().getCount() / FLUID_PER_DIRT);
         }
         return ItemStack.EMPTY;

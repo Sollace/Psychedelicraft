@@ -60,22 +60,27 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
         return getTimeNeeded() != Processable.UNCONVERTABLE;
     }
 
-    protected boolean isOpen() {
-        return false;
-    }
-
     @Override
     public void tick(ServerWorld world) {
         super.tick(world);
 
-        Resovoir tank = getTank(Direction.UP);
+        Resovoir compliment = getTank(Direction.UP);
+        Resovoir tank = getTank(Direction.DOWN);
+
+        if (compliment != tank && !compliment.isEmpty() && tank.isEmpty()) {
+            compliment.transferTo(tank);
+        }
+
         if (tank.getFluidType() instanceof Processable p) {
-            boolean open = isOpen();
-            setTimeNeeded(p.getProcessingTime(tank, processType, open));
+            if (compliment != tank && !compliment.isEmpty() && p.getProcessingTime(tank, Processable.ProcessType.REACT, compliment) > 0) {
+                p.process(tank, Processable.ProcessType.REACT, compliment);
+            }
+
+            setTimeNeeded(p.getProcessingTime(tank, processType, compliment));
 
             if (canProcess(world, getTimeNeeded())) {
                 if (getTimeProcessed() >= getTimeNeeded()) {
-                    onProcessCompleted(world, tank, p.process(tank, processType, open));
+                    onProcessCompleted(world, tank, p.process(tank, processType, compliment));
                 } else {
                     setTimeProcessed(getTimeProcessed() + 1);
                 }

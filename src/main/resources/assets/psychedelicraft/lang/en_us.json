@@ -282,9 +282,9 @@
   "fluid.psychedelicraft.slurry": "Slurry",
   "fluid.psychedelicraft.bath_salts": "Bath Salts",
 
-  "fluid.status.maturing": "Maturing",
-  "fluid.status.fermenting": "Fermenting",
-  "fluid.status.distilling": "Distilling",
+  "fluid.status.mature": "Maturing",
+  "fluid.status.ferment": "Fermenting",
+  "fluid.status.distill": "Distilling",
 
   "death.attack.alcohol_poisoning": "%1$s died of alcohol poisoning",
   "death.attack.stroke": "%1$s had a stroke",
