@@ -1,31 +1,18 @@
 package ivorius.psychedelicraft.client.screen;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
-import net.minecraft.util.*;
-
-import java.util.List;
 
 /**
  * Created by lukas on 13.11.14.
  * Updated by Sollace on 4 Jan 2023
  */
-public class DistilleryScreen extends FlaskScreen<DistilleryBlockEntity> {
-    public static final Identifier TEXTURE = Psychedelicraft.id("textures/gui/distillery.png");
-
-    private static final List<Text> DISTILLING_LABEL = List.of(Text.translatable("fluid.status.distilling").formatted(Formatting.GREEN));
-
+public class DistilleryScreen extends FluidProcessingContraptionScreen<DistilleryBlockEntity> {
     public DistilleryScreen(FluidContraptionScreenHandler<DistilleryBlockEntity> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-    }
-
-    @Override
-    protected Identifier getBackgroundTexture() {
-        return TEXTURE;
     }
 
     @Override
@@ -35,10 +22,5 @@ public class DistilleryScreen extends FlaskScreen<DistilleryBlockEntity> {
         drawTexture(matrices, baseX + 110, baseY + 14, 233, 22, 23, 22);
         int barHeight = (int)(22 * (1 - progress));
         drawTexture(matrices, baseX + 110, baseY + 14 + barHeight, 233, barHeight, 23, 23 - barHeight);
-    }
-
-    @Override
-    protected List<Text> getAdditionalTankText() {
-        return handler.getBlockEntity().isActive() ? DISTILLING_LABEL : List.of();
     }
 }

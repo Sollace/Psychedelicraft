@@ -10,8 +10,8 @@ import net.minecraft.registry.Registry;
 
 public interface PSBlockEntities {
     BlockEntityType<DryingTableBlockEntity> DRYING_TABLE = create("drying_table", BlockEntityType.Builder.create(DryingTableBlockEntity::new, PSBlocks.DRYING_TABLE, PSBlocks.IRON_DRYING_TABLE));
-    BlockEntityType<MashTubBlockEntity> MASH_TUB = create("mash_tub", BlockEntityType.Builder.create(MashTubBlockEntity::new, PSBlocks.MASH_TUB));
-    BlockEntityType<MashTubWallBlock.MasterPosition> MASH_TUB_EDGE = create("mash_tub_edge", BlockEntityType.Builder.create(MashTubWallBlock.MasterPosition::new, PSBlocks.MASH_TUB_EDGE));
+    BlockEntityType<MashTubBlockEntity> MASH_TUB = create("wooden_vat", BlockEntityType.Builder.create(MashTubBlockEntity::new, PSBlocks.MASH_TUB));
+    BlockEntityType<MashTubWallBlock.MasterPosition> MASH_TUB_EDGE = create("wooden_vat_edge", BlockEntityType.Builder.create(MashTubWallBlock.MasterPosition::new, PSBlocks.MASH_TUB_EDGE));
     BlockEntityType<RiftJarBlockEntity> RIFT_JAR = create("rift_jar", BlockEntityType.Builder.create(RiftJarBlockEntity::new, PSBlocks.RIFT_JAR));
     BlockEntityType<PeyoteBlockEntity> PEYOTE = create("peyote", BlockEntityType.Builder.create(PeyoteBlockEntity::new, PSBlocks.PEYOTE));
     BlockEntityType<DistilleryBlockEntity> DISTILLERY = create("distillery", BlockEntityType.Builder.create(DistilleryBlockEntity::new, PSBlocks.DISTILLERY));

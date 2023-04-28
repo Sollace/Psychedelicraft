@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.client.screen;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
@@ -22,10 +23,11 @@ import java.util.List;
  * Updated by Sollace on 4 Jan 2023
  */
 public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContraptionScreen<FluidContraptionScreenHandler<T>> {
-    public static final Identifier BACKGROUND = Psychedelicraft.id("textures/gui/flask.png");
+    private final Identifier background;
 
     public FlaskScreen(FluidContraptionScreenHandler<T> handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+        this.background = Psychedelicraft.id("textures/gui/" + BlockEntityType.getId(handler.getBlockEntity().getType()).getPath() + ".png");
     }
 
     @Override
@@ -33,12 +35,12 @@ public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContra
         int baseX = (width - backgroundWidth) / 2;
         int baseY = (height - backgroundHeight) / 2;
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShaderTexture(0, getBackgroundTexture());
+        RenderSystem.setShaderTexture(0, background);
         drawTexture(matrices, baseX + 30, baseY + 20, 0, backgroundHeight, 110, 50);
 
         drawTanks(matrices, baseX, baseY);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShaderTexture(0, getBackgroundTexture());
+        RenderSystem.setShaderTexture(0, background);
 
         drawTexture(matrices, baseX, baseY, 0, 0, backgroundWidth, backgroundHeight);
         drawAdditionalInfo(matrices, baseX, baseY);
@@ -64,10 +66,6 @@ public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContra
 
     protected void drawTanks(MatrixStack matrices, int baseX, int baseY) {
         drawTank(getTank(), baseX + 48, baseY + 59, 64, 27, 4.0f, 2.1111f);
-    }
-
-    protected Identifier getBackgroundTexture() {
-        return BACKGROUND;
     }
 
     @Override

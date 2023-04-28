@@ -52,6 +52,10 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
         return 0;
     }
 
+    public Processable.ProcessType getProcessType() {
+        return processType;
+    }
+
     public boolean isActive() {
         return getTimeNeeded() != Processable.UNCONVERTABLE;
     }
