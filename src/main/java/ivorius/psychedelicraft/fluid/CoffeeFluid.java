@@ -38,16 +38,11 @@ public class CoffeeFluid extends DrugFluid {
         return Text.translatable(getTranslationKey() + ".temperature." + WARMTH.get(stack));
     }
 
-    public ItemStack setTemperature(ItemStack stack, int temperature) {
-        FluidContainer.getFluidAttributesTag(stack, false).putInt("temperature", temperature);
-        return stack;
-    }
-
     @Override
     public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
         super.getDefaultStacks(container, consumer);
-        consumer.accept(setTemperature(getDefaultStack(container), 1));
-        consumer.accept(setTemperature(getDefaultStack(container), 2));
+        consumer.accept(WARMTH.set(getDefaultStack(container), 1));
+        consumer.accept(WARMTH.set(getDefaultStack(container), 2));
     }
 
     @SuppressWarnings("deprecation")
