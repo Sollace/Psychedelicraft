@@ -114,13 +114,12 @@ public interface PSFluids {
     );
     AlcoholicFluid MILK = new AlcoholicFluid(Psychedelicraft.id("milk"), new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
-            //.distilledColor(0x77cac4b2)
+            .distilledColor(0x77cac4b2)
             .matureColor(0x88D6BC90)
             .variants(DrinkTypes.NONE, DrinkTypes.only("rice_wine"))
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoMilk)
-            .color(0xeecac4b2)
+            .color(0x88ffffff)
             .viscocity(2)
-            // TODO: (Sollace) Color for milk was set twice. Second time set to 0x77cac4b2 Should it be the distilled colour?
     );
 
     DrugFluid COFFEE = new CoffeeFluid(Psychedelicraft.id("coffee"), new DrugFluid.Settings()
