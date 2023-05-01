@@ -8,6 +8,7 @@ public interface PSCriteria {
     DrugEffectsChangedCriterion DRUG_EFFECTS_CHANGED = Criteria.register(new DrugEffectsChangedCriterion());
 
     CustomEventCriterion.Trigger FEED_VILLAGER = CUSTOM.createTrigger("feed_villager");
+    CustomEventCriterion.Trigger HANGOVER = CUSTOM.createTrigger("get_hangover");
 
     static void bootstrap() { }
 }
