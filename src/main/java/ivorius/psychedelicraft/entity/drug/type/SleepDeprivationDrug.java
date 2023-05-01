@@ -7,6 +7,8 @@ package ivorius.psychedelicraft.entity.drug.type;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.nbt.NbtCompound;
 
 /**
  * Created by Sollace on April 19 2023.
@@ -17,6 +19,8 @@ public class SleepDeprivationDrug extends SimpleDrug {
 
     private static final float INCREASE_PER_TICKS = 1F / TICKS_UNTIL_PHANTOM_SPAWN;
 
+    private float storedEnergy;
+
     public SleepDeprivationDrug() {
         super(DrugType.SLEEP_DEPRIVATION, 1, 0);
     }
@@ -25,8 +29,11 @@ public class SleepDeprivationDrug extends SimpleDrug {
     public void update(DrugProperties drugProperties) {
         super.update(drugProperties);
 
-        if (drugProperties.getDrugValue(DrugType.CAFFEINE) > 0.1F
-                || drugProperties.getDrugValue(DrugType.COCAINE) > 0.1F) {
+        float caffiene = drugProperties.getDrugValue(DrugType.CAFFEINE) + drugProperties.getDrugValue(DrugType.COCAINE);
+
+        storedEnergy = MathUtils.approach(storedEnergy, Math.min(1, caffiene * 10F), 0.02F);
+
+        if (caffiene > 0.1F) {
             setDesiredValue(0);
         } else {
             setDesiredValue(getDesiredValue() + (INCREASE_PER_TICKS / 3));
@@ -37,6 +44,11 @@ public class SleepDeprivationDrug extends SimpleDrug {
     public void onWakeUp(DrugProperties drugProperties) {
         super.onWakeUp(drugProperties);
         setActiveValue(0);
+    }
+
+    @Override
+    public double getActiveValue() {
+        return Math.max(0, super.getActiveValue() - storedEnergy);
     }
 
     @Override
@@ -83,4 +95,25 @@ public class SleepDeprivationDrug extends SimpleDrug {
     public float movementHallucinationStrength() {
         return Math.max(0, (float)getActiveValue() - 0.8F) * 3;
     }
+
+    @Override
+    public void reset(DrugProperties drugProperties) {
+        super.reset(drugProperties);
+        if (!locked) {
+            storedEnergy = 0;
+        }
+    }
+
+    @Override
+    public void fromNbt(NbtCompound compound) {
+        super.fromNbt(compound);
+        storedEnergy = compound.getFloat("storedEnergy");
+    }
+
+    @Override
+    public void toNbt(NbtCompound compound) {
+        super.toNbt(compound);
+        compound.putFloat("storedEnergy", storedEnergy);
+    }
+
 }
