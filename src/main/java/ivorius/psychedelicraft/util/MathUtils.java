@@ -8,8 +8,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public interface MathUtils {
-    static float nearValue(float from, float to, float delta, float plusSpeed) {
-        return approach(MathHelper.lerp(delta, from, to), to, plusSpeed);
+    static float nearValue(float from, float to, float delta, float adjustmentRate) {
+        return approach(MathHelper.lerp(delta, from, to), to, adjustmentRate);
     }
 
     static float approach(float value, float target, float adjustmentRate) {
@@ -24,8 +24,8 @@ public interface MathUtils {
         return value;
     }
 
-    static double nearValue(double from, double to, double delta, double plusSpeed) {
-        return approach(MathHelper.lerp(delta, from, to), to, plusSpeed);
+    static double nearValue(double from, double to, double delta, double adjustmentRate) {
+        return approach(MathHelper.lerp(delta, from, to), to, adjustmentRate);
     }
 
     static double approach(double value, double target, double adjustmentRate) {
