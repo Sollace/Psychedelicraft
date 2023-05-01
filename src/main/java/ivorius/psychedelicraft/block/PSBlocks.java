@@ -81,6 +81,10 @@ public interface PSBlocks {
             () -> PSItems.BELLADONNA_BERRIES,
             () -> PSItems.BELLADONNA_LEAF
     ));
+    NightshadeBlock TOMATOES = register("tomatoes", new NightshadeBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS),
+            () -> PSItems.TOMATO,
+            () -> PSItems.TOMATO_LEAF
+    ));
 
     Block LATTICE = register("lattice", new LatticeBlock(Block.Settings.of(Material.WOOD)
             .sounds(BlockSoundGroup.WOOD).hardness(0.3F).nonOpaque()));

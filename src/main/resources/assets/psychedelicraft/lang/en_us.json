@@ -252,6 +252,14 @@
   "fluid.psychedelicraft.pineapple.mature": "Pineapple Wine (%d DM)",
   "fluid.psychedelicraft.pineapple.fermented.1": "Pineapple Half Wash",
   "fluid.psychedelicraft.pineapple.fermented.2": "Young Pineapple Wine",
+  
+  "fluid.psychedelicraft.tomato_juice": "Tomato",
+  "fluid.psychedelicraft.tomato_juice.vinegar": "Tomato Vinegar",
+  "fluid.psychedelicraft.tomato_juice.mature.distilled": "Tomato Brandy (%d DM, %d TD)",
+  "fluid.psychedelicraft.tomato_juice.distilled": "Tomato Brandy (%d TD)",
+  "fluid.psychedelicraft.tomato_juice.mature": "Tomato Wine (%d DM)",
+  "fluid.psychedelicraft.tomato_juice.fermented.1": "Tomato Half Wash",
+  "fluid.psychedelicraft.tomato_juice.fermented.2": "Young Tomato Wine",
 
   "fluid.psychedelicraft.banana": "Banana Juice",
   "fluid.psychedelicraft.banana.vinegar": "Banana Vinegar",
@@ -311,6 +319,17 @@
   "psychedelicract.alcohol.flavor": "%1$s and %2$s with %3$s after-taste",
   "psychedelicraft.alcohol.distillations": "Proof: %dx",
   "psychedelicraft.alcohol.maturations": "Maturation: %d days (%s)",
+  
+  "psychedelicraft.alcohol.drink.juice": "%s Juice",
+  "psychedelicraft.alcohol.drink.beer": "%s Beer",
+  "psychedelicraft.alcohol.drink.vodka": "%s Vodka",
+  "psychedelicraft.alcohol.drink.rum": "%s Rum",
+  "psychedelicraft.alcohol.drink.whiskey": "%s Whiskey",
+  "psychedelicraft.alcohol.drink.mead": "%s Mead",
+  "psychedelicraft.alcohol.drink.ketchup": "Ketchup",
+  "psychedelicraft.alcohol.drink.jenever": "Jenever",
+  "psychedelicraft.alcohol.drink.red_wine": "Red Wine",
+  "psychedelicraft.alcohol.drink.rice_wine": "Rice Wine",
 
   "death.attack.alcohol_poisoning": "%1$s died of alcohol poisoning",
   "death.attack.stroke": "%1$s had a stroke",

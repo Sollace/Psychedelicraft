@@ -4,11 +4,7 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import ivorius.psychedelicraft.fluid.alcohol.Charisma;
-import ivorius.psychedelicraft.fluid.alcohol.FlavorProfile;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
-import ivorius.psychedelicraft.fluid.alcohol.Potency;
-import ivorius.psychedelicraft.fluid.alcohol.Texture;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
@@ -224,7 +220,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     public static class Settings extends DrugFluid.Settings {
-        private DrinkTypes.VariantSet<String> displayNames = DrinkTypes.VariantSet.empty();
+        protected DrinkTypes.VariantSet<String> displayNames = DrinkTypes.VariantSet.empty();
         private DrinkTypes.VariantSet<DrinkTypes.Icons> textures = DrinkTypes.VariantSet.empty();
 
         private double fermentationAlcohol;

@@ -34,6 +34,16 @@ public interface PSFluids {
             .color(0xaafeaa08)
             .viscocity(2)
     );
+    AlcoholicFluid TOMATO = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("tomato_juice"), new AlcoholicFluid.Settings()
+            .alcohol(0.15, 0.9, 0.05)
+            .distilledColor(0xaaff0000)
+            .matureColor(0xaaff3300)
+            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoTomato)
+            .variants(DrinkTypes.JUICE_KETCHUP, DrinkTypes.JUICE_KETCHUP_ICONS)
+            .drug(DrugType.SUGAR)
+            .color(0xaaffaa08)
+            .viscocity(1)
+    );
     AlcoholicFluid RED_GRAPES = new AlcoholicFluid(Psychedelicraft.id("red_grapes"), new AlcoholicFluid.Settings()
             .alcohol(0.55, 1.7, 0.2)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoRedGrapes)

@@ -185,6 +185,10 @@ public interface PSItems {
     Item JIMSONWEED_LEAF = register("jimsonweed_leaf");
     Item DRIED_JIMSONWEED_LEAF = register("dried_jimsonweed_leaf");
 
+    Item TOMATO_SEEDS = register("tomato_seeds", new AliasedBlockItem(PSBlocks.TOMATOES, new Settings()));
+    Item TOMATO = register("tomato", new Item(new Settings().food(EdibleItem.TOMATO)));
+    Item TOMATO_LEAF = register("tomato_leaf");
+
     Item BELLADONNA_SEEDS = register("belladonna_seeds", new AliasedBlockItem(PSBlocks.BELLADONNA, new Settings()));
     Item BELLADONNA_LEAF = register("belladonna_leaf");
     Item DRIED_BELLADONNA_LEAF = register("dried_belladonna_leaf");

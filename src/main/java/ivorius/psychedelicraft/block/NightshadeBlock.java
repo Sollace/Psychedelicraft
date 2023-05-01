@@ -5,7 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -98,7 +97,7 @@ public class NightshadeBlock extends PlantBlock implements Fertilizable {
 
         if ((stack.isOf(Items.SHEARS) && age >= 1) || (stack.isOf(Items.BONE_MEAL) && age == MAX_AGE)) {
             stack.damage(1, player, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
-            SweetBerryBushBlock.dropStack(world, pos, new ItemStack((age == MAX_AGE ? fruit : leaf).asItem(), 1 + world.random.nextInt(2)));
+            dropStack(world, pos, new ItemStack((age == MAX_AGE ? fruit : leaf).asItem(), 1 + world.random.nextInt(2)));
 
             state = state.with(AGE, MAX_AGE - 1);
             world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);

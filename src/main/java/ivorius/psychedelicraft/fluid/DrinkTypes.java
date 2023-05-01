@@ -37,7 +37,23 @@ public interface DrinkTypes {
             .add("vodka", IntRange.exactly(0), IntRange.atLeast(1))
             .add("whisky", IntRange.atLeast(1), IntRange.atLeast(1));
 
+
     VariantSet<String> MEAD = new NameSet().add("mead", IntRange.ANY, IntRange.ANY);
+
+    VariantSet<String> JUICE_KETCHUP = new NameSet()
+            .add("ketchup", IntRange.between(1, 4), IntRange.exactly(0))
+            .add("mead", IntRange.atLeast(5), IntRange.exactly(0))
+            .add("beer", IntRange.ANY, IntRange.exactly(1))
+            .add("vodka", IntRange.exactly(0), IntRange.exactly(2))
+            .add("whisky", IntRange.atLeast(6), IntRange.atLeast(3));
+    VariantSet<Icons> JUICE_KETCHUP_ICONS = new IconSet()
+            .add(IntRange.ANY, IntRange.atMost(0), IntRange.atMost(0), "tomato_juice")
+            .add(IntRange.ANY, IntRange.between(1, 4), IntRange.exactly(0), "ketchup")
+            .add(IntRange.ANY, IntRange.atLeast(5), IntRange.exactly(0), "mead")
+            .add(IntRange.ANY, IntRange.ANY, IntRange.exactly(1), "clear")
+            .add(IntRange.ANY, IntRange.exactly(0), IntRange.exactly(2), "rum_semi_mature")
+            .add(IntRange.ANY, IntRange.atLeast(6), IntRange.atLeast(3), "rum_mature");
+
     VariantSet<String> JENEVER = new NameSet().add("jenever", IntRange.ANY, IntRange.ANY);
     VariantSet<String> RED_WINE = new NameSet().add("red_wine", IntRange.ANY, IntRange.ANY);
     VariantSet<String> RICE_WINE = new NameSet().add("rice_wine", IntRange.ANY, IntRange.ANY);
@@ -48,6 +64,7 @@ public interface DrinkTypes {
 
     static VariantSet<Icons> maturable(String juvenileName) {
         return new IconSet()
+                .add(IntRange.ANY, IntRange.atMost(1), IntRange.atMost(0), juvenileName)
                 .add(IntRange.ANY, IntRange.atMost(2), IntRange.atMost(1), "clear")
                 .add(IntRange.ANY, IntRange.atMost(3), IntRange.atLeast(2), "clear")
                 .add(IntRange.ANY, IntRange.between(4, 13), IntRange.ANY, "rum_semi_mature")

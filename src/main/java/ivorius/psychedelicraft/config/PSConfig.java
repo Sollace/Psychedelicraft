@@ -35,6 +35,7 @@ public class PSConfig {
             public TickInfo alcInfoWheat = DEFAULT;
             public TickInfo alcInfoCorn = DEFAULT;
             public TickInfo alcInfoPotato = DEFAULT;
+            public TickInfo alcInfoTomato = DEFAULT;
             public TickInfo alcInfoRedGrapes = DEFAULT;
             public TickInfo alcInfoRice = DEFAULT;
             public TickInfo alcInfoJuniper = DEFAULT;
