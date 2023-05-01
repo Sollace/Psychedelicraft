@@ -4,12 +4,21 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.alcohol.Charisma;
+import ivorius.psychedelicraft.fluid.alcohol.FlavorProfile;
+import ivorius.psychedelicraft.fluid.alcohol.Maturity;
+import ivorius.psychedelicraft.fluid.alcohol.Potency;
+import ivorius.psychedelicraft.fluid.alcohol.Texture;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -146,6 +155,27 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         }
 
         return super.getName(stack);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+
+        int distillation = DISTILLATION.get(stack);
+        int maturation = MATURATION.get(stack);
+        //int fermentation = FERMENTATION.get(stack);
+
+        if (distillation > 0) {
+            tooltip.add(Text.translatable("psychedelicraft.alcohol.distillations", distillation).formatted(Formatting.GRAY));
+        }
+
+        if (maturation > 0) {
+            tooltip.add(Text.translatable("psychedelicraft.alcohol.maturations", maturation, Maturity.getMaturity(maturation).getName()).formatted(Formatting.GRAY));
+        }
+
+        //if (distillation > 0 || maturation > 0 || fermentation > 0) {
+        //    tooltip.add(Text.empty());
+        //    tooltip.add(settings.profile.getFlavour(distillation, fermentation, maturation));
+        //}
     }
 
     @Override

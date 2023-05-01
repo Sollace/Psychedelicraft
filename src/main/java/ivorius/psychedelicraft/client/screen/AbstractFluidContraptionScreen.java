@@ -6,6 +6,7 @@ import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -87,6 +88,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
             if (!fluid.isEmpty()) {
                 tooltip.add(Text.literal("Amount: " + level).formatted(Formatting.GRAY));
             }
+            fluid.appendTooltip(tank.getStack(), null, tooltip, TooltipContext.BASIC);
             tooltip.addAll(details);
             renderTooltip(matrices, tooltip, mouseX, mouseY);
         }

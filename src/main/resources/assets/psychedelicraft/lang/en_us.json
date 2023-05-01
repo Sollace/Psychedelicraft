@@ -286,6 +286,32 @@
   "fluid.status.ferment": "Fermenting",
   "fluid.status.distill": "Distilling",
 
+  "psychedelicraft.alcohol.maturity.young": "young",
+  "psychedelicraft.alcohol.maturity.aged": "aged",
+  "psychedelicraft.alcohol.maturity.mature": "mature",
+  "psychedelicraft.alcohol.maturity.very_mature": "very mature",
+
+  "psychedelicraft.alcohol.texture.thin": "thin",
+  "psychedelicraft.alcohol.texture.smooth": "smooth",
+  "psychedelicraft.alcohol.texture.fizzy": "fizzy",
+  "psychedelicraft.alcohol.texture.chunky": "chunky",
+  "psychedelicraft.alcohol.texture.thick": "thick",
+
+  "psychedelicraft.alcohol.charisma.plain": "plain",
+  "psychedelicraft.alcohol.charisma.fruity": "fruity",
+  "psychedelicraft.alcohol.charisma.acidic": "acidic",
+  "psychedelicraft.alcohol.charisma.acrid": "acrid",
+  
+  "psychedelicraft.alcohol.potency.watery": "watery",
+  "psychedelicraft.alcohol.potency.weak": "weak",
+  "psychedelicraft.alcohol.potency.strong": "strong",
+  "psychedelicraft.alcohol.potency.pungent": "pungent",
+  
+  "psychedelicraft.drink.levels": "Level: %d/%d",
+  "psychedelicract.alcohol.flavor": "%1$s and %2$s with %3$s after-taste",
+  "psychedelicraft.alcohol.distillations": "Proof: %dx",
+  "psychedelicraft.alcohol.maturations": "Maturation: %d days (%s)",
+
   "death.attack.alcohol_poisoning": "%1$s died of alcohol poisoning",
   "death.attack.stroke": "%1$s had a stroke",
   "death.attack.seizure": "%1$s has a seizure",

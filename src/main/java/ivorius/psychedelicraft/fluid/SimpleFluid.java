@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -133,6 +134,10 @@ public class SimpleFluid {
 
     public Text getName(ItemStack stack) {
         return Text.translatable(getTranslationKey());
+    }
+
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+
     }
 
     @SuppressWarnings("deprecation")
