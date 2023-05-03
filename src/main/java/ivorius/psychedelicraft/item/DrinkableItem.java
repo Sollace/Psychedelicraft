@@ -83,7 +83,12 @@ public class DrinkableItem extends Item implements FluidContainer {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         tooltip.add(Text.translatable("psychedelicraft.drink.levels", getLevel(stack), getMaxCapacity(stack)).formatted(Formatting.GRAY));
-        getFluid(stack).appendTooltip(stack, world, tooltip, context);
+
+        SimpleFluid fluid = getFluid(stack);
+        fluid.appendTooltip(stack, world, tooltip, context);
+        if (context.isAdvanced()) {
+            tooltip.add(Text.literal("contents: " + fluid.getId().toString()).formatted(Formatting.DARK_GRAY));
+        }
     }
 
     @Override
