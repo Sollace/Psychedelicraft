@@ -207,7 +207,7 @@
   "psychedelicraft.alcohol.maturity.mature": "mature",
   "psychedelicraft.alcohol.maturity.very_mature": "very mature",
   
-  "psychedelicraft.drink.levels": "Level: %d/%d",
+  "psychedelicraft.drink.levels": "Volume: %d/%d ml",
   "psychedelicract.alcohol.flavor": "%1$s and %2$s with %3$s after-taste",
   "psychedelicraft.alcohol.distillations": "Proof: %dx",
   "psychedelicraft.alcohol.maturations": "Maturation: %d days (%s)",
