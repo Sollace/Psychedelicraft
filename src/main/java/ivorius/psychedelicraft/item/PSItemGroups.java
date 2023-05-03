@@ -60,6 +60,10 @@ public interface PSItemGroups {
                 entries.add(PSItems.COFFEA_CHERRIES);
                 entries.add(PSItems.COFFEE_BEANS);
 
+                entries.add(PSItems.TOMATO_LEAF);
+                entries.add(PSItems.TOMATO_SEEDS);
+                entries.add(PSItems.TOMATO);
+
                 entries.add(PSItems.OBSIDIAN_BOTTLE);
                 entries.add(PSItems.OBSIDIAN_DUST);
 
