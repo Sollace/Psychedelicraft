@@ -19,9 +19,9 @@
     "consumed_the_thing": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
-        "item": {
-          "items": [ "psychedelicraft:red_magic_mushrooms" ]
-        }
+        "items": [
+          { "items": [ "psychedelicraft:red_magic_mushrooms" ] }
+        ]
       }
     }
   },
