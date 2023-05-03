@@ -1,0 +1,19 @@
+{
+  "type": "psychedelicraft:mashing",
+  "stew_time": 0,
+  "base_fluid": {
+    "fluid": "minecraft:water"
+  },
+  "ingredients": [
+    { "item": "minecraft:tomato" },
+    { "item": "minecraft:tomato" },
+    { "item": "minecraft:tomato" },
+    { "item": "minecraft:tomato" },
+    { "item": "minecraft:tomato" },
+    { "item": "minecraft:tomato" },
+    { "item": "minecraft:tomato" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:tomato"
+  }
+}
