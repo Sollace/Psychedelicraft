@@ -1,27 +1,32 @@
 package ivorius.psychedelicraft.fluid;
 
+import ivorius.psychedelicraft.fluid.alcohol.DrinkType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class DynamicallyNamedAlcoholicFluid extends AlcoholicFluid {
 
-    public DynamicallyNamedAlcoholicFluid(Identifier id, Settings settings) {
-        super(id, settings);
+    private final DrinkType defaultDrinkName;
+
+    public DynamicallyNamedAlcoholicFluid(Identifier id, String defaultDrinkName, Settings settings) {
+        this(id, DrinkType.of(defaultDrinkName), settings);
     }
+
+    public DynamicallyNamedAlcoholicFluid(Identifier id, DrinkType defaultDrinkName, Settings settings) {
+        super(id, settings);
+        this.defaultDrinkName = defaultDrinkName;
+    }
+
 
     @Override
     public Text getName(ItemStack stack) {
 
-        var specialName = settings.displayNames.find(stack);
-        if (specialName == null && DISTILLATION.get(stack) == 0 && MATURATION.get(stack) == 0 && FERMENTATION.get(stack) == 0) {
-            specialName = "juice";
-        }
-
+        var specialName = settings.variants.find(stack);
         if (specialName == null) {
-            return super.getName(stack);
+            specialName = defaultDrinkName;
         }
 
-        return Text.translatable("psychedelicraft.alcohol.drink." + specialName, Text.translatable(getTranslationKey()));
+        return specialName.getName(Text.translatable(getTranslationKey()));
     }
 }

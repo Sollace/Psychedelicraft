@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.alcohol.FluidAppearance;
 import ivorius.psychedelicraft.item.PSItems;
 
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
     @Override
     public Optional<Identifier> getFlowTexture(ItemStack stack) {
         return Optional.ofNullable(settings.icons)
-                .map(DrinkTypes.Icons::still)
+                .map(FluidAppearance::still)
                 .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
     }
 
@@ -136,7 +137,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
         private FoodComponent foodLevel;
 
         @Nullable
-        private DrinkTypes.Icons icons;
+        private FluidAppearance icons;
 
         public Settings drinkable() {
             drinkable = true;
@@ -158,7 +159,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
             return this;
         }
 
-        public Settings appearance(DrinkTypes.Icons icons) {
+        public Settings appearance(FluidAppearance icons) {
             this.icons = icons;
             return this;
         }

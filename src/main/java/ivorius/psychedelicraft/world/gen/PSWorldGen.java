@@ -155,6 +155,9 @@ public class PSWorldGen {
                 BiomeKeys.MEADOW,
                 BiomeKeys.LUSH_CAVES
         ), genConf.morningGlories);
+        registerUnTilledPatch("belladonna", PSBlocks.BELLADONNA, BiomeSelectors.includeByKey(BiomeKeys.DARK_FOREST), genConf.belladonna);
+        registerUnTilledPatch("jimsonweed", PSBlocks.JIMSONWEEED, BiomeSelectors.includeByKey(BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE), genConf.jimsonweed);
+        registerUnTilledPatch("tomato", PSBlocks.JIMSONWEEED, BiomeSelectors.includeByKey(BiomeKeys.FOREST), genConf.tomato);
         registerUnTilledPatch("peyote", PSBlocks.PEYOTE, BiomeSelectors.foundInOverworld().and(
                     BiomeSelectors.tag(BiomeTags.IS_SAVANNA)
                 .or(BiomeSelectors.tag(BiomeTags.IS_BADLANDS))

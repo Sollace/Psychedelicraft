@@ -36,6 +36,7 @@ public class PSConfig {
             public TickInfo alcInfoCorn = DEFAULT;
             public TickInfo alcInfoPotato = DEFAULT;
             public TickInfo alcInfoTomato = DEFAULT;
+            public TickInfo alcInfoAgave = new TickInfo(30, 80, 40, 90);
             public TickInfo alcInfoRedGrapes = DEFAULT;
             public TickInfo alcInfoRice = DEFAULT;
             public TickInfo alcInfoJuniper = DEFAULT;
@@ -68,6 +69,9 @@ public class PSConfig {
             public FeatureConfig hop = new FeatureConfig();
             public FeatureConfig tobacco = new FeatureConfig();
             public FeatureConfig morningGlories = new FeatureConfig();
+            public FeatureConfig belladonna = new FeatureConfig();
+            public FeatureConfig jimsonweed = new FeatureConfig();
+            public FeatureConfig tomato = new FeatureConfig();
             public FeatureConfig coffea = new FeatureConfig();
             public FeatureConfig coca = new FeatureConfig();
             public FeatureConfig peyote = new FeatureConfig();

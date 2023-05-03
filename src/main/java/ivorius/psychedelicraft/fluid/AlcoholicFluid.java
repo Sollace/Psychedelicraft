@@ -4,6 +4,9 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.alcohol.FluidAppearance;
+import ivorius.psychedelicraft.fluid.alcohol.DrinkType;
+import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.item.TooltipContext;
@@ -34,9 +37,14 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     final Settings settings;
 
+    private final boolean hasMatchedBaseStack;
+    private final List<DrinkTypes.State> defaultStates;
+
     public AlcoholicFluid(Identifier id, Settings settings) {
         super(id, settings.drinkable());
         this.settings = settings;
+        this.defaultStates = settings.variants.streamStates().toList();
+        this.hasMatchedBaseStack = defaultStates.stream().anyMatch(DrinkTypes.State::isDefault);
     }
 
     protected int getDistilledColor() {
@@ -158,10 +166,14 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
         int distillation = DISTILLATION.get(stack);
         int maturation = MATURATION.get(stack);
-        //int fermentation = FERMENTATION.get(stack);
+        int fermentation = FERMENTATION.get(stack);
 
         if (distillation > 0) {
             tooltip.add(Text.translatable("psychedelicraft.alcohol.distillations", distillation).formatted(Formatting.GRAY));
+        }
+
+        if (fermentation > 0) {
+            tooltip.add(Text.translatable("psychedelicraft.alcohol.fermentation", fermentation).formatted(Formatting.GRAY));
         }
 
         if (maturation > 0) {
@@ -189,28 +201,27 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public Identifier getSymbol(ItemStack stack) {
-        var specialName = settings.displayNames.find(stack);
+        var specialName = settings.variants.find(stack);
         if (specialName != null) {
-            return getId().withPath(p -> "textures/fluid/" + specialName + ".png");
+            return specialName.getSymbol(getId());
         }
         return super.getSymbol(stack);
     }
 
     @Override
     public Optional<Identifier> getFlowTexture(ItemStack stack) {
-        return Optional.ofNullable(settings.textures.find(stack))
-                .map(DrinkTypes.Icons::still)
+        return Optional.ofNullable(settings.variants.find(stack))
+                .map(DrinkType::appearance)
+                .map(FluidAppearance::still)
                 .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
     }
 
     @Override
     public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
-        super.getDefaultStacks(container, consumer);
-        settings.displayNames.variants().forEach(namedAlcohol -> {
-            ItemStack stack = getDefaultStack(container);
-            namedAlcohol.predicate().applyTo(stack);
-            consumer.accept(stack);
-        });
+        if (!hasMatchedBaseStack) {
+            super.getDefaultStacks(container, consumer);
+        }
+        defaultStates.forEach(state -> consumer.accept(state.apply(getDefaultStack(container))));
     }
 
     @SuppressWarnings("deprecation")
@@ -220,8 +231,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     public static class Settings extends DrugFluid.Settings {
-        protected DrinkTypes.VariantSet<String> displayNames = DrinkTypes.VariantSet.empty();
-        private DrinkTypes.VariantSet<DrinkTypes.Icons> textures = DrinkTypes.VariantSet.empty();
+        protected DrinkTypes variants = DrinkTypes.empty();
 
         private double fermentationAlcohol;
         private double distillationAlcohol;
@@ -249,9 +259,8 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             return this;
         }
 
-        public Settings variants(DrinkTypes.VariantSet<String> names, DrinkTypes.VariantSet<DrinkTypes.Icons> textures) {
-            this.displayNames = names;
-            this.textures = textures;
+        public Settings variants(DrinkTypes variants) {
+            this.variants = variants;
             return this;
         }
 
