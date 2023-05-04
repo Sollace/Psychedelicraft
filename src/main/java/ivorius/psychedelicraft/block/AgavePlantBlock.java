@@ -31,18 +31,21 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class AgavePlantBlock extends SucculentPlantBlock {
+    public static final IntProperty AGE = Properties.AGE_5;
+    public static final int MAX_AGE = Properties.AGE_5_MAX;
+
     public AgavePlantBlock(Settings settings) {
         super(settings.offsetType(OffsetType.XZ));
     }
 
     @Override
     protected IntProperty getAgeProperty() {
-        return Properties.AGE_5;
+        return AGE;
     }
 
     @Override
     protected int getMaxAge() {
-        return Properties.AGE_5_MAX;
+        return MAX_AGE;
     }
 
     @Override

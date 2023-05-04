@@ -26,6 +26,7 @@ public class VineStemBlock extends FlowerBlock {
     public static final BooleanProperty WEST = ConnectingBlock.WEST;
 
     public static final IntProperty AGE = Properties.AGE_4;
+    public static final int MAX_AGE = Properties.AGE_4_MAX;
 
     private final Supplier<Block> lattice;
 
@@ -38,7 +39,7 @@ public class VineStemBlock extends FlowerBlock {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 
-        if (state.get(AGE) < Properties.AGE_4_MAX) {
+        if (state.get(AGE) < MAX_AGE) {
             world.setBlockState(pos, state.cycle(AGE));
         }
 

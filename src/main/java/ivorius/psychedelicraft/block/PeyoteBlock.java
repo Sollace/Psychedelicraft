@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class PeyoteBlock extends SucculentPlantBlock implements BlockEntityProvider {
     public static final IntProperty AGE = Properties.AGE_3;
+    public static final int MAX_AGE = Properties.AGE_3_MAX;
     public PeyoteBlock(Settings settings) {
         super(settings);
     }
@@ -25,7 +26,7 @@ public class PeyoteBlock extends SucculentPlantBlock implements BlockEntityProvi
 
     @Override
     protected int getMaxAge() {
-        return Properties.AGE_3_MAX;
+        return MAX_AGE;
     }
 
     @Override

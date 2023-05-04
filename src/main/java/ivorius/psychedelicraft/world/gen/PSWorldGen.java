@@ -9,8 +9,12 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.AgavePlantBlock;
 import ivorius.psychedelicraft.block.CannabisPlantBlock;
+import ivorius.psychedelicraft.block.NightshadeBlock;
 import ivorius.psychedelicraft.block.PSBlocks;
+import ivorius.psychedelicraft.block.PeyoteBlock;
+import ivorius.psychedelicraft.block.VineStemBlock;
 import ivorius.psychedelicraft.config.BiomeSelector;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.world.gen.structure.MutableStructurePool;
@@ -19,7 +23,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.*;
@@ -27,6 +34,7 @@ import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.placementmodifier.*;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
+import net.minecraft.world.gen.stateprovider.RandomizedIntBlockStateProvider;
 import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
 
 /**
@@ -77,14 +85,14 @@ public class PSWorldGen {
         });
     }
 
-    private static void registerUnTilledPatch(String id, Block plant, Predicate<BiomeSelectionContext> builtinBiomePredicate, PSConfig.Balancing.Generation.FeatureConfig config) {
+    private static void registerUnTilledPatch(String id, Block plant, IntProperty ageProperty, IntProvider ageRange, Predicate<BiomeSelectionContext> builtinBiomePredicate, PSConfig.Balancing.Generation.FeatureConfig config) {
         var patch = createConfiguredFeature(id + "_patch");
 
         FeatureRegistry.registerConfiguredFeature(patch, () -> {
             return new ConfiguredFeature<>(Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(
                     5,
                     PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK,
-                    new SimpleBlockFeatureConfig(BlockStateProvider.of(plant)))
+                    new SimpleBlockFeatureConfig(new RandomizedIntBlockStateProvider(BlockStateProvider.of(plant), ageProperty, ageRange)))
             ));
         });
 
@@ -149,20 +157,25 @@ public class PSWorldGen {
         registerTilledPatch("tobacco", PSBlocks.TOBACCO, false, genConf.tobacco);
         registerTilledPatch("coffea", PSBlocks.COFFEA, false, genConf.coffea);
         registerTilledPatch("coca", PSBlocks.COCA, true, genConf.coca);
-        registerUnTilledPatch("morning_glory", PSBlocks.MORNING_GLORY, BiomeSelectors.includeByKey(
+        registerUnTilledPatch("morning_glory", PSBlocks.MORNING_GLORY, VineStemBlock.AGE, UniformIntProvider.create(0, VineStemBlock.MAX_AGE), BiomeSelectors.includeByKey(
                 BiomeKeys.FLOWER_FOREST,
                 BiomeKeys.SUNFLOWER_PLAINS,
                 BiomeKeys.MEADOW,
                 BiomeKeys.LUSH_CAVES
         ), genConf.morningGlories);
-        registerUnTilledPatch("belladonna", PSBlocks.BELLADONNA, BiomeSelectors.includeByKey(BiomeKeys.DARK_FOREST), genConf.belladonna);
-        registerUnTilledPatch("jimsonweed", PSBlocks.JIMSONWEEED, BiomeSelectors.includeByKey(BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE), genConf.jimsonweed);
-        registerUnTilledPatch("tomato", PSBlocks.JIMSONWEEED, BiomeSelectors.includeByKey(BiomeKeys.FOREST), genConf.tomato);
-        registerUnTilledPatch("peyote", PSBlocks.PEYOTE, BiomeSelectors.foundInOverworld().and(
+        registerUnTilledPatch("belladonna", PSBlocks.BELLADONNA, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.DARK_FOREST), genConf.belladonna);
+        registerUnTilledPatch("jimsonweed", PSBlocks.JIMSONWEEED, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE), genConf.jimsonweed);
+        registerUnTilledPatch("tomato", PSBlocks.TOMATOES, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.FOREST), genConf.tomato);
+        registerUnTilledPatch("peyote", PSBlocks.PEYOTE, PeyoteBlock.AGE, UniformIntProvider.create(0, PeyoteBlock.MAX_AGE), BiomeSelectors.foundInOverworld().and(
                     BiomeSelectors.tag(BiomeTags.IS_SAVANNA)
                 .or(BiomeSelectors.tag(BiomeTags.IS_BADLANDS))
                 .or(BiomeSelectors.tag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE))
                 .or(BiomeSelector.DRY)
+        ), genConf.peyote);
+        registerUnTilledPatch("agave", PSBlocks.AGAVE_PLANT, AgavePlantBlock.AGE, UniformIntProvider.create(0, AgavePlantBlock.MAX_AGE), BiomeSelectors.foundInOverworld().and(
+            BiomeSelectors.tag(BiomeTags.IS_BADLANDS)
+            .or(BiomeSelectors.tag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE))
+            .or(BiomeSelector.DRY)
         ), genConf.peyote);
 
         MutableStructurePool.bootstrap();
