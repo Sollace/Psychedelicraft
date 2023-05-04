@@ -211,7 +211,7 @@
   "psychedelicract.alcohol.flavor": "%1$s and %2$s with %3$s after-taste",
   "psychedelicraft.alcohol.distillations": "Proof: %dx",
   "psychedelicraft.alcohol.maturations": "Maturation: %d days (%s)",
-  "psychedelicraft.alcohol.fermentation": "Fermentation: %d days",
+  "psychedelicraft.alcohol.fermentations": "Fermentation: %d days",
   
   "psychedelicraft.alcohol.drink.tea": "%s Tea",
   "psychedelicraft.alcohol.drink.wort": "%s Wort",

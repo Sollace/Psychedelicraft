@@ -173,7 +173,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         }
 
         if (fermentation > 0) {
-            tooltip.add(Text.translatable("psychedelicraft.alcohol.fermentation", fermentation).formatted(Formatting.GRAY));
+            tooltip.add(Text.translatable("psychedelicraft.alcohol.fermentations", fermentation).formatted(Formatting.GRAY));
         }
 
         if (maturation > 0) {
