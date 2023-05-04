@@ -1,0 +1,19 @@
+{
+  "type": "psychedelicraft:mashing",
+  "stew_time": 0,
+  "base_fluid": {
+    "fluid": "minecraft:water"
+  },
+  "ingredients": [
+    { "tag": "psychedelicraft:agave_leaf" },
+    { "tag": "psychedelicraft:agave_leaf" },
+    { "tag": "psychedelicraft:agave_leaf" },
+    { "tag": "psychedelicraft:agave_leaf" },
+    { "tag": "psychedelicraft:agave_leaf" },
+    { "tag": "psychedelicraft:agave_leaf" },
+    { "tag": "psychedelicraft:agave_leaf" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:agave"
+  }
+}
