@@ -193,7 +193,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         SimpleFluid fluid = getTank(Direction.UP).getFluidType();
         if (!fluid.isEmpty()) {
-            world.setBlockState(getPos(), fluid.getPhysical().getFluid().getDefaultState().getBlockState());
+            world.setBlockState(getPos(), fluid.getFluidState(getTank(Direction.UP).getStack()).getBlockState());
         }
 
         if (!solidContents.isEmpty()) {

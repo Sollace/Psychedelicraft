@@ -21,7 +21,7 @@ import net.minecraft.predicate.NumberRange.IntRange;
  */
 public interface PSFluids {
     SimpleFluid EMPTY = new SimpleFluid(SimpleFluid.EMPTY_KEY, new Settings().color(0xFFFFFFFF), true);
-    AlcoholicFluid WHEAT_HOP = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("wheat_hop"), "wort", new AlcoholicFluid.Settings()
+    AlcoholicFluid WHEAT_HOP = new AlcoholicFluid(Psychedelicraft.id("wheat_hop"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoWheatHop)
             .variants(DrinkTypes.builder()
@@ -33,7 +33,7 @@ public interface PSFluids {
                     .add(DrinkType.BEER.withVariation("green").withAppearance(FluidAppearance.RUM_MATURE), StatePredicate.Standard.FERMENTED_2))
             .color(0xaafeaa08)
     );
-    AlcoholicFluid WHEAT = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("wheat"), "wort", new AlcoholicFluid.Settings()
+    AlcoholicFluid WHEAT = new AlcoholicFluid(Psychedelicraft.id("wheat"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoWheat)
             .variants(DrinkTypes.builder()
@@ -46,7 +46,7 @@ public interface PSFluids {
                     .add(DrinkType.WASH, StatePredicate.Standard.FERMENTED_2))
             .color(0xaafeaa08)
     );
-    AlcoholicFluid POTATO = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("potato"), "wort", new AlcoholicFluid.Settings()
+    AlcoholicFluid POTATO = new AlcoholicFluid(Psychedelicraft.id("potato"), new AlcoholicFluid.Settings()
             .alcohol(0.45, 1.9, 0.15)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoPotato)
             .variants(DrinkTypes.builder()
@@ -60,7 +60,7 @@ public interface PSFluids {
             .color(0xaafeaa08)
             .viscocity(2)
     );
-    AlcoholicFluid TOMATO = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("tomato"), "juice", new AlcoholicFluid.Settings()
+    AlcoholicFluid TOMATO = new AlcoholicFluid(Psychedelicraft.id("tomato"), new AlcoholicFluid.Settings()
             .alcohol(0.15, 0.9, 0.05)
             .distilledColor(0xaaff0000)
             .matureColor(0xaaff3300)
@@ -76,7 +76,7 @@ public interface PSFluids {
             .color(0xaaffaa08)
             .viscocity(1)
     );
-    AlcoholicFluid RED_GRAPES = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("red_grapes"), "juice", new AlcoholicFluid.Settings()
+    AlcoholicFluid RED_GRAPES = new AlcoholicFluid(Psychedelicraft.id("red_grapes"), new AlcoholicFluid.Settings()
             .alcohol(0.55, 1.7, 0.2)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoRedGrapes)
             .distilledColor(0x993f0822)
@@ -94,7 +94,7 @@ public interface PSFluids {
                     .add(DrinkType.WASH.withVariation(Variation.WINE).withAppearance(FluidAppearance.WINE), StatePredicate.Standard.FERMENTED_2))
             .color(0xaafeaa08)
     );
-    AlcoholicFluid RICE = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("rice"), "wort", new AlcoholicFluid.Settings()
+    AlcoholicFluid RICE = new AlcoholicFluid(Psychedelicraft.id("rice"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoRice)
             .matureColor(0x88D6BC90)
@@ -107,7 +107,7 @@ public interface PSFluids {
                     .add(DrinkType.WINE.withVariation(Variation.YOUNG).withAppearance(FluidAppearance.CLEAR), StatePredicate.Standard.FERMENTED_2))
             .color(0xeecac4b2)
     );
-    AlcoholicFluid JUNIPER = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("juniper"), "wort", new AlcoholicFluid.Settings()
+    AlcoholicFluid JUNIPER = new AlcoholicFluid(Psychedelicraft.id("juniper"), new AlcoholicFluid.Settings()
             .alcohol(0.4, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoJuniper)
             .variants(DrinkTypes.builder()
@@ -119,7 +119,7 @@ public interface PSFluids {
                     .add(DrinkType.WASH.withVariation(Variation.YOUNG), StatePredicate.Standard.FERMENTED_2))
             .color(0xcc704E21)
     );
-    AlcoholicFluid HONEY = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("honey"), "wort", new AlcoholicFluid.Settings()
+    AlcoholicFluid HONEY = new AlcoholicFluid(Psychedelicraft.id("honey"), new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x99e9ae3b)
             .matureColor(0xaaD1984D)
@@ -134,7 +134,7 @@ public interface PSFluids {
             .color(0xbbe9ae3b)
             .viscocity(5)
     );
-    AlcoholicFluid SUGAR_CANE = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("sugar_cane"), "wort", new AlcoholicFluid.Settings()
+    AlcoholicFluid SUGAR_CANE = new AlcoholicFluid(Psychedelicraft.id("sugar_cane"), new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
             .variants(DrinkTypes.builder()
                     .add(DrinkType.WORT.withAppearance(FluidAppearance.CLEAR), StatePredicate.Standard.BASE)
@@ -147,7 +147,7 @@ public interface PSFluids {
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoSugarCane)
             .color(0xaafeaa08)
     );
-    AlcoholicFluid CORN = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("corn"), "wort", new AlcoholicFluid.Settings()
+    AlcoholicFluid CORN = new AlcoholicFluid(Psychedelicraft.id("corn"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoCorn)
             .variants(DrinkTypes.builder()
@@ -160,7 +160,7 @@ public interface PSFluids {
                     .add(DrinkType.BEER.withVariation(Variation.GREEN), StatePredicate.Standard.FERMENTED_2))
             .color(0xaafeaa08)
     );
-    AlcoholicFluid APPLE = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("apple"), "juice", new AlcoholicFluid.Settings()
+    AlcoholicFluid APPLE = new AlcoholicFluid(Psychedelicraft.id("apple"), new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x66EDC13B)
             .matureColor(0x88EDC13B)
@@ -174,7 +174,7 @@ public interface PSFluids {
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoApple)
             .color(0x99EDC13B)
     );
-    AlcoholicFluid PINEAPPLE = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("pineapple"), "juice", new AlcoholicFluid.Settings()
+    AlcoholicFluid PINEAPPLE = new AlcoholicFluid(Psychedelicraft.id("pineapple"), new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x66EDC13B)
             .matureColor(0x88EDC13B)
@@ -189,7 +189,7 @@ public interface PSFluids {
             .color(0x99EDC13B)
             .viscocity(2)
     );
-    AlcoholicFluid BANANA = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("banana"), "juice", new AlcoholicFluid.Settings()
+    AlcoholicFluid BANANA = new AlcoholicFluid(Psychedelicraft.id("banana"), new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x99e9ae3b)
             .matureColor(0xaaD1984D)
@@ -204,7 +204,7 @@ public interface PSFluids {
             .color(0xbbe9ae3b)
             .viscocity(3)
     );
-    AlcoholicFluid MILK = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("milk"), "wort", new AlcoholicFluid.Settings()
+    AlcoholicFluid MILK = new AlcoholicFluid(Psychedelicraft.id("milk"), new AlcoholicFluid.Settings()
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x77cac4b2)
             .matureColor(0x88D6BC90)
@@ -219,7 +219,7 @@ public interface PSFluids {
             .color(0x88ffffff)
             .viscocity(2)
     );
-    AlcoholicFluid AGAVE = new DynamicallyNamedAlcoholicFluid(Psychedelicraft.id("agave"), "juice", new AlcoholicFluid.Settings()
+    AlcoholicFluid AGAVE = new AlcoholicFluid(Psychedelicraft.id("agave"), new AlcoholicFluid.Settings()
             .alcohol(0.15, 1.5, 0.05)
             .distilledColor(0x779beb62)
             .matureColor(0x779beb62)

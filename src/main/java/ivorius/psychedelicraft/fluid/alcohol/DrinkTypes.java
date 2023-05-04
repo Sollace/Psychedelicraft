@@ -77,7 +77,7 @@ public interface DrinkTypes {
 
                         Entry match = findMatch(distillation, maturation, fermentation, vinegar);
                         if (match != null && previouslyReturned.add(match.value().getUniqueKey())) {
-                            return new State(distillation, maturation, fermentation, vinegar);
+                            return new State(distillation, maturation, fermentation, vinegar, match);
                         }
                     }
                 }
@@ -112,7 +112,7 @@ public interface DrinkTypes {
 
     record Entry (DrinkType value, StatePredicate predicate) { }
 
-    record State (int distillation, int maturation, int fermentation, boolean vinegar) {
+    record State (int distillation, int maturation, int fermentation, boolean vinegar, Entry entry) {
         public ItemStack apply(ItemStack stack) {
             stack = AlcoholicFluid.DISTILLATION.set(stack, distillation);
             stack = AlcoholicFluid.MATURATION.set(stack, maturation);

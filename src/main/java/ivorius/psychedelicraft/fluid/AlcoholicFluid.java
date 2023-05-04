@@ -4,13 +4,15 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import ivorius.psychedelicraft.fluid.alcohol.FluidAppearance;
-import ivorius.psychedelicraft.fluid.alcohol.DrinkType;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.State;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -18,7 +20,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -37,14 +38,43 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     final Settings settings;
 
-    private final boolean hasMatchedBaseStack;
-    private final List<DrinkTypes.State> defaultStates;
+    private List<DrinkTypes.State> defaultStates;
+
+    private IntProperty variant;
 
     public AlcoholicFluid(Identifier id, Settings settings) {
         super(id, settings.drinkable());
         this.settings = settings;
-        this.defaultStates = settings.variants.streamStates().toList();
-        this.hasMatchedBaseStack = defaultStates.stream().anyMatch(DrinkTypes.State::isDefault);
+    }
+
+    @Override
+    <O, S extends State<O, S>> void appendProperties(StateManager.Builder<O, S> builder) {
+        this.defaultStates = ((Settings)getSettings()).variants.streamStates().toList();
+        if (!defaultStates.stream().anyMatch(DrinkTypes.State::isDefault)) {
+            throw new AssertionError("Default state should have a matching drink type");
+        }
+        variant = IntProperty.of("variant", 0, defaultStates.size());
+        builder.add(variant);
+    }
+
+    @Override
+    <O, S extends State<O, S>> S copyState(State<?, ?> from, S to) {
+        return to.withIfExists(variant, from.getOrEmpty(variant).orElse(0));
+    }
+
+    @Override
+    public ItemStack getStack(State<?, ?> state, FluidContainer container) {
+        return defaultStates.get(MathHelper.clamp(state.get(variant), 0, defaultStates.size())).apply(super.getStack(state, container));
+    }
+
+    @Override
+    public FluidState getFluidState(ItemStack stack) {
+        return super.getFluidState(stack).with(variant, defaultStates.stream()
+                .filter(s -> s.entry().predicate().test(stack))
+                .findFirst()
+                .map(match -> defaultStates.indexOf(match))
+                .orElse(0)
+        );
     }
 
     protected int getDistilledColor() {
@@ -133,32 +163,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public Text getName(ItemStack stack) {
-
-        if (VINEGAR.get(stack)) {
-            return Text.translatable(getTranslationKey() + ".vinegar");
-        }
-
-        int fermentation = FERMENTATION.get(stack);
-        int distillation = DISTILLATION.get(stack);
-        int maturation = MATURATION.get(stack);
-
-        if (distillation > 0) {
-            if (maturation > 0) {
-                return Text.translatable(getTranslationKey() + ".mature.distilled", maturation, distillation);
-            }
-
-            return Text.translatable(getTranslationKey() + ".distilled", distillation);
-        }
-
-        if (maturation > 0) {
-            return Text.translatable(getTranslationKey() + ".mature", maturation);
-        }
-
-        if (fermentation > 0) {
-            return Text.translatable(getTranslationKey() + ".fermented." + fermentation);
-        }
-
-        return super.getName(stack);
+        return settings.variants.find(stack).getName(Text.translatable(getTranslationKey()));
     }
 
     @Override
@@ -201,26 +206,11 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public Identifier getSymbol(ItemStack stack) {
-        var specialName = settings.variants.find(stack);
-        if (specialName != null) {
-            return specialName.getSymbol(getId());
-        }
-        return super.getSymbol(stack);
-    }
-
-    @Override
-    public Optional<Identifier> getFlowTexture(ItemStack stack) {
-        return Optional.ofNullable(settings.variants.find(stack))
-                .map(DrinkType::appearance)
-                .map(FluidAppearance::still)
-                .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
+        return settings.variants.find(stack).getSymbol(getId());
     }
 
     @Override
     public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
-        if (!hasMatchedBaseStack) {
-            super.getDefaultStacks(container, consumer);
-        }
         defaultStates.forEach(state -> consumer.accept(state.apply(getDefaultStack(container))));
     }
 
@@ -243,6 +233,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         DrugType drugType = DrugType.ALCOHOL;
 
         public Supplier<PSConfig.Balancing.FluidProperties.TickInfo> tickInfo;
+
+        public Settings() {
+            this.appearance = stack -> variants.find(stack).appearance();
+        }
 
         public Settings drug(DrugType drug) {
             this.drugType = drug;

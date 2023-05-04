@@ -21,6 +21,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.state.State;
+import net.minecraft.state.StateManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -72,6 +73,22 @@ public class SimpleFluid {
         this.physical = physical;
     }
 
+    @SuppressWarnings("unchecked")
+    protected <S extends Settings> S getSettings() {
+        return (S)settings;
+    }
+
+    <O, S extends State<O, S>> void appendProperties(StateManager.Builder<O, S> builder) {
+
+    }
+
+    <O, S extends State<O, S>> S copyState(State<?, ?> from, S to) {
+        return to;
+    }
+
+    protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    }
+
     public final boolean isEmpty() {
         return empty;
     }
@@ -90,6 +107,10 @@ public class SimpleFluid {
 
     public ItemStack getStack(State<?, ?> state, FluidContainer container) {
         return container.getDefaultStack(this);
+    }
+
+    public FluidState getFluidState(ItemStack stack) {
+        return getPhysical().getDefaultState();
     }
 
     public PhysicalFluid getPhysical() {

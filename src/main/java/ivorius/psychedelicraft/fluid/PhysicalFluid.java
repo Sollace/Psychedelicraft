@@ -22,6 +22,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -83,6 +84,12 @@ public class PhysicalFluid {
         }
 
         @Override
+        protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+            super.appendProperties(builder);
+            getPysicalFluid().type.appendProperties(builder);
+        }
+
+        @Override
         public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
             if (state.get(LEVEL) == 0) {
                 world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
@@ -90,10 +97,21 @@ public class PhysicalFluid {
             }
             return ItemStack.EMPTY;
         }
+
+        @Override
+        public FluidState getFluidState(BlockState state) {
+            return getPysicalFluid().type.copyState(state, super.getFluidState(state));
+        }
     }
 
     abstract static class PlacedFluid extends WaterFluid {
         protected abstract PhysicalFluid getPysicalFluid();
+
+        @Override
+        protected void appendProperties(StateManager.Builder<Fluid, FluidState> builder) {
+            super.appendProperties(builder);
+            getPysicalFluid().type.appendProperties(builder);
+        }
 
         public SimpleFluid getType() {
             return getPysicalFluid().type;
@@ -116,7 +134,9 @@ public class PhysicalFluid {
 
         @Override
         public BlockState toBlockState(FluidState state) {
-            return getPysicalFluid().block.getDefaultState().withIfExists(FluidBlock.LEVEL, getBlockStateLevel(state));
+            return getType().copyState(state, getPysicalFluid().block.getDefaultState()
+                    .withIfExists(FluidBlock.LEVEL, getBlockStateLevel(state))
+            );
         }
 
         @Override
@@ -133,6 +153,30 @@ public class PhysicalFluid {
         public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
             super.randomDisplayTick(world, pos, state, random);
             getType().randomDisplayTick(world, pos, state, random);
+        }
+
+        @Override
+        protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+            super.onRandomTick(world, pos, state, random);
+            getType().onRandomTick(world, pos, state, random);
+        }
+
+        private static final Direction[] ALL_DIRECTIONS = Direction.values();
+
+        @Override
+        protected FluidState getUpdatedState(World world, BlockPos pos, BlockState state) {
+
+            FluidState newState = super.getUpdatedState(world, pos, state);
+
+            for (Direction direction : ALL_DIRECTIONS) {
+                BlockPos neighbourPos = pos.offset(direction);
+                FluidState neighbourState = world.getBlockState(neighbourPos).getFluidState();
+                if (neighbourState.getFluid().matchesType(this)) {
+                    return getType().copyState(neighbourState, newState);
+                }
+            }
+
+            return newState;
         }
 
         static PlacedFluid still(PhysicalFluid physical) {

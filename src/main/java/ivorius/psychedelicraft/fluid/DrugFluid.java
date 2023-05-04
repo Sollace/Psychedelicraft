@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Created by lukas on 22.10.14.
@@ -33,7 +34,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
     protected final List<DrugInfluence> drugInfluences;
     protected final FoodComponent foodLevel;
 
-    private final Settings settings;
+    protected final Settings settings;
 
     protected final Map<String, Identifier> flowTextures = new HashMap<>();
 
@@ -101,7 +102,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
 
     @Override
     public Optional<Identifier> getFlowTexture(ItemStack stack) {
-        return Optional.ofNullable(settings.icons)
+        return Optional.ofNullable(settings.appearance.apply(stack))
                 .map(FluidAppearance::still)
                 .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
     }
@@ -136,8 +137,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
         private List<DrugInfluence> drugInfluences = new ArrayList<>();
         private FoodComponent foodLevel;
 
-        @Nullable
-        private FluidAppearance icons;
+        protected Function<ItemStack, FluidAppearance> appearance = stack -> null;
 
         public Settings drinkable() {
             drinkable = true;
@@ -159,8 +159,8 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
             return this;
         }
 
-        public Settings appearance(FluidAppearance icons) {
-            this.icons = icons;
+        public Settings appearance(FluidAppearance appearance) {
+            this.appearance = stack -> appearance;
             return this;
         }
     }
