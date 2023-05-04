@@ -5,13 +5,13 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "item": "minecraft:tomato" },
-    { "item": "minecraft:tomato" },
-    { "item": "minecraft:tomato" },
-    { "item": "minecraft:tomato" },
-    { "item": "minecraft:tomato" },
-    { "item": "minecraft:tomato" },
-    { "item": "minecraft:tomato" }
+    { "item": "psychedelicraft:tomato" },
+    { "item": "psychedelicraft:tomato" },
+    { "item": "psychedelicraft:tomato" },
+    { "item": "psychedelicraft:tomato" },
+    { "item": "psychedelicraft:tomato" },
+    { "item": "psychedelicraft:tomato" },
+    { "item": "psychedelicraft:tomato" }
   ],
   "result": {
     "fluid": "psychedelicraft:tomato"
