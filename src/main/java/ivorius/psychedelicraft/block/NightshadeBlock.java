@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.block;
 
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Fertilizable;
@@ -95,7 +96,7 @@ public class NightshadeBlock extends PlantBlock implements Fertilizable {
         ItemStack stack = player.getStackInHand(hand);
         int age = state.get(AGE);
 
-        if ((stack.isOf(Items.SHEARS) && age >= 1) || (stack.isOf(Items.BONE_MEAL) && age == MAX_AGE)) {
+        if ((stack.isIn(ConventionalItemTags.SHEARS) && age >= 1) || (stack.isOf(Items.BONE_MEAL) && age == MAX_AGE)) {
             stack.damage(1, player, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
             dropStack(world, pos, new ItemStack((age == MAX_AGE ? fruit : leaf).asItem(), 1 + world.random.nextInt(2)));
 

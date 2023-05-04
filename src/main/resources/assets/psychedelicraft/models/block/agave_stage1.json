@@ -1,0 +1,99 @@
+{
+  "textures": {
+    "leaves": "psychedelicraft:block/agave_leaves",
+    "particle": "psychedelicraft:block/agave_flower"
+  },
+	"elements": [
+		{
+			"name": "large_leaf4",
+			"from": [7.5, 0, 9],
+			"to": [8.5, 4, 10],
+			"rotation": {"angle": 45, "axis": "x", "origin": [8, 0, 9]},
+			"faces": {
+				"north": {"uv": [1, 1, 2, 5], "texture": "#leaves"},
+				"east": {"uv": [0, 1, 1, 5], "texture": "#leaves"},
+				"south": {"uv": [3, 1, 4, 5], "texture": "#leaves"},
+				"west": {"uv": [2, 1, 3, 5], "texture": "#leaves"},
+				"up": {"uv": [2, 1, 1, 0], "texture": "#leaves"},
+				"down": {"uv": [3, 0, 2, 1], "texture": "#leaves"}
+			}
+		},
+		{
+			"name": "large_leaf1",
+			"from": [7, 0, 8.5],
+			"to": [8, 4, 9.5],
+			"rotation": {"angle": 45, "axis": "z", "origin": [8, 0, 9]},
+			"faces": {
+				"north": {"uv": [2, 2, 3, 6], "texture": "#leaves"},
+				"east": {"uv": [1, 2, 2, 6], "texture": "#leaves"},
+				"south": {"uv": [4, 2, 5, 6], "texture": "#leaves"},
+				"west": {"uv": [3, 2, 4, 6], "texture": "#leaves"},
+				"up": {"uv": [3, 2, 2, 1], "texture": "#leaves"},
+				"down": {"uv": [4, 1, 3, 2], "texture": "#leaves"}
+			}
+		},
+		{
+			"name": "large_leaf2",
+			"from": [8, 0, 8.5],
+			"to": [9, 4, 9.5],
+			"rotation": {"angle": -45, "axis": "z", "origin": [8, 0, 9]},
+			"faces": {
+				"north": {"uv": [2, 2, 3, 6], "texture": "#leaves"},
+				"east": {"uv": [1, 2, 2, 6], "texture": "#leaves"},
+				"south": {"uv": [4, 2, 5, 6], "texture": "#leaves"},
+				"west": {"uv": [3, 2, 4, 6], "texture": "#leaves"},
+				"up": {"uv": [3, 2, 2, 1], "texture": "#leaves"},
+				"down": {"uv": [4, 1, 3, 2], "texture": "#leaves"}
+			}
+		},
+		{
+			"name": "large_leaf3",
+			"from": [7.5, 0, 8],
+			"to": [8.5, 4, 9],
+			"rotation": {"angle": -45, "axis": "x", "origin": [8, 0, 9]},
+			"faces": {
+				"north": {"uv": [1, 1, 2, 5], "texture": "#leaves"},
+				"east": {"uv": [0, 1, 1, 5], "texture": "#leaves"},
+				"south": {"uv": [3, 1, 4, 5], "texture": "#leaves"},
+				"west": {"uv": [2, 1, 3, 5], "texture": "#leaves"},
+				"up": {"uv": [2, 1, 1, 0], "texture": "#leaves"},
+				"down": {"uv": [3, 0, 2, 1], "texture": "#leaves"}
+			}
+		},
+		{
+			"name": "flower",
+			"from": [7, -1, 8],
+			"to": [9, 2, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 1, 8]},
+			"faces": {
+				"north": {"uv": [8, 2, 10, 5], "texture": "#leaves"},
+				"east": {"uv": [6, 2, 8, 5], "texture": "#leaves"},
+				"south": {"uv": [12, 2, 14, 5], "texture": "#leaves"},
+				"west": {"uv": [10, 2, 12, 5], "texture": "#leaves"},
+				"up": {"uv": [10, 2, 8, 0], "texture": "#leaves"},
+				"down": {"uv": [12, 0, 10, 2], "texture": "#leaves"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "inner",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "middle",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1, 2, 3]
+		},
+		{
+			"name": "outer",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": []
+		},
+		4
+	]
+}
