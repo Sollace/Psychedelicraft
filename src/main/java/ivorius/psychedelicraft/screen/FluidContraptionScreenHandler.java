@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.screen;
 
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
-import ivorius.psychedelicraft.fluid.Resovoir;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;

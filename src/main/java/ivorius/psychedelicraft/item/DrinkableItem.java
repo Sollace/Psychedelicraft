@@ -10,6 +10,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

@@ -8,8 +8,6 @@ package ivorius.psychedelicraft.fluid;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.State;
-import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -24,36 +22,19 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 
 /**
  * Created by lukas on 22.10.14.
  */
 public class CoffeeFluid extends DrugFluid implements Processable {
     public static final Attribute<Integer> WARMTH = Attribute.ofInt("warmth", 0, 2);
-    private static final IntProperty TEMPERATURE = IntProperty.of("temperature", 0, 2);
+    private static final FluidStateManager.FluidProperty<Integer> TEMPERATURE = new FluidStateManager.FluidProperty<>(IntProperty.of("temperature", 0, 2), WARMTH::set, WARMTH::get);
 
     public CoffeeFluid(Identifier id, Settings settings) {
-        super(id, settings);
-    }
-
-    @Override
-    <O, S extends State<O, S>> void appendProperties(StateManager.Builder<O, S> builder) {
-        builder.add(TEMPERATURE);
-    }
-
-    @Override
-    <O, S extends State<O, S>> S copyState(State<?, ?> from, S to) {
-        return to.withIfExists(TEMPERATURE, from.getOrEmpty(TEMPERATURE).orElse(0));
-    }
-
-    @Override
-    public ItemStack getStack(State<?, ?> state, FluidContainer container) {
-        return WARMTH.set(super.getStack(state, container), state.get(TEMPERATURE));
-    }
-
-    @Override
-    public FluidState getFluidState(ItemStack stack) {
-        return super.getFluidState(stack).with(TEMPERATURE, WARMTH.get(stack));
+        super(id, settings.with(TEMPERATURE));
     }
 
     @Override
@@ -65,10 +46,10 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
-        int temperature = state.get(TEMPERATURE);
+    public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+        int temperature = state.get(TEMPERATURE.property());
         if (temperature > 0 && world.getBlockState(pos).getBlock() instanceof FluidBlock) {
-            world.setBlockState(pos, state.with(TEMPERATURE, temperature - 1).getBlockState());
+            world.setBlockState(pos, state.with(TEMPERATURE.property(), temperature - 1).getBlockState());
         }
     }
 

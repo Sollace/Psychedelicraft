@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ivorius.psychedelicraft.fluid.FluidContainer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.minecraft.block.*;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.*;

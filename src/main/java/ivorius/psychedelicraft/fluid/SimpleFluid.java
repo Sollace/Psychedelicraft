@@ -12,6 +12,11 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
+import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
+import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
+import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.client.item.TooltipContext;
@@ -21,7 +26,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.state.State;
-import net.minecraft.state.StateManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -78,15 +82,8 @@ public class SimpleFluid {
         return (S)settings;
     }
 
-    <O, S extends State<O, S>> void appendProperties(StateManager.Builder<O, S> builder) {
-
-    }
-
-    <O, S extends State<O, S>> S copyState(State<?, ?> from, S to) {
-        return to;
-    }
-
-    protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    public final FluidStateManager getStateManager() {
+        return settings.stateManager;
     }
 
     public final boolean isEmpty() {
@@ -105,12 +102,12 @@ public class SimpleFluid {
         return Optional.empty();
     }
 
-    public ItemStack getStack(State<?, ?> state, FluidContainer container) {
-        return container.getDefaultStack(this);
+    public final ItemStack getStack(State<?, ?> state, FluidContainer container) {
+        return getStateManager().writeStack(state, container.getDefaultStack(this));
     }
 
-    public FluidState getFluidState(ItemStack stack) {
-        return getPhysical().getDefaultState();
+    public final FluidState getFluidState(ItemStack stack) {
+        return getStateManager().readStack(getPhysical().getDefaultState(), stack);
     }
 
     public PhysicalFluid getPhysical() {
@@ -172,6 +169,9 @@ public class SimpleFluid {
         }
     }
 
+    public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    }
+
     public static SimpleFluid byId(@Nullable Identifier id) {
         if (id == null) {
             return PSFluids.EMPTY;
@@ -180,7 +180,7 @@ public class SimpleFluid {
     }
 
     public static SimpleFluid forVanilla(@Nullable Fluid fluid) {
-        if (fluid instanceof PhysicalFluid.PlacedFluid pf) {
+        if (fluid instanceof PlacedFluid pf) {
             return pf.getType();
         }
         if (fluid == null || fluid == Fluids.EMPTY) {
@@ -209,6 +209,7 @@ public class SimpleFluid {
     public static class Settings {
         private int color;
         private int viscocity = 1;
+        final FluidStateManager stateManager = new FluidStateManager(new HashSet<>());
 
         public <T extends Settings> T color(int color) {
             this.color = color;
@@ -217,6 +218,11 @@ public class SimpleFluid {
 
         public <T extends Settings> T viscocity(int viscocity) {
             this.viscocity = viscocity;
+            return (T)this;
+        }
+
+        public <T extends Settings> T with(FluidStateManager.FluidProperty<?> property) {
+            stateManager.properties().add(property);
             return (T)this;
         }
     }
@@ -245,12 +251,12 @@ public class SimpleFluid {
 
                 @Override
                 public Integer get(MutableFluidContainer stack) {
-                    return MathHelper.clamp(stack.attributes.getInt(name), min, max);
+                    return MathHelper.clamp(stack.getAttributes().getInt(name), min, max);
                 }
 
                 @Override
                 public MutableFluidContainer set(MutableFluidContainer stack, Integer value) {
-                    NbtCompound attributes = stack.getAttributes();
+                    NbtCompound attributes = stack.getAttributes().copy();
                     attributes.putInt(name, value);
                     stack.withAttributes(attributes);
                     return stack;
@@ -273,12 +279,12 @@ public class SimpleFluid {
 
                 @Override
                 public Boolean get(MutableFluidContainer stack) {
-                    return stack.attributes.getBoolean(name);
+                    return stack.getAttributes().getBoolean(name);
                 }
 
                 @Override
                 public MutableFluidContainer set(MutableFluidContainer stack, Boolean value) {
-                    NbtCompound attributes = stack.getAttributes();
+                    NbtCompound attributes = stack.getAttributes().copy();
                     attributes.putBoolean(name, value);
                     stack.withAttributes(attributes);
                     return stack;

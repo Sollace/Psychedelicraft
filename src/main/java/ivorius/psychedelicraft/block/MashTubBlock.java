@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.MashTubItem;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;

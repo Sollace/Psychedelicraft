@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 

@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.alcohol.FluidAppearance;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.item.PSItems;
 
 import java.util.ArrayList;

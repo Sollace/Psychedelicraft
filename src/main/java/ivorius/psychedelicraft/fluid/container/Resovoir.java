@@ -1,9 +1,10 @@
-package ivorius.psychedelicraft.fluid;
+package ivorius.psychedelicraft.fluid.container;
 
 import java.util.function.IntConsumer;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

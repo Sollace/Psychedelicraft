@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ivorius.psychedelicraft.fluid.MutableFluidContainer;
-import ivorius.psychedelicraft.fluid.Resovoir;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;

@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.fluid;
+package ivorius.psychedelicraft.fluid.container;
 
 import java.util.*;
 import java.util.function.Function;
@@ -6,6 +6,9 @@ import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
 
+import ivorius.psychedelicraft.fluid.FluidVolumes;
+import ivorius.psychedelicraft.fluid.PSFluids;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;

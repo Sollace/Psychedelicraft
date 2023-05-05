@@ -4,6 +4,7 @@ import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer.TextureBounds;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.item.TooltipContext;

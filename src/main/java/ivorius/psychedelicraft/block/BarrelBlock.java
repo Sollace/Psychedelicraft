@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;

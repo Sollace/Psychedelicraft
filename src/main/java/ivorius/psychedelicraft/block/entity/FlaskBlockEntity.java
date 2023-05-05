@@ -28,6 +28,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 

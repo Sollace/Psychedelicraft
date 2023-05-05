@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
 
-import ivorius.psychedelicraft.fluid.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
 
 public interface RecipeUtils {
     static Stream<Map.Entry<FluidContainer, ItemStack>> recepticals(Inventory inventory) {

@@ -7,8 +7,8 @@ package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
-import ivorius.psychedelicraft.fluid.Resovoir;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;

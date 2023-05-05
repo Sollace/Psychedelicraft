@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import com.google.gson.*;
 
-import ivorius.psychedelicraft.fluid.MutableFluidContainer;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 
 public class FluidAwareShapelessRecipe extends ShapelessRecipe {
 

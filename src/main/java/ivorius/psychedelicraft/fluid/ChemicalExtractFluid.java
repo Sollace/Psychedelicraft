@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;

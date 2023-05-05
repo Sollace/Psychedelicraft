@@ -10,6 +10,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

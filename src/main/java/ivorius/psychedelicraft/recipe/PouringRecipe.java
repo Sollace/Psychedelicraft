@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import ivorius.psychedelicraft.fluid.FluidContainer;
-import ivorius.psychedelicraft.fluid.MutableFluidContainer;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.*;

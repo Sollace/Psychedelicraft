@@ -1,5 +1,7 @@
-package ivorius.psychedelicraft.fluid;
+package ivorius.psychedelicraft.fluid.container;
 
+import ivorius.psychedelicraft.fluid.PSFluids;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;

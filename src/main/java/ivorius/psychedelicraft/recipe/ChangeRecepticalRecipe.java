@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 import com.google.gson.*;
 
-import ivorius.psychedelicraft.fluid.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
 
 /**
  * Created by lukas on 10.11.14.

@@ -6,12 +6,13 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.State;
-import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -24,6 +25,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
+
+import com.google.common.base.Suppliers;
 
 /**
  * Created by lukas on 25.11.14.
@@ -38,43 +41,17 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     final Settings settings;
 
-    private List<DrinkTypes.State> defaultStates;
-
-    private IntProperty variant;
-
     public AlcoholicFluid(Identifier id, Settings settings) {
-        super(id, settings.drinkable());
+        super(id, settings.drinkable().with(new FluidStateManager.FluidProperty<>(IntProperty.of("variant", 0, settings.states.get().size()), (stack, variant) -> {
+            return settings.states.get().get(MathHelper.clamp(variant, 0, settings.states.get().size())).apply(stack);
+        }, stack -> {
+            return settings.states.get().stream()
+                    .filter(s -> s.entry().predicate().test(stack))
+                    .findFirst()
+                    .map(match -> settings.states.get().indexOf(match))
+                    .orElse(0);
+        })));
         this.settings = settings;
-    }
-
-    @Override
-    <O, S extends State<O, S>> void appendProperties(StateManager.Builder<O, S> builder) {
-        this.defaultStates = ((Settings)getSettings()).variants.streamStates().toList();
-        if (!defaultStates.stream().anyMatch(DrinkTypes.State::isDefault)) {
-            throw new AssertionError("Default state should have a matching drink type");
-        }
-        variant = IntProperty.of("variant", 0, defaultStates.size());
-        builder.add(variant);
-    }
-
-    @Override
-    <O, S extends State<O, S>> S copyState(State<?, ?> from, S to) {
-        return to.withIfExists(variant, from.getOrEmpty(variant).orElse(0));
-    }
-
-    @Override
-    public ItemStack getStack(State<?, ?> state, FluidContainer container) {
-        return defaultStates.get(MathHelper.clamp(state.get(variant), 0, defaultStates.size())).apply(super.getStack(state, container));
-    }
-
-    @Override
-    public FluidState getFluidState(ItemStack stack) {
-        return super.getFluidState(stack).with(variant, defaultStates.stream()
-                .filter(s -> s.entry().predicate().test(stack))
-                .findFirst()
-                .map(match -> defaultStates.indexOf(match))
-                .orElse(0)
-        );
     }
 
     protected int getDistilledColor() {
@@ -211,7 +188,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
-        defaultStates.forEach(state -> consumer.accept(state.apply(getDefaultStack(container))));
+        settings.states.get().forEach(state -> consumer.accept(state.apply(getDefaultStack(container))));
     }
 
     @SuppressWarnings("deprecation")
@@ -231,6 +208,8 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         private int distilledColor = 0x33ffffff;
 
         DrugType drugType = DrugType.ALCOHOL;
+
+        private final Supplier<List<DrinkTypes.State>> states = Suppliers.memoize(() -> variants.streamStates().toList());
 
         public Supplier<PSConfig.Balancing.FluidProperties.TickInfo> tickInfo;
 

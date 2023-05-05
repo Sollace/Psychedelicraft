@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.fluid;
 
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;

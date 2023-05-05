@@ -7,7 +7,7 @@ import ivorius.psychedelicraft.block.BottleRackBlock;
 import ivorius.psychedelicraft.block.entity.BottleRackBlockEntity;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.RenderUtil;
-import ivorius.psychedelicraft.fluid.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;

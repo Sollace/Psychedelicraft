@@ -1,9 +1,11 @@
-package ivorius.psychedelicraft.fluid;
+package ivorius.psychedelicraft.fluid.container;
 
 import java.util.function.IntConsumer;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.fluid.PSFluids;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
@@ -67,7 +69,7 @@ public class MutableFluidContainer {
     }
 
     public NbtCompound getAttributes() {
-        return attributes.copy();
+        return attributes;
     }
 
     public MutableFluidContainer withLevel(int level) {

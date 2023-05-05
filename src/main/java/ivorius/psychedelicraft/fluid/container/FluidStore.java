@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.fluid;
+package ivorius.psychedelicraft.fluid.container;
 
 import java.util.function.IntConsumer;
 

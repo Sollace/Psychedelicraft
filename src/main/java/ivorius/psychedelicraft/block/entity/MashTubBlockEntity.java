@@ -14,6 +14,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.block.MashTubBlock;
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.particle.BubbleParticleEffect;
 import ivorius.psychedelicraft.recipe.MashingRecipe;

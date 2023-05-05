@@ -8,6 +8,8 @@ package ivorius.psychedelicraft.block.entity;
 import ivorius.psychedelicraft.block.DistilleryBlock;
 import ivorius.psychedelicraft.block.MashTubWallBlock;
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

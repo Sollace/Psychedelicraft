@@ -8,8 +8,8 @@ package ivorius.psychedelicraft.block;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
-import ivorius.psychedelicraft.fluid.FluidContainer;
-import ivorius.psychedelicraft.fluid.Resovoir;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.*;

@@ -1,10 +1,13 @@
-package ivorius.psychedelicraft.fluid;
+package ivorius.psychedelicraft.fluid.container;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
 
+import ivorius.psychedelicraft.fluid.FluidVolumes;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -40,7 +43,7 @@ final class VariantMarshal {
             return new InsertionOnlyStorage<>() {
                 @Override
                 public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-                    if (resource.getFluid() instanceof PhysicalFluid.PlacedFluid) {
+                    if (resource.getFluid() instanceof PlacedFluid) {
                         ItemStack stack = VariantMarshal.unpackFluid(context.getItemVariant(), resource, FluidVolumes.BUCKET).asStack();
 
                         if (context.exchange(ItemVariant.of(stack), 1, transaction) == 1) {
@@ -54,7 +57,7 @@ final class VariantMarshal {
     }
 
     public static FluidVariant packFluid(MutableFluidContainer contents) {
-        return FluidVariant.of(contents.getFluid().getPhysical().getFluid(), contents.getAttributes());
+        return FluidVariant.of(contents.getFluid().getPhysical().getFluid(), contents.getAttributes().copy());
     }
 
     public static MutableFluidContainer unpackFluid(ItemVariant container, FluidVariant contents, long level) {

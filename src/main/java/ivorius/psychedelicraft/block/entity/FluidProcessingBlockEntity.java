@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.block.entity;
 
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
