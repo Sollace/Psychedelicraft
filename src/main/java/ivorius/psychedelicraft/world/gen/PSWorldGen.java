@@ -64,7 +64,7 @@ public class PSWorldGen {
         var placement = createPlacement(id + "_tilled_patch_checked");
         FeatureRegistry.registerPlacedFeature(placement, cannabisPatch, feature -> {
             return new PlacedFeature(feature, List.of(
-                    RarityFilterPlacementModifier.of(90),
+                    RarityFilterPlacementModifier.of(160),
                     SquarePlacementModifier.of(),
                     PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
                     BiomePlacementModifier.of()
