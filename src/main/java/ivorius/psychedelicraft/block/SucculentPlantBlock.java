@@ -81,7 +81,7 @@ public abstract class SucculentPlantBlock extends PlantBlock implements Fertiliz
 
     @Override
     public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
-        return true;
+        return state.get(getAgeProperty()) < getMaxAge();
     }
 
     @Override

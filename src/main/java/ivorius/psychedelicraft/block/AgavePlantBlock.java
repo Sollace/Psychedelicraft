@@ -28,7 +28,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class AgavePlantBlock extends SucculentPlantBlock {
@@ -66,11 +65,6 @@ public class AgavePlantBlock extends SucculentPlantBlock {
     @Override
     protected int getGrowthRate(BlockState state) {
         return 320;
-    }
-
-    @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
-        return state.get(getAgeProperty()) < getMaxAge();
     }
 
     @Override
