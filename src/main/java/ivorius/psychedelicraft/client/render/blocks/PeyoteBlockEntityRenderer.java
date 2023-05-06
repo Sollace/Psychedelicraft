@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.client.render.blocks;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PeyoteBlock;
 import ivorius.psychedelicraft.block.entity.*;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.*;
@@ -15,6 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
+import java.util.Random;
 import java.util.stream.IntStream;
 
 public class PeyoteBlockEntityRenderer implements BlockEntityRenderer<PeyoteBlockEntity> {
@@ -38,6 +40,14 @@ public class PeyoteBlockEntityRenderer implements BlockEntityRenderer<PeyoteBloc
         matrices.push();
         matrices.translate(0.5F, 0.5f, 0.5F);
         matrices.translate(0, 1, 0);
+
+
+        Random rng = RenderUtil.random(entity.getCachedState().getRenderingSeed(entity.getPos()));
+
+        Vec3d offset = entity.getCachedState().getModelOffset(entity.getWorld(), entity.getPos());
+        matrices.translate(offset.x, offset.y, offset.z);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rng.nextInt(4) * 180));
+
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
         int age = entity.getCachedState().get(PeyoteBlock.AGE) % 4;

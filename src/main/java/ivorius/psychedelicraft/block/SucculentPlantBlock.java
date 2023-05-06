@@ -11,15 +11,14 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
 public abstract class SucculentPlantBlock extends PlantBlock implements Fertilizable {
-    private static final VoxelShape SHAPE = Block.createCuboidShape(4.8, 0, 4.8, 11.2, 6.4, 11.2);
-
     public SucculentPlantBlock(Settings settings) {
-        super(settings);
+        super(settings.offsetType(OffsetType.XZ));
         setDefaultState(getDefaultState().with(getAgeProperty(), 0));
     }
 
@@ -29,14 +28,17 @@ public abstract class SucculentPlantBlock extends PlantBlock implements Fertiliz
 
     protected abstract int getGrowthRate(BlockState state);
 
+    protected abstract VoxelShape[] getShapes();
+
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(getAgeProperty());
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return SHAPE;
+    public final VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        Vec3d offset = state.getModelOffset(world, pos);
+        return getShapes()[state.get(getAgeProperty())].offset(offset.x, offset.y, offset.z);
     }
 
     @Override

@@ -26,6 +26,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
@@ -34,8 +35,22 @@ public class AgavePlantBlock extends SucculentPlantBlock {
     public static final IntProperty AGE = Properties.AGE_5;
     public static final int MAX_AGE = Properties.AGE_5_MAX;
 
+    public static final VoxelShape[] SHAPES = {
+            Block.createCuboidShape(6, 0, 6, 10,  4, 10),
+            Block.createCuboidShape(6, 0, 6, 10,  8, 10),
+            Block.createCuboidShape(5, 0, 5, 11, 10, 11),
+            Block.createCuboidShape(5, 0, 5, 11, 10, 11),
+            Block.createCuboidShape(4, 0, 4, 12, 12, 12),
+            Block.createCuboidShape(2, 0, 2, 14, 14, 14)
+    };
+
     public AgavePlantBlock(Settings settings) {
-        super(settings.offsetType(OffsetType.XZ));
+        super(settings);
+    }
+
+    @Override
+    public VoxelShape[] getShapes() {
+        return SHAPES;
     }
 
     @Override
