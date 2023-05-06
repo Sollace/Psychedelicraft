@@ -1,0 +1,21 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:feature_pool_element",
+        "feature": "psychedelicraft:agave_patch_unchecked",
+        "projection": "terrain_matching"
+      },
+      "weight": 10
+    },
+    {
+      "element": {
+        "element_type": "minecraft:feature_pool_element",
+        "feature": "psychedelicraft:peyote_patch_unchecked",
+        "projection": "terrain_matching"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}
