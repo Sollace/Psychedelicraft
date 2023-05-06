@@ -95,6 +95,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.DRIED_COCA_LEAVES);
                 entries.add(PSItems.COCAINE_POWDER);
 
+                entries.add(PSItems.AGAVE_LEAF);
                 entries.add(PSItems.PEYOTE);
                 entries.add(PSItems.DRIED_PEYOTE);
                 entries.add(PSItems.PEYOTE_JOINT);
