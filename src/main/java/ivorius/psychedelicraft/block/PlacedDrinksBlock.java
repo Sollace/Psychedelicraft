@@ -17,13 +17,18 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -42,6 +47,11 @@ public class PlacedDrinksBlock extends BlockWithEntity {
 
     protected PlacedDrinksBlock(Settings settings) {
         super(settings.noCollision());
+    }
+
+    @Override
+    public boolean canMobSpawnInside() {
+        return true;
     }
 
     @Override
@@ -77,6 +87,10 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                 .orElseGet(() -> super.getPickStack(world, pos, state));
     }
 
+    public static boolean canPlace(ItemStack stack) {
+        return stack.isOf(PSItems.WOODEN_MUG) || stack.isOf(PSItems.GLASS_CHALICE) || stack.isOf(PSItems.BOTTLE);
+    }
+
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.PLACED_DRINK).flatMap(be -> {
@@ -93,7 +107,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                 });
             }
 
-            if (!heldStack.isOf(PSItems.WOODEN_MUG) && !heldStack.isOf(PSItems.GLASS_CHALICE)) {
+            if (!canPlace(heldStack)) {
                 return FAILURE;
             }
 
@@ -113,23 +127,41 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+        if (!world.isClient && entity instanceof LivingEntity && Math.max(
+                Math.abs(entity.getX() - entity.lastRenderX),
+                Math.abs(entity.getZ() - entity.lastRenderZ)
+            ) >= 0.003F) {
+            Block.dropStacks(state, world, pos, world.getBlockEntity(pos), entity, ItemStack.EMPTY);
+            world.removeBlock(pos, false);
+            world.playSound(null, pos, SoundEvents.BLOCK_CANDLE_PLACE, SoundCategory.BLOCKS);
+        }
+    }
+
+    @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new Data(pos, state);
     }
 
     public static ActionResult tryPlace(ItemUsageContext context) {
-        if (context.getSide() != Direction.UP) {
+        if (!canPlace(context.getStack())) {
             return ActionResult.PASS;
         }
 
         BlockState state = context.getWorld().getBlockState(context.getBlockPos());
+        boolean replaceable = state.canReplace(new ItemPlacementContext(context));
+
+        if (!replaceable && context.getSide() != Direction.UP) {
+            return ActionResult.PASS;
+        }
+
         if (state.isOf(PSBlocks.PLACED_DRINK)) {
             return state.onUse(context.getWorld(), context.getPlayer(), context.getHand(), new BlockHitResult(
                     context.getHitPos(), context.getSide(), context.getBlockPos(), true
             ));
         }
 
-        BlockPos blockPos = context.getBlockPos().offset(context.getSide());
+        BlockPos blockPos = replaceable ? context.getBlockPos() : context.getBlockPos().offset(context.getSide());
         BlockPos hitPos = Data.getHitPos(blockPos, context.getHitPos());
         context.getWorld().setBlockState(blockPos, PSBlocks.PLACED_DRINK.getDefaultState());
         return context.getWorld().getBlockEntity(blockPos, PSBlockEntities.PLACED_DRINK).map(be -> {
@@ -149,9 +181,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         }
 
         public void forEachDrink(Consumer<Entry> consumer) {
-            entries.values().forEach(list -> {
-                list.forEach(consumer);
-            });
+            entries.values().forEach(list -> list.forEach(consumer));
         }
 
         public TypedActionResult<ItemStack> removeDrink(BlockPos center) {
@@ -200,6 +230,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             }
             if (list.size() < MAX_STACK_HEIGHT) {
                 list.add(new Entry(position.getX() / 16F - 0.5F, list.size() / 4F, position.getZ() / 16F - 0.5F, (-yaw) % 360, stack.split(1)));
+                getWorld().playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_PLACE, SoundCategory.BLOCKS);
                 markDirty();
                 return TypedActionResult.success(stack);
             }
