@@ -30,16 +30,7 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
     public static final Identifier TEXTURE = Psychedelicraft.id("textures/entity/bottle.png");
 
     // TODO: (Sollace) Add bottles as a placeable block
-    private final ModelPart bottleModel = getBottleModelData().createModel();
-
-    private static TexturedModelData getBottleModelData() {
-        ModelData data = new ModelData();
-        ModelPartData root = data.getRoot();
-        root.addChild("bottle_0", ModelPartBuilder.create()
-                    .uv(0, 3).cuboid(-3.125F, -3.3F, 3.375F, 3, 6, 3, Dilation.NONE)
-                    .uv(0, 0).cuboid(-2.125F, -5.55F, 4.375F, 1, 2, 1, Dilation.NONE), ModelTransform.pivot(2, 21, -5));
-        return TexturedModelData.of(data, 32, 32);
-    }
+    private final ModelPart bottleModel = DrinksBlockEntityRenderer.getBottleModelData().createModel();
 
     public BottleRackBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 

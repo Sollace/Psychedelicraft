@@ -31,7 +31,8 @@ public class PsychedelicraftClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        Psychedelicraft.globalDrugProperties = () -> Optional.of(DrugProperties.of(MinecraftClient.getInstance().player));
+        Psychedelicraft.globalDrugProperties = () -> DrugProperties.of((Entity)MinecraftClient.getInstance().player);
+        Psychedelicraft.crossHairTarget = () -> Optional.ofNullable(MinecraftClient.getInstance().crosshairTarget);
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             if (!client.isPaused()) {
                 DrugProperties.of((Entity)client.player).ifPresent(properties -> {

@@ -53,19 +53,19 @@ public interface MathUtils {
     }
 
     static float a(int left) {
-        return (left >> 24 & 255) / 255F;
+        return (left >> 24 & 0xFF) / 255F;
     }
 
     static float r(int left) {
-        return (left >> 16 & 255) / 255F;
+        return (left >> 16 & 0xFF) / 255F;
     }
 
     static float g(int left) {
-        return (left >> 8 & 255) / 255F;
+        return (left >> 8 & 0xFF) / 255F;
     }
 
     static float b(int left) {
-        return (left & 255) / 255F;
+        return (left & 0xFF) / 255F;
     }
 
     static int mixColors(int left, int right, float progress) {

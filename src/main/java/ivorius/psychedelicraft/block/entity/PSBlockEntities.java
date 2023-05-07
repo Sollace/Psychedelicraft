@@ -22,6 +22,7 @@ public interface PSBlockEntities {
             PSBlocks.BIRCH_BARREL, PSBlocks.JUNGLE_BARREL,
             PSBlocks.ACACIA_BARREL, PSBlocks.DARK_OAK_BARREL
     ));
+    BlockEntityType<PlacedDrinksBlock.Data> PLACED_DRINK = create("placed_drink", BlockEntityType.Builder.create(PlacedDrinksBlock.Data::new, PSBlocks.PLACED_DRINK));
 
     static <T extends BlockEntity> BlockEntityType<T> create(String id, Builder<T> builder) {
         return Registry.register(Registries.BLOCK_ENTITY_TYPE, Psychedelicraft.id(id), builder.build(null));

@@ -9,15 +9,11 @@ import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
@@ -37,7 +33,7 @@ import ivorius.psychedelicraft.util.NbtSerialisable;
  * Created by lukas on 25.10.14.
  * Updated by Sollace on 2 Jan 2023
  */
-public class FlaskBlockEntity extends BlockEntity
+public class FlaskBlockEntity extends SyncedBlockEntity
         implements BlockWithFluid.DirectionalFluidResovoir,
                    Resovoir.ChangeListener, SidedInventory,
                    SidedStorageBlockEntity {
@@ -153,18 +149,6 @@ public class FlaskBlockEntity extends BlockEntity
         Inventories.readNbt(compound, ioInventory.stacks);
         inputSlot.fromNbt(compound.getCompound("inputSlot"));
         outputSlot.fromNbt(compound.getCompound("outputSlot"));
-    }
-
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        NbtCompound compound = new NbtCompound();
-        writeNbt(compound);
-        return compound;
     }
 
     @Override

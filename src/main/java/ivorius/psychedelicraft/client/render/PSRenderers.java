@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
@@ -40,6 +41,12 @@ public interface PSRenderers {
         BlockEntityRendererRegistry.register(PSBlockEntities.RIFT_JAR, RiftJarBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(PSBlockEntities.BOTTLE_RACK, BottleRackBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(PSBlockEntities.PEYOTE, PeyoteBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(PSBlockEntities.PLACED_DRINK, DrinksBlockEntityRenderer::new);
+
+        ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, appender) -> {
+            appender.accept(DrinksBlockEntityRenderer.getGroundModelId(PSItems.WOODEN_MUG));
+            appender.accept(DrinksBlockEntityRenderer.getGroundModelId(PSItems.GLASS_CHALICE));
+        });
 
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), PSBlocks.DISTILLERY, PSBlocks.FLASK);
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),

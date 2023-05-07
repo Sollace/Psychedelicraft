@@ -26,6 +26,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 class RiftJarBlock extends BlockWithEntity {
@@ -78,6 +79,9 @@ class RiftJarBlock extends BlockWithEntity {
     @Deprecated
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+            return;
+        }
         if (!state.isOf(newState.getBlock()) && !world.isClient) {
             world.getBlockEntity(pos, PSBlockEntities.RIFT_JAR).ifPresent(be -> {
 

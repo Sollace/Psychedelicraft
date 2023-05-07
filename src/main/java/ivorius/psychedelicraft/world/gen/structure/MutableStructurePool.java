@@ -60,13 +60,11 @@ public interface MutableStructurePool {
                 target = of(pool);
             }
             if (source != null && target != null) {
-                ObjectArrayList<StructurePoolElement> elements = new ObjectArrayList<>();
-                elements.addAll(target.getElements());
+                ObjectArrayList<StructurePoolElement> elements = new ObjectArrayList<>(target.getElements());
                 elements.addAll(source.getElements());
                 target.setElements(elements);
 
-                List<Pair<StructurePoolElement, Integer>> elementCounts = new ArrayList<>();
-                elementCounts.addAll(target.getElementCounts());
+                List<Pair<StructurePoolElement, Integer>> elementCounts = new ArrayList<>(target.getElementCounts());
                 elementCounts.addAll(source.getElementCounts());
                 target.setElementCounts(elementCounts);
                 return true;

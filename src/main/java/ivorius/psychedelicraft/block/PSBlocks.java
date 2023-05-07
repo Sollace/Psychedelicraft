@@ -26,8 +26,12 @@ import net.minecraft.util.SignType;
 public interface PSBlocks {
     Block MASH_TUB = register("mash_tub", new MashTubBlock(Settings.of(Material.WOOD)
             .sounds(BlockSoundGroup.WOOD)
-            .hardness(2).nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never)));
+            .hardness(2).nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never)
+    ));
     Block MASH_TUB_EDGE = register("mash_tub_edge", new MashTubWallBlock(Settings.copy(MASH_TUB)));
+    Block PLACED_DRINK = register("placed_drink", new PlacedDrinksBlock(Settings.of(Material.WOOD)
+            .breakInstantly().nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never)
+    ));
 
     Block OAK_BARREL = register("oak_barrel", new BarrelBlock(BlockConstructionUtils.barrel()));
     Block SPRUCE_BARREL = register("spruce_barrel", new BarrelBlock(BlockConstructionUtils.barrel()));

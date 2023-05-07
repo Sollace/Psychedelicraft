@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.joml.Vector3f;
 
+import ivorius.psychedelicraft.block.PlacedDrinksBlock;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.particle.ExhaledSmokeParticleEffect;
@@ -18,6 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.*;
@@ -71,6 +73,11 @@ public class SmokeableItem extends Item {
         }
 
         return super.finishUsing(stack, world, entity);
+    }
+
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        return PlacedDrinksBlock.tryPlace(context);
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.block.PlacedDrinksBlock;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.minecraft.client.item.TooltipContext;
@@ -63,6 +64,11 @@ public class DrinkableItem extends Item implements FluidContainer {
             return TypedActionResult.consume(stack);
         }
         return super.use(world, player, hand);
+    }
+
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        return PlacedDrinksBlock.tryPlace(context);
     }
 
     @Override

@@ -25,6 +25,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.HitResult;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -38,9 +39,14 @@ public class Psychedelicraft implements ModInitializer {
     private static final Supplier<JsonConfig.Loader<PSConfig>> CONFIG_LOADER = JsonConfig.create("psychedelicraft.json", PSConfig::new);
 
     public static Supplier<Optional<DrugProperties>> globalDrugProperties = Optional::empty;
+    public static Supplier<Optional<HitResult>> crossHairTarget = Optional::empty;
 
     public static Optional<DrugProperties> getGlobalDrugProperties() {
         return globalDrugProperties.get();
+    }
+
+    public static Optional<HitResult> getCrossHairTarget() {
+        return crossHairTarget.get();
     }
 
     public static PSConfig getConfig() {
