@@ -46,6 +46,7 @@ public interface PSRenderers {
         ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, appender) -> {
             appender.accept(DrinksBlockEntityRenderer.getGroundModelId(PSItems.WOODEN_MUG));
             appender.accept(DrinksBlockEntityRenderer.getGroundModelId(PSItems.GLASS_CHALICE));
+            appender.accept(DrinksBlockEntityRenderer.getGroundModelId(PSItems.BOTTLE));
         });
 
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), PSBlocks.DISTILLERY, PSBlocks.FLASK);
