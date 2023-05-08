@@ -164,6 +164,9 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         }
 
         BlockPos blockPos = replaceable ? context.getBlockPos() : context.getBlockPos().offset(context.getSide());
+        if (!replaceable && !context.getWorld().isAir(blockPos)) {
+            return ActionResult.PASS;
+        }
         BlockPos hitPos = Data.getHitPos(blockPos, context.getHitPos());
         context.getWorld().setBlockState(blockPos, PSBlocks.PLACED_DRINK.getDefaultState());
         return context.getWorld().getBlockEntity(blockPos, PSBlockEntities.PLACED_DRINK).map(be -> {
