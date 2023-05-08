@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.command;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
@@ -44,7 +45,7 @@ class DrugCommand {
                         .then(CommandManager.argument("locked", BoolArgumentType.bool()).executes(ctx -> lockDrugs(ctx, IdentifierArgumentType.getIdentifier(ctx, "drug")))
                     )
                 ))
-                .then(CommandManager.literal("get")
+                .then(CommandManager.literal("get").executes(DrugCommand::getAllDrugs)
                     .then(CommandManager.argument("drug", IdentifierArgumentType.identifier()).suggests(DRUG_NAME_SUGGESTIONS).executes(DrugCommand::getDrugs)
                 ))
                 .then(CommandManager.literal("set")
@@ -63,6 +64,26 @@ class DrugCommand {
         );
     }
 
+    private static int getAllDrugs(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "target");
+        DrugProperties properties = DrugProperties.of(player);
+
+        List<Drug> drugs = properties.getAllDrugs().stream().filter(drug -> drug.getActiveValue() > 0).toList();
+
+        if (drugs.isEmpty()) {
+            source.sendFeedback(Text.translatable("commands.drug.success.get.sober", player.getName()), true);
+        } else {
+            source.sendFeedback(Text.translatable("commands.drug.success.get", player.getName(), drugs.size()), true);
+            drugs.forEach(drug -> {
+                double value = drug.getActiveValue();
+                source.sendFeedback(Text.literal(DrugType.REGISTRY.getId(drug.getType()).getPath() + ": " + value), true);
+            });
+        }
+
+        return 0;
+    }
+
     private static int getDrugs(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "target");
@@ -71,7 +92,7 @@ class DrugCommand {
 
         DrugType.REGISTRY.getOrEmpty(drugName).ifPresentOrElse(drugType -> {
             float value = properties.isDrugActive(drugType) ? properties.getDrugValue(drugType) : 0;
-            source.sendFeedback(Text.translatable("commands.drug.success.get." + (player == source.getEntity() ? "self" : "other"), drugName.getPath(), value), true);
+            source.sendFeedback(Text.translatable("commands.drug.success.get." + (player == source.getEntity() ? "self" : "other"), player.getName(), drugName.getPath(), value), true);
         }, () -> {
             source.sendFeedback(Text.translatable("commands.drug.fail.get", drugName), true);
         });

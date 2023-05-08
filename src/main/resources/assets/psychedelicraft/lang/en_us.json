@@ -279,8 +279,10 @@
 
   "commands.hallucinate.success": "Summond hallucination",
 
+  "commands.drug.success.get": "%1$s has %2$s active drug effects:",
+  "commands.drug.success.get.sober": "%1$s has no drug effects",
   "commands.drug.success.get.other": "%1$s %2$s level is %3$s",
-  "commands.drug.success.get.self": "Your %1$s level is %2$s",
+  "commands.drug.success.get.self": "Your %2$s level is %3$s",
   "commands.drug.fail.get": "%1$s is not a valid drug type",
 
   "commands.drug.fail.set.self": "%1$s is not a valid drug type",
