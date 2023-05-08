@@ -43,11 +43,7 @@ public interface PSRenderers {
         BlockEntityRendererRegistry.register(PSBlockEntities.PEYOTE, PeyoteBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(PSBlockEntities.PLACED_DRINK, DrinksBlockEntityRenderer::new);
 
-        ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, appender) -> {
-            appender.accept(DrinksBlockEntityRenderer.getGroundModelId(PSItems.WOODEN_MUG));
-            appender.accept(DrinksBlockEntityRenderer.getGroundModelId(PSItems.GLASS_CHALICE));
-            appender.accept(DrinksBlockEntityRenderer.getGroundModelId(PSItems.BOTTLE));
-        });
+        ModelLoadingRegistry.INSTANCE.registerModelProvider(PlacedDrinksModelProvider.INSTANCE);
 
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), PSBlocks.DISTILLERY, PSBlocks.FLASK);
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),

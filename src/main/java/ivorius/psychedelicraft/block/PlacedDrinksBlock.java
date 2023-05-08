@@ -2,16 +2,15 @@ package ivorius.psychedelicraft.block;
 
 import java.util.Optional;
 import java.util.Stack;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.SyncedBlockEntity;
-import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -88,7 +87,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     public static boolean canPlace(ItemStack stack) {
-        return stack.isOf(PSItems.WOODEN_MUG) || stack.isOf(PSItems.GLASS_CHALICE) || stack.isOf(PSItems.BOTTLE);
+        return stack.isIn(PSTags.Items.PLACEABLE);
     }
 
     @Override
@@ -121,7 +120,10 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     @Deprecated
     public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
         world.getBlockEntity(pos, PSBlockEntities.PLACED_DRINK).ifPresent(be -> {
-            be.forEachDrink(entry -> Block.dropStack(world, pos, entry.stack()));
+            be.forEachDrink((y, entry) -> {
+                Block.dropStack(world, pos, entry.stack());
+                return 0;
+            });
             be.entries.clear();
         });
     }
@@ -180,8 +182,13 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             super(PSBlockEntities.PLACED_DRINK, pos, state);
         }
 
-        public void forEachDrink(Consumer<Entry> consumer) {
-            entries.values().forEach(list -> list.forEach(consumer));
+        public void forEachDrink(DrinkConsumer consumer) {
+            entries.values().forEach(list -> {
+                final float[] y = new float[1];
+                list.forEach(drink -> {
+                    y[0] += consumer.accept(y[0], drink);
+                });
+            });
         }
 
         public TypedActionResult<ItemStack> removeDrink(BlockPos center) {
@@ -229,7 +236,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                 entries.put(index, list);
             }
             if (list.size() < MAX_STACK_HEIGHT) {
-                list.add(new Entry(position.getX() / 16F - 0.5F, list.size() / 4F, position.getZ() / 16F - 0.5F, (-yaw) % 360, stack.split(1)));
+                list.add(new Entry(position.getX() / 16F - 0.5F, position.getZ() / 16F - 0.5F, (-yaw) % 360, stack.split(1)));
                 getWorld().playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_PLACE, SoundCategory.BLOCKS);
                 markDirty();
                 return TypedActionResult.success(stack);
@@ -295,12 +302,11 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             return ((Math.max(0, position.getX()) * MAX_COORD) + Math.max(0, position.getZ())) % MAX_INDEX;
         }
 
-        public record Entry (float x, float y, float z, float rotation, ItemStack stack) {
+        public record Entry (float x, float z, float rotation, ItemStack stack) {
 
             public Entry(NbtCompound compound) {
                 this(
                         compound.getFloat("x"),
-                        compound.getFloat("y"),
                         compound.getFloat("z"),
                         compound.getFloat("rotation"),
                         ItemStack.fromNbt(compound.getCompound("stack"))
@@ -309,12 +315,15 @@ public class PlacedDrinksBlock extends BlockWithEntity {
 
             public NbtCompound toNbt(NbtCompound compound) {
                 compound.putFloat("x", x);
-                compound.putFloat("y", y);
                 compound.putFloat("z", z);
                 compound.putFloat("rotation", rotation);
                 compound.put("stack", stack.writeNbt(new NbtCompound()));
                 return compound;
             }
+        }
+
+        public interface DrinkConsumer {
+            float accept(float y, Entry drink);
         }
     }
 }

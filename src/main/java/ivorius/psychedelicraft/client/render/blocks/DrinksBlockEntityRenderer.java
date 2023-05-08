@@ -10,6 +10,10 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.block.PlacedDrinksBlock;
+import ivorius.psychedelicraft.client.render.PlacedDrinksModelProvider;
+import ivorius.psychedelicraft.client.render.FluidBoxRenderer.FluidAppearance;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.StainedGlassPaneBlock;
 import net.minecraft.block.TransparentBlock;
@@ -34,9 +38,7 @@ import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Direction;
@@ -51,20 +53,32 @@ public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrin
     private static final Random RNG = Random.create();
     private static final long SEED = 42L;
 
-    public DrinksBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-
-    }
+    public DrinksBlockEntityRenderer(BlockEntityRendererFactory.Context context) { }
 
     @Override
     public void render(PlacedDrinksBlock.Data entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        entity.forEachDrink(drink -> {
+        entity.forEachDrink((y, drink) -> {
+            PlacedDrinksModelProvider.Entry geometry = PlacedDrinksModelProvider.INSTANCE.get(drink.stack().getItem()).orElse(PlacedDrinksModelProvider.Entry.DEFAULT);
             matrices.push();
-            matrices.translate(drink.x(), drink.y(), drink.z());
+            matrices.translate(drink.x(), y, drink.z());
             matrices.translate(0.5F, 0, 0.5F);
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(drink.rotation()));
             matrices.translate(-0.5F, 0, -0.5F);
-            renderDrinkModel(drink.stack(), matrices, vertices, light, overlay);
+            renderDrinkModel(drink.stack(), matrices, vertices, light, overlay, 0xFFFFFF, PlacedDrinksModelProvider.getGroundModelId(drink.stack().getItem()));
+
+            FluidContainer container = FluidContainer.of(drink.stack());
+            float fillPercentage = container.getFillPercentage(drink.stack());
+            if (fillPercentage > 0.01) {
+                float origin = geometry.fluidOrigin() / 16F;
+                matrices.translate(0, origin, 0);
+                matrices.scale(1, fillPercentage, 1);
+                matrices.translate(0, -origin, 0);
+                int color = FluidAppearance.getItemColor(container.getFluid(drink.stack()), drink.stack());
+                renderDrinkModel(drink.stack(), matrices, vertices, light, overlay, color, PlacedDrinksModelProvider.getGroundModelFluidId(drink.stack().getItem()));
+            }
             matrices.pop();
+
+            return geometry.height();
         });
 
         MinecraftClient client = MinecraftClient.getInstance();
@@ -80,35 +94,31 @@ public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrin
         }
     }
 
-    private static void renderDrinkModel(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    private static void renderDrinkModel(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, int color, ModelIdentifier modelId) {
         ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
 
-        BakedModel model = renderer.getModels().getModelManager().getModel(getGroundModelId(stack.getItem()));
+        BakedModel model = renderer.getModels().getModelManager().getModel(modelId);
 
-        boolean bl22 = !(stack.getItem() instanceof BlockItem bi) || !(bi.getBlock() instanceof TransparentBlock) && !(bi.getBlock() instanceof StainedGlassPaneBlock);
-        RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl22);
+        boolean solid = !(stack.getItem() instanceof BlockItem bi) || !(bi.getBlock() instanceof TransparentBlock) && !(bi.getBlock() instanceof StainedGlassPaneBlock);
+        RenderLayer renderLayer = RenderLayers.getItemLayer(stack, solid);
 
-        renderBakedItemModel(model, stack, matrices, vertices.getBuffer(renderLayer), light, overlay);
+        renderBakedItemModel(model, matrices, vertices.getBuffer(renderLayer), light, overlay, color);
     }
 
-    private static void renderBakedItemModel(BakedModel model, ItemStack stack, MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
+    private static void renderBakedItemModel(BakedModel model, MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
         for (Direction direction : Direction.values()) {
             RNG.setSeed(SEED);
-            renderBakedItemQuads(matrices, vertices, model.getQuads(null, direction, RNG), stack, light, overlay);
+            renderBakedItemQuads(matrices, vertices, model.getQuads(null, direction, RNG), light, overlay, color);
         }
         RNG.setSeed(SEED);
-        renderBakedItemQuads(matrices, vertices, model.getQuads(null, null, RNG), stack, light, overlay);
+        renderBakedItemQuads(matrices, vertices, model.getQuads(null, null, RNG), light, overlay, color);
     }
 
-    private static void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {
+    private static void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, int light, int overlay, int color) {
         MatrixStack.Entry entry = matrices.peek();
         for (BakedQuad bakedQuad : quads) {
-            vertices.quad(entry, bakedQuad, 1, 1, 1, light, overlay);
+            vertices.quad(entry, bakedQuad, MathUtils.r(color), MathUtils.g(color), MathUtils.b(color), light, overlay);
         }
-    }
-
-    public static ModelIdentifier getGroundModelId(Item item) {
-        return new ModelIdentifier(Registries.ITEM.getId(item).withPath(p -> p + "_on_ground"), "inventory");
     }
 
     public static TexturedModelData getBottleModelData() {
