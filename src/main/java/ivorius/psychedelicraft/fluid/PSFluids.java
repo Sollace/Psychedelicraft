@@ -67,12 +67,11 @@ public interface PSFluids {
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoTomato)
             .variants(DrinkTypes.builder()
                     .add(DrinkType.JUICE.withAppearance(FluidAppearance.TOMATO_JUICE), StatePredicate.Standard.BASE)
-                    .add(DrinkType.KETCHUP, StatePredicate.builder().unfermented().maturation(IntRange.between(1, 4)).vinegar())
+                    .add(DrinkType.KETCHUP.withExtraDrug(new DrugInfluence(DrugType.SUGAR, 20, 0.003, 0.002, 0.3)), StatePredicate.builder().unfermented().maturation(IntRange.between(1, 4)).vinegar())
                     .add(DrinkType.MEAD, StatePredicate.builder().fermented().maturation(IntRange.atLeast(5)).undistilled())
                     .add(DrinkType.BEER, StatePredicate.builder().fermented().distillation(IntRange.exactly(1)))
                     .add(DrinkType.VODKA, StatePredicate.builder().fermented().unmatured().distillation(IntRange.exactly(2)))
                     .add(DrinkType.WHISKEY.withAppearance(FluidAppearance.RUM_SEMI_MATURE), StatePredicate.builder().fermented().maturation(IntRange.atLeast(6)).distillation(IntRange.atLeast(3))))
-            .drug(DrugType.SUGAR)
             .color(0xaaffaa08)
             .viscocity(1)
     );

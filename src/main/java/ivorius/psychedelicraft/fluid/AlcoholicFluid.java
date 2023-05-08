@@ -63,15 +63,18 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getDrugInfluencesPerLiter(ItemStack fluidStack, Consumer<DrugInfluence> consumer) {
-        super.getDrugInfluencesPerLiter(fluidStack, consumer);
+    public void getDrugInfluencesPerLiter(ItemStack stack, Consumer<DrugInfluence> consumer) {
+        super.getDrugInfluencesPerLiter(stack, consumer);
 
         double alcohol =
-                  settings.fermentationAlcohol * (FERMENTATION.get(fluidStack) / (double) FERMENTATION_STEPS)
-                + settings.distillationAlcohol * MathUtils.progress(DISTILLATION.get(fluidStack))
-                + settings.maturationAlcohol * MathUtils.progress(MATURATION.get(fluidStack) * 0.2F);
+                  settings.fermentationAlcohol * (FERMENTATION.get(stack) / (double) FERMENTATION_STEPS)
+                + settings.distillationAlcohol * MathUtils.progress(DISTILLATION.get(stack))
+                + settings.maturationAlcohol * MathUtils.progress(MATURATION.get(stack) * 0.2F);
 
         consumer.accept(new DrugInfluence(settings.drugType, 20, 0.003, 0.002, alcohol));
+        settings.variants.find(stack).extraDrug().ifPresent(drug -> {
+            consumer.accept(drug.clone());
+        });
     }
 
     @Override

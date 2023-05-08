@@ -2,10 +2,12 @@ package ivorius.psychedelicraft.fluid.alcohol;
 
 import java.util.Optional;
 
+import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public record DrinkType(String drinkName, String symbolName, Optional<String> variant, FluidAppearance appearance) {
+public record DrinkType(String drinkName, String symbolName, Optional<String> variant, Optional<DrugInfluence> extraDrug, FluidAppearance appearance) {
     public static final DrinkType TEA = of("tea").withAppearance(FluidAppearance.TEA);
     public static final DrinkType JUICE = of("juice");
     public static final DrinkType WORT = of("wort").withAppearance(FluidAppearance.BEER);
@@ -30,27 +32,31 @@ public record DrinkType(String drinkName, String symbolName, Optional<String> va
     public static final DrinkType TEQUILA = of("tequila");
 
     public static DrinkType of(String drinkName) {
-        return new DrinkType(drinkName, drinkName, Optional.empty(), FluidAppearance.CLEAR);
+        return new DrinkType(drinkName, drinkName, Optional.empty(), Optional.empty(), FluidAppearance.CLEAR);
     }
 
     public static DrinkType of(String drinkName, DrinkType looksLike) {
-        return new DrinkType(drinkName, looksLike.symbolName(), looksLike.variant(), looksLike.appearance());
+        return new DrinkType(drinkName, looksLike.symbolName(), looksLike.variant(), looksLike.extraDrug(), looksLike.appearance());
     }
 
     public DrinkType withVariation(String variation) {
-        return new DrinkType(drinkName, symbolName, Optional.of(variation), appearance);
+        return new DrinkType(drinkName, symbolName, Optional.of(variation), extraDrug, appearance);
     }
 
     public DrinkType withSymbol(String symbolName) {
-        return new DrinkType(drinkName, symbolName, variant, appearance);
+        return new DrinkType(drinkName, symbolName, variant, extraDrug, appearance);
     }
 
     public DrinkType withName(String drinkName) {
-        return new DrinkType(drinkName, symbolName, variant, appearance);
+        return new DrinkType(drinkName, symbolName, variant, extraDrug, appearance);
     }
 
     public DrinkType withAppearance(FluidAppearance appearance) {
-        return new DrinkType(drinkName, symbolName, variant, appearance);
+        return new DrinkType(drinkName, symbolName, variant, extraDrug, appearance);
+    }
+
+    public DrinkType withExtraDrug(DrugInfluence extraDrug) {
+        return new DrinkType(drinkName, symbolName, variant, Optional.of(extraDrug), appearance);
     }
 
     public String getUniqueKey() {
