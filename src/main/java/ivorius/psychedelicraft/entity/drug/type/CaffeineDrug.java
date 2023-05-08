@@ -20,8 +20,8 @@ public class CaffeineDrug extends SimpleDrug {
 
     private final float breathVolumeMultiplier;
 
-    public CaffeineDrug(double decSpeed, double decSpeedPlus, float breathVolumeMultiplier) {
-        super(DrugType.CAFFEINE, decSpeed, decSpeedPlus);
+    public CaffeineDrug(DrugType type, double decSpeed, double decSpeedPlus, float breathVolumeMultiplier) {
+        super(type, decSpeed, decSpeedPlus);
         this.breathVolumeMultiplier = breathVolumeMultiplier;
     }
 

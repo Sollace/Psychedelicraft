@@ -25,8 +25,8 @@ public record DrugType (Identifier id, Function<DrugType, Drug> constructor) {
     public static final DrugType RED_SHROOMS = register("red_shrooms", type -> new RedShroomsDrug(1, 0.0002d));
     public static final DrugType TOBACCO = register("tobacco", type -> new TobaccoDrug(1, 0.003d));
     public static final DrugType COCAINE = register("coccaine", type -> new CocaineDrug(1, 0.0003d));
-    public static final DrugType CAFFEINE = register("caffeine", type -> new CaffeineDrug(1, 0.0002d, 1));
-    public static final DrugType SUGAR = register("sugar", type -> new CaffeineDrug(1, 0.0002d, 0));
+    public static final DrugType CAFFEINE = register("caffeine", type -> new CaffeineDrug(type, 1, 0.0002d, 1));
+    public static final DrugType SUGAR = register("sugar", type -> new CaffeineDrug(type, 1, 0.0002d, 0));
     public static final DrugType BATH_SALTS = register("bath_salts", type -> new BathSaltsDrug(1, 0.00012d));
     public static final DrugType SLEEP_DEPRIVATION = register("sleep_deprivation", type -> new SleepDeprivationDrug());
     public static final DrugType LSD = register("lsd", type -> new LsdDrug(1, 0.0003d));
