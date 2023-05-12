@@ -22,6 +22,8 @@ float gold_noise(vec2 xy, float seed) {
 }
 
 void main() {
+  // we have to write to it so mac is happy
+  vertexDistance = 0;
   i_parent_shaders_main();
 
   float worldTicks = PS_WorldTicks;

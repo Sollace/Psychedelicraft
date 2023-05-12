@@ -3,6 +3,7 @@ uniform float PS_WorldTicks;
 uniform vec4 PS_Pulses;
 
 ps_in float vertexDistance;
+ps_in vec4 vertexColor;
 
 ps_out vec4 fragColor;
 
@@ -12,6 +13,7 @@ void main() {
   float worldTicks = PS_WorldTicks;
 
   float fogFragCoord = vertexDistance;
+  float unusedbecausemacisgarbage = vertexColor.r;
 
   vec3 outcolor = fragColor.rgb;
   vec4 pulses = PS_Pulses;
