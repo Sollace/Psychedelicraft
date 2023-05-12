@@ -2,7 +2,6 @@ package ivorius.psychedelicraft.fluid.alcohol;
 
 import java.util.Optional;
 
-import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;

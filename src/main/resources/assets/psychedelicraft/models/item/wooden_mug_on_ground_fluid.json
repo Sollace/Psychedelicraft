@@ -1,6 +1,6 @@
 {
 	"textures": {
-    "fluid": "minecraft:item/water_still"
+    "fluid": "minecraft:block/water_still"
   },
 	"elements": [
 		{

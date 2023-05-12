@@ -29,12 +29,14 @@ public class DrinkableItem extends Item implements FluidContainer {
     private final int capacity;
 
     private final int consumptionVolume;
+    private final int consumptionTime;
     private final ConsumableFluid.ConsumptionType consumptionType;
 
-    public DrinkableItem(Settings settings, int capacity, int consumptionVolume, ConsumableFluid.ConsumptionType consumptionType) {
+    public DrinkableItem(Settings settings, int capacity, int consumptionVolume, int consumptionTime, ConsumableFluid.ConsumptionType consumptionType) {
         super(settings.maxCount(1));
         this.capacity = capacity;
         this.consumptionVolume = Math.min(capacity, consumptionVolume);
+        this.consumptionTime = consumptionTime;
         this.consumptionType = consumptionType;
     }
 
@@ -73,7 +75,7 @@ public class DrinkableItem extends Item implements FluidContainer {
 
     @Override
     public int getMaxUseTime(ItemStack stack) {
-        return DEFAULT_MAX_USE_TIME;
+        return consumptionTime;
     }
 
     @Override

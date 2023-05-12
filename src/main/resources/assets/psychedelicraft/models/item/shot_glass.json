@@ -1,0 +1,14 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "psychedelicraft:item/shot_glass"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:filled": 1
+            },
+            "model": "psychedelicraft:item/shot_glass_filled"
+        }
+    ]
+}

@@ -13,6 +13,6 @@ import net.minecraft.item.*;
  */
 public class BottleItem extends DrinkableItem implements DyeableItem {
     public BottleItem(Settings settings, int capacity, int consumptionVolume, ConsumableFluid.ConsumptionType consumptionType) {
-        super(settings, capacity, consumptionVolume, consumptionType);
+        super(settings, capacity, consumptionVolume, Item.DEFAULT_MAX_USE_TIME, consumptionType);
     }
 }

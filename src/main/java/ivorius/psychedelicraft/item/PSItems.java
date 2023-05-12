@@ -31,9 +31,12 @@ import net.minecraft.registry.Registry;
  * Updated by Sollace on 1 Jan 2023
  */
 public interface PSItems {
-    DrinkableItem WOODEN_MUG = register("wooden_mug", new DrinkableItem(new Settings(), FluidVolumes.MUG, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem STONE_CUP = register("stone_cup", new DrinkableItem(new Settings(), FluidVolumes.CUP, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem GLASS_CHALICE = register("glass_chalice", new DrinkableItem(new Settings(), FluidVolumes.CHALLICE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem WOODEN_MUG = register("wooden_mug", new DrinkableItem(new Settings(), FluidVolumes.MUG, DrinkableItem.FLUID_PER_DRINKING, Item.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem STONE_CUP = register("stone_cup", new DrinkableItem(new Settings(), FluidVolumes.CUP, DrinkableItem.FLUID_PER_DRINKING, Item.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem GLASS_CHALICE = register("glass_chalice", new DrinkableItem(new Settings(), FluidVolumes.CHALLICE, DrinkableItem.FLUID_PER_DRINKING, Item.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem SHOT_GLASS = register("shot_glass", new DrinkableItem(new Settings(), FluidVolumes.SHOT, DrinkableItem.FLUID_PER_DRINKING, Item.DEFAULT_MAX_USE_TIME / 4, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem BOTTLE = register("bottle", new BottleItem(new Settings(), FluidVolumes.BOTTLE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings().maxCount(16), FluidVolumes.BOTTLE));
 
     FlaskItem OAK_BARREL = register("oak_barrel", new FlaskItem(PSBlocks.OAK_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
     FlaskItem SPRUCE_BARREL = register("spruce_barrel", new FlaskItem(PSBlocks.SPRUCE_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
@@ -54,8 +57,6 @@ public interface PSItems {
     Item WINE_GRAPES = register("wine_grapes", new WineGrapesItem(new Settings().food(
             new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()
     ), 15));
-    DrinkableItem BOTTLE = register("bottle", new BottleItem(new Settings(), FluidVolumes.BOTTLE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings().maxCount(16), FluidVolumes.BOTTLE));
 
     Item CANNABIS_SEEDS = register("cannabis_seeds", new AliasedBlockItem(PSBlocks.CANNABIS, new Settings()));
     Item CANNABIS_LEAF = register("cannabis_leaf");

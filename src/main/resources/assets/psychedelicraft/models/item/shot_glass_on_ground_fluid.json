@@ -1,0 +1,21 @@
+{
+  "textures": {
+    "fluid": "minecraft:block/water_still"
+  },
+	"elements": [
+		{
+			"name": "fluid",
+			"from": [7.5, 0.5, 7.5],
+			"to": [8.5, 2.5, 8.5],
+			"color": 0,
+			"faces": {
+				"north": {"uv": [2, 2, 3, 4], "texture": "#fluid"},
+				"east": {"uv": [1, 2, 2, 4], "texture": "#fluid"},
+				"south": {"uv": [4, 2, 5, 4], "texture": "#fluid"},
+				"west": {"uv": [3, 2, 4, 4], "texture": "#fluid"},
+				"up": {"uv": [3, 2, 2, 1], "texture": "#fluid"},
+				"down": {"uv": [4, 1, 3, 2], "texture": "#fluid"}
+			}
+		}
+	]
+}

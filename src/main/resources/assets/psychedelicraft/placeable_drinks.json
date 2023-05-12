@@ -6,6 +6,11 @@
       "fluid_origin": 0.5
     },
     {
+      "id": "psychedelicraft:shot_glass",
+      "height": 0.2,
+      "fluid_origin": 0.5
+    },
+    {
       "id": "psychedelicraft:glass_chalice",
       "height": 0.4,
       "fluid_origin": 3.5

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "psychedelicraft:shot_glass",
     "psychedelicraft:glass_chalice",
     "psychedelicraft:wooden_mug",
     "psychedelicraft:filled_bucket",

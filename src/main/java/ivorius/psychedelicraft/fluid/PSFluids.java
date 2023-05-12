@@ -218,7 +218,7 @@ public interface PSFluids {
             .color(0x88ffffff)
             .viscocity(2)
     );
-    AlcoholicFluid AGAVE = new AlcoholicFluid(Psychedelicraft.id("agave"), new AlcoholicFluid.Settings()
+    AlcoholicFluid AGAVE = new AgaveFluid(Psychedelicraft.id("agave"), new AlcoholicFluid.Settings()
             .alcohol(0.15, 1.5, 0.05)
             .distilledColor(0x779beb62)
             .matureColor(0x779beb62)

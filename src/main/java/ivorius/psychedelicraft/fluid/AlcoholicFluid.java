@@ -212,7 +212,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
         DrugType drugType = DrugType.ALCOHOL;
 
-        private final Supplier<List<DrinkTypes.State>> states = Suppliers.memoize(() -> variants.streamStates().toList());
+        final Supplier<List<DrinkTypes.State>> states = Suppliers.memoize(() -> variants.streamStates().toList());
 
         public Supplier<PSConfig.Balancing.FluidProperties.TickInfo> tickInfo;
 

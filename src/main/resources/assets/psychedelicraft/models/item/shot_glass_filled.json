@@ -1,0 +1,7 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "psychedelicraft:item/shot_glass",
+        "layer1": "psychedelicraft:item/shot_glass_liquid"
+    }
+}
