@@ -19,6 +19,11 @@
       "id": "psychedelicraft:bottle",
       "height": 0.5,
       "fluid_origin": 0.5
+    },
+    {
+      "id": "psychedelicraft:molotov_cocktail",
+      "height": 0.5,
+      "fluid_origin": 0.5
     }
   ]
 }

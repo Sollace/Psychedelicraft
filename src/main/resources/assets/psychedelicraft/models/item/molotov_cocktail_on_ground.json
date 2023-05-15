@@ -1,0 +1,51 @@
+{
+	"textures": {
+		"texture": "psychedelicraft:item/bottle_on_ground",
+		"cloth": "psychedelicraft:item/molotov_cloth",
+    "particle": "#texture"
+	},
+	"elements": [
+		{
+			"name": "neck",
+			"from": [7.5, 6, 7.5],
+			"to": [8.5, 8, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-13, 3, -5]},
+			"faces": {
+				"north": {"uv": [1, 1, 2, 3], "texture": "#texture"},
+				"east": {"uv": [0, 1, 1, 3], "texture": "#texture"},
+				"south": {"uv": [3, 1, 4, 3], "texture": "#texture"},
+				"west": {"uv": [2, 1, 3, 3], "texture": "#texture"},
+				"up": {"uv": [2, 1, 1, 0], "texture": "#texture"},
+				"down": {"uv": [3, 0, 2, 1], "texture": "#texture"}
+			}
+		},
+		{
+			"name": "bottle",
+			"from": [6.5, 0, 6.5],
+			"to": [9.5, 6, 9.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-13, 3, -5]},
+			"faces": {
+				"north": {"uv": [3, 6, 6, 12], "texture": "#texture"},
+				"east": {"uv": [0, 6, 3, 12], "texture": "#texture"},
+				"south": {"uv": [9, 6, 12, 12], "texture": "#texture"},
+				"west": {"uv": [6, 6, 9, 12], "texture": "#texture"},
+				"up": {"uv": [6, 6, 3, 3], "texture": "#texture"},
+				"down": {"uv": [9, 3, 6, 6], "texture": "#texture"}
+			}
+		},
+		{
+      "name": "cloth",
+      "from": [7.75, 7.42043, 7.0475],
+      "to": [8, 10.42043, 9.0475],
+      "rotation": {"angle": -22.5, "axis": "x", "origin": [8, 8, 8]},
+      "faces": {
+        "north": {"uv": [2, 0, 2, 3], "texture": "#cloth"},
+        "east": {"uv": [0, 0, 2, 3], "texture": "#cloth"},
+        "south": {"uv": [4, 0, 4, 3], "texture": "#cloth"},
+        "west": {"uv": [2, 0, 4, 3], "texture": "#cloth"},
+        "up": {"uv": [2, 0, 2, -2], "texture": "#cloth"},
+        "down": {"uv": [2, -2, 2, 0], "texture": "#cloth"}
+      }
+    }
+	]
+}

@@ -1,0 +1,21 @@
+{
+	"textures": {
+		"cloth": "psychedelicraft:item/molotov_cloth"
+	},
+	"elements": [
+		{
+			"name": "cloth",
+			"from": [7.75, 7.42043, 7.0475],
+			"to": [8, 10.42043, 9.0475],
+			"rotation": {"angle": -22.5, "axis": "x", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [2, 0, 2, 3], "texture": "#cloth"},
+				"east": {"uv": [0, 0, 2, 3], "texture": "#cloth"},
+				"south": {"uv": [4, 0, 4, 3], "texture": "#cloth"},
+				"west": {"uv": [2, 0, 4, 3], "texture": "#cloth"},
+				"up": {"uv": [2, 0, 2, -2], "texture": "#cloth"},
+				"down": {"uv": [2, -2, 2, 0], "texture": "#cloth"}
+			}
+		}
+	]
+}
