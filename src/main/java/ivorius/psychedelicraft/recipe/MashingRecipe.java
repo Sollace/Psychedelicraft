@@ -114,7 +114,7 @@ public class MashingRecipe extends FillRecepticalRecipe {
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     new FluidIngredient(buffer),
                     new FluidIngredient(buffer),
-                    buffer.readCollection(i -> DefaultedList.ofSize(i, Ingredient.EMPTY), Ingredient::fromPacket),
+                    buffer.readCollection(DefaultedList::ofSize, Ingredient::fromPacket),
                     buffer.readVarInt()
             );
         }

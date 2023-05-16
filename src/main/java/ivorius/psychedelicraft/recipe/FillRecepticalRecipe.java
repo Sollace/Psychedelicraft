@@ -89,7 +89,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     new FluidIngredient(buffer),
-                    buffer.readCollection(i -> DefaultedList.ofSize(i, Ingredient.EMPTY), Ingredient::fromPacket)
+                    buffer.readCollection(DefaultedList::ofSize, Ingredient::fromPacket)
             );
         }
 

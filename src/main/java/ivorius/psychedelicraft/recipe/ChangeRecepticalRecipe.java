@@ -74,7 +74,7 @@ class ChangeRecepticalRecipe extends ShapelessRecipe {
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     buffer.readItemStack(),
-                    buffer.readCollection(i -> DefaultedList.ofSize(i, Ingredient.EMPTY), Ingredient::fromPacket)
+                    buffer.readCollection(DefaultedList::ofSize, Ingredient::fromPacket)
             );
         }
 

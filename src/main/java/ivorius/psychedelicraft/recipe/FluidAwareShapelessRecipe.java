@@ -97,7 +97,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     buffer.readItemStack(),
-                    buffer.readCollection(i -> DefaultedList.ofSize(i, OptionalFluidIngredient.EMPTY), OptionalFluidIngredient::new)
+                    buffer.readCollection(DefaultedList::ofSize, OptionalFluidIngredient::new)
             );
         }
 
@@ -106,7 +106,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
             buffer.writeString(recipe.getGroup());
             buffer.writeEnumConstant(recipe.getCategory());
             buffer.writeItemStack(recipe.getOutput());
-            buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
+            buffer.writeCollection(recipe.ingredients, (b, c) -> c.write(b));
         }
     }
 }

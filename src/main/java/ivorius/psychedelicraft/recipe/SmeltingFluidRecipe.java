@@ -21,6 +21,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Functions;
 import com.google.gson.*;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
@@ -103,18 +104,27 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     }
 
 
-    record Modification(int value, String type) implements Int2IntFunction {
-        static final Map<String, Op> OPS = Map.of(
-                "set", (a, b) -> b,
-                "add", (a, b) -> a + b,
-                "subtract", (a, b) -> a - b,
-                "multiply", (a, b) -> a * b,
-                "divide", (a, b) -> a / b
-        );
-        static final String[] OP_KEYS = OPS.keySet().toArray(String[]::new);
+    record Modification(int value, Ops type) implements Int2IntFunction {
+        enum Ops {
+            SET((a, b) -> b),
+            ADD((a, b) -> a + b),
+            SUBTRACT((a, b) -> a - b),
+            MULTIPLY((a, b) -> a * b),
+            DIVIDE((a, b) -> a / b);
+
+            private final String name;
+            private final Op operation;
+
+            static final Map<String, Ops> VALUES = Arrays.stream(values()).collect(Collectors.toMap(a -> a.name, Functions.identity()));
+
+            Ops(Op operation) {
+                this.name = name().toLowerCase(Locale.ROOT);
+                this.operation = operation;
+            }
+        }
 
         Modification(PacketByteBuf buffer) {
-            this(buffer.readVarInt(), OP_KEYS[buffer.readVarInt()]);
+            this(buffer.readVarInt(), buffer.readEnumConstant(Ops.class));
         }
 
         interface Op {
@@ -126,19 +136,19 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
                 JsonObject obj = JsonHelper.asObject(entry.getValue(), "attribute");
                 return new Modification(
                         JsonHelper.getInt(obj, "value"),
-                        JsonHelper.getString(obj, "type").toLowerCase(Locale.ROOT)
+                        Ops.VALUES.getOrDefault(JsonHelper.getString(obj, "type").toLowerCase(Locale.ROOT), Ops.ADD)
                 );
             }));
         }
 
         @Override
         public int get(int v) {
-            return OPS.get(type).apply(v, value);
+            return type.operation.apply(v, value);
         }
 
         public void write(PacketByteBuf buffer) {
             buffer.writeVarInt(value);
-            buffer.writeVarInt(Arrays.binarySearch(OP_KEYS, type));
+            buffer.writeEnumConstant(type);
         }
     }
 
