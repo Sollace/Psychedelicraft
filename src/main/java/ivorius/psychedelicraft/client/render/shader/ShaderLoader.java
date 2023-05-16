@@ -73,16 +73,16 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     })
                     .program("simple_effects_depth", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var h = ShaderContext.hallucinations();
-                        var pulses = h.getPulseColor(tickDelta);
+                        // var pulses = h.getPulseColor(tickDelta);
                         var worldColorization = h.getContrastColorization(tickDelta);
                         if (h.getQuickColorRotation(tickDelta) > 0
                          | h.getSlowColorRotation(tickDelta) > 0
                          | h.getDesaturation(tickDelta) > 0
                          | h.getColorIntensification(tickDelta) > 0
                          | ShaderContext.modifier(Drug.INVERSION_HALLUCINATION_STRENGTH) > 0
-                         | pulses[3] > 0
+                         // | pulses[3] > 0
                          | worldColorization[3] > 0) {
-                            setter.set("pulses", pulses);
+                            //setter.set("pulses", pulses);
                             setter.set("colorSafeMode", GLStateProxy.isColorSafeMode() ? 1 : 0);
                             setter.set("worldColorization", worldColorization);
                             pass.run();

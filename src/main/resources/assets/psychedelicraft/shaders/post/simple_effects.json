@@ -26,7 +26,6 @@
             ],
             "uniforms": [
               { "name": "ticks", "values": [ 0.0 ] },
-              { "name": "pulses", "values": [ 1.0, 1.0, 1.0, 0.0 ] },
               { "name": "colorSafeMode", "values": [ 0.0 ] },
               { "name": "worldColorization", "values": [ 0.0, 0.0, 0.0, 0.0 ] }
             ]

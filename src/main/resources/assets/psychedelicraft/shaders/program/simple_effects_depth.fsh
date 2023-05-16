@@ -6,7 +6,7 @@ uniform sampler2D DepthSampler;
 in vec2 texCoord;
 
 uniform float ticks;
-uniform vec4 pulses;
+//uniform vec4 pulses;
 uniform float colorSafeMode;
 uniform vec4 worldColorization;
 
@@ -17,13 +17,13 @@ void main() {
 	vec3 outcolor = incolor.rgb;
 	float fogCoord = texture(DepthSampler, texCoord).r;
 
-	if (pulses.r > 0.0) {
+	//if (pulses.r > 0.0) {
 		// float pulseA = (sin((fogCoord - ticks) / 5.0) - 0.4) * pulses.r;
 
 		// if (pulseA > 0.0) {
 		//  outcolor.r = mix(outcolor.r, (outcolor.r + 1.0) * pulses.r, pulseA);
 		// }
-  }
+  //}
 
 	if (worldColorization.a > 0.0) {
 		vec3 c1 = outcolor;
