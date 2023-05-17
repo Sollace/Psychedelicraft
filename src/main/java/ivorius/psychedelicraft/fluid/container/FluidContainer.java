@@ -77,7 +77,7 @@ public interface FluidContainer extends ItemConvertible {
     }
 
     default ItemStack getDefaultStack(SimpleFluid fluid) {
-        Item bucketItem = this != UNLIMITED || !fluid.isCustomFluid() ? asItem() : of(fluid.getPhysical().getFluid().getBucketItem()).asItem();
+        Item bucketItem = this != UNLIMITED || !fluid.isCustomFluid() ? asItem() : of(fluid.getPhysical().getStandingFluid().getBucketItem()).asItem();
         return of(bucketItem).toMutable(bucketItem.getDefaultStack())
                 .withFluid(fluid)
                 .withLevel(getMaxCapacity())

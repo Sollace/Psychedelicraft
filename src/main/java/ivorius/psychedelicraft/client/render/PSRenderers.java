@@ -58,7 +58,7 @@ public interface PSRenderers {
         BuiltinItemRendererRegistry.INSTANCE.register(PSItems.RIFT_JAR, RiftJarBlockEntityRenderer::renderStack);
 
         SimpleFluid.all().forEach(fluid -> {
-            FluidRenderHandlerRegistry.INSTANCE.register(fluid.getPhysical().getFluid(), fluid.getPhysical().getFlowingFluid(), new SimpleFluidRenderHandler(SimpleFluidRenderHandler.WATER_STILL, SimpleFluidRenderHandler.WATER_FLOWING, SimpleFluidRenderHandler.WATER_OVERLAY, 0) {
+            FluidRenderHandlerRegistry.INSTANCE.register(fluid.getPhysical().getStandingFluid(), fluid.getPhysical().getFlowingFluid(), new SimpleFluidRenderHandler(SimpleFluidRenderHandler.WATER_STILL, SimpleFluidRenderHandler.WATER_FLOWING, SimpleFluidRenderHandler.WATER_OVERLAY, 0) {
                 @Override
                 public int getFluidColor(@Nullable BlockRenderView view, @Nullable BlockPos pos, FluidState state) {
                     return fluid.getColor(fluid.getDefaultStack());

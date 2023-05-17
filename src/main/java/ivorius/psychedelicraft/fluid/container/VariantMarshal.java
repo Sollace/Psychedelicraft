@@ -57,7 +57,7 @@ final class VariantMarshal {
     }
 
     public static FluidVariant packFluid(MutableFluidContainer contents) {
-        return FluidVariant.of(contents.getFluid().getPhysical().getFluid(), contents.getAttributes().copy());
+        return FluidVariant.of(contents.getFluid().getPhysical().getStandingFluid(), contents.getAttributes().copy());
     }
 
     public static MutableFluidContainer unpackFluid(ItemVariant container, FluidVariant contents, long level) {
@@ -164,7 +164,7 @@ final class VariantMarshal {
                 FluidVariant oldFluid = view.getResource();
 
                 long newLevel = getLevel();
-                FluidVariant newFluid = FluidVariant.of(getFluid().getPhysical().getFluid());
+                FluidVariant newFluid = FluidVariant.of(getFluid().getPhysical().getStandingFluid());
 
                 if (oldLevel != newLevel || !oldFluid.equals(newFluid)) {
                     try (var transaction = Transaction.openOuter()) {

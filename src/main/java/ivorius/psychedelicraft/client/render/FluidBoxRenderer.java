@@ -174,9 +174,9 @@ public class FluidBoxRenderer {
                 Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
 
                 if (!fluid.isCustomFluid()) {
-                    FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getPhysical().getFluid());
+                    FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getPhysical().getStandingFluid());
                     if (handler != null) {
-                        FluidState state = fluid.getPhysical().getFluid().getDefaultState();
+                        FluidState state = fluid.getPhysical().getStandingFluid().getDefaultState();
                         color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
                         sprite = handler.getFluidSprites(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state)[0];
                     }
@@ -188,9 +188,9 @@ public class FluidBoxRenderer {
 
         public static int getItemColor(SimpleFluid fluid, ItemStack stack) {
             if (!fluid.isCustomFluid()) {
-                FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getPhysical().getFluid());
+                FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getPhysical().getStandingFluid());
                 if (handler != null) {
-                    FluidState state = fluid.getPhysical().getFluid().getDefaultState();
+                    FluidState state = fluid.getPhysical().getStandingFluid().getDefaultState();
                     return handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
                 }
             }

@@ -30,17 +30,17 @@ public abstract class PlacedFluid extends WaterFluid {
     }
 
     public SimpleFluid getType() {
-        return getPysicalFluid().type;
+        return getPysicalFluid().getType();
     }
 
     @Override
     public Fluid getFlowing() {
-        return getPysicalFluid().flowing;
+        return getPysicalFluid().getFlowingFluid();
     }
 
     @Override
     public Fluid getStill() {
-        return getPysicalFluid().standing;
+        return getPysicalFluid().getStandingFluid();
     }
 
     @Override
@@ -50,7 +50,7 @@ public abstract class PlacedFluid extends WaterFluid {
 
     @Override
     public BlockState toBlockState(FluidState state) {
-        return getType().getStateManager().copyStateValues(state, getPysicalFluid().block.getDefaultState()
+        return getType().getStateManager().copyStateValues(state, getPysicalFluid().getBlock().getDefaultState()
                 .withIfExists(FluidBlock.LEVEL, getBlockStateLevel(state))
         );
     }
