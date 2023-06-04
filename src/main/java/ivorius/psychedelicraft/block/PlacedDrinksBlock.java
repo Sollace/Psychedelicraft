@@ -130,7 +130,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (!world.isClient && entity instanceof LivingEntity && Math.max(
+        if (!world.isClient && (entity.getY() > pos.getY() || entity.getY() >= pos.getY() && !entity.isSneaking()) && entity instanceof LivingEntity && Math.max(
                 Math.abs(entity.getX() - entity.lastRenderX),
                 Math.abs(entity.getZ() - entity.lastRenderZ)
             ) >= 0.003F) {
