@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.ShapedRecipe;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -38,12 +39,12 @@ public class BottleRecipe extends ShapedRecipe {
     });
 
     public BottleRecipe(Identifier id, ShapedRecipe recipe) {
-        super(id, recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getOutput());
+        super(id, recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getOutput(null));
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory) {
-        ItemStack output = getOutput().copy();
+    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
+        ItemStack output = getOutput(registries).copy();
         if (output.getItem() instanceof DyeableItem dyeable) {
             RecipeUtils.stacks(inventory)
                 .map(stack -> stack.getItem())

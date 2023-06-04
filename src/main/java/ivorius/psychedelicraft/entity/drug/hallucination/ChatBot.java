@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 public class ChatBot {
     private final Personality personality;
@@ -48,9 +49,11 @@ public class ChatBot {
             });
 
             if (player.world.getRandom().nextFloat() < 0.3F || message.getString().contains("!")) {
-                player.animateDamage();
+                float x = player.world.getRandom().nextFloat();
+                float z = player.world.getRandom().nextFloat();
+                player.animateDamage((float)(MathHelper.atan2(z, x) * 57.2957763671875 - player.getYaw()));
                 player.playSound(SoundEvents.ENTITY_PLAYER_HURT, 1, 1);
-                player.takeKnockback(0.2F, player.world.getRandom().nextFloat(), player.world.getRandom().nextFloat());
+                player.takeKnockback(0.2F, x, z);
             }
         }
     }

@@ -13,10 +13,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
@@ -81,7 +81,7 @@ public class AgavePlantBlock extends SucculentPlantBlock {
                     Math.abs(entity.getX() - entity.lastRenderX),
                     Math.abs(entity.getZ() - entity.lastRenderZ)
                 ) >= 0.003F) {
-                entity.damage(DamageSource.CACTUS, 1);
+                entity.damage(entity.getDamageSources().cactus(), 1);
             }
         }
     }
@@ -111,7 +111,7 @@ public class AgavePlantBlock extends SucculentPlantBlock {
             return ActionResult.success(world.isClient);
         }
         if (stack.isEmpty()) {
-            player.damage(DamageSource.CACTUS, 1);
+            player.damage(player.getDamageSources().cactus(), 1);
             return ActionResult.SUCCESS;
         }
 
@@ -122,16 +122,16 @@ public class AgavePlantBlock extends SucculentPlantBlock {
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         super.onBreak(world, pos, state, player);
         if (!isAppropriateTool(player.getStackInHand(Hand.MAIN_HAND))) {
-            player.damage(DamageSource.CACTUS, 1);
+            player.damage(player.getDamageSources().cactus(), 1);
         }
     }
 
     private boolean isAppropriateTool(ItemStack stack) {
-        return stack.isIn(ConventionalItemTags.PICKAXES)
-                || stack.isIn(ConventionalItemTags.SHOVELS)
-                || stack.isIn(ConventionalItemTags.SWORDS)
-                || stack.isIn(ConventionalItemTags.AXES)
-                || stack.isIn(ConventionalItemTags.HOES)
+        return stack.isIn(ItemTags.PICKAXES)
+                || stack.isIn(ItemTags.SHOVELS)
+                || stack.isIn(ItemTags.SWORDS)
+                || stack.isIn(ItemTags.AXES)
+                || stack.isIn(ItemTags.HOES)
                 || stack.isIn(ConventionalItemTags.SHEARS);
     }
 }

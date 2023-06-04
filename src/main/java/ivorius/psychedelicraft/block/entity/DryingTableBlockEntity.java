@@ -131,7 +131,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     public ItemStack getResult() {
         return getWorld().getRecipeManager()
                 .getFirstMatch(PSRecipes.DRYING_TYPE, this, this.getWorld())
-                .map(recipe -> recipe.craft(this))
+                .map(recipe -> recipe.craft(this, getWorld().getRegistryManager()))
                 .orElse(ItemStack.EMPTY);
     }
 

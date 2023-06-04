@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
@@ -33,15 +34,15 @@ public interface PSRenderers {
         EntityRendererRegistry.register(PSEntities.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
         EntityRendererRegistry.register(PSEntities.REALITY_RIFT, RealityRiftEntityRenderer::new);
 
-        BlockEntityRendererRegistry.register(PSBlockEntities.DISTILLERY, FlaskBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.FLASK, FlaskBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.MASH_TUB, MashTubBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.BARREL, BarrelBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.DRYING_TABLE, DryingTableBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.RIFT_JAR, RiftJarBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.BOTTLE_RACK, BottleRackBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.PEYOTE, PeyoteBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(PSBlockEntities.PLACED_DRINK, DrinksBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.DISTILLERY, FlaskBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.FLASK, FlaskBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.MASH_TUB, MashTubBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.BARREL, BarrelBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.DRYING_TABLE, DryingTableBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.RIFT_JAR, RiftJarBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.BOTTLE_RACK, BottleRackBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.PEYOTE, PeyoteBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.PLACED_DRINK, DrinksBlockEntityRenderer::new);
 
         ModelLoadingRegistry.INSTANCE.registerModelProvider(PlacedDrinksModelProvider.INSTANCE);
 

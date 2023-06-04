@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "psychedelicraft:alcohol_poisoning",
+    "psychedelicraft:respiratory_failure",
+    "psychedelicraft:stroke",
+    "psychedelicraft:heart_failure",
+    "psychedelicraft:heart_attack",
+    "psychedelicraft:kidney_failure",
+    "psychedelicraft:in_sleep",
+    "psychedelicraft:over_eating",
+    "psychedelicraft:molotov",
+    "psychedelicraft:self_molotov"
+  ]
+}

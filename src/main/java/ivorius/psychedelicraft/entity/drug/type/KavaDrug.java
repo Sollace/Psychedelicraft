@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
-import ivorius.psychedelicraft.PSDamageSources;
+import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -74,7 +74,7 @@ public class KavaDrug extends SimpleDrug {
                 double damageChance = (activeValue - 1.3F) * 2;
 
                 if (entity.age % 10 == 0 && random.nextFloat() < damageChance) {
-                    entity.damage(PSDamageSources.HEART_FAILURE, (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
+                    entity.damage(drugProperties.damageOf(PSDamageTypes.HEART_FAILURE), (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
                 }
             }
 

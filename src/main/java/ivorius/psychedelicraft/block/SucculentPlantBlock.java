@@ -18,7 +18,7 @@ import net.minecraft.world.*;
 
 public abstract class SucculentPlantBlock extends PlantBlock implements Fertilizable {
     public SucculentPlantBlock(Settings settings) {
-        super(settings.offsetType(OffsetType.XZ));
+        super(settings.offset(OffsetType.XZ));
         setDefaultState(getDefaultState().with(getAgeProperty(), 0));
     }
 

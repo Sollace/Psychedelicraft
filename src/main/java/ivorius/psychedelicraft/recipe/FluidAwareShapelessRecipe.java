@@ -26,6 +26,7 @@ import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 
 public class FluidAwareShapelessRecipe extends ShapelessRecipe {
 
+    private final ItemStack output;
     private final DefaultedList<OptionalFluidIngredient> ingredients;
     private final List<OptionalFluidIngredient> fluidRestrictions;
 
@@ -37,6 +38,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
                 .map(i -> i.receptical().orElse(Ingredient.EMPTY))
                 .collect(Collectors.toCollection(DefaultedList::of))
         );
+        this.output = output;
         this.ingredients = input;
         this.fluidRestrictions = ingredients.stream().filter(i -> i.fluid().filter(f -> f.level() > 0).isPresent()).toList();
     }
@@ -105,7 +107,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         public void write(PacketByteBuf buffer, FluidAwareShapelessRecipe recipe) {
             buffer.writeString(recipe.getGroup());
             buffer.writeEnumConstant(recipe.getCategory());
-            buffer.writeItemStack(recipe.getOutput());
+            buffer.writeItemStack(recipe.output);
             buffer.writeCollection(recipe.ingredients, (b, c) -> c.write(b));
         }
     }

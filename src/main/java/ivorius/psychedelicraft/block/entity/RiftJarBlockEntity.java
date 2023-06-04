@@ -14,18 +14,14 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World.ExplosionSourceType;
 
-public class RiftJarBlockEntity extends BlockEntity {
+public class RiftJarBlockEntity extends SyncedBlockEntity {
     public float currentRiftFraction;
     public int ticksAliveVisual;
 
@@ -183,18 +179,6 @@ public class RiftJarBlockEntity extends BlockEntity {
         jarBroken = compound.getBoolean("jarBroken");
         suckingRifts = compound.getBoolean("suckingRifts");
         fractionHandleUp = compound.getFloat("fractionHandleUp");
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        NbtCompound compound = new NbtCompound();
-        writeNbt(compound);
-        return compound;
-    }
-
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     public static class JarRiftConnection {

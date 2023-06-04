@@ -13,6 +13,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
@@ -79,16 +80,16 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     }
 
     @Override
-    public ItemStack getOutput() {
+    public ItemStack getOutput(DynamicRegistryManager registries) {
         Inventory inventory = lastQueriedInventory.get();
         if (inventory == null) {
-            return super.getOutput();
+            return super.getOutput(registries);
         }
-        return craft(inventory);
+        return craft(inventory, registries);
     }
 
     @Override
-    public ItemStack craft(Inventory inventory) {
+    public ItemStack craft(Inventory inventory, DynamicRegistryManager registries) {
         lastQueriedInventory = new WeakReference<>(inventory);
         ItemStack stack = output.isEmpty() ? inventory.getStack(0).copyWithCount(
                 output.getItem() == Items.AIR ? 1 : output.getCount()
@@ -191,7 +192,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             recipe.fluid.write(buffer);
             recipe.input.write(buffer);
             buffer.writeMap(recipe.outputModifications, PacketByteBuf::writeString, (b, c) -> c.write(b));
-            buffer.writeItemStack(recipe.getOutput());
+            buffer.writeItemStack(recipe.output);
             buffer.writeFloat(recipe.getExperience());
             buffer.writeVarInt(recipe.getCookTime());
         }

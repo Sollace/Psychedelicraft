@@ -40,6 +40,6 @@ public class TrayBlock extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(AXIS, ctx.getPlayerFacing().rotateYClockwise().getAxis());
+        return getDefaultState().with(AXIS, ctx.getHorizontalPlayerFacing().rotateYClockwise().getAxis());
     }
 }

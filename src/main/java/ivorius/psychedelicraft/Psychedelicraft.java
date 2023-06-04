@@ -83,5 +83,6 @@ public class Psychedelicraft implements ModInitializer {
         Channel.bootstrap();
         PSCriteria.bootstrap();
         PSParticles.bootstrap();
+        PSDamageTypes.bootstrap();
     }
 }

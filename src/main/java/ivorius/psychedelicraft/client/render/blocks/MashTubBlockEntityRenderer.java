@@ -17,7 +17,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.model.json.ModelTransformation.Mode;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.util.math.*;
@@ -81,7 +81,7 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
                 matrices.translate(0, bob, -0.2F);
                 matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-50 * spin));
                 matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees((ShaderContext.ticks() + c) % 360));
-                MinecraftClient.getInstance().getItemRenderer().renderItem(stack, Mode.FIXED, light, overlay, matrices, vertices, (int)seed);
+                MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
 
                 matrices.pop();
             }

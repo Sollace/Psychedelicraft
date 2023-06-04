@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.entity.drug.type;
 
 import java.util.Optional;
 
-import ivorius.psychedelicraft.PSDamageSources;
+import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.Entity;
@@ -96,7 +96,7 @@ public class SimpleDrug implements Drug {
             ticksActive++;
 
             if (heartbeatSpeed() > 3) {
-                drugProperties.asEntity().damage(PSDamageSources.HEART_ATTACK, Integer.MAX_VALUE);
+                drugProperties.asEntity().damage(drugProperties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
                 reset(drugProperties);
             }
         } else {

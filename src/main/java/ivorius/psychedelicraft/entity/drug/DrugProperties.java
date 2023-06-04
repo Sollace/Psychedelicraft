@@ -19,8 +19,11 @@ import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -81,6 +84,10 @@ public class DrugProperties implements NbtSerialisable {
 
     public PlayerEntity asEntity() {
         return entity;
+    }
+
+    public DamageSource damageOf(RegistryKey<DamageType> type) {
+        return PSDamageTypes.create(entity.getWorld(), type);
     }
 
     public Stomach getStomach() {

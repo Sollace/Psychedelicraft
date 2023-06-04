@@ -9,7 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.model.json.ModelTransformation.Mode;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RotationAxis;
@@ -59,7 +59,7 @@ public class DryingTableBlockEntityRenderer implements BlockEntityRenderer<Dryin
             matrices.translate(0, 0, -0.2F);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
             matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-50));
-            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, Mode.FIXED, light, overlay, matrices, vertices, (int)seed);
+            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
 
             matrices.pop();
         }

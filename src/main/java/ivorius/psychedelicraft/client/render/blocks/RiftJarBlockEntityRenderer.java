@@ -16,7 +16,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.*;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -44,7 +44,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
 
     private static final RiftJarBlockEntity ITEM_ENTITY = PSBlockEntities.RIFT_JAR.instantiate(BlockPos.ORIGIN, PSBlocks.RIFT_JAR.getDefaultState());
 
-    public static void renderStack(ItemStack stack, ModelTransformation.Mode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public static void renderStack(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         ITEM_ENTITY.currentRiftFraction = PSItems.RIFT_JAR.getRiftFraction(stack);
         ITEM_ENTITY.ticksAliveVisual = (int)((System.currentTimeMillis() % 500) / 100);
         MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(ITEM_ENTITY, matrices, vertices, light, overlay);

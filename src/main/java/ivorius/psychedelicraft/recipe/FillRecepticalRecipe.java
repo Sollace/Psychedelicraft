@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
@@ -53,7 +54,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory) {
+    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
         return RecipeUtils.recepticals(inventory).findFirst().map(receptical -> {
             ItemStack stack = output.fluid().getDefaultStack(receptical.getKey(), output.level() <= 0
                 ? receptical.getKey().getMaxCapacity(receptical.getValue())

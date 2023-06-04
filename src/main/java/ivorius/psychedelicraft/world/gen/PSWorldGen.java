@@ -137,7 +137,7 @@ public class PSWorldGen {
             .build());
         });
         FeatureRegistry.registerPlacedFeature(JUNIPER_TREE_PLACEMENT, JUNIPER_TREE_CONFIG, config -> {
-            return new PlacedFeature(config, VegetationPlacedFeatures.modifiersWithWouldSurvive(
+            return new PlacedFeature(config, VegetationPlacedFeatures.treeModifiersWithWouldSurvive(
                     PlacedFeatures.createCountExtraModifier(1, 0.05F, 2),
                     PSBlocks.JUNIPER_SAPLING)
             );

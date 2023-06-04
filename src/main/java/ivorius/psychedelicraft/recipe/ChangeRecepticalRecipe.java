@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
@@ -25,8 +26,11 @@ import ivorius.psychedelicraft.fluid.container.FluidContainer;
  *
  */
 class ChangeRecepticalRecipe extends ShapelessRecipe {
+    private final ItemStack output;
+
     public ChangeRecepticalRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
         super(id, group, category, output, input);
+        this.output = output;
     }
 
     @Override
@@ -40,11 +44,11 @@ class ChangeRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory) {
+    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
         return RecipeUtils.recepticals(inventory).findFirst().map(pair -> {
             // copy bottle contents to the new stack
             ItemStack input = pair.getValue().copy();
-            ItemStack output = getOutput().copy();
+            ItemStack output = getOutput(registries).copy();
             FluidContainer outputContainer = FluidContainer.of(output, null);
             if (outputContainer != null) {
                 output = outputContainer.toMutable(output).fillFrom(pair.getKey().toMutable(input)).asStack();
@@ -53,7 +57,7 @@ class ChangeRecepticalRecipe extends ShapelessRecipe {
                 outDyable.setColor(output, inDyable.getColor(input));
             }
             return output;
-        }).orElseGet(getOutput()::copy);
+        }).orElseGet(getOutput(registries)::copy);
     }
 
     static class Serializer implements RecipeSerializer<ChangeRecepticalRecipe> {
@@ -82,7 +86,7 @@ class ChangeRecepticalRecipe extends ShapelessRecipe {
         public void write(PacketByteBuf buffer, ChangeRecepticalRecipe recipe) {
             buffer.writeString(recipe.getGroup());
             buffer.writeEnumConstant(recipe.getCategory());
-            buffer.writeItemStack(recipe.getOutput());
+            buffer.writeItemStack(recipe.output);
             buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
         }
     }

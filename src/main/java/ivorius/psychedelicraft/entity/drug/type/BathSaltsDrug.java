@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
-import ivorius.psychedelicraft.PSDamageSources;
+import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -35,13 +35,13 @@ public class BathSaltsDrug extends SimpleDrug {
 
                 if (entity.age % 20 == 0 && random.nextFloat() < chance) {
                     if (random.nextFloat() < 0.4F) {
-                        entity.damage(PSDamageSources.STROKE, Integer.MAX_VALUE);
+                        entity.damage(drugProperties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
                     } else if (random.nextFloat() < 0.5F) {
-                        entity.damage(PSDamageSources.HEART_FAILURE, Integer.MAX_VALUE);
+                        entity.damage(drugProperties.damageOf(PSDamageTypes.HEART_FAILURE), Integer.MAX_VALUE);
                     } else if (random.nextFloat() < 0.5F) {
-                        entity.damage(PSDamageSources.RESPIRATORY_FAILURE, Integer.MAX_VALUE);
+                        entity.damage(drugProperties.damageOf(PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
                     } else if (random.nextFloat() < 0.5F) {
-                        entity.damage(PSDamageSources.KIDNEY_FAILURE, Integer.MAX_VALUE);
+                        entity.damage(drugProperties.damageOf(PSDamageTypes.KIDNEY_FAILURE), Integer.MAX_VALUE);
                     }
                 }
             }
@@ -54,7 +54,10 @@ public class BathSaltsDrug extends SimpleDrug {
             Random random = drugProperties.asEntity().world.random;
 
             if (random.nextFloat() < 0.5) {
-                drugProperties.asEntity().damage(random.nextFloat() < 0.002 ? PSDamageSources.KIDNEY_FAILURE : PSDamageSources.IN_SLEEP, Integer.MAX_VALUE);
+                drugProperties.asEntity().damage(
+                        drugProperties.damageOf(random.nextFloat() < 0.002 ? PSDamageTypes.KIDNEY_FAILURE : PSDamageTypes.IN_SLEEP),
+                        Integer.MAX_VALUE
+                );
             } else {
                 drugProperties.asEntity().addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0, false, false, false));
                 super.onWakeUp(drugProperties);

@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.entity.drug;
 
-import ivorius.psychedelicraft.PSDamageSources;
+import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -95,7 +95,7 @@ public class Stomach implements NbtSerialisable {
         } else {
             vomitingTicks = entity.world.random.nextBetween(10, 100);
             if (++vomitCount > 16) {
-                entity.damage(PSDamageSources.OVER_EATING, Integer.MAX_VALUE);
+                entity.damage(properties.damageOf(PSDamageTypes.OVER_EATING), Integer.MAX_VALUE);
             }
         }
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 1));

@@ -21,6 +21,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap.Type;
+import net.minecraft.world.biome.Biome.Precipitation;
 
 /**
  * @author Sollace
@@ -58,9 +59,9 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
             experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
         }
 
-        wasInWater = entity.world.getFluidState(new BlockPos(entity.getEyePos())).isIn(FluidTags.WATER);
+        wasInWater = entity.world.getFluidState(BlockPos.ofFloored(entity.getEyePos())).isIn(FluidTags.WATER);
         wasInRain = entity.world.getRainGradient(tickDelta) > 0
-                && entity.world.getBiome(entity.getBlockPos()).value().getDownfall() > 0
+                && entity.world.getBiome(entity.getBlockPos()).value().getPrecipitation(entity.getBlockPos()) == Precipitation.RAIN
                 && entity.world.getTopPosition(Type.MOTION_BLOCKING, entity.getBlockPos()).getY() <= entity.getY();
 
         if (PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {

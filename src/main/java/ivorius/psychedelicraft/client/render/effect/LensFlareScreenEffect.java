@@ -21,11 +21,11 @@ import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.HitResult.Type;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -133,9 +133,9 @@ public class LensFlareScreenEffect implements ScreenEffect {
         float yDist = normSunPos.y * screenHeight;
 
         int colorValue = world.getBiome(renderEntity.getBlockPos()).value().getFogColor();
-        int fogRed = NativeImage.getRed(colorValue);
-        int fogGreen = NativeImage.getGreen(colorValue);
-        int fogBlue = NativeImage.getBlue(colorValue);
+        int fogRed = ColorHelper.Abgr.getRed(colorValue);
+        int fogGreen = ColorHelper.Abgr.getGreen(colorValue);
+        int fogBlue = ColorHelper.Abgr.getBlue(colorValue);
 
         float alpha = Math.min(1, sunPositionOnScreen.z);
 

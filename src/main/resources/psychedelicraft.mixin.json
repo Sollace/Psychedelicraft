@@ -14,8 +14,7 @@
       "MixinVillagerEntity",
       "MixinVillagerTaskListProvider",
       "MixinHungerManager",
-      "MixinBlockEntityType",
-      "SignTypeAccessor"
+      "MixinBlockEntityType"
     ],
     "client": [
       "client.MixinCamera",

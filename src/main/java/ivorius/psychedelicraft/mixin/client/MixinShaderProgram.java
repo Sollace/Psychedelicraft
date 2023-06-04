@@ -47,7 +47,7 @@ abstract class MixinShaderProgram implements ShaderProgramSetupView, AutoCloseab
     }
 }
 
-@Mixin(GLImportProcessor.class)
+@Mixin(GlImportProcessor.class)
 abstract class MixinGLImportProcessor {
     @ModifyVariable(method = "readSource(Ljava/lang/String;)Ljava/util/List;", at = @At("HEAD"), argsOnly = true)
     private String modifySource(String source) {
@@ -58,7 +58,7 @@ abstract class MixinGLImportProcessor {
 @Mixin(ShaderStage.class)
 abstract class MixinShaderStage {
     @Inject(method = "load", at = @At("HEAD"))
-    private static void onLoad(Type type, String name, InputStream stream, String domain, GLImportProcessor loader, CallbackInfoReturnable<Integer> info) throws IOException {
+    private static void onLoad(Type type, String name, InputStream stream, String domain, GlImportProcessor loader, CallbackInfoReturnable<Integer> info) throws IOException {
         GeometryShader.INSTANCE.setup(type, name, stream, domain, loader);
     }
 }

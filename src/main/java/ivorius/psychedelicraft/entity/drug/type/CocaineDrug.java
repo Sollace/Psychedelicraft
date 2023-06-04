@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.entity.drug.type;
 
 import java.util.Optional;
 
-import ivorius.psychedelicraft.PSDamageSources;
+import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,11 +37,11 @@ public class CocaineDrug extends SimpleDrug {
                 double chance = (getActiveValue() - 0.8F) * 0.1F;
 
                 if (entity.age % 20 == 0 && random.nextFloat() < chance) {
-                    entity.damage(random.nextFloat() < 0.4F
-                            ? PSDamageSources.STROKE
+                    entity.damage(drugProperties.damageOf(random.nextFloat() < 0.4F
+                            ? PSDamageTypes.STROKE
                             : random.nextFloat() < 0.5F
-                            ? PSDamageSources.HEART_FAILURE
-                            : PSDamageSources.RESPIRATORY_FAILURE, Integer.MAX_VALUE);
+                            ? PSDamageTypes.HEART_FAILURE
+                            : PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
                 }
             }
         }

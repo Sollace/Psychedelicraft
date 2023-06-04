@@ -15,9 +15,6 @@ import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
@@ -137,7 +134,7 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
         return new MasterPosition(pos, state);
     }
 
-    public static class MasterPosition extends BlockEntity {
+    public static class MasterPosition extends SyncedBlockEntity {
 
         private BlockPos masterPos;
 
@@ -168,18 +165,6 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
         public void readNbt(NbtCompound compound) {
             super.readNbt(compound);
             masterPos = NbtHelper.toBlockPos(compound.getCompound("masterPos"));
-        }
-
-        @Override
-        public Packet<ClientPlayPacketListener> toUpdatePacket() {
-            return BlockEntityUpdateS2CPacket.create(this);
-        }
-
-        @Override
-        public NbtCompound toInitialChunkDataNbt() {
-            NbtCompound compound = new NbtCompound();
-            writeNbt(compound);
-            return compound;
         }
     }
 }

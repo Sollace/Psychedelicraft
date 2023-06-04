@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
-import ivorius.psychedelicraft.PSDamageSources;
+import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
@@ -51,7 +51,7 @@ public class AlcoholDrug extends SimpleDrug {
                 double damageChance = (activeValue - 0.9F) * 2;
 
                 if (entity.age % 20 == 0 && random.nextFloat() < damageChance) {
-                    entity.damage(PSDamageSources.ALCOHOL_POISONING, (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
+                    entity.damage(PSDamageTypes.create(entity.getWorld(), PSDamageTypes.ALCOHOL_POSIONING), (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
                 }
             }
 
@@ -76,7 +76,7 @@ public class AlcoholDrug extends SimpleDrug {
             Random random = player.world.random;
 
             if (random.nextFloat() > (1 - value)) {
-                player.animateDamage();
+                player.animateDamage(random.nextFloat() * MathHelper.TAU);
                 player.playSound(SoundEvents.ENTITY_PLAYER_HURT, 1, 1);
                 drugProperties.addToDrug(DrugType.SLEEP_DEPRIVATION, 0.25F);
                 PSCriteria.HANGOVER.trigger(player);

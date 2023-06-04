@@ -10,13 +10,12 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.biome.Biome;
 
 public interface BiomeSelector {
     Predicate<BiomeSelectionContext> ALL = BiomeSelectors.all();
     Predicate<BiomeSelectionContext> NONE = ctx -> false;
-    Predicate<BiomeSelectionContext> COLD = ctx -> ctx.getBiome().getPrecipitation() == Biome.Precipitation.SNOW;
-    Predicate<BiomeSelectionContext> DRY = ctx -> ctx.getBiome().getPrecipitation() == Biome.Precipitation.NONE;
+    Predicate<BiomeSelectionContext> COLD = ctx -> ctx.getBiome().getTemperature() < 0.15F;
+    Predicate<BiomeSelectionContext> DRY = ctx -> !ctx.getBiome().hasPrecipitation();
 
     static Predicate<BiomeSelectionContext> compile(String[] included, String[] excluded, Predicate<BiomeSelectionContext> dynamicInclusion) {
         var include = compile(included, NONE, Stream::allMatch).or(dynamicInclusion);

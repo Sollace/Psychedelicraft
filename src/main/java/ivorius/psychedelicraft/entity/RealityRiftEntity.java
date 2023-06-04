@@ -11,7 +11,6 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.DustParticleEffect;
@@ -173,7 +172,7 @@ public class RealityRiftEntity extends Entity {
                     drugProperties.addToDrug(DrugType.POWER, effect * 200.0f);
                 }, () -> {
                     if (critical) {
-                        entityLivingBase.damage(DamageSource.MAGIC, (float) effect * 20.0f);
+                        entityLivingBase.damage(getDamageSources().magic(), (float) effect * 20.0f);
                     }
                 });
             }

@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
-import ivorius.psychedelicraft.PSDamageSources;
+import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,9 +33,9 @@ public class AtropineDrug extends SimpleDrug {
 
                 if (entity.age % 20 == 0 && random.nextFloat() < chance) {
                     if (random.nextFloat() < 0.8F) {
-                        entity.damage(PSDamageSources.STROKE, Integer.MAX_VALUE);
+                        entity.damage(drugProperties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
                     } else if (random.nextFloat() < 0.5F) {
-                        entity.damage(PSDamageSources.HEART_ATTACK, Integer.MAX_VALUE);
+                        entity.damage(drugProperties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
                     }
                 }
             }

@@ -294,7 +294,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         }
 
         public static BlockPos getHitPos(BlockPos pos, Vec3d relativePos) {
-            return new BlockPos(
+            return BlockPos.ofFloored(
                     (relativePos.getX() - pos.getX()) * MAX_COORD,
                     0,
                     (relativePos.getZ() - pos.getZ()) * MAX_COORD

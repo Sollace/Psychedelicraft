@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 public interface PSItemGroups {
     ItemGroup creativeTab = FabricItemGroup.builder(Psychedelicraft.id("general"))
             .icon(PSItems.CANNABIS_LEAF::getDefaultStack)
-            .entries((features, entries, search) -> {
+            .entries((context, entries) -> {
                 entries.add(PSItems.DRYING_TABLE);
                 entries.add(PSItems.IRON_DRYING_TABLE);
                 entries.add(PSItems.FLASK);
@@ -154,7 +154,7 @@ public interface PSItemGroups {
             .build();
     ItemGroup drinksTab = FabricItemGroup.builder(Psychedelicraft.id("drinks"))
             .icon(PSItems.OAK_BARREL::getDefaultStack)
-            .entries((features, entries, search) -> {
+            .entries((context, entries) -> {
                 appendAllFluids(PSItems.STONE_CUP, entries);
                 PSFluids.AGAVE.getDefaultStacks(PSItems.SHOT_GLASS, entries::add);
                 appendAllFluids(PSItems.WOODEN_MUG, entries);
@@ -167,7 +167,7 @@ public interface PSItemGroups {
             .build();
     ItemGroup weaponsTab = FabricItemGroup.builder(Psychedelicraft.id("weapons"))
             .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
-            .entries((features, entries, search) -> {
+            .entries((context, entries) -> {
                 appendAllFluids(PSItems.MOLOTOV_COCKTAIL, entries);
             })
             .build();

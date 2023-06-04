@@ -5,12 +5,11 @@
 
 package ivorius.psychedelicraft.entity;
 
-import ivorius.psychedelicraft.PSDamageSources;
+import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.fluid.Combustable;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
@@ -89,7 +88,7 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
         Combustable combustable = Combustable.fromStack(getItem());
         float explosionStrength = combustable.getExplosionStrength(getItem());
         float fireStrength = combustable.getFireStrength(getItem());
-        entity.damage(PSDamageSources.molotov(this, entity, getOwner()), percentageScale * Math.max(4, explosionStrength * 0.6F + fireStrength * 0.3F));
+        entity.damage(PSDamageTypes.create(getWorld(), getOwner(), this, PSDamageTypes.molotov(entity, getOwner())), percentageScale * Math.max(4, explosionStrength * 0.6F + fireStrength * 0.3F));
         if (fireStrength > 0) {
             entity.isOnFire();
             entity.setFireTicks((int)Math.max(10, 3 * fireStrength));
@@ -130,7 +129,7 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
         if (explosionStrength > 0) {
             world.createExplosion(
                     this,
-                    DamageSource.thrownProjectile(this, getOwner()),
+                    getDamageSources().thrown(this, getOwner()),
                     new ExplosionBehavior() {
                         @Override
                         public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {

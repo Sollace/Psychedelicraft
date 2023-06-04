@@ -80,7 +80,7 @@ public class DryingRecipe extends AbstractCookingRecipe {
             buffer.writeString(recipe.getGroup());
             buffer.writeEnumConstant(recipe.getCategory());
             recipe.getInput().write(buffer);
-            buffer.writeItemStack(recipe.getOutput());
+            buffer.writeItemStack(recipe.output);
             buffer.writeFloat(recipe.getExperience());
             buffer.writeVarInt(recipe.getCookTime());
         }

@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.entity.drug;
 
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
 import java.util.function.Function;
@@ -18,7 +19,7 @@ import ivorius.psychedelicraft.entity.drug.type.*;
  * Created by lukas on 22.10.14.
  */
 public record DrugType (Identifier id, Function<DrugType, Drug> constructor) {
-    public static final Registry<DrugType> REGISTRY = FabricRegistryBuilder.createSimple(DrugType.class, Psychedelicraft.id("drugs")).buildAndRegister();
+    public static final Registry<DrugType> REGISTRY = FabricRegistryBuilder.createSimple(RegistryKey.<DrugType>ofRegistry(Psychedelicraft.id("drugs"))).buildAndRegister();
     public static final DrugType ALCOHOL = register("alcohol", type -> new AlcoholDrug(1, 0.0002d));
     public static final DrugType CANNABIS = register("cannabis", type -> new CannabisDrug(1, 0.0002d));
     public static final DrugType BROWN_SHROOMS = register("brown_shrooms", type -> new BrownShroomsDrug(1, 0.0002d));

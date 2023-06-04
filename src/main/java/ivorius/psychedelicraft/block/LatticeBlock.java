@@ -74,7 +74,7 @@ public class LatticeBlock extends HorizontalConnectingBlock implements Waterlogg
         }
 
         if (connections.isEmpty()) {
-            connections = DEFAULT_CONNECTIONS.getOrDefault(ctx.getPlayerFacing().rotateYClockwise().getAxis(), Set.of());
+            connections = DEFAULT_CONNECTIONS.getOrDefault(ctx.getHorizontalPlayerFacing().rotateYClockwise().getAxis(), Set.of());
         }
 
         return applyConnections(super.getPlacementState(ctx), connections)

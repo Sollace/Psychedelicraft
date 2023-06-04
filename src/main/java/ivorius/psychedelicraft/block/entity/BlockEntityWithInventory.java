@@ -6,19 +6,15 @@
 package ivorius.psychedelicraft.block.entity;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
-import net.minecraft.network.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 
-public abstract class BlockEntityWithInventory extends BlockEntity implements SidedInventory {
+public abstract class BlockEntityWithInventory extends SyncedBlockEntity implements SidedInventory {
     protected static final int[] NO_SLOTS = new int[0];
 
     private final DefaultedList<ItemStack> inventory;
@@ -99,17 +95,5 @@ public abstract class BlockEntityWithInventory extends BlockEntity implements Si
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction direction) {
         return true;
-    }
-
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        NbtCompound compound = new NbtCompound();
-        writeNbt(compound);
-        return compound;
     }
 }

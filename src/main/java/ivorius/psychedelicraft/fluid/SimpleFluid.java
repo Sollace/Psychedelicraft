@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.state.State;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -40,7 +41,7 @@ import net.minecraft.world.World;
  */
 public class SimpleFluid {
     public static final Identifier EMPTY_KEY = Psychedelicraft.id("empty");
-    private static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(SimpleFluid.class, Psychedelicraft.id("fluids"), EMPTY_KEY).buildAndRegister();
+    private static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids")), EMPTY_KEY).buildAndRegister();
     private static final Map<Identifier, SimpleFluid> VANILLA_FLUIDS = new HashMap<>();
 
     protected final Identifier id;

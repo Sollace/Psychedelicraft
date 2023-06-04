@@ -44,7 +44,7 @@ public class GeometryShader {
     });
 
 
-    public void setup(Type type, String name, InputStream stream, String domain, GLImportProcessor loader) {
+    public void setup(Type type, String name, InputStream stream, String domain, GlImportProcessor loader) {
         this.name = name;
         this.type = type;
     }

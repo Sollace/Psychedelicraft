@@ -70,7 +70,7 @@ public abstract class AbstractEntityHallucination extends Hallucination {
         animateEntity();
 
         if (entity instanceof LivingEntity living) {
-            living.updateLimbs(living, false);
+            living.updateLimbs(false);
         }
     }
 

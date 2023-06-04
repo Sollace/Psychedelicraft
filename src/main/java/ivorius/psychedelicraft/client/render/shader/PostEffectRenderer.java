@@ -14,7 +14,6 @@ public class PostEffectRenderer {
         if (PsychedelicraftClient.getConfig().visual.shader2DEnabled) {
             RenderSystem.disableBlend();
             RenderSystem.disableDepthTest();
-            RenderSystem.enableTexture();
             RenderSystem.resetTextureMatrix();
 
             if (shaders.size() == 1) {
