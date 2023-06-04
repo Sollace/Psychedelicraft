@@ -50,8 +50,10 @@ public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrin
             BlockHitResult hit = (BlockHitResult)client.crosshairTarget;
             if (hit.getBlockPos().equals(entity.getPos())) {
                 PlacedDrinksBlock.Data.getHitPos(hit).ifPresent(pos -> {
-                    WorldRenderer.drawShapeOutline(matrices, vertices.getBuffer(RenderLayer.getLines()), entity.hasDrink(pos) ? FILLED_SLOT_RAY_TRACE_SHAPE : EMPTY_SLOT_RAY_TRACE_SHAPE, pos.getX() / 16F, 0, pos.getZ() / 16F, 0, 0, 0, 1);
-                    RenderSystem.setShaderColor(0, 0, 0, 1);
+                    WorldRenderer.drawShapeOutline(matrices, vertices.getBuffer(RenderLayer.getLines()), entity.hasDrink(pos) ? FILLED_SLOT_RAY_TRACE_SHAPE : EMPTY_SLOT_RAY_TRACE_SHAPE, pos.getX() / 16F, 0, pos.getZ() / 16F, 0, 0, 0, 0.4F);
+                    RenderSystem.setShaderColor(0, 0, 0, 0.4F);
+                    MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw(RenderLayer.getLines());
+                    RenderSystem.setShaderColor(1, 1, 1, 1);
                 });
             }
         }
