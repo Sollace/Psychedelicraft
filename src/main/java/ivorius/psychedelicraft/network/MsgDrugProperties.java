@@ -28,6 +28,6 @@ public record MsgDrugProperties (
 
     @Override
     public void handle(PlayerEntity sender) {
-        DrugProperties.of(sender.world.getEntityById(entityId)).ifPresent(e -> e.fromNbt(compound));
+        DrugProperties.of(sender.getWorld().getEntityById(entityId)).ifPresent(e -> e.fromNbt(compound));
     }
 }

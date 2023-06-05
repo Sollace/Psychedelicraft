@@ -30,9 +30,9 @@ abstract class MixinEntity implements TouchingWaterAccessor {
         if (!info.getReturnValueZ()) {
             Entity self = (Entity)(Object)this;
             BlockPos.stream(self.getBoundingBox().contract(0.001)).map(pos -> {
-                BlockState state = self.world.getBlockState(pos);
+                BlockState state = self.getWorld().getBlockState(pos);
                 if (state.getBlock() instanceof MashTubBlock tub) {
-                    return tub.getFluidHeight(self.world, state, pos, tag);
+                    return tub.getFluidHeight(self.getWorld(), state, pos, tag);
                 }
                 return -1;
             }).filter(l -> l > 0).findFirst().ifPresent(level -> {

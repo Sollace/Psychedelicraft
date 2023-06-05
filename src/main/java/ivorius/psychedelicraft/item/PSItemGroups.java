@@ -10,7 +10,13 @@ import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -18,7 +24,7 @@ import net.minecraft.util.math.MathHelper;
  * @since 1 Jan 2023
  */
 public interface PSItemGroups {
-    ItemGroup creativeTab = FabricItemGroup.builder(Psychedelicraft.id("general"))
+    RegistryKey<ItemGroup> GENERAL = register("general", FabricItemGroup.builder()
             .icon(PSItems.CANNABIS_LEAF::getDefaultStack)
             .entries((context, entries) -> {
                 entries.add(PSItems.DRYING_TABLE);
@@ -150,9 +156,8 @@ public interface PSItemGroups {
                         entries.add(harmonium);
                     }
                 }
-            })
-            .build();
-    ItemGroup drinksTab = FabricItemGroup.builder(Psychedelicraft.id("drinks"))
+            }));
+    RegistryKey<ItemGroup> DRINKS = register("drinks", FabricItemGroup.builder()
             .icon(PSItems.OAK_BARREL::getDefaultStack)
             .entries((context, entries) -> {
                 appendAllFluids(PSItems.STONE_CUP, entries);
@@ -163,14 +168,12 @@ public interface PSItemGroups {
                 appendAllFluids(PSItems.FILLED_BUCKET, entries);
                 appendAllFluids(PSItems.FILLED_BOWL, entries);
                 appendAllFluids(PSItems.FILLED_GLASS_BOTTLE, entries);
-            })
-            .build();
-    ItemGroup weaponsTab = FabricItemGroup.builder(Psychedelicraft.id("weapons"))
+            }));
+    RegistryKey<ItemGroup> WEAPONS = register("weapons", FabricItemGroup.builder()
             .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
             .entries((context, entries) -> {
                 appendAllFluids(PSItems.MOLOTOV_COCKTAIL, entries);
-            })
-            .build();
+            }));
 
     private static void appendAllFluids(FluidContainer item, ItemGroup.Entries entries) {
         SimpleFluid.all().forEach(fluid -> {
@@ -178,6 +181,15 @@ public interface PSItemGroups {
                 fluid.getDefaultStacks(item, entries::add);
             }
         });
+    }
+
+    static RegistryKey<ItemGroup> register(String name, ItemGroup.Builder builder) {
+        RegistryKey<ItemGroup> key = RegistryKey.of(RegistryKeys.ITEM_GROUP, Psychedelicraft.id(name));
+        Registry.register(Registries.ITEM_GROUP, key.getValue(), builder
+                .displayName(Text.translatable(Util.createTranslationKey("itemGroup", key.getValue())))
+                .build()
+        );
+        return key;
     }
 
     static void bootstrap() { }

@@ -31,7 +31,7 @@ public interface PSRecipes {
             if (!"minecraft".contentEquals(id.getNamespace())) {
                 return;
             }
-            LootTable table = manager.getTable(new Identifier("psychedelicraftmc", id.getPath()));
+            LootTable table = manager.getLootTable(new Identifier("psychedelicraftmc", id.getPath()));
             if (table != LootTable.EMPTY) {
                 final boolean isVillagerChest = id.getPath().contains("village");
                 if ((isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.villageChests)

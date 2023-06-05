@@ -101,7 +101,7 @@ public class TilledPatchFeature extends Feature<TilledPatchFeature.Config> {
     }
 
     static boolean isReplaceable(StructureWorldAccess world, BlockPos pos) {
-        return world.isAir(pos) || world.getBlockState(pos).isIn(BlockTags.REPLACEABLE_PLANTS);
+        return world.isAir(pos) || world.getBlockState(pos).isIn(BlockTags.REPLACEABLE_BY_TREES);
     }
 
     static boolean isWaterNearby(StructureWorldAccess world, BlockPos pos) {

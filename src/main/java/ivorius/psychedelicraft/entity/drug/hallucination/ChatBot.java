@@ -23,7 +23,7 @@ public class ChatBot {
     }
 
     public void tick() {
-        if (!player.world.isClient) {
+        if (!player.getWorld().isClient) {
             return;
         }
 
@@ -48,9 +48,9 @@ public class ChatBot {
                 getResponsiveCharacters(sender, message).forEach(character -> character.wakeUp(sender, message, false));
             });
 
-            if (player.world.getRandom().nextFloat() < 0.3F || message.getString().contains("!")) {
-                float x = player.world.getRandom().nextFloat();
-                float z = player.world.getRandom().nextFloat();
+            if (player.getWorld().getRandom().nextFloat() < 0.3F || message.getString().contains("!")) {
+                float x = player.getWorld().getRandom().nextFloat();
+                float z = player.getWorld().getRandom().nextFloat();
                 player.animateDamage((float)(MathHelper.atan2(z, x) * 57.2957763671875 - player.getYaw()));
                 player.playSound(SoundEvents.ENTITY_PLAYER_HURT, 1, 1);
                 player.takeKnockback(0.2F, x, z);
@@ -82,7 +82,7 @@ public class ChatBot {
         private final Queue<DelayedMessage> messageQueue = new LinkedList<>();
 
         private final Text name = personality.getName(player.getRandom());
-        private final MessageType.Parameters parameters = MessageType.params(MessageType.CHAT, player.world.getRegistryManager(), name);
+        private final MessageType.Parameters parameters = MessageType.params(MessageType.CHAT, player.getWorld().getRegistryManager(), name);
 
         public boolean tick() {
             if (sleepTicks-- > 0) {

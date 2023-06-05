@@ -6,6 +6,7 @@ import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
@@ -36,10 +37,10 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         titleX = 83 - textRenderer.getWidth(title) / 2;
-        super.render(matrices, mouseX, mouseY, delta);
-        drawMouseoverTooltip(matrices, mouseX, mouseY);
+        super.render(context, mouseX, mouseY, delta);
+        drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
     protected Resovoir getTank() {
@@ -79,7 +80,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         RenderSystem.defaultBlendFunc();
     }
 
-    public void drawTankTooltip(MatrixStack matrices, Resovoir tank, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
+    public void drawTankTooltip(DrawContext context, Resovoir tank, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
         if (rectContains(mouseX, mouseY, x, y, width, height)) {
             SimpleFluid fluid = tank.getFluidType();
             int level = tank.getLevel();
@@ -91,7 +92,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
             }
             fluid.appendTooltip(tank.getStack(), null, tooltip, TooltipContext.BASIC);
             tooltip.addAll(details);
-            renderTooltip(matrices, tooltip, mouseX, mouseY);
+            context.drawTooltip(textRenderer, tooltip, mouseX, mouseY);
         }
     }
 

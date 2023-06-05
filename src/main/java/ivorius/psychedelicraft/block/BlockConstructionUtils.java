@@ -2,47 +2,80 @@ package ivorius.psychedelicraft.block;
 
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
+import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityType;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 
-public interface BlockConstructionUtils {
+interface BlockConstructionUtils {
     static AbstractBlock.Settings leaves(BlockSoundGroup soundGroup) {
-        return AbstractBlock.Settings.of(Material.LEAVES)
+        return AbstractBlock.Settings.create()
+                .mapColor(MapColor.DARK_GREEN)
                 .strength(0.2f)
                 .ticksRandomly()
                 .sounds(soundGroup)
                 .nonOpaque()
                 .allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves)
                 .suffocates(BlockConstructionUtils::never)
-                .blockVision(BlockConstructionUtils::never);
+                .blockVision(BlockConstructionUtils::never)
+                .burnable()
+                .pistonBehavior(PistonBehavior.DESTROY)
+                .solidBlock(BlockConstructionUtils::never);
     }
 
-    static Settings barrel() {
-        return Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(2);
+    static BarrelBlock barrel(MapColor mapColor) {
+        return new BarrelBlock(Settings.create()
+                .mapColor(mapColor)
+                .instrument(Instrument.BASS)
+                .sounds(BlockSoundGroup.WOOD)
+                .hardness(2)
+                .burnable()
+                .pistonBehavior(PistonBehavior.BLOCK));
     }
 
     static PillarBlock log(MapColor topColor, MapColor sideColor) {
-        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD,
-                state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topColor : sideColor)
-                .strength(2).sounds(BlockSoundGroup.WOOD));
+        return new PillarBlock(AbstractBlock.Settings.create()
+                .mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topColor : sideColor)
+                .instrument(Instrument.BASS)
+                .strength(2.0f)
+                .sounds(BlockSoundGroup.WOOD)
+                .burnable());
     }
 
     static AbstractBlock.Settings plant(BlockSoundGroup soundGroup) {
-        return Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(soundGroup);
+        return Settings.create()
+                .mapColor(MapColor.DARK_GREEN)
+                .noCollision()
+                .breakInstantly()
+                .sounds(soundGroup)
+                .burnable()
+                .pistonBehavior(PistonBehavior.DESTROY);
     }
 
-    static AbstractBlock.Settings pottedPlant() {
-        return Settings.of(Material.DECORATION).breakInstantly().nonOpaque();
-    }
-    static ButtonBlock woodenButton(BlockSetType setType) {
-        return woodenButton(BlockSoundGroup.WOOD, setType);
+    static FlowerPotBlock pottedPlant(Block flower, FeatureFlag ... requiredFeatures) {
+        AbstractBlock.Settings settings = AbstractBlock.Settings.create()
+                .breakInstantly()
+                .nonOpaque()
+                .pistonBehavior(PistonBehavior.DESTROY);
+        if (requiredFeatures.length > 0) {
+            settings = settings.requires(requiredFeatures);
+        }
+        return new FlowerPotBlock(flower, settings);
     }
 
-    private static ButtonBlock woodenButton(BlockSoundGroup soundGroup, BlockSetType setType) {
-        return new ButtonBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().strength(0.5f).sounds(soundGroup), setType, 30, true);
+    static ButtonBlock woodenButton(BlockSetType blockSetType, FeatureFlag ... requiredFeatures) {
+        AbstractBlock.Settings settings = Settings.create()
+                .noCollision()
+                .strength(0.5f)
+                .pistonBehavior(PistonBehavior.DESTROY);
+        if (requiredFeatures.length > 0) {
+            settings = settings.requires(requiredFeatures);
+        }
+        return new ButtonBlock(settings, blockSetType, 30, true);
     }
 
     static Boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {

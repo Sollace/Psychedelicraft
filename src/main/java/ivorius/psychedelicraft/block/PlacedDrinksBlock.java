@@ -49,7 +49,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    public boolean canMobSpawnInside() {
+    public boolean canMobSpawnInside(BlockState state) {
         return true;
     }
 

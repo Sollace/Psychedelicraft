@@ -2,7 +2,7 @@ package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 
@@ -16,11 +16,11 @@ public class DistilleryScreen extends FluidProcessingContraptionScreen<Distiller
     }
 
     @Override
-    protected void drawAdditionalInfo(MatrixStack matrices, int baseX, int baseY) {
+    protected void drawAdditionalInfo(DrawContext context, int baseX, int baseY) {
         float progress = handler.getBlockEntity().getProgress();
 
-        drawTexture(matrices, baseX + 110, baseY + 14, 233, 22, 23, 22);
+        context.drawTexture(background, baseX + 110, baseY + 14, 233, 22, 23, 22);
         int barHeight = (int)(22 * (1 - progress));
-        drawTexture(matrices, baseX + 110, baseY + 14 + barHeight, 233, barHeight, 23, 23 - barHeight);
+        context.drawTexture(background, baseX + 110, baseY + 14 + barHeight, 233, barHeight, 23, 23 - barHeight);
     }
 }

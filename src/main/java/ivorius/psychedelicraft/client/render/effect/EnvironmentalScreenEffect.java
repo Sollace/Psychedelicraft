@@ -59,10 +59,10 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
             experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
         }
 
-        wasInWater = entity.world.getFluidState(BlockPos.ofFloored(entity.getEyePos())).isIn(FluidTags.WATER);
-        wasInRain = entity.world.getRainGradient(tickDelta) > 0
-                && entity.world.getBiome(entity.getBlockPos()).value().getPrecipitation(entity.getBlockPos()) == Precipitation.RAIN
-                && entity.world.getTopPosition(Type.MOTION_BLOCKING, entity.getBlockPos()).getY() <= entity.getY();
+        wasInWater = entity.getWorld().getFluidState(BlockPos.ofFloored(entity.getEyePos())).isIn(FluidTags.WATER);
+        wasInRain = entity.getWorld().getRainGradient(tickDelta) > 0
+                && entity.getWorld().getBiome(entity.getBlockPos()).value().getPrecipitation(entity.getBlockPos()) == Precipitation.RAIN
+                && entity.getWorld().getTopPosition(Type.MOTION_BLOCKING, entity.getBlockPos()).getY() <= entity.getY();
 
         if (PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {
             timeScreenWet--;
@@ -78,7 +78,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         }
 
         BlockPos pos = entity.getBlockPos();
-        float newHeat = entity.world.getBiome(pos).value().getTemperature();
+        float newHeat = entity.getWorld().getBiome(pos).value().getTemperature();
 
         this.currentHeat = MathUtils.nearValue(currentHeat, newHeat, 0.01f, 0.01f);
     }

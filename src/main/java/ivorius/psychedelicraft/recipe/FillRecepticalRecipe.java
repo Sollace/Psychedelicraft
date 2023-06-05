@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
@@ -43,7 +43,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory inventory, World world) {
+    public boolean matches(RecipeInputInventory inventory, World world) {
         RecipeMatcher recipeMatcher = new RecipeMatcher();
         return RecipeUtils.recepticals(inventory).count() == 1
                 && RecipeUtils.stacks(inventory).filter(stack -> {
@@ -54,7 +54,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
+    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
         return RecipeUtils.recepticals(inventory).findFirst().map(receptical -> {
             ItemStack stack = output.fluid().getDefaultStack(receptical.getKey(), output.level() <= 0
                 ? receptical.getKey().getMaxCapacity(receptical.getValue())

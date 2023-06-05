@@ -1,12 +1,10 @@
 package ivorius.psychedelicraft.fluid.physical;
 
 import ivorius.psychedelicraft.item.PSItems;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.block.Material;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
@@ -27,7 +25,7 @@ public abstract class PlacedFluidBlock extends FluidBlock {
     }
 
     PlacedFluidBlock(FlowableFluid fluid) {
-        super(fluid, AbstractBlock.Settings.of(Material.WATER).noCollision().strength(100).dropsNothing());
+        super(fluid, Settings.copy(Blocks.WATER));
     }
 
     @Override

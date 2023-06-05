@@ -67,8 +67,8 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
     @Override
     @Deprecated
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-        ItemStack tool = builder.getNullable(LootContextParameters.TOOL);
+    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+        ItemStack tool = builder.getOptional(LootContextParameters.TOOL);
         if (tool != null && !tool.isEmpty() && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, tool) > 0) {
             ItemStack drop = asItem().getDefaultStack();
             drop.setDamage(state.get(AGE));
@@ -89,13 +89,12 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
             if (!world.isClient) {
                 Identifier lootTableId = getLootTableId().withPath(p -> p + "_farming");
-                world.getServer().getLootManager().getTable(lootTableId)
-                    .generateLoot(new LootContext.Builder((ServerWorld)world)
-                        .random(world.random)
-                        .parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
-                        .parameter(LootContextParameters.TOOL, player.getStackInHand(hand))
-                        .parameter(LootContextParameters.BLOCK_STATE, state)
-                        .optionalParameter(LootContextParameters.BLOCK_ENTITY, world.getBlockEntity(pos))
+                world.getServer().getLootManager().getLootTable(lootTableId)
+                    .generateLoot(new LootContextParameterSet.Builder((ServerWorld)world)
+                        .add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+                        .add(LootContextParameters.TOOL, player.getStackInHand(hand))
+                        .add(LootContextParameters.BLOCK_STATE, state)
+                        .addOptional(LootContextParameters.BLOCK_ENTITY, world.getBlockEntity(pos))
                         .build(LootContextTypes.BLOCK)).forEach(stack -> {
                     Block.dropStack(world, pos, stack);
                 });

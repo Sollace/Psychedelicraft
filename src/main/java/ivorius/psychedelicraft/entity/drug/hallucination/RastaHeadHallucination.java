@@ -35,7 +35,7 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
     private final float planeRotationZ;
 
     public RastaHeadHallucination(PlayerEntity playerEntity) {
-        super(playerEntity, EntityType.PIG.create(playerEntity.world));
+        super(playerEntity, EntityType.PIG.create(playerEntity.getWorld()));
 
         maxAge = (random.nextInt(59) + 120) * 20;
         scale = 1 + random.nextFloat() / 2F;

@@ -26,9 +26,9 @@ public class AtropineDrug extends SimpleDrug {
 
         if (getActiveValue() > 0) {
             PlayerEntity entity = drugProperties.asEntity();
-            Random random = entity.world.random;
+            Random random = entity.getWorld().random;
 
-            if (!entity.world.isClient) {
+            if (!entity.getWorld().isClient) {
                 double chance = (getActiveValue() - 0.8F) * 0.051F;
 
                 if (entity.age % 20 == 0 && random.nextFloat() < chance) {

@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -39,12 +39,12 @@ class ChangeRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory inventory, World world) {
+    public boolean matches(RecipeInputInventory inventory, World world) {
         return RecipeUtils.recepticals(inventory).count() == 1 && super.matches(inventory, world);
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
+    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
         return RecipeUtils.recepticals(inventory).findFirst().map(pair -> {
             // copy bottle contents to the new stack
             ItemStack input = pair.getValue().copy();

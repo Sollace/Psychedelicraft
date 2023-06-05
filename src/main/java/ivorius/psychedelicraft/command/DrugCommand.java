@@ -72,12 +72,12 @@ class DrugCommand {
         List<Drug> drugs = properties.getAllDrugs().stream().filter(drug -> drug.getActiveValue() > 0).toList();
 
         if (drugs.isEmpty()) {
-            source.sendFeedback(Text.translatable("commands.drug.success.get.sober", player.getName()), true);
+            source.sendFeedback(() -> Text.translatable("commands.drug.success.get.sober", player.getName()), true);
         } else {
-            source.sendFeedback(Text.translatable("commands.drug.success.get", player.getName(), drugs.size()), true);
+            source.sendFeedback(() -> Text.translatable("commands.drug.success.get", player.getName(), drugs.size()), true);
             drugs.forEach(drug -> {
                 double value = drug.getActiveValue();
-                source.sendFeedback(Text.literal(DrugType.REGISTRY.getId(drug.getType()).getPath() + ": " + value), true);
+                source.sendFeedback(() -> Text.literal(DrugType.REGISTRY.getId(drug.getType()).getPath() + ": " + value), true);
             });
         }
 
@@ -92,9 +92,9 @@ class DrugCommand {
 
         DrugType.REGISTRY.getOrEmpty(drugName).ifPresentOrElse(drugType -> {
             float value = properties.isDrugActive(drugType) ? properties.getDrugValue(drugType) : 0;
-            source.sendFeedback(Text.translatable("commands.drug.success.get." + (player == source.getEntity() ? "self" : "other"), player.getName(), drugName.getPath(), value), true);
+            source.sendFeedback(() -> Text.translatable("commands.drug.success.get." + (player == source.getEntity() ? "self" : "other"), player.getName(), drugName.getPath(), value), true);
         }, () -> {
-            source.sendFeedback(Text.translatable("commands.drug.fail.get", drugName), true);
+            source.sendFeedback(() -> Text.translatable("commands.drug.fail.get", drugName), true);
         });
 
         return 0;
@@ -175,13 +175,13 @@ class DrugCommand {
 
     private static void sendFeedback(ServerCommandSource source, ServerPlayerEntity player, boolean succeeded, String key, Object... arguments) {
         if (source.getEntity() == player) {
-            source.sendFeedback(Text.translatable("commands.drug." + (succeeded ? "success" : "fail") + "." + key + ".self", arguments), true);
+            source.sendFeedback(() -> Text.translatable("commands.drug." + (succeeded ? "success" : "fail") + "." + key + ".self", arguments), true);
         } else {
             if (succeeded && source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
                 player.sendMessage(Text.translatable("commands.drug." + key + ".changed", arguments));
             }
 
-            source.sendFeedback(Text.translatable("commands.drug." + (succeeded ? "success" : "fail") + "." + key + ".other", Streams.concat(
+            source.sendFeedback(() -> Text.translatable("commands.drug." + (succeeded ? "success" : "fail") + "." + key + ".other", Streams.concat(
                     Stream.of(player.getDisplayName()),
                     Arrays.stream(arguments)).toArray()
             ), true);

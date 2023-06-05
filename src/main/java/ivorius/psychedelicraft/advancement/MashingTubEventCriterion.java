@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate.Extended;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -28,7 +28,7 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
     }
 
     @Override
-    protected Conditions conditionsFromJson(JsonObject json, Extended playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
+    protected Conditions conditionsFromJson(JsonObject json, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
         return new Conditions(
                 playerPredicate,
                 (AlcoholicFluid)SimpleFluid.byId(Identifier.tryParse(json.get("fluid").getAsString())),
@@ -55,7 +55,7 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
         private final IntRange maturation;
         private final IntRange distillation;
 
-        public Conditions(Extended playerPredicate, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) {
+        public Conditions(LootContextPredicate playerPredicate, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) {
             super(ID, playerPredicate);
             this.fluid = fluid;
             this.fermentation = fermentation;

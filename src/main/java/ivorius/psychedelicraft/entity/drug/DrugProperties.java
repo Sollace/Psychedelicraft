@@ -163,7 +163,7 @@ public class DrugProperties implements NbtSerialisable {
         this.timeBreathingSmoke = time + 10; //10 is the time spent breathing in
         markDirty();
 
-        entity.world.playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 0.02F, 1.5F);
+        entity.getWorld().playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 0.02F, 1.5F);
     }
 
     public boolean isBreathingSmoke() {
@@ -185,7 +185,7 @@ public class DrugProperties implements NbtSerialisable {
             });
         }
 
-        if (entity.getActiveItem().isOf(PSItems.BONG) && entity.world.random.nextInt(3) == 0) {
+        if (entity.getActiveItem().isOf(PSItems.BONG) && entity.getWorld().random.nextInt(3) == 0) {
             entity.playSound(SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, 1, 1);
         }
 
@@ -195,7 +195,7 @@ public class DrugProperties implements NbtSerialisable {
 
         Random random = entity.getRandom();
 
-        if (entity.world.isClient) {
+        if (entity.getWorld().isClient) {
             hallucinations.update();
             soundManager.update();
 
@@ -216,7 +216,7 @@ public class DrugProperties implements NbtSerialisable {
         if (isBreathingSmoke()) {
             timeBreathingSmoke--;
 
-            if (timeBreathingSmoke > 10 && entity.world.isClient) {
+            if (timeBreathingSmoke > 10 && entity.getWorld().isClient) {
                 Vec3d look = entity.getRotationVec(1);
 
                 if (random.nextInt(2) == 0) {
@@ -239,7 +239,7 @@ public class DrugProperties implements NbtSerialisable {
             sendCapabilities();
         }
 
-        if (!entity.world.isClient && Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0) {
+        if (!entity.getWorld().isClient && Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0) {
             if (random.nextInt(Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn) == 0) {
                 RealityRiftEntity.spawn(entity);
             }
@@ -247,7 +247,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public void sendCapabilities() {
-        if (!entity.world.isClient) {
+        if (!entity.getWorld().isClient) {
             Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this), entity);
             Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this), (ServerPlayerEntity)entity);
         }

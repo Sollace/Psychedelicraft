@@ -88,7 +88,7 @@ public class DrugMusicManager {
 
                 delayUntilHeartbeat = speed <= 1 ? 1 : MathHelper.floor(35F / (speed - 1F));
                 targetHeartbeatPulseStrength = 1;
-                entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(),
+                entity.getWorld().playSound(entity.getX(), entity.getY(), entity.getZ(),
                         PSSounds.ENTITY_PLAYER_HEARTBEAT,
                         SoundCategory.AMBIENT, heartbeatVolume, speed, false);
             }
@@ -101,7 +101,7 @@ public class DrugMusicManager {
             if (breathVolume > 0) {
                 float speed = properties.getModifier(Drug.BREATH_SPEED);
                 delayUntilBreath = MathHelper.floor(30F / speed);
-                entity.world.playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS,
+                entity.getWorld().playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS,
                         breathVolume,
                         speed * 0.05F + 0.9F + (lastBreathWasIn ? 0.15F : 0)
                 );

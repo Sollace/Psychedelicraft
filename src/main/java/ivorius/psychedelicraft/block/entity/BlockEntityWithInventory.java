@@ -83,7 +83,7 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
 
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
-        return (getCachedState().equals(player.world.getBlockState(pos)))
+        return (getCachedState().equals(player.getWorld().getBlockState(pos)))
                 && player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) <= 64;
     }
 

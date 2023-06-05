@@ -38,18 +38,18 @@ public class RealityRiftEntity extends Entity {
     public float visualRiftSize;
 
     public static void spawn(Entity entity) {
-        RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(entity.world);
+        RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(entity.getWorld());
         rift.setPosition(
-                entity.getX() + (entity.world.random.nextDouble() - 0.5) * 100,
-                entity.getY() + (entity.world.random.nextDouble() - 0.5) * 100,
-                entity.getZ() + (entity.world.random.nextDouble() - 0.5) * 100
+                entity.getX() + (entity.getWorld().getRandom().nextDouble() - 0.5) * 100,
+                entity.getY() + (entity.getWorld().getRandom().nextDouble() - 0.5) * 100,
+                entity.getZ() + (entity.getWorld().getRandom().nextDouble() - 0.5) * 100
         );
-        entity.world.spawnEntity(rift);
+        entity.getWorld().spawnEntity(rift);
     }
 
     RealityRiftEntity(EntityType<RealityRiftEntity> type, World par1World) {
         super(type, par1World);
-        setRiftSize((float)world.random.nextTriangular(0.5F, 0.5F));
+        setRiftSize((float)getWorld().getRandom().nextTriangular(0.5F, 0.5F));
     }
 
     @Override
@@ -147,22 +147,22 @@ public class RealityRiftEntity extends Entity {
 
         boolean critical = isCritical();
 
-        if (world.isClient) {
+        if (getWorld().isClient) {
             Vec3d pos = getPos();
             Supplier<Vec3d> particlePositionSupplier = () -> {
                 float distance = random.nextFloat() * random.nextFloat();
                 return ParticleHelper.apply(pos, x -> x + (random.nextFloat() * 8 - 4) * distance).add(0, getHeight() / 2F, 0);
             };
-            ParticleHelper.spawnParticles(world, ParticleTypes.LARGE_SMOKE, particlePositionSupplier, Suppliers.ofInstance(Vec3d.ZERO), random.nextInt(3));
-            ParticleHelper.spawnParticles(world, new DustParticleEffect(new Vector3f(1, 0.5F, 0.5F), 1), particlePositionSupplier, Suppliers.ofInstance(new Vec3d(-10, -10, -10)), random.nextInt(2));
-            ParticleHelper.spawnParticles(world, ParticleTypes.ENCHANT, Suppliers.ofInstance(pos.add(0, 1 + (getHeight() / 2F), 0)), () -> {
+            ParticleHelper.spawnParticles(getWorld(), ParticleTypes.LARGE_SMOKE, particlePositionSupplier, Suppliers.ofInstance(Vec3d.ZERO), random.nextInt(3));
+            ParticleHelper.spawnParticles(getWorld(), new DustParticleEffect(new Vector3f(1, 0.5F, 0.5F), 1), particlePositionSupplier, Suppliers.ofInstance(new Vec3d(-10, -10, -10)), random.nextInt(2));
+            ParticleHelper.spawnParticles(getWorld(), ParticleTypes.ENCHANT, Suppliers.ofInstance(pos.add(0, 1 + (getHeight() / 2F), 0)), () -> {
                 float distance = random.nextFloat() * random.nextFloat();
                 return ParticleHelper.apply(Vec3d.ZERO, x -> x + (random.nextFloat() * 8 - 4) * distance).add(0, getHeight() / 2F, 0);
             }, 1);
         }
 
         float searchDistance = 5.0f + getInstability() * 50.0f;
-        for (LivingEntity entityLivingBase : world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(searchDistance), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
+        for (LivingEntity entityLivingBase : getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(searchDistance), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
             double dist = entityLivingBase.distanceTo(this);
             double effect = (searchDistance - dist) * 0.0005 * getRiftSize();
 
@@ -190,8 +190,8 @@ public class RealityRiftEntity extends Entity {
                 int desRange = MathHelper.ceil(newDesRange);
                 BlockPos center = getBlockPos();
                 BlockPos.iterateOutwards(center, desRange, desRange, desRange).forEach(p -> {
-                    if (p.isWithinDistance(center, newDesRange) && !p.isWithinDistance(center, prevDesRange) && !world.isAir(p)) {
-                        world.setBlockState(p, PSBlocks.GLITCH.getDefaultState());
+                    if (p.isWithinDistance(center, newDesRange) && !p.isWithinDistance(center, prevDesRange) && !getWorld().isAir(p)) {
+                        getWorld().setBlockState(p, PSBlocks.GLITCH.getDefaultState());
                     }
                 });
             }
@@ -206,7 +206,7 @@ public class RealityRiftEntity extends Entity {
        // setRiftSize(getRiftSize() - 1.0f / 1.0f / 20.0f / 60.0f);
         visualRiftSize = MathUtils.nearValue(visualRiftSize, getRiftSize(), 0.05f, 0.005f);
 
-        if (!world.isClient) {
+        if (!getWorld().isClient) {
             if (getInstability() >= 0.9f) {
                 setRiftClosing(true);
             }

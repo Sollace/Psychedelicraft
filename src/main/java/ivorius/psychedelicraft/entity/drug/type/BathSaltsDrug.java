@@ -28,9 +28,9 @@ public class BathSaltsDrug extends SimpleDrug {
 
         if (getActiveValue() > 0) {
             PlayerEntity entity = drugProperties.asEntity();
-            Random random = entity.world.random;
+            Random random = entity.getWorld().random;
 
-            if (!entity.world.isClient) {
+            if (!entity.getWorld().isClient) {
                 double chance = (getActiveValue() - 0.8F) * 0.051F;
 
                 if (entity.age % 20 == 0 && random.nextFloat() < chance) {
@@ -51,7 +51,7 @@ public class BathSaltsDrug extends SimpleDrug {
     @Override
     public void onWakeUp(DrugProperties drugProperties) {
         if (getActiveValue() > 0) {
-            Random random = drugProperties.asEntity().world.random;
+            Random random = drugProperties.asEntity().getWorld().random;
 
             if (random.nextFloat() < 0.5) {
                 drugProperties.asEntity().damage(

@@ -52,6 +52,6 @@ class HallucinateCommand {
     private static void sendHallucination(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity player, Optional<BlockPos> position) {
         Identifier type = IdentifierArgumentType.getIdentifier(ctx, "type");
         Channel.HALLUCINATE.sendToPlayer(new MsgHallucinate(player.getId(), type, position), player);
-        ctx.getSource().sendFeedback(Text.translatable("commands.hallucinate.success"), true);
+        ctx.getSource().sendFeedback(() -> Text.translatable("commands.hallucinate.success"), true);
     }
 }

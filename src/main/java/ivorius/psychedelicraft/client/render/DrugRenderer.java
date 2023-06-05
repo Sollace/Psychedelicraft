@@ -16,6 +16,7 @@ import ivorius.psychedelicraft.entity.drug.hallucination.DriftingCamera;
 import ivorius.psychedelicraft.entity.drug.hallucination.Hallucination;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -182,13 +183,13 @@ public class DrugRenderer {
         }
     }
 
-    public void onRenderOverlay(MatrixStack matrices, float tickDelta) {
+    public void onRenderOverlay(DrawContext context, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         Window window = client.getWindow();
 
         RenderPhase.SCREEN.push();
 
-        getScreenEffects().render(matrices,
+        getScreenEffects().render(context.getMatrices(),
                 client.getBufferBuilders().getEntityVertexConsumers(),
                 window.getScaledWidth(), window.getScaledHeight(), tickDelta, null);
 

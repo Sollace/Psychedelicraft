@@ -177,7 +177,7 @@ public class FilledBucketItem extends Item implements FluidContainer {
             return true;
         }
 
-        if (!world.isClient && canPlace && !state.getMaterial().isLiquid()) {
+        if (!world.isClient && canPlace && !state.isLiquid()) {
             world.breakBlock(pos, true);
         }
 

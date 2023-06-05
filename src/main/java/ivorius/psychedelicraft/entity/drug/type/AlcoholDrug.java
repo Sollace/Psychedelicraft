@@ -73,7 +73,7 @@ public class AlcoholDrug extends SimpleDrug {
             super.onWakeUp(drugProperties);
 
             PlayerEntity player = drugProperties.asEntity();
-            Random random = player.world.random;
+            Random random = player.getWorld().random;
 
             if (random.nextFloat() > (1 - value)) {
                 player.animateDamage(random.nextFloat() * MathHelper.TAU);

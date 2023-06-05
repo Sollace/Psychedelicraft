@@ -35,13 +35,13 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
                 if (!player.getAbilities().creativeMode) {
                     stack.decrement(1);
                 }
-                if (!world.isClient) {
-                    world.playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT, getSoundCategory(),
+                if (!getWorld().isClient) {
+                    getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT, getSoundCategory(),
                             1 + random.nextFloat(),
                             random.nextFloat() * 0.7F + 0.3F
                     );
                     setVillagerData(getVillagerData().withProfession(PSTradeOffers.DRUG_ADDICT_PROFESSION));
-                    ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)world);
+                    ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)getWorld());
                     PSCriteria.FEED_VILLAGER.trigger(player);
                 }
                 info.setReturnValue(ActionResult.SUCCESS);

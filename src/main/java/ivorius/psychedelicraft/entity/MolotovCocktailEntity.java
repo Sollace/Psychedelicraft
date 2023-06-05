@@ -56,17 +56,17 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     }
 
     private void spawnParticles(float spread) {
-        world.addParticle(ParticleTypes.FLAME,
-                world.random.nextTriangular(getX(), 0.5 * spread),
-                world.random.nextTriangular(getY(), 0.5 * spread),
-                world.random.nextTriangular(getZ(), 0.5 * spread),
+        getWorld().addParticle(ParticleTypes.FLAME,
+                getWorld().getRandom().nextTriangular(getX(), 0.5 * spread),
+                getWorld().getRandom().nextTriangular(getY(), 0.5 * spread),
+                getWorld().getRandom().nextTriangular(getZ(), 0.5 * spread),
                 0, 0, 0
         );
 
-        world.addParticle(ParticleTypes.LAVA,
-                world.random.nextTriangular(getX(), 0.5 * spread),
-                world.random.nextTriangular(getY() + getHeight(), 0.5 * spread),
-                world.random.nextTriangular(getZ(), 0.5 * spread),
+        getWorld().addParticle(ParticleTypes.LAVA,
+                getWorld().getRandom().nextTriangular(getX(), 0.5 * spread),
+                getWorld().getRandom().nextTriangular(getY() + getHeight(), 0.5 * spread),
+                getWorld().getRandom().nextTriangular(getZ(), 0.5 * spread),
                 0, 0, 0
         );
     }
@@ -78,7 +78,7 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
         damageEntity(hit.getEntity(), 1);
         float explosionStrength = Combustable.fromStack(getItem()).getExplosionStrength(getItem());
         if (explosionStrength > 0) {
-            world.getOtherEntities(this, getBoundingBox().expand(explosionStrength), i -> i.distanceTo(this) <= explosionStrength).forEach(e -> {
+            getWorld().getOtherEntities(this, getBoundingBox().expand(explosionStrength), i -> i.distanceTo(this) <= explosionStrength).forEach(e -> {
                 damageEntity(hit.getEntity(), 1 - (e.distanceTo(this) / explosionStrength));
             });
         }
@@ -98,7 +98,7 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
-        if (world.isClient || isRemoved()) {
+        if (getWorld().isClient || isRemoved()) {
             return;
         }
 
@@ -110,24 +110,24 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
 
         if (fireStrength > 0) {
             for (int i = 0; i < fireStrength * 2; i++) {
-                world.addParticle(ParticleTypes.FLAME,
-                        world.random.nextTriangular(getX(), 0.5 * fireStrength),
-                        world.random.nextTriangular(getY(), 0.5 * fireStrength),
-                        world.random.nextTriangular(getZ(), 0.5 * fireStrength),
+                getWorld().addParticle(ParticleTypes.FLAME,
+                        getWorld().getRandom().nextTriangular(getX(), 0.5 * fireStrength),
+                        getWorld().getRandom().nextTriangular(getY(), 0.5 * fireStrength),
+                        getWorld().getRandom().nextTriangular(getZ(), 0.5 * fireStrength),
                         0, 0, 0
                 );
 
-                world.addParticle(ParticleTypes.LAVA,
-                        world.random.nextTriangular(getX(), 0.5 * fireStrength),
-                        world.random.nextTriangular(getY() + getHeight(), 0.5 * fireStrength),
-                        world.random.nextTriangular(getZ(), 0.5 * fireStrength),
+                getWorld().addParticle(ParticleTypes.LAVA,
+                        getWorld().getRandom().nextTriangular(getX(), 0.5 * fireStrength),
+                        getWorld().getRandom().nextTriangular(getY() + getHeight(), 0.5 * fireStrength),
+                        getWorld().getRandom().nextTriangular(getZ(), 0.5 * fireStrength),
                         0, 0, 0
                 );
             }
         }
 
         if (explosionStrength > 0) {
-            world.createExplosion(
+            getWorld().createExplosion(
                     this,
                     getDamageSources().thrown(this, getOwner()),
                     new ExplosionBehavior() {

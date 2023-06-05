@@ -15,7 +15,7 @@ import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.predicate.NumberRange.FloatRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate.Extended;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -30,7 +30,7 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
     }
 
     @Override
-    protected Conditions conditionsFromJson(JsonObject json, Extended playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
+    protected Conditions conditionsFromJson(JsonObject json, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
         return new Conditions(
                 playerPredicate,
                 JsonHelper.getArray(json, "drugs").asList().stream().map(Conditions.DrugPredicate::of).toList()
@@ -46,7 +46,7 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
     public static class Conditions extends AbstractCriterionConditions {
         private final List<DrugPredicate> drugs;
 
-        public Conditions(Extended playerPredicate, List<DrugPredicate> drugs) {
+        public Conditions(LootContextPredicate playerPredicate, List<DrugPredicate> drugs) {
             super(ID, playerPredicate);
             this.drugs = drugs;
         }

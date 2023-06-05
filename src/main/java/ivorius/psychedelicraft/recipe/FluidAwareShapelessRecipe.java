@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -49,7 +49,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory inventory, World world) {
+    public boolean matches(RecipeInputInventory inventory, World world) {
         List<OptionalFluidIngredient> unmatchedInputs = new ArrayList<>(ingredients);
         return RecipeUtils.stacks(inventory)
                     .filter(stack -> unmatchedInputs.stream()
@@ -60,7 +60,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingInventory inventory) {
+    public DefaultedList<ItemStack> getRemainder(RecipeInputInventory inventory) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
 
         for (int i = 0; i < defaultedList.size(); ++i) {

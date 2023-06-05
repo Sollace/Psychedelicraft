@@ -17,7 +17,7 @@ public interface ParticleHelper {
     static void spawnColoredParticle(Entity entity, Vector3f color, Vec3d direction, float speed, float size) {
         Vec3d velocity = entity.getVelocity().add(direction.normalize().multiply(speed));
         Vec3d pos = entity.getEyePos();
-        entity.world.addParticle(new ExhaledSmokeParticleEffect(color, 1),
+        entity.getWorld().addParticle(new ExhaledSmokeParticleEffect(color, 1),
                 pos.x, pos.y - 0.1F, pos.z,
                 velocity.x, velocity.y + 0.03F, velocity.z);
     }

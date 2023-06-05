@@ -49,7 +49,7 @@ public class SlotDryingTableResult extends Slot {
 
     @Override
     protected void onCrafted(ItemStack stack) {
-        stack.onCraft(this.player.world, this.player, this.amount);
+        stack.onCraft(this.player.getWorld(), this.player, this.amount);
 
         if (player instanceof ServerPlayerEntity spe) {
             int amount = this.amount;
@@ -69,7 +69,7 @@ public class SlotDryingTableResult extends Slot {
                 amount = xp;
             }
 
-            ExperienceOrbEntity.spawn(spe.getWorld(), player.getPos(), amount);
+            ExperienceOrbEntity.spawn(spe.getServerWorld(), player.getPos(), amount);
         }
 
         this.amount = 0;

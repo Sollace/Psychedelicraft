@@ -106,7 +106,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
                 connection.bezier = Bezier.spiral(0.1, 0.5, 8, connectionPoint, 0.2, 0);
             }
 
-            BezierLabelRenderer.INSTANCE.render(matrices, connection.bezier, LABEL_STYLE.shift(ticks * -0.002F).topCap(connection.fractionUp), SMALL_SPIRAL_TEXT);
+            BezierLabelRenderer.INSTANCE.render(matrices, vertices, light, connection.bezier, LABEL_STYLE.shift(ticks * -0.002F).topCap(connection.fractionUp), SMALL_SPIRAL_TEXT);
 
             if (connection.fractionUp > 0) {
                 matrices.push();
@@ -115,7 +115,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
                         connectionPoint.y,
                         connectionPoint.z
                 );
-                BezierLabelRenderer.INSTANCE.render(matrices,
+                BezierLabelRenderer.INSTANCE.render(matrices, vertices, light,
                         SPHERE_BEZIER_PATH,
                         LABEL_STYLE.shift(ticks * -0.002F).topCap(1),
                         Text.literal(cheeseString("This is a small circle.", 1 - connection.fractionUp, new Random(42))).styled(s -> s.withFont(FONT)));
@@ -126,7 +126,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
 
         float outgoingStrength = entity.fractionHandleUp * entity.fractionOpen;
         if (outgoingStrength > 0) {
-            BezierLabelRenderer.INSTANCE.render(matrices, OUTGOING_PATH, LABEL_STYLE.shift(ticks * -0.002F).topCap(outgoingStrength), SMALL_SPIRAL_TEXT);
+            BezierLabelRenderer.INSTANCE.render(matrices, vertices, light, OUTGOING_PATH, LABEL_STYLE.shift(ticks * -0.002F).topCap(outgoingStrength), SMALL_SPIRAL_TEXT);
         }
 
         RenderSystem.enableCull();

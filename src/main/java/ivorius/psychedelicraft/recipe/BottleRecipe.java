@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -43,7 +43,7 @@ public class BottleRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
+    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
         ItemStack output = getOutput(registries).copy();
         if (output.getItem() instanceof DyeableItem dyeable) {
             RecipeUtils.stacks(inventory)

@@ -49,7 +49,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
             at = @At("HEAD"),
             cancellable = true)
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
-        if (!world.isClient) {
+        if (!getWorld().isClient) {
             getDrugProperties().trySleep(pos).ifPresent(reason -> {
                 ((PlayerEntity)(Object)this).sendMessage(reason, true);
 

@@ -46,7 +46,7 @@ public class TirednessScreenEffect implements ScreenEffect {
 
         overlayOpacity = MathUtils.approach(overlayOpacity, ticksBlinking > 0 ? drowsyness * 0.9F + MathHelper.sin(entity.age / 10F) : 0, 0.03F);
         if (drowsyness > 0.3F && overlayOpacity > 0.6F) {
-            entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(),
+            entity.getWorld().playSound(entity.getX(), entity.getY(), entity.getZ(),
                 PSSounds.ENTITY_PLAYER_HEARTBEAT,
                 SoundCategory.AMBIENT, drowsyness, 0.3F, false);
         }
@@ -56,8 +56,8 @@ public class TirednessScreenEffect implements ScreenEffect {
             return;
         }
 
-        if (--ticksBlinking <= 0 && (ticksBlinking < -300 || entity.world.random.nextFloat() < properties.getModifier(Drug.DROWSYNESS))) {
-            ticksBlinking = (int)entity.world.random.nextTriangular(300, 200);
+        if (--ticksBlinking <= 0 && (ticksBlinking < -300 || entity.getWorld().random.nextFloat() < properties.getModifier(Drug.DROWSYNESS))) {
+            ticksBlinking = (int)entity.getWorld().random.nextTriangular(300, 200);
             entity.sendMessage(Text.literal("...I should really sleep..."), true);
         }
     }

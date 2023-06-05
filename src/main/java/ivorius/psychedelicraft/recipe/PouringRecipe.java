@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -29,7 +29,7 @@ class PouringRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory inventory, World world) {
+    public boolean matches(RecipeInputInventory inventory, World world) {
         List<MutableFluidContainer> recepticals = getRecepticals(inventory).map(e -> e.content().getKey().toMutable(e.content().getValue())).toList();
         if (RecipeUtils.stacks(inventory).count() != recepticals.size() || recepticals.size() < 2) {
             return false;
@@ -38,12 +38,12 @@ class PouringRecipe extends SpecialCraftingRecipe {
         return recepticals.get(1).canReceive(recepticals.get(0).getFluid());
     }
 
-    private Stream<RecipeUtils.Slot<Map.Entry<FluidContainer, ItemStack>>> getRecepticals(CraftingInventory inventory) {
+    private Stream<RecipeUtils.Slot<Map.Entry<FluidContainer, ItemStack>>> getRecepticals(RecipeInputInventory inventory) {
         return RecipeUtils.recepticalSlots(inventory).limit(2);
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
+    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
         var recepticals = getRecepticals(inventory).toList();
 
         MutableFluidContainer mutableTo = recepticals.get(1).map(e -> e.getKey().toMutable(e.getValue()));
@@ -54,7 +54,7 @@ class PouringRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingInventory inventory) {
+    public DefaultedList<ItemStack> getRemainder(RecipeInputInventory inventory) {
         var recepticals = getRecepticals(inventory).toList();
         if (recepticals.size() < 2) {
             return DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
