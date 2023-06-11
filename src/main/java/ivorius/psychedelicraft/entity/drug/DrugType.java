@@ -12,6 +12,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.function.Function;
 
+import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.type.*;
 
@@ -45,6 +46,7 @@ public record DrugType (Identifier id, Function<DrugType, Drug> constructor) {
 
     static DrugType register(String name, Function<DrugType, Drug> constructor) {
         DrugType type = new DrugType(Psychedelicraft.id(name), constructor);
+        PSSounds.register("drug." + name);
         return Registry.register(REGISTRY, type.id(), type);
     }
 }
