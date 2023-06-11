@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.client.sound;
 
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.sound.SoundCategory;
@@ -11,12 +12,14 @@ import net.minecraft.util.math.random.Random;
  * Created by lukas on 22.11.14.
  */
 public class MovingSoundDrug extends MovingSoundInstance {
-    private final DrugMusicManager manager;
+    private final ClientDrugMusicManager manager;
+    private final DrugProperties properties;
     private final DrugType drugType;
 
-    public MovingSoundDrug(SoundEvent event, SoundCategory category, DrugMusicManager manager, DrugType drugType) {
+    public MovingSoundDrug(SoundEvent event, SoundCategory category, ClientDrugMusicManager manager, DrugProperties properties, DrugType drugType) {
         super(event, category, Random.create());
         this.manager = manager;
+        this.properties = properties;
         this.drugType = drugType;
     }
 
@@ -28,13 +31,13 @@ public class MovingSoundDrug extends MovingSoundInstance {
     public void tick() {
         volume = manager.getVolumeFor(drugType);
 
-        if (MathHelper.approximatelyEquals(volume, 0) || manager.properties.asEntity().isRemoved()) {
+        if (MathHelper.approximatelyEquals(volume, 0) || properties.asEntity().isRemoved()) {
             setDone();
             return;
         }
 
-        x = (float) manager.properties.asEntity().getX();
-        y = (float) manager.properties.asEntity().getY();
-        z = (float) manager.properties.asEntity().getZ();
+        x = (float) properties.asEntity().getX();
+        y = (float) properties.asEntity().getY();
+        z = (float) properties.asEntity().getZ();
     }
 }

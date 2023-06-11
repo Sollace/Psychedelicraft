@@ -7,10 +7,10 @@ package ivorius.psychedelicraft.entity.drug;
 
 import ivorius.psychedelicraft.*;
 import ivorius.psychedelicraft.advancement.PSCriteria;
-import ivorius.psychedelicraft.client.sound.DrugMusicManager;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.entity.drug.sound.DrugMusicManager;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.mixin.MixinLivingEntity;
 import ivorius.psychedelicraft.network.Channel;
@@ -185,12 +185,13 @@ public class DrugProperties implements NbtSerialisable {
         drugs.values().forEach(drug -> drug.update(this));
 
         stomach.onTick();
+        soundManager.update();
 
         Random random = entity.getRandom();
 
         if (entity.world.isClient) {
             hallucinations.update();
-            soundManager.update();
+
 
 
             if (entity.isOnGround() && random.nextFloat() < getModifier(Drug.JUMP_CHANCE)) {
