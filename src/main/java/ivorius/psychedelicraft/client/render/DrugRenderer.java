@@ -10,6 +10,7 @@ import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.effect.*;
 import ivorius.psychedelicraft.client.render.shader.PostEffectRenderer;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
+import ivorius.psychedelicraft.client.sound.ClientDrugMusicManager;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.hallucination.DriftingCamera;
@@ -54,6 +55,8 @@ public class DrugRenderer {
 
     private final PostEffectRenderer postEffects = new PostEffectRenderer();
 
+    private final ClientDrugMusicManager musicManager = new ClientDrugMusicManager();
+
     private float screenBackgroundBlur;
 
     public ScreenEffect getScreenEffects() {
@@ -79,7 +82,8 @@ public class DrugRenderer {
             screenBackgroundBlur = Math.max(0, screenBackgroundBlur - 0.25F);
         }
 
-        screenEffects.update(MinecraftClient.getInstance().getTickDelta());
+        screenEffects.update(ShaderContext.tickDelta());
+        musicManager.update(drugProperties);
     }
 
     public void distortScreen(MatrixStack matrices, float tickDelta) {
