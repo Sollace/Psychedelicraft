@@ -1,16 +1,9 @@
-package ivorius.psychedelicraft.client.sound;
-
-import java.util.Optional;
+package ivorius.psychedelicraft.entity.drug.sound;
 
 import ivorius.psychedelicraft.PSSounds;
-import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.SoundManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 
@@ -20,12 +13,6 @@ import net.minecraft.util.math.MathHelper;
  */
 public class DrugMusicManager {
     public static final float PLAY_THRESHOLD = 0.01F;
-
-    private Optional<DrugType> activeDrug = Optional.empty();
-
-    private Optional<MovingSoundDrug> activeSound = Optional.empty();
-
-    private float volume;
 
     final DrugProperties properties;
 
@@ -42,30 +29,7 @@ public class DrugMusicManager {
     }
 
     public void update() {
-        if (activeDrug.isEmpty()) {
-            activeDrug = DrugType.REGISTRY
-                .stream()
-                .filter(type -> PsychedelicraftClient.getConfig().audio.hasBackgroundMusic(type) && properties.getDrugValue(type) >= PLAY_THRESHOLD)
-                .findFirst()
-                .map(this::startPlayingSound);
-        }
-
         PlayerEntity entity = properties.asEntity();
-
-        float destVolume = activeDrug
-            .map(properties::getDrug)
-            .map(drug -> MathHelper.lerp((float) drug.getActiveValue(), 0, 0.2F))
-            .orElse(0F);
-
-        if (destVolume >= PLAY_THRESHOLD) {
-            volume = destVolume;
-        } else {
-            activeDrug = Optional.empty();
-            activeSound.ifPresent(MovingSoundDrug::markCompleted);
-            activeSound = Optional.empty();
-            volume = 0;
-        }
-
 
         if (delayUntilHeartbeat > 0) {
             delayUntilHeartbeat--;
@@ -111,20 +75,5 @@ public class DrugMusicManager {
 
     public float getHeartbeatPulseStrength(float delta) {
         return MathHelper.lerp(delta, prevHeartbeatPulseStrength, heartbeatPulseStrength);
-    }
-
-    private DrugType startPlayingSound(DrugType type) {
-        Registries.SOUND_EVENT.getOrEmpty(Psychedelicraft.id("drug." + type.id().getPath())).ifPresent(sound -> {
-            SoundManager manager = MinecraftClient.getInstance().getSoundManager();
-            activeSound.ifPresent(MovingSoundDrug::markCompleted);
-            MovingSoundDrug newSound = new MovingSoundDrug(sound, SoundCategory.AMBIENT, this, type);
-            activeSound = Optional.of(newSound);
-            manager.play(newSound);
-        });
-        return type;
-    }
-
-    public float getVolumeFor(DrugType drugType) {
-        return activeDrug.filter(drugType::equals).isPresent() ? volume : 0;
     }
 }
