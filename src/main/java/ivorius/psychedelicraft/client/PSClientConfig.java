@@ -7,13 +7,14 @@ import java.util.stream.Collectors;
 import org.joml.Vector2f;
 
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import net.minecraft.util.Identifier;
 
 public class PSClientConfig {
     public PSClientConfig.Audio audio = new Audio();
     public PSClientConfig.Visual visual = new Visual();
 
     public static class Audio {
-        public String[] drugsWithBackgroundMusic = new String[0];
+        public String[] drugsWithBackgroundMusic = DrugType.REGISTRY.getIds().stream().map(Identifier::toString).toArray(String[]::new);
         private transient Set<String> drugsWithBackgroundMusicSet;
 
         public boolean hasBackgroundMusic(DrugType drugType) {
