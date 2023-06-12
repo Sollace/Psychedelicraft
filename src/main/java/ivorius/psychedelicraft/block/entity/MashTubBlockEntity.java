@@ -184,15 +184,6 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public void onDestroyed(ServerWorld world) {
-
-        SimpleFluid fluid = getTank(Direction.UP).getFluidType();
-        if (!fluid.isEmpty()) {
-            world.setBlockState(getPos(), fluid.getFluidState(getTank(Direction.UP).getStack()).getBlockState());
-        }
-    }
-
-    @Override
     public List<ItemStack> getDroppedStacks(FluidContainer container) {
         if (!solidContents.isEmpty()) {
             return List.of(solidContents);

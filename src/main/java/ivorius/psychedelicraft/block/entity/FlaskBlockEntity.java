@@ -122,10 +122,6 @@ public class FlaskBlockEntity extends SyncedBlockEntity
         }
     }
 
-    public void onDestroyed(ServerWorld world) {
-
-    }
-
     @Override
     public List<ItemStack> getDroppedStacks(FluidContainer container) {
         List<ItemStack> stacks = new ArrayList<>();
