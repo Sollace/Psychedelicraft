@@ -1,0 +1,13 @@
+{
+  "type": "psychedelicraft:fill_receptical",
+  "receptical": { "tag": "psychedelicraft:drink_recepticals" },
+  "ingredients": [
+    { "item": "minecraft:water_bucket" },
+    { "item": "psychedelicraft:agave_leaf" },
+    { "item": "psychedelicraft:agave_leaf" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:agave",
+    "level": 100
+  }
+}

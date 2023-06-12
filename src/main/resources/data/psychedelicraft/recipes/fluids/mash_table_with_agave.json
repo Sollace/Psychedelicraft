@@ -5,13 +5,13 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "psychedelicraft:agave_leaf" },
-    { "tag": "psychedelicraft:agave_leaf" },
-    { "tag": "psychedelicraft:agave_leaf" },
-    { "tag": "psychedelicraft:agave_leaf" },
-    { "tag": "psychedelicraft:agave_leaf" },
-    { "tag": "psychedelicraft:agave_leaf" },
-    { "tag": "psychedelicraft:agave_leaf" }
+    { "item": "psychedelicraft:agave_leaf" },
+    { "item": "psychedelicraft:agave_leaf" },
+    { "item": "psychedelicraft:agave_leaf" },
+    { "item": "psychedelicraft:agave_leaf" },
+    { "item": "psychedelicraft:agave_leaf" },
+    { "item": "psychedelicraft:agave_leaf" },
+    { "item": "psychedelicraft:agave_leaf" }
   ],
   "result": {
     "fluid": "psychedelicraft:agave"
