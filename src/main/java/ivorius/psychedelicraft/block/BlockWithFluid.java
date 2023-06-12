@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
@@ -17,6 +19,8 @@ import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.*;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,6 +37,8 @@ import net.minecraft.world.World;
  * @since 3 Jan 2023
  */
 public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWithEntity {
+    public static final Identifier CONTENTS_DYNAMIC_DROP_ID = new Identifier("contents");
+
     protected BlockWithFluid(Settings settings) {
         super(settings);
     }
@@ -66,6 +72,25 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
             });
         }
         super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
+    @Deprecated
+    @Override
+    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+        BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
+        if (blockEntity instanceof DirectionalFluidResovoir container && blockEntity.getType() == getBlockEntityType()) {
+            builder = builder.addDynamicDrop(CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
+                List<ItemStack> dynamicStacks = container.getDroppedStacks(FluidContainer.of(asItem()));
+                if (dynamicStacks.isEmpty()) {
+                    lootConsumer.accept(asItem().getDefaultStack());
+                } else {
+                    dynamicStacks.forEach(stack -> {
+                        lootConsumer.accept(stack);
+                    });
+                }
+            });
+        }
+        return super.getDroppedStacks(state, builder);
     }
 
     @Override
@@ -114,7 +139,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     public interface DirectionalFluidResovoir {
         Resovoir getTank(Direction direction);
 
-        void onDestroyed(ServerWorld world);
+        List<ItemStack> getDroppedStacks(FluidContainer container);
 
         void tick(ServerWorld world);
     }

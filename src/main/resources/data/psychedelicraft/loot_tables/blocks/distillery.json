@@ -6,8 +6,8 @@
       "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "psychedelicraft:distillery"
+          "type": "minecraft:dynamic",
+          "name": "minecraft:contents"
         }
       ],
       "conditions": [
