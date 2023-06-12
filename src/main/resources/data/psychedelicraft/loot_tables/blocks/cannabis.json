@@ -30,6 +30,21 @@
             },
             {
               "type": "minecraft:item",
+              "name": "psychedelicraft:cannabis_seeds"
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
               "conditions": [
                 {
                   "block": "psychedelicraft:cannabis",
@@ -40,10 +55,6 @@
                 }
               ],
               "name": "psychedelicraft:cannabis_buds"
-            },
-            {
-              "type": "minecraft:item",
-              "name": "psychedelicraft:cannabis_seeds"
             }
           ]
         }
