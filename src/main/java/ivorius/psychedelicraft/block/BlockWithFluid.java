@@ -19,7 +19,7 @@ import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.*;
@@ -65,10 +65,10 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
 
     @Deprecated
     @Override
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-        BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
+    public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
+        BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
         if (blockEntity instanceof DirectionalFluidResovoir container && blockEntity.getType() == getBlockEntityType()) {
-            builder = builder.addDynamicDrop(CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
+            builder = builder.putDrop(CONTENTS_DYNAMIC_DROP_ID, (ctx, lootConsumer) -> {
                 List<ItemStack> dynamicStacks = container.getDroppedStacks(FluidContainer.of(asItem()));
                 if (dynamicStacks.isEmpty()) {
                     lootConsumer.accept(asItem().getDefaultStack());
