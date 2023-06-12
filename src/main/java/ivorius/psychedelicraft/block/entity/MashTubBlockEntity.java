@@ -16,13 +16,11 @@ import ivorius.psychedelicraft.block.MashTubBlock;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
-import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.particle.BubbleParticleEffect;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.util.MathUtils;
 import ivorius.psychedelicraft.util.NbtSerialisable;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
@@ -50,11 +48,6 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     public MashTubBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.MASH_TUB, pos, state, FluidVolumes.MASH_TUB, Processable.ProcessType.FERMENT);
-    }
-
-    @Override
-    protected FluidContainer getContainerType() {
-        return PSItems.MASH_TUB;
     }
 
     public Object2IntMap<Item> getSuppliedIngredients() {
@@ -197,10 +190,14 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         if (!fluid.isEmpty()) {
             world.setBlockState(getPos(), fluid.getFluidState(getTank(Direction.UP).getStack()).getBlockState());
         }
+    }
 
+    @Override
+    public List<ItemStack> getDroppedStacks(FluidContainer container) {
         if (!solidContents.isEmpty()) {
-            Block.dropStack(world, pos, solidContents);
+            return List.of(solidContents);
         }
+        return List.of();
     }
 
     @Override

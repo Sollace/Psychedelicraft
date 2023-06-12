@@ -10,7 +10,6 @@ import ivorius.psychedelicraft.block.MashTubWallBlock;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
-import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -30,11 +29,6 @@ public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
 
     public DistilleryBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.DISTILLERY, pos, state, DISTILLERY_CAPACITY, Processable.ProcessType.DISTILL);
-    }
-
-    @Override
-    protected FluidContainer getContainerType() {
-        return PSItems.DISTILLERY;
     }
 
     @Override

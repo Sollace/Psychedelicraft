@@ -6,7 +6,6 @@
 package ivorius.psychedelicraft.block.entity;
 
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -23,11 +22,6 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
 
     public BarrelBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.BARREL, pos, state, FluidVolumes.BARREL, Processable.ProcessType.MATURE);
-    }
-
-    @Override
-    protected FluidContainer getContainerType() {
-        return FluidContainer.of(getCachedState().getBlock().asItem());
     }
 
     @Override
