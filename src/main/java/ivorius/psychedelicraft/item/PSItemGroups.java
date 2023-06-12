@@ -161,6 +161,7 @@ public interface PSItemGroups {
             .icon(PSItems.OAK_BARREL::getDefaultStack)
             .entries((context, entries) -> {
                 appendAllFluids(PSItems.STONE_CUP, entries);
+                entries.add(PSItems.SHOT_GLASS);
                 PSFluids.AGAVE.getDefaultStacks(PSItems.SHOT_GLASS, entries::add);
                 appendAllFluids(PSItems.WOODEN_MUG, entries);
                 appendAllFluids(PSItems.GLASS_CHALICE, entries);
