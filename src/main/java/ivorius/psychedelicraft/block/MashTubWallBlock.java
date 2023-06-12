@@ -114,7 +114,7 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
             getMasterPosition(world, pos).ifPresent(center -> {
                 BlockState masterState = world.getBlockState(center);
                 if (masterState.isOf(PSBlocks.MASH_TUB) || masterState.isOf(this)) {
-                    world.setBlockState(center, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                    world.breakBlock(center, true);
                 }
             });
         }

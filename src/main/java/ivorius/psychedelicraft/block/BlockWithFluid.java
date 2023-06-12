@@ -65,17 +65,6 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
 
     @Deprecated
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock()) && !world.isClient) {
-            world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
-                be.onDestroyed((ServerWorld)world);
-            });
-        }
-        super.onStateReplaced(state, world, pos, newState, moved);
-    }
-
-    @Deprecated
-    @Override
     public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
         if (blockEntity instanceof DirectionalFluidResovoir container && blockEntity.getType() == getBlockEntityType()) {
