@@ -23,6 +23,7 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 
@@ -78,7 +79,12 @@ public class CoffeeFluid extends DrugFluid implements Processable {
 
     @Override
     public ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
-        ItemStack contents = tank.getContents().drain(tank.getLevel()).asStack();
-        return WARMTH.set(contents, Math.max(0, WARMTH.get(contents) - 1));
+
+        if (type == ProcessType.FERMENT) {
+            MutableFluidContainer contents = tank.getContents();
+            WARMTH.set(contents, Math.max(1, WARMTH.get(contents) - 1));
+        }
+
+        return ItemStack.EMPTY;
     }
 }
