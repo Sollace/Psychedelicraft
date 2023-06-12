@@ -7,7 +7,6 @@ package ivorius.psychedelicraft.block.entity;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,11 +21,14 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
-import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 
 /**
@@ -120,17 +122,19 @@ public class FlaskBlockEntity extends SyncedBlockEntity
         }
     }
 
-    protected FluidContainer getContainerType() {
-        return PSItems.FLASK;
+    public void onDestroyed(ServerWorld world) {
+
     }
 
     @Override
-    public void onDestroyed(ServerWorld world) {
-        ItemStack flaskStack = getContainerType().getDefaultStack(PSFluids.EMPTY);
-        int maxCapacity = getContainerType().getMaxCapacity(flaskStack);
+    public List<ItemStack> getDroppedStacks(FluidContainer container) {
+        List<ItemStack> stacks = new ArrayList<>();
+        ItemStack flaskStack = container.getDefaultStack(PSFluids.EMPTY);
+        int maxCapacity = container.getMaxCapacity(flaskStack);
         while (!tank.isEmpty()) {
-            Block.dropStack(world, pos, tank.drain(maxCapacity, flaskStack));
+            stacks.add(tank.drain(maxCapacity, flaskStack));
         }
+        return stacks;
     }
 
     @Override
