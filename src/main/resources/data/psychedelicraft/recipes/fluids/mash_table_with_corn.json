@@ -5,13 +5,13 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "psychedelicraft:corn" },
-    { "tag": "psychedelicraft:corn" },
-    { "tag": "psychedelicraft:corn" },
-    { "tag": "psychedelicraft:corn" },
-    { "tag": "psychedelicraft:corn" },
-    { "tag": "psychedelicraft:corn" },
-    { "tag": "psychedelicraft:corn" }
+    { "tag": "c:corn" },
+    { "tag": "c:corn" },
+    { "tag": "c:corn" },
+    { "tag": "c:corn" },
+    { "tag": "c:corn" },
+    { "tag": "c:corn" },
+    { "tag": "c:corn" }
   ],
   "result": {
     "fluid": "psychedelicraft:corn"

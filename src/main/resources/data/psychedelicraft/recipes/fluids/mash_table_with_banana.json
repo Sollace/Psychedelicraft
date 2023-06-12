@@ -5,14 +5,14 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "psychedelicraft:bananas" },
-    { "tag": "psychedelicraft:bananas" },
-    { "tag": "psychedelicraft:bananas" },
-    { "tag": "psychedelicraft:bananas" },
-    { "tag": "psychedelicraft:bananas" },
-    { "tag": "psychedelicraft:bananas" },
-    { "tag": "psychedelicraft:bananas" },
-    { "tag": "psychedelicraft:bananas" }
+    { "tag": "c:bananas" },
+    { "tag": "c:bananas" },
+    { "tag": "c:bananas" },
+    { "tag": "c:bananas" },
+    { "tag": "c:bananas" },
+    { "tag": "c:bananas" },
+    { "tag": "c:bananas" },
+    { "tag": "c:bananas" }
   ],
   "result": {
     "fluid": "psychedelicraft:banana"

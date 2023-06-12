@@ -5,14 +5,14 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "psychedelicraft:apples" },
-    { "tag": "psychedelicraft:apples" },
-    { "tag": "psychedelicraft:apples" },
-    { "tag": "psychedelicraft:apples" },
-    { "tag": "psychedelicraft:apples" },
-    { "tag": "psychedelicraft:apples" },
-    { "tag": "psychedelicraft:apples" },
-    { "tag": "psychedelicraft:apples" }
+    { "tag": "c:apples" },
+    { "tag": "c:apples" },
+    { "tag": "c:apples" },
+    { "tag": "c:apples" },
+    { "tag": "c:apples" },
+    { "tag": "c:apples" },
+    { "tag": "c:apples" },
+    { "tag": "c:apples" }
   ],
   "result": {
     "fluid": "psychedelicraft:apple"

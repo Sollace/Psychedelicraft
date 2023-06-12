@@ -5,13 +5,13 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "psychedelicraft:rice" },
-    { "tag": "psychedelicraft:rice" },
-    { "tag": "psychedelicraft:rice" },
-    { "tag": "psychedelicraft:rice" },
-    { "tag": "psychedelicraft:rice" },
-    { "tag": "psychedelicraft:rice" },
-    { "tag": "psychedelicraft:rice" }
+    { "tag": "c:rice" },
+    { "tag": "c:rice" },
+    { "tag": "c:rice" },
+    { "tag": "c:rice" },
+    { "tag": "c:rice" },
+    { "tag": "c:rice" },
+    { "tag": "c:rice" }
   ],
   "result": {
     "fluid": "psychedelicraft:rice"
