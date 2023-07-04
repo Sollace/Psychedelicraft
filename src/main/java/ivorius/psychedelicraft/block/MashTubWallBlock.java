@@ -40,9 +40,16 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
     }
 
     @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return getValidMasterPosition(world, pos)
+                .map(center -> MashTubBlock.COLLISSION_SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ()))
+                .orElseGet(VoxelShapes::empty);
+    }
+
+    @Override
     @Deprecated
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
-        return VoxelShapes.empty();
+        return MashTubBlock.RAYCAST_SHAPE;
     }
 
     @Override
@@ -67,13 +74,6 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
             BlockState masterState = world.getBlockState(center);
             return masterState.getBlock().getPickStack(world, center, masterState);
         }).orElse(ItemStack.EMPTY);
-    }
-
-    @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return getValidMasterPosition(world, pos)
-                .map(center -> MashTubBlock.COLLISSION_SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ()))
-                .orElseGet(VoxelShapes::empty);
     }
 
     @Override
