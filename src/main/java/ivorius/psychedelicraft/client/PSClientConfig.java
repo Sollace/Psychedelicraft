@@ -17,13 +17,28 @@ public class PSClientConfig {
         public String[] drugsWithBackgroundMusic = DrugType.REGISTRY.getIds().stream().map(Identifier::toString).toArray(String[]::new);
         private transient Set<String> drugsWithBackgroundMusicSet;
 
-        public boolean hasBackgroundMusic(DrugType drugType) {
+        private Set<String> loadMusicSet() {
             if (drugsWithBackgroundMusicSet == null) {
                 drugsWithBackgroundMusicSet = Arrays.stream(drugsWithBackgroundMusic == null ? new String[0] : drugsWithBackgroundMusic)
                         .distinct()
                         .collect(Collectors.toSet());
             }
-            return drugsWithBackgroundMusicSet.contains(drugType.id().toString());
+            return drugsWithBackgroundMusicSet;
+        }
+
+        public boolean hasBackgroundMusic(DrugType drugType) {
+            return loadMusicSet().contains(drugType.id().toString());
+        }
+
+        public boolean setHasBackgroundMusic(DrugType drugType, boolean value) {
+            Set<String> musicSet = loadMusicSet();
+            if (value) {
+                musicSet.add(drugType.id().toString());
+            } else {
+                musicSet.remove(drugType.id().toString());
+            }
+            drugsWithBackgroundMusic = musicSet.toArray(String[]::new);
+            return value;
         }
     }
 

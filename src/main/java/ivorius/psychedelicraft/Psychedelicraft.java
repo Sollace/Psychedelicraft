@@ -49,8 +49,12 @@ public class Psychedelicraft implements ModInitializer {
         return crossHairTarget.get();
     }
 
+    public static JsonConfig.Loader<PSConfig> getConfigLoader() {
+        return CONFIG_LOADER.get();
+    }
+
     public static PSConfig getConfig() {
-        return CONFIG_LOADER.get().getData();
+        return getConfigLoader().getData();
     }
 
     public static Identifier id(String name) {
