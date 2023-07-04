@@ -48,6 +48,7 @@ interface BlockConstructionUtils {
 
     static AbstractBlock.Settings plant(BlockSoundGroup soundGroup) {
         return Settings.create()
+                .ticksRandomly()
                 .mapColor(MapColor.DARK_GREEN)
                 .noCollision()
                 .breakInstantly()
