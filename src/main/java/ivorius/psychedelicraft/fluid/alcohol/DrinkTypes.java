@@ -26,7 +26,6 @@ public interface DrinkTypes {
 
     List<Entry> variants();
 
-    @Nullable
     default DrinkType find(ItemStack stack) {
 
         if (!variants().isEmpty()) {
@@ -37,7 +36,7 @@ public interface DrinkTypes {
             }
         }
 
-        return null;
+        throw noMatch(stack);
     }
 
     default Stream<State> streamStates() {
@@ -47,8 +46,13 @@ public interface DrinkTypes {
     default Iterable<State> generateStateTable() {
         final int max = 2 * 3 * 16 * 16;
         Set<String> previouslyReturned = new HashSet<>();
+
         return () -> {
             return new AbstractIterator<>() {
+                {
+                    findMatch(17, 17, 3, false);
+                }
+
                 int index;
                 @Nullable
                 @Override
@@ -76,7 +80,8 @@ public interface DrinkTypes {
                         }
 
                         Entry match = findMatch(distillation, maturation, fermentation, vinegar);
-                        if (match != null && previouslyReturned.add(match.value().getUniqueKey())) {
+
+                        if (previouslyReturned.add(match.value().getUniqueKey())) {
                             return new State(distillation, maturation, fermentation, vinegar, match);
                         }
                     }
@@ -88,10 +93,24 @@ public interface DrinkTypes {
                             return variant;
                         }
                     }
-                    return null;
+                    throw noMatch(distillation, maturation, fermentation, vinegar);
                 }
             };
         };
+    }
+
+
+    private static NullPointerException noMatch(ItemStack stack) {
+        return noMatch(
+                AlcoholicFluid.DISTILLATION.get(stack),
+                AlcoholicFluid.MATURATION.get(stack),
+                AlcoholicFluid.FERMENTATION.get(stack),
+                AlcoholicFluid.VINEGAR.get(stack)
+        );
+    }
+
+    private static NullPointerException noMatch(int distillation, int maturation, int fermentation, boolean vinegar) {
+        return new NullPointerException("No drink type specified for state { vinegar: " + vinegar + ", dist: " + distillation + ", ferm: " + fermentation + ", mat: " + maturation + " }");
     }
 
     static record Builder(List<Entry> variants) implements DrinkTypes {
