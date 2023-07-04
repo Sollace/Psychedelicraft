@@ -83,6 +83,7 @@
   "block.psychedelicraft.coffea": "Coffea",
   "block.psychedelicraft.agave_plant": "Agave",
   "block.psychedelicraft.drying_table": "Drying Table",
+  "block.psychedelicraft.drying_table.daylight": "Daylight: %d%%",
   "block.psychedelicraft.iron_drying_table": "Iron Drying Table",
   "block.psychedelicraft.flask": "Flask",
   "block.psychedelicraft.flask.filled": "Flask of %s",

@@ -36,6 +36,17 @@ public class DryingTableScreen extends HandledScreen<DryingTableScreenHandler> {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
         drawMouseoverTooltip(matrices, mouseX, mouseY);
+
+        if (handler.getCursorStack().isEmpty() && (focusedSlot == null || !focusedSlot.hasStack())) {
+            int centerX = (width - backgroundWidth) / 2 + backgroundWidth;
+            int centerY = (height - backgroundHeight) / 2;
+
+            if (mouseX > centerX - 30 && mouseX < centerX
+                    && mouseY > centerY && mouseY < centerY + 30) {
+
+                renderTooltip(matrices, Text.translatable("block.psychedelicraft.drying_table.daylight", (int)(handler.getHeatRatio() * 100)), mouseX, mouseY);
+            }
+        }
     }
 
     @Override
