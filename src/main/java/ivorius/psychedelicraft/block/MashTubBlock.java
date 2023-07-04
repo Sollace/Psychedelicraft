@@ -111,7 +111,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
         ItemStack heldStack = player.getStackInHand(hand);
         if (!heldStack.isEmpty()) {
-            TypedActionResult<ItemStack> result = blockEntity.depositIngredient(heldStack);
+            TypedActionResult<ItemStack> result = blockEntity.depositIngredient(heldStack.copy());
             if (!player.isCreative()) {
                 player.setStackInHand(hand, result.getValue());
             }
