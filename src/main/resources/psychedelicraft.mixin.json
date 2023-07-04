@@ -13,6 +13,7 @@
       "MixinStructurePool",
       "MixinVillagerEntity",
       "MixinVillagerTaskListProvider",
+      "MixinVoxelShape",
       "MixinHungerManager",
       "MixinBlockEntityType",
       "SignTypeAccessor"

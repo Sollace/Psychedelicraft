@@ -86,7 +86,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     @Deprecated
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
-        return VoxelShapes.fullCube();
+        return RAYCAST_SHAPE;
     }
 
     @Override
