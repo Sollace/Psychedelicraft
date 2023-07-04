@@ -47,7 +47,7 @@ public interface JsonConfig {
             if (Files.exists(path)) {
                 try (var reader = Files.newBufferedReader(path)) {
                     data = (T) GSON.fromJson(reader, blank.getClass());
-                } catch (IOException e) {}
+                } catch (IOException | JsonSyntaxException e) {}
             }
             if (data == null) {
                 data = blank;

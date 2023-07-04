@@ -49,6 +49,9 @@ dependencies {
     modApi "net.fabricmc:fabric-loader:${project.loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    modApi "com.minelittlepony:kirin:${project.kirin_version}"
+    include "com.minelittlepony:kirin:${project.kirin_version}"
+
     modApi "com.sollace:fabwork:${project.fabwork_version}"
     include "com.sollace:fabwork:${project.fabwork_version}"
 
