@@ -30,6 +30,7 @@ class HallucinateCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
         dispatcher.register(CommandManager.literal("hallucinate")
+                .requires(source -> source.hasPermissionLevel(2))
             .requires(source -> source.hasPermissionLevel(2))
                     .then(CommandManager.argument("type", IdentifierArgumentType.identifier()).suggests(SUGGESTIONS).executes(ctx -> {
                         sendHallucination(ctx, ctx.getSource().getPlayerOrThrow(), Optional.empty());
