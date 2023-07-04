@@ -99,6 +99,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
 
         if (isValidIngredient(stack)) {
+            stack.split(1);
             suppliedIngredients.computeInt(stack.getItem(), (s, i) -> i == null ? 1 : (i + 1));
             checkIngredients();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
