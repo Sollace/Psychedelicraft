@@ -37,6 +37,7 @@ class DrugCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
         dispatcher.register(CommandManager.literal("drug")
+                .requires(source -> source.hasPermissionLevel(2))
             .then(CommandManager.argument("target", EntityArgumentType.players())
                 .then(CommandManager.literal("lock")
                     .then(CommandManager.literal("all")
