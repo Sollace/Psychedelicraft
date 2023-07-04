@@ -7,6 +7,8 @@ accessible          method   net/minecraft/client/render/RenderLayer$MultiPhase 
 accessible          method   net/minecraft/client/render/RenderPhase$TextureBase   getId      ()Ljava/util/Optional;
 accessible          method   net/minecraft/client/render/RenderLayer               of         (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;Lnet/minecraft/client/render/VertexFormat$DrawMode;IZZLnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)Lnet/minecraft/client/render/RenderLayer$MultiPhase;
 
-accessible          field    net/minecraft/client/render/RenderLayer$MultiPhaseParameters     texture     Lnet/minecraft/client/render/RenderPhase$TextureBase;
+accessible          field    net/minecraft/client/render/RenderLayer$MultiPhaseParameters     texture        Lnet/minecraft/client/render/RenderPhase$TextureBase;
+accessible          field    net/minecraft/item/ItemGroups                                    displayContext Lnet/minecraft/item/ItemGroup$DisplayContext;
+
 
 extendable          method   net/minecraft/block/CropBlock                                    isMature    (Lnet/minecraft/block/BlockState;)Z

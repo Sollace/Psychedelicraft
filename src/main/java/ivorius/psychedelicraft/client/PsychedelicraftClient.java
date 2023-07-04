@@ -25,8 +25,12 @@ import net.minecraft.resource.ResourceType;
 public class PsychedelicraftClient implements ClientModInitializer {
     private static final Supplier<JsonConfig.Loader<PSClientConfig>> CONFIG_LOADER = JsonConfig.create("psychedelicraft_client.json", PSClientConfig::new);
 
+    public static JsonConfig.Loader<PSClientConfig> getConfigLoader() {
+        return CONFIG_LOADER.get();
+    }
+
     public static PSClientConfig getConfig() {
-        return CONFIG_LOADER.get().getData();
+        return getConfigLoader().getData();
     }
 
     @Override
@@ -34,12 +38,10 @@ public class PsychedelicraftClient implements ClientModInitializer {
         Psychedelicraft.globalDrugProperties = () -> DrugProperties.of((Entity)MinecraftClient.getInstance().player);
         Psychedelicraft.crossHairTarget = () -> Optional.ofNullable(MinecraftClient.getInstance().crosshairTarget);
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
-            if (!client.isPaused()) {
-                DrugProperties.of((Entity)client.player).ifPresent(properties -> {
-                    DrugRenderer.INSTANCE.update(properties, client.player);
-                    SmoothCameraHelper.INSTANCE.tick(properties);
-                });
-            }
+            DrugProperties.of((Entity)client.player).ifPresent(properties -> {
+                DrugRenderer.INSTANCE.update(properties, client.player);
+                SmoothCameraHelper.INSTANCE.tick(properties);
+            });
         });
 
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {

@@ -22,6 +22,9 @@
     ],
     "client": [
       "ivorius.psychedelicraft.client.PsychedelicraftClient"
+    ],
+    "modmenu": [
+      "ivorius.psychedelicraft.compat.modmenu.Main"
     ]
   },
   "mixins": [
