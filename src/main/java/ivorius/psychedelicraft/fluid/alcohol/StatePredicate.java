@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.fluid.alcohol;
 import java.util.function.Predicate;
 
 import ivorius.psychedelicraft.fluid.AlcoholicFluid;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange.IntRange;
 
@@ -10,13 +11,14 @@ public record StatePredicate (
         IntRange fermentationRange,
         IntRange maturationRange,
         IntRange distillationRange,
-        boolean vinegar
+        TriState vinegar
 ) implements Predicate<ItemStack> {
     public static final StatePredicate ANY_DISTILLED = StatePredicate.builder().distilled().build();
     public static final StatePredicate ANY_FERMENTED = StatePredicate.builder().fermented().build();
     public static final StatePredicate ANY_VINEGAR = StatePredicate.builder().vinegar().build();
 
     public interface Standard {
+        StatePredicate ANY = StatePredicate.builder().vinegar(TriState.DEFAULT).build();
         StatePredicate BASE = StatePredicate.builder().undistilled().unfermented().unmatured().build();
         StatePredicate VINEGAR = StatePredicate.builder().vinegar().build();
         StatePredicate DISTILLED = StatePredicate.builder().distilled().build();
@@ -39,7 +41,7 @@ public record StatePredicate (
         return fermentationRange.test(fermentation)
                 && distillationRange.test(distillation)
                 && maturationRange.test(maturation)
-                && this.vinegar == vinegar;
+                && this.vinegar.orElse(vinegar) == vinegar;
     }
 
     public static StatePredicate.Builder builder() {
@@ -50,10 +52,14 @@ public record StatePredicate (
         private IntRange fermentationRange = IntRange.ANY;
         private IntRange maturationRange = IntRange.ANY;
         private IntRange distillationRange = IntRange.ANY;
-        private boolean vinegar;
+        private TriState vinegar = TriState.FALSE;
 
         public StatePredicate.Builder vinegar() {
-            this.vinegar = true;
+            return vinegar(TriState.TRUE);
+        }
+
+        public StatePredicate.Builder vinegar(TriState vinegar) {
+            this.vinegar = vinegar;
             return this;
         }
 
