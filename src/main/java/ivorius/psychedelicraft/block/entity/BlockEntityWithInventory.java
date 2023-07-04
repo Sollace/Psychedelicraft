@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 
@@ -33,6 +34,7 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
     @Override
     public void readNbt(NbtCompound compound) {
         super.readNbt(compound);
+        inventory.clear();
         Inventories.readNbt(compound, inventory);
     }
 
@@ -49,6 +51,7 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
     @Override
     public void clear() {
         inventory.clear();
+        onInventoryChanged();
     }
 
     @Override
@@ -58,12 +61,20 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
 
     @Override
     public ItemStack removeStack(int slot) {
-        return Inventories.removeStack(inventory, slot);
+        ItemStack removed = Inventories.removeStack(inventory, slot);
+        if (!removed.isEmpty()) {
+            onInventoryChanged();
+        }
+        return removed;
     }
 
     @Override
     public ItemStack removeStack(int slot, int amount) {
-        return Inventories.splitStack(inventory, slot, amount);
+        ItemStack removed = Inventories.splitStack(inventory, slot, amount);
+        if (!removed.isEmpty()) {
+            onInventoryChanged();
+        }
+        return removed;
     }
 
     @Override
@@ -79,6 +90,12 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
 
     public void onInventoryChanged() {
         markDirty();
+        if (world != null) {
+            world.updateNeighbors(pos, getCachedState().getBlock());
+            if (world instanceof ServerWorld sw) {
+                sw.getChunkManager().markForUpdate(getPos());
+            }
+        }
     }
 
     @Override
