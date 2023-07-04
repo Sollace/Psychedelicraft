@@ -26,6 +26,6 @@ abstract class MixinVoxelShape {
             return;
         }
 
-        info.setReturnValue(result.withBlockPos(BlockPos.ofFloored(result.getPos())));
+        info.setReturnValue(result.withBlockPos(new BlockPos(result.getPos())));
     }
 }
