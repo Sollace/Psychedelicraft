@@ -2,7 +2,6 @@ package ivorius.psychedelicraft.client.sound;
 
 import java.util.Optional;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
@@ -37,7 +36,6 @@ public class MovingSoundDrug extends MovingSoundInstance {
     @Override
     public void tick() {
         volume = getTargetVolume();
-        Psychedelicraft.LOGGER.info("Current volume: " + volume);
 
         if (MathHelper.approximatelyEquals(volume, 0) || properties.asEntity().isRemoved()) {
             setDone();

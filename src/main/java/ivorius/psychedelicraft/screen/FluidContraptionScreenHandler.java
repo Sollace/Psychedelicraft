@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.screen;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.entity.player.*;
@@ -20,6 +22,12 @@ import net.minecraft.util.math.Direction;
  * Updated by Sollace on 3 Jan 2023
  */
 public class FluidContraptionScreenHandler<T extends FlaskBlockEntity> extends ScreenHandler {
+
+    static final int INVENTORY_START = 2;
+    static final int INVENTORY_END = 28;
+    static final int HOTBAR_START = INVENTORY_END + 1;
+    static final int HOTBAR_END = HOTBAR_START + 9;
+
     private final Resovoir tank;
 
     private final T blockEntity;
@@ -64,37 +72,63 @@ public class FluidContraptionScreenHandler<T extends FlaskBlockEntity> extends S
 
     @Override
     public ItemStack quickMove(PlayerEntity player, int index) {
-        ItemStack originalStack = null;
+        @Nullable
         Slot slot = slots.get(index);
 
-        if (slot != null && slot.hasStack()) {
-            ItemStack stack = slot.getStack();
-            originalStack = stack.copy();
-
-            if (index == 0) {
-                if (!insertItem(stack, 2, 37, true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else {
-                if (!insertItem(stack, 0, 2, true)) {
-                    return ItemStack.EMPTY;
-                }
-            }
-
-            if (stack.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
-            } else {
-                slot.markDirty();
-            }
-
-            if (stack.getCount() == originalStack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTakeItem(player, stack);
+        if (slot == null || !slot.hasStack()) {
+            return ItemStack.EMPTY;
         }
 
+        ItemStack stack = slot.getStack();
+        ItemStack originalStack = stack.copy();
+
+        if (index < INVENTORY_START) {
+            if (!insertItem(stack, HOTBAR_START, HOTBAR_END, true)
+                    && !insertItem(stack, INVENTORY_START, INVENTORY_END, false)) {
+                return ItemStack.EMPTY;
+            }
+        } if (index < HOTBAR_START) {
+            if (!insertStack(stack, 0) && !insertStack(stack, 1)
+                    && !insertItem(stack, HOTBAR_START, HOTBAR_END, false)) {
+                return ItemStack.EMPTY;
+            }
+        } else {
+            if (!insertStack(stack, 0) && !insertStack(stack, 1)
+                    && !insertItem(stack, INVENTORY_START, INVENTORY_END, false)
+                    && !insertItem(stack, HOTBAR_START, HOTBAR_END, false)) {
+                return ItemStack.EMPTY;
+            }
+        }
+
+        if (stack.isEmpty()) {
+            slot.setStack(ItemStack.EMPTY);
+        } else {
+            slot.markDirty();
+        }
+
+        if (stack.getCount() == originalStack.getCount()) {
+            return ItemStack.EMPTY;
+        }
+
+        slot.onTakeItem(player, stack);
+
         return originalStack;
+    }
+
+    private boolean insertStack(ItemStack stack, int slotIndex) {
+        @Nullable
+        Slot slot = slots.get(slotIndex);
+        if (slot == null) {
+            return false;
+        }
+        ItemStack currentStack = slot.getStack();
+        if (!currentStack.isEmpty() || !slot.canInsert(stack)) {
+            return false;
+        }
+
+        slot.setStack(stack.split(Math.min(stack.getCount(), slot.getMaxItemCount(stack))));
+        slot.markDirty();
+        return true;
     }
 
     final class InputSlot extends Slot {
