@@ -276,7 +276,8 @@ public class FlaskBlockEntity extends SyncedBlockEntity
 
         @Override
         public boolean isValid(int slot, ItemStack stack) {
-            return FluidContainer.of(stack, null) != null;
+            var container = FluidContainer.of(stack, null);
+            return container != null && (slot == 0 ? container.getFillPercentage(stack) > 0 : container.getFillPercentage(stack) < 1);
         }
     }
 
