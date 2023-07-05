@@ -45,7 +45,7 @@ public interface PSItems {
     FlaskItem ACACIA_BARREL = register("acacia_barrel", new FlaskItem(PSBlocks.ACACIA_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
     FlaskItem DARK_OAK_BARREL = register("dark_oak_barrel", new FlaskItem(PSBlocks.DARK_OAK_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
 
-    FlaskItem MASH_TUB = register("mash_tub", new MashTubItem(PSBlocks.MASH_TUB, new Settings().maxCount(16), FluidVolumes.MASH_TUB));
+    FlaskItem MASH_TUB = register("mash_tub", new MashTubItem(PSBlocks.MASH_TUB, new Settings().maxCount(16), FluidVolumes.VAT));
     FlaskItem FLASK = register("flask", new FlaskItem(PSBlocks.FLASK, new Settings().maxCount(16), FlaskBlockEntity.FLASK_CAPACITY));
     FlaskItem DISTILLERY = register("distillery", new FlaskItem(PSBlocks.DISTILLERY, new Settings().maxCount(16), DistilleryBlockEntity.DISTILLERY_CAPACITY));
     RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings()));

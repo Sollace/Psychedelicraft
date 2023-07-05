@@ -47,7 +47,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     private final Object2IntMap<Item> suppliedIngredients = new Object2IntOpenHashMap<>();
 
     public MashTubBlockEntity(BlockPos pos, BlockState state) {
-        super(PSBlockEntities.MASH_TUB, pos, state, FluidVolumes.MASH_TUB, Processable.ProcessType.FERMENT);
+        super(PSBlockEntities.MASH_TUB, pos, state, FluidVolumes.VAT, Processable.ProcessType.FERMENT);
     }
 
     public Object2IntMap<Item> getSuppliedIngredients() {
