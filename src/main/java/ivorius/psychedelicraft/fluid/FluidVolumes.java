@@ -16,12 +16,12 @@ public interface FluidVolumes {
     int BOWL = BUCKET / 20;
 
     int MUG = BUCKET / 2;
-    int CUP = BUCKET / 20;
+    int CUP = BUCKET / 4;
     int CHALLICE = BUCKET / 5;
     int SHOT = BUCKET / 25;
     int BOTTLE = BUCKET * 2;
     int SYRINGE = BUCKET / 100;
 
     int BARREL = BUCKET * 16;
-    int MASH_TUB = BUCKET * 16;
+    int VAT = BUCKET * 32;
 }
