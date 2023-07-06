@@ -3,8 +3,10 @@ package ivorius.psychedelicraft.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.entity.PSTradeOffers;
 import ivorius.psychedelicraft.item.PSItems;
@@ -16,6 +18,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.village.TradeOffer;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
 
@@ -48,6 +51,13 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
             } else {
                 info.setReturnValue(ActionResult.CONSUME);
             }
+        }
+    }
+
+    @Inject(method = "afterUsing", at = @At("RETURN"))
+    private void onAfterUsing(TradeOffer offer, CallbackInfo info) {
+        if (getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION) {
+            damage(PSDamageTypes.create(getWorld(), PSDamageTypes.OVERDOSE), (offer.getUses() * offer.getSellItem().getCount()) + 1);
         }
     }
 }
