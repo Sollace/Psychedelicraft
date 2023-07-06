@@ -7,6 +7,7 @@
   "gui.psychedelicraft.options.sounds": "Sounds",
   "gui.psychedelicraft.options.themes": "Drug Theme Music",
   "gui.psychedelicraft.options.gameplay": "Gameplay",
+  "gui.psychedelicraft.options.balancing": "Balancing",
   "gui.psychedelicraft.options.message_distortion": "Message Distortion",
   "gui.psychedelicraft.options.features": "Features",
   "gui.psychedelicraft.option.shaders_2d": "Use 2D Shaders",
@@ -25,7 +26,8 @@
   "gui.psychedelicraft.option.gameplay.distort_incoming_messages": "Incoming Messages",
   "gui.psychedelicraft.option.gameplay.distort_outgoing_messages": "Outgoing Messages",
   "gui.psychedelicraft.option.gameplay.harmonium": "Enable Harmonium",
-  "gui.psychedelicraft.option.gameplay.rifts": "Spawn Rifts",
+  "gui.psychedelicraft.option.gameplay.rift_jars": "Enable Rift Jars",
+  "gui.psychedelicraft.option.gameplay.rift_spawnrate": "Rift Spawn Rate",
 
   "button.reset": "Reset",
 

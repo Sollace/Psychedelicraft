@@ -153,10 +153,16 @@ class SettingsScreen extends GameGui {
                 ItemGroups.operatorEnabled = !ItemGroups.operatorEnabled;
                 return z;
             });
-            createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.rifts", gameplay.enableRiftJars, z -> {
+            createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.rift_jars", gameplay.enableRiftJars, z -> {
                 gameplay.enableRiftJars = z;
                 ItemGroups.operatorEnabled = !ItemGroups.operatorEnabled;
                 return z;
+            });
+
+            content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.balancing");
+            createFormattedSlider(RIGHT, row += 25, 0, 1800, "gui.psychedelicraft.option.gameplay.rift_spawnrate", gameplay.randomTicksUntilRiftSpawn / PSConfig.MINUTE, z -> {
+                gameplay.randomTicksUntilRiftSpawn = (int)(z * PSConfig.MINUTE);
+                return (float)(gameplay.randomTicksUntilRiftSpawn / PSConfig.MINUTE);
             });
         }
     }
