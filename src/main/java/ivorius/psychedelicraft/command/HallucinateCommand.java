@@ -6,7 +6,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.*;
 
-import ivorius.psychedelicraft.entity.drug.hallucination.EntityHallucinationType;
+import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationTypeKeys;
 import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgHallucinate;
 import net.minecraft.command.CommandRegistryAccess;
@@ -26,7 +26,7 @@ import net.minecraft.util.math.BlockPos;
  * @since 5 Jan 2023
  */
 class HallucinateCommand {
-    private static final SuggestionProvider<ServerCommandSource> SUGGESTIONS = (context, builder) -> CommandSource.suggestIdentifiers(EntityHallucinationType.REGISTRY.keySet(), builder);
+    private static final SuggestionProvider<ServerCommandSource> SUGGESTIONS = (context, builder) -> CommandSource.suggestIdentifiers(HallucinationTypeKeys.REGISTRY, builder);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
         dispatcher.register(CommandManager.literal("hallucinate")
