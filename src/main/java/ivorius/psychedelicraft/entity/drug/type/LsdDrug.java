@@ -5,6 +5,9 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
+import ivorius.psychedelicraft.PSDamageSources;
+import ivorius.psychedelicraft.entity.drug.Drug;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.util.math.MathHelper;
 
@@ -12,8 +15,26 @@ import net.minecraft.util.math.MathHelper;
  * Created by Sollace on Feb 6 2023.
  */
 public class LsdDrug extends SimpleDrug {
-    public LsdDrug(double decSpeed, double decSpeedPlus) {
-        super(DrugType.LSD, decSpeed, decSpeedPlus);
+
+    private final boolean harmful;
+
+    public LsdDrug(DrugType type, double decSpeed, double decSpeedPlus, boolean harmful) {
+        super(type, decSpeed, decSpeedPlus);
+        this.harmful = harmful;
+    }
+
+    @Override
+    public void update(DrugProperties drugProperties) {
+        if (harmful && getActiveValue() >= 0.99F) {
+            Drug caffiene = drugProperties.getDrug(DrugType.CAFFEINE);
+            if (caffiene.getActiveValue() > 0) {
+                caffiene.addToDesiredValue(-0.5);
+                effect /= 2;
+            } else {
+                drugProperties.asEntity().damage(PSDamageSources.STROKE, 1);
+            }
+        }
+        super.update(drugProperties);
     }
 
     @Override

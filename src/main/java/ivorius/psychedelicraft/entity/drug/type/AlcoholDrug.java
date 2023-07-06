@@ -18,8 +18,8 @@ import net.minecraft.util.math.random.Random;
  * Created by lukas on 01.11.14.
  */
 public class AlcoholDrug extends SimpleDrug {
-    public AlcoholDrug(double decSpeed, double decSpeedPlus) {
-        super(DrugType.ALCOHOL, decSpeed, decSpeedPlus);
+    public AlcoholDrug(DrugType type, double decSpeed, double decSpeedPlus) {
+        super(type, decSpeed, decSpeedPlus);
     }
 
     @Override
