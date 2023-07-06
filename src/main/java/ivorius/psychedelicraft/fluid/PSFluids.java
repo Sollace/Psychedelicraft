@@ -283,13 +283,13 @@ public interface PSFluids {
     );
     ChemicalExtractFluid MORNING_GLORY_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("morning_glory_extract"), new DrugFluid.Settings()
             .injectable()
-            .color(0x66eee2d3)
+            .color(0x66eee2d3), DrugType.LSD
     );
     ChemicalExtractFluid BELLADONA_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("belladonna_extract"), new DrugFluid.Settings()
-            .color(0x66eee2d3)
+            .color(0x66eee2d3), DrugType.ATROPINE
     );
     ChemicalExtractFluid JIMSONWEED_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("jimsonweed_extract"), new DrugFluid.Settings()
-            .color(0x66eee2d3)
+            .color(0x66eee2d3), DrugType.ATROPINE
     );
 
     SimpleFluid SLURRY = new SlurryFluid(Psychedelicraft.id("slurry"), new SimpleFluid.Settings().color(0xcc704E21).viscocity(4));
