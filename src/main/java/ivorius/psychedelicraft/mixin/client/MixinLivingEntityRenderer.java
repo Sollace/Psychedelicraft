@@ -3,11 +3,12 @@ package ivorius.psychedelicraft.mixin.client;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import ivorius.psychedelicraft.client.render.DrugRenderer;
+import ivorius.psychedelicraft.entity.AddictTaskListProvider;
 import ivorius.psychedelicraft.entity.PSTradeOffers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -41,10 +42,12 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, M extends Entit
         }
     }
 
-    @Inject(method = "isShaking", at = @At("HEAD"), cancellable = true)
-    private void onIsShaking(T entity, CallbackInfoReturnable<Boolean> info) {
+    @ModifyVariable(method = "setupTransforms", at = @At("HEAD"), ordinal = 1, argsOnly = true)
+    private float changeBodyYaw(float bodyYaw, T entity) {
         if (entity instanceof VillagerDataContainer v && v.getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION) {
-            info.setReturnValue(true);
+            bodyYaw += AddictTaskListProvider.getShakeAmount(entity);
         }
+
+        return bodyYaw;
     }
 }

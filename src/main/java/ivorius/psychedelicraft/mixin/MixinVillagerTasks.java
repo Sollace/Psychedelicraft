@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 
+import ivorius.psychedelicraft.entity.AddictTaskListProvider;
 import ivorius.psychedelicraft.entity.DealerTaskListProvider;
 import ivorius.psychedelicraft.entity.PSTradeOffers;
 import net.minecraft.entity.LivingEntity;
@@ -40,6 +41,9 @@ abstract class MixinVillagerTaskListProvider {
             CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>>> info) {
         if (profession == PSTradeOffers.DRUG_DEALER_PROFESSION) {
             info.setReturnValue(DealerTaskListProvider.createWorkTasks(createBusyFollowTask(), speed));
+        }
+        if (profession == PSTradeOffers.DRUG_ADDICT_PROFESSION) {
+            info.setReturnValue(AddictTaskListProvider.createWorkTasks(createBusyFollowTask(), speed));
         }
     }
 }

@@ -19,6 +19,7 @@ public interface PSDamageSources {
     DamageSource KIDNEY_FAILURE = new DamageSource("kidney_failure").setBypassesArmor().setUnblockable();
     DamageSource IN_SLEEP = new DamageSource("in_sleep").setBypassesArmor().setUnblockable();
     DamageSource OVER_EATING = new DamageSource("over_eating").setBypassesArmor().setUnblockable();
+    DamageSource OVERDOSE = new DamageSource("overdose").setBypassesArmor().setUnblockable();
 
     static DamageSource molotov(Entity projectile, Entity target, @Nullable Entity attacker) {
         return new ProjectileDamageSource(target == attacker ? "molotov.self" : "molotov", projectile, attacker).setProjectile();
