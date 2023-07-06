@@ -27,22 +27,22 @@ public class CaffeineDrug extends SimpleDrug {
 
     @Override
     public float heartbeatVolume() {
-        return breathVolumeMultiplier * MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1) + (getTicksActive() * 0.001F), 0, 1);
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1) + (getTicksActive() * 0.0001F), 0, 1) * 1.2F;
     }
 
     @Override
     public float heartbeatSpeed() {
-        return breathVolumeMultiplier * (float) getActiveValue() * 0.2f + (getTicksActive() * 0.001F);
+        return (float) getActiveValue() * 0.05F + (getTicksActive() * 0.0001F);
     }
 
     @Override
     public float breathVolume() {
-        return breathVolumeMultiplier * MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1), 0, 1) * 0.5F;
+        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4f, 1.0f), 0, 1) * 0.5F;
     }
 
     @Override
     public float breathSpeed() {
-        return breathVolumeMultiplier * (float) getActiveValue() * 0.3F;
+        return (float) getActiveValue() * 0.3F;
     }
 
     @Override
