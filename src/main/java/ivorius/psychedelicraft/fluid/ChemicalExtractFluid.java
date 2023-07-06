@@ -18,19 +18,19 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     public static final Attribute<Integer> DISTILLATION = Attribute.ofInt("distillation", 0, 2);
 
     final Settings settings;
+    private final DrugType drug;
 
-    public ChemicalExtractFluid(Identifier id, Settings settings) {
+    public ChemicalExtractFluid(Identifier id, Settings settings, DrugType drug) {
         super(id, settings.drinkable());
         this.settings = settings;
+        this.drug = drug;
     }
 
     @Override
     public void getDrugInfluencesPerLiter(ItemStack stack, Consumer<DrugInfluence> consumer) {
         super.getDrugInfluencesPerLiter(stack, consumer);
 
-        if (DISTILLATION.get(stack) >= 2) {
-            consumer.accept(new DrugInfluence(DrugType.LSD, 3, 0.05, 0.003, 0.6F));
-        }
+        consumer.accept(new DrugInfluence(drug, 3, 0, 0.03, Math.pow(96F, DISTILLATION.get(stack))));
     }
 
     @Override
