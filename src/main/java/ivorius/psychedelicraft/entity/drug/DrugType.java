@@ -21,7 +21,7 @@ import ivorius.psychedelicraft.entity.drug.type.*;
  */
 public record DrugType (Identifier id, Function<DrugType, Drug> constructor) {
     public static final Registry<DrugType> REGISTRY = FabricRegistryBuilder.createSimple(RegistryKey.<DrugType>ofRegistry(Psychedelicraft.id("drugs"))).buildAndRegister();
-    public static final DrugType ALCOHOL = register("alcohol", type -> new AlcoholDrug(1, 0.0002d));
+    public static final DrugType ALCOHOL = register("alcohol", type -> new AlcoholDrug(type, 1, 0.0002d));
     public static final DrugType CANNABIS = register("cannabis", type -> new CannabisDrug(1, 0.0002d));
     public static final DrugType BROWN_SHROOMS = register("brown_shrooms", type -> new BrownShroomsDrug(1, 0.0002d));
     public static final DrugType RED_SHROOMS = register("red_shrooms", type -> new RedShroomsDrug(1, 0.0002d));
@@ -31,9 +31,9 @@ public record DrugType (Identifier id, Function<DrugType, Drug> constructor) {
     public static final DrugType SUGAR = register("sugar", type -> new CaffeineDrug(type, 1, 0.0002d, 0));
     public static final DrugType BATH_SALTS = register("bath_salts", type -> new BathSaltsDrug(1, 0.00012d));
     public static final DrugType SLEEP_DEPRIVATION = register("sleep_deprivation", type -> new SleepDeprivationDrug());
-    public static final DrugType LSD = register("lsd", type -> new LsdDrug(1, 0.0003d));
-    public static final DrugType ATROPINE = register("atropine", type -> new RedShroomsDrug(1, 0.0003d));
-    public static final DrugType KAVA = register("kava", type -> new LsdDrug(1, 0.0002d));
+    public static final DrugType LSD = register("lsd", type -> new LsdDrug(type, 1, 0.0003d, false));
+    public static final DrugType ATROPINE = register("atropine", type -> new LsdDrug(type, 1, 0.0003d, true));
+    public static final DrugType KAVA = register("kava", type -> new AlcoholDrug(type, 1, 0.0002d));
     public static final DrugType WARMTH = register("warmth", type -> new WarmthDrug(1, 0.004d));
     public static final DrugType PEYOTE = register("peyote", type -> new PeyoteDrug(1, 0.0002d));
     public static final DrugType ZERO = register("zero", type -> new SimpleDrug(type, 1, 0.0001d));
