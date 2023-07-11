@@ -11,49 +11,71 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
+import ivorius.psychedelicraft.block.BarrelBlock;
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Direction.Axis;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Updated by Sollace on 6 Jan 2023
  */
 public class BarrelModel extends Model {
     private final ModelPart tree;
-    private final ModelPart tap3;
+
+    private final ModelPart barrel;
+    private final ModelPart legs;
+    private final ModelPart tap;
+    private final ModelPart tapHandle;
 
     public BarrelModel(ModelPart tree) {
         super(RenderLayer::getEntityCutout);
         this.tree = tree;
-        this.tap3 = tree.getChild("tap_3");
+        this.barrel = tree.getChild("barrel");
+        this.legs = tree.getChild("rack");
+        this.tap = barrel.getChild("tap");
+        this.tapHandle = tap.getChild("handle");
     }
 
     public static TexturedModelData getTexturedModelData() {
-        ModelData data = new ModelData();
-        ModelPartData root = data.getRoot();
-        root.addChild("base", ModelPartBuilder.create().uv(0, 0).mirrored().cuboid(-4, -4, 0, 8, 8, 14), ModelTransform.pivot(0, 15, -7));
-        root.addChild("top", ModelPartBuilder.create().uv(45, 0).mirrored().cuboid(-4, -6, -1, 8, 2, 16), ModelTransform.pivot(0, 15, -7));
-        root.addChild("bottom", ModelPartBuilder.create().uv(45, 19).mirrored().cuboid(-4, 4, -1, 8, 2, 16), ModelTransform.pivot(0, 15, -7));
-        root.addChild("right", ModelPartBuilder.create().uv(45, 38).mirrored().cuboid(-6, -4, -1, 2, 8, 16), ModelTransform.pivot(0, 15, -7));
-        root.addChild("left", ModelPartBuilder.create().uv(82, 38).mirrored().cuboid(4, -4, -1, 2, 8, 16), ModelTransform.pivot(0, 15, -7));
-        root.addChild("corner_1", ModelPartBuilder.create().uv(0, 23).mirrored().cuboid(-4, -4, -1, 1, 1, 16), ModelTransform.pivot(0, 15, -7));
-        root.addChild("corner_2", ModelPartBuilder.create().uv(0, 26).mirrored().cuboid(3, -4, -1, 1, 1, 16), ModelTransform.pivot(0, 15, -7));
-        root.addChild("corner_3", ModelPartBuilder.create().uv(0, 28).mirrored().cuboid(-4, 3, -1, 1, 1, 16), ModelTransform.pivot(0, 15, -7));
-        root.addChild("corner_4", ModelPartBuilder.create().uv(0, 30).mirrored().cuboid(3, 3, -1, 1, 1, 16), ModelTransform.pivot(0, 15, -7));
+        ModelData modelData = new ModelData();
+        ModelPartData root = modelData.getRoot();
+        ModelPartData barrel = root.addChild("barrel", ModelPartBuilder.create(), ModelTransform.pivot(0, 9, 0));
 
-        root.addChild("rack_1", ModelPartBuilder.create().uv(94, 12).mirrored().cuboid(-5, 0, -1, 10, 4, 2), ModelTransform.of(0, 20.5F, -5, -0.1487144F, 0, 0));
-        root.addChild("rack_2", ModelPartBuilder.create().uv(94, 19).mirrored().cuboid(-5, 0, 0, 10, 4, 2), ModelTransform.of(0, 20.5F, 4, 0.1487144F, 0, 0));
+        barrel.addChild("cube_r1", ModelPartBuilder.create().uv(0, 30).cuboid(-4, 5, -8, 1, 1, 16, Dilation.NONE)
+                .uv(0, 28).cuboid(3, 5, -8, 1, 1, 16, Dilation.NONE)
+                .uv(0, 26).cuboid(-4, 12, -8, 1, 1, 16, Dilation.NONE)
+                .uv(0, 23).cuboid(3, 12, -8, 1, 1, 16, Dilation.NONE)
+                .uv(45, 38).cuboid(4, 5, -8, 2, 8, 16, Dilation.NONE)
+                .uv(82, 38).cuboid(-6, 5, -8, 2, 8, 16, Dilation.NONE)
+                .uv(0, 0).cuboid(-4, 5, -7, 8, 8, 14, Dilation.NONE)
+                .uv(45, 19).cuboid(-4, 3, -8, 8, 2, 16, Dilation.NONE)
+                .uv(45, 0).cuboid(-4, 13, -8, 8, 2, 16, Dilation.NONE), ModelTransform.pivot(0, -9, 0));
 
-        root.addChild("rack_3", ModelPartBuilder.create().uv(94, 0).mirrored().cuboid(-1, 7, 2, 2, 1, 10), ModelTransform.pivot(0, 15, -7));
-        root.addChild("tap_1", ModelPartBuilder.create().uv(0, 50).mirrored().cuboid(-0.5F, 2, -1.5F, 1, 1, 2), ModelTransform.pivot(0, 15, -7));
-        root.addChild("tap_2", ModelPartBuilder.create().uv(7, 50).mirrored().cuboid(-0.5F, 1.8F, -2.5F, 1, 2, 1), ModelTransform.pivot(0, 15, -7));
-        root.addChild("tap_3", ModelPartBuilder.create().uv(12, 50).mirrored().cuboid(-1.5F, -0.21F, -0.5F, 3, 0, 1), ModelTransform.pivot(0, 17, -9));
-        return TexturedModelData.of(data, 128, 64);
+        ModelPartData tap = barrel.addChild("tap", ModelPartBuilder.create(), ModelTransform.pivot(0, -2.5F, -7));
+        tap.addChild("handle", ModelPartBuilder.create()
+                .uv(12, 50).cuboid(-1.5F, 0, -0.5F, 3, 0, 1, Dilation.NONE), ModelTransform.pivot(0, 0.71F, -2));
+        tap.addChild("base", ModelPartBuilder.create()
+                .uv(7, 50).cuboid(-0.5F, 5.2F, -9.5F, 1, 2, 1, Dilation.NONE)
+                .uv(0, 50).cuboid(-0.5F, 6, -8.5F, 1, 1, 2, Dilation.NONE), ModelTransform.pivot(0, -6.5F, 7));
+
+        ModelPartData legs = root.addChild("rack", ModelPartBuilder.create(), ModelTransform.of(0, 3F, 0, 0, 0, MathHelper.PI));
+        legs.addChild("back_legs", ModelPartBuilder.create().uv(94, 19).cuboid(-5, -2, -1, 10, 4, 2, Dilation.NONE), ModelTransform.of(0, 1.5969F, 5.9183F, 0.1487F, 0, 0));
+        legs.addChild("crossbeam", ModelPartBuilder.create().uv(94, 0).cuboid(-1, 1, -5, 2, 1, 10, Dilation.NONE), ModelTransform.NONE);
+        legs.addChild("front_legs", ModelPartBuilder.create().uv(94, 12).cuboid(-5, -2, -1, 10, 4, 2, Dilation.NONE), ModelTransform.of(0, 1.7332F, -5.7591F, -0.1487F, 0, 0));
+        return TexturedModelData.of(modelData, 128, 64);
     }
 
     public void setRotationAngles(BarrelBlockEntity entity) {
-        tap3.yaw = entity.tapRotation;
+        tapHandle.yaw = entity.tapRotation;
+        barrel.pitch = entity.getCachedState().get(BarrelBlock.FACING).getAxis() == Axis.Y ? MathHelper.HALF_PI : 0;
+        barrel.pivotY = 9 - 2 * barrel.pitch;
+        tap.roll = 0;//MinecraftClient.getInstance().player.age;
+        tap.visible = barrel.pitch == 0 && entity.getCachedState().get(BarrelBlock.TAPPED);
+        legs.visible = barrel.pitch == 0;
+        tree.pivotY = legs.visible ? 0 : 2;
     }
 
     @Override
