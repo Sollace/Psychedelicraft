@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import ivorius.psychedelicraft.PSDamageTypes;
+import ivorius.psychedelicraft.PSDamageSources;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.entity.PSTradeOffers;
 import ivorius.psychedelicraft.item.PSItems;
@@ -57,7 +57,7 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
     @Inject(method = "afterUsing", at = @At("RETURN"))
     private void onAfterUsing(TradeOffer offer, CallbackInfo info) {
         if (getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION) {
-            damage(PSDamageTypes.create(getWorld(), PSDamageTypes.OVERDOSE), (offer.getUses() * offer.getSellItem().getCount()) + 1);
+            damage(PSDamageSources.OVERDOSE, (offer.getUses() * offer.getSellItem().getCount()) + 1);
         }
     }
 }
