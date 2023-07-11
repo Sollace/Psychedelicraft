@@ -95,6 +95,10 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
 
     @Override
     protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
+        if (!state.get(TAPPED) || state.get(FACING).getAxis() == Axis.Y) {
+            return ActionResult.FAIL;
+        }
+
         ItemStack stack = player.getStackInHand(hand);
         if (stack.getItem() instanceof FluidContainer container) {
 
