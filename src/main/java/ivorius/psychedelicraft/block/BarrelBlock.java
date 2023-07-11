@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
@@ -21,6 +23,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
@@ -34,20 +37,33 @@ import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     public static final int MAX_TAP_AMOUNT = FluidVolumes.BUCKET;
-    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+    public static final DirectionProperty FACING = Properties.HOPPER_FACING;
+    public static final BooleanProperty TAPPED = BooleanProperty.of("tapped");
 
-    private static final VoxelShape X_ORIENTED_SHAPE = VoxelShapes.union(
-        Block.createCuboidShape(0, 5, 2, 16, 13, 14),
-        Block.createCuboidShape(0, 3, 4, 16, 15, 12)
-    );
-    private static final VoxelShape Z_ORIENTED_SHAPE = VoxelShapes.union(
-        Block.createCuboidShape(2, 5, 0, 14, 13, 16),
-        Block.createCuboidShape(4, 3, 0, 12, 15, 16)
+    private static final Map<Axis, VoxelShape> STANDING_SHAPES = Map.of(
+        Axis.X, VoxelShapes.union(
+            Block.createCuboidShape(0, 5, 2, 16, 13, 14),
+            Block.createCuboidShape(0, 3, 4, 16, 15, 12)
+        ),
+        Axis.Y, VoxelShapes.union(
+            Block.createCuboidShape(2, 0, 4, 14, 16, 12),
+            Block.createCuboidShape(4, 0, 2, 12, 16, 14)
+        ),
+        Axis.Z, VoxelShapes.union(
+            Block.createCuboidShape(2, 5, 0, 14, 13, 16),
+            Block.createCuboidShape(4, 3, 0, 12, 15, 16)
+        )
     );
 
     public BarrelBlock(Settings settings) {
         super(settings.nonOpaque());
-        setDefaultState(getDefaultState().with(FACING, Direction.NORTH));
+        setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(TAPPED, true));
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(FACING, TAPPED);
     }
 
     @Override
@@ -58,7 +74,7 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return state.get(FACING).getAxis() == Axis.X ? X_ORIENTED_SHAPE : Z_ORIENTED_SHAPE;
+        return STANDING_SHAPES.get(state.get(FACING).getAxis());
     }
 
     @Override
@@ -73,12 +89,12 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
+        Direction side = ctx.getPlayerLookDirection().getOpposite();
+        return getDefaultState().with(FACING, side.getAxis() == Axis.Y ? Direction.DOWN : side);
     }
 
     @Override
     protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
-
         ItemStack stack = player.getStackInHand(hand);
         if (stack.getItem() instanceof FluidContainer container) {
 
@@ -115,12 +131,6 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     @Override
     protected ScreenHandlerType<FluidContraptionScreenHandler<BarrelBlockEntity>> getScreenHandlerType() {
         return PSScreenHandlers.BARREL;
-    }
-
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
-        builder.add(FACING);
     }
 
     @Override
