@@ -19,7 +19,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4f;
 
 public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBlockEntity> {
     private final BarrelModel model;
@@ -45,16 +47,25 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
 
             if (MinecraftClient.getInstance().getResourceManager().getResource(symbol).isPresent()) {
                 matrices.translate(0, 0.5, 0);
-                float barrelZ = -0.4376F;
+                if (entity.getCachedState().get(BarrelBlock.FACING).getAxis() == Axis.Y) {
+                    Matrix4f mat = new Matrix4f();
+                    RotationAxis.POSITIVE_X.rotationDegrees(90).get(mat);
+
+                    matrices.multiplyPositionMatrix(mat);
+                    matrices.translate(0, -0.1, 0);
+                }
+                float barrelZ = -0.4376F + 0.06F;
                 float iconSize = 0.5F;
                 VertexConsumer buffer = vertices.getBuffer(model.getLayer(symbol));
+
+
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
 
                 for (int i = 0; i < 2; i++) {
                     RenderUtil.vertex(buffer, matrices, -iconSize, -iconSize, barrelZ, 1, 1, overlay, light);
                     RenderUtil.vertex(buffer, matrices, -iconSize,  iconSize, barrelZ, 1, 0, overlay, light);
                     RenderUtil.vertex(buffer, matrices,  iconSize,  iconSize, barrelZ, 0, 0, overlay, light);
                     RenderUtil.vertex(buffer, matrices,  iconSize, -iconSize, barrelZ, 0, 1, overlay, light);
-
                     matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
                 }
             }
