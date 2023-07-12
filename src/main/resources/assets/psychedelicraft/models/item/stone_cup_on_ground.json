@@ -1,0 +1,73 @@
+{
+	"textures": {
+	  "cup": "psychedelicraft:item/cup_placed",
+		"particle": "#cup"
+	},
+	"elements": [
+		{
+			"name": "west",
+			"from": [6.5, 0.25, 7],
+			"to": [7, 4, 9],
+			"faces": {
+				"north": {"uv": [4, 4, 5, 10], "texture": "#cup"},
+				"east": {"uv": [0, 4, 4, 10], "texture": "#cup"},
+				"south": {"uv": [9, 4, 10, 10], "texture": "#cup"},
+				"west": {"uv": [5, 4, 9, 10], "texture": "#cup"},
+				"up": {"uv": [0, 4, 1, 0], "texture": "#cup"},
+				"down": {"uv": [1, 0, 2, 4], "texture": "#cup"}
+			}
+		},
+		{
+			"name": "south",
+			"from": [7, 0.25, 9],
+			"to": [9, 4, 9.5],
+			"faces": {
+				"north": {"uv": [1, 10, 5, 16], "texture": "#cup"},
+				"east": {"uv": [0, 10, 1, 16], "texture": "#cup"},
+				"south": {"uv": [6, 10, 10, 16], "texture": "#cup"},
+				"west": {"uv": [5, 10, 6, 16], "texture": "#cup"},
+				"up": {"uv": [0, 4, 1, 0], "rotation": 270, "texture": "#cup"},
+				"down": {"uv": [1, 4, 2, 0], "rotation": 90, "texture": "#cup"}
+			}
+		},
+		{
+			"name": "north",
+			"from": [7, 0.25, 6.5],
+			"to": [9, 4, 7],
+			"faces": {
+				"north": {"uv": [1, 10, 5, 16], "texture": "#cup"},
+				"east": {"uv": [0, 10, 1, 16], "texture": "#cup"},
+				"south": {"uv": [6, 10, 10, 16], "texture": "#cup"},
+				"west": {"uv": [5, 10, 6, 16], "texture": "#cup"},
+				"up": {"uv": [0, 4, 1, 0], "rotation": 270, "texture": "#cup"},
+				"down": {"uv": [1, 4, 2, 0], "rotation": 90, "texture": "#cup"}
+			}
+		},
+		{
+			"name": "east",
+			"from": [9, 0.25, 7],
+			"to": [9.5, 4, 9],
+			"faces": {
+				"north": {"uv": [4, 4, 5, 10], "texture": "#cup"},
+				"east": {"uv": [0, 4, 4, 10], "texture": "#cup"},
+				"south": {"uv": [9, 4, 10, 10], "texture": "#cup"},
+				"west": {"uv": [5, 4, 9, 10], "texture": "#cup"},
+				"up": {"uv": [0, 4, 1, 0], "texture": "#cup"},
+				"down": {"uv": [1, 0, 2, 4], "texture": "#cup"}
+			}
+		},
+		{
+			"name": "down",
+			"from": [7, 0, 7],
+			"to": [9, 0.5, 9],
+			"faces": {
+				"north": {"uv": [6, 3, 2, 4], "texture": "#cup"},
+				"east": {"uv": [2, 0, 6, 1], "texture": "#cup"},
+				"south": {"uv": [6, 2, 2, 3], "texture": "#cup"},
+				"west": {"uv": [2, 1, 6, 2], "texture": "#cup"},
+				"up": {"uv": [10, 4, 6, 0], "texture": "#cup"},
+				"down": {"uv": [14, 0, 10, 4], "texture": "#cup"}
+			}
+		}
+	]
+}
