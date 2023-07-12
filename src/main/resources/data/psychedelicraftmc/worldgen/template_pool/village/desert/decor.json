@@ -1,4 +1,6 @@
 {
+  "name": "psychedelicraft:village/desert/decor",
+  "fallback": "minecraft:empty",
   "elements": [
     {
       "element": {
@@ -16,6 +18,5 @@
       },
       "weight": 1
     }
-  ],
-  "fallback": "minecraft:empty"
+  ]
 }
