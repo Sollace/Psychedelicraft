@@ -15,12 +15,11 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
 import java.util.*;
 import java.util.function.Function;
-
-import org.joml.Vector3f;
 
 /**
  * Created by calebmanley on 4/05/2014.
@@ -110,7 +109,7 @@ public class BongItem extends Item {
     public record Consumable (
             ItemStack consumedItem,
             Function<ItemStack, List<DrugInfluence>> drugInfluences,
-            Vector3f smokeColor
+            Vec3f smokeColor
     ) {
         public Consumable(ItemStack consumedItem, DrugInfluence...drugInfluences) {
             this(consumedItem, stack -> List.of(drugInfluences), SmokeableItem.WHITE);

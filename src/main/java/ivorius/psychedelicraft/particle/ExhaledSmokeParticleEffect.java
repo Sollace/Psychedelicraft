@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.particle;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -13,7 +13,7 @@ public class ExhaledSmokeParticleEffect extends DustParticleEffect {
     public static final Factory<ExhaledSmokeParticleEffect> FACTORY = new Factory<>(){
         @Override
         public ExhaledSmokeParticleEffect read(ParticleType<ExhaledSmokeParticleEffect> particleType, StringReader reader) throws CommandSyntaxException {
-            Vector3f color = AbstractDustParticleEffect.readColor(reader);
+            Vec3f color = AbstractDustParticleEffect.readColor(reader);
             reader.expect(' ');
             float f = reader.readFloat();
             return new ExhaledSmokeParticleEffect(color, f);
@@ -25,7 +25,7 @@ public class ExhaledSmokeParticleEffect extends DustParticleEffect {
         }
     };
 
-    public ExhaledSmokeParticleEffect(Vector3f color, float scale) {
+    public ExhaledSmokeParticleEffect(Vec3f color, float scale) {
         super(color, scale);
     }
 

@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer.FluidAppearance;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.util.Compat119;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.client.model.ExtraModelProvider;
 import net.minecraft.block.StainedGlassPaneBlock;
@@ -34,7 +35,7 @@ import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -60,9 +61,7 @@ public class PlacedDrinksModelProvider implements ExtraModelProvider {
         entries.clear();
         manager.getResource(CONFIG_LOCATION).ifPresent(resource -> {
             try (BufferedReader reader = resource.getReader()) {
-                JsonHelper.getArray(JsonHelper.asObject(JsonHelper.deserialize(GSON, reader, JsonElement.class), "root"), "values")
-                .asList()
-                .stream()
+                Compat119.stream(JsonHelper.getArray(JsonHelper.asObject(JsonHelper.deserialize(GSON, reader, JsonElement.class), "root"), "values"))
                 .map(element -> {
                     try {
                         return JsonHelper.asObject(element, "root.values[i]");
@@ -90,7 +89,7 @@ public class PlacedDrinksModelProvider implements ExtraModelProvider {
     }
 
     public Optional<Entry> get(Item item) {
-        return Optional.ofNullable(entries.get(Registries.ITEM.getId(item)));
+        return Optional.ofNullable(entries.get(Registry.ITEM.getId(item)));
     }
 
     public void renderDrink(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
@@ -139,19 +138,19 @@ public class PlacedDrinksModelProvider implements ExtraModelProvider {
     }
 
     public static ModelIdentifier getGroundModelId(Item item) {
-        return getGroundModelId(Registries.ITEM.getId(item));
+        return getGroundModelId(Registry.ITEM.getId(item));
     }
 
     public static ModelIdentifier getGroundModelFluidId(Item item) {
-        return getGroundModelFluidId(Registries.ITEM.getId(item));
+        return getGroundModelFluidId(Registry.ITEM.getId(item));
     }
 
     public static ModelIdentifier getGroundModelId(Identifier item) {
-        return new ModelIdentifier(item.withPath(p -> p + "_on_ground"), "inventory");
+        return new ModelIdentifier(Compat119.withPath(item, p -> p + "_on_ground"), "inventory");
     }
 
     public static ModelIdentifier getGroundModelFluidId(Identifier item) {
-        return new ModelIdentifier(item.withPath(p -> p + "_on_ground_fluid"), "inventory");
+        return new ModelIdentifier(Compat119.withPath(item, p -> p + "_on_ground_fluid"), "inventory");
     }
 
     public record Entry(float height, float fluidOrigin) {

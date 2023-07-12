@@ -6,9 +6,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ivorius.psychedelicraft.block.CannabisPlantBlock;
 import ivorius.psychedelicraft.block.PSBlocks;
 import net.minecraft.block.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -128,7 +128,7 @@ public class TilledPatchFeature extends Feature<TilledPatchFeature.Config> {
         public static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> {
             return instance.group(
                     Codec.BOOL.fieldOf("needsWater").orElse(true).forGetter(Config::needsWater),
-                    Registries.BLOCK.getCodec().fieldOf("block").forGetter(Config::block)
+                    Registry.BLOCK.getCodec().fieldOf("block").forGetter(Config::block)
             ).apply(instance, (needsWater, block) -> new Config(
                     (boolean)needsWater,
                     (CannabisPlantBlock)(block instanceof CannabisPlantBlock ? block : PSBlocks.CANNABIS)

@@ -63,7 +63,7 @@ public class DryingTableScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int index) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack originalStack = ItemStack.EMPTY;
         Slot slot = slots.get(index);
 

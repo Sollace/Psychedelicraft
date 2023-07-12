@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.particle;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -13,7 +13,7 @@ public class BubbleParticleEffect extends DustParticleEffect {
     public static final Factory<BubbleParticleEffect> FACTORY = new Factory<>(){
         @Override
         public BubbleParticleEffect read(ParticleType<BubbleParticleEffect> particleType, StringReader reader) throws CommandSyntaxException {
-            Vector3f color = AbstractDustParticleEffect.readColor(reader);
+            Vec3f color = AbstractDustParticleEffect.readColor(reader);
             reader.expect(' ');
             float f = reader.readFloat();
             return new BubbleParticleEffect(color, f);
@@ -25,7 +25,7 @@ public class BubbleParticleEffect extends DustParticleEffect {
         }
     };
 
-    public BubbleParticleEffect(Vector3f color, float scale) {
+    public BubbleParticleEffect(Vec3f color, float scale) {
         super(color, scale);
     }
 

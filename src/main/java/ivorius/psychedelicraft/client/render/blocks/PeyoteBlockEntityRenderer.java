@@ -46,9 +46,9 @@ public class PeyoteBlockEntityRenderer implements BlockEntityRenderer<PeyoteBloc
 
         Vec3d offset = entity.getCachedState().getModelOffset(entity.getWorld(), entity.getPos());
         matrices.translate(offset.x, offset.y, offset.z);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rng.nextInt(4) * 180));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rng.nextInt(4) * 180));
 
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180));
 
         int age = entity.getCachedState().get(PeyoteBlock.AGE) % 4;
         models[age].render(matrices, vertices.getBuffer(RenderLayer.getEntityCutout(TEXTURES[age])), light, overlay, 1, 1, 1, 1);

@@ -42,7 +42,7 @@ public record FluidStateManager (Set<FluidProperty<?>> properties) {
     }
 
     private <O, S extends State<O, S>, T extends Comparable<T>> S copyStateValue(State<?, ?> from, S to, Property<T> property) {
-        return from.getOrEmpty(property).map(v -> to.withIfExists(property, v)).orElse(to);
+        return from.getOrEmpty(property).map(v -> to.contains(property) ? to.with(property, v) : to).orElse(to);
     }
 
     public record FluidProperty<T extends Comparable<T>>(

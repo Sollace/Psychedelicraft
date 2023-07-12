@@ -69,7 +69,7 @@ final class VariantMarshal {
 
     public static Optional<ViewBasedFluidContainer> probeContents(ItemStack stack) {
         return Optional.of(stack).filter(s -> {
-            var storage = FluidStorage.ITEM.find(s, ContainerItemContext.withInitial(s.copy()));
+            var storage = FluidStorage.ITEM.find(s, ContainerItemContext.withConstant(s.copy()));
             return storage != null && storage.iterator().hasNext();
         }).map(ViewBasedFluidContainer::new);
     }
@@ -87,7 +87,7 @@ final class VariantMarshal {
 
         @Override
         public MutableFluidContainer toMutable(ItemStack stack) {
-            var context = ContainerItemContext.withInitial(stack.copy());
+            var context = ContainerItemContext.withConstant(stack.copy());
             var storage = FluidStorage.ITEM.find(stack, context);
             var view = storage.iterator().next();
             return new Mutable(this, context, storage, view);

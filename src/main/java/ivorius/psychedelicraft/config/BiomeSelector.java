@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 
@@ -42,7 +42,7 @@ public interface BiomeSelector {
 
     static Predicate<BiomeSelectionContext> compile(String selector) {
         if (selector.startsWith("#")) {
-            return BiomeSelectors.tag(TagKey.of(RegistryKeys.BIOME, new Identifier(selector.substring(1))));
+            return BiomeSelectors.tag(TagKey.of(Registry.BIOME_KEY, new Identifier(selector.substring(1))));
         }
 
         return ofId(new Identifier(selector));

@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.client.particle;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 import ivorius.psychedelicraft.particle.BubbleParticleEffect;
 import net.minecraft.client.particle.ParticleTextureSheet;
@@ -21,10 +21,10 @@ public class BubbleParticle extends SpriteBillboardParticle {
         velocityZ = vZ * 0.2F + (Math.random() * 2 - 1) * 0.02F;
         maxAge = (int)(8 / (Math.random() * 0.8 + 0.2));
 
-        Vector3f color = effect.getColor();
-        red = color.x;
-        green = color.y;
-        blue = color.z;
+        Vec3f color = effect.getColor();
+        red = color.getX();
+        green = color.getY();
+        blue = color.getZ();
     }
 
     @Override

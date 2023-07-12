@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft;
 
-import net.minecraft.registry.*;
+import net.minecraft.util.registry.*;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
@@ -18,7 +18,7 @@ public interface PSSounds {
 
     static SoundEvent register(String name) {
         Identifier id = Psychedelicraft.id(name);
-        return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
+        return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(id));
     }
 
     static void bootstrap() {}

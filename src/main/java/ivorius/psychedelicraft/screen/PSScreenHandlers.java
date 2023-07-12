@@ -3,8 +3,7 @@ package ivorius.psychedelicraft.screen;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.*;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 
@@ -29,7 +28,7 @@ public interface PSScreenHandlers {
     ));
 
     static <T extends ScreenHandler> ScreenHandlerType<T> register(String name, ScreenHandlerType<T> type) {
-        return Registry.register(Registries.SCREEN_HANDLER, Psychedelicraft.id(name), type);
+        return Registry.register(Registry.SCREEN_HANDLER, Psychedelicraft.id(name), type);
     }
 
     static void bootstrap() { }

@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.block;
 
 import net.minecraft.block.*;
-import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;

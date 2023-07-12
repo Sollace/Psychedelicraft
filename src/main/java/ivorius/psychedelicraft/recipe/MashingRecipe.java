@@ -9,7 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
@@ -32,8 +31,8 @@ public class MashingRecipe extends FillRecepticalRecipe {
 
     private final FluidIngredient fluid;
 
-    public MashingRecipe(Identifier id, String group, CraftingRecipeCategory category, FluidIngredient output, FluidIngredient fluid, DefaultedList<Ingredient> input, int stewTime) {
-        super(id, group, category, output, input);
+    public MashingRecipe(Identifier id, String group, FluidIngredient output, FluidIngredient fluid, DefaultedList<Ingredient> input, int stewTime) {
+        super(id, group, output, input);
         this.fluid = fluid;
         this.stewTime = stewTime;
     }
@@ -94,12 +93,10 @@ public class MashingRecipe extends FillRecepticalRecipe {
     }
 
     static class Serializer implements RecipeSerializer<MashingRecipe> {
-        @SuppressWarnings("deprecation")
         @Override
         public MashingRecipe read(Identifier id, JsonObject json) {
             return new MashingRecipe(id,
                     JsonHelper.getString(json, "group", ""),
-                    CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC),
                     FluidIngredient.fromJson(JsonHelper.getObject(json, "result")),
                     FluidIngredient.fromJson(JsonHelper.getObject(json, "base_fluid")),
                     RecipeUtils.getIngredients(JsonHelper.getArray(json, "ingredients")),
@@ -111,7 +108,6 @@ public class MashingRecipe extends FillRecepticalRecipe {
         public MashingRecipe read(Identifier id, PacketByteBuf buffer) {
             return new MashingRecipe(id,
                     buffer.readString(),
-                    buffer.readEnumConstant(CraftingRecipeCategory.class),
                     new FluidIngredient(buffer),
                     new FluidIngredient(buffer),
                     buffer.readCollection(DefaultedList::ofSize, Ingredient::fromPacket),
@@ -122,7 +118,6 @@ public class MashingRecipe extends FillRecepticalRecipe {
         @Override
         public void write(PacketByteBuf buffer, MashingRecipe recipe) {
             buffer.writeString(recipe.getGroup());
-            buffer.writeEnumConstant(recipe.getCategory());
             recipe.getOutputFluid().write(buffer);
             recipe.getPoolFluid().write(buffer);
             buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));

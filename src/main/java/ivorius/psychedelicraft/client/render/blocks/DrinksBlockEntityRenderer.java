@@ -20,7 +20,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.shape.VoxelShape;
 
 public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrinksBlock.Data> {
@@ -36,7 +36,7 @@ public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrin
             matrices.push();
             matrices.translate(drink.x(), y, drink.z());
             matrices.translate(0.5F, 0, 0.5F);
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(drink.rotation()));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(drink.rotation()));
             matrices.translate(-0.5F, 0, -0.5F);
             PlacedDrinksModelProvider.INSTANCE.renderDrink(drink.stack(), matrices, vertices, light, overlay);
             matrices.pop();

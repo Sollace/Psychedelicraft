@@ -7,8 +7,8 @@ package ivorius.psychedelicraft.client.render;
 
 import java.util.Random;
 
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -25,7 +25,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class RenderUtil {
     private static final Vector4f POSITION_VECTOR = new Vector4f();
-    private static final Vector3f NORMAL_VECTOR = new Vector3f();
+    private static final Vec3f NORMAL_VECTOR = new Vec3f();
     public static final int SCREEN_Z_OFFSET = -90;
     private static final Random RNG = new Random(0L);
 
@@ -44,14 +44,17 @@ public class RenderUtil {
     }
 
     public static VertexConsumer fastVertex(VertexConsumer buffer, MatrixStack matrices, float x, float y, float z) {
-        matrices.peek().getPositionMatrix().transform(POSITION_VECTOR.set(x, y, z, 1));
-        return buffer.vertex(POSITION_VECTOR.x, POSITION_VECTOR.y, POSITION_VECTOR.z);
+        POSITION_VECTOR.set(x, y, z, 1);
+        POSITION_VECTOR.transform(matrices.peek().getPositionMatrix());
+        return buffer.vertex(POSITION_VECTOR.getX(), POSITION_VECTOR.getY(), POSITION_VECTOR.getZ());
     }
 
     public static void vertex(VertexConsumer buffer, MatrixStack matrices, float x, float y, float z, float u, float v, int light, int overlay) {
-        matrices.peek().getPositionMatrix().transform(POSITION_VECTOR.set(x, y, z, 1));
-        matrices.peek().getNormalMatrix().transform(NORMAL_VECTOR.set(0, 1, 0));
-        buffer.vertex(POSITION_VECTOR.x, POSITION_VECTOR.y, POSITION_VECTOR.z, 1, 1, 1, 1, u, v, light, overlay, NORMAL_VECTOR.x, NORMAL_VECTOR.y, NORMAL_VECTOR.z);
+        POSITION_VECTOR.set(x, y, z, 1);
+        POSITION_VECTOR.transform(matrices.peek().getPositionMatrix());
+        NORMAL_VECTOR.set(0, 1, 0);
+        NORMAL_VECTOR.transform(matrices.peek().getNormalMatrix());
+        buffer.vertex(POSITION_VECTOR.getX(), POSITION_VECTOR.getY(), POSITION_VECTOR.getZ(), 1, 1, 1, 1, u, v, light, overlay, NORMAL_VECTOR.getX(), NORMAL_VECTOR.getY(), NORMAL_VECTOR.getZ());
     }
 
     public static void drawQuad(MatrixStack matrices, float x0, float y0, float x1, float y1) {
@@ -73,7 +76,7 @@ public class RenderUtil {
             Identifier texture,
             float u0, float v0,
             float u1, float v1, int offset) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.setShaderTexture(0, texture);
         BufferBuilder buffer = Tessellator.getInstance().getBuffer();

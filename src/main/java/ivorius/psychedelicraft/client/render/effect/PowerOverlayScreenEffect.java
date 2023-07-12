@@ -35,7 +35,7 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
         Random powerR = new Random(entity.age); // 20 changes / sec is alright
         int powerParticles = MathHelper.floor(powerR.nextFloat() * 200.0f * power);
         if (powerParticles > 0) {
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, POWER_PARTICLE_TEXTURE);
             renderRandomParticles(matrices, powerParticles, height / 10, MathHelper.ceil(height / 10 * power), width, height, powerR);
         }
@@ -50,7 +50,7 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
         if (powerLightnings > 0) {
             int lightningW = height;
 
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.blendFuncSeparate(
                     GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE,
                     GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO

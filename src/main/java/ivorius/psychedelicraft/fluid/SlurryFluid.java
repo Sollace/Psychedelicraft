@@ -35,14 +35,14 @@ public class SlurryFluid extends SimpleFluid implements Processable {
 
     public SlurryFluid(Identifier id, Settings settings) {
         super(id, settings);
-        this.flowTexture = Optional.of(getId().withPath(p -> "block/fluid/" + p + "_still"));
+        this.flowTexture = Optional.of(getId()).map(i -> new Identifier(i.getNamespace(), "block/fluid/" + i.getPath() + "_still"));
     }
 
     @Override
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
         ParticleUtil.spawnParticle(world, pos, new BubbleParticleEffect(MathUtils.unpackRgbVector(getColor(ItemStack.EMPTY)), 1), ConstantIntProvider.create(5));
 
-        world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS,
+        world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS,
                 0.5F + world.getRandom().nextFloat(),
                 0.3F + world.getRandom().nextFloat(), true);
     }

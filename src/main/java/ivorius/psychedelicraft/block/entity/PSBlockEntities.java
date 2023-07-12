@@ -5,8 +5,7 @@ import ivorius.psychedelicraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.BlockEntityType.Builder;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.util.registry.Registry;
 
 public interface PSBlockEntities {
     BlockEntityType<DryingTableBlockEntity> DRYING_TABLE = create("drying_table", BlockEntityType.Builder.create(DryingTableBlockEntity::new, PSBlocks.DRYING_TABLE, PSBlocks.IRON_DRYING_TABLE));
@@ -25,7 +24,7 @@ public interface PSBlockEntities {
     BlockEntityType<PlacedDrinksBlock.Data> PLACED_DRINK = create("placed_drink", BlockEntityType.Builder.create(PlacedDrinksBlock.Data::new, PSBlocks.PLACED_DRINK));
 
     static <T extends BlockEntity> BlockEntityType<T> create(String id, Builder<T> builder) {
-        return Registry.register(Registries.BLOCK_ENTITY_TYPE, Psychedelicraft.id(id), builder.build(null));
+        return Registry.register(Registry.BLOCK_ENTITY_TYPE, Psychedelicraft.id(id), builder.build(null));
     }
 
     static void bootstrap() { }

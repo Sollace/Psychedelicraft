@@ -167,7 +167,7 @@ public class MotionBlurScreenEffect implements ScreenEffect {
             float alpha = Math.min(1, sample * 0.002f * motionBlur);
 
             if (prepared && alpha > 0) {
-                RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
                 RenderSystem.setShaderColor(1, 1, 1, alpha);
                 RenderSystem.enableBlend();
                 RenderSystem.setShaderTexture(0, output.getColorAttachment());

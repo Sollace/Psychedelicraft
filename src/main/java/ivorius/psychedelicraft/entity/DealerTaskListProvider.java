@@ -31,7 +31,6 @@ import net.minecraft.entity.ai.brain.task.GoToIfNearbyTask;
 import net.minecraft.entity.ai.brain.task.GoToNearbyPositionTask;
 import net.minecraft.entity.ai.brain.task.GoToSecondaryPositionTask;
 import net.minecraft.entity.ai.brain.task.HoldTradeOffersTask;
-import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.ScheduleActivityTask;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -57,24 +56,24 @@ public class DealerTaskListProvider {
                 busyFollowTasks,
                 Pair.of(5, new RandomTask<>(ImmutableList.of(
                         Pair.of(new DealerWorkTask(), 7),
-                        Pair.of(GoToIfNearbyTask.create(MemoryModuleType.JOB_SITE, 0.4f, 4), 2),
-                        Pair.of(GoToNearbyPositionTask.create(MemoryModuleType.JOB_SITE, 0.4f, 1, 10), 5),
-                        Pair.of(GoToSecondaryPositionTask.create(MemoryModuleType.SECONDARY_JOB_SITE, speed, 1, 6, MemoryModuleType.JOB_SITE), 5),
+                        Pair.of(new GoToIfNearbyTask(MemoryModuleType.JOB_SITE, 0.4f, 4), 2),
+                        Pair.of(new GoToNearbyPositionTask(MemoryModuleType.JOB_SITE, 0.4f, 1, 10), 5),
+                        Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.SECONDARY_JOB_SITE, speed, 1, 6, MemoryModuleType.JOB_SITE), 5),
                         Pair.of(new DealerVillagerTask(), 2),
                         Pair.of(new BoneMealTask(), 4))
                 )),
                 Pair.of(10, new HoldTradeOffersTask(400, 1600)),
-                Pair.of(10, FindInteractionTargetTask.create(EntityType.PLAYER, 4)),
-                Pair.of(2, VillagerWalkTowardsTask.create(MemoryModuleType.JOB_SITE, speed, 9, 100, 1200)),
+                Pair.of(10, new FindInteractionTargetTask(EntityType.PLAYER, 4)),
+                Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.JOB_SITE, speed, 9, 100, 1200)),
             //  Pair.of(3, new GiveGiftsToHeroTask(100)),
-                Pair.of(99, ScheduleActivityTask.create()
+                Pair.of(99, new ScheduleActivityTask()
         ));
     }
 
     static class DealerWorkTask extends VillagerWorkTask {
         @Override
         protected void performAdditionalWork(ServerWorld world, VillagerEntity entity) {
-            Optional<GlobalPos> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
+            Optional<GlobalPos> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
             if (!optional.isPresent()) {
                 return;
             }
@@ -120,7 +119,7 @@ public class DealerTaskListProvider {
 
     }
 
-    static class DealerVillagerTask extends MultiTickTask<VillagerEntity> { // version of FarmerVillagerTask changed to work with drug crops
+    static class DealerVillagerTask extends Task<VillagerEntity> { // version of FarmerVillagerTask changed to work with drug crops
         private static final int MAX_RUN_TIME = 200;
         public static final float WALK_SPEED = 0.5f;
 

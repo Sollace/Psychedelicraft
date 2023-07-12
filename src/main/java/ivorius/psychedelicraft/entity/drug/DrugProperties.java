@@ -35,7 +35,6 @@ import java.util.function.Function;
 import java.util.stream.*;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 public class DrugProperties implements NbtSerialisable {
     public static final UUID DRUG_EFFECT_UUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1");
@@ -50,7 +49,7 @@ public class DrugProperties implements NbtSerialisable {
 
     private int timeBreathingSmoke;
     @Nullable
-    private Vector3f breathSmokeColor;
+    private Vec3f breathSmokeColor;
 
     private final PlayerEntity entity;
 
@@ -151,7 +150,7 @@ public class DrugProperties implements NbtSerialisable {
         return drugs.keySet();
     }
 
-    public void startBreathingSmoke(int time, Vector3f color) {
+    public void startBreathingSmoke(int time, Vec3f color) {
         this.breathSmokeColor = color;
         this.timeBreathingSmoke = time + 10; //10 is the time spent breathing in
         markDirty();

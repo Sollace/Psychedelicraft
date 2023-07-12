@@ -10,8 +10,8 @@ import net.minecraft.client.render.WorldRenderer;
 
 @Mixin(WorldRenderer.class)
 abstract class MixinWorldRenderer {
-    private static final String SKY = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V";
-    private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FDDD)V";
+    private static final String SKY = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/math/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V";
+    private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/math/Matrix4f;FDDD)V";
 
     @Inject(method = SKY, at = @At("HEAD"))
     private void beforeRenderSky(CallbackInfo info) {

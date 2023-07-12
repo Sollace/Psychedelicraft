@@ -11,7 +11,8 @@ import com.mojang.datafixers.util.Pair;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
-import net.minecraft.registry.RegistryKeys;
+import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.Identifier;
@@ -19,8 +20,9 @@ import net.minecraft.util.Identifier;
 public interface MutableStructurePool {
     static void bootstrap() {
         DynamicRegistrySetupCallback.EVENT.register(registries -> {
+            Registry<StructurePool> structurePools = registries.get(Registry.STRUCTURE_POOL_KEY);
             Map<Identifier, PoolPair> registeredPools = new HashMap<>();
-            registries.registerEntryAdded(RegistryKeys.TEMPLATE_POOL, (rawId, id, pool) -> {
+            RegistryEntryAddedCallback.event(structurePools).register((rawId, id, pool) -> {
                 boolean isInjectedPool = id.getNamespace().equals("psychedelicraftmc");
                 if (isInjectedPool || id.getNamespace().equals("minecraft")) {
                     Identifier targetId = isInjectedPool ? new Identifier(id.getPath()) : id;

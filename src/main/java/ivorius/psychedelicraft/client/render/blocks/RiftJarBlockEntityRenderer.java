@@ -27,8 +27,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.Random;
 
-import org.joml.Vector3d;
-
 public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBlockEntity> {
     public static final Identifier TEXTURE = Psychedelicraft.id("textures/entity/rift_jar/rift_jar.png");
     public static final Identifier CRACKED_TEXTURE = Psychedelicraft.id("textures/entity/rift_jar/rift_jar_cracked.png");
@@ -62,11 +60,11 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         matrices.translate(0.5F, 0.5f, 0.5F);
 
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getCachedState().get(HorizontalFacingBlock.FACING).asRotation() + 180));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(entity.getCachedState().get(HorizontalFacingBlock.FACING).asRotation() + 180));
 
         model.setAngles(entity, tickDelta);
         matrices.translate(0, 1, 0);
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180));
 
         model.render(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucent(TEXTURE)), light, overlay, 1, 1, 1, 1);
 
@@ -79,7 +77,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         if (entity.currentRiftFraction > 0) {
             matrices.push();
             matrices.translate(0, 1.5F, 0);
-            matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(180));
+            matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(180));
             matrices.scale(0.9F, 0.9F, 0.9F);
             ZeroScreen.render(ticks, (layer, u, v) -> {
                 model.renderInterior(matrices, vertices.getBuffer(layer), 0, 0, 1, 1, 1, Math.min(entity.currentRiftFraction * 2, 1));
@@ -94,10 +92,10 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         matrices.translate(0.5F, 0.5f, 0.5F);
         RenderSystem.disableCull();
 
-        Vec3d jarPosition = entity.getPos().toCenterPos();
+        Vec3d jarPosition = Vec3d.ofCenter(entity.getPos());
 
         for (RiftJarBlockEntity.JarRiftConnection connection : entity.getConnections()) {
-            Vector3d connectionPoint = new Vector3d(
+            Vec3d connectionPoint = new Vec3d(
                     connection.position.x - jarPosition.x,
                     connection.position.y - (jarPosition.y + 0.1F),
                     connection.position.z - jarPosition.z

@@ -1,7 +1,7 @@
 package ivorius.psychedelicraft.util;
 
-import org.joml.Vector3d;
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import net.minecraft.util.math.MathHelper;
@@ -40,8 +40,8 @@ public interface MathUtils {
         return value;
     }
 
-    static Vector3f unpackRgbVector(int left) {
-        return new Vector3f(r(left), g(left), b(left));
+    static Vec3f unpackRgbVector(int left) {
+        return new Vec3f(r(left), g(left), b(left));
     }
 
     static float[] unpackRgb(int left) {
@@ -135,8 +135,17 @@ public interface MathUtils {
         return cubicMix(0, 0, 1, 1, MathHelper.clamp(delta, 0, 1));
     }
 
-    static Vector3d cubicMix(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, double delta, Vector3d dest) {
-        return dest.set(
+    static Vec3d cubicMix(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, double delta) {
+        return new Vec3d(
+            cubicMix(v1.x, v2.x, v3.x, v4.x, delta),
+            cubicMix(v1.y, v2.y, v3.y, v4.y, delta),
+            cubicMix(v1.z, v2.z, v3.z, v4.z, delta)
+        );
+    }
+
+    @Deprecated
+    static Vec3d cubicMix(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, double delta, @Deprecated Vec3d dest) {
+        return new Vec3d(
             cubicMix(v1.x, v2.x, v3.x, v4.x, delta),
             cubicMix(v1.y, v2.y, v3.y, v4.y, delta),
             cubicMix(v1.z, v2.z, v3.z, v4.z, delta)
@@ -151,8 +160,8 @@ public interface MathUtils {
         return MathHelper.lerp3(delta, delta, delta, v1, v2, v2, v3, v2, v3, v3, v4);
     }
 
-    static Vector3d apply(Vector3d vector, Double2DoubleFunction function) {
-        return new Vector3d(
+    static Vec3d apply(Vec3d vector, Double2DoubleFunction function) {
+        return new Vec3d(
                 function.applyAsDouble(vector.x),
                 function.applyAsDouble(vector.y),
                 function.applyAsDouble(vector.z)

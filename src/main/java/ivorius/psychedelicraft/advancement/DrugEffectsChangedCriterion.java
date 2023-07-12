@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.Compat119;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.predicate.NumberRange.FloatRange;
@@ -33,7 +34,7 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
     protected Conditions conditionsFromJson(JsonObject json, Extended playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
         return new Conditions(
                 playerPredicate,
-                JsonHelper.getArray(json, "drugs").asList().stream().map(Conditions.DrugPredicate::of).toList()
+                Compat119.stream(JsonHelper.getArray(json, "drugs")).map(Conditions.DrugPredicate::of).toList()
         );
     }
 

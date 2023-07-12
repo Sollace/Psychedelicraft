@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.client.particle;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 import ivorius.psychedelicraft.particle.ExhaledSmokeParticleEffect;
 import net.minecraft.client.particle.*;
@@ -11,9 +11,9 @@ public class ExhaledSmokeParticle extends FireSmokeParticle {
             double x, double y, double z,
             double vX, double vY, double vZ) {
         super(world, x, y, z, vX, vY, vZ, 1, spriteProvider);
-        Vector3f color = effect.getColor();
-        red = color.x;
-        green = color.y;
-        blue = color.z;
+        Vec3f color = effect.getColor();
+        red = color.getX();
+        green = color.getY();
+        blue = color.getZ();
     }
 }

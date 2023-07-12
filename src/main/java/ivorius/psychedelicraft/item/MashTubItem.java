@@ -16,6 +16,7 @@ import net.minecraft.item.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldView;
 
 /**
@@ -32,7 +33,7 @@ public class MashTubItem extends FlaskItem {
         return findPlacementPosition(context.getWorld(), context.getBlockPos()).map(position -> {
             return new ItemPlacementContext(
                     context.getPlayer(), context.getHand(), context.getStack(),
-                    new BlockHitResult(position.toCenterPos(), Direction.UP, position, false)
+                    new BlockHitResult(Vec3d.ofCenter(position), Direction.UP, position, false)
             );
         }).orElse(context);
     }
@@ -56,7 +57,7 @@ public class MashTubItem extends FlaskItem {
         return BlockPos.streamOutwards(pos, 1, 0, 1)
                 .filter(center -> BlockPos.streamOutwards(center, 1, 0, 1).allMatch(p -> {
                     BlockState s = world.getBlockState(p);
-                    return world.isAir(p) || s.isReplaceable();
+                    return world.isAir(p) || s.getMaterial().isReplaceable();
                 }))
                 .findFirst()
                 .map(p -> p.toImmutable());

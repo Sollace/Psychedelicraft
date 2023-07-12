@@ -19,8 +19,7 @@ import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.block.*;
 import net.minecraft.item.*;
-import net.minecraft.registry.*;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.registry.*;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.village.*;
@@ -109,7 +108,7 @@ public interface PSTradeOffers {
             factories.add(buy(5, PSItems.DRIED_COCA_LEAVES, 20, 3, 2, 0.5f));
         });
 
-        PointOfInterestTypes.register(Registries.POINT_OF_INTEREST_TYPE, DRUG_DEALER_POI, Stream.concat(
+        PointOfInterestTypes.register(Registry.POINT_OF_INTEREST_TYPE, DRUG_DEALER_POI, Stream.concat(
                         PSBlocks.DRYING_TABLE.getStateManager().getStates().stream(),
                         PSBlocks.IRON_DRYING_TABLE.getStateManager().getStates().stream()
         ).collect(Collectors.toUnmodifiableSet()), 1, 1);
@@ -143,10 +142,10 @@ public interface PSTradeOffers {
     }
 
     private static RegistryKey<PointOfInterestType> poi(String id) {
-        return RegistryKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, Psychedelicraft.id(id));
+        return RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, Psychedelicraft.id(id));
     }
 
     private static VillagerProfession register(String id, Predicate<RegistryEntry<PointOfInterestType>> heldWorkstation, Predicate<RegistryEntry<PointOfInterestType>> acquirableWorkstation, ImmutableSet<Item> gatherableItems, ImmutableSet<Block> secondaryJobSites, @Nullable SoundEvent workSound) {
-        return Registry.register(Registries.VILLAGER_PROFESSION, Psychedelicraft.id(id), new VillagerProfession("psychedelicraft:" + id, heldWorkstation, acquirableWorkstation, gatherableItems, secondaryJobSites, workSound));
+        return Registry.register(Registry.VILLAGER_PROFESSION, Psychedelicraft.id(id), new VillagerProfession("psychedelicraft:" + id, heldWorkstation, acquirableWorkstation, gatherableItems, secondaryJobSites, workSound));
     }
 }

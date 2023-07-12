@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-import org.joml.Vector3d;
+import net.minecraft.util.math.Vec3d;
 
 import com.google.common.base.Suppliers;
 
@@ -22,11 +22,11 @@ final class Path {
     }
 
     static final int SAMPLES = 50;
-    static final Vector3d[][] UNIT_VECTORS = {
-            { new Vector3d(1, 1, -1), new Vector3d(-1, 1, -1) },
-            { new Vector3d(-1, 1, -1), new Vector3d(-1, 1, 1) },
-            { new Vector3d(-1, 1, 1), new Vector3d(1, 1, 1) },
-            { new Vector3d(1, 1, 1), new Vector3d(1, 1, -1) }
+    static final Vec3d[][] UNIT_VECTORS = {
+            { new Vec3d(1, 1, -1), new Vec3d(-1, 1, -1) },
+            { new Vec3d(-1, 1, -1), new Vec3d(-1, 1, 1) },
+            { new Vec3d(-1, 1, 1), new Vec3d(1, 1, 1) },
+            { new Vec3d(1, 1, 1), new Vec3d(1, 1, -1) }
     };
 
     private final List<Node> nodes = new ArrayList<>();
@@ -40,25 +40,19 @@ final class Path {
     private final Supplier<Intermediate> terminal;
 
     private Path(Consumer<NodeConsumer> nodeFactory) {
-        final Vector3d from = new Vector3d();
-        final Vector3d to = new Vector3d();
-
-        final Vector3d point1 = new Vector3d();
-        final Vector3d point2 = new Vector3d();
-
         nodeFactory.accept((position, orientation, fontSize) -> {
             if (!nodes.isEmpty()) {
                 Node previous = nodes.get(nodes.size() - 1);
                 double distance = 0;
 
                 for (int i = 0; i < SAMPLES; i++) {
-                    depart(previous.position(), previous.orientation(), from);
-                    approach(position, orientation, to);
+                    Vec3d from = depart(previous.position(), previous.orientation());
+                    Vec3d to = approach(position, orientation);
 
-                    MathUtils.cubicMix(previous.position(), from, to, position, (double) i / (double) SAMPLES, point1);
-                    MathUtils.cubicMix(previous.position(), from, to, position, (double) (i + 1) / (double) SAMPLES, point2);
+                    Vec3d point1 = MathUtils.cubicMix(previous.position(), from, to, position, (double) i / (double) SAMPLES);
+                    Vec3d point2 = MathUtils.cubicMix(previous.position(), from, to, position, (double) (i + 1) / (double) SAMPLES);
 
-                    distance += point1.distance(point2);
+                    distance += point1.distanceTo(point2);
                 }
 
                 totalDistance += distance;
@@ -98,48 +92,49 @@ final class Path {
         return terminal.get();
     }
 
-    public Vector3d getNaturalRotation(Intermediate intermediate, double stepSize) {
-        return toNatural(toSpherical(getStep(intermediate.delta() + stepSize * 0.3).position().sub(intermediate.position(), new Vector3d())));
+    public Vec3d getNaturalRotation(Intermediate intermediate, double stepSize) {
+        return toNatural(toSpherical(getStep(intermediate.delta() + stepSize * 0.3).position().subtract(intermediate.position())));
     }
 
-    private static Vector3d toNatural(Vector3d spherical) {
-        spherical.x /= Math.PI * 180;
-        spherical.y /= Math.PI * 180;
-        spherical.y += 90;
-        return spherical;
+    private static Vec3d toNatural(Vec3d spherical) {
+        return new Vec3d(
+            spherical.getX() / (Math.PI * 180),
+            spherical.getY() / (Math.PI * 180),
+            spherical.getY() + 90
+        );
     }
 
-    private static Vector3d toSpherical(Vector3d vector) {
+    private static Vec3d toSpherical(Vec3d vector) {
         double r = vector.length();
         double inclination = Math.acos(vector.x / r);
         double azimuth = Math.atan2(vector.y, vector.z);
-        return vector.set(azimuth, inclination, r);
+        return new Vec3d(azimuth, inclination, r);
     }
 
     interface NodeConsumer {
-        void accept(Vector3d position, Vector3d orientation, double fontSize);
+        void accept(Vec3d position, Vec3d orientation, double fontSize);
     }
 
-    private static Vector3d approach(Vector3d position, Vector3d orientation, Vector3d dest) {
-        return position.sub(orientation, dest);
+    private static Vec3d approach(Vec3d position, Vec3d orientation) {
+        return position.subtract(orientation);
     }
 
-    private static Vector3d depart(Vector3d position, Vector3d orientation, Vector3d dest) {
-        return position.add(orientation, dest);
+    private static Vec3d depart(Vec3d position, Vec3d orientation) {
+        return position.add(orientation);
     }
 
-    record Node(Vector3d position, Vector3d orientation, double fontSize) { }
+    record Node(Vec3d position, Vec3d orientation, double fontSize) { }
 
-    record Intermediate(Vector3d position, float fontSize, double delta) {
+    record Intermediate(Vec3d position, float fontSize, double delta) {
         static Intermediate create(Node prev, Node next, double minDelta, double maxDelta, double betweenDelta) {
             float delta = (float)MathHelper.lerp(betweenDelta, minDelta, maxDelta);
             return new Intermediate(
                     MathUtils.cubicMix(
                             prev.position(),
-                            depart(prev.position(), prev.orientation(), new Vector3d()),
-                            approach(next.position(), next.orientation(), new Vector3d()),
+                            depart(prev.position(), prev.orientation()),
+                            approach(next.position(), next.orientation()),
                             next.position(),
-                            betweenDelta, new Vector3d()
+                            betweenDelta
                     ),
                     (float)MathHelper.lerp(delta, prev.fontSize(), next.fontSize()),
                     delta

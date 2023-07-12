@@ -23,8 +23,8 @@ import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.util.MathUtils;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vector4f;
 
 /**
  * Created by lukas on 27.10.14.
@@ -105,9 +105,9 @@ public class FluidBoxRenderer {
 
     private void vertex(float x, float y, float z, float u, float v, Direction direction) {
         POSITION_VECTOR.set(x, y, z, 1);
-        position.transform(POSITION_VECTOR);
+        POSITION_VECTOR.transform(position);
         buffer.vertex(
-                POSITION_VECTOR.x * scale, POSITION_VECTOR.y * scale, POSITION_VECTOR.z * scale,
+                POSITION_VECTOR.getX() * scale, POSITION_VECTOR.getY() * scale, POSITION_VECTOR.getZ() * scale,
                 color[0], color[1], color[2], color[3],
                 u, v,
                 overlay, light,
@@ -168,7 +168,7 @@ public class FluidBoxRenderer {
         public static FluidAppearance of(SimpleFluid fluid, ItemStack stack) {
             return fluid.getFlowTexture(stack).map(texture -> {
                 Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).getSprite(texture);
-                return new FluidAppearance(sprite.getAtlasId(), sprite, 0xFFFFFFFF);
+                return new FluidAppearance(sprite.getAtlas().getId(), sprite, 0xFFFFFFFF);
             }).orElseGet(() -> {
                 int color = fluid.getColor(stack);
                 Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
@@ -182,7 +182,7 @@ public class FluidBoxRenderer {
                     }
                 }
 
-                return new FluidAppearance(sprite.getAtlasId(), sprite, color);
+                return new FluidAppearance(sprite.getAtlas().getId(), sprite, color);
             });
         }
 

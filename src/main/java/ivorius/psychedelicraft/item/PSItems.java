@@ -5,14 +5,14 @@
 
 package ivorius.psychedelicraft.item;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
-import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
 import ivorius.psychedelicraft.block.entity.*;
+import ivorius.psychedelicraft.entity.PSEntities;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.influence.HarmoniumDrugInfluence;
@@ -23,8 +23,7 @@ import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.util.registry.Registry;
 
 /**
  * Created by lukas on 25.04.14.
@@ -95,11 +94,11 @@ public interface PSItems {
             new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7f)
     ));
     SmokeableItem CIGAR = register("cigar", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(3), 4, new Vector3f(0.6F, 0.6F, 0.5F),
+            new Settings().maxCount(1).maxDamage(3), 4, new Vec3f(0.6F, 0.6F, 0.5F),
             new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7f)
     ));
     SmokeableItem JOINT = register("joint", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.9F, 0.9F, 0.9F),
+            new Settings().maxCount(1).maxDamage(2), 2, new Vec3f(0.9F, 0.9F, 0.9F),
             new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20f)
     ));
 
@@ -127,15 +126,15 @@ public interface PSItems {
     Item JUNIPER_STAIRS = register("juniper_stairs", PSBlocks.JUNIPER_STAIRS);
     Item JUNIPER_SIGN = register("juniper_sign", new SignItem(new Settings().maxCount(16), PSBlocks.JUNIPER_SIGN, PSBlocks.JUNIPER_WALL_SIGN));
     Item JUNIPER_DOOR = register("juniper_door", PSBlocks.JUNIPER_DOOR);
-    Item JUNIPER_HANGING_SIGN = register("juniper_hanging_sign", new HangingSignItem(PSBlocks.JUNIPER_HANGING_SIGN, PSBlocks.JUNIPER_WALL_HANGING_SIGN, new Settings().maxCount(16)));
     Item JUNIPER_PRESSURE_PLATE = register("juniper_pressure_plate", PSBlocks.JUNIPER_PRESSURE_PLATE);
     Item JUNIPER_FENCE = register("juniper_fence", PSBlocks.JUNIPER_FENCE);
     Item JUNIPER_TRAPDOOR = register("juniper_trapdoor", PSBlocks.JUNIPER_TRAPDOOR);
     Item JUNIPER_FENCE_GATE = register("juniper_fence_gate", PSBlocks.JUNIPER_FENCE_GATE);
     Item JUNIPER_BUTTON = register("juniper_button", PSBlocks.JUNIPER_BUTTON);
     Item JUNIPER_SLAB = register("juniper_slab", PSBlocks.JUNIPER_SLAB);
-    Item JUNIPER_BOAT = TerraformBoatItemHelper.registerBoatItem(Psychedelicraft.id("juniper_boat"), TerraformBoatTypeRegistry.createKey(Psychedelicraft.id("juniper")), false);
-    Item JUNIPER_CHEST_BOAT = TerraformBoatItemHelper.registerBoatItem(Psychedelicraft.id("juniper_chest_boat"), TerraformBoatTypeRegistry.createKey(Psychedelicraft.id("juniper")), true);
+
+    Item JUNIPER_BOAT = TerraformBoatItemHelper.registerBoatItem(Psychedelicraft.id("juniper_boat"), () -> PSEntities.JUNIPER_BOAT_TYPE, false);
+    Item JUNIPER_CHEST_BOAT = TerraformBoatItemHelper.registerBoatItem(Psychedelicraft.id("juniper_chest_boat"), () -> PSEntities.JUNIPER_BOAT_TYPE, true);
 
     Item COFFEA_CHERRIES = register("coffea_cherries", new AliasedBlockItem(PSBlocks.COFFEA, new Settings()));
     Item COFFEE_BEANS = register("coffee_beans");
@@ -146,7 +145,7 @@ public interface PSItems {
             new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
     ));
     Item PEYOTE_JOINT = register("peyote_joint", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.5F, 0.9F, 0.4F),
+            new Settings().maxCount(1).maxDamage(2), 2, new Vec3f(0.5F, 0.9F, 0.4F),
             new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INHALED, 0.003, 0.0015, 0.4f),
             new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.1f)
     ));
@@ -232,7 +231,7 @@ public interface PSItems {
     }
 
     static <T extends Item> T register(String name, T item) {
-        return Registry.register(Registries.ITEM, Psychedelicraft.id(name), item);
+        return Registry.register(Registry.ITEM, Psychedelicraft.id(name), item);
     }
 
     static void bootstrap() {

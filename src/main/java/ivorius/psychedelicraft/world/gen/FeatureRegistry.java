@@ -1,55 +1,38 @@
 package ivorius.psychedelicraft.world.gen;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
+
+import ivorius.psychedelicraft.Psychedelicraft;
+
 import java.util.function.Function;
 
-import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
-import net.minecraft.registry.*;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.*;
 import net.minecraft.world.gen.feature.*;
-import net.minecraft.registry.entry.*;
 
 class FeatureRegistry {
-    private static final List<ConfiguredEntry> CONFIGURED_FEATURES = new ArrayList<>();
-    private static final List<PlacedEntry> PLACED_FEATURES = new ArrayList<>();
-    static {
-        DynamicRegistrySetupCallback.EVENT.register(registries -> {
-            registries.getOptional(RegistryKeys.CONFIGURED_FEATURE).ifPresent(registry -> {
-                CONFIGURED_FEATURES.forEach(entry -> {
-                    Registry.register(registry, entry.key(), entry.factory().get());
-                });
-            });
-            registries.getOptional(RegistryKeys.PLACED_FEATURE).ifPresent(registry -> {
-                var lookup = registries.getOptional(RegistryKeys.CONFIGURED_FEATURE).orElseThrow();
-                PLACED_FEATURES.forEach(entry -> {
-                    Registry.register(registry, entry.key(), entry.factory().apply(lookup.getEntry(entry.configuration()).orElseThrow()));
-                });
-            });
-        });
-    }
 
-    public static void registerConfiguredFeature(
+    public static RegistryEntry<ConfiguredFeature<?, ?>> registerConfiguredFeature(
             RegistryKey<ConfiguredFeature<?, ?>> featureKey,
             Supplier<ConfiguredFeature<?, ?>> factory) {
-        CONFIGURED_FEATURES.add(new ConfiguredEntry(featureKey, factory));
+        return addCasted(BuiltinRegistries.CONFIGURED_FEATURE, featureKey.getValue(), factory.get());
     }
 
-    public static void registerPlacedFeature(
+    public static RegistryEntry<PlacedFeature> registerPlacedFeature(
             RegistryKey<PlacedFeature> key,
-            RegistryKey<ConfiguredFeature<?, ?>> configuration,
+            RegistryEntry<ConfiguredFeature<?, ?>> configuration,
             Function<RegistryEntry<ConfiguredFeature<?, ?>>, PlacedFeature> factory) {
-        PLACED_FEATURES.add(new PlacedEntry(key, configuration, factory));
+        return addCasted(BuiltinRegistries.PLACED_FEATURE, key.getValue(), factory.apply(configuration));
     }
 
-    record ConfiguredEntry (
-        RegistryKey<ConfiguredFeature<?, ?>> key,
-        Supplier<ConfiguredFeature<?, ?>> factory
-    ) {}
+    @SuppressWarnings("unchecked")
+    public static <V extends T, T> RegistryEntry<V> addCasted(Registry<T> registry, Identifier id, V value) {
+        RegistryEntry<T> registryEntry = BuiltinRegistries.add(registry, id, value);
+        return (RegistryEntry<V>)registryEntry;
+    }
 
-    record PlacedEntry (
-            RegistryKey<PlacedFeature> key,
-            RegistryKey<ConfiguredFeature<?, ?>> configuration,
-            Function<RegistryEntry<ConfiguredFeature<?, ?>>, PlacedFeature> factory
-        ) {}
+    public static RegistryKey<PlacedFeature> createPlacement(String id) {
+        return RegistryKey.of(Registry.PLACED_FEATURE_KEY, Psychedelicraft.id(id));
+    }
+
 }

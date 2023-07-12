@@ -8,8 +8,8 @@ import com.mojang.datafixers.util.Pair;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.resource.ResourceFactory;
+import net.minecraft.client.render.Shader;
+import net.minecraft.resource.ResourceManager;
 
 public interface CoreShaderRegistrationCallback {
     Event<CoreShaderRegistrationCallback> EVENT = EventFactory.createArrayBacked(CoreShaderRegistrationCallback.class, callbacks -> {
@@ -20,5 +20,5 @@ public interface CoreShaderRegistrationCallback {
         };
     });
 
-    void call(ResourceFactory factory, List<Pair<ShaderProgram, Consumer<ShaderProgram>>> shaderList) throws IOException;
+    void call(ResourceManager factory, List<Pair<Shader, Consumer<Shader>>> shaderList) throws IOException;
 }

@@ -9,7 +9,6 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
@@ -31,8 +30,8 @@ import com.google.gson.*;
 public class FillRecepticalRecipe extends ShapelessRecipe {
     private final FluidIngredient output;
 
-    public FillRecepticalRecipe(Identifier id, String group, CraftingRecipeCategory category, FluidIngredient output, DefaultedList<Ingredient> input) {
-        super(id, group, category, ItemStack.EMPTY, input);
+    public FillRecepticalRecipe(Identifier id, String group, FluidIngredient output, DefaultedList<Ingredient> input) {
+        super(id, group, ItemStack.EMPTY, input);
         this.output = output;
     }
 
@@ -69,12 +68,10 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     }
 
     static class Serializer implements RecipeSerializer<FillRecepticalRecipe> {
-        @SuppressWarnings("deprecation")
         @Override
         public FillRecepticalRecipe read(Identifier id, JsonObject json) {
             return new FillRecepticalRecipe(id,
                     JsonHelper.getString(json, "group", ""),
-                    CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC),
                     FluidIngredient.fromJson(JsonHelper.getObject(json, "result")),
                     RecipeUtils.checkLength(RecipeUtils.union(
                             RecipeUtils.getIngredients(JsonHelper.getArray(json, "ingredients")),
@@ -87,7 +84,6 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
         public FillRecepticalRecipe read(Identifier id, PacketByteBuf buffer) {
             return new FillRecepticalRecipe(id,
                     buffer.readString(),
-                    buffer.readEnumConstant(CraftingRecipeCategory.class),
                     new FluidIngredient(buffer),
                     buffer.readCollection(DefaultedList::ofSize, Ingredient::fromPacket)
             );
@@ -96,7 +92,6 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
         @Override
         public void write(PacketByteBuf buffer, FillRecepticalRecipe recipe) {
             buffer.writeString(recipe.getGroup());
-            buffer.writeEnumConstant(recipe.getCategory());
             recipe.output.write(buffer);
             buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
         }

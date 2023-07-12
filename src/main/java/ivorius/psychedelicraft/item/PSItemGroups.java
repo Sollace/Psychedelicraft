@@ -8,7 +8,7 @@ package ivorius.psychedelicraft.item;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import ivorius.psychedelicraft.util.Compat119;
 import net.minecraft.item.*;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.MathHelper;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
  * @since 1 Jan 2023
  */
 public interface PSItemGroups {
-    ItemGroup creativeTab = FabricItemGroup.builder(Psychedelicraft.id("general"))
+    ItemGroup creativeTab = Compat119.FabricItemGroup.builder(Psychedelicraft.id("general"))
             .icon(PSItems.CANNABIS_LEAF::getDefaultStack)
             .entries((features, entries, search) -> {
                 entries.add(PSItems.DRYING_TABLE);
@@ -130,7 +130,6 @@ public interface PSItemGroups {
                 entries.add(PSItems.JUNIPER_STAIRS);
                 entries.add(PSItems.JUNIPER_SIGN);
                 entries.add(PSItems.JUNIPER_DOOR);
-                entries.add(PSItems.JUNIPER_HANGING_SIGN);
                 entries.add(PSItems.JUNIPER_PRESSURE_PLATE);
                 entries.add(PSItems.JUNIPER_FENCE);
                 entries.add(PSItems.JUNIPER_TRAPDOOR);
@@ -152,7 +151,7 @@ public interface PSItemGroups {
                 }
             })
             .build();
-    ItemGroup drinksTab = FabricItemGroup.builder(Psychedelicraft.id("drinks"))
+    ItemGroup drinksTab = Compat119.FabricItemGroup.builder(Psychedelicraft.id("drinks"))
             .icon(PSItems.OAK_BARREL::getDefaultStack)
             .entries((features, entries, search) -> {
                 appendAllFluids(PSItems.STONE_CUP, entries);
@@ -166,14 +165,14 @@ public interface PSItemGroups {
                 appendAllFluids(PSItems.FILLED_GLASS_BOTTLE, entries);
             })
             .build();
-    ItemGroup weaponsTab = FabricItemGroup.builder(Psychedelicraft.id("weapons"))
+    ItemGroup weaponsTab = Compat119.FabricItemGroup.builder(Psychedelicraft.id("weapons"))
             .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
             .entries((features, entries, search) -> {
                 appendAllFluids(PSItems.MOLOTOV_COCKTAIL, entries);
             })
             .build();
 
-    private static void appendAllFluids(FluidContainer item, ItemGroup.Entries entries) {
+    private static void appendAllFluids(FluidContainer item, Compat119.FabricItemGroup.StacksList entries) {
         SimpleFluid.all().forEach(fluid -> {
             if (fluid.isSuitableContainer(item)) {
                 fluid.getDefaultStacks(item, entries::add);

@@ -21,8 +21,8 @@ import ivorius.psychedelicraft.world.gen.structure.MutableStructurePool;
 import net.fabricmc.fabric.api.biome.v1.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.registry.*;
-import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.util.registry.*;
+import net.minecraft.tag.BiomeTags;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
@@ -42,27 +42,27 @@ import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
  * Updated by Sollace on 16 Jan 2023
  */
 public class PSWorldGen {
-    public static final TilledPatchFeature TILLED_PATCH_FEATURE = Registry.register(Registries.FEATURE, Psychedelicraft.id("tilled_patch"), new TilledPatchFeature());
+    public static final TilledPatchFeature TILLED_PATCH_FEATURE = Registry.register(Registry.FEATURE, Psychedelicraft.id("tilled_patch"), new TilledPatchFeature());
 
-    public static final RegistryKey<ConfiguredFeature<?, ?>> JUNIPER_TREE_CONFIG = createConfiguredFeature("juniper_tree");
-    public static final RegistryKey<PlacedFeature> JUNIPER_TREE_PLACEMENT = createPlacement("juniper_tree_checked");
+    public static RegistryEntry<ConfiguredFeature<?, ?>> JUNIPER_TREE_CONFIG;
+    public static RegistryEntry<PlacedFeature> JUNIPER_TREE_PLACEMENT;
 
     public static RegistryKey<ConfiguredFeature<?, ?>> createConfiguredFeature(String name) {
-        return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, Psychedelicraft.id(name));
+        return RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, Psychedelicraft.id(name));
     }
 
     public static RegistryKey<PlacedFeature> createPlacement(String id) {
-        return RegistryKey.of(RegistryKeys.PLACED_FEATURE, Psychedelicraft.id(id));
+        return RegistryKey.of(Registry.PLACED_FEATURE_KEY, Psychedelicraft.id(id));
     }
 
     private static void registerTilledPatch(String id, CannabisPlantBlock crop, boolean requireWater, PSConfig.Balancing.Generation.FeatureConfig config) {
-        var cannabisPatch = createConfiguredFeature(id + "_tilled_patch");
-        FeatureRegistry.registerConfiguredFeature(cannabisPatch, () -> {
+        var cannabisPatch =
+        FeatureRegistry.registerConfiguredFeature(createConfiguredFeature(id + "_tilled_patch"), () -> {
             return new ConfiguredFeature<>(TILLED_PATCH_FEATURE, new TilledPatchFeature.Config(requireWater, crop));
         });
 
-        var placement = createPlacement(id + "_tilled_patch_checked");
-        FeatureRegistry.registerPlacedFeature(placement, cannabisPatch, feature -> {
+        var placement =
+        FeatureRegistry.registerPlacedFeature(createPlacement(id + "_tilled_patch_checked"), cannabisPatch, feature -> {
             return new PlacedFeature(feature, List.of(
                     RarityFilterPlacementModifier.of(160),
                     SquarePlacementModifier.of(),
@@ -80,15 +80,15 @@ public class PSWorldGen {
                             .or(ctx -> ctx.getBiomeKey() == BiomeKeys.PLAINS)
                     )),
                     GenerationStep.Feature.VEGETAL_DECORATION,
-                    placement
+                    placement.getKey().orElseThrow()
             );
         });
     }
 
     private static void registerUnTilledPatch(String id, Block plant, IntProperty ageProperty, IntProvider ageRange, Predicate<BiomeSelectionContext> builtinBiomePredicate, PSConfig.Balancing.Generation.FeatureConfig config) {
-        var patch = createConfiguredFeature(id + "_patch");
+        var patch =
 
-        FeatureRegistry.registerConfiguredFeature(patch, () -> {
+        FeatureRegistry.registerConfiguredFeature(createConfiguredFeature(id + "_patch"), () -> {
             return new ConfiguredFeature<>(Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(
                     5,
                     PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK,
@@ -96,9 +96,9 @@ public class PSWorldGen {
             ));
         });
 
-        var placement = createPlacement(id + "_patch_checked");
+        var placement =
 
-        FeatureRegistry.registerPlacedFeature(placement, patch, feature -> {
+        FeatureRegistry.registerPlacedFeature(createPlacement(id + "_patch_checked"), patch, feature -> {
             return new PlacedFeature(feature, List.of(
                     RarityFilterPlacementModifier.of(20),
                     SquarePlacementModifier.of(),
@@ -114,14 +114,14 @@ public class PSWorldGen {
             BiomeModifications.addFeature(
                     spawnableBiomes.createPredicate(builtinBiomePredicate),
                     GenerationStep.Feature.VEGETAL_DECORATION,
-                    placement
+                    placement.getKey().orElseThrow()
             );
         });
     }
     public static void bootstrap() {
         var genConf = Psychedelicraft.getConfig().balancing.worldGeneration;
 
-        FeatureRegistry.registerConfiguredFeature(JUNIPER_TREE_CONFIG, () -> {
+        JUNIPER_TREE_CONFIG = FeatureRegistry.registerConfiguredFeature(createConfiguredFeature("juniper_tree"), () -> {
             return new ConfiguredFeature<>(Feature.TREE, new TreeFeatureConfig.Builder(
                     BlockStateProvider.of(PSBlocks.JUNIPER_LOG),
                     new ForkingTrunkPlacer(5, 2, 2),
@@ -136,7 +136,7 @@ public class PSWorldGen {
             .forceDirt()
             .build());
         });
-        FeatureRegistry.registerPlacedFeature(JUNIPER_TREE_PLACEMENT, JUNIPER_TREE_CONFIG, config -> {
+        JUNIPER_TREE_PLACEMENT = FeatureRegistry.registerPlacedFeature(createPlacement("juniper_tree_checked"), JUNIPER_TREE_CONFIG, config -> {
             return new PlacedFeature(config, VegetationPlacedFeatures.modifiersWithWouldSurvive(
                     PlacedFeatures.createCountExtraModifier(1, 0.05F, 2),
                     PSBlocks.JUNIPER_SAPLING)
@@ -152,7 +152,7 @@ public class PSWorldGen {
                         )
                     ),
                     GenerationStep.Feature.VEGETAL_DECORATION,
-                    JUNIPER_TREE_PLACEMENT
+                    JUNIPER_TREE_PLACEMENT.getKey().orElseThrow()
             );
         });
 

@@ -2,7 +2,6 @@ package ivorius.psychedelicraft.compat.modmenu;
 
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemGroups;
 import net.minecraft.text.*;
 
 import com.minelittlepony.common.client.gui.GameGui;
@@ -150,12 +149,10 @@ class SettingsScreen extends GameGui {
             content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.features");
             createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.harmonium", gameplay.enableHarmonium, z -> {
                 gameplay.enableHarmonium = z;
-                ItemGroups.operatorEnabled = !ItemGroups.operatorEnabled;
                 return z;
             });
             createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.rift_jars", gameplay.enableRiftJars, z -> {
                 gameplay.enableRiftJars = z;
-                ItemGroups.operatorEnabled = !ItemGroups.operatorEnabled;
                 return z;
             });
 

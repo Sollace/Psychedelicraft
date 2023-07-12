@@ -4,8 +4,6 @@ import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.entity.EntityType;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
@@ -39,12 +37,8 @@ public interface BlockConstructionUtils {
     static AbstractBlock.Settings pottedPlant() {
         return Settings.of(Material.DECORATION).breakInstantly().nonOpaque();
     }
-    static ButtonBlock woodenButton() {
-        return woodenButton(BlockSoundGroup.WOOD, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON);
-    }
-
-    private static ButtonBlock woodenButton(BlockSoundGroup soundGroup, SoundEvent clickOffSound, SoundEvent clickOnSound) {
-        return new ButtonBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().strength(0.5f).sounds(soundGroup), 30, true, clickOffSound, clickOnSound);
+    static WoodenButtonBlock woodenButton() {
+        return new WoodenButtonBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD));
     }
 
     static Boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {

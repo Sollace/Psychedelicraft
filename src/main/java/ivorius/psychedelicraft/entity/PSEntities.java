@@ -12,8 +12,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.util.registry.Registry;
 
 /**
  * Created by lukas on 25.04.14.
@@ -35,7 +34,7 @@ public interface PSEntities {
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
-        return Registry.register(Registries.ENTITY_TYPE, Psychedelicraft.id(name), type);
+        return Registry.register(Registry.ENTITY_TYPE, Psychedelicraft.id(name), type);
     }
 
     static void bootstrap() {

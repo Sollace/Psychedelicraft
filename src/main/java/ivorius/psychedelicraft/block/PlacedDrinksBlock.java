@@ -111,7 +111,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             }
 
             return Data.getHitPos(hit).map(position -> {
-                return be.placeDrink(position, player.isCreative() ? heldStack.copyWithCount(1) : heldStack, player.getHeadYaw());
+                return be.placeDrink(position, player.isCreative() ? heldStack.copy().split(1) : heldStack, player.getHeadYaw());
             });
         }).map(TypedActionResult::getResult).orElse(ActionResult.FAIL);
     }
@@ -136,7 +136,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             ) >= 0.003F) {
             Block.dropStacks(state, world, pos, world.getBlockEntity(pos), entity, ItemStack.EMPTY);
             world.removeBlock(pos, false);
-            world.playSound(null, pos, SoundEvents.BLOCK_CANDLE_PLACE, SoundCategory.BLOCKS);
+            world.playSound(null, pos, SoundEvents.BLOCK_CANDLE_PLACE, SoundCategory.BLOCKS, 1, 1);
         }
     }
 
@@ -240,7 +240,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             }
             if (list.size() < MAX_STACK_HEIGHT) {
                 list.add(new Entry(position.getX() / 16F - 0.5F, position.getZ() / 16F - 0.5F, (-yaw) % 360, stack.split(1)));
-                getWorld().playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_PLACE, SoundCategory.BLOCKS);
+                getWorld().playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_PLACE, SoundCategory.BLOCKS, 1, 1);
                 markDirty();
                 return TypedActionResult.success(stack);
             }

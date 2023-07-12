@@ -26,7 +26,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;

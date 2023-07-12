@@ -25,7 +25,7 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
     }
 
     private void renderWarmthOverlay(MatrixStack matrices, float alpha, int width, int height, int ticks) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, COFFEE_OVERLAY);
         RenderSystem.enableBlend();
         BufferBuilder buffer = Tessellator.getInstance().getBuffer();

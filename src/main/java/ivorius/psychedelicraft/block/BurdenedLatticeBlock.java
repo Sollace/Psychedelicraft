@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.util.Compat119;
 import net.minecraft.block.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -88,7 +89,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
             world.playSoundFromEntity(null, player, SoundEvents.ENTITY_SHEEP_SHEAR, player.getSoundCategory(), 1, 1);
 
             if (!world.isClient) {
-                Identifier lootTableId = getLootTableId().withPath(p -> p + "_farming");
+                Identifier lootTableId = Compat119.withPath(getLootTableId(), p -> p + "_farming");
                 world.getServer().getLootManager().getTable(lootTableId)
                     .generateLoot(new LootContext.Builder((ServerWorld)world)
                         .random(world.random)
@@ -133,7 +134,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
+    public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean client) {
         return (state.get(AGE) < MAX_AGE || canSpread(state, world, pos)) && !state.get(PERSISTENT);
     }
 
@@ -175,7 +176,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
             .ifPresent(mPos -> world.setBlockState(mPos, copyStateProperties(getDefaultState(), world.getBlockState(mPos))));
     }
 
-    private boolean canSpread(BlockState state, WorldView world, BlockPos pos) {
+    private boolean canSpread(BlockState state, BlockView world, BlockPos pos) {
         return spreads && visitNeighbours(state, pos).anyMatch(mPos -> world.getBlockState(mPos).isOf(PSBlocks.LATTICE));
     }
 

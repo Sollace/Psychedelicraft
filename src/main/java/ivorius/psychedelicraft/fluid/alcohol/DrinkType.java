@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.fluid.alcohol;
 import java.util.Optional;
 
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.util.Compat119;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -72,7 +73,7 @@ public record DrinkType(String drinkName, String symbolName, Optional<String> va
     }
 
     public Identifier getSymbol(Identifier fluidId) {
-        return fluidId.withPath(p -> "textures/fluid/" + symbolName + ".png");
+        return Compat119.withPath(fluidId, p -> "textures/fluid/" + symbolName + ".png");
     }
 
     public interface Variation {

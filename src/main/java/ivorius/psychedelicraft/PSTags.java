@@ -8,15 +8,15 @@ package ivorius.psychedelicraft;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
-import net.minecraft.registry.*;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.registry.*;
 
 public interface PSTags {
     TagKey<Block> BARRELS = of("barrels");
     TagKey<Block> DRYING_TABLES = of("drying_tables");
 
     static TagKey<Block> of(String name) {
-        return TagKey.of(RegistryKeys.BLOCK, Psychedelicraft.id(name));
+        return TagKey.of(Registry.BLOCK_KEY, Psychedelicraft.id(name));
     }
 
     interface Items {
@@ -29,7 +29,7 @@ public interface PSTags {
         TagKey<Item> DRUG_CROP_SEEDS = of("drug_crop_seeds");
 
         static TagKey<Item> of(String name) {
-            return TagKey.of(RegistryKeys.ITEM, Psychedelicraft.id(name));
+            return TagKey.of(Registry.ITEM_KEY, Psychedelicraft.id(name));
         }
     }
 
@@ -38,7 +38,7 @@ public interface PSTags {
         TagKey<EntityType<?>> SINGLE_ENTITY_HALLUCINATIONS = of("single_entity_hallucinations");
 
         static TagKey<EntityType<?>> of(String name) {
-            return TagKey.of(RegistryKeys.ENTITY_TYPE, Psychedelicraft.id(name));
+            return TagKey.of(Registry.ENTITY_TYPE_KEY, Psychedelicraft.id(name));
         }
     }
 

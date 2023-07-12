@@ -14,10 +14,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.*;
-import net.minecraft.client.gl.ShaderStage.Type;
+import net.minecraft.client.render.Shader;
 
-@Mixin(ShaderProgram.class)
-abstract class MixinShaderProgram implements ShaderProgramSetupView, AutoCloseable {
+@Mixin(Shader.class)
+abstract class MixinShaderProgram implements GlShader, AutoCloseable {
     @Shadow
     private @Final List<GlUniform> uniforms;
     @Shadow
@@ -34,13 +34,13 @@ abstract class MixinShaderProgram implements ShaderProgramSetupView, AutoCloseab
     private void onLoadReferences(CallbackInfo info) {
         RenderSystem.assertOnRenderThread();
         GeometryShader.INSTANCE.getSamplers().keySet().forEach(samplerName -> {
-            if (GlUniform.getUniformLocation(getGlRef(), samplerName) != -1) {
+            if (GlUniform.getUniformLocation(getProgramRef(), samplerName) != -1) {
                 samplerNames.add(samplerName);
                 samplers.put(samplerName, null);
             }
         });
         GeometryShader.INSTANCE.addUniforms(this, uniform -> {
-            if (GlUniform.getUniformLocation(getGlRef(), uniform.getName()) != -1) {
+            if (GlUniform.getUniformLocation(getProgramRef(), uniform.getName()) != -1) {
                 uniforms.add(uniform);
             }
         });
@@ -55,10 +55,10 @@ abstract class MixinGLImportProcessor {
     }
 }
 
-@Mixin(ShaderStage.class)
+@Mixin(Program.class)
 abstract class MixinShaderStage {
-    @Inject(method = "load", at = @At("HEAD"))
-    private static void onLoad(Type type, String name, InputStream stream, String domain, GLImportProcessor loader, CallbackInfoReturnable<Integer> info) throws IOException {
+    @Inject(method = "loadProgram", at = @At("HEAD"))
+    private static void onLoad(Program.Type type, String name, InputStream stream, String domain, GLImportProcessor loader, CallbackInfoReturnable<Integer> info) throws IOException {
         GeometryShader.INSTANCE.setup(type, name, stream, domain, loader);
     }
 }

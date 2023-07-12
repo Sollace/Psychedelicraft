@@ -25,7 +25,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -158,7 +158,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     private void spawnBubbles(int count, float spread, SoundEvent sound) {
         Random random = getWorld().getRandom();
-        Vec3d center = ParticleHelper.apply(getPos().toCenterPos(), x -> random.nextTriangular(x, 0.25));
+        Vec3d center = ParticleHelper.apply(Vec3d.ofCenter(getPos()), x -> random.nextTriangular(x, 0.25));
 
         Resovoir tank = getTank(Direction.UP);
         ParticleHelper.spawnParticles(getWorld(),
@@ -178,7 +178,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
                     0.3F + getWorld().getRandom().nextFloat()
             );
         } else {
-            getWorld().playSoundAtBlockCenter(getPos(), sound, SoundCategory.BLOCKS,
+            getWorld().playSound(getPos().getX(), getPos().getY(), getPos().getZ(), sound, SoundCategory.BLOCKS,
                     0.5F + getWorld().getRandom().nextFloat(),
                     0.3F + getWorld().getRandom().nextFloat(), true);
         }
@@ -217,7 +217,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
         NbtCompound suppliedIngredsTag = new NbtCompound();
         suppliedIngredients.forEach((item, count) -> {
-            suppliedIngredsTag.putInt(Registries.ITEM.getId(item).toString(), count);
+            suppliedIngredsTag.putInt(Registry.ITEM.getId(item).toString(), count);
         });
         compound.put("suppliedIngredients", suppliedIngredsTag);
     }
@@ -231,7 +231,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         NbtCompound suppliedIngredsTag = compound.getCompound("suppliedIngredients");
         suppliedIngredients.clear();
         suppliedIngredsTag.getKeys().forEach(key -> {
-            Optional.ofNullable(Identifier.tryParse(key)).map(Registries.ITEM::get).filter(Objects::nonNull).ifPresent(item -> {
+            Optional.ofNullable(Identifier.tryParse(key)).map(Registry.ITEM::get).filter(Objects::nonNull).ifPresent(item -> {
                 suppliedIngredients.put(item, suppliedIngredsTag.getInt(key));
             });
         });

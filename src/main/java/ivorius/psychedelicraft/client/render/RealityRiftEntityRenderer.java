@@ -14,8 +14,9 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-
-import org.joml.*;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vector4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -65,25 +66,29 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
 
         light = 0;
 
-        Quaternionf cameraRotation = MinecraftClient.getInstance().gameRenderer.getCamera().getRotation();
+        Quaternion cameraRotation = MinecraftClient.getInstance().gameRenderer.getCamera().getRotation();
         matrices.multiply(cameraRotation);
         matrices.translate(-size * 0.5F, -size * 0.5F, 0);
 
         vector.set(0, 0, 0, 1);
-        Vector4f pos = positionMatrix.transform(vector);
-        consumer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, 0, 0, light, 0, 1, 1, 1);
+        vector.transform(positionMatrix);
+        Vector4f pos = vector;
+        consumer.vertex(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1, 1, 0, 0, light, 0, 1, 1, 1);
 
         vector.set(size, 0, 0, 1);
-        pos = positionMatrix.transform(vector);
-        consumer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, 1, 0, light, 0, 1, 1, 1);
+        vector.transform(positionMatrix);
+        pos = vector;
+        consumer.vertex(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1, 1, 1, 0, light, 0, 1, 1, 1);
 
         vector.set(size, size, 0, 1);
-        pos = positionMatrix.transform(vector);
-        consumer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, 1, 1, light, 0, 1, 1, 1);
+        vector.transform(positionMatrix);
+        pos = vector;
+        consumer.vertex(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1, 1, 1, 1, light, 0, 1, 1, 1);
 
         vector.set(0, size, 0, 1);
-        pos = positionMatrix.transform(vector);
-        consumer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, 0, 1, light, 0, 1, 1, 1);
+        vector.transform(positionMatrix);
+        pos = vector;
+        consumer.vertex(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1, 1, 0, 1, light, 0, 1, 1, 1);
 
         matrices.pop();
 
@@ -119,12 +124,12 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
             float lightAlpha = 1F / (1 + (float) Math.pow(2.71828f, -0.8F * xLogFunc) * ((1F / 0.01F) - 1));
 
             if (lightAlpha > 0.01F) {
-                matrices.multiply(new Quaternionf().rotateXYZ(
+                matrices.multiply(Quaternion.fromEulerXyz(
                         RANDOM.nextFloat() * MathHelper.TAU,
                         RANDOM.nextFloat() * MathHelper.TAU,
                         RANDOM.nextFloat() * MathHelper.TAU
                 ));
-                matrices.multiply(new Quaternionf().rotateXYZ(
+                matrices.multiply(Quaternion.fromEulerXyz(
                         RANDOM.nextFloat() * MathHelper.TAU,
                         RANDOM.nextFloat() * MathHelper.TAU,
                         RANDOM.nextFloat() * MathHelper.TAU + rotation * MathHelper.HALF_PI * 0.5F
@@ -134,26 +139,27 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
                 float var9 = RANDOM.nextFloat() * 2 + 1;
 
                 vector.set(0, 0, 0, 1);
-                Vector4f pos = positionMatrix.transform(vector);
+                Vector4f pos = vector;
+                vector.transform(positionMatrix);
                 float centerAlpha = alpha * lightAlpha;
 
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, centerAlpha, 0, 0, light, 0, 1, 1, 1);
+                vertices.vertex(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1, centerAlpha, 0, 0, light, 0, 1, 1, 1);
 
                 vector.set(-width * var9, var8, -0.5F * var9, 1);
-                pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 0, 1, 0, light, 0, 1, 1, 1);
+                vector.transform(positionMatrix);
+                vertices.vertex(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1, 0, 1, 0, light, 0, 1, 1, 1);
 
                 vector.set(width * var9, var8, -0.5F * var9, 1);
-                pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 0, 0, 1, light, 0, 1, 1, 1);
+                vector.transform(positionMatrix);
+                vertices.vertex(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1, 0, 0, 1, light, 0, 1, 1, 1);
 
                 vector.set(0, var8, var9, 1);
-                pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 0, 1, 1, light, 0, 1, 1, 1);
+                vector.transform(positionMatrix);
+                vertices.vertex(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1, 0, 1, 1, light, 0, 1, 1, 1);
 
                 vector.set(-width * var9, var8, -0.5F * var9, 1);
-                pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 0, 1, 1, light, 0, 1, 1, 1);
+                vector.transform(positionMatrix);
+                vertices.vertex(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1, 0, 1, 1, light, 0, 1, 1, 1);
             }
         }
 

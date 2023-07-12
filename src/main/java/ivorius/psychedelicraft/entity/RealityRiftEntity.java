@@ -14,6 +14,8 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -24,7 +26,7 @@ import net.minecraft.world.*;
 
 import java.util.function.Supplier;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 import com.google.common.base.Suppliers;
 
@@ -155,7 +157,7 @@ public class RealityRiftEntity extends Entity {
                 return ParticleHelper.apply(pos, x -> x + (random.nextFloat() * 8 - 4) * distance).add(0, getHeight() / 2F, 0);
             };
             ParticleHelper.spawnParticles(world, ParticleTypes.LARGE_SMOKE, particlePositionSupplier, Suppliers.ofInstance(Vec3d.ZERO), random.nextInt(3));
-            ParticleHelper.spawnParticles(world, new DustParticleEffect(new Vector3f(1, 0.5F, 0.5F), 1), particlePositionSupplier, Suppliers.ofInstance(new Vec3d(-10, -10, -10)), random.nextInt(2));
+            ParticleHelper.spawnParticles(world, new DustParticleEffect(new Vec3f(1, 0.5F, 0.5F), 1), particlePositionSupplier, Suppliers.ofInstance(new Vec3d(-10, -10, -10)), random.nextInt(2));
             ParticleHelper.spawnParticles(world, ParticleTypes.ENCHANT, Suppliers.ofInstance(pos.add(0, 1 + (getHeight() / 2F), 0)), () -> {
                 float distance = random.nextFloat() * random.nextFloat();
                 return ParticleHelper.apply(Vec3d.ZERO, x -> x + (random.nextFloat() * 8 - 4) * distance).add(0, getHeight() / 2F, 0);
@@ -232,4 +234,8 @@ public class RealityRiftEntity extends Entity {
         compound.putFloat("instability", getInstability());
     }
 
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return new EntitySpawnS2CPacket(this);
+    }
 }

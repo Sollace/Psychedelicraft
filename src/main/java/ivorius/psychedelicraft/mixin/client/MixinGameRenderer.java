@@ -16,11 +16,11 @@ import com.mojang.datafixers.util.Pair;
 import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.client.render.shader.CoreShaderRegistrationCallback;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.gl.ShaderStage;
+import net.minecraft.client.gl.Program;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Shader;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.resource.ResourceFactory;
+import net.minecraft.resource.ResourceManager;
 
 @Mixin(GameRenderer.class)
 abstract class MixinGameRenderer {
@@ -49,16 +49,16 @@ abstract class MixinGameRenderer {
         DrugRenderer.INSTANCE.getPostEffects().setupDimensions(width, height);
     }
 
-    @Inject(method = "loadPrograms(Lnet/minecraft/resource/ResourceFactory;)V", at = @At(
+    @Inject(method = "loadShaders(Lnet/minecraft/resource/ResourceManager;)V", at = @At(
                 value = "INVOKE",
                 target = "java/util/List.add(Ljava/lang/Object;)Z",
                 ordinal = 0
             ),
             locals = LocalCapture.CAPTURE_FAILEXCEPTION
     )
-    private void onLoadPrograms(ResourceFactory factory, CallbackInfo info,
-            List<ShaderStage> stages,
-            List<Pair<ShaderProgram, Consumer<ShaderProgram>>> programs) throws IOException {
+    private void onLoadPrograms(ResourceManager factory, CallbackInfo info,
+            List<Program> stages,
+            List<Pair<Shader, Consumer<Shader>>> programs) throws IOException {
         CoreShaderRegistrationCallback.EVENT.invoker().call(factory, programs);
     }
 }

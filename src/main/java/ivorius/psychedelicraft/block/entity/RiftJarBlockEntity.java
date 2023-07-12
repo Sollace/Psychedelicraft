@@ -23,7 +23,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
-import net.minecraft.world.World.ExplosionSourceType;
+import net.minecraft.world.explosion.Explosion.DestructionType;
 
 public class RiftJarBlockEntity extends BlockEntity {
     public float currentRiftFraction;
@@ -86,7 +86,7 @@ public class RiftJarBlockEntity extends BlockEntity {
                 float minus = Math.min(0.0004f * fractionOpen * currentRiftFraction + 0.0004f, currentRiftFraction);
 
                 BlockPos pos = getPos();
-                Vec3d center = pos.toCenterPos();
+                Vec3d center = Vec3d.ofCenter(pos);
                 world.getEntitiesByClass(LivingEntity.class, new Box(
                         pos.getX() - 5, pos.getY() - 5, pos.getZ() - 2,
                         pos.getX() + 6, pos.getY() + 6, pos.getZ() + 6
@@ -108,8 +108,8 @@ public class RiftJarBlockEntity extends BlockEntity {
 
             releaseRift();
             world.breakBlock(pos, false);
-            Vec3d explosionPosition = getPos().toCenterPos();
-            world.createExplosion(null, explosionPosition.x, explosionPosition.y, explosionPosition.z, 1, false, ExplosionSourceType.BLOCK);
+            Vec3d explosionPosition = Vec3d.ofCenter(getPos());
+            world.createExplosion(null, explosionPosition.x, explosionPosition.y, explosionPosition.z, 1, false, DestructionType.BREAK);
         }
     }
 
@@ -147,7 +147,7 @@ public class RiftJarBlockEntity extends BlockEntity {
                 rifts.get(0).addToRift(currentRiftFraction);
             } else if (!world.isClient) {
                 RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(world);
-                rift.setPosition(getPos().toCenterPos().add(5, 3, 0.5));
+                rift.setPosition(Vec3d.ofCenter(getPos()).add(5, 3, 0.5));
                 rift.setRiftSize(currentRiftFraction);
                 world.spawnEntity(rift);
             }

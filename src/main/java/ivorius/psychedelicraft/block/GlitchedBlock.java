@@ -24,6 +24,11 @@ class GlitchedBlock extends Block {
     }
 
     @Override
+    protected void spawnBreakParticles(World world, PlayerEntity player, BlockPos pos, BlockState state) {
+        // noop
+    }
+
+    @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient) {
             world.removeBlock(pos, true);

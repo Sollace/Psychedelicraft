@@ -7,9 +7,12 @@ package ivorius.psychedelicraft.client.render;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.util.math.Vector2f;
 import net.minecraft.util.math.MathHelper;
-
-import org.joml.*;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 
 /**
  * Created by lukas on 09.03.14.
@@ -17,14 +20,20 @@ import org.joml.*;
  */
 public class PsycheMatrixHelper {
     private static Matrix4f getProjectionMatrix(Camera camera) {
-        return new Matrix4f().rotate(new Quaternionf(camera.getRotation()).invert());
+        var mat = new Matrix4f();
+        var rotation = new Quaternion(camera.getRotation());
+        rotation.conjugate();
+        mat.multiply(rotation);
+        return mat;
     }
 
-    private static Vector3f projectPointView(Camera camera, Vector3f point) {
-        return to3F(getProjectionMatrix(camera).transform(new Vector4f(point, 1)));
+    private static Vec3f projectPointView(Camera camera, Vec3f point) {
+        var vec = new Vector4f(point);
+        vec.transform(getProjectionMatrix(camera));
+        return to3F(vec);
     }
 
-    public static Vector3f projectPointCurrentView(Vector3f point) {
+    public static Vec3f projectPointCurrentView(Vec3f point) {
         return projectPointView(MinecraftClient.getInstance().gameRenderer.getCamera(), point);
     }
 
@@ -32,7 +41,7 @@ public class PsycheMatrixHelper {
         return new Vector2f(MathHelper.sin(angle) * distance, MathHelper.cos(angle) * distance);
     }
 
-    static Vector3f to3F(Vector4f vector) {
-        return new Vector3f(vector.x, vector.y, vector.z);
+    static Vec3f to3F(Vector4f vector) {
+        return new Vec3f(vector.getX(), vector.getY(), vector.getZ());
     }
 }

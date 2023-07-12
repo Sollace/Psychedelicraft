@@ -9,9 +9,9 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.TouchingWaterAccessor;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.*;
 
 public class EntityHallucination extends AbstractEntityHallucination {
@@ -23,7 +23,7 @@ public class EntityHallucination extends AbstractEntityHallucination {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public EntityHallucination(PlayerEntity player, TagKey<EntityType<?>> entityTypes) {
-        super(player, player.world.getRegistryManager().get(RegistryKeys.ENTITY_TYPE)
+        super(player, player.world.getRegistryManager().get(Registry.ENTITY_TYPE_KEY)
                 .getOrCreateEntryList(entityTypes)
                 .getRandom(player.world.random)
                 .map(RegistryEntry::value)

@@ -13,7 +13,7 @@ import ivorius.psychedelicraft.entity.TouchingWaterAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.*;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.*;
 
 @Mixin(Entity.class)

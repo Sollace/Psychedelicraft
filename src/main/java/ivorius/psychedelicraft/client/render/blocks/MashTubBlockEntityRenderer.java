@@ -70,7 +70,7 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
                 matrices.push();
                 matrices.translate(positionX, fluidHeight / 16F - 0.02F, positionZ);
 
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotation));
                 matrices.scale(0.3F, 0.3F, 0.3F);
 
                 int singleDifference = c * 5;
@@ -78,8 +78,8 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
                 float spin = MathHelper.cos((ShaderContext.ticks() + singleDifference) / 8F) * 0.12F;
 
                 matrices.translate(0, bob, -0.2F);
-                matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-50 * spin));
-                matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees((ShaderContext.ticks() + c) % 360));
+                matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(-50 * spin));
+                matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion((ShaderContext.ticks() + c) % 360));
                 MinecraftClient.getInstance().getItemRenderer().renderItem(stack, Mode.FIXED, light, overlay, matrices, vertices, (int)seed);
 
                 matrices.pop();

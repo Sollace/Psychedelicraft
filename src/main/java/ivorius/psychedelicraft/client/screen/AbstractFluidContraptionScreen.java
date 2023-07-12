@@ -64,7 +64,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         TextureBounds frame = appearance.frame();
 
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
@@ -89,7 +89,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
             if (!fluid.isEmpty()) {
                 tooltip.add(Text.literal("Amount: " + level).formatted(Formatting.GRAY));
             }
-            fluid.appendTooltip(tank.getStack(), null, tooltip, TooltipContext.BASIC);
+            fluid.appendTooltip(tank.getStack(), null, tooltip, TooltipContext.Default.NORMAL);
             tooltip.addAll(details);
             renderTooltip(matrices, tooltip, mouseX, mouseY);
         }

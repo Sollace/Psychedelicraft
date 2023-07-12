@@ -12,7 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
-import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
@@ -25,6 +24,7 @@ import com.google.common.base.Functions;
 import com.google.gson.*;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import ivorius.psychedelicraft.util.Compat119;
 
 /**
  * Created by Sollace on 5 Jan 2023
@@ -57,12 +57,12 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     private WeakReference<Inventory> lastQueriedInventory = new WeakReference<>(null);
 
     public SmeltingFluidRecipe(
-            Identifier id, String group, CookingRecipeCategory category,
+            Identifier id, String group,
             FluidIngredient fluid, Ingredient inputStack,
             Map<String, Modification> outputModifications,
             ItemStack outputStack,
             float experience, int cookingTime) {
-        super(id, group, category, inputStack, outputStack, experience, cookingTime);
+        super(id, group, inputStack, outputStack, experience, cookingTime);
         this.fluid = fluid;
         this.outputModifications = outputModifications;
     }
@@ -90,7 +90,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     @Override
     public ItemStack craft(Inventory inventory) {
         lastQueriedInventory = new WeakReference<>(inventory);
-        ItemStack stack = output.isEmpty() ? inventory.getStack(0).copyWithCount(
+        ItemStack stack = output.isEmpty() ? Compat119.copyWithCount(inventory.getStack(0),
                 output.getItem() == Items.AIR ? 1 : output.getCount()
             ) : output.copy();
         NbtCompound tag = stack.getOrCreateSubNbt("fluid");
@@ -102,7 +102,6 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
         });
         return stack;
     }
-
 
     record Modification(int value, Ops type) implements Int2IntFunction {
         enum Ops {
@@ -155,12 +154,10 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
 
 
     static class Serializer implements RecipeSerializer<SmeltingFluidRecipe> {
-        @SuppressWarnings("deprecation")
         @Override
         public SmeltingFluidRecipe read(Identifier id, JsonObject json) {
             return new SmeltingFluidRecipe(id,
                     JsonHelper.getString(json, "group", ""),
-                    CookingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CookingRecipeCategory.MISC),
                     FluidIngredient.fromJson(JsonHelper.getObject(json, "input")),
                     json.has("item") ? Ingredient.fromJson(json.get("item")) : Ingredient.empty(),
                     Modification.fromJson(JsonHelper.getObject(JsonHelper.getObject(json, "result"), "attributes", new JsonObject())),
@@ -174,7 +171,6 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
         public SmeltingFluidRecipe read(Identifier id, PacketByteBuf buffer) {
             return new SmeltingFluidRecipe(id,
                     buffer.readString(),
-                    buffer.readEnumConstant(CookingRecipeCategory.class),
                     new FluidIngredient(buffer),
                     Ingredient.fromPacket(buffer),
                     buffer.readMap(PacketByteBuf::readString, Modification::new),
@@ -187,7 +183,6 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
         @Override
         public void write(PacketByteBuf buffer, SmeltingFluidRecipe recipe) {
             buffer.writeString(recipe.getGroup());
-            buffer.writeEnumConstant(recipe.getCategory());
             recipe.fluid.write(buffer);
             recipe.input.write(buffer);
             buffer.writeMap(recipe.outputModifications, PacketByteBuf::writeString, (b, c) -> c.write(b));

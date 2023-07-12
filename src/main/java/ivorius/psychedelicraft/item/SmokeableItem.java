@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.item;
 
 import java.util.List;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 import ivorius.psychedelicraft.block.PlacedDrinksBlock;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
@@ -28,15 +28,15 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public class SmokeableItem extends Item {
-    public static Vector3f WHITE = new Vector3f(1, 1, 1);
+    public static Vec3f WHITE = new Vec3f(1, 1, 1);
 
     private final List<DrugInfluence> drugEffects;
 
-    private final Vector3f smokeColor;
+    private final Vec3f smokeColor;
 
     private final int useStages;
 
-    public SmokeableItem(Settings settings, int useStages, Vector3f smokeColor, DrugInfluence... drugEffects) {
+    public SmokeableItem(Settings settings, int useStages, Vec3f smokeColor, DrugInfluence... drugEffects) {
         super(settings);
         this.smokeColor = smokeColor;
         this.useStages = useStages;

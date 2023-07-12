@@ -5,7 +5,7 @@
 package ivorius.psychedelicraft.block;
 
 import net.minecraft.block.*;
-import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
 import net.minecraft.util.math.BlockPos;
@@ -76,8 +76,8 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
     }
 
     @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
-        return (world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight())
+    public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean client) {
+        return (world.getBlockState(pos.up()).isAir() && getPlantSize(world, pos) < getMaxHeight())
                 || state.get(getAgeProperty()) < getMaxAge(state);
     }
 }

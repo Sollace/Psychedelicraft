@@ -13,7 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3f;
 
 /**
  * Created by lukas on 16.11.14.
@@ -34,9 +34,9 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
         }
         float facing = direction.asRotation() + 90;
 
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(facing));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(facing));
         matrices.translate(0.14F, -0.55F, -0.8F);
-        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-90));
+        matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(-90));
 
         Random rng = RenderUtil.random(entity.getPos().asLong());
 
@@ -50,7 +50,7 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
                 matrices.translate((1 - (i / 3)) * spacing, 0, (i % 3) * spacing);
                 float rotPoint = 1F;
                 matrices.translate(0, rotPoint, rotPoint * -1.2F);
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rot * 4));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rot * 4));
                 matrices.translate(0, -rotPoint, -rotPoint * -1.2F);
 
                 PlacedDrinksModelProvider.INSTANCE.renderDrink(bottle, matrices, vertices, light, overlay);

@@ -38,7 +38,7 @@ public class BottleRecipe extends ShapedRecipe {
     });
 
     public BottleRecipe(Identifier id, ShapedRecipe recipe) {
-        super(id, recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getOutput());
+        super(id, recipe.getGroup(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getOutput());
     }
 
     @Override

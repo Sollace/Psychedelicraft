@@ -23,8 +23,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.state.State;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -61,7 +60,7 @@ public class SimpleFluid {
     public SimpleFluid(Identifier id, Settings settings, boolean empty) {
         this.id = id;
         this.settings = settings;
-        this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
+        this.symbol = new Identifier(id.getNamespace(), "textures/fluid/" + id.getPath() + ".png");
         this.custom = true;
         this.empty = empty;
         physical = new PhysicalFluid(id, this);
@@ -72,7 +71,7 @@ public class SimpleFluid {
         this.id = id;
         this.empty = false;
         this.settings = new Settings().color(color);
-        this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
+        this.symbol = new Identifier(id.getNamespace(), "textures/fluid/" + id.getPath() + ".png");
         this.custom = false;
         this.physical = physical;
     }
@@ -176,7 +175,7 @@ public class SimpleFluid {
         if (id == null) {
             return PSFluids.EMPTY;
         }
-        return REGISTRY.getOrEmpty(id).orElseGet(() -> Registries.FLUID.getOrEmpty(id).map(SimpleFluid::forVanilla).orElse(PSFluids.EMPTY));
+        return REGISTRY.getOrEmpty(id).orElseGet(() -> Registry.FLUID.getOrEmpty(id).map(SimpleFluid::forVanilla).orElse(PSFluids.EMPTY));
     }
 
     public static SimpleFluid forVanilla(@Nullable Fluid fluid) {
@@ -187,7 +186,7 @@ public class SimpleFluid {
             return PSFluids.EMPTY;
         }
         Fluid still = toStill(fluid);
-        Identifier id = Registries.FLUID.getId(still);
+        Identifier id = Registry.FLUID.getId(still);
         return VANILLA_FLUIDS.computeIfAbsent(id, i -> new SimpleFluid(i, 0xFFFFFFFF,
                 new PhysicalFluid(still, toFlowing(still), (FluidBlock)still.getDefaultState().getBlockState().getBlock())
         ));

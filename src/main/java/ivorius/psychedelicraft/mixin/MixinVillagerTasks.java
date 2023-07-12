@@ -22,9 +22,8 @@ import net.minecraft.village.VillagerProfession;
 
 @Mixin(LoseJobOnSiteLossTask.class)
 abstract class MixinLoseJobOnSiteLossTask {
-    @Inject(method = "method_47038(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/passive/VillagerEntity;J)Z", at = @At("HEAD"), cancellable = true)
-    private static void onTryLoseJobSite(ServerWorld world, VillagerEntity entity, long time,
-            CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = "shouldRun", at = @At("HEAD"), cancellable = true)
+    private static void onTryLoseJobSite(ServerWorld world, VillagerEntity entity, CallbackInfoReturnable<Boolean> info) {
         if (entity.getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION) {
             info.setReturnValue(false);
         }

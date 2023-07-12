@@ -9,9 +9,8 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public final class PhysicalFluid {
@@ -32,9 +31,9 @@ public final class PhysicalFluid {
     public PhysicalFluid(Identifier id, SimpleFluid type) {
         @SuppressWarnings("unused") Object o = Fluids.EMPTY;
         this.type = type;
-        standing = Registry.register(Registries.FLUID, id, PlacedFluid.still(this));
-        flowing = Registry.register(Registries.FLUID, id.withPath(p -> "flowing_" + p), PlacedFluid.flowing(this));
-        block = type.isEmpty() ? Blocks.AIR : Registry.register(Registries.BLOCK, id, PlacedFluidBlock.create(this));
+        standing = Registry.register(Registry.FLUID, id, PlacedFluid.still(this));
+        flowing = Registry.register(Registry.FLUID, new Identifier(id.getNamespace(), "flowing_" + id.getPath()), PlacedFluid.flowing(this));
+        block = type.isEmpty() ? Blocks.AIR : Registry.register(Registry.BLOCK, id, PlacedFluidBlock.create(this));
     }
 
     public Fluid getStandingFluid() {

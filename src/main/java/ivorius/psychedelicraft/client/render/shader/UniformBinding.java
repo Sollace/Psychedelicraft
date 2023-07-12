@@ -2,7 +2,7 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.util.*;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 public interface UniformBinding {
     UniformBinding EMPTY = (uniforms, tickDelta, screenWidth, screenHeight, pass) -> pass.run();
@@ -14,7 +14,7 @@ public interface UniformBinding {
 
         void set(String name, float...values);
 
-        void set(String name, Vector3f values);
+        void set(String name, Vec3f values);
 
         default boolean setIfNonZero(String name, float value) {
             set(name, value);

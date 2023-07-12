@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.util.Compat119;
 import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
 
@@ -29,7 +30,7 @@ class ModdedResourceFactory implements ResourceFactory {
 
     private Resource loadShader(Resource resource, Identifier id) {
         if (id.getPath().endsWith(".vsh") || id.getPath().endsWith(".fsh")) {
-            return new Resource(resource.getPack(), () -> {
+            return new Resource(resource.getResourcePackName(), () -> {
                 id.getClass();
                 try (var reader = resource.getReader()) {
                     return new ByteArrayInputStream(reader.lines().toList().stream()
@@ -53,7 +54,7 @@ class ModdedResourceFactory implements ResourceFactory {
         if (line.startsWith("#moj_import <") && line.endsWith(">")) {
             Identifier importPath = Identifier.tryParse(line.split("#moj_import <")[1].replace(">", ""));
             if (importPath != null) {
-                importPath = importPath.withPrefixedPath("shaders/include/");
+                importPath = Compat119.withPrefixedPath(importPath, "shaders/include/");
                 return loadedImports.computeIfAbsent(importPath, p -> {
                     return parent.getResource(p).or(() -> {
                         Psychedelicraft.LOGGER.error("Failed to locate import: {}", line);

@@ -12,7 +12,7 @@ import ivorius.psychedelicraft.entity.drug.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.WeightedSoundSet;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 
@@ -46,7 +46,7 @@ public class ClientDrugMusicManager {
 
     private MovingSoundDrug startPlayingSound(DrugProperties properties, DrugType type) {
         Psychedelicraft.LOGGER.info("Playing drug background music for " + type.id());
-        SoundEvent sound = Registries.SOUND_EVENT.getOrEmpty(Psychedelicraft.id("drug." + type.id().getPath())).orElse(PSSounds.DRUG_GENERIC);
+        SoundEvent sound = Registry.SOUND_EVENT.getOrEmpty(Psychedelicraft.id("drug." + type.id().getPath())).orElse(PSSounds.DRUG_GENERIC);
         SoundManager manager = MinecraftClient.getInstance().getSoundManager();
 
         @Nullable

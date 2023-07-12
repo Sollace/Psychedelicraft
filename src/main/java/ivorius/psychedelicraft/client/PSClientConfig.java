@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.joml.Vector2f;
+import net.minecraft.client.util.math.Vector2f;
 
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.util.Identifier;
@@ -70,7 +70,7 @@ public class PSClientConfig {
 
         public float[] getDigitalEffectPixelResize() {
             if (digitalEffectPixelRescaleF == null) {
-                digitalEffectPixelRescaleF = new float[] { digitalEffectPixelRescale.x, digitalEffectPixelRescale.y };
+                digitalEffectPixelRescaleF = new float[] { digitalEffectPixelRescale.getX(), digitalEffectPixelRescale.getY() };
             }
             return digitalEffectPixelRescaleF;
         }

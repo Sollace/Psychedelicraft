@@ -4,6 +4,7 @@ import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.util.Compat119;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.Fluid;
@@ -50,8 +51,8 @@ public abstract class PlacedFluid extends WaterFluid {
 
     @Override
     public BlockState toBlockState(FluidState state) {
-        return getType().getStateManager().copyStateValues(state, getPysicalFluid().getBlock().getDefaultState()
-                .withIfExists(FluidBlock.LEVEL, getBlockStateLevel(state))
+        return getType().getStateManager().copyStateValues(state, Compat119.withIfExists(getPysicalFluid().getBlock().getDefaultState(),
+                FluidBlock.LEVEL, getBlockStateLevel(state))
         );
     }
 
@@ -78,7 +79,7 @@ public abstract class PlacedFluid extends WaterFluid {
     }
 
     @Override
-    protected FluidState getUpdatedState(World world, BlockPos pos, BlockState state) {
+    protected FluidState getUpdatedState(WorldView world, BlockPos pos, BlockState state) {
         return getType().getStateManager().computeAverage(Stream.of(ALL_DIRECTIONS)
                 .map(direction -> world.getBlockState(pos.offset(direction)).getFluidState())
                 .filter(neighbourState -> neighbourState.getFluid().matchesType(this)),

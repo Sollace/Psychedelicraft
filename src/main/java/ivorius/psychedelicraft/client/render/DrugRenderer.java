@@ -28,12 +28,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3d;
 
 import java.lang.Math;
 
-import org.joml.Quaternionf;
+import net.minecraft.util.math.Quaternion;
 
 /**
  * Created by lukas on 17.02.14.
@@ -98,8 +98,8 @@ public class DrugRenderer {
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
         DriftingCamera driftingCam = properties.getHallucinations().getCamera();
 
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0f));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0f));
 
         Vec3d cameraOffset = driftingCam.getPosition();
         Vec3d prevCameraOffset = driftingCam.getPrevPosition();
@@ -110,14 +110,14 @@ public class DrugRenderer {
         );
         Vec3d cameraRoll = driftingCam.getRotation();
         Vec3d prevCameraRoll = driftingCam.getPrevRotation();
-        matrices.multiply(new Quaternionf().rotateXYZ(
+        matrices.multiply(Quaternion.fromEulerXyz(
                 (float)MathHelper.lerp(tickDelta, prevCameraRoll.x, cameraRoll.x),
                 (float)MathHelper.lerp(tickDelta, prevCameraRoll.y, cameraRoll.y),
                 (float)MathHelper.lerp(tickDelta, prevCameraRoll.z, cameraRoll.z)
         ));
 
-        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(camera.getYaw() + 180.0f));
-        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
+        matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0f));
+        matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(camera.getPitch()));
 
         if (wobblyness > 0) {
             float f4 = MathHelper.square(5F / (wobblyness * wobblyness + 5F) - wobblyness * 0.04F);
@@ -127,14 +127,15 @@ public class DrugRenderer {
             float sin3 = MathHelper.sin(tick / 190 * MathHelper.PI);
 
             float yz = tick * 3F * MathHelper.RADIANS_PER_DEGREE;
-            Quaternionf rotation = new Quaternionf().rotateXYZ(0, yz, yz);
+            Quaternion rotation = Quaternion.fromEulerXyz(0, yz, yz);
             matrices.multiply(rotation);
             matrices.scale(
                     1F / (f4 + (wobblyness * sin1) / 2),
                     1F / (f4 + (wobblyness * sin2) / 2),
                     1F / (f4 + (wobblyness * sin3) / 2)
             );
-            matrices.multiply(rotation.invert());
+            rotation.conjugate();
+            matrices.multiply(rotation);
         }
 
         matrices.translate(

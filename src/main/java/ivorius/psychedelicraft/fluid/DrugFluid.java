@@ -109,7 +109,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
     }
 
     protected Identifier getFlowTexture(String name) {
-        return getId().withPath(p -> "block/fluid/" + name);
+        return new Identifier(getId().getNamespace(), "block/fluid/" + name);
     }
 
     private float getAlcohol(ItemStack fluidStack) {

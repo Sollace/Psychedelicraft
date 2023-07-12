@@ -10,10 +10,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RenderPhase;
+import ivorius.psychedelicraft.util.Compat119;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
-import net.minecraft.client.gl.ShaderStage.Type;
+import net.minecraft.client.gl.Program.Type;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.resource.*;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -57,7 +58,7 @@ public class GeometryShader {
         return (RenderPhase.current() == RenderPhase.WORLD || RenderPhase.current() == RenderPhase.CLOUDS) && client.world != null && client.player != null;
     }
 
-    public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
+    public void addUniforms(GlShader program, Consumer<GlUniform> register) {
         register.accept(new BoundUniform("PS_SurfaceFractalStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
             uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().getSurfaceFractalStrength(ShaderContext.tickDelta()), 0, 1) : 0);
         }));
@@ -104,7 +105,7 @@ public class GeometryShader {
     public String injectShaderSources(String source) {
         if (type == Type.VERTEX) {
             return loadProgram(new Identifier(GEO_DIRECTORY + name + ".gvsh")).or(() -> {
-                return loadProgram(BASIC.withPath(p -> GEO_DIRECTORY + p + ".gvsh"));
+                return loadProgram(Compat119.withPath(BASIC, p -> GEO_DIRECTORY + p + ".gvsh"));
             }).map(geometryShaderSources -> {
                 return combineSources(source, geometryShaderSources);
             }).orElse(source);
@@ -112,7 +113,7 @@ public class GeometryShader {
 
         if (type == Type.FRAGMENT) {
             return loadProgram(new Identifier(GEO_DIRECTORY + name + ".gfsh")).or(() -> {
-                return loadProgram(BASIC.withPath(p -> GEO_DIRECTORY + p + ".gfsh"));
+                return loadProgram(Compat119.withPath(BASIC, p -> GEO_DIRECTORY + p + ".gfsh"));
             }).map(geometryShaderSources -> {
                 return combineSources(source, geometryShaderSources);
             }).orElse(source);
@@ -150,7 +151,7 @@ public class GeometryShader {
     static class BoundUniform extends GlUniform {
         private final Consumer<GlUniform> valueGetter;
 
-        public BoundUniform(String name, int dataType, int count, ShaderProgramSetupView program, Consumer<GlUniform> valueGetter) {
+        public BoundUniform(String name, int dataType, int count, GlShader program, Consumer<GlUniform> valueGetter) {
             super(name, dataType, count, program);
             this.valueGetter = valueGetter;
         }

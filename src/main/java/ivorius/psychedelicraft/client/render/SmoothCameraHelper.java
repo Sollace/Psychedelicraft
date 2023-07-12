@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.client.render;
 
-import org.joml.Vector2f;
+import net.minecraft.util.math.Vec2f;
 
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
@@ -25,14 +25,13 @@ public class SmoothCameraHelper {
 
     private float lastTickDelta;
 
-    private Vector2f cursorDelta = new Vector2f();
+    private Vec2f cursorDelta = new Vec2f(0, 0);
 
-    private Vector2f smoothedCursor = new Vector2f();
-    private Vector2f prevCursorDelta = new Vector2f();
+    private Vec2f smoothedCursor = new Vec2f(0, 0);
+    private Vec2f prevCursorDelta = new Vec2f(0, 0);
 
     public void setCursorDelta(float deltaX, float deltaY) {
-        prevCursorDelta.x = deltaX;
-        prevCursorDelta.y = deltaY;
+        prevCursorDelta = new Vec2f(deltaX, deltaY);
     }
 
     public void applyCameraChange() {
@@ -40,10 +39,11 @@ public class SmoothCameraHelper {
         if (mc.isWindowFocused() && !mc.isPaused() && mc.player != null) {
             DrugProperties properties = DrugProperties.of(mc.player);
             if (properties.getModifier(Drug.HEAD_MOTION_INERTNESS) > 0) {
-                Vector2f angles = getAngles();
+                Vec2f angles = getAngles();
 
                 if (!mc.options.smoothCameraEnabled) {
-                    angles.sub(getOriginalAngles());
+                    Vec2f o = getOriginalAngles();
+                    angles = new Vec2f(angles.x - o.x, angles.y - o.y);
                 }
 
                 mc.player.changeLookDirection(angles.x, angles.y);
@@ -54,28 +54,28 @@ public class SmoothCameraHelper {
     public void tick(DrugProperties properties) {
         float multiplier = MathHelper.clamp(properties.getModifier(Drug.HEAD_MOTION_INERTNESS), 0, 1);
         float speed = getSpeed();
-        smoothedCursor.set(
+        smoothedCursor = new Vec2f(
                 (float)xSmoother.smooth(cursorDelta.x, multiplier * speed),
                 (float)ySmoother.smooth(cursorDelta.y, multiplier * speed)
         );
         lastTickDelta = 0;
-        cursorDelta.set(0, 0);
+        cursorDelta = new Vec2f(0, 0);
     }
 
-    private Vector2f getAngles() {
+    private Vec2f getAngles() {
         float speed = getSpeed();
-        cursorDelta.add(prevCursorDelta.x * speed, prevCursorDelta.y * speed);
+        cursorDelta = new Vec2f(cursorDelta.x + prevCursorDelta.x * speed, cursorDelta.y + prevCursorDelta.y * speed);
 
         float tickDelta = MinecraftClient.getInstance().getTickDelta();
         float progress = tickDelta - lastTickDelta;
         lastTickDelta = tickDelta;
 
-        return smoothedCursor.mul(progress, progress * getYSignum(), new Vector2f());
+        return new Vec2f(smoothedCursor.x * progress, smoothedCursor.y * progress * getYSignum());
     }
 
-    private Vector2f getOriginalAngles() {
+    private Vec2f getOriginalAngles() {
         float speed = getSpeed();
-        return prevCursorDelta.mul(speed, speed * getYSignum(), new Vector2f());
+        return new Vec2f(prevCursorDelta.x * speed, prevCursorDelta.y * speed * getYSignum());
     }
 
     private float getYSignum() {

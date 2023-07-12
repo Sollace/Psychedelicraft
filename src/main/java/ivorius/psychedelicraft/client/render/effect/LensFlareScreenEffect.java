@@ -8,7 +8,8 @@ package ivorius.psychedelicraft.client.render.effect;
 import java.util.stream.IntStream;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
+
+import net.minecraft.client.util.math.Vector2f;
 
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
@@ -28,6 +29,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
@@ -79,10 +81,10 @@ public class LensFlareScreenEffect implements ScreenEffect {
             Vector2f angleEnd = PsycheMatrixHelper.fromPolar(sunRadians - SUN_RADIANS, SUN_DISTANCE);
 
             float newSunAlpha = (1 - world.getRainGradient(tickDelta)) * (
-                      (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleBegin.x, angleBegin.y, -SUN_WIDTH)) ? 0.25F : 0)
-                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleBegin.x, angleBegin.y, SUN_WIDTH)) ? 0.25F : 0)
-                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleEnd.x, angleEnd.y, -SUN_WIDTH)) ? 0.25F : 0)
-                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleEnd.x, angleEnd.y, SUN_WIDTH)) ? 0.25F : 0)
+                      (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleBegin.getX(), angleBegin.getY(), -SUN_WIDTH)) ? 0.25F : 0)
+                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleBegin.getX(), angleBegin.getY(), SUN_WIDTH)) ? 0.25F : 0)
+                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleEnd.getX(), angleEnd.getY(), -SUN_WIDTH)) ? 0.25F : 0)
+                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleEnd.getX(), angleEnd.getY(), SUN_WIDTH)) ? 0.25F : 0)
             );
             actualSunAlpha = Math.min(1, MathUtils.nearValue(actualSunAlpha, newSunAlpha, 0.1f, 0.01f));
         }
@@ -117,33 +119,34 @@ public class LensFlareScreenEffect implements ScreenEffect {
         float genSize = screenWidth > screenHeight ? screenWidth : screenHeight;
         float sunRadians = world.getSkyAngleRadians(tickDelta);
 
-        Vector3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(new Vector3f(
+        Vec3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(new Vec3f(
                 -MathHelper.sin(sunRadians) * 120,
                 MathHelper.cos(sunRadians) * 120,
                 0
         ));
 
-        Vector3f normSunPos = sunPositionOnScreen.normalize(new Vector3f());
+        Vec3f normSunPos = sunPositionOnScreen.copy();
+        normSunPos.normalize();
 
-        if (sunPositionOnScreen.z <= 0) {
+        if (sunPositionOnScreen.getZ() <= 0) {
             return;
         }
 
-        float xDist = normSunPos.x * screenWidth;
-        float yDist = normSunPos.y * screenHeight;
+        float xDist = normSunPos.getX() * screenWidth;
+        float yDist = normSunPos.getY() * screenHeight;
 
         int colorValue = world.getBiome(renderEntity.getBlockPos()).value().getFogColor();
         int fogRed = NativeImage.getRed(colorValue);
         int fogGreen = NativeImage.getGreen(colorValue);
         int fogBlue = NativeImage.getBlue(colorValue);
 
-        float alpha = Math.min(1, sunPositionOnScreen.z);
+        float alpha = Math.min(1, sunPositionOnScreen.getZ());
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
         float screenCenterX = screenWidth * 0.5f;
         float screenCenterY = screenHeight * 0.5f;
@@ -165,7 +168,7 @@ public class LensFlareScreenEffect implements ScreenEffect {
         }
 
         // Looks weird because of a hard edge... :|
-        float genDist = 1 - (normSunPos.x * normSunPos.x + normSunPos.y * normSunPos.y);
+        float genDist = 1 - (normSunPos.getX() * normSunPos.getX() + normSunPos.getY() * normSunPos.getY());
         float blendingSize = (genDist - 0.1F) * getIntensity() * 250F * genSize;
 
         if (blendingSize > 0) {

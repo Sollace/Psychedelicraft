@@ -51,7 +51,7 @@ public class DryingTableScreen extends HandledScreen<DryingTableScreenHandler> {
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, TEXTURE);
 

@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public record MsgHallucinate (
         int entityId,
@@ -32,7 +33,7 @@ public record MsgHallucinate (
     public void handle(PlayerEntity sender) {
         DrugProperties.of(sender.world.getEntityById(entityId)).ifPresent(properties -> {
             if (properties.getHallucinations().getEntities().addHallucination(type, true) instanceof AbstractEntityHallucination e) {
-                position.map(BlockPos::toCenterPos).ifPresent(e.getEntity()::setPosition);
+                position.map(Vec3d::ofCenter).ifPresent(e.getEntity()::setPosition);
             }
         });
     }

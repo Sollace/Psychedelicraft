@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.entity.drug;
 
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.registry.Registry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.Identifier;
 
 import java.util.function.Function;

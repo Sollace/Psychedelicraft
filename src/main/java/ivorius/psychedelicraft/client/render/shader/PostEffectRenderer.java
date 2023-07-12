@@ -5,7 +5,7 @@ import java.util.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
-import net.minecraft.client.gl.PostEffectProcessor;
+import net.minecraft.client.gl.ShaderEffect;
 
 public class PostEffectRenderer {
     private List<LoadedShader> shaders = new ArrayList<>();
@@ -32,6 +32,6 @@ public class PostEffectRenderer {
     public void onShadersLoaded(List<LoadedShader> shaders) {
         List<LoadedShader> oldShaders = this.shaders;
         this.shaders = shaders;
-        oldShaders.forEach(PostEffectProcessor::close);
+        oldShaders.forEach(ShaderEffect::close);
     }
 }

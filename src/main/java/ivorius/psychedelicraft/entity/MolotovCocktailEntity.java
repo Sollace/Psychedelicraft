@@ -18,8 +18,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.*;
-import net.minecraft.world.World.ExplosionSourceType;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.Explosion.DestructionType;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class MolotovCocktailEntity extends ThrownItemEntity {
@@ -134,12 +134,12 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
                     new ExplosionBehavior() {
                         @Override
                         public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
-                            return state.isReplaceable();
+                            return state.getMaterial().isReplaceable();
                         }
                     },
-                    getPos(),
+                    getPos().getX(), getPos().getY(), getPos().getZ(),
                     explosionStrength,
-                    fireStrength > 0, ExplosionSourceType.MOB
+                    fireStrength > 0, DestructionType.DESTROY
             );
         } else {
             playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1, 1);

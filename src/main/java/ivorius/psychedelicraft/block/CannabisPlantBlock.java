@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.block;
 
 import net.minecraft.block.*;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -112,7 +112,7 @@ public class CannabisPlantBlock extends CropBlock {
         }
     }
 
-    protected int getPlantSize(WorldView world, BlockPos pos) {
+    protected int getPlantSize(BlockView world, BlockPos pos) {
         int plantSize = 1;
         while (world.getBlockState(pos.down(plantSize)).isOf(this)) {
             ++plantSize;

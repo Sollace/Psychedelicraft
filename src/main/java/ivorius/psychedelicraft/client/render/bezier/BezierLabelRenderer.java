@@ -1,7 +1,8 @@
 package ivorius.psychedelicraft.client.render.bezier;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3d;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -10,7 +11,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.resource.language.ReorderingUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.*;
-import net.minecraft.util.math.RotationAxis;
 
 public class BezierLabelRenderer {
     public static final BezierLabelRenderer INSTANCE = new BezierLabelRenderer();
@@ -43,16 +43,16 @@ public class BezierLabelRenderer {
 
                 if (finalProgress >= style.bottomCap && finalProgress <= style.capTop) {
                     Path.Intermediate step = path.getStep(finalProgress);
-                    Vector3d position = step.position();
-                    Vector3d rotation = path.getNaturalRotation(step, 0.01);
+                    Vec3d position = step.position();
+                    Vec3d rotation = path.getNaturalRotation(step, 0.01);
 
                     float textSize = scale * step.fontSize();
 
                     matrices.push();
                     matrices.translate(position.x, position.y, position.z);
                     matrices.scale(textSize, textSize, textSize);
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float)rotation.x + (style.inwards ? 0 : 180)));
-                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float)rotation.y));
+                    matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)rotation.x + (style.inwards ? 0 : 180)));
+                    matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion((float)rotation.y));
 
                     activeIndex = charIndex;
                     activeStyle = charStyle;

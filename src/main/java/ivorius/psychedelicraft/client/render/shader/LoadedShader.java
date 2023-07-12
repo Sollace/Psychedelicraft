@@ -3,7 +3,7 @@ package ivorius.psychedelicraft.client.render.shader;
 import java.io.IOException;
 import java.util.*;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -13,7 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
 import net.minecraft.util.Identifier;
 
-class LoadedShader extends PostEffectProcessor {
+class LoadedShader extends ShaderEffect {
     private final UniformBinding.Set bindings;
 
     private int width;
@@ -63,8 +63,8 @@ class LoadedShader extends PostEffectProcessor {
     }
 
     @Override
-    public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest) throws IOException {
-        PostEffectPass pass = super.addPass(programName, source, dest);
+    public PostProcessShader addPass(String programName, Framebuffer source, Framebuffer dest) throws IOException {
+        PostProcessShader pass = super.addPass(programName, source, dest);
         if (passes == null) {
             passes = new ArrayList<>();
         }
@@ -73,15 +73,15 @@ class LoadedShader extends PostEffectProcessor {
     }
 
     class Pass implements UniformSetter {
-        private final JsonEffectShaderProgram program;
-        private final PostEffectPass pass;
+        private final JsonEffectGlShader program;
+        private final PostProcessShader pass;
 
         private final List<FloatConsumer> replay = new ArrayList<>();
         private int updateCount;
 
         private boolean rendered;
 
-        public Pass(PostEffectPass pass) {
+        public Pass(PostProcessShader pass) {
             this.pass = pass;
             this.program = pass.getProgram();
         }
@@ -141,10 +141,10 @@ class LoadedShader extends PostEffectProcessor {
         }
 
         @Override
-        public void set(String name, Vector3f values) {
+        public void set(String name, Vec3f values) {
             var uniform = program.getUniformByName(name);
             if (uniform != null) {
-                var copy = new Vector3f(values);
+                var copy = values.copy();
                 replay.add(uniformSetter(name, f -> uniform.set(copy)));
             }
         }

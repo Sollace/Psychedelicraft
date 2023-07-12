@@ -85,9 +85,9 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
         yaw = 180 - MathHelper.lerp(tickDelta, ((LivingEntity)entity).prevHeadYaw, ((LivingEntity)entity).headYaw);
 
         matrices.translate(x, y, z);
-        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(180));
-        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(pitch));
-        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
+        matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(180));
+        matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(pitch));
+        matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(yaw));
 
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         modelRastaHead.render(matrices, vertices.getBuffer(modelRastaHead.getLayer(TEXTURE)), dispatcher.getLight(entity, tickDelta), 0, 1, 1, 1, 1);

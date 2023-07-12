@@ -9,7 +9,6 @@ import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.*;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -18,8 +17,8 @@ import net.minecraft.world.World;
  * Recipe for pouring fluid from one container to another.
  */
 class PouringRecipe extends SpecialCraftingRecipe {
-    public PouringRecipe(Identifier id, CraftingRecipeCategory category) {
-        super(id, category);
+    public PouringRecipe(Identifier id) {
+        super(id);
     }
 
     @Override
