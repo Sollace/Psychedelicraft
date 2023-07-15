@@ -29,7 +29,7 @@ public class GeometryShader {
 
     public static final GeometryShader INSTANCE = new GeometryShader();
 
-    private String name;
+    private Identifier name;
     private Type type;
 
     private final MinecraftClient client = MinecraftClient.getInstance();
@@ -43,9 +43,8 @@ public class GeometryShader {
         map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
     });
 
-
     public void setup(Type type, String name, InputStream stream, String domain, GLImportProcessor loader) {
-        this.name = name;
+        this.name = new Identifier(name);
         this.type = type;
     }
 
@@ -103,7 +102,7 @@ public class GeometryShader {
 
     public String injectShaderSources(String source) {
         if (type == Type.VERTEX) {
-            return loadProgram(new Identifier(GEO_DIRECTORY + name + ".gvsh")).or(() -> {
+            return loadProgram(name.withPath(p -> GEO_DIRECTORY + p + ".gvsh")).or(() -> {
                 return loadProgram(BASIC.withPath(p -> GEO_DIRECTORY + p + ".gvsh"));
             }).map(geometryShaderSources -> {
                 return combineSources(source, geometryShaderSources);
@@ -111,7 +110,7 @@ public class GeometryShader {
         }
 
         if (type == Type.FRAGMENT) {
-            return loadProgram(new Identifier(GEO_DIRECTORY + name + ".gfsh")).or(() -> {
+            return loadProgram(name.withPath(p -> name + ".gfsh")).or(() -> {
                 return loadProgram(BASIC.withPath(p -> GEO_DIRECTORY + p + ".gfsh"));
             }).map(geometryShaderSources -> {
                 return combineSources(source, geometryShaderSources);
