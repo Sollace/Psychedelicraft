@@ -56,7 +56,7 @@ public interface JsonConfig {
         }
 
         public void save() {
-            try (var writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE)) {
+            try (var writer = Files.newBufferedWriter(path)) {
                 GSON.toJson(getData(), writer);
             } catch (IOException e) {}
         }
