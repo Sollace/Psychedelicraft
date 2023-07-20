@@ -111,7 +111,7 @@ public class GeometryShader {
         }
 
         if (type == Type.FRAGMENT) {
-            return loadProgram(Compat119.withPath(name, p -> name + ".gfsh")).or(() -> {
+            return loadProgram(Compat119.withPath(name, p -> p + ".gfsh")).or(() -> {
                 return loadProgram(Compat119.withPath(BASIC, p -> GEO_DIRECTORY + p + ".gfsh"));
             }).map(geometryShaderSources -> {
                 return combineSources(source, geometryShaderSources);
