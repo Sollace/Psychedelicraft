@@ -169,7 +169,9 @@ public interface PSItemGroups {
     ItemGroup weaponsTab = FabricItemGroup.builder(Psychedelicraft.id("weapons"))
             .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
             .entries((context, entries) -> {
-                appendAllFluids(PSItems.MOLOTOV_COCKTAIL, entries);
+                if (!Psychedelicraft.getConfig().balancing.disableMolotovs) {
+                    appendAllFluids(PSItems.MOLOTOV_COCKTAIL, entries);
+                }
             })
             .build();
 
