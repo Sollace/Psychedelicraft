@@ -173,7 +173,9 @@ public interface PSItemGroups {
     RegistryKey<ItemGroup> WEAPONS = register("weapons", FabricItemGroup.builder()
             .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
             .entries((context, entries) -> {
-                appendAllFluids(PSItems.MOLOTOV_COCKTAIL, entries);
+                if (!Psychedelicraft.getConfig().balancing.disableMolotovs) {
+                    appendAllFluids(PSItems.MOLOTOV_COCKTAIL, entries);
+                }
             }));
 
     private static void appendAllFluids(FluidContainer item, ItemGroup.Entries entries) {

@@ -18,6 +18,7 @@ public class PSConfig {
 
         public boolean enableHarmonium = false;
         public boolean enableRiftJars = false;
+        public boolean disableMolotovs = false;
         public Generation worldGeneration = new Generation();
         public FluidProperties fluidAttributes = new FluidProperties();
         public MessageDistortion messageDistortion = new MessageDistortion();
