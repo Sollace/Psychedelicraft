@@ -158,6 +158,11 @@ class SettingsScreen extends GameGui {
                 ItemGroups.operatorEnabled = !ItemGroups.operatorEnabled;
                 return z;
             });
+            createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.molotovs", !gameplay.disableMolotovs, z -> {
+                gameplay.disableMolotovs = !z;
+                ItemGroups.displayContext = null;
+                return z;
+            });
 
             content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.balancing");
             createFormattedSlider(RIGHT, row += 25, 0, 1800, "gui.psychedelicraft.option.gameplay.rift_spawnrate", gameplay.randomTicksUntilRiftSpawn / PSConfig.MINUTE, z -> {

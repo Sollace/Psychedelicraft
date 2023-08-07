@@ -27,6 +27,7 @@
   "gui.psychedelicraft.option.gameplay.distort_outgoing_messages": "Outgoing Messages",
   "gui.psychedelicraft.option.gameplay.harmonium": "Enable Harmonium",
   "gui.psychedelicraft.option.gameplay.rift_jars": "Enable Rift Jars",
+  "gui.psychedelicraft.option.gameplay.molotovs": "Enable Molotov Cocktails",
   "gui.psychedelicraft.option.gameplay.rift_spawnrate": "Rift Spawn Rate",
 
   "button.reset": "Reset",
