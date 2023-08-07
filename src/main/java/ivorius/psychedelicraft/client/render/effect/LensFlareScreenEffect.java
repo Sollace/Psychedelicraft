@@ -73,7 +73,9 @@ public class LensFlareScreenEffect implements ScreenEffect {
         World world = client.world;
         Entity renderEntity = client.getCameraEntity();
 
-        if (renderEntity != null && world != null) {
+        if (renderEntity != null && world != null
+                && !world.getDimension().hasCeiling()
+                && world.getDimension().hasSkyLight()) {
             float sunRadians = world.getSkyAngleRadians(tickDelta);
             Vector2f angleBegin = PsycheMatrixHelper.fromPolar(sunRadians + SUN_RADIANS, SUN_DISTANCE);
             Vector2f angleEnd = PsycheMatrixHelper.fromPolar(sunRadians - SUN_RADIANS, SUN_DISTANCE);
@@ -85,6 +87,8 @@ public class LensFlareScreenEffect implements ScreenEffect {
                     + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleEnd.x, angleEnd.y, SUN_WIDTH)) ? 0.25F : 0)
             );
             actualSunAlpha = Math.min(1, MathUtils.nearValue(actualSunAlpha, newSunAlpha, 0.1f, 0.01f));
+        } else {
+            actualSunAlpha = 0;
         }
     }
 
