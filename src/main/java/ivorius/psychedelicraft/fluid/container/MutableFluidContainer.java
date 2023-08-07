@@ -96,8 +96,8 @@ public class MutableFluidContainer {
         return this;
     }
 
-    public MutableFluidContainer withAttributes(NbtCompound attributes) {
-        this.attributes = isEmpty() ? FluidContainer.EMPTY_NBT : attributes.copy();
+    public MutableFluidContainer withAttributes(@Nullable NbtCompound attributes) {
+        this.attributes = isEmpty() || attributes == null || attributes.isEmpty() ? FluidContainer.EMPTY_NBT : attributes.copy();
         return this;
     }
 
