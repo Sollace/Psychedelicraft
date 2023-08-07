@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
+import ivorius.psychedelicraft.PSGameRules;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -36,7 +37,9 @@ public class SleepDeprivationDrug extends SimpleDrug {
         if (caffiene > 0.1F) {
             setDesiredValue(0);
         } else {
-            setDesiredValue(getDesiredValue() + (INCREASE_PER_TICKS / 3));
+            if (drugProperties.asEntity().getWorld().getGameRules().getBoolean(PSGameRules.DO_SLEEP_DEPRIVATION)) {
+                setDesiredValue(getDesiredValue() + (INCREASE_PER_TICKS / 3));
+            }
         }
     }
 
