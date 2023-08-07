@@ -81,6 +81,7 @@ public class Psychedelicraft implements ModInitializer {
         PSRecipes.bootstrap();
         PSEntities.bootstrap();
         PSWorldGen.bootstrap();
+        PSGameRules.bootstrap();
         PSCommands.bootstrap();
         PSSounds.bootstrap();
         PSScreenHandlers.bootstrap();
