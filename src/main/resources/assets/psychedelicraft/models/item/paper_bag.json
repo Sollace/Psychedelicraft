@@ -2,5 +2,19 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "psychedelicraft:item/paper_bag"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:filled": 0.5
+            },
+            "model": "psychedelicraft:item/paper_bag_filled"
+        },
+        {
+            "predicate": {
+                "psychedelicraft:filled": 1
+            },
+            "model": "psychedelicraft:item/paper_bag_overflowing"
+        }
+    ]
 }
