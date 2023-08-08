@@ -215,7 +215,7 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
 
     Item VOMIT = register("vomit", new Item(new Settings()));
-    Item PAPER_BAG = register("paper_bag", new Item(new Settings()));
+    Item PAPER_BAG = register("paper_bag", new PaperBagItem(new Settings()));
     Item BAG_O_VOMIT = register("bag_o_vomit", new SuspiciousItem(new Settings()
             .food(new FoodComponent.Builder().hunger(8).saturationModifier(0.8f).meat().alwaysEdible().build()
     ), SuspiciousItem.createForms(Items.COOKIE, Items.MUSHROOM_STEW, Items.GOLDEN_APPLE, Items.COOKED_BEEF, Items.COOKED_CHICKEN)));

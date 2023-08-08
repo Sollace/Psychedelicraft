@@ -31,6 +31,10 @@ public interface PSModelPredicates {
         ModelPredicateProviderRegistry.register(PSItems.WINE_GRAPE_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> stack.getDamage() / 10F);
         ModelPredicateProviderRegistry.register(PSItems.MORNING_GLORY_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> stack.getDamage() / 10F);
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
+            if (stack.getItem() instanceof PaperBagItem item) {
+                PaperBagItem.Contents contents = PaperBagItem.getContents(stack);
+                return contents.isEmpty() ? 0 : contents.count() > 16000 ? 1 : 0.5F;
+            }
             if (stack.getItem() instanceof BongItem item) {
                 return item.hasUsableConsumable(entity) ? 1 : 0;
             }
