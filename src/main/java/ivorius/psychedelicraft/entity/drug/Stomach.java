@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.entity.drug;
 
 import ivorius.psychedelicraft.PSDamageSources;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.PaperBagItem;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -81,7 +82,7 @@ public class Stomach implements NbtSerialisable {
 
     public void vomit() {
         ItemStack heldItem = entity.getStackInHand(Hand.OFF_HAND);
-        if (heldItem.isOf(PSItems.PAPER_BAG)) {
+        if (heldItem.isOf(PSItems.PAPER_BAG) && PaperBagItem.getContents(heldItem).isEmpty()) {
             playBarfNoise();
 
             if (!entity.isCreative()) {

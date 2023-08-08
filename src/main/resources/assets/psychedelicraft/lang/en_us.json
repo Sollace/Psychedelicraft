@@ -106,6 +106,7 @@
   "item.psychedelicraft.agave_leaf": "Agave Leaf",
   "item.psychedelicraft.vomit": "Vomit",
   "item.psychedelicraft.paper_bag": "Empty Paper Bag",
+  "item.psychedelicraft.paper_bag.filled": "Bag of %s",
   "item.psychedelicraft.bag_o_vomit": "Bag of Vomit",
   "item.psychedelicraft.harmonium": "Harmonium",
   "item.psychedelicraft.lsd_square": "LSA Square",
