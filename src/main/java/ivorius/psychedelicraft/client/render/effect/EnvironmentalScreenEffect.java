@@ -81,7 +81,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         float newHeat = wasInWater ? 0 : entity.getWorld().getBiome(pos).value().getTemperature();
         if (!entity.getWorld().getDimension().hasCeiling()) {
             newHeat *= MeteorlogicalUtil.getSunIntensity(entity.getWorld());
-            newHeat *= MeteorlogicalUtil.getSkyLightIntensity(entity.getWorld(), BlockPos.ofFloored(entity.getEyePos()));
+            newHeat *= MeteorlogicalUtil.getSkyLightIntensity(entity.getWorld(), new BlockPos(entity.getEyePos()));
         }
 
         this.currentHeat = MathUtils.nearValue(currentHeat, newHeat, 0.01f, 0.01f);

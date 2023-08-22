@@ -16,6 +16,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
+import ivorius.psychedelicraft.client.render.MeteorlogicalUtil;
 import ivorius.psychedelicraft.client.render.PsycheMatrixHelper;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -25,10 +26,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
 import net.minecraft.util.*;
-import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import java.lang.Math;
@@ -38,11 +36,6 @@ import java.lang.Math;
  * Updated by Sollace on 15 Jan 2023
  */
 public class LensFlareScreenEffect implements ScreenEffect {
-    private static final float SUN_RADIANS = 5F * MathHelper.RADIANS_PER_DEGREE;
-    private static final float SUN_WIDTH = 20;
-
-    private static final float SUN_DISTANCE = 120;
-
     private static final float[] FLARE_SIZES = {
             0.15f, 0.24f, 0.12f, 0.036f, 0.06f,
             0.048f, 0.006f, 0.012f, 0.5f, 0.09f,
@@ -70,34 +63,7 @@ public class LensFlareScreenEffect implements ScreenEffect {
 
     @Override
     public void update(float tickDelta) {
-        World world = client.world;
-        Entity renderEntity = client.getCameraEntity();
-
-        if (renderEntity != null && world != null
-                && !world.getDimension().hasCeiling()
-                && world.getDimension().hasSkyLight()) {
-            float sunRadians = world.getSkyAngleRadians(tickDelta);
-            Vector2f angleBegin = PsycheMatrixHelper.fromPolar(sunRadians + SUN_RADIANS, SUN_DISTANCE);
-            Vector2f angleEnd = PsycheMatrixHelper.fromPolar(sunRadians - SUN_RADIANS, SUN_DISTANCE);
-
-            float newSunAlpha = (1 - world.getRainGradient(tickDelta)) * (
-                      (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleBegin.x, angleBegin.y, -SUN_WIDTH)) ? 0.25F : 0)
-                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleBegin.x, angleBegin.y, SUN_WIDTH)) ? 0.25F : 0)
-                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleEnd.x, angleEnd.y, -SUN_WIDTH)) ? 0.25F : 0)
-                    + (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleEnd.x, angleEnd.y, SUN_WIDTH)) ? 0.25F : 0)
-            );
-            actualSunAlpha = Math.min(1, MathUtils.nearValue(actualSunAlpha, newSunAlpha, 0.1f, 0.01f));
-        } else {
-            actualSunAlpha = 0;
-        }
-    }
-
-    private boolean checkIntersection(World world, Entity entity, float tickDelta, Vec3d offset) {
-        Vec3d start = entity.getCameraPosVec(tickDelta);
-        return world.raycast(new RaycastContext(start, start.add(offset),
-                RaycastContext.ShapeType.OUTLINE,
-                RaycastContext.FluidHandling.ANY, entity))
-                .getType() == Type.MISS;
+        actualSunAlpha = Math.min(1, MathUtils.nearValue(actualSunAlpha, MeteorlogicalUtil.getSunFlareIntensity(client.world, client.getCameraEntity(), tickDelta), 0.1f, 0.01f));
     }
 
     protected float getIntensity() {
@@ -158,7 +124,6 @@ public class LensFlareScreenEffect implements ScreenEffect {
             float flareCenterY = screenCenterY + yDist * FLARE_INFLUENCES[i];
 
             RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, (alpha * i == 8 ? 1F : 0.5F) * actualSunAlpha * getIntensity());
-            RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.setShaderTexture(0, FLARES[i]);
             RenderUtil.drawQuad(matrices,
                     flareCenterX - flareSizeHalf,
