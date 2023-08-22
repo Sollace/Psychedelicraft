@@ -1,7 +1,6 @@
 package ivorius.psychedelicraft.client.render;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
@@ -9,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
@@ -31,19 +31,24 @@ public interface MeteorlogicalUtil {
         float sunRadians = world.getSkyAngleRadians(tickDelta);
 
 
-        Vector3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(
+        Vec3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(
                 PsycheMatrixHelper.fromPolar(sunRadians, 120)
-        ).normalize();
+        );
+        sunPositionOnScreen.normalize();
 
-        if (sunPositionOnScreen.z() < 0) {
+        if (sunPositionOnScreen.getZ() < 0) {
             return 0;
         }
 
         Window window = MinecraftClient.getInstance().getWindow();
         float maxFlareDistance = 170F;
-        return 1 - (Math.min(maxFlareDistance, sunPositionOnScreen
-                .mul(window.getScaledWidth(), window.getScaledHeight(), 0)
-                .length()) / maxFlareDistance);
+
+        sunPositionOnScreen.multiplyComponentwise(window.getScaledWidth(), window.getScaledHeight(), 0);
+
+        return 1 - (Math.min(maxFlareDistance,
+                MathHelper.sqrt(
+                        (sunPositionOnScreen.getX() * sunPositionOnScreen.getX()) + (sunPositionOnScreen.getY() * sunPositionOnScreen.getY())
+                )) / maxFlareDistance);
     }
 
     static float getSunIntensity(World world) {

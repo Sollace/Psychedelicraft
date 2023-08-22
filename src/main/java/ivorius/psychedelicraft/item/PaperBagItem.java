@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.PSTags;
+import ivorius.psychedelicraft.util.Compat119;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.client.item.TooltipContext;
@@ -217,7 +218,7 @@ public class PaperBagItem extends Item {
     }
 
     private static ItemStack removeItems(ItemStack bag, Contents contents, int count) {
-        ItemStack dispensed = contents.stack().copyWithCount(Math.min(contents.count(), count));
+        ItemStack dispensed = Compat119.copyWithCount(contents.stack(), Math.min(contents.count(), count));
         setContents(bag, new Contents(contents.stack(), contents.count() - dispensed.getCount()));
         return dispensed;
     }
@@ -314,7 +315,7 @@ public class PaperBagItem extends Item {
                     return true;
                 }
                 if (canAdd(stack)) {
-                    this.stack = stack.copyWithCount(1);
+                    this.stack = Compat119.copyWithCount(stack, 1);
                     count += stack.split(getMaxCountForItem(stack.getItem()) - count).getCount();
                     return true;
                 }
@@ -322,7 +323,7 @@ public class PaperBagItem extends Item {
             }
 
             public ItemStack split(int count) {
-                ItemStack dispensed = stack.copyWithCount(Math.min(this.count, count));
+                ItemStack dispensed = Compat119.copyWithCount(stack, Math.min(this.count, count));
                 this.count -= dispensed.getCount();
                 return dispensed;
             }

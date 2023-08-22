@@ -157,7 +157,6 @@ class SettingsScreen extends GameGui {
             });
             createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.molotovs", !gameplay.disableMolotovs, z -> {
                 gameplay.disableMolotovs = !z;
-                ItemGroups.displayContext = null;
                 return z;
             });
 
