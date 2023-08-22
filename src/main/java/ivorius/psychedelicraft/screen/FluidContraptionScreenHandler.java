@@ -87,17 +87,22 @@ public class FluidContraptionScreenHandler<T extends FlaskBlockEntity> extends S
                     && !insertItem(stack, INVENTORY_START, INVENTORY_END, false)) {
                 return ItemStack.EMPTY;
             }
+            slot.onQuickTransfer(stack, originalStack);
         } if (index < HOTBAR_START) {
             if (!insertStack(stack, 0) && !insertStack(stack, 1)
                     && !insertItem(stack, HOTBAR_START, HOTBAR_END, false)) {
                 return ItemStack.EMPTY;
             }
+            slot.onQuickTransfer(stack, originalStack);
         } else {
-            if (!insertStack(stack, 0) && !insertStack(stack, 1)
+            if (!insertStack(stack, 0)
+                    && !insertStack(stack, 1)
                     && !insertItem(stack, INVENTORY_START, INVENTORY_END, false)
-                    && !insertItem(stack, HOTBAR_START, HOTBAR_END, false)) {
+                    && !insertItem(stack, HOTBAR_START, Math.min(index - 1, HOTBAR_END), false)
+                    && !insertItem(stack, Math.max(index + 1, HOTBAR_START), HOTBAR_END, false)) {
                 return ItemStack.EMPTY;
             }
+            slot.onQuickTransfer(stack, originalStack);
         }
 
         if (stack.isEmpty()) {
