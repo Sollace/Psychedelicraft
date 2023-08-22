@@ -9,8 +9,6 @@ import java.util.stream.IntStream;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.util.math.Vector2f;
-
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -79,8 +77,8 @@ public class LensFlareScreenEffect implements ScreenEffect {
                 && !world.getDimension().hasCeiling()
                 && world.getDimension().hasSkyLight()) {
             float sunRadians = world.getSkyAngleRadians(tickDelta);
-            Vector2f angleBegin = PsycheMatrixHelper.fromPolar(sunRadians + SUN_RADIANS, SUN_DISTANCE);
-            Vector2f angleEnd = PsycheMatrixHelper.fromPolar(sunRadians - SUN_RADIANS, SUN_DISTANCE);
+            Vec3f angleBegin = PsycheMatrixHelper.fromPolar(sunRadians + SUN_RADIANS, SUN_DISTANCE);
+            Vec3f angleEnd = PsycheMatrixHelper.fromPolar(sunRadians - SUN_RADIANS, SUN_DISTANCE);
 
             float newSunAlpha = (1 - world.getRainGradient(tickDelta)) * (
                       (checkIntersection(world, renderEntity, tickDelta, new Vec3d(-angleBegin.getX(), angleBegin.getY(), -SUN_WIDTH)) ? 0.25F : 0)

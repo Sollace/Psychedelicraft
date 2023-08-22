@@ -7,7 +7,6 @@ package ivorius.psychedelicraft.client.render;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.util.math.Vector2f;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
@@ -18,7 +17,7 @@ import net.minecraft.util.math.Vector4f;
  * Created by lukas on 09.03.14.
  * Updated by Sollace on 15 Jan 2023
  */
-public class PsycheMatrixHelper {
+public interface PsycheMatrixHelper {
     private static Matrix4f getProjectionMatrix(Camera camera) {
         var mat = new Matrix4f();
         var rotation = new Quaternion(camera.getRotation());
@@ -33,12 +32,16 @@ public class PsycheMatrixHelper {
         return to3F(vec);
     }
 
-    public static Vec3f projectPointCurrentView(Vec3f point) {
+    static Vec3f projectPointCurrentView(Vec3f point) {
         return projectPointView(MinecraftClient.getInstance().gameRenderer.getCamera(), point);
     }
 
-    public static Vector2f fromPolar(float angle, float distance) {
-        return new Vector2f(MathHelper.sin(angle) * distance, MathHelper.cos(angle) * distance);
+    static Vec3f fromPolar(float angle, float distance) {
+        return new Vec3f(
+               -MathHelper.sin(angle) * distance,
+                MathHelper.cos(angle) * distance,
+                0
+        );
     }
 
     static Vec3f to3F(Vector4f vector) {
