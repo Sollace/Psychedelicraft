@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
+import ivorius.psychedelicraft.client.render.MeteorlogicalUtil;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -78,7 +79,11 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         }
 
         BlockPos pos = entity.getBlockPos();
-        float newHeat = entity.getWorld().getBiome(pos).value().getTemperature();
+        float newHeat = wasInWater ? 0 : entity.getWorld().getBiome(pos).value().getTemperature();
+        if (!entity.getWorld().getDimension().hasCeiling()) {
+            newHeat *= MeteorlogicalUtil.getSunIntensity(entity.getWorld());
+            newHeat *= MeteorlogicalUtil.getSkyLightIntensity(entity.getWorld(), BlockPos.ofFloored(entity.getEyePos()));
+        }
 
         this.currentHeat = MathUtils.nearValue(currentHeat, newHeat, 0.01f, 0.01f);
     }
