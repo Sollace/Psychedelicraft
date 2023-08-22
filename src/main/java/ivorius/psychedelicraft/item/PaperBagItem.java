@@ -109,6 +109,7 @@ public class PaperBagItem extends Item {
             }
 
             // bag to bag transfer
+            /*
             if (cursorStack.getItem() instanceof PaperBagItem) {
                 Contents.Builder cursorContents = new Contents.Builder(getContents(cursorStack));
                 builder.add(cursorContents.split(maxTaken));
@@ -117,6 +118,7 @@ public class PaperBagItem extends Item {
                 setContents(cursorStack, cursorContents.build());
                 return true;
             }
+            */
         }
 
         return false;
@@ -189,8 +191,6 @@ public class PaperBagItem extends Item {
             if (inv.getStack(slot) != stack) {
                 return;
             }
-
-            System.out.println(slot);
 
             Contents contents = getContents(stack);
             if (contents.isFull() || contents.isEmpty()) {
@@ -297,23 +297,27 @@ public class PaperBagItem extends Item {
             }
 
             public boolean canAdd(ItemStack stack) {
+                if (stack.getItem() instanceof PaperBagItem) {
+                    return false;
+                }
+
                 if (this.stack.isEmpty()) {
                     return true;
                 }
-                if (stack.getItem() instanceof PaperBagItem) {
-                    return canAdd(getContents(stack).stack());
-                }
+                //if (stack.getItem() instanceof PaperBagItem) {
+                //    return canAdd(getContents(stack).stack());
+                //}
                 return (this.stack.isEmpty() || ItemStack.canCombine(this.stack, stack)) && count < getMaxCountForItem(stack.getItem());
             }
 
             public boolean add(ItemStack stack) {
-                if (stack.getItem() instanceof PaperBagItem) {
+                /*if (stack.getItem() instanceof PaperBagItem) {
                     Builder builder = new Builder(getContents(stack));
                     this.stack = builder.stack.copy();
                     count += builder.split(getMaxCountForItem(builder.stack.getItem()) - count).getCount();
                     setContents(stack, builder.build());
                     return true;
-                }
+                }*/
                 if (canAdd(stack)) {
                     this.stack = Compat119.copyWithCount(stack, 1);
                     count += stack.split(getMaxCountForItem(stack.getItem()) - count).getCount();
