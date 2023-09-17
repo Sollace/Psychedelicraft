@@ -1,7 +1,5 @@
 package ivorius.psychedelicraft.recipe;
 
-import java.util.List;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.minecraft.loot.LootTable;
@@ -36,7 +34,7 @@ public interface PSRecipes {
                 final boolean isVillagerChest = id.getPath().contains("village");
                 if ((isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.villageChests)
                 || (!isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.dungeonChests)) {
-                    supplier.pools(List.of(table.pools));
+                    supplier.pools(table.pools);
                 }
             }
         });

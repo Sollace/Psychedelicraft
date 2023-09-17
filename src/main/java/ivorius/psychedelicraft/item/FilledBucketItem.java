@@ -56,8 +56,8 @@ public class FilledBucketItem extends Item implements FluidContainer {
         DispenserBlock.registerBehavior(this, new ItemDispenserBehavior(){
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-                BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                ServerWorld world = pointer.getWorld();
+                BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
+                ServerWorld world = pointer.world();
                 if (placeFluid(getFluid(stack).getFluidState(stack), null, world, blockPos, null)) {
                     return new ItemStack(asEmpty());
                 }
@@ -120,7 +120,7 @@ public class FilledBucketItem extends Item implements FluidContainer {
             if (fluid.isEmpty()) {
                 ItemStack itemStack2;
                 BlockState state = world.getBlockState(blockPos);
-                if (state.getBlock() instanceof FluidDrainable drainable && !(itemStack2 = drainable.tryDrainFluid(world, blockPos, state)).isEmpty()) {
+                if (state.getBlock() instanceof FluidDrainable drainable && !(itemStack2 = drainable.tryDrainFluid(user, world, blockPos, state)).isEmpty()) {
                     user.incrementStat(Stats.USED.getOrCreateStat(this));
                     drainable.getBucketFillSound().ifPresent(sound -> user.playSound(sound, 1.0f, 1.0f));
                     world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
@@ -156,7 +156,7 @@ public class FilledBucketItem extends Item implements FluidContainer {
         Block block = state.getBlock();
         boolean canPlace = state.canBucketPlace(fluid.getFluid());
 
-        if (!(state.isAir() || canPlace || block instanceof FluidFillable && ((FluidFillable)(block)).canFillWithFluid(world, pos, state, fluid.getFluid()))) {
+        if (!(state.isAir() || canPlace || block instanceof FluidFillable && ((FluidFillable)(block)).canFillWithFluid(player, world, pos, state, fluid.getFluid()))) {
             return hit != null && placeFluid(fluid, player, world, hit.getBlockPos().offset(hit.getSide()), null);
         }
 

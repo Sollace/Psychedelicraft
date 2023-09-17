@@ -41,6 +41,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -96,6 +97,7 @@ public class DealerTaskListProvider {
                 }
                 world.getRecipeManager().getAllMatches(PSRecipes.DRYING_TYPE, entity.getInventory(), world)
                         .stream()
+                        .map(RecipeEntry::value)
                         .filter(recipe -> recipe.getIngredients().size() <= inputSlots.length)
                         .findFirst()
                         .ifPresent(recipe -> {

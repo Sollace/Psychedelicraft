@@ -91,7 +91,7 @@ public class CannabisPlantBlock extends CropBlock {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.getBaseLightLevel(pos.up(), 0) >= 9 && random.nextFloat() < getRandomGrowthChance()) {
-            if (isFertilizable(world, pos, state, false)) {
+            if (isFertilizable(world, pos, state)) {
                 applyGrowth(world, pos, state, false);
             }
         }

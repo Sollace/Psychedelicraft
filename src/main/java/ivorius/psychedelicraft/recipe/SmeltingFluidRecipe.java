@@ -14,16 +14,20 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import com.google.common.base.Functions;
 import com.google.gson.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
@@ -58,12 +62,12 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     private WeakReference<Inventory> lastQueriedInventory = new WeakReference<>(null);
 
     public SmeltingFluidRecipe(
-            Identifier id, String group, CookingRecipeCategory category,
+            String group, CookingRecipeCategory category,
             FluidIngredient fluid, Ingredient inputStack,
             Map<String, Modification> outputModifications,
             ItemStack outputStack,
             float experience, int cookingTime) {
-        super(id, group, category, inputStack, outputStack, experience, cookingTime);
+        super(group, category, inputStack, outputStack, experience, cookingTime);
         this.fluid = fluid;
         this.outputModifications = outputModifications;
     }
@@ -76,14 +80,14 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     @Override
     public boolean matches(Inventory inventory, World world) {
         lastQueriedInventory = new WeakReference<>(inventory);
-        return (input.isEmpty() || input.test(inventory.getStack(0))) && fluid.test(inventory.getStack(0));
+        return (ingredient.isEmpty() || ingredient.test(inventory.getStack(0))) && fluid.test(inventory.getStack(0));
     }
 
     @Override
-    public ItemStack getOutput(DynamicRegistryManager registries) {
+    public ItemStack getResult(DynamicRegistryManager registries) {
         Inventory inventory = lastQueriedInventory.get();
         if (inventory == null) {
-            return super.getOutput(registries);
+            return super.getResult(registries);
         }
         return craft(inventory, registries);
     }
@@ -91,9 +95,9 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     @Override
     public ItemStack craft(Inventory inventory, DynamicRegistryManager registries) {
         lastQueriedInventory = new WeakReference<>(inventory);
-        ItemStack stack = output.isEmpty() ? inventory.getStack(0).copyWithCount(
-                output.getItem() == Items.AIR ? 1 : output.getCount()
-            ) : output.copy();
+        ItemStack stack = result.isEmpty() ? inventory.getStack(0).copyWithCount(
+                result.getItem() == Items.AIR ? 1 : result.getCount()
+            ) : result.copy();
         NbtCompound tag = stack.getOrCreateSubNbt("fluid");
         outputModifications.forEach((key, modder) -> {
             if (!tag.contains(key, NbtElement.INT_TYPE)) {
@@ -116,7 +120,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             private final String name;
             private final Op operation;
 
-            static final Map<String, Ops> VALUES = Arrays.stream(values()).collect(Collectors.toMap(a -> a.name, Functions.identity()));
+            private static final Map<String, Ops> VALUES = Arrays.stream(values()).collect(Collectors.toMap(a -> a.name, Functions.identity()));
 
             Ops(Op operation) {
                 this.name = name().toLowerCase(Locale.ROOT);
@@ -128,10 +132,6 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             this(buffer.readVarInt(), buffer.readEnumConstant(Ops.class));
         }
 
-        interface Op {
-            int apply(int a, int b);
-        }
-
         static Map<String, Modification> fromJson(JsonObject json) {
             return json.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
                 JsonObject obj = JsonHelper.asObject(entry.getValue(), "attribute");
@@ -140,6 +140,10 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
                         Ops.VALUES.getOrDefault(JsonHelper.getString(obj, "type").toLowerCase(Locale.ROOT), Ops.ADD)
                 );
             }));
+        }
+
+        interface Op {
+            int apply(int a, int b);
         }
 
         @Override
@@ -153,27 +157,34 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
         }
     }
 
-
-
     static class Serializer implements RecipeSerializer<SmeltingFluidRecipe> {
         @SuppressWarnings("deprecation")
+        private static final Codec<Map<String, Modification>> ATTRIBUTES_CODEC = Codecs.fromJsonSerializer(
+                json -> Modification.fromJson(JsonHelper.getObject(json.getAsJsonObject(), "attributes", new JsonObject())),
+                data -> {
+                    throw new NotImplementedException("Cannot serialize a modifications map!");
+                }
+        );
+
+        private static final Codec<SmeltingFluidRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(SmeltingFluidRecipe::getGroup),
+                CookingRecipeCategory.CODEC.fieldOf("category").orElse(CookingRecipeCategory.MISC).forGetter(SmeltingFluidRecipe::getCategory),
+                FluidIngredient.CODEC.fieldOf("input").forGetter(recipe -> recipe.fluid),
+                Ingredient.ALLOW_EMPTY_CODEC.optionalFieldOf("item", Ingredient.empty()).forGetter(recipe -> recipe.ingredient),
+                ATTRIBUTES_CODEC.fieldOf("result").forGetter(recipe -> recipe.outputModifications),
+                RecipeUtils.ITEM_STACK_CODEC.optionalFieldOf("result", ItemStack.EMPTY).forGetter(recipe -> recipe.result),
+                Codec.FLOAT.fieldOf("experience").forGetter(SmeltingFluidRecipe::getExperience),
+                Codec.INT.optionalFieldOf("cookingTIme", 200).forGetter(SmeltingFluidRecipe::getCookingTime)
+            ).apply(instance, SmeltingFluidRecipe::new));
+
         @Override
-        public SmeltingFluidRecipe read(Identifier id, JsonObject json) {
-            return new SmeltingFluidRecipe(id,
-                    JsonHelper.getString(json, "group", ""),
-                    CookingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CookingRecipeCategory.MISC),
-                    FluidIngredient.fromJson(JsonHelper.getObject(json, "input")),
-                    json.has("item") ? Ingredient.fromJson(json.get("item")) : Ingredient.empty(),
-                    Modification.fromJson(JsonHelper.getObject(JsonHelper.getObject(json, "result"), "attributes", new JsonObject())),
-                    JsonHelper.getObject(json, "result").has("item") ? ShapedRecipe.outputFromJson(JsonHelper.getObject(json, "result")) : ItemStack.EMPTY,
-                    JsonHelper.getFloat(json, "experience"),
-                    JsonHelper.getInt(json, "cookingTime", 200)
-            );
+        public Codec<SmeltingFluidRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public SmeltingFluidRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new SmeltingFluidRecipe(id,
+        public SmeltingFluidRecipe read(PacketByteBuf buffer) {
+            return new SmeltingFluidRecipe(
                     buffer.readString(),
                     buffer.readEnumConstant(CookingRecipeCategory.class),
                     new FluidIngredient(buffer),
@@ -190,11 +201,11 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             buffer.writeString(recipe.getGroup());
             buffer.writeEnumConstant(recipe.getCategory());
             recipe.fluid.write(buffer);
-            recipe.input.write(buffer);
+            recipe.ingredient.write(buffer);
             buffer.writeMap(recipe.outputModifications, PacketByteBuf::writeString, (b, c) -> c.write(b));
-            buffer.writeItemStack(recipe.output);
+            buffer.writeItemStack(recipe.result);
             buffer.writeFloat(recipe.getExperience());
-            buffer.writeVarInt(recipe.getCookTime());
+            buffer.writeVarInt(recipe.getCookingTime());
         }
     }
 }

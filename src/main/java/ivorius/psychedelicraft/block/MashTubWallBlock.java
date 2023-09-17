@@ -92,10 +92,10 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
     }
 
     @Override
-    public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+    public boolean canFillWithFluid(PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         return getValidMasterPosition(world, pos).filter(center -> {
             BlockState masterState = world.getBlockState(center);
-            return masterState.getBlock() instanceof FluidFillable fillable && fillable.canFillWithFluid(world, center, masterState, fluid);
+            return masterState.getBlock() instanceof FluidFillable fillable && fillable.canFillWithFluid(player, world, center, masterState, fluid);
         }).isPresent();
     }
 

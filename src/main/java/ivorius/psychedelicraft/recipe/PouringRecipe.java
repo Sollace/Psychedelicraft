@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -19,8 +18,8 @@ import net.minecraft.world.World;
  * Recipe for pouring fluid from one container to another.
  */
 class PouringRecipe extends SpecialCraftingRecipe {
-    public PouringRecipe(Identifier id, CraftingRecipeCategory category) {
-        super(id, category);
+    public PouringRecipe(CraftingRecipeCategory category) {
+        super(category);
     }
 
     @Override

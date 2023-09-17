@@ -76,7 +76,7 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
     }
 
     @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
         return (world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight())
                 || state.get(getAgeProperty()) < getMaxAge(state);
     }

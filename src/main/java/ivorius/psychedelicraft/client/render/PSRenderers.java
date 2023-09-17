@@ -14,7 +14,7 @@ import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
@@ -44,7 +44,7 @@ public interface PSRenderers {
         BlockEntityRendererFactories.register(PSBlockEntities.PEYOTE, PeyoteBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(PSBlockEntities.PLACED_DRINK, DrinksBlockEntityRenderer::new);
 
-        ModelLoadingRegistry.INSTANCE.registerModelProvider(PlacedDrinksModelProvider.INSTANCE);
+        PreparableModelLoadingPlugin.register(PlacedDrinksModelProvider.INSTANCE, PlacedDrinksModelProvider.INSTANCE);
 
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), PSBlocks.DISTILLERY, PSBlocks.FLASK);
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),

@@ -1,9 +1,10 @@
 package ivorius.psychedelicraft.recipe;
 
-import com.google.gson.JsonElement;
+import org.apache.commons.lang3.NotImplementedException;
+
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
+import com.mojang.serialization.Codec;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
@@ -13,10 +14,11 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
-    public static FluidIngredient fromJson(JsonElement element) {
-
+    @SuppressWarnings("deprecation")
+    public static final Codec<FluidIngredient> CODEC = Codecs.fromJsonSerializer(element -> {
         if (element.isJsonObject()) {
             JsonObject json = element.getAsJsonObject();
             SimpleFluid fluid = SimpleFluid.byId(Identifier.tryParse(JsonHelper.getString(json, "fluid")));
@@ -35,7 +37,9 @@ public record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attribu
         SimpleFluid fluid = SimpleFluid.byId(Identifier.tryParse(JsonHelper.asString(element, "fluid")));
 
         return new FluidIngredient(fluid, -1, new NbtCompound());
-    }
+    }, ingredient -> {
+        throw new NotImplementedException("Cannot serialize a fluid ingredient!!");
+    });
 
     public FluidIngredient(PacketByteBuf buffer) {
         this(SimpleFluid.byId(buffer.readIdentifier()), buffer.readVarInt(), buffer.readNbt());

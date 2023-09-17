@@ -13,6 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
@@ -137,7 +138,8 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
             return Optional.empty();
         }
         return getWorld().getRecipeManager()
-                .getFirstMatch(PSRecipes.DRYING_TYPE, this, this.getWorld());
+                .getFirstMatch(PSRecipes.DRYING_TYPE, this, this.getWorld())
+                .map(RecipeEntry::value);
     }
 
     public ItemStack craft() {

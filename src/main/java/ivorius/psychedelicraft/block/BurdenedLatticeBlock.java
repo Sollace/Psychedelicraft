@@ -132,7 +132,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
         return (state.get(AGE) < MAX_AGE || canSpread(state, world, pos)) && !state.get(PERSISTENT);
     }
 

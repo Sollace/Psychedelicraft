@@ -2,11 +2,13 @@ package ivorius.psychedelicraft.client.render;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -16,7 +18,8 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer.FluidAppearance;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.fabricmc.fabric.api.client.model.ExtraModelProvider;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.Context;
+import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
 import net.minecraft.block.StainedGlassPaneBlock;
 import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
@@ -41,7 +44,9 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
-public class PlacedDrinksModelProvider implements ExtraModelProvider {
+public class PlacedDrinksModelProvider
+        implements PreparableModelLoadingPlugin<Map<Identifier, PlacedDrinksModelProvider.Entry>>,
+        PreparableModelLoadingPlugin.DataLoader<Map<Identifier, PlacedDrinksModelProvider.Entry>> {
     private static final Identifier CONFIG_LOCATION = Psychedelicraft.id("placeable_drinks.json");
     private static final Gson GSON = new Gson();
     private static final Random RNG = Random.create();
@@ -49,43 +54,52 @@ public class PlacedDrinksModelProvider implements ExtraModelProvider {
 
     public static final PlacedDrinksModelProvider INSTANCE = new PlacedDrinksModelProvider();
 
-    private final Map<Identifier, Entry> entries = new HashMap<>();
+    private Map<Identifier, Entry> entries = Map.of();
 
     @Override
-    public void provideExtraModels(ResourceManager manager, Consumer<Identifier> out) {
-        if (this != INSTANCE) {
-            INSTANCE.provideExtraModels(manager, out);
-            return;
-        }
-        entries.clear();
-        manager.getResource(CONFIG_LOCATION).ifPresent(resource -> {
-            try (BufferedReader reader = resource.getReader()) {
-                JsonHelper.getArray(JsonHelper.asObject(JsonHelper.deserialize(GSON, reader, JsonElement.class), "root"), "values")
-                .asList()
-                .stream()
-                .map(element -> {
-                    try {
-                        return JsonHelper.asObject(element, "root.values[i]");
-                    } catch (Exception e) {
-                        Psychedelicraft.LOGGER.error(e);
-                    }
-                    return new JsonObject();
-                })
-                .forEach(element -> {
-                    if (!element.has("id")) {
-                        return;
-                    }
-                    Identifier id = Identifier.tryParse(JsonHelper.getString(element, "id"));
-                    if (id == null) {
-                        Psychedelicraft.LOGGER.warn("Invalid identifier: " + element);
-                    }
-                    out.accept(getGroundModelId(id));
-                    out.accept(getGroundModelFluidId(id));
-                    entries.put(id, new Entry(element));
-                });
-            } catch (IOException e) {
-                Psychedelicraft.LOGGER.error("Could not load client drinks file", e);
-            }
+    public CompletableFuture<Map<Identifier, PlacedDrinksModelProvider.Entry>> load(ResourceManager resourceManager, Executor executor) {
+        return CompletableFuture.supplyAsync(() -> {
+            return resourceManager.getResource(CONFIG_LOCATION).map(resource -> {
+                try (BufferedReader reader = resource.getReader()) {
+                    return JsonHelper.getArray(JsonHelper.asObject(JsonHelper.deserialize(GSON, reader, JsonElement.class), "root"), "values")
+                        .asList()
+                        .stream()
+                        .map(element -> {
+                            try {
+                                return JsonHelper.asObject(element, "root.values[i]");
+                            } catch (Exception e) {
+                                Psychedelicraft.LOGGER.error(e);
+                            }
+                            return null;
+                        })
+                        .filter(Objects::nonNull)
+                        .map(element -> {
+                            if (!element.has("id") || !element.get("id").isJsonPrimitive()) {
+                                return null;
+                            }
+                            Identifier id = Identifier.tryParse(JsonHelper.getString(element, "id"));
+                            if (id == null) {
+                                Psychedelicraft.LOGGER.warn("Invalid identifier: " + element);
+                                return null;
+                            }
+                            return Map.entry(id, new Entry(element));
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                } catch (IOException e) {
+                    Psychedelicraft.LOGGER.error("Could not load client drinks file", e);
+                }
+                return null;
+            }).orElseGet(Map::of);
+        }, executor);
+    }
+
+    @Override
+    public void onInitializeModelLoader(Map<Identifier, PlacedDrinksModelProvider.Entry> data, Context context) {
+        entries = data;
+        data.keySet().forEach(id -> {
+            context.addModels(getGroundModelId(id));
+            context.addModels(getGroundModelFluidId(id));
         });
     }
 

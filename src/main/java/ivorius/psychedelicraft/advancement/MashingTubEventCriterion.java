@@ -1,10 +1,11 @@
 package ivorius.psychedelicraft.advancement;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonObject;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.minecraft.advancement.criterion.AbstractCriterion;
@@ -13,22 +14,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventCriterion.Conditions> {
-
-    private static final Identifier ID = Psychedelicraft.id("mashed_item");
-
     @Override
-    public Identifier getId() {
-        return ID;
-    }
-
-    @Override
-    protected Conditions conditionsFromJson(JsonObject json, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
+    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
         return new Conditions(
                 playerPredicate,
                 (AlcoholicFluid)SimpleFluid.byId(Identifier.tryParse(json.get("fluid").getAsString())),
@@ -55,8 +47,8 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
         private final IntRange maturation;
         private final IntRange distillation;
 
-        public Conditions(LootContextPredicate playerPredicate, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) {
-            super(ID, playerPredicate);
+        public Conditions(Optional<LootContextPredicate> playerPredicate, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) {
+            super(playerPredicate);
             this.fluid = fluid;
             this.fermentation = fermentation;
             this.maturation = maturation;
@@ -71,8 +63,8 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
         }
 
         @Override
-        public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
-            JsonObject json = super.toJson(serializer);
+        public JsonObject toJson() {
+            JsonObject json = super.toJson();
             json.addProperty("fluid", fluid.getId().toString());
             json.add("fermentation", fermentation.toJson());
             json.add("maturation", maturation.toJson());

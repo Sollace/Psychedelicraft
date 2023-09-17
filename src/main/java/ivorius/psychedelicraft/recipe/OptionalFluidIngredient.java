@@ -1,10 +1,12 @@
 package ivorius.psychedelicraft.recipe;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
@@ -15,23 +17,15 @@ public record OptionalFluidIngredient (
         Optional<Ingredient> receptical
 ) implements Predicate<ItemStack> {
     public static final OptionalFluidIngredient EMPTY = new OptionalFluidIngredient(Optional.empty(), Optional.empty());
-
-    public static OptionalFluidIngredient fromJson(JsonObject json) {
-        return new OptionalFluidIngredient(
-                json.has("fluid") ? Optional.of(FluidIngredient.fromJson(json.get("fluid"))) : Optional.empty(),
-                Optional.of(Ingredient.fromJson(json)).filter(i -> !i.isEmpty())
-        );
-    }
-
-    public static DefaultedList<OptionalFluidIngredient> fromJsonArray(JsonArray json) {
-        DefaultedList<OptionalFluidIngredient> defaultedList = DefaultedList.of();
-        for (int i = 0; i < json.size(); ++i) {
-            OptionalFluidIngredient ingredient = fromJson(json.get(i).getAsJsonObject());
-            if (ingredient.isEmpty()) continue;
-            defaultedList.add(ingredient);
-        }
-        return defaultedList;
-    }
+    public static final Codec<OptionalFluidIngredient> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                FluidIngredient.CODEC.optionalFieldOf("fluid").forGetter(OptionalFluidIngredient::fluid),
+                Ingredient.ALLOW_EMPTY_CODEC.optionalFieldOf("receptical").forGetter(OptionalFluidIngredient::receptical)
+            ).apply(instance, OptionalFluidIngredient::new)
+    );
+    public static final Codec<DefaultedList<OptionalFluidIngredient>> LIST_CODEC = CODEC.listOf().xmap(
+            values -> DefaultedList.copyOf(EMPTY, values.toArray(OptionalFluidIngredient[]::new)),
+            defaultedList -> new ArrayList<>(defaultedList)
+    );
 
     public OptionalFluidIngredient(PacketByteBuf buffer) {
         this(buffer.readOptional(FluidIngredient::new), buffer.readOptional(Ingredient::fromPacket));

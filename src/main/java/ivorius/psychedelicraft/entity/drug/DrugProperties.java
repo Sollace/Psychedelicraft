@@ -323,12 +323,7 @@ public class DrugProperties implements NbtSerialisable {
 
     private void changeDrugModifier(LivingEntity entity, EntityAttribute attribute, double value, Operation operation) {
         EntityAttributeInstance speedInstance = entity.getAttributeInstance(attribute);
-        EntityAttributeModifier oldModifier = speedInstance.getModifier(DrugProperties.DRUG_EFFECT_UUID);
-
-        if (oldModifier != null) {
-            speedInstance.removeModifier(oldModifier);
-        }
-
+        speedInstance.removeModifier(DrugProperties.DRUG_EFFECT_UUID);
         speedInstance.addTemporaryModifier(new EntityAttributeModifier(DrugProperties.DRUG_EFFECT_UUID, "Drug Effects", value, operation));
     }
 }

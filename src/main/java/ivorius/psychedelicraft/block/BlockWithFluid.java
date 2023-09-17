@@ -117,7 +117,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     @Override
     @Nullable
     public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
-        return world.isClient ? null : checkType(type, getBlockEntityType(), (w, p, s, entity) -> entity.tick((ServerWorld)w));
+        return world.isClient ? null : validateTicker(type, getBlockEntityType(), (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
 
     @Override

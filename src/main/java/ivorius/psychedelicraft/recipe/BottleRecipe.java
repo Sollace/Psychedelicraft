@@ -3,9 +3,9 @@ package ivorius.psychedelicraft.recipe;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
-import com.google.gson.JsonObject;
-
+import com.mojang.serialization.Codec;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
@@ -15,7 +15,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 public class BottleRecipe extends ShapedRecipe {
@@ -38,13 +37,13 @@ public class BottleRecipe extends ShapedRecipe {
         map.put(Items.BLACK_STAINED_GLASS, DyeColor.BLACK);
     });
 
-    public BottleRecipe(Identifier id, ShapedRecipe recipe) {
-        super(id, recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getOutput(null));
+    public BottleRecipe(ShapedRecipe recipe) {
+        super(recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getResult(null));
     }
 
     @Override
     public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
-        ItemStack output = getOutput(registries).copy();
+        ItemStack output = getResult(registries).copy();
         if (output.getItem() instanceof DyeableItem dyeable) {
             RecipeUtils.stacks(inventory)
                 .map(stack -> stack.getItem())
@@ -60,13 +59,13 @@ public class BottleRecipe extends ShapedRecipe {
 
     public static class Serializer extends ShapedRecipe.Serializer {
         @Override
-        public ShapedRecipe read(Identifier id, JsonObject json) {
-            return new BottleRecipe(id, super.read(id, json));
+        public Codec<ShapedRecipe> codec() {
+            return super.codec().xmap(BottleRecipe::new, Function.identity());
         }
 
         @Override
-        public ShapedRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new BottleRecipe(id, super.read(id, buffer));
+        public ShapedRecipe read(PacketByteBuf buffer) {
+            return new BottleRecipe(super.read(buffer));
         }
     }
 }

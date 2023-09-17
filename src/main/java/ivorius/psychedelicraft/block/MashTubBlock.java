@@ -150,7 +150,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     }
 
     @Override
-    public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+    public boolean canFillWithFluid(PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         return world.getBlockEntity(pos, getBlockEntityType()).filter(be -> {
             Resovoir tank = be.getTank(Direction.UP);
             return (tank.isEmpty()
@@ -206,6 +206,6 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     @Nullable
     public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
-        return world.isClient ? checkType(type, getBlockEntityType(), (w, p, s, entity) -> entity.tickAnimations()) : super.getTicker(world, state, type);
+        return world.isClient ? validateTicker(type, getBlockEntityType(), (w, p, s, entity) -> entity.tickAnimations()) : super.getTicker(world, state, type);
     }
 }

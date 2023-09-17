@@ -53,7 +53,7 @@ public abstract class SucculentPlantBlock extends PlantBlock implements Fertiliz
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (isFertilizable(world, pos, state, false)) {
+        if (isFertilizable(world, pos, state)) {
             if (world.random.nextInt(getGrowthRate(state)) == 0) {
                 applyGrowth(world, random, pos, state, false);
             }
@@ -80,7 +80,7 @@ public abstract class SucculentPlantBlock extends PlantBlock implements Fertiliz
     }
 
     @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean client) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
         return state.get(getAgeProperty()) < getMaxAge();
     }
 

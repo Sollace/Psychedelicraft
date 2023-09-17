@@ -11,12 +11,14 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
-import com.google.gson.*;
+import org.apache.commons.lang3.NotImplementedException;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 /**
  * Created from "RecipeFillDrink" by Sollace on 5 Jan 2023
@@ -32,8 +34,8 @@ import com.google.gson.*;
 public class FillRecepticalRecipe extends ShapelessRecipe {
     private final FluidIngredient output;
 
-    public FillRecepticalRecipe(Identifier id, String group, CraftingRecipeCategory category, FluidIngredient output, DefaultedList<Ingredient> input) {
-        super(id, group, category, ItemStack.EMPTY, input);
+    public FillRecepticalRecipe(String group, CraftingRecipeCategory category, FluidIngredient output, DefaultedList<Ingredient> input) {
+        super(group, category, ItemStack.EMPTY, input);
         this.output = output;
     }
 
@@ -70,23 +72,32 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     }
 
     static class Serializer implements RecipeSerializer<FillRecepticalRecipe> {
-        @SuppressWarnings("deprecation")
+        record IntermediateWorkAround (String group, CraftingRecipeCategory category, FluidIngredient output, DefaultedList<Ingredient> input, Ingredient receptical) {
+            FillRecepticalRecipe createRecipe() {
+                var inputsWithReceptical = receptical.isEmpty() ? input : DefaultedList.copyOf(Ingredient.EMPTY, input.toArray(Ingredient[]::new));
+                return new FillRecepticalRecipe(group, category, output, inputsWithReceptical);
+            }
+        }
+
+        public static final Codec<FillRecepticalRecipe> CODEC = RecordCodecBuilder.<IntermediateWorkAround>create(instance -> instance
+                .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(IntermediateWorkAround::group),
+                        CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(IntermediateWorkAround::category),
+                        FluidIngredient.CODEC.fieldOf("result").forGetter(IntermediateWorkAround::output),
+                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(IntermediateWorkAround::input),
+                        Ingredient.ALLOW_EMPTY_CODEC.fieldOf("receptical").forGetter(IntermediateWorkAround::receptical)
+                ).apply(instance, IntermediateWorkAround::new)
+        ).xmap(i -> i.createRecipe(), recipe -> {
+            throw new NotImplementedException("Cannot serialize this recipe type");
+        });
+
         @Override
-        public FillRecepticalRecipe read(Identifier id, JsonObject json) {
-            return new FillRecepticalRecipe(id,
-                    JsonHelper.getString(json, "group", ""),
-                    CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC),
-                    FluidIngredient.fromJson(JsonHelper.getObject(json, "result")),
-                    RecipeUtils.checkLength(RecipeUtils.union(
-                            RecipeUtils.getIngredients(JsonHelper.getArray(json, "ingredients")),
-                            Ingredient.fromJson(json.get("receptical"))
-                    ))
-            );
+        public Codec<FillRecepticalRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public FillRecepticalRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new FillRecepticalRecipe(id,
+        public FillRecepticalRecipe read(PacketByteBuf buffer) {
+            return new FillRecepticalRecipe(
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     new FluidIngredient(buffer),
@@ -101,6 +112,5 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
             recipe.output.write(buffer);
             buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
         }
-
     }
 }

@@ -11,16 +11,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.gson.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 
@@ -30,9 +31,9 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     private final DefaultedList<OptionalFluidIngredient> ingredients;
     private final List<OptionalFluidIngredient> fluidRestrictions;
 
-    public FluidAwareShapelessRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output,
+    public FluidAwareShapelessRecipe(String group, CraftingRecipeCategory category, ItemStack output,
             DefaultedList<OptionalFluidIngredient> input) {
-        super(id, group, category, output,
+        super(group, category, output,
                 // parent expects regular ingredients but we don't actually use them
                 input.stream()
                 .map(i -> i.receptical().orElse(Ingredient.EMPTY))
@@ -82,20 +83,22 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     }
 
     static class Serializer implements RecipeSerializer<FluidAwareShapelessRecipe> {
-        @SuppressWarnings("deprecation")
+        public static final Codec<FluidAwareShapelessRecipe> CODEC = RecordCodecBuilder.create(instance -> instance
+                .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(FluidAwareShapelessRecipe::getGroup),
+                        CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FluidAwareShapelessRecipe::getCategory),
+                        Registries.ITEM.getCodec().xmap(ItemStack::new, ItemStack::getItem).fieldOf("result").forGetter(recipe -> recipe.getResult(null)),
+                        OptionalFluidIngredient.LIST_CODEC.fieldOf("ingredients").forGetter(recipe -> recipe.ingredients)
+                ).apply(instance, FluidAwareShapelessRecipe::new)
+        );
+
         @Override
-        public FluidAwareShapelessRecipe read(Identifier id, JsonObject json) {
-            return new FluidAwareShapelessRecipe(id,
-                    JsonHelper.getString(json, "group", ""),
-                    CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC),
-                    ShapedRecipe.outputFromJson(JsonHelper.getObject(json, "result")),
-                    RecipeUtils.checkLength(OptionalFluidIngredient.fromJsonArray(JsonHelper.getArray(json, "ingredients")))
-            );
+        public Codec<FluidAwareShapelessRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public FluidAwareShapelessRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new FluidAwareShapelessRecipe(id,
+        public FluidAwareShapelessRecipe read(PacketByteBuf buffer) {
+            return new FluidAwareShapelessRecipe(
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     buffer.readItemStack(),
@@ -110,5 +113,6 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
             buffer.writeItemStack(recipe.output);
             buffer.writeCollection(recipe.ingredients, (b, c) -> c.write(b));
         }
+
     }
 }

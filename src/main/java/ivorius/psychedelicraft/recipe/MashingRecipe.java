@@ -10,13 +10,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.dynamic.Codecs;
 
 import java.util.*;
 
-import com.google.gson.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -32,8 +32,8 @@ public class MashingRecipe extends FillRecepticalRecipe {
 
     private final FluidIngredient fluid;
 
-    public MashingRecipe(Identifier id, String group, CraftingRecipeCategory category, FluidIngredient output, FluidIngredient fluid, DefaultedList<Ingredient> input, int stewTime) {
-        super(id, group, category, output, input);
+    public MashingRecipe(String group, CraftingRecipeCategory category, FluidIngredient output, FluidIngredient fluid, DefaultedList<Ingredient> input, int stewTime) {
+        super(group, category, output, input);
         this.fluid = fluid;
         this.stewTime = stewTime;
     }
@@ -94,22 +94,24 @@ public class MashingRecipe extends FillRecepticalRecipe {
     }
 
     static class Serializer implements RecipeSerializer<MashingRecipe> {
-        @SuppressWarnings("deprecation")
+        public static final Codec<MashingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance
+                .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(MashingRecipe::getGroup),
+                        CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(MashingRecipe::getCategory),
+                        FluidIngredient.CODEC.fieldOf("result").forGetter(FillRecepticalRecipe::getOutputFluid),
+                        FluidIngredient.CODEC.fieldOf("base_fluid").forGetter(FillRecepticalRecipe::getOutputFluid),
+                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::getIngredients),
+                        Codec.INT.optionalFieldOf("stew_time", 0).forGetter(recipe -> recipe.stewTime)
+                ).apply(instance, MashingRecipe::new)
+        );
+
         @Override
-        public MashingRecipe read(Identifier id, JsonObject json) {
-            return new MashingRecipe(id,
-                    JsonHelper.getString(json, "group", ""),
-                    CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC),
-                    FluidIngredient.fromJson(JsonHelper.getObject(json, "result")),
-                    FluidIngredient.fromJson(JsonHelper.getObject(json, "base_fluid")),
-                    RecipeUtils.getIngredients(JsonHelper.getArray(json, "ingredients")),
-                    JsonHelper.getInt(json, "stew_time", 0)
-            );
+        public Codec<MashingRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public MashingRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new MashingRecipe(id,
+        public MashingRecipe read(PacketByteBuf buffer) {
+            return new MashingRecipe(
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     new FluidIngredient(buffer),

@@ -102,8 +102,8 @@ class RiftJarBlock extends BlockWithEntity {
     @Nullable
     public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
         return world.isClient
-                ? checkType(type, PSBlockEntities.RIFT_JAR, (w, p, s, entity) -> entity.tickAnimation())
-                : checkType(type, PSBlockEntities.RIFT_JAR, (w, p, s, entity) -> entity.tick((ServerWorld)w));
+                ? validateTicker(type, PSBlockEntities.RIFT_JAR, (w, p, s, entity) -> entity.tickAnimation())
+                : validateTicker(type, PSBlockEntities.RIFT_JAR, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
 
     @Override

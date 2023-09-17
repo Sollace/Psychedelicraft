@@ -7,12 +7,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
-import com.google.gson.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 
@@ -28,8 +28,8 @@ import ivorius.psychedelicraft.fluid.container.FluidContainer;
 class ChangeRecepticalRecipe extends ShapelessRecipe {
     private final ItemStack output;
 
-    public ChangeRecepticalRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
-        super(id, group, category, output, input);
+    public ChangeRecepticalRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
+        super(group, category, output, input);
         this.output = output;
     }
 
@@ -48,7 +48,7 @@ class ChangeRecepticalRecipe extends ShapelessRecipe {
         return RecipeUtils.recepticals(inventory).findFirst().map(pair -> {
             // copy bottle contents to the new stack
             ItemStack input = pair.getValue().copy();
-            ItemStack output = getOutput(registries).copy();
+            ItemStack output = getResult(registries).copy();
             FluidContainer outputContainer = FluidContainer.of(output, null);
             if (outputContainer != null) {
                 output = outputContainer.toMutable(output).fillFrom(pair.getKey().toMutable(input)).asStack();
@@ -57,24 +57,26 @@ class ChangeRecepticalRecipe extends ShapelessRecipe {
                 outDyable.setColor(output, inDyable.getColor(input));
             }
             return output;
-        }).orElseGet(getOutput(registries)::copy);
+        }).orElseGet(getResult(registries)::copy);
     }
 
     static class Serializer implements RecipeSerializer<ChangeRecepticalRecipe> {
-        @SuppressWarnings("deprecation")
+        private static final Codec<ChangeRecepticalRecipe> CODEC = RecordCodecBuilder.create(instance -> instance
+                .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(ChangeRecepticalRecipe::getGroup),
+                        CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(ChangeRecepticalRecipe::getCategory),
+                        RecipeUtils.ITEM_STACK_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
+                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ChangeRecepticalRecipe::getIngredients)
+                ).apply(instance, ChangeRecepticalRecipe::new)
+        );
+
         @Override
-        public ChangeRecepticalRecipe read(Identifier id, JsonObject json) {
-            return new ChangeRecepticalRecipe(id,
-                    JsonHelper.getString(json, "group", ""),
-                    CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC),
-                    ShapedRecipe.outputFromJson(JsonHelper.getObject(json, "result")),
-                    RecipeUtils.checkLength(RecipeUtils.getIngredients(JsonHelper.getArray(json, "ingredients")))
-            );
+        public Codec<ChangeRecepticalRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public ChangeRecepticalRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new ChangeRecepticalRecipe(id,
+        public ChangeRecepticalRecipe read(PacketByteBuf buffer) {
+            return new ChangeRecepticalRecipe(
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     buffer.readItemStack(),

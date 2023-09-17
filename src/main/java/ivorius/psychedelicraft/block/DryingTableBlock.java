@@ -71,7 +71,7 @@ public class DryingTableBlock extends BlockWithEntity {
     @Override
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : checkType(type, PSBlockEntities.DRYING_TABLE, (w, p, s, entity) -> entity.tick((ServerWorld)w));
+        return world.isClient ? null : validateTicker(type, PSBlockEntities.DRYING_TABLE, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
 
     @Override

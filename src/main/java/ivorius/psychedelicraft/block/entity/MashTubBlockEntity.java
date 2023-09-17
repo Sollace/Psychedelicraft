@@ -25,6 +25,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -43,7 +44,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     private Optional<Stew> currentStew = Optional.empty();
 
-    private Optional<MashingRecipe> expectedRecipe = Optional.empty();
+    private Optional<RecipeEntry<MashingRecipe>> expectedRecipe = Optional.empty();
     private final Object2IntMap<Item> suppliedIngredients = new Object2IntOpenHashMap<>();
 
     public MashTubBlockEntity(BlockPos pos, BlockState state) {
@@ -113,6 +114,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     public boolean isValidIngredient(ItemStack stack) {
         return FluidContainer.of(stack, null) == null
             && world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream()
+                .map(RecipeEntry::value)
                 .filter(recipe -> recipe.getPoolFluid().test(getTank(Direction.UP)))
                 .flatMap(recipe -> recipe.getIngredients().stream())
                 .anyMatch(ingredient -> ingredient.test(stack));
@@ -123,10 +125,10 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             return;
         }
 
-        var expectedRecipeMatchPair = expectedRecipe.map(recipe -> Map.entry(recipe, recipe.matchPartially(suppliedIngredients)));
+        var expectedRecipeMatchPair = expectedRecipe.map(recipe -> Map.entry(recipe, recipe.value().matchPartially(suppliedIngredients)));
         var matchedRecipes = world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream()
-                .filter(recipe -> recipe.getPoolFluid().test(getTank(Direction.UP)))
-                .map(recipe -> Map.entry(recipe, recipe.matchPartially(suppliedIngredients)))
+                .filter(recipe -> recipe.value().getPoolFluid().test(getTank(Direction.UP)))
+                .map(recipe -> Map.entry(recipe, recipe.value().matchPartially(suppliedIngredients)))
                 .filter(pair -> pair.getValue().isMatch())
                 .toList();
 
@@ -239,10 +241,10 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     class Stew implements NbtSerialisable {
 
-        private MashingRecipe recipe;
+        private RecipeEntry<MashingRecipe> recipe;
         private int stewTime;
 
-        public Stew(MashingRecipe recipe) {
+        public Stew(RecipeEntry<MashingRecipe> recipe) {
             this.recipe = recipe;
             this.stewTime = -(2 + world.getRandom().nextInt(4));
         }
@@ -256,11 +258,11 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             if (world.getTime() % 30 == 0) {
                 spawnBubbles(9, 0.5F, SoundEvents.BLOCK_BUBBLE_COLUMN_UPWARDS_INSIDE);
 
-                if (++stewTime >= recipe.getStewTime()) {
+                if (++stewTime >= recipe.value().getStewTime()) {
                     suppliedIngredients.clear();
                     getTank(Direction.UP).getContents()
-                        .withFluid(recipe.getOutputFluid().fluid())
-                        .withAttributes(recipe.getOutputFluid().attributes());
+                        .withFluid(recipe.value().getOutputFluid().fluid())
+                        .withAttributes(recipe.value().getOutputFluid().attributes());
                     onIdle(getTank(Direction.UP));
 
                     return false;
@@ -273,13 +275,14 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         @Override
         public void toNbt(NbtCompound compound) {
             compound.putInt("stewTime", stewTime);
-            compound.putString("recipe", recipe.getId().toString());
+            compound.putString("recipe", recipe.id().toString());
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void fromNbt(NbtCompound compound) {
             stewTime = compound.getInt("stewTime");
-            recipe = (MashingRecipe)Optional
+            recipe = (RecipeEntry<MashingRecipe>)Optional
                     .ofNullable(Identifier.tryParse(compound.getString("recipe")))
                     .flatMap(world.getRecipeManager()::get)
                     .orElse(null);
