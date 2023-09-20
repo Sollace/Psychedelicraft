@@ -46,7 +46,8 @@
     },
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://discord.gg/mt7uwQ4"
+        "modmenu.discord": "https://discord.gg/mt7uwQ4",
+        "modmenu.github_releases": "https://github.com/Sollace/Psychedelicraft/releases"
       }
     }
   }
