@@ -174,7 +174,7 @@ final class VariantMarshal {
                         if (!isEmpty()) {
                             storage.insert(newFluid, newLevel, transaction);
                         }
-                        view = storage.exactView(newFluid);
+                        view = storage.iterator().next();
                         // transaction
                         transaction.commit();
                     }
