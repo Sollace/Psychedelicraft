@@ -63,7 +63,7 @@ public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContra
     }
 
     protected void drawTanks(DrawContext context, int baseX, int baseY) {
-        drawTank(getTank(), baseX + 48, baseY + 59, 64, 27, 4.0f, 2.1111f);
+        drawTank(context, getTank(), baseX + 48, baseY + 59, 64, 27);
     }
 
     @Override

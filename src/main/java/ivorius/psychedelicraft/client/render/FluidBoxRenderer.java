@@ -17,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -31,7 +30,6 @@ import org.joml.Vector4f;
  * Updated by Sollace on 5 Jan 2023
  */
 public class FluidBoxRenderer {
-    private static final TextureBounds DEFAULT_BOUNDS = new TextureBounds(0, 0, 1, 1);
     private static final float[] DEFAULT_COLOR = new float[] {1, 1, 1, 1};
     private static final Vector4f POSITION_VECTOR = new Vector4f(0, 0, 0, 1);
     private static final FluidBoxRenderer INSTANCE = new FluidBoxRenderer();
@@ -44,7 +42,8 @@ public class FluidBoxRenderer {
     private int light = 0;
     private int overlay = 0;
 
-    private TextureBounds sprite = DEFAULT_BOUNDS;
+    @Nullable
+    private Sprite sprite;
 
     @Nullable
     private VertexConsumer buffer;
@@ -84,7 +83,7 @@ public class FluidBoxRenderer {
         } else {
             FluidAppearance appearance = FluidAppearance.of(fluid, tank.getStack());
 
-            sprite = appearance.frame();
+            sprite = appearance.sprite();
             color = appearance.rgba();
             buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(appearance.texture()));
         }
@@ -93,7 +92,7 @@ public class FluidBoxRenderer {
     }
 
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemStack stack) {
-        sprite = new TextureBounds(MinecraftClient.getInstance().getItemRenderer().getModels().getModel(stack).getParticleSprite());
+        sprite = MinecraftClient.getInstance().getItemRenderer().getModels().getModel(stack).getParticleSprite();
         buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
         color = DEFAULT_COLOR;
         return this;
@@ -119,48 +118,42 @@ public class FluidBoxRenderer {
         for (Direction direction : directions) {
             switch (direction) {
                 case DOWN:
-                    vertex(x, y, z, sprite.x0, sprite.y0, direction);
-                    vertex(x + width, y, z, sprite.x1, sprite.y0, direction);
-                    vertex(x + width, y, z + length, sprite.x1, sprite.y1, direction);
-                    vertex(x, y, z + length, sprite.x0, sprite.y1, direction);
+                    vertex(x, y, z, sprite.getMinU(), sprite.getMinV(), direction);
+                    vertex(x + width, y, z, sprite.getMaxU(), sprite.getMinV(), direction);
+                    vertex(x + width, y, z + length, sprite.getMaxU(), sprite.getMaxV(), direction);
+                    vertex(x, y, z + length, sprite.getMinU(), sprite.getMaxV(), direction);
                     break;
                 case UP:
-                    vertex(x, y + height, z, sprite.x0, sprite.y0, direction);
-                    vertex(x, y + height, z + length, sprite.x0, sprite.y1, direction);
-                    vertex(x + width, y + height, z + length, sprite.x1, sprite.y1, direction);
-                    vertex(x + width, y + height, z, sprite.x1, sprite.y0, direction);
+                    vertex(x, y + height, z, sprite.getMinU(), sprite.getMinV(), direction);
+                    vertex(x, y + height, z + length, sprite.getMinU(), sprite.getMaxV(), direction);
+                    vertex(x + width, y + height, z + length, sprite.getMaxU(), sprite.getMaxV(), direction);
+                    vertex(x + width, y + height, z, sprite.getMaxU(), sprite.getMinV(), direction);
                     break;
                 case EAST:
-                    vertex(x + width, y, z, sprite.x0, sprite.y0, direction);
-                    vertex(x + width, y + height, z, sprite.x1, sprite.y0, direction);
-                    vertex(x + width, y + height, z + length, sprite.x1, sprite.y1, direction);
-                    vertex(x + width, y, z + length, sprite.x0, sprite.y1, direction);
+                    vertex(x + width, y, z, sprite.getMinU(), sprite.getMinV(), direction);
+                    vertex(x + width, y + height, z, sprite.getMaxU(), sprite.getMinV(), direction);
+                    vertex(x + width, y + height, z + length, sprite.getMaxU(), sprite.getMaxV(), direction);
+                    vertex(x + width, y, z + length, sprite.getMinU(), sprite.getMaxV(), direction);
                     break;
                 case WEST:
-                    vertex(x, y, z, sprite.x0, sprite.y0, direction);
-                    vertex(x, y, z + length, sprite.x1, sprite.y0, direction);
-                    vertex(x, y + height, z + length, sprite.x1, sprite.y1, direction);
-                    vertex(x, y + height, z, sprite.x0, sprite.y1, direction);
+                    vertex(x, y, z, sprite.getMinU(), sprite.getMinV(), direction);
+                    vertex(x, y, z + length, sprite.getMaxU(), sprite.getMinV(), direction);
+                    vertex(x, y + height, z + length, sprite.getMaxU(), sprite.getMaxV(), direction);
+                    vertex(x, y + height, z, sprite.getMinU(), sprite.getMaxV(), direction);
                     break;
                 case NORTH:
-                    vertex(x, y, z, sprite.x0, sprite.y0, direction);
-                    vertex(x, y + height, z, sprite.x0, sprite.y1, direction);
-                    vertex(x + width, y + height, z, sprite.x1, sprite.y1, direction);
-                    vertex(x + width, y, z, sprite.x1, sprite.y0, direction);
+                    vertex(x, y, z, sprite.getMinU(), sprite.getMinV(), direction);
+                    vertex(x, y + height, z, sprite.getMinU(), sprite.getMaxV(), direction);
+                    vertex(x + width, y + height, z, sprite.getMaxU(), sprite.getMaxV(), direction);
+                    vertex(x + width, y, z, sprite.getMaxU(), sprite.getMinV(), direction);
                     break;
                 case SOUTH:
-                    vertex(x, y, z + length, sprite.x0, sprite.y0, direction);
-                    vertex(x + width, y, z + length, sprite.x1, sprite.y0, direction);
-                    vertex(x + width, y + height, z + length, sprite.x1, sprite.y1, direction);
-                    vertex(x, y + height, z + length, sprite.x0, sprite.y1, direction);
+                    vertex(x, y, z + length, sprite.getMinU(), sprite.getMinV(), direction);
+                    vertex(x + width, y, z + length, sprite.getMaxU(), sprite.getMinV(), direction);
+                    vertex(x + width, y + height, z + length, sprite.getMaxU(), sprite.getMaxV(), direction);
+                    vertex(x, y + height, z + length, sprite.getMinU(), sprite.getMaxV(), direction);
                     break;
             }
-        }
-    }
-
-    public record TextureBounds(float x0, float x1, float y0, float y1) {
-        TextureBounds(Sprite sprite) {
-            this(sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
         }
     }
 
@@ -205,26 +198,6 @@ public class FluidBoxRenderer {
                     MathUtils.b(color),
                     1
             };
-        }
-
-        public TextureBounds frame() {
-            float x0 = sprite.getFrameU(0);
-            float x1 = sprite.getFrameU(16);
-
-            float y0 = sprite.getFrameV(0);
-            float y1 = sprite.getFrameV(16);
-
-            float delta = sprite.getAnimationFrameDelta();
-
-            float totalX = (x0 + x1) / 2F;
-            float totalY = (y0 + y1) / 2F;
-
-            return new TextureBounds(
-                MathHelper.lerp(delta, x0, totalX),
-                MathHelper.lerp(delta, x1, totalX),
-                MathHelper.lerp(delta, y0, totalY),
-                MathHelper.lerp(delta, y1, totalY)
-            );
         }
     }
 

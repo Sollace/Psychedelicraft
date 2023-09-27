@@ -1,7 +1,6 @@
 package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
-import ivorius.psychedelicraft.client.render.FluidBoxRenderer.TextureBounds;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
@@ -9,12 +8,6 @@ import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -47,7 +40,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         return handler.getTank();
     }
 
-    public void drawTank(Resovoir tank, int x, int y, int width, int height, float repeatTextureX, float repeatTextureY) {
+    public void drawTank(DrawContext context, Resovoir tank, int x, int y, int width, int height) {
         if (tank.isEmpty()) {
             return;
         }
@@ -60,22 +53,9 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         FluidBoxRenderer.FluidAppearance appearance = FluidBoxRenderer.FluidAppearance.of(fluid, tank.getStack());
 
-        RenderUtil.setColor(appearance.color(), false);
-        RenderSystem.setShaderTexture(0, appearance.texture());
+        float[] color = appearance.rgba();
 
-        TextureBounds frame = appearance.frame();
-
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-
-        RenderUtil.drawRepeatingTexture(new MatrixStack(), bufferBuilder,
-                x, x + width, y - fluidHeightPixels, y,
-                frame.x0(), frame.x1(), frame.y0(), frame.y1(), 2048, 0, 0);
-        Tessellator.getInstance().draw();
-
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-
+        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], 1);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     }

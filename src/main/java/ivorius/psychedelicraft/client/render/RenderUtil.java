@@ -13,11 +13,12 @@ import org.joml.Vector4f;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 25.10.14.
@@ -86,34 +87,11 @@ public class RenderUtil {
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
-    public static void drawRepeatingTexture(MatrixStack matrices, BufferVertexConsumer buffer,
-            float x0, float x1, float y0, float y1,
-            float u0, float u1, float v0, float v1,
-            float amplification, int light, int overlay) {
-
-        final float xFrameSize = (u1 - u0) * amplification;
-        final float yFrameSize = (v1 - v0) * amplification;
-
-        final int xRepeats = MathHelper.ceil((x1 - x0) / xFrameSize);
-        final int yRepeats = MathHelper.ceil((y1 - y0) / yFrameSize);
-
-        for (int x = 0; x <= xRepeats; x++) {
-            float x2 = x0 + x * xFrameSize;
-            float x3 = Math.min(x2 + xFrameSize, x1);
-            float xLen = x0 == x1 ? 0 : (x3 - x2) / (x1 - x0);
-
-            for (int y = 0; y <= yRepeats; y++) {
-                float y2 = y0 + y * yFrameSize;
-                float y3 = Math.min(y2 + yFrameSize, y1);
-                float yLen = y0 == y1 ? 0 : (y3 - y2) / (y1 - y0);
-
-                float u2 = u0 + Math.min(u1 - u0, xLen);
-                float v2 = v0 + Math.min(v1 - v0, yLen);
-
-                vertex(buffer, matrices, x2, y3, 0, u0, v2, light, overlay);
-                vertex(buffer, matrices, x3, y3, 0, u2, v2, light, overlay);
-                vertex(buffer, matrices, x3, y2, 0, u2, v0, light, overlay);
-                vertex(buffer, matrices, x2, y2, 0, u0, v0, light, overlay);
+    public static void drawRepeatingSprite(DrawContext context, Sprite sprite, int x, int y, int width, int height, float r, float g, float b, float a) {
+        final int tileSize = 16;
+        for (int tileX = 0; tileX < width; tileX += tileSize) {
+            for (int tileY = 0; tileY < height; tileY += tileSize) {
+                context.drawSprite(x + tileX, y + tileY, 0, tileSize, tileSize, sprite, r, g, b, a);
             }
         }
     }
