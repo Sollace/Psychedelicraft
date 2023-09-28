@@ -8,7 +8,6 @@ package ivorius.psychedelicraft.recipe;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.Map;
@@ -35,7 +34,6 @@ public interface RecipeUtils {
         }
         return DataResult.success(DefaultedList.copyOf(Ingredient.EMPTY, ingredients2));
     }, DataResult::success);
-    Codec<ItemStack> ITEM_STACK_CODEC = Registries.ITEM.getCodec().xmap(ItemStack::new, ItemStack::getItem);
 
     static Stream<Map.Entry<FluidContainer, ItemStack>> recepticals(Inventory inventory) {
         return stacks(inventory)

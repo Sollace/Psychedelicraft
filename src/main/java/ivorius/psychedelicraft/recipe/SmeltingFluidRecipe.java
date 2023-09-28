@@ -172,7 +172,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
                 FluidIngredient.CODEC.fieldOf("input").forGetter(recipe -> recipe.fluid),
                 Ingredient.ALLOW_EMPTY_CODEC.optionalFieldOf("item", Ingredient.empty()).forGetter(recipe -> recipe.ingredient),
                 ATTRIBUTES_CODEC.fieldOf("result").forGetter(recipe -> recipe.outputModifications),
-                RecipeUtils.ITEM_STACK_CODEC.optionalFieldOf("result", ItemStack.EMPTY).forGetter(recipe -> recipe.result),
+                RecipeCodecs.CRAFTING_RESULT.optionalFieldOf("result", ItemStack.EMPTY).forGetter(recipe -> recipe.result),
                 Codec.FLOAT.fieldOf("experience").forGetter(SmeltingFluidRecipe::getExperience),
                 Codec.INT.optionalFieldOf("cookingTIme", 200).forGetter(SmeltingFluidRecipe::getCookingTime)
             ).apply(instance, SmeltingFluidRecipe::new));
