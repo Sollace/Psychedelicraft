@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
+
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
@@ -43,6 +45,7 @@ public class SimpleFluid {
     public static final Identifier EMPTY_KEY = Psychedelicraft.id("empty");
     private static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids")), EMPTY_KEY).buildAndRegister();
     private static final Map<Identifier, SimpleFluid> VANILLA_FLUIDS = new HashMap<>();
+    public static final Codec<SimpleFluid> CODEC = Identifier.CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
 
     protected final Identifier id;
 

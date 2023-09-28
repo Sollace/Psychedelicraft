@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
@@ -86,7 +85,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         public static final Codec<FluidAwareShapelessRecipe> CODEC = RecordCodecBuilder.create(instance -> instance
                 .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(FluidAwareShapelessRecipe::getGroup),
                         CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FluidAwareShapelessRecipe::getCategory),
-                        Registries.ITEM.getCodec().xmap(ItemStack::new, ItemStack::getItem).fieldOf("result").forGetter(recipe -> recipe.getResult(null)),
+                        RecipeCodecs.CRAFTING_RESULT.fieldOf("result").forGetter(recipe -> recipe.getResult(null)),
                         OptionalFluidIngredient.LIST_CODEC.fieldOf("ingredients").forGetter(recipe -> recipe.ingredients)
                 ).apply(instance, FluidAwareShapelessRecipe::new)
         );

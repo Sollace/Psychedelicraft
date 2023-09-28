@@ -1,10 +1,9 @@
 package ivorius.psychedelicraft.recipe;
 
-import org.apache.commons.lang3.NotImplementedException;
-
-import com.google.gson.JsonObject;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
@@ -12,34 +11,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.dynamic.Codecs;
 
 public record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attributes) {
-    @SuppressWarnings("deprecation")
-    public static final Codec<FluidIngredient> CODEC = Codecs.fromJsonSerializer(element -> {
-        if (element.isJsonObject()) {
-            JsonObject json = element.getAsJsonObject();
-            SimpleFluid fluid = SimpleFluid.byId(Identifier.tryParse(JsonHelper.getString(json, "fluid")));
-            int level = JsonHelper.getInt(json, "level", -1);
-
-            NbtCompound nbt = new NbtCompound();
-
-            if (json.has("attributes")) {
-                try {
-                    nbt = NbtHelper.fromNbtProviderString(json.get("attributes").toString());
-                } catch (CommandSyntaxException ignored) {}
-            }
-            return new FluidIngredient(fluid, level, nbt);
-        }
-
-        SimpleFluid fluid = SimpleFluid.byId(Identifier.tryParse(JsonHelper.asString(element, "fluid")));
-
-        return new FluidIngredient(fluid, -1, new NbtCompound());
-    }, ingredient -> {
-        throw new NotImplementedException("Cannot serialize a fluid ingredient!!");
-    });
+    public static final Codec<FluidIngredient> CODEC = Codecs.xor(
+            SimpleFluid.CODEC.xmap(fluid -> new FluidIngredient(fluid, -1, new NbtCompound()), FluidIngredient::fluid),
+            RecordCodecBuilder.<FluidIngredient>create(instance -> instance.group(
+                    SimpleFluid.CODEC.fieldOf("fluid").forGetter(FluidIngredient::fluid),
+                    Codec.INT.optionalFieldOf("level", -1).forGetter(FluidIngredient::level),
+                    NbtCompound.CODEC.optionalFieldOf("attributes", new NbtCompound()).forGetter(FluidIngredient::attributes)
+            ).apply(instance, FluidIngredient::new))
+        ).xmap(RecipeUtils::iDontCareWhich, Either::right);
 
     public FluidIngredient(PacketByteBuf buffer) {
         this(SimpleFluid.byId(buffer.readIdentifier()), buffer.readVarInt(), buffer.readNbt());

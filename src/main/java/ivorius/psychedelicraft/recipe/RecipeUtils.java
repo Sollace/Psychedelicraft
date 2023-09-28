@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
@@ -82,6 +83,10 @@ public interface RecipeUtils {
                 .filter(i -> filter.test(inventory.getStack(i)))
                 .mapToObj(i -> inventory.getStack(i).split(1))
                 .findFirst();
+    }
+
+    static <T> T iDontCareWhich(Either<T, T> either) {
+        return either.left().or(either::right).orElseThrow();
     }
 
     record Slot<T>(Inventory inventory, T content, int slot) {
