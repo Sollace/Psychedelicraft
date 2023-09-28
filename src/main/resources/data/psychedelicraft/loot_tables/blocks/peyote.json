@@ -12,7 +12,7 @@
               "block": "psychedelicraft:peyote",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "age": 0
+                "age": "0"
               }
             }
           ],
@@ -35,7 +35,7 @@
               "block": "psychedelicraft:peyote",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "age": 1
+                "age": "1"
               }
             }
           ],
@@ -58,7 +58,7 @@
               "block": "psychedelicraft:peyote",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "age": 2
+                "age": "2"
               }
             }
           ],
@@ -81,7 +81,7 @@
               "block": "psychedelicraft:peyote",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "age": 3
+                "age": "3"
               }
             }
           ],
