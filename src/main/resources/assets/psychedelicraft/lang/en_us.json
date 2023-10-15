@@ -301,7 +301,7 @@
   "psychedelicraft.alcohol.drink.variant.reposado": "Reposado %s",
   "psychedelicraft.alcohol.drink.variant.wine": "Wine %s",
 
-  "death.attack.psychedelicraft..alcohol_poisoning": "%1$s died of alcohol poisoning",
+  "death.attack.psychedelicraft.alcohol_poisoning": "%1$s died of alcohol poisoning",
   "death.attack.psychedelicraft.stroke": "%1$s had a stroke",
   "death.attack.psychedelicraft.seizure": "%1$s has a seizure",
   "death.attack.psychedelicraft.coma": "%1$s fell into a coma",
