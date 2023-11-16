@@ -2,11 +2,11 @@ package ivorius.psychedelicraft.fluid.container;
 
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 
 /**
  * @author Sollace
@@ -73,7 +73,7 @@ public interface FluidContainer extends ItemConvertible {
     }
 
     default float getFillPercentage(ItemStack stack) {
-        return MathHelper.clamp(MathHelper.getLerpProgress(getLevel(stack), 0, getMaxCapacity(stack)), 0, 1);
+        return MathUtils.inverseLerp(getLevel(stack), 0, getMaxCapacity(stack));
     }
 
     default ItemStack getDefaultStack(SimpleFluid fluid) {

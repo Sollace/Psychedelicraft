@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.entity.drug.type;
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -69,12 +70,12 @@ public class BathSaltsDrug extends SimpleDrug {
 
     @Override
     public float randomJumpChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1), 0, 1) * 0.03F;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1) * 0.03F;
     }
 
     @Override
     public float randomPunchChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.5F, 1), 0, 1) * 0.02F;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.5F, 1) * 0.02F;
     }
 
     @Override

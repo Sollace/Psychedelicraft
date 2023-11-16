@@ -135,6 +135,10 @@ public interface MathUtils {
         return cubicMix(0, 0, 1, 1, MathHelper.clamp(delta, 0, 1));
     }
 
+    static float inverseLerp(float value, float start, float end) {
+        return MathHelper.clamp(MathHelper.getLerpProgress(value, start, end), 0, 1);
+    }
+
     static Vector3d cubicMix(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, double delta, Vector3d dest) {
         return dest.set(
             cubicMix(v1.x, v2.x, v3.x, v4.x, delta),

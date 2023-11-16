@@ -8,8 +8,8 @@ package ivorius.psychedelicraft.entity.drug.type;
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 /**
@@ -44,7 +44,7 @@ public class AtropineDrug extends SimpleDrug {
 
     @Override
     public float heartbeatVolume() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1) + (getTicksActive() * 0.0001F), 0, 1) * 1.2F;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.4F, 1) + (getTicksActive() * 0.0001F) * 1.2F;
     }
 
     @Override

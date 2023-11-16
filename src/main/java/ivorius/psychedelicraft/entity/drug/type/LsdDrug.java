@@ -9,6 +9,7 @@ import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -39,12 +40,12 @@ public class LsdDrug extends SimpleDrug {
 
     @Override
     public float handTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1), 0, 1);
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1);
     }
 
     @Override
     public float viewTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.8F, 1), 0, 1);
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.8F, 1);
     }
 
     @Override

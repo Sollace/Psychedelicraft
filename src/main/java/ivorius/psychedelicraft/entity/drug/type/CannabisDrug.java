@@ -7,7 +7,7 @@ package ivorius.psychedelicraft.entity.drug.type;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
-import net.minecraft.util.math.MathHelper;
+import ivorius.psychedelicraft.util.MathUtils;
 
 /**
  * Created by lukas on 01.11.14.
@@ -38,22 +38,22 @@ public class CannabisDrug extends SimpleDrug {
 
     @Override
     public float superSaturationHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0, 0.5f), 0, 1) * 0.3F;
+        return MathUtils.inverseLerp((float)getActiveValue(), 0, 0.5f) * 0.3F;
     }
 
     @Override
     public float colorHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.5F, 1), 0, 1) * 0.1F;
+        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.5F, 1) * 0.1F;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.5f, 1), 0, 1) * 0.1F;
+        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.5f, 1) * 0.1F;
     }
 
     @Override
     public float contextualHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.5f, 1), 0, 1) * 0.1F;
+        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.5f, 1) * 0.1F;
     }
 
     @Override

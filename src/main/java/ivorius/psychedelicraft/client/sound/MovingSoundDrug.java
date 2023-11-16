@@ -5,6 +5,7 @@ import java.util.Optional;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -56,6 +57,6 @@ public class MovingSoundDrug extends MovingSoundInstance {
         if (activeValue <= ClientDrugMusicManager.PLAY_THRESHOLD) {
             return 0;
         }
-        return MathHelper.lerp(MathHelper.clamp((float)activeValue, 0, 1), 0, 0.4F);
+        return MathUtils.inverseLerp(MathHelper.clamp((float)activeValue, 0, 1), 0, 0.4F);
     }
 }

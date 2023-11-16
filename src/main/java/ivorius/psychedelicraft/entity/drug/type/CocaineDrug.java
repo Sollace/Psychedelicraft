@@ -10,10 +10,10 @@ import java.util.Optional;
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 /**
@@ -49,7 +49,7 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float heartbeatVolume() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1) + (getTicksActive() * 0.0001F), 0, 1) * 1.2F;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.4F, 1) + (getTicksActive() * 0.0001F) * 1.2F;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float breathVolume() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4f, 1.0f), 0, 1) * 1.5F;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.4f, 1.0f) * 1.5F;
     }
 
     @Override
@@ -69,12 +69,12 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float randomJumpChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1), 0, 1) * 0.03F;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1) * 0.03F;
     }
 
     @Override
     public float randomPunchChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.5F, 1), 0, 1) * 0.02F;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.5F, 1) * 0.02F;
     }
 
     @Override
@@ -101,12 +101,12 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float handTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.6F, 1), 0, 1);
+        return MathUtils.inverseLerp((float)getActiveValue(), 0.6F, 1);
     }
 
     @Override
     public float viewTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.8F, 1), 0, 1);
+        return MathUtils.inverseLerp((float)getActiveValue(), 0.8F, 1);
     }
 
     @Override
@@ -116,21 +116,21 @@ public class CocaineDrug extends SimpleDrug {
 
     @Override
     public float bloomHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0, 0.6F), 0, 1) * 1.5F;
+        return MathUtils.inverseLerp((float)getActiveValue(), 0, 0.6F) * 1.5F;
     }
 
     @Override
     public float colorHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.05F;
+        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.05F;
+        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
     }
 
     @Override
     public float contextualHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.05F;
+        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
     }
 }
