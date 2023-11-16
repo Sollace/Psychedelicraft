@@ -9,6 +9,7 @@ import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
@@ -29,12 +30,12 @@ public class AlcoholDrug extends SimpleDrug {
 
     @Override
     public float doubleVision() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.25f, 1), 0, 1);
+        return MathUtils.inverseLerp((float)getActiveValue(), 0.25f, 1);
     }
 
     @Override
     public float motionBlur() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float)getActiveValue(), 0.5f, 1), 0, 1) * 0.3F;
+        return MathUtils.inverseLerp((float)getActiveValue(), 0.5f, 1) * 0.3F;
     }
 
     @Override

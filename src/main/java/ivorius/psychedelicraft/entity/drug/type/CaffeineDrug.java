@@ -8,9 +8,9 @@ package ivorius.psychedelicraft.entity.drug.type;
 import java.util.Optional;
 
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 01.11.14.
@@ -27,7 +27,7 @@ public class CaffeineDrug extends SimpleDrug {
 
     @Override
     public float heartbeatVolume() {
-        return breathVolumeMultiplier * MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1) + (getTicksActive() * 0.001F), 0, 1);
+        return breathVolumeMultiplier * MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1) + (getTicksActive() * 0.001F);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class CaffeineDrug extends SimpleDrug {
 
     @Override
     public float breathVolume() {
-        return breathVolumeMultiplier * MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1), 0, 1) * 0.5F;
+        return breathVolumeMultiplier * MathUtils.inverseLerp((float) getActiveValue(), 0.4F, 1) * 0.5F;
     }
 
     @Override
@@ -47,12 +47,12 @@ public class CaffeineDrug extends SimpleDrug {
 
     @Override
     public float randomJumpChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1), 0, 1) * 0.07F;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1) * 0.07F;
     }
 
     @Override
     public float randomPunchChance() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.3F, 1), 0, 1) * 0.05F;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.3F, 1) * 0.05F;
     }
 
     @Override
@@ -79,27 +79,27 @@ public class CaffeineDrug extends SimpleDrug {
 
     @Override
     public float handTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.6F, 1), 0, 1);
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1);
     }
 
     @Override
     public float viewTrembleStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.8F, 1), 0, 1);
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.8F, 1);
     }
 
     @Override
     public float colorHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.03F;
+        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.03F;
     }
 
     @Override
     public float movementHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.03F;
+        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.03F;
     }
 
     @Override
     public float contextualHallucinationStrength() {
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue() * 1.3F, 0.7F, 1), 0, 1) * 0.05F;
+        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
     }
 
     @Override

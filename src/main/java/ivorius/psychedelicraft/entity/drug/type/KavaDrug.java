@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.entity.drug.type;
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -57,7 +58,7 @@ public class KavaDrug extends SimpleDrug {
     @Override
     public float heartbeatVolume() {
         float strength = (MathHelper.clamp(getTicksActive(), 50, 250) - 50) / 200F;
-        return MathHelper.clamp(MathHelper.getLerpProgress((float) getActiveValue(), 0.4F, 1), 0, 1) * 1.2F * strength;
+        return MathUtils.inverseLerp((float) getActiveValue(), 0.4F, 1) * 1.2F * strength;
     }
 
     @Override
