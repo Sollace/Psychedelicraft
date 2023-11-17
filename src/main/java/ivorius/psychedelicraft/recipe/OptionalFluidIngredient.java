@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
+import ivorius.psychedelicraft.util.CodecUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
@@ -17,10 +17,9 @@ public record OptionalFluidIngredient (
         Optional<Ingredient> receptical
 ) implements Predicate<ItemStack> {
     public static final OptionalFluidIngredient EMPTY = new OptionalFluidIngredient(Optional.empty(), Optional.empty());
-    public static final Codec<OptionalFluidIngredient> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                FluidIngredient.CODEC.optionalFieldOf("fluid").forGetter(OptionalFluidIngredient::fluid),
-                Ingredient.ALLOW_EMPTY_CODEC.optionalFieldOf("receptical").forGetter(OptionalFluidIngredient::receptical)
-            ).apply(instance, OptionalFluidIngredient::new)
+    public static final Codec<OptionalFluidIngredient> CODEC = CodecUtils.extend(Ingredient.ALLOW_EMPTY_CODEC, FluidIngredient.CODEC.fieldOf("fluid")).xmap(
+        pair -> new OptionalFluidIngredient(pair.getSecond(), pair.getFirst()),
+        ingredient -> new Pair<>(ingredient.receptical(), ingredient.fluid())
     );
     public static final Codec<DefaultedList<OptionalFluidIngredient>> LIST_CODEC = CODEC.listOf().xmap(
             values -> DefaultedList.copyOf(EMPTY, values.toArray(OptionalFluidIngredient[]::new)),
