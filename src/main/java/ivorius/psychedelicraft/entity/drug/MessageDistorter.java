@@ -52,21 +52,13 @@ public class MessageDistorter {
     }
 
     private String getRandomTranslation(String keyBeggining, Random random) {
-        List<String> options = new ArrayList<String>();
         int i = 0;
         while (true) {
-            String translationKey = keyBeggining + i;
-            String toAdd = I18n.translate(translationKey);
-            if (toAdd.equals(translationKey)) {
-                if (options.size() == 0) {
-                    options.add(toAdd);
-                }
-                break;
+            if (!I18n.hasTranslation(keyBeggining + i)) {
+                return i < 1 ? keyBeggining + i : I18n.translate(keyBeggining + random.nextInt(i));
             }
-            options.add(toAdd);
             i++;
         }
-        return options.get(random.nextInt(options.size()));
     }
 
     public String distortMessage(String message, Random random, float alcohol, float zero, float cannabis) {
