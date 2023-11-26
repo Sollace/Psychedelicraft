@@ -15,6 +15,8 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.NotImplementedException;
 
 import com.mojang.serialization.Codec;
@@ -74,7 +76,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     static class Serializer implements RecipeSerializer<FillRecepticalRecipe> {
         record IntermediateWorkAround (String group, CraftingRecipeCategory category, FluidIngredient output, DefaultedList<Ingredient> input, Ingredient receptical) {
             FillRecepticalRecipe createRecipe() {
-                var inputsWithReceptical = receptical.isEmpty() ? input : DefaultedList.copyOf(Ingredient.EMPTY, input.toArray(Ingredient[]::new));
+                var inputsWithReceptical = receptical.isEmpty() ? input : DefaultedList.copyOf(Ingredient.EMPTY, Stream.concat(Stream.of(receptical), input.stream()).toArray(Ingredient[]::new));
                 return new FillRecepticalRecipe(group, category, output, inputsWithReceptical);
             }
         }
