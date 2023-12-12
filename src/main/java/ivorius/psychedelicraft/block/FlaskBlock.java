@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import com.mojang.serialization.MapCodec;
+
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
@@ -20,6 +22,7 @@ import net.minecraft.world.BlockView;
  * Created by lukas on 25.10.14.
  */
 public class FlaskBlock extends BlockWithFluid<FlaskBlockEntity> {
+    public static final MapCodec<FlaskBlock> CODEC = createCodec(FlaskBlock::new);
     private static final VoxelShape SHAPE = VoxelShapes.union(
         Block.createCuboidShape(5, 0, 5, 11, 5, 11),
         Block.createCuboidShape(4, 0, 6, 12, 4, 10),
@@ -31,6 +34,11 @@ public class FlaskBlock extends BlockWithFluid<FlaskBlockEntity> {
 
     public FlaskBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    protected MapCodec<? extends FlaskBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

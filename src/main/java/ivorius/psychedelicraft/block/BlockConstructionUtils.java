@@ -76,7 +76,7 @@ interface BlockConstructionUtils {
         if (requiredFeatures.length > 0) {
             settings = settings.requires(requiredFeatures);
         }
-        return new ButtonBlock(settings, blockSetType, 30, true);
+        return new ButtonBlock(blockSetType, 30, settings);
     }
 
     static Boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {

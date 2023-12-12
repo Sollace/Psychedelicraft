@@ -7,6 +7,8 @@ package ivorius.psychedelicraft.block;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.MapCodec;
+
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
 import ivorius.psychedelicraft.item.PSItems;
@@ -30,6 +32,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 class RiftJarBlock extends BlockWithEntity {
+    public static final MapCodec<RiftJarBlock> CODEC = createCodec(RiftJarBlock::new);
     private static final VoxelShape SHAPE = VoxelShapes.union(
             Block.createCuboidShape(4, 0, 4, 12, 5, 12),
             Block.createCuboidShape(4.5, 5, 4.5, 11.5, 7, 11.5),
@@ -41,6 +44,11 @@ class RiftJarBlock extends BlockWithEntity {
     public RiftJarBlock(Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<? extends RiftJarBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

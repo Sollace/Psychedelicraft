@@ -5,12 +5,20 @@
 
 package ivorius.psychedelicraft.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.*;
 
 public class CoffeaPlantBlock extends TobaccoPlantBlock {
+    public static final MapCodec<CoffeaPlantBlock> CODEC = createCodec(CoffeaPlantBlock::new);
 
     public CoffeaPlantBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public MapCodec<? extends CoffeaPlantBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

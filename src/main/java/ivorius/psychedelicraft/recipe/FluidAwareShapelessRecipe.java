@@ -85,7 +85,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         public static final Codec<FluidAwareShapelessRecipe> CODEC = RecordCodecBuilder.create(instance -> instance
                 .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(FluidAwareShapelessRecipe::getGroup),
                         CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FluidAwareShapelessRecipe::getCategory),
-                        RecipeCodecs.CRAFTING_RESULT.fieldOf("result").forGetter(recipe -> recipe.getResult(null)),
+                        ItemStack.RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.getResult(null)),
                         OptionalFluidIngredient.LIST_CODEC.fieldOf("ingredients").forGetter(recipe -> recipe.ingredients)
                 ).apply(instance, FluidAwareShapelessRecipe::new)
         );

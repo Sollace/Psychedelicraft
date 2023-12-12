@@ -12,6 +12,10 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.block.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -19,6 +23,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.loot.context.*;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvents;
@@ -32,6 +37,13 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 
 public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
+    public static final MapCodec<BurdenedLatticeBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.BOOL.fieldOf("spreads").forGetter(block -> block.spreads),
+            Registries.BLOCK.getCodec().fieldOf("stem").forGetter(block -> block.stem),
+            Codec.INT.fieldOf("shearedAge").forGetter(block -> block.shearedAge),
+            AbstractBlock.createSettingsCodec()
+    ).apply(instance, BurdenedLatticeBlock::new));
+
     public static final IntProperty AGE = Properties.AGE_3;
     public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
     public static final int MAX_AGE = 3;
@@ -47,8 +59,14 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
         super(settings);
         this.spreads = spreads;
         this.stem = stem;
+
         this.shearedAge = shearedAge;
         setDefaultState(getDefaultState().with(AGE, 0).with(PERSISTENT, false));
+    }
+
+    @Override
+    protected MapCodec<? extends BurdenedLatticeBlock> getCodec() {
+        return CODEC;
     }
 
     @Override
@@ -151,7 +169,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         ItemStack stack = super.getPickStack(world, pos, state);
         stack.setDamage(state.get(AGE));
         return stack;

@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.*;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.property.IntProperty;
@@ -12,10 +14,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
 public class CocaPlantBlock extends CannabisPlantBlock {
+    public static final MapCodec<CocaPlantBlock> CODEC = createCodec(CocaPlantBlock::new);
     private static final IntProperty AGE_12 = IntProperty.of("age", 0, 12);
 
     public CocaPlantBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public MapCodec<? extends CocaPlantBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

@@ -137,7 +137,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity
     public void writeNbt(NbtCompound compound) {
         super.writeNbt(compound);
         compound.put("tank", tank.toNbt());
-        Inventories.writeNbt(compound, ioInventory.stacks);
+        Inventories.writeNbt(compound, ioInventory.heldStacks);
         compound.put("inputSlot", inputSlot.toNbt());
         compound.put("outputSlot", outputSlot.toNbt());
     }
@@ -146,7 +146,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity
     public void readNbt(NbtCompound compound) {
         super.readNbt(compound);
         tank.fromNbt(compound.getCompound("tank"));
-        Inventories.readNbt(compound, ioInventory.stacks);
+        Inventories.readNbt(compound, ioInventory.heldStacks);
         inputSlot.fromNbt(compound.getCompound("inputSlot"));
         outputSlot.fromNbt(compound.getCompound("outputSlot"));
     }

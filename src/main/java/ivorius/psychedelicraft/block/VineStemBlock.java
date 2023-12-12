@@ -2,12 +2,17 @@ package ivorius.psychedelicraft.block;
 
 import java.util.function.Supplier;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.FlowerBlock;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -20,6 +25,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class VineStemBlock extends FlowerBlock {
+    public static final MapCodec<VineStemBlock> CODEC = RecordCodecBuilder.<VineStemBlock>mapCodec(instance -> instance.group(
+            Registries.BLOCK.getCodec().<Supplier<Block>>xmap(block -> () -> block, Supplier::get).fieldOf("lattice").forGetter(b -> b.lattice),
+            AbstractBlock.createSettingsCodec()
+    ).apply(instance, VineStemBlock::new));
     public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
     public static final BooleanProperty EAST = ConnectingBlock.EAST;
     public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
@@ -34,6 +43,11 @@ public class VineStemBlock extends FlowerBlock {
         super(StatusEffects.MINING_FATIGUE, 5, settings);
         this.lattice = lattice;
         setDefaultState(getDefaultState().with(AGE, 0).with(NORTH, false).with(SOUTH, false).with(EAST, false).with(WEST, false));
+    }
+
+    @Override
+    public MapCodec<? extends VineStemBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

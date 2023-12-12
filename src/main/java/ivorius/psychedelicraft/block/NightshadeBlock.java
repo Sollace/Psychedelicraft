@@ -1,6 +1,10 @@
 package ivorius.psychedelicraft.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Fertilizable;
@@ -14,6 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -33,6 +38,11 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class NightshadeBlock extends PlantBlock implements Fertilizable {
+    public static final MapCodec<NightshadeBlock> CODEC = RecordCodecBuilder.<NightshadeBlock>mapCodec(instance -> instance.group(
+            Registries.ITEM.getCodec().fieldOf("fruit").forGetter(b -> b.fruit.asItem()),
+            Registries.ITEM.getCodec().fieldOf("leaf").forGetter(b -> b.leaf.asItem()),
+            AbstractBlock.createSettingsCodec()
+    ).apply(instance, NightshadeBlock::new));
     public static final IntProperty AGE = Properties.AGE_7;
     public static final int MAX_AGE = Properties.AGE_7_MAX;
 
@@ -50,11 +60,16 @@ public class NightshadeBlock extends PlantBlock implements Fertilizable {
     private final ItemConvertible fruit;
     private final ItemConvertible leaf;
 
-    public NightshadeBlock(Settings settings, ItemConvertible fruit, ItemConvertible leaf) {
+    public NightshadeBlock(ItemConvertible fruit, ItemConvertible leaf, Settings settings) {
         super(settings);
         this.fruit = fruit;
         this.leaf = leaf;
         setDefaultState(getDefaultState().with(AGE, 0));
+    }
+
+    @Override
+    protected MapCodec<? extends NightshadeBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

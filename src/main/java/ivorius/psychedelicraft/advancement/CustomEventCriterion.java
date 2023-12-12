@@ -4,20 +4,20 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.advancement.criterion.AbstractCriterion;
-import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion.Conditions> {
     @Override
-    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
-        return new Conditions(playerPredicate, JsonHelper.getString(json, "event"));
+    public Codec<Conditions> getConditionsCodec() {
+        return Conditions.CODEC;
     }
 
     public CustomEventCriterion.Trigger createTrigger(String event) {
@@ -32,24 +32,14 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         void trigger(@Nullable PlayerEntity player);
     }
 
-    public static class Conditions extends AbstractCriterionConditions {
-
-        private final String event;
-
-        public Conditions(Optional<LootContextPredicate> playerPredicate, String event) {
-            super(playerPredicate);
-            this.event = event;
-        }
+    public record Conditions (Optional<LootContextPredicate> player, String event) implements AbstractCriterion.Conditions {
+        public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
+                Codec.STRING.fieldOf("event").forGetter(Conditions::event)
+        ).apply(instance, Conditions::new));
 
         public boolean test(ServerPlayerEntity player, String event) {
             return this.event.contentEquals(event);
-        }
-
-        @Override
-        public JsonObject toJson() {
-            JsonObject json = super.toJson();
-            json.addProperty("event", event);
-            return json;
         }
     }
 }

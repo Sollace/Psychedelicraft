@@ -5,14 +5,23 @@
 
 package ivorius.psychedelicraft.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.*;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
 public class HopPlantBlock extends CannabisPlantBlock {
+    public static final MapCodec<HopPlantBlock> CODEC = createCodec(HopPlantBlock::new);
+
     public HopPlantBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public MapCodec<? extends HopPlantBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

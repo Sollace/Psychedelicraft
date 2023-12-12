@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -19,8 +21,15 @@ import net.minecraft.world.World;
  * Updated by Sollace on 3 Jan 2023
  */
 class GlitchedBlock extends Block {
+    public static final MapCodec<GlitchedBlock> CODEC = createCodec(GlitchedBlock::new);
+
     public GlitchedBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    protected MapCodec<? extends GlitchedBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.MapCodec;
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.fluid.*;
@@ -36,6 +37,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
+    public static final MapCodec<BarrelBlock> CODEC = createCodec(BarrelBlock::new);
     public static final int MAX_TAP_AMOUNT = FluidVolumes.BUCKET;
     public static final DirectionProperty FACING = Properties.HOPPER_FACING;
     public static final BooleanProperty TAPPED = BooleanProperty.of("tapped");
@@ -58,6 +60,11 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     public BarrelBlock(Settings settings) {
         super(settings.nonOpaque());
         setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(TAPPED, true));
+    }
+
+    @Override
+    protected MapCodec<? extends BarrelBlock> getCodec() {
+        return CODEC;
     }
 
     @Override
