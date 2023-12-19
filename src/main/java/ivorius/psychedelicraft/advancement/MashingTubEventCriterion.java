@@ -39,9 +39,9 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
                 SimpleFluid.CODEC.xmap(AlcoholicFluid.class::cast, Function.identity()).fieldOf("fluid").forGetter(Conditions::fluid),
-                IntRange.CODEC.fieldOf("fermentation").forGetter(Conditions::fermentation),
-                IntRange.CODEC.fieldOf("maturation").forGetter(Conditions::maturation),
-                IntRange.CODEC.fieldOf("distillation").forGetter(Conditions::distillation)
+                IntRange.CODEC.optionalFieldOf("fermentation", IntRange.ANY).forGetter(Conditions::fermentation),
+                IntRange.CODEC.optionalFieldOf("maturation", IntRange.ANY).forGetter(Conditions::maturation),
+                IntRange.CODEC.optionalFieldOf("distillation", IntRange.ANY).forGetter(Conditions::distillation)
         ).apply(instance, Conditions::new));
 
         public boolean test(ServerPlayerEntity player, ItemStack stack) {
