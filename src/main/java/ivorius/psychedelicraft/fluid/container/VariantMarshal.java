@@ -28,7 +28,7 @@ import net.minecraft.nbt.NbtCompound;
 /**
  * Interop layer with Fabric's "experimental" transfer api.
  */
-final class VariantMarshal {
+public final class VariantMarshal {
     static void bootstrap() {
         FluidStorage.GENERAL_COMBINED_PROVIDER.register(context -> {
             if (context.getItemVariant().getItem() instanceof FluidContainer container) {
@@ -61,7 +61,11 @@ final class VariantMarshal {
     }
 
     public static MutableFluidContainer unpackFluid(ItemVariant container, FluidVariant contents, long level) {
-        return MutableFluidContainer.of(container.toStack())
+        return unpackFluid(container.toStack(), contents, level);
+    }
+
+    public static MutableFluidContainer unpackFluid(ItemStack container, FluidVariant contents, long level) {
+        return MutableFluidContainer.of(container)
             .withFluid(SimpleFluid.forVanilla(contents.getFluid()))
             .withLevel((int)level)
             .withAttributes(contents.copyNbt());

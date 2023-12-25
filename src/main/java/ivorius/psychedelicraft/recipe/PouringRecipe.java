@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 /**
  * Recipe for pouring fluid from one container to another.
  */
-class PouringRecipe extends SpecialCraftingRecipe {
+public class PouringRecipe extends SpecialCraftingRecipe {
     public PouringRecipe(CraftingRecipeCategory category) {
         super(category);
     }

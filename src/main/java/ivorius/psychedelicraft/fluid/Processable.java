@@ -5,7 +5,9 @@
 
 package ivorius.psychedelicraft.fluid;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +39,15 @@ public interface Processable {
      * @return The stack left over in the distillery.
      */
     ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement);
+
+    void getProcessStages(ProcessType type, ProcessStageConsumer consumer);
+
+    interface ProcessStageConsumer {
+        void accept(int time, int change,
+                Function<ItemStack, List<ItemStack>> from,
+                Function<ItemStack, List<ItemStack>> to
+        );
+    }
 
     enum ProcessType {
         /**

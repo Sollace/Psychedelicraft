@@ -26,7 +26,7 @@ public class DryingRecipe extends AbstractCookingRecipe {
         return RecipeUtils.stacks(inventory).filter(ingredient).count() == inventory.size() - 1;
     }
 
-    protected Ingredient getInput() {
+    public Ingredient getInput() {
         return ingredient;
     }
 

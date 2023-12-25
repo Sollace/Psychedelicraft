@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -86,5 +87,15 @@ public class CoffeeFluid extends DrugFluid implements Processable {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
+        if (type == ProcessType.FERMENT) {
+            consumer.accept(300, -1,
+                    stack -> List.of(WARMTH.set(stack, 2)),
+                    stack -> List.of(WARMTH.set(stack, 1))
+            );
+        }
     }
 }

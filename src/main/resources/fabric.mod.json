@@ -23,6 +23,9 @@
     "client": [
       "ivorius.psychedelicraft.client.PsychedelicraftClient"
     ],
+    "emi": [
+      "ivorius.psychedelicraft.compat.emi.Main"
+    ],
     "modmenu": [
       "ivorius.psychedelicraft.compat.modmenu.Main"
     ]

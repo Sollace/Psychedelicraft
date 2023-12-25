@@ -294,5 +294,5 @@ public interface PSFluids {
 
     SimpleFluid SLURRY = new SlurryFluid(Psychedelicraft.id("slurry"), new SimpleFluid.Settings().color(0xcc704E21).viscocity(4));
 
-    static void bootstrap() {}
+    static void bootstrap() { }
 }
