@@ -25,7 +25,7 @@ import ivorius.psychedelicraft.fluid.container.FluidContainer;
  * Used to change the container a fluid is in without losing any of its contents.
  *
  */
-class ChangeRecepticalRecipe extends ShapelessRecipe {
+public class ChangeRecepticalRecipe extends ShapelessRecipe {
     private final ItemStack output;
 
     public ChangeRecepticalRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {

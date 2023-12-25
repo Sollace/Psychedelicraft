@@ -4,6 +4,7 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.alcohol.DrinkType;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
@@ -13,6 +14,7 @@ import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -20,8 +22,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -139,6 +144,58 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
+        if (type == ProcessType.DISTILL) {
+            generateRecipeConversions(settings.tickInfo.get().ticksPerDistillation, DISTILLATION, DrinkTypes.State::distillation, consumer);
+        }
+
+        if (type == ProcessType.MATURE) {
+            generateRecipeConversions(settings.tickInfo.get().ticksPerMaturation, MATURATION, DrinkTypes.State::maturation, consumer);
+        }
+
+        if (type == ProcessType.FERMENT) {
+            generateRecipeConversions(settings.tickInfo.get().ticksPerFermentation, FERMENTATION, DrinkTypes.State::fermentation, consumer);
+        }
+    }
+
+    private void generateRecipeConversions(int time, Attribute<Integer> attribute, Function<DrinkTypes.State, Integer> valueGetter, ProcessStageConsumer consumer) {
+        /*Map<Integer, List<DrinkTypes.State>> groups = new TreeMap<>();
+        settings.states.get().forEach(state -> {
+            groups.computeIfAbsent(valueGetter.apply(state), k -> new ArrayList<>()).add(state);
+        });
+        List<List<DrinkTypes.State>> sorted = groups.keySet().stream().sorted().map(groups::get).toList();
+
+        for (int i = 1; i < sorted.size(); i++) {
+            var from = sorted.get(i - 1);
+            var to = sorted.get(i);
+            int change = valueGetter.apply(to.get(0)) - valueGetter.apply(from.get(0));
+            consumer.accept(
+                time,
+                change,
+                stack -> from.stream().map(state -> state.apply(stack)).toList(),
+                stack -> to.stream().map(state -> state.apply(stack)).toList()
+            );
+        }*/
+
+        ItemStack stack = Items.STONE.getDefaultStack();
+        settings.states.get().forEach(state -> {
+            int value = valueGetter.apply(state);
+            Set<DrinkType> counted = new HashSet<>();
+            attribute.forEachStep((from, to) -> {
+                if (to > value) {
+                    attribute.set(state.apply(stack), to);
+                    if (counted.add(settings.variants.find(stack))) {
+                        consumer.accept(time, to - value,
+                                s -> List.of(state.apply(s)),
+                                s -> List.of(attribute.set(state.apply(s), to))
+                        );
+                    }
+                }
+            });
+        });
     }
 
     @Override

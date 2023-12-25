@@ -58,6 +58,14 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
         this.result = result;
     }
 
+    public FluidIngredient getFluid() {
+        return fluid;
+    }
+
+    public FluidModifyingResult getResult() {
+        return result;
+    }
+
     @Override
     public RecipeSerializer<?> getSerializer() {
         return PSRecipes.SMELTING_RECEPTICAL;
