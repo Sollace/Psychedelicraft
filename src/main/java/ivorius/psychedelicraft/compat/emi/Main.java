@@ -141,24 +141,9 @@ public class Main implements EmiPlugin {
             }
         });
 
-        registry.addRecipe(EmiWorldInteractionRecipe.builder()
-            .id(Psychedelicraft.id("morning_glory_flowers"))
-            .leftInput(EmiStack.of(PSItems.MORNING_GLORY_LATTICE))
-            .rightInput(EmiIngredient.of(ConventionalItemTags.SHEARS), true)
-            .output(EmiStack.of(PSItems.MORNING_GLORY))
-            .build());
-        registry.addRecipe(EmiWorldInteractionRecipe.builder()
-                .id(Psychedelicraft.id("juniper_berries"))
-                .leftInput(EmiStack.of(PSItems.FRUITING_JUNIPER_LEAVES))
-                .rightInput(EmiIngredient.of(ConventionalItemTags.SHEARS), true)
-                .output(EmiStack.of(PSItems.JUNIPER_BERRIES))
-                .build());
-        registry.addRecipe(EmiWorldInteractionRecipe.builder()
-                .id(Psychedelicraft.id("wine_grapes"))
-                .leftInput(EmiStack.of(PSItems.WINE_GRAPE_LATTICE))
-                .rightInput(EmiIngredient.of(ConventionalItemTags.SHEARS), true)
-                .output(EmiStack.of(PSItems.WINE_GRAPES))
-                .build());
+        registry.addRecipe(createInteraction("morning_glory_flowers", EmiStack.of(PSItems.MORNING_GLORY_LATTICE), EmiIngredient.of(ConventionalItemTags.SHEARS), EmiStack.of(PSItems.MORNING_GLORY)));
+        registry.addRecipe(createInteraction("juniper_berries", EmiStack.of(PSItems.FRUITING_JUNIPER_LEAVES), EmiIngredient.of(ConventionalItemTags.SHEARS), EmiStack.of(PSItems.JUNIPER_BERRIES)));
+        registry.addRecipe(createInteraction("wine_grapes", EmiStack.of(PSItems.WINE_GRAPE_LATTICE), EmiIngredient.of(ConventionalItemTags.SHEARS), EmiStack.of(PSItems.WINE_GRAPES)));
 
         SimpleFluid.all().forEach(fluid -> {
             if (!fluid.isEmpty()) {
@@ -181,4 +166,12 @@ public class Main implements EmiPlugin {
         ).forEach(item -> registry.setDefaultComparison(item, comparison -> COMPARE_FLUID));
     }
 
+    static EmiRecipe createInteraction(String name, EmiIngredient left, EmiIngredient right, EmiStack output) {
+        return EmiWorldInteractionRecipe.builder()
+                .id(Psychedelicraft.id(name))
+                .leftInput(left)
+                .rightInput(right, true)
+                .output(output)
+                .build();
+    }
 }

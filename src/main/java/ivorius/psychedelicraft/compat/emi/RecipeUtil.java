@@ -63,7 +63,7 @@ interface RecipeUtil {
                 var container = FluidContainer.of(stack);
                 var mutable = container.toMutable(stack);
 
-                mutable.deposit(container.getMaxCapacity(), fluid.fluid());
+                mutable.deposit(fluid.level(), fluid.fluid());
 
                 return EmiStack.of(mutable.asStack());
             }).toList();
@@ -81,7 +81,7 @@ interface RecipeUtil {
             var container = FluidContainer.of(stack);
             var mutable = container.toMutable(stack);
 
-            mutable.deposit(container.getMaxCapacity(), fluid.fluid());
+            mutable.deposit(fluid.level(), fluid.fluid());
 
             return EmiStack.of(mutable.asStack());
         }).orElseGet(() -> EmiStack.of(stack));
@@ -97,6 +97,9 @@ interface RecipeUtil {
 
     static EmiStack createFluidIngredient(ItemStack stack) {
         var container = MutableFluidContainer.of(stack);
+        if (container.isEmpty()) {
+            return EmiStack.of(stack);
+        }
         return createFluidIngredient(container.getFluid(), container.getLevel(), container.getAttributes().copy());
     }
 
