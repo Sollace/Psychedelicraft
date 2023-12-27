@@ -5,10 +5,12 @@
 
 package ivorius.psychedelicraft.fluid;
 
+import java.util.List;
 import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.particle.BubbleParticleEffect;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -69,6 +71,11 @@ public class SlurryFluid extends SimpleFluid implements Processable {
 
     @Override
     public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
-
+        if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
+            consumer.accept(Psychedelicraft.getConfig().balancing.slurryHardeningTime, 1,
+                    stack -> List.of(getDefaultStack(FluidContainer.of(stack))),
+                    stack -> List.of(Items.DIRT.getDefaultStack())
+            );
+        }
     }
 }

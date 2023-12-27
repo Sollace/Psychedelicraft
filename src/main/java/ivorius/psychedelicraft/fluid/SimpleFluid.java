@@ -188,6 +188,14 @@ public class SimpleFluid {
     public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
     }
 
+    public final boolean isEquivalent(ItemStack selfStack, ItemStack otherStack) {
+        return getHash(selfStack) == getHash(otherStack);
+    }
+
+    public int getHash(ItemStack stack) {
+        return hashCode();
+    }
+
     public static SimpleFluid byId(@Nullable Identifier id) {
         if (id == null) {
             return PSFluids.EMPTY;
@@ -282,7 +290,7 @@ public class SimpleFluid {
 
                 @Override
                 public void forEachStep(BiConsumer<Integer, Integer> consumer) {
-                    for (int i = min; i < max - 1; i++) {
+                    for (int i = min; i < max; i++) {
                         consumer.accept(i, i + 1);
                     }
                 }
