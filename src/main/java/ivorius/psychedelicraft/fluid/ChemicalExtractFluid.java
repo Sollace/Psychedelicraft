@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.fluid;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -84,5 +85,10 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
             0xFFFFFFFF,
             DISTILLATION.get(stack) / 16F
         );
+    }
+
+    @Override
+    public int getHash(ItemStack stack) {
+        return Objects.hash(this, DISTILLATION.get(stack));
     }
 }
