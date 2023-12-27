@@ -1,0 +1,14 @@
+{
+  "type": "psychedelicraft:fill_receptical",
+  "receptical": { "tag": "psychedelicraft:drink_recepticals" },
+  "ingredients": [
+    { "item": "minecraft:water_bucket" },
+    { "item": "psychedelicraft:belladonna_seeds" },
+    { "item": "psychedelicraft:belladonna_seeds" },
+    { "item": "psychedelicraft:belladonna_seeds" }
+  ],
+  "result": {
+    "fluid": "psychedelicraft:belladonna_extract",
+    "level": 500
+  }
+}
