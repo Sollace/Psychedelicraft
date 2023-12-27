@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.compat.emi;
 
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import dev.emi.emi.EmiPort;
@@ -56,11 +55,10 @@ public class Main implements EmiPlugin {
     static final Comparison COMPARE_FLUID = Comparison.of((a, b) -> {
         ItemStack stackA = a.getItemStack();
         ItemStack stackB = b.getItemStack();
-        return FluidContainer.of(stackA).getFluid(stackA) == FluidContainer.of(stackB).getFluid(stackB)
-                && Objects.equals(FluidContainer.getFluidAttributesTag(stackA, true), FluidContainer.getFluidAttributesTag(stackB, true));
+        return FluidContainer.of(stackA).getFluid(stackA).isEquivalent(stackA, stackB);
     }, s -> {
         ItemStack stack = s.getItemStack();
-        return Objects.hash(FluidContainer.of(stack).getFluid(stack), FluidContainer.of(stack).getFluid(stack));
+        return FluidContainer.of(stack).getFluid(stack).getHash(stack);
     });
 
     @Override
