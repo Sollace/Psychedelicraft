@@ -113,13 +113,14 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
         return riftConnections.computeIfAbsent(rift.getUuid(), id -> new JarRiftConnection(rift));
     }
 
-    public void toggleRiftJarOpen() {
+    public boolean toggleRiftJarOpen() {
         if (!world.isClient) {
             isOpening = !isOpening;
 
             markDirty();
             ((ServerWorld)world).getChunkManager().markForUpdate(getPos());
         }
+        return isOpening;
     }
 
     public void toggleSuckingRifts() {
