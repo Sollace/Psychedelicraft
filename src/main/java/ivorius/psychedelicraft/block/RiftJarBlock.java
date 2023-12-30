@@ -5,10 +5,14 @@
 
 package ivorius.psychedelicraft.block;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
 
+import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
 import ivorius.psychedelicraft.item.PSItems;
@@ -17,7 +21,11 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -28,7 +36,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 class RiftJarBlock extends BlockWithEntity {
@@ -77,28 +84,22 @@ class RiftJarBlock extends BlockWithEntity {
         return world.getBlockEntity(pos, PSBlockEntities.RIFT_JAR).map(be -> {
             if (player.isSneaking()) {
                 be.toggleSuckingRifts();
+                world.playSound(null, pos, PSSounds.BLOCK_RIFT_JAR_TOGGLE, SoundCategory.BLOCKS);
             } else {
-                be.toggleRiftJarOpen();
+                world.playSound(null, pos, be.toggleRiftJarOpen() ? PSSounds.BLOCK_RIFT_JAR_OPEN : PSSounds.BLOCK_RIFT_JAR_CLOSE, SoundCategory.BLOCKS);
             }
             return ActionResult.SUCCESS;
         }).orElse(ActionResult.FAIL);
     }
 
-    @Deprecated
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
-            return;
-        }
-        if (!state.isOf(newState.getBlock()) && !world.isClient) {
-            world.getBlockEntity(pos, PSBlockEntities.RIFT_JAR).ifPresent(be -> {
-
-                if (!be.jarBroken) {
-                    Block.dropStack(world, pos, RiftJarItem.createFilledRiftJar(be.currentRiftFraction, PSItems.RIFT_JAR));
-                }
-            });
-        }
-        super.onStateReplaced(state, world, pos, newState, moved);
+    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+        return Optional.ofNullable(builder.getOptional(LootContextParameters.BLOCK_ENTITY)).map(RiftJarBlockEntity.class::cast).map(be -> {
+            if (!be.jarBroken) {
+                return RiftJarItem.createFilledRiftJar(be.currentRiftFraction, PSItems.RIFT_JAR);
+            }
+            return null;
+        }).stream().toList();
     }
 
     @Override
