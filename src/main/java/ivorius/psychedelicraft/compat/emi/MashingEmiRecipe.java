@@ -31,7 +31,7 @@ public class MashingEmiRecipe implements EmiRecipe, PSRecipe {
 
     @Override
     public EmiRecipeCategory getCategory() {
-        return Main.VAT_CATEGORY;
+        return Main.VAT.category();
     }
 
     @Override

@@ -33,7 +33,7 @@ public class DryingEmiRecipe implements EmiRecipe, PSRecipe {
 
     @Override
     public EmiRecipeCategory getCategory() {
-        return Main.DRYING_TABLE_CATEGORY;
+        return Main.DRYING_TABLE.category();
     }
 
     @Override

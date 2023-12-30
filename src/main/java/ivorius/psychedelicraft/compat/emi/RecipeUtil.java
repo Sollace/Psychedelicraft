@@ -22,6 +22,7 @@ import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.recipe.FluidIngredient;
 import ivorius.psychedelicraft.recipe.OptionalFluidIngredient;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
@@ -87,12 +88,20 @@ interface RecipeUtil {
         }).orElseGet(() -> EmiStack.of(stack));
     }
 
+    static SimpleFluid getFluid(EmiStack stack) {
+        if (stack.getKey() instanceof Fluid f) {
+            return SimpleFluid.forVanilla(f);
+        }
+
+        return FluidContainer.of(stack.getItemStack()).getFluid(stack.getItemStack());
+    }
+
     static EmiStack createFluidIngredient(FluidIngredient ingredient) {
         return createFluidIngredient(ingredient.fluid(), ingredient.level(), ingredient.attributes().copy());
     }
 
     static EmiStack createFluidIngredient(SimpleFluid fluid, int level, @Nullable NbtCompound attributes) {
-        return EmiStack.of(fluid.getPhysical().getStandingFluid(), attributes, level <= 0 ? 12 : level / 12);
+        return EmiStack.of(getStackKey(fluid), attributes, level <= 0 ? 12 : level / 12);
     }
 
     static EmiStack createFluidIngredient(ItemStack stack) {
@@ -101,6 +110,10 @@ interface RecipeUtil {
             return EmiStack.of(stack);
         }
         return createFluidIngredient(container.getFluid(), container.getLevel(), container.getAttributes().copy());
+    }
+
+    static Fluid getStackKey(SimpleFluid fluid) {
+        return fluid.getPhysical().getStandingFluid();
     }
 
     static Stream<EmiIngredient> grouped(Stream<EmiIngredient> ingredients) {
