@@ -14,6 +14,10 @@ public interface PSSounds {
     SoundEvent ENTITY_PLAYER_HEARTBEAT = register("entity.player.heartbeat");
     SoundEvent ENTITY_PLAYER_BREATH = register("entity.player.breath");
 
+    SoundEvent BLOCK_RIFT_JAR_TOGGLE = register("block.rift_jar.toggle");
+    SoundEvent BLOCK_RIFT_JAR_OPEN = register("block.rift_jar.open");
+    SoundEvent BLOCK_RIFT_JAR_CLOSE = register("block.rift_jar.close");
+
     SoundEvent DRUG_GENERIC = register("drug.generic");
 
     static SoundEvent register(String name) {
