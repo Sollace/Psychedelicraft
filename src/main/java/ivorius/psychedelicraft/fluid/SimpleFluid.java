@@ -188,8 +188,8 @@ public class SimpleFluid {
     public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
     }
 
-    public final boolean isEquivalent(ItemStack selfStack, ItemStack otherStack) {
-        return getHash(selfStack) == getHash(otherStack);
+    public static final boolean isEquivalent(SimpleFluid fluidA, ItemStack selfStack, SimpleFluid fluidB, ItemStack otherStack) {
+        return fluidA == fluidB && fluidA.getHash(selfStack) == fluidB.getHash(otherStack);
     }
 
     public int getHash(ItemStack stack) {
