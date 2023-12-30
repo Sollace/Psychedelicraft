@@ -65,7 +65,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getCachedState().get(HorizontalFacingBlock.FACING).asRotation() + 180));
 
         model.setAngles(entity, tickDelta);
-        matrices.translate(0, 1, 0);
+        matrices.translate(0, 1.001F, 0);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
         model.render(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucent(TEXTURE)), light, overlay, 1, 1, 1, 1);
