@@ -62,7 +62,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         matrices.translate(0.5F, 0.5f, 0.5F);
 
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getCachedState().get(HorizontalFacingBlock.FACING).asRotation() + 180));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - entity.getCachedState().get(HorizontalFacingBlock.FACING).asRotation()));
 
         model.setAngles(entity, tickDelta);
         matrices.translate(0, 1.001F, 0);
@@ -70,7 +70,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
 
         model.render(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucent(TEXTURE)), light, overlay, 1, 1, 1, 1);
 
-        float crackedVisibility = Math.min((entity.currentRiftFraction - 0.5F) * 2, 1);
+        float crackedVisibility = entity.jarBroken ? 1 : Math.min((entity.currentRiftFraction - 0.5F) * 2, 1);
 
         if (crackedVisibility > 0) {
             model.render(matrices, vertices.getBuffer(model.getLayer(CRACKED_TEXTURE)), light, overlay, 1, 1, 1, crackedVisibility);
@@ -80,7 +80,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
             matrices.push();
             matrices.translate(0, 1.5F, 0);
             matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(180));
-            matrices.scale(0.9F, 0.9F, 0.9F);
+            matrices.scale(0.9F, 1, 0.9F);
             ZeroScreen.render(ticks, (layer, u, v) -> {
                 model.renderInterior(matrices, vertices.getBuffer(layer), 0, 0, 1, 1, 1, Math.min(entity.currentRiftFraction * 2, 1));
             });
