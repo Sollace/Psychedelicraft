@@ -45,8 +45,8 @@ public class RiftJarModel extends Model {
         root.addChild("glass_3", ModelPartBuilder.create().uv(33, 24).mirrored().cuboid(-3F, 0F, -3F, 6, 2, 6), ModelTransform.pivot(0F, 17F, 0F));
 
         root.addChild("rope", ModelPartBuilder.create().uv(33, 0).mirrored().cuboid(-3.5F, 0F, -3.5F, 7, 2, 7), ModelTransform.pivot(0F, 17F, 0F));
-        root.addChild("knot", ModelPartBuilder.create().uv(33, 2).mirrored().cuboid(0F, 0F, -4F, 0, 5, 8), ModelTransform.of(3.5F, 17F, 0F, 0F, 0F, -0.2602503F));
-        root.addChild("cork", ModelPartBuilder.create().uv(33, 16).mirrored().cuboid(-3F, 0F, -3F, 6, 2, 6), ModelTransform.pivot(0F, 10F, 0F));
+        root.addChild("knot", ModelPartBuilder.create().uv(33, 2).mirrored().cuboid(0F, 0F, -4F, 0.001F, 5, 8), ModelTransform.of(-3.5F, 17F, 0F, 0F, 0F, -0.2602503F));
+        root.addChild("cork", ModelPartBuilder.create().uv(33, 16).mirrored().cuboid(-3F, -0.001F, -3F, 6, 2, 6), ModelTransform.pivot(0F, 10F, 0F));
 
         Dilation dilation = new Dilation(0.001f);
         root.addChild("interior", ModelPartBuilder.create()
@@ -60,7 +60,7 @@ public class RiftJarModel extends Model {
     public void setAngles(RiftJarBlockEntity entity, float tickDelta) {
         cork.pivotX = entity.fractionOpen * 2;
         cork.yaw = entity.fractionOpen * 0.1F;
-        knot.roll = -0.2602503F - (entity.fractionHandleUp * (1 + MathHelper.sin(entity.ticksAliveVisual * 0.1f) * 0.1f)) * 0.5f;
+        knot.roll = 0.2602503F + (entity.fractionHandleUp * (1 + MathHelper.sin(entity.ticksAliveVisual * 0.1f) * 0.1f)) * 0.5f;
     }
 
     @Override
