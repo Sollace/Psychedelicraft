@@ -9,6 +9,7 @@ import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.ListEmiIngredient;
 import dev.emi.emi.api.widget.WidgetHolder;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
@@ -84,11 +85,11 @@ public class DrawingFluidEmiRecipe implements EmiRecipe, PSRecipe {
                tankContents.getDefaultStacks(FluidContainer.of(stack.getItemStack().getItem()), filled -> {
                    outputs.add(EmiStack.of(filled));
                    var container = FluidContainer.of(filled).toMutable(filled);
-                   tanks.add(EmiStack.of(container.getFluid().getPhysical().getStandingFluid(), container.getAttributes(), container.getLevel() / 12));
+                   tanks.add(RecipeUtil.createFluidIngredient(container.getFluid(), container.getLevel(), container.getAttributes()));
                    ingredients.add(EmiStack.of(container.withLevel(0).asStack()));
                });
             });
-            var tank = EmiIngredient.of(tanks).setAmount(FluidVolumes.VAT / 12);
+            var tank = new ListEmiIngredient(tanks, FluidVolumes.VAT / 12);
             var inputs = List.of(EmiIngredient.of(new ArrayList<>(ingredients)));
             return new Contents(inputs, outputs, tank, EmiIngredient.of(outputs));
         }

@@ -1,13 +1,10 @@
 package ivorius.psychedelicraft.compat.emi;
 
-import java.util.stream.Stream;
-
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.EmiWorldInteractionRecipe;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiIngredient;
@@ -18,7 +15,6 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.recipe.BottleRecipe;
 import ivorius.psychedelicraft.recipe.ChangeRecepticalRecipe;
@@ -34,67 +30,32 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
 
 public class Main implements EmiPlugin {
-    static final EmiStack DRYING_TABLE_STATION = EmiStack.of(PSItems.DRYING_TABLE);
-    static final EmiRecipeCategory DRYING_TABLE_CATEGORY = new EmiRecipeCategory(Psychedelicraft.id("drying_table"), DRYING_TABLE_STATION, DRYING_TABLE_STATION);
-
-    static final EmiStack VAT_STATION = EmiStack.of(PSItems.MASH_TUB);
-    static final EmiRecipeCategory VAT_CATEGORY = new EmiRecipeCategory(Psychedelicraft.id("wooden_vat"), VAT_STATION, VAT_STATION);
-    static final EmiRecipeCategory FERMENTING_CATEGORY = new EmiRecipeCategory(Psychedelicraft.id("fermenting"), VAT_STATION, VAT_STATION);
-
-    static final EmiStack BARREL_STATION = EmiStack.of(PSItems.OAK_BARREL);
-    static final EmiRecipeCategory BARREL_CATEGORY = new EmiRecipeCategory(Psychedelicraft.id("barrel"), BARREL_STATION, BARREL_STATION);
-    static final EmiRecipeCategory MATURING_CATEGORY = new EmiRecipeCategory(Psychedelicraft.id("maturing"), BARREL_STATION, BARREL_STATION);
-
-    static final EmiStack DISTILLERY_STATION = EmiStack.of(PSItems.DISTILLERY);
-    static final EmiRecipeCategory DISTILLERY_CATEGORY = new EmiRecipeCategory(Psychedelicraft.id("distillery"), DISTILLERY_STATION, DISTILLERY_STATION);
-    static final EmiRecipeCategory DISTILLING_CATEGORY = new EmiRecipeCategory(Psychedelicraft.id("distilling"), DISTILLERY_STATION, DISTILLERY_STATION);
-
-    static final EmiStack FLASK_STATION = EmiStack.of(PSItems.FLASK);
-    static final EmiRecipeCategory FLASK_CATEGORY = new EmiRecipeCategory(Psychedelicraft.id("flask"), FLASK_STATION, FLASK_STATION);
-
-    static final Comparison COMPARE_FLUID = Comparison.of((a, b) -> {
-        ItemStack stackA = a.getItemStack();
-        ItemStack stackB = b.getItemStack();
-        return FluidContainer.of(stackA).getFluid(stackA).isEquivalent(stackA, stackB);
-    }, s -> {
-        ItemStack stack = s.getItemStack();
-        return FluidContainer.of(stack).getFluid(stack).getHash(stack);
-    });
-
-    @Override
-    public void register(EmiRegistry registry) {
-        registry.addCategory(BARREL_CATEGORY);
-        registry.addWorkstation(BARREL_CATEGORY, EmiIngredient.of(PSTags.BARRELS));
-
-        registry.addCategory(MATURING_CATEGORY);
-        registry.addWorkstation(MATURING_CATEGORY, EmiIngredient.of(PSTags.BARRELS));
-
-        registry.addCategory(DISTILLERY_CATEGORY);
-        registry.addWorkstation(DISTILLERY_CATEGORY, DISTILLERY_STATION);
-
-        registry.addCategory(DISTILLING_CATEGORY);
-        registry.addWorkstation(DISTILLING_CATEGORY, DISTILLERY_STATION);
-
-        registry.addCategory(DISTILLING_CATEGORY);
-        registry.addWorkstation(DISTILLING_CATEGORY, DISTILLERY_STATION);
-
-        registry.addCategory(FERMENTING_CATEGORY);
-        registry.addWorkstation(FERMENTING_CATEGORY, VAT_STATION);
-
-        registry.addCategory(FLASK_CATEGORY);
-        registry.addWorkstation(FLASK_CATEGORY, FLASK_STATION);
-
-        registry.addCategory(DRYING_TABLE_CATEGORY);
-        registry.addWorkstation(DRYING_TABLE_CATEGORY, EmiIngredient.of(PSTags.DRYING_TABLES));
+    static final RecipeCategory DRYING_TABLE = RecipeCategory.register("drying_table", EmiStack.of(PSItems.DRYING_TABLE), registry -> {
         registry.getRecipeManager().listAllOfType(PSRecipes.DRYING_TYPE).forEach(recipe -> {
             registry.addRecipe(new DryingEmiRecipe(recipe.getId(), recipe));
         });
-
-        registry.addCategory(VAT_CATEGORY);
-        registry.addWorkstation(VAT_CATEGORY, VAT_STATION);
+    });
+    static final RecipeCategory VAT = RecipeCategory.register("wooden_vat", EmiStack.of(PSItems.MASH_TUB), registry -> {
         registry.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).forEach(recipe -> {
             registry.addRecipe(new MashingEmiRecipe(recipe.getId(), recipe));
         });
+    });
+    static final RecipeCategory BARREL = RecipeCategory.register("barrel", EmiStack.of(PSItems.OAK_BARREL), EmiIngredient.of(PSTags.BARRELS), registry -> {});
+    static final RecipeCategory DISTILLERY = RecipeCategory.register("distillery", EmiStack.of(PSItems.DISTILLERY), registry -> {});
+    static final RecipeCategory FLASK = RecipeCategory.register("flask", EmiStack.of(PSItems.FLASK), registry -> {});
+
+    static final RecipeCategory FERMENTING = RecipeCategory.register("fermenting", EmiStack.of(PSItems.MASH_TUB), registry -> {});
+    static final RecipeCategory MATURING = RecipeCategory.register("maturing", EmiStack.of(PSItems.OAK_BARREL), EmiIngredient.of(PSTags.BARRELS), registry -> {});
+    static final RecipeCategory DISTILLING = RecipeCategory.register("distilling", EmiStack.of(PSItems.DISTILLERY), registry -> {});
+
+    static final Comparison COMPARE_FLUID = Comparison.of(
+            (a, b) -> SimpleFluid.isEquivalent(RecipeUtil.getFluid(a), a.getItemStack(), RecipeUtil.getFluid(b), b.getItemStack()),
+            s -> RecipeUtil.getFluid(s).getHash(s.getItemStack())
+    );
+
+    @Override
+    public void register(EmiRegistry registry) {
+        RecipeCategory.initialize(registry);
 
         registry.getRecipeManager().listAllOfType(RecipeType.CRAFTING).forEach(recipe -> {
             if (recipe instanceof FluidAwareShapelessRecipe r) {
@@ -148,22 +109,31 @@ public class Main implements EmiPlugin {
         SimpleFluid.all().forEach(fluid -> {
             if (!fluid.isEmpty()) {
                 var contents = DrawingFluidEmiRecipe.Contents.of(fluid);
-                registry.addRecipe(new DrawingFluidEmiRecipe(BARREL_CATEGORY, fluid, contents));
-                registry.addRecipe(new DrawingFluidEmiRecipe(DISTILLERY_CATEGORY, fluid, contents));
-                registry.addRecipe(new DrawingFluidEmiRecipe(FLASK_CATEGORY, fluid, contents));
+                registry.addRecipe(new DrawingFluidEmiRecipe(BARREL.category(), fluid, contents));
+                registry.addRecipe(new DrawingFluidEmiRecipe(DISTILLERY.category(), fluid, contents));
+                registry.addRecipe(new DrawingFluidEmiRecipe(FLASK.category(), fluid, contents));
 
                 if (fluid instanceof Processable p) {
-                    FluidProcessingEmiRecipe.createRecipesFor(MATURING_CATEGORY, ProcessType.MATURE, p, fluid, registry::addRecipe);
-                    FluidProcessingEmiRecipe.createRecipesFor(DISTILLING_CATEGORY, ProcessType.DISTILL, p, fluid, registry::addRecipe);
-                    FluidProcessingEmiRecipe.createRecipesFor(FERMENTING_CATEGORY, ProcessType.FERMENT, p, fluid, registry::addRecipe);
+                    FluidProcessingEmiRecipe.createRecipesFor(MATURING.category(), ProcessType.MATURE, p, fluid, registry::addRecipe);
+                    FluidProcessingEmiRecipe.createRecipesFor(DISTILLING.category(), ProcessType.DISTILL, p, fluid, registry::addRecipe);
+                    FluidProcessingEmiRecipe.createRecipesFor(FERMENTING.category(), ProcessType.FERMENT, p, fluid, registry::addRecipe);
                 }
             }
+
+            setComparison(registry, COMPARE_FLUID, RecipeUtil.getStackKey(fluid));
         });
 
-        Stream.of(
-                PSItems.WOODEN_MUG, PSItems.STONE_CUP, PSItems.GLASS_CHALICE, PSItems.SHOT_GLASS, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.SYRINGE,
+        setComparison(registry, COMPARE_FLUID,
+                PSItems.WOODEN_MUG, PSItems.STONE_CUP, PSItems.GLASS_CHALICE,
+                PSItems.SHOT_GLASS, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.SYRINGE,
                 PSItems.FILLED_GLASS_BOTTLE, PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL
-        ).forEach(item -> registry.setDefaultComparison(item, comparison -> COMPARE_FLUID));
+        );
+    }
+
+    static void setComparison(EmiRegistry registry, Comparison comparison, Object...keys) {
+        for (var key : keys) {
+            registry.setDefaultComparison(key, c -> comparison);
+        }
     }
 
     static EmiRecipe createInteraction(String name, EmiIngredient left, EmiIngredient right, EmiStack output) {
