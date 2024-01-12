@@ -21,7 +21,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -139,6 +141,75 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
+        if (type == ProcessType.DISTILL) {
+            generateRecipeConversions(settings.tickInfo.get().ticksPerDistillation, DISTILLATION,
+                    DrinkTypes.State::distillation,
+                    DrinkTypes.State::maturation,
+                    DrinkTypes.State::fermentation, consumer);
+        }
+
+        if (type == ProcessType.MATURE) {
+            generateRecipeConversions(settings.tickInfo.get().ticksPerMaturation, MATURATION,
+                    DrinkTypes.State::maturation,
+                    DrinkTypes.State::distillation,
+                    DrinkTypes.State::fermentation, consumer);
+        }
+
+        if (type == ProcessType.FERMENT) {
+            generateRecipeConversions(settings.tickInfo.get().ticksPerFermentation, FERMENTATION,
+                    DrinkTypes.State::fermentation,
+                    DrinkTypes.State::distillation,
+                    DrinkTypes.State::maturation, consumer);
+        }
+    }
+
+    private void generateRecipeConversions(int time, Attribute<Integer> attribute, Function<DrinkTypes.State, Integer> valueGetter,
+            Function<DrinkTypes.State, Integer> fixA,
+            Function<DrinkTypes.State, Integer> fixB,
+            ProcessStageConsumer consumer) {
+        List<DrinkTypes.State> states = settings.states.get();
+
+        for (int i = 0; i < states.size(); i++) {
+            var state = states.get(i);
+
+            if (!state.vinegar()) {
+                states.stream()
+                        .filter(s -> {
+                            return fixA.apply(s) == fixA.apply(state)
+                                    && fixB.apply(s) == fixB.apply(state)
+                                    && !s.vinegar();
+                        })
+                        .forEach(s -> {
+                    int difference = valueGetter.apply(state) - valueGetter.apply(s);
+                    if (difference > 0) {
+                        consumer.accept(
+                            time,
+                            difference,
+                            stack -> List.of(s.apply(stack)),
+                            stack -> List.of(state.apply(stack))
+                        );
+                    }
+                });
+            } else if (attribute == FERMENTATION) {
+                states.stream().filter(s -> !s.vinegar()).forEach(s -> {
+                    consumer.accept(
+                        time,
+                        (FERMENTATION_STEPS + 1) - valueGetter.apply(s),
+                        stack -> List.of(s.apply(stack)),
+                        stack -> List.of(state.apply(stack))
+                    );
+                });
+            }
+        }
+    }
+
+    @Override
+    public int getHash(ItemStack stack) {
+        return Objects.hash(this, settings.variants.find(stack));
     }
 
     @Override

@@ -49,7 +49,7 @@ public class SlotDryingTableResult extends Slot {
 
     @Override
     protected void onCrafted(ItemStack stack) {
-        stack.onCraft(this.player.getWorld(), this.player, this.amount);
+        stack.onCraftByPlayer(player.getWorld(), player, amount);
 
         if (player instanceof ServerPlayerEntity spe) {
             int amount = this.amount;

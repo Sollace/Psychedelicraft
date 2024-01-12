@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.mojang.serialization.MapCodec;
+
 import ivorius.psychedelicraft.block.entity.BottleRackBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -30,6 +32,7 @@ import net.minecraft.world.*;
  * Created by lukas on 16.11.14.
  */
 public class BottleRackBlock extends BlockWithEntity {
+    public static final MapCodec<BottleRackBlock> CODEC = createCodec(BottleRackBlock::new);
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     private static final Map<Direction, VoxelShape> SHAPES = Arrays.stream(Direction.values())
@@ -51,6 +54,11 @@ public class BottleRackBlock extends BlockWithEntity {
 
     public BottleRackBlock(Settings settings) {
         super(settings.nonOpaque());
+    }
+
+    @Override
+    protected MapCodec<? extends BottleRackBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

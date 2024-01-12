@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import com.mojang.serialization.MapCodec;
+
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -14,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 
 public class PeyoteBlock extends SucculentPlantBlock implements BlockEntityProvider {
+    public static final MapCodec<PeyoteBlock> CODEC = createCodec(PeyoteBlock::new);
     public static final IntProperty AGE = Properties.AGE_3;
     public static final int MAX_AGE = Properties.AGE_3_MAX;
     private static final VoxelShape[] SHAPES = {
@@ -25,6 +28,11 @@ public class PeyoteBlock extends SucculentPlantBlock implements BlockEntityProvi
 
     public PeyoteBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    protected MapCodec<? extends PeyoteBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

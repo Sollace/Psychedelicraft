@@ -25,7 +25,7 @@ import ivorius.psychedelicraft.fluid.container.FluidContainer;
  * Used to change the container a fluid is in without losing any of its contents.
  *
  */
-class ChangeRecepticalRecipe extends ShapelessRecipe {
+public class ChangeRecepticalRecipe extends ShapelessRecipe {
     private final ItemStack output;
 
     public ChangeRecepticalRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
@@ -64,7 +64,7 @@ class ChangeRecepticalRecipe extends ShapelessRecipe {
         private static final Codec<ChangeRecepticalRecipe> CODEC = RecordCodecBuilder.create(instance -> instance
                 .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(ChangeRecepticalRecipe::getGroup),
                         CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(ChangeRecepticalRecipe::getCategory),
-                        RecipeCodecs.CRAFTING_RESULT.fieldOf("result").forGetter(recipe -> recipe.output),
+                        ItemStack.RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
                         RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ChangeRecepticalRecipe::getIngredients)
                 ).apply(instance, ChangeRecepticalRecipe::new)
         );

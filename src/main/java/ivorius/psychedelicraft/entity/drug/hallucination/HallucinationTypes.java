@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 14.11.14.
@@ -51,7 +50,7 @@ public class HallucinationTypes {
         float value = 1;
         for (Category c : categories) {
             if (c.hallucinations.contains(hallucination)) {
-                value *= MathHelper.lerp(c.currentValue, 0, 0.5F);
+                value *= MathUtils.inverseLerp(c.currentValue, 0, 0.5F);
             }
         }
         return value;

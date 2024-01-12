@@ -7,6 +7,8 @@ package ivorius.psychedelicraft.block;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.MapCodec;
+
 import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.screen.DryingTableScreenHandler;
@@ -30,10 +32,16 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class DryingTableBlock extends BlockWithEntity {
+    public static final MapCodec<DryingTableBlock> CODEC = createCodec(DryingTableBlock::new);
     private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 12, 16);
 
     public DryingTableBlock(Settings settings) {
         super(settings.nonOpaque());
+    }
+
+    @Override
+    protected MapCodec<? extends DryingTableBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

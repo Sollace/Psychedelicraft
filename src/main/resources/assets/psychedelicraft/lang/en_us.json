@@ -34,6 +34,15 @@
 
   "gui.psychedelicraft.slider.value": "%s: %d",
   "gui.psychedelicraft.slider.value.off": "%s: Off",
+  
+  "emi.category.psychedelicraft.drying_table": "Drying",
+  "emi.category.psychedelicraft.wooden_vat": "Soaking",
+  "emi.category.psychedelicraft.barrel": "Barrel Interaction",
+  "emi.category.psychedelicraft.distillery": "Distillery Interaction",
+  "emi.category.psychedelicraft.flask": "Flask Interaction",
+  "emi.category.psychedelicraft.maturing": "Aging",
+  "emi.category.psychedelicraft.distilling": "Distillation",
+  "emi.category.psychedelicraft.fermenting": "Fermentation",
 
   "item.psychedelicraft.tobacco_seeds": "Tobacco Seeds",
   "item.psychedelicraft.tobacco": "Tobacco Leaf",
@@ -186,6 +195,22 @@
   "block.psychedelicraft.potted_coffea": "Potted Coffea",
   "block.psychedelicraft.glitch": "Block $__0",
 
+  "tag.item.c.apples": "Apples",  
+  "tag.item.c.tomatoes": "Tomatoes",
+  "tag.item.psychedelicraft.barrels": "Barrels",
+  "tag.item.psychedelicraft.bottles": "Bottles",
+  "tag.item.psychedelicraft.drying_tables": "Drying Tables",
+  "tag.item.psychedelicraft.drink_recepticals": "Drink Holders",
+  "tag.item.psychedelicraft.drug_crop_seeds": "Drug Crop Seeds",
+  "tag.item.psychedelicraft.drug_recepticals": "Drug Holders",
+  "tag.item.psychedelicraft.grapes": "Grapes",
+  "tag.item.psychedelicraft.honey": "Honey",
+  "tag.item.psychedelicraft.morning_glories": "Morning Glory",
+  "tag.item.psychedelicraft.placeable": "Placeable Items",
+  "tag.item.psychedelicraft.suitable_alcoholic_drink_recepticals": "Alcoholic Drink Holders",
+  "tag.item.psychedelicraft.suitable_hot_drink_recepticals": "Hot Drink Holders",
+  "tag.item.psychedelicraft.can_go_into_paper_bag": "Can Insert Into Paper Bag",
+
   "entity.psychedelicraft.molotov_cocktail": "Molotov Cocktail",
   "entity.psychedelicraft.reality_rift": "Zero Rift",
 
@@ -301,7 +326,7 @@
   "psychedelicraft.alcohol.drink.variant.reposado": "Reposado %s",
   "psychedelicraft.alcohol.drink.variant.wine": "Wine %s",
 
-  "death.attack.psychedelicraft..alcohol_poisoning": "%1$s died of alcohol poisoning",
+  "death.attack.psychedelicraft.alcohol_poisoning": "%1$s died of alcohol poisoning",
   "death.attack.psychedelicraft.stroke": "%1$s had a stroke",
   "death.attack.psychedelicraft.seizure": "%1$s has a seizure",
   "death.attack.psychedelicraft.coma": "%1$s fell into a coma",
@@ -425,5 +450,9 @@
   "distortion.psychedelicraft.hics.1": "*hiuc*",
   "distortion.psychedelicraft.hics.2": "*burp*",
   "distortion.psychedelicraft.hics.3": "*h-cup*",
-  "distortion.psychedelicraft.hics.4": "*hup*"
+  "distortion.psychedelicraft.hics.4": "*hup*",
+  
+  "subtitle.psychedelicraft.rift_jar_open": "Rift Jar Opens",
+  "subtitle.psychedelicraft.rift_jar_close": "Rift Jar Closes",
+  "subtitle.psychedelicraft.rift_jar_toggles": "Rift Jar Toggles"
 }

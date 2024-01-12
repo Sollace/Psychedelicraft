@@ -3,19 +3,23 @@ package ivorius.psychedelicraft.recipe;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.recipe.RawShapedRecipe;
+import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 
 public class BottleRecipe extends ShapedRecipe {
     public static final Map<Item, DyeColor> COLORS = Util.make(new HashMap<>(), map -> {
@@ -37,8 +41,13 @@ public class BottleRecipe extends ShapedRecipe {
         map.put(Items.BLACK_STAINED_GLASS, DyeColor.BLACK);
     });
 
-    public BottleRecipe(ShapedRecipe recipe) {
-        super(recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getResult(null));
+    private final RawShapedRecipe raw;
+    private final ItemStack result;
+
+    public BottleRecipe(String group, CraftingRecipeCategory category, RawShapedRecipe raw, ItemStack result, boolean showNotification) {
+        super(group, category, raw, result, showNotification);
+        this.raw = raw;
+        this.result = result;
     }
 
     @Override
@@ -57,15 +66,36 @@ public class BottleRecipe extends ShapedRecipe {
         return output;
     }
 
-    public static class Serializer extends ShapedRecipe.Serializer {
+    public static class Serializer implements RecipeSerializer<BottleRecipe> {
+        private static final Codec<BottleRecipe> CODEC = RecordCodecBuilder.<BottleRecipe>create(instance -> instance.group(
+                Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(recipe -> recipe.getGroup()),
+                CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(recipe -> recipe.getCategory()),
+                RawShapedRecipe.CODEC.forGetter(recipe -> recipe.raw),
+                ItemStack.RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_notification", true).forGetter(recipe -> recipe.showNotification())
+        ).apply(instance, BottleRecipe::new));
+
         @Override
-        public Codec<ShapedRecipe> codec() {
-            return super.codec().xmap(BottleRecipe::new, Function.identity());
+        public Codec<BottleRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public ShapedRecipe read(PacketByteBuf buffer) {
-            return new BottleRecipe(super.read(buffer));
+        public BottleRecipe read(PacketByteBuf packetByteBuf) {
+            String string = packetByteBuf.readString();
+            CraftingRecipeCategory craftingRecipeCategory = packetByteBuf.readEnumConstant(CraftingRecipeCategory.class);
+            RawShapedRecipe rawShapedRecipe = RawShapedRecipe.readFromBuf(packetByteBuf);
+            ItemStack itemStack = packetByteBuf.readItemStack();
+            boolean bl = packetByteBuf.readBoolean();
+            return new BottleRecipe(string, craftingRecipeCategory, rawShapedRecipe, itemStack, bl);
+        }
+        @Override
+        public void write(PacketByteBuf packetByteBuf, BottleRecipe shapedRecipe) {
+            packetByteBuf.writeString(shapedRecipe.getGroup());
+            packetByteBuf.writeEnumConstant(shapedRecipe.getCategory());
+            shapedRecipe.raw.writeToBuf(packetByteBuf);
+            packetByteBuf.writeItemStack(shapedRecipe.result);
+            packetByteBuf.writeBoolean(shapedRecipe.showNotification());
         }
     }
 }

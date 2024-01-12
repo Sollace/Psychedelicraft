@@ -1,33 +1,28 @@
 package ivorius.psychedelicraft.advancement;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.minecraft.advancement.criterion.AbstractCriterion;
-import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange.IntRange;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.Codecs;
 
 public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventCriterion.Conditions> {
     @Override
-    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
-        return new Conditions(
-                playerPredicate,
-                (AlcoholicFluid)SimpleFluid.byId(Identifier.tryParse(json.get("fluid").getAsString())),
-                json.has("fermentaion") ? IntRange.fromJson(json.get("fermentation")) : IntRange.ANY,
-                json.has("maturation") ? IntRange.fromJson(json.get("maturation")) : IntRange.ANY,
-                json.has("distillation") ? IntRange.fromJson(json.get("distillation")) : IntRange.ANY
-        );
+    public Codec<Conditions> getConditionsCodec() {
+        return Conditions.CODEC;
     }
 
     public void trigger(PlayerEntity player, ItemStack stack) {
@@ -40,36 +35,20 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
         void trigger(@Nullable PlayerEntity player);
     }
 
-    public static class Conditions extends AbstractCriterionConditions {
-        private final AlcoholicFluid fluid;
-
-        private final IntRange fermentation;
-        private final IntRange maturation;
-        private final IntRange distillation;
-
-        public Conditions(Optional<LootContextPredicate> playerPredicate, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) {
-            super(playerPredicate);
-            this.fluid = fluid;
-            this.fermentation = fermentation;
-            this.maturation = maturation;
-            this.distillation = distillation;
-        }
+    public record Conditions (Optional<LootContextPredicate> player, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) implements AbstractCriterion.Conditions {
+        public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
+                SimpleFluid.CODEC.xmap(AlcoholicFluid.class::cast, Function.identity()).fieldOf("fluid").forGetter(Conditions::fluid),
+                IntRange.CODEC.optionalFieldOf("fermentation", IntRange.ANY).forGetter(Conditions::fermentation),
+                IntRange.CODEC.optionalFieldOf("maturation", IntRange.ANY).forGetter(Conditions::maturation),
+                IntRange.CODEC.optionalFieldOf("distillation", IntRange.ANY).forGetter(Conditions::distillation)
+        ).apply(instance, Conditions::new));
 
         public boolean test(ServerPlayerEntity player, ItemStack stack) {
             return FluidContainer.of(stack).getFluid(stack) == fluid
                     && fermentation.test(AlcoholicFluid.FERMENTATION.get(stack))
                     && maturation.test(AlcoholicFluid.MATURATION.get(stack))
                     && distillation.test(AlcoholicFluid.DISTILLATION.get(stack));
-        }
-
-        @Override
-        public JsonObject toJson() {
-            JsonObject json = super.toJson();
-            json.addProperty("fluid", fluid.getId().toString());
-            json.add("fermentation", fermentation.toJson());
-            json.add("maturation", maturation.toJson());
-            json.add("distillation", distillation.toJson());
-            return json;
         }
     }
 }

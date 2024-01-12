@@ -12,13 +12,12 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.recipe.RecipeCodecs;
 import net.minecraft.util.StringIdentifiable;
 
 public record FluidModifyingResult(Map<String, Modification> attributes, ItemStack result) {
     public static final Codec<FluidModifyingResult> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.unboundedMap(Codec.STRING, Modification.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(FluidModifyingResult::attributes),
-            RecipeCodecs.CRAFTING_RESULT.optionalFieldOf("result", ItemStack.EMPTY).forGetter(FluidModifyingResult::result)
+            ItemStack.RECIPE_RESULT_CODEC.optionalFieldOf("result", ItemStack.EMPTY).forGetter(FluidModifyingResult::result)
         ).apply(instance, FluidModifyingResult::new));
 
     public FluidModifyingResult(PacketByteBuf buffer) {

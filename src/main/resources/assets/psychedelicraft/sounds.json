@@ -11,6 +11,29 @@
       "psychedelicraft:breath"
     ]
   },
+  "block.rift_jar.toggle": {
+    "category": "block",
+    "subtitle": "subtitle.psychedelicraft.rift_jar_toggles",
+    "sounds": [
+      "minecraft:block/end_portal/eyeplace1",
+      "minecraft:block/end_portal/eyeplace2",
+      "minecraft:block/end_portal/eyeplace3"
+    ]
+  },
+  "block.rift_jar.open": {
+    "category": "block",
+    "subtitle": "subtitle.psychedelicraft.rift_jar_open",
+    "sounds": [
+      "psychedelicraft:rift_jar/jar_open"
+    ]
+  },
+  "block.rift_jar.close": {
+    "category": "block",
+    "subtitle": "subtitle.psychedelicraft.rift_jar_close",
+    "sounds": [
+      "psychedelicraft:rift_jar/jar_open"
+    ]
+  },
   "drug.generic": {
     "category": "player",
     "sounds": [

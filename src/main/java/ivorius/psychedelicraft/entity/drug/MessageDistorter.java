@@ -6,12 +6,15 @@
 package ivorius.psychedelicraft.entity.drug;
 
 import net.minecraft.entity.player.PlayerEntity;
+
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 import ivorius.psychedelicraft.Psychedelicraft;
 import java.util.List;
 import java.util.ArrayList;
+import net.minecraft.util.math.random.Random;
+import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.util.MathUtils;
 
 /**
  * Created by lukas on 22.05.14.
@@ -62,19 +65,19 @@ public class MessageDistorter {
     public String distortMessage(String message, Random random, float alcohol, float zero, float cannabis) {
         StringBuilder builder = new StringBuilder();
 
-        float randomCaseChance = MathHelper.lerp(alcohol, 0.3f, 1) * 0.06f + MathHelper.lerp(zero, 0, 0.3f);
-        float randomLetterChance = MathHelper.lerp(alcohol, 0.5f, 1) * 0.015f;
-        float sToShChance = MathHelper.lerp(alcohol, 0.2f, 0.6f);
+        float randomCaseChance = MathUtils.inverseLerp(alcohol, 0.3f, 1) * 0.06f + MathUtils.inverseLerp(zero, 0, 0.3f);
+        float randomLetterChance = MathUtils.inverseLerp(alcohol, 0.5f, 1) * 0.015f;
+        float sToShChance = MathUtils.inverseLerp(alcohol, 0.2f, 0.6f);
         float longShChance = alcohol * 0.8f;
-        float hicChance = MathHelper.lerp(alcohol, 0.5f, 1) * 0.04f;
-        float rewindChance = MathHelper.lerp(alcohol, 0.4f, 0.9f) * 0.03f;
-        float longCharChance = MathHelper.lerp(alcohol, 0.3f, 1) * 0.025f;
+        float hicChance = MathUtils.inverseLerp(alcohol, 0.5f, 1) * 0.04f;
+        float rewindChance = MathUtils.inverseLerp(alcohol, 0.4f, 0.9f) * 0.03f;
+        float longCharChance = MathUtils.inverseLerp(alcohol, 0.3f, 1) * 0.025f;
 
-        float oneZeroChance = MathHelper.lerp(zero, 0.6f, 0.95f);
-        float randomCharChance = MathHelper.lerp(zero, 0.2f, 0.95f);
+        float oneZeroChance = MathUtils.inverseLerp(zero, 0.6f, 0.95f);
+        float randomCharChance = MathUtils.inverseLerp(zero, 0.2f, 0.95f);
 
-        float fillerWordChance = MathHelper.lerp(cannabis, 0.2f, 0.95f) * 0.1f;
-        float startFillerWordChance = MathHelper.lerp(cannabis, 0.2f, 0.95f) * 0.7f;
+        float fillerWordChance = MathUtils.inverseLerp(cannabis, 0.2f, 0.95f) * 0.1f;
+        float startFillerWordChance = MathUtils.inverseLerp(cannabis, 0.2f, 0.95f) * 0.7f;
 
         boolean wasPoint = true;
         for (int i = 0; i < message.length(); i++) {

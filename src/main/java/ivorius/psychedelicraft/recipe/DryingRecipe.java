@@ -26,7 +26,7 @@ public class DryingRecipe extends AbstractCookingRecipe {
         return RecipeUtils.stacks(inventory).filter(ingredient).count() == inventory.size() - 1;
     }
 
-    protected Ingredient getInput() {
+    public Ingredient getInput() {
         return ingredient;
     }
 
@@ -45,7 +45,7 @@ public class DryingRecipe extends AbstractCookingRecipe {
                 Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(DryingRecipe::getGroup),
                 CookingRecipeCategory.CODEC.fieldOf("category").orElse(CookingRecipeCategory.MISC).forGetter(DryingRecipe::getCategory),
                 Ingredient.ALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(DryingRecipe::getInput),
-                RecipeCodecs.CRAFTING_RESULT.fieldOf("result").forGetter(recipe -> recipe.result),
+                ItemStack.RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
                 Codec.FLOAT.optionalFieldOf("experience", 0F).forGetter(DryingRecipe::getExperience),
                 Codec.INT.optionalFieldOf("cookingTime", cookingTime).forGetter(DryingRecipe::getCookingTime)
             ).apply(instance, DryingRecipe::new));

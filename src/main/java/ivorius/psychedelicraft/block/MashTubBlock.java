@@ -7,6 +7,8 @@ package ivorius.psychedelicraft.block;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.MapCodec;
+
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.fluid.*;
@@ -39,6 +41,7 @@ import net.minecraft.world.*;
  * Updated by Sollace on 12 Jan 2023
  */
 public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements FluidFillable {
+    public static final MapCodec<MashTubBlock> CODEC = createCodec(MashTubBlock::new);
     public static final int SIZE = 15;
     public static final int BORDER_SIZE = 1;
     public static final int HEIGHT = 16;
@@ -60,6 +63,11 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
     public MashTubBlock(Settings settings) {
         super(settings.luminance(LightBlock.STATE_TO_LUMINANCE));
+    }
+
+    @Override
+    protected MapCodec<? extends MashTubBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

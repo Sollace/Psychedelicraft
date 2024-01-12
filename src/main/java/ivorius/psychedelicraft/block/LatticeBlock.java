@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.*;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -21,7 +23,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class LatticeBlock extends HorizontalConnectingBlock implements Waterloggable {
-
+    public static final MapCodec<LatticeBlock> CODEC = createCodec(LatticeBlock::new);
     private static final Set<Direction> X_DIRECTIONS = Set.of(Direction.EAST, Direction.WEST);
     private static final Set<Direction> Z_DIRECTIONS = Set.of(Direction.NORTH, Direction.SOUTH);
 
@@ -33,6 +35,11 @@ public class LatticeBlock extends HorizontalConnectingBlock implements Waterlogg
     public LatticeBlock(Settings settings) {
         super(1.6F, 1.6F, 16, 16, 16, settings);
         setDefaultState(getDefaultState().with(EAST, true).with(WEST, true).with(WATERLOGGED, false));
+    }
+
+    @Override
+    protected MapCodec<? extends LatticeBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

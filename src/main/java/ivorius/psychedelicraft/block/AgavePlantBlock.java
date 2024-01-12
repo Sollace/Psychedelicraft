@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import com.mojang.serialization.MapCodec;
+
 import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.block.Block;
@@ -31,6 +33,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class AgavePlantBlock extends SucculentPlantBlock {
+    public static final MapCodec<AgavePlantBlock> CODEC = createCodec(AgavePlantBlock::new);
     public static final IntProperty AGE = Properties.AGE_5;
     public static final int MAX_AGE = Properties.AGE_5_MAX;
 
@@ -45,6 +48,11 @@ public class AgavePlantBlock extends SucculentPlantBlock {
 
     public AgavePlantBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    protected MapCodec<? extends AgavePlantBlock> getCodec() {
+        return CODEC;
     }
 
     @Override
@@ -119,11 +127,11 @@ public class AgavePlantBlock extends SucculentPlantBlock {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        super.onBreak(world, pos, state, player);
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (!isAppropriateTool(player.getStackInHand(Hand.MAIN_HAND))) {
             player.damage(player.getDamageSources().cactus(), 1);
         }
+        return super.onBreak(world, pos, state, player);
     }
 
     private boolean isAppropriateTool(ItemStack stack) {

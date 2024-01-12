@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.*;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -17,6 +19,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class TrayBlock extends Block {
+    public static final MapCodec<TrayBlock> CODEC = createCodec(TrayBlock::new);
 
     private static final VoxelShape X_SHAPE = ShapeUtil.createCenteredShape(9, 2, 6);
     private static final VoxelShape Z_SHAPE = ShapeUtil.createCenteredShape(6, 2, 9);
@@ -26,6 +29,11 @@ public class TrayBlock extends Block {
     public TrayBlock(Settings settings) {
         super(settings.nonOpaque());
         this.setDefaultState(getDefaultState().with(AXIS, Direction.Axis.X));
+    }
+
+    @Override
+    protected MapCodec<? extends TrayBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

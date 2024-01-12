@@ -33,7 +33,7 @@ public class MashingRecipe extends FillRecepticalRecipe {
     private final FluidIngredient fluid;
 
     public MashingRecipe(String group, CraftingRecipeCategory category, FluidIngredient output, FluidIngredient fluid, DefaultedList<Ingredient> input, int stewTime) {
-        super(group, category, output, input);
+        super(group, category, output, input, Ingredient.empty());
         this.fluid = fluid;
         this.stewTime = stewTime;
     }
@@ -94,15 +94,14 @@ public class MashingRecipe extends FillRecepticalRecipe {
     }
 
     static class Serializer implements RecipeSerializer<MashingRecipe> {
-        public static final Codec<MashingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance
-                .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(MashingRecipe::getGroup),
-                        CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(MashingRecipe::getCategory),
-                        FluidIngredient.CODEC.fieldOf("result").forGetter(FillRecepticalRecipe::getOutputFluid),
-                        FluidIngredient.CODEC.fieldOf("base_fluid").forGetter(FillRecepticalRecipe::getOutputFluid),
-                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::getIngredients),
-                        Codec.INT.optionalFieldOf("stew_time", 0).forGetter(recipe -> recipe.stewTime)
-                ).apply(instance, MashingRecipe::new)
-        );
+        public static final Codec<MashingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(MashingRecipe::getGroup),
+                CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(MashingRecipe::getCategory),
+                FluidIngredient.CODEC.fieldOf("result").forGetter(MashingRecipe::getOutputFluid),
+                FluidIngredient.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::getPoolFluid),
+                RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::getIngredients),
+                Codec.INT.optionalFieldOf("stew_time", 0).forGetter(recipe -> recipe.stewTime)
+        ).apply(instance, MashingRecipe::new));
 
         @Override
         public Codec<MashingRecipe> codec() {

@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.fluid;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -16,14 +17,19 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
+import ivorius.psychedelicraft.fluid.container.VariantMarshal;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
 import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributeHandler;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -70,6 +76,12 @@ public class SimpleFluid {
         this.empty = empty;
         physical = new PhysicalFluid(id, this);
         Registry.register(REGISTRY, id, this);
+        FluidVariantAttributes.register(physical.getStandingFluid(), new FluidVariantAttributeHandler() {
+            @Override
+            public Text getName(FluidVariant fluidVariant) {
+                return SimpleFluid.this.getName(VariantMarshal.unpackFluid(Items.STONE.getDefaultStack(), fluidVariant, 1).asStack());
+            }
+        });
     }
 
     private SimpleFluid(Identifier id, int color, PhysicalFluid physical) {
@@ -176,6 +188,14 @@ public class SimpleFluid {
     public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
     }
 
+    public static final boolean isEquivalent(SimpleFluid fluidA, ItemStack selfStack, SimpleFluid fluidB, ItemStack otherStack) {
+        return fluidA == fluidB && fluidA.getHash(selfStack) == fluidB.getHash(otherStack);
+    }
+
+    public int getHash(ItemStack stack) {
+        return hashCode();
+    }
+
     public static SimpleFluid byId(@Nullable Identifier id) {
         if (id == null) {
             return PSFluids.EMPTY;
@@ -240,6 +260,8 @@ public class SimpleFluid {
 
         public abstract MutableFluidContainer set(MutableFluidContainer stack, T value);
 
+        public abstract void forEachStep(BiConsumer<T , T> consumer);
+
         public static Attribute<Integer> ofInt(String name, int min, int max) {
             return new Attribute<>() {
                 @Override
@@ -264,6 +286,13 @@ public class SimpleFluid {
                     attributes.putInt(name, value);
                     stack.withAttributes(attributes);
                     return stack;
+                }
+
+                @Override
+                public void forEachStep(BiConsumer<Integer, Integer> consumer) {
+                    for (int i = min; i < max; i++) {
+                        consumer.accept(i, i + 1);
+                    }
                 }
             };
         }
@@ -292,6 +321,11 @@ public class SimpleFluid {
                     attributes.putBoolean(name, value);
                     stack.withAttributes(attributes);
                     return stack;
+                }
+
+                @Override
+                public void forEachStep(BiConsumer<Boolean, Boolean> consumer) {
+                    consumer.accept(false, true);
                 }
             };
         }
