@@ -68,6 +68,21 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
         this.outputModifications = outputModifications;
     }
 
+    public FluidIngredient getFluid() {
+        return fluid;
+    }
+
+    public ItemStack modifyStack(ItemStack stack) {
+        NbtCompound tag = stack.getOrCreateSubNbt("fluid");
+        outputModifications.forEach((key, modder) -> {
+            if (!tag.contains(key, NbtElement.INT_TYPE)) {
+                tag.putInt(key, 0);
+            }
+            tag.putInt(key, modder.applyAsInt(tag.getInt(key)));
+        });
+        return stack;
+    }
+
     @Override
     public RecipeSerializer<?> getSerializer() {
         return PSRecipes.SMELTING_RECEPTICAL;
@@ -94,14 +109,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
         ItemStack stack = output.isEmpty() ? inventory.getStack(0).copyWithCount(
                 output.getItem() == Items.AIR ? 1 : output.getCount()
             ) : output.copy();
-        NbtCompound tag = stack.getOrCreateSubNbt("fluid");
-        outputModifications.forEach((key, modder) -> {
-            if (!tag.contains(key, NbtElement.INT_TYPE)) {
-                tag.putInt(key, 0);
-            }
-            tag.putInt(key, modder.applyAsInt(tag.getInt(key)));
-        });
-        return stack;
+        return modifyStack(stack);
     }
 
 

@@ -1,5 +1,7 @@
 package ivorius.psychedelicraft.client.render;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
@@ -12,16 +14,23 @@ import ivorius.psychedelicraft.client.render.blocks.*;
 import ivorius.psychedelicraft.client.render.shader.PSShaders;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.fluid.container.VariantMarshal;
 import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
@@ -63,6 +72,17 @@ public interface PSRenderers {
                 @Override
                 public int getFluidColor(@Nullable BlockRenderView view, @Nullable BlockPos pos, FluidState state) {
                     return fluid.getColor(fluid.getDefaultStack());
+                }
+            });
+            FluidVariantRendering.register(fluid.getPhysical().getStandingFluid(), new FluidVariantRenderHandler() {
+                @Override
+                public int getColor(FluidVariant fluidVariant, @Nullable BlockRenderView view, @Nullable BlockPos pos) {
+                    return fluid.getColor(VariantMarshal.unpackFluid(Items.STONE.getDefaultStack(), fluidVariant, 1).asStack());
+                }
+
+                @Override
+                public void appendTooltip(FluidVariant fluidVariant, List<Text> tooltip, TooltipContext tooltipContext) {
+                    fluid.appendTooltip(VariantMarshal.unpackFluid(Items.STONE.getDefaultStack(), fluidVariant, 1).asStack(), null, tooltip, tooltipContext);
                 }
             });
         });

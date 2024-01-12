@@ -6,7 +6,6 @@
 package ivorius.psychedelicraft.fluid;
 
 import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -66,5 +65,10 @@ public class SlurryFluid extends SimpleFluid implements Processable {
             return new ItemStack(Items.DIRT, tank.getStack().getCount() / FLUID_PER_DIRT);
         }
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
+
     }
 }

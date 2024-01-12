@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.fluid;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -55,6 +56,19 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
+        if (type == ProcessType.DISTILL) {
+            DISTILLATION.forEachStep((from, to) -> {
+                consumer.accept(Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract.ticksPerDistillation,
+                        1,
+                        stack -> List.of(DISTILLATION.set(stack, from)),
+                        stack -> List.of(DISTILLATION.set(stack, to))
+                );
+            });
+        }
     }
 
     @Override

@@ -43,6 +43,10 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         this.fluidRestrictions = ingredients.stream().filter(i -> i.fluid().filter(f -> f.level() > 0).isPresent()).toList();
     }
 
+    public DefaultedList<OptionalFluidIngredient> getFluidAwareIngredients() {
+        return ingredients;
+    }
+
     @Override
     public RecipeSerializer<?> getSerializer() {
         return PSRecipes.SHAPELESS_FLUID;
