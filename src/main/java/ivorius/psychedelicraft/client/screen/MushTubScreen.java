@@ -21,7 +21,7 @@ public class MushTubScreen extends FluidProcessingContraptionScreen<MashTubBlock
         if (progress > 0 && progress < 1) {
             context.drawTexture(background, baseX + 140, baseY + 14, 233, 22, 23, 22);
             int barHeight = (int)(22 * (1 - progress));
-            context.drawTexture(background, baseX + 140, baseY + 14 + barHeight, 233, barHeight, 23, 23 - barHeight);
+            context.drawTexture(background, baseX + 140, baseY + 15 + barHeight, 233, barHeight, 23, 23 - barHeight);
         }
     }
 }
