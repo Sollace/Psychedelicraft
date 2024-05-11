@@ -172,7 +172,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
                 count
         );
 
-        if (getWorld() instanceof ServerWorld sw) {
+        if (getWorld() instanceof ServerWorld) {
             getWorld().playSound(null, getPos(), sound, SoundCategory.BLOCKS,
                     0.5F + getWorld().getRandom().nextFloat(),
                     0.3F + getWorld().getRandom().nextFloat()

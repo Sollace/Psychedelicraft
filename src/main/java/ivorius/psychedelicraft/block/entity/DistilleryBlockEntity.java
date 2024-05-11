@@ -65,7 +65,7 @@ public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
     private BlockEntity getOutput(ServerWorld world, BlockPos pos) {
         pos = getOutputPos();
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() instanceof MashTubWallBlock f) {
+        if (state.getBlock() instanceof MashTubWallBlock) {
             pos = world.getBlockEntity(pos, PSBlockEntities.MASH_TUB_EDGE).map(p -> p.getMasterPos()).orElse(pos);
         }
         return world.getBlockEntity(pos);
