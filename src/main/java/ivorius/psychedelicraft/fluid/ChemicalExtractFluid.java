@@ -39,7 +39,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     public int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
         int distillation = DISTILLATION.get(tank.getContents());
         if (type == ProcessType.DISTILL && distillation < 2) {
-            return Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract.ticksPerDistillation * (1 + distillation);
+            return Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation() * (1 + distillation);
         }
 
         return UNCONVERTABLE;
@@ -63,7 +63,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
         if (type == ProcessType.DISTILL) {
             DISTILLATION.forEachStep((from, to) -> {
-                consumer.accept(Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract.ticksPerDistillation,
+                consumer.accept(Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation(),
                         1,
                         stack -> List.of(DISTILLATION.set(stack, from)),
                         stack -> List.of(DISTILLATION.set(stack, to))

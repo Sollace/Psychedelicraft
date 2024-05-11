@@ -34,8 +34,8 @@ public interface PSRecipes {
             LootTable table = manager.getLootTable(new Identifier("psychedelicraftmc", id.getPath()));
             if (table != LootTable.EMPTY) {
                 final boolean isVillagerChest = id.getPath().contains("village");
-                if ((isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.villageChests)
-                || (!isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.dungeonChests)) {
+                if ((isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.villageChests())
+                || (!isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.dungeonChests())) {
                     supplier.pools(List.of(table.pools));
                 }
             }

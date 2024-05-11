@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.fluid;
 
 import ivorius.psychedelicraft.PSTags;
+import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
@@ -17,10 +18,12 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -86,21 +89,21 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                 return UNCONVERTABLE;
             }
 
-            return settings.tickInfo.get().ticksPerDistillation;
+            return settings.tickInfo.get().ticksPerDistillation();
         }
 
         if (type == ProcessType.MATURE) {
             if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS) {
                 return UNCONVERTABLE;
             }
-            return settings.tickInfo.get().ticksPerMaturation;
+            return settings.tickInfo.get().ticksPerMaturation();
         }
 
         if (type == ProcessType.FERMENT) {
             if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS) {
-                return settings.tickInfo.get().ticksPerFermentation;
+                return settings.tickInfo.get().ticksPerFermentation();
             }
-            return settings.tickInfo.get().ticksUntilAcetification;
+            return settings.tickInfo.get().ticksUntilAcetification();
         }
 
         return UNCONVERTABLE;
@@ -146,21 +149,21 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     @Override
     public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
         if (type == ProcessType.DISTILL) {
-            generateRecipeConversions(settings.tickInfo.get().ticksPerDistillation, DISTILLATION,
+            generateRecipeConversions(settings.tickInfo.get().ticksPerDistillation(), DISTILLATION,
                     DrinkTypes.State::distillation,
                     DrinkTypes.State::maturation,
                     DrinkTypes.State::fermentation, consumer);
         }
 
         if (type == ProcessType.MATURE) {
-            generateRecipeConversions(settings.tickInfo.get().ticksPerMaturation, MATURATION,
+            generateRecipeConversions(settings.tickInfo.get().ticksPerMaturation(), MATURATION,
                     DrinkTypes.State::maturation,
                     DrinkTypes.State::distillation,
                     DrinkTypes.State::fermentation, consumer);
         }
 
         if (type == ProcessType.FERMENT) {
-            generateRecipeConversions(settings.tickInfo.get().ticksPerFermentation, FERMENTATION,
+            generateRecipeConversions(settings.tickInfo.get().ticksPerFermentation(), FERMENTATION,
                     DrinkTypes.State::fermentation,
                     DrinkTypes.State::distillation,
                     DrinkTypes.State::maturation, consumer);
