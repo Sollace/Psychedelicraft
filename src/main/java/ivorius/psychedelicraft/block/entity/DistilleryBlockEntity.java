@@ -16,6 +16,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -35,6 +37,18 @@ public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
     @Override
     public Processable.ProcessType getProcessType() {
         return Processable.ProcessType.DISTILL;
+    }
+
+    @Override
+    protected int getTickRate(ServerWorld world) {
+        if (world.getFluidState(getPos().down()).isIn(FluidTags.LAVA)) {
+            return 7;
+        }
+        BlockState below = world.getBlockState(getPos().down());
+        if (below.isIn(BlockTags.FIRE) || below.isIn(BlockTags.CAMPFIRES)) {
+            return 3;
+        }
+        return 1;
     }
 
     @Override

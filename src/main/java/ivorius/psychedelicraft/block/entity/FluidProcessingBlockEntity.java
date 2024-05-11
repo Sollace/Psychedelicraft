@@ -30,6 +30,9 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     }
 
     public void setTimeNeeded(int value) {
+        if (value > 0 && getWorld() instanceof ServerWorld sw) {
+            value = Math.max(1, value / getTickRate(sw));
+        }
         propertyDelegate.set(4, value);
     }
 
@@ -61,6 +64,10 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
 
     public boolean isActive() {
         return getTimeNeeded() != Processable.UNCONVERTABLE;
+    }
+
+    protected int getTickRate(ServerWorld world) {
+        return 1;
     }
 
     @Override
@@ -110,8 +117,6 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     @Override
     public void onFill(Resovoir resovoir, int amountFilled) {
         super.onFill(resovoir, amountFilled);
-        double percentFilled = amountFilled / (double) resovoir.getLevel();
-        setTimeNeeded(MathHelper.floor(getTimeProcessed() * (1 - percentFilled)));
     }
 
     @Override
