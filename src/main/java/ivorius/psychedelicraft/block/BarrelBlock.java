@@ -104,7 +104,7 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
 
             if (container.getLevel(stack) < container.getMaxCapacity(stack)) {
 
-                Resovoir tank = blockEntity.getTank(Direction.DOWN);
+                Resovoir tank = blockEntity.getTankOnSide(Direction.DOWN);
                 if (tank.getLevel() > 0 && tank.getFluidType().isSuitableContainer(container)) {
                     if (!world.isClient) {
                         if (stack.getCount() > 1) {

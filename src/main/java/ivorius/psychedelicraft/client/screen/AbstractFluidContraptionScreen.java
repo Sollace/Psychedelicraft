@@ -88,7 +88,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
             List<Text> tooltip = new ArrayList<>();
             tooltip.add(fluid.getName(tank.getStack()));
             if (!fluid.isEmpty()) {
-                tooltip.add(Text.literal("Amount: " + level).formatted(Formatting.GRAY));
+                tooltip.add(Text.translatable("psychedelicraft.container.levels", level, tank.getCapacity()).formatted(Formatting.GRAY));
             }
             fluid.appendTooltip(tank.getStack(), null, tooltip, TooltipContext.BASIC);
             tooltip.addAll(details);

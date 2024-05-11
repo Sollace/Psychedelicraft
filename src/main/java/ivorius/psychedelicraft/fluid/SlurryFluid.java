@@ -7,10 +7,9 @@ package ivorius.psychedelicraft.fluid;
 
 import java.util.List;
 import java.util.Optional;
-import org.jetbrains.annotations.Nullable;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.particle.BubbleParticleEffect;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -54,7 +53,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     }
 
     @Override
-    public int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
+    public int getProcessingTime(Resovoir tank, ProcessType type) {
         if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
             return tank.getLevel() >= FLUID_PER_DIRT ? Psychedelicraft.getConfig().balancing.slurryHardeningTime : UNCONVERTABLE;
         }
@@ -62,11 +61,14 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     }
 
     @Override
-    public ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
+    public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
         if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
-            return new ItemStack(Items.DIRT, tank.getStack().getCount() / FLUID_PER_DIRT);
+            MutableFluidContainer contents = tank.getContents();
+            if (contents.getLevel() > FLUID_PER_DIRT) {
+                contents.drain(FLUID_PER_DIRT);
+                output.accept(Items.DIRT.getDefaultStack());
+            }
         }
-        return ItemStack.EMPTY;
     }
 
     @Override

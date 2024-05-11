@@ -9,20 +9,15 @@ import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 
-public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
-    private final Processable.ProcessType processType;
-
+public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implements Processable.ByProductConsumer {
     public FluidProcessingBlockEntity(
             BlockEntityType<? extends FluidProcessingBlockEntity> type,
-            BlockPos pos, BlockState state, int capacity,
-            Processable.ProcessType processType) {
+            BlockPos pos, BlockState state, int capacity) {
         super(type, pos, state, capacity);
-        this.processType = processType;
     }
 
     @Override
@@ -53,8 +48,15 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
         return 0;
     }
 
-    public Processable.ProcessType getProcessType() {
-        return processType;
+    public abstract Processable.ProcessType getProcessType();
+
+    public Processable.ProcessType getActiveProcess() {
+        Resovoir tank = getPrimaryTank();
+
+        if (isActive() && tank.getFluidType() instanceof Processable p) {
+            return p.modifyProcess(tank, getProcessType());
+        }
+        return Processable.ProcessType.IDLE;
     }
 
     public boolean isActive() {
@@ -65,23 +67,16 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
     public void tick(ServerWorld world) {
         super.tick(world);
 
-        Resovoir compliment = getTank(Direction.UP);
-        Resovoir tank = getTank(Direction.DOWN);
-
-        if (compliment != tank && !compliment.isEmpty() && tank.isEmpty()) {
-            compliment.transferTo(tank);
-        }
+        Resovoir tank = getPrimaryTank();
 
         if (tank.getFluidType() instanceof Processable p) {
-            if (compliment != tank && !compliment.isEmpty() && p.getProcessingTime(tank, Processable.ProcessType.REACT, compliment) > 0) {
-                p.process(tank, Processable.ProcessType.REACT, compliment);
-            }
-
-            setTimeNeeded(p.getProcessingTime(tank, processType, compliment));
+            Processable.ProcessType type = p.modifyProcess(tank, getProcessType());
+            setTimeNeeded(p.getProcessingTime(tank, type));
 
             if (canProcess(world, getTimeNeeded())) {
                 if (getTimeProcessed() >= getTimeNeeded()) {
-                    onProcessCompleted(world, tank, p.process(tank, processType, compliment));
+                    p.process(tank, type, this);
+                    onProcessCompleted(world, tank);
                 } else {
                     setTimeProcessed(getTimeProcessed() + 1);
                 }
@@ -97,7 +92,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity {
         return timeNeeded >= 0;
     }
 
-    protected void onProcessCompleted(ServerWorld world, Resovoir tank, ItemStack solids) {
+    protected void onProcessCompleted(ServerWorld world, Resovoir tank) {
         setTimeProcessed(0);
         setTimeNeeded(Processable.UNCONVERTABLE);
 

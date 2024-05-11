@@ -44,7 +44,7 @@ public class FlaskItem extends BlockItem implements FluidContainer {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (context.isAdvanced()) {
-            tooltip.add(Text.literal(getLevel(stack) + "/" + getMaxCapacity(stack)));
+            tooltip.add(Text.translatable("psychedelicraft.container.levels", getLevel(stack), getMaxCapacity(stack)));
         }
     }
 

@@ -23,7 +23,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -83,66 +82,47 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
-        if (type == ProcessType.DISTILL) {
-            if (FERMENTATION.get(tank.getContents()) == 0 || MATURATION.get(tank.getContents()) != 0) {
-                return UNCONVERTABLE;
-            }
-
-            return settings.tickInfo.get().ticksPerDistillation();
+    public ProcessType modifyProcess(Resovoir tank, ProcessType type) {
+        if (type == ProcessType.FERMENT && FERMENTATION.get(tank.getContents()) >= FERMENTATION_STEPS) {
+            return ProcessType.ACETIFY;
         }
-
-        if (type == ProcessType.MATURE) {
-            if (FERMENTATION.get(tank.getContents()) == 0) {
-                return UNCONVERTABLE;
-            }
-            return settings.tickInfo.get().ticksPerMaturation();
-        }
-
-        if (type == ProcessType.FERMENT) {
-            if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS) {
-                return settings.tickInfo.get().ticksPerFermentation();
-            }
-            return settings.tickInfo.get().ticksUntilAcetification();
-        }
-
-        return UNCONVERTABLE;
+        return type;
     }
 
     @Override
-    public ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
+    public int getProcessingTime(Resovoir tank, ProcessType type) {
+        return switch (type) {
+            case DISTILL -> FERMENTATION.get(tank.getContents()) == 0 || MATURATION.get(tank.getContents()) != 0 ? UNCONVERTABLE : settings.tickInfo.get().ticksPerDistillation();
+            case MATURE -> FERMENTATION.get(tank.getContents()) == 0 ? UNCONVERTABLE : settings.tickInfo.get().ticksPerMaturation();
+            case FERMENT -> settings.tickInfo.get().ticksPerFermentation();
+            case ACETIFY -> VINEGAR.get(tank.getContents()) ? settings.tickInfo.get().ticksUntilAcetification() : UNCONVERTABLE;
+            default -> UNCONVERTABLE;
+        };
+    }
+
+    @Override
+    public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
         MutableFluidContainer contents = tank.getContents();
 
-        if (type == ProcessType.DISTILL) {
-            int fermentation = FERMENTATION.get(contents);
-
-            if (fermentation < FERMENTATION_STEPS) {
-                return ItemStack.EMPTY;
+        switch (type) {
+            case DISTILL: {
+                int amountDrained = MathHelper.floor(contents.getLevel() * MathUtils.progress(DISTILLATION.get(contents), 0.5F));
+                if (amountDrained > 0) {
+                    output.accept(contents.drain(1).withFluid(PSFluids.SLURRY));
+                }
+                DISTILLATION.cycle(contents);
             }
-
-            int distillation = DISTILLATION.get(contents);
-
-            DISTILLATION.set(contents, distillation + 1);
-
-            contents.drain(MathHelper.floor(contents.getLevel() * MathUtils.progress(distillation, 0.5F)));
-            return PSFluids.SLURRY.getDefaultStack(1);
+            case MATURE:
+                MATURATION.cycle(contents);
+                break;
+            case FERMENT:
+                FERMENTATION.cycle(contents);
+                break;
+            case ACETIFY:
+                VINEGAR.cycle(contents);
+                break;
+            default:
         }
-
-        if (type == ProcessType.MATURE) {
-            MATURATION.set(contents, MATURATION.get(contents) + 1);
-        }
-
-        if (type == ProcessType.FERMENT) {
-            int fermentation = FERMENTATION.get(contents);
-
-            if (fermentation < FERMENTATION_STEPS) {
-                FERMENTATION.set(contents, fermentation + 1);
-            } else {
-                VINEGAR.set(contents, true);
-            }
-        }
-
-        return ItemStack.EMPTY;
     }
 
     @Override
@@ -242,6 +222,40 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         //    tooltip.add(Text.empty());
         //    tooltip.add(settings.profile.getFlavour(distillation, fermentation, maturation));
         //}
+    }
+
+    @Override
+    public void appendTankTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
+        int ticksProcessed = tank.getTimeProcessed();
+        int ticksNeeded = tank.getTimeNeeded();
+        String timeRemaining = StringHelper.formatTicks(ticksNeeded - ticksProcessed);
+        ProcessType processType = tank.getActiveProcess();
+        tooltip.add(Text.translatable("fluid.status", processType.getStatus()));
+
+        if (processType == ProcessType.FERMENT && FERMENTATION.get(stack) >= FERMENTATION_STEPS) {
+            processType = ProcessType.ACETIFY;
+        }
+        if (processType != ProcessType.IDLE) {
+            tooltip.add(Text.translatable(processType.getTimeLabelTranslationKey(), timeRemaining));
+        }
+        if (tank.getProcessType() == ProcessType.DISTILL) {
+            if (FERMENTATION.get(stack) == 0) {
+                tooltip.add(Text.translatable("* Must be fermented").formatted(Formatting.RED, Formatting.ITALIC));
+            } else {
+                tooltip.add(Text.translatable("* Is fermented").formatted(Formatting.GRAY));
+            }
+            if (MATURATION.get(stack) > 0) {
+                tooltip.add(Text.translatable("* Must be unmatured").formatted(Formatting.RED, Formatting.ITALIC));
+            } else {
+                tooltip.add(Text.translatable("* Is unmatured").formatted(Formatting.GRAY));
+            }
+        } else if (tank.getProcessType() == ProcessType.MATURE) {
+            if (FERMENTATION.get(stack) == 0) {
+                tooltip.add(Text.translatable("* Must be fermented").formatted(Formatting.GRAY));
+            } else {
+                tooltip.add(Text.translatable("* Is fermented").formatted(Formatting.RED, Formatting.ITALIC));
+            }
+        }
     }
 
     @Override

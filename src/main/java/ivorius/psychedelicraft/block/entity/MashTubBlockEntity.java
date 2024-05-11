@@ -15,6 +15,7 @@ import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.block.MashTubBlock;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.particle.BubbleParticleEffect;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
@@ -47,7 +48,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     private final Object2IntMap<Item> suppliedIngredients = new Object2IntOpenHashMap<>();
 
     public MashTubBlockEntity(BlockPos pos, BlockState state) {
-        super(PSBlockEntities.MASH_TUB, pos, state, FluidVolumes.VAT, Processable.ProcessType.FERMENT);
+        super(PSBlockEntities.MASH_TUB, pos, state, FluidVolumes.VAT);
     }
 
     public Object2IntMap<Item> getSuppliedIngredients() {
@@ -55,13 +56,20 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    protected void onProcessCompleted(ServerWorld world, Resovoir tank, ItemStack solids) {
-        if (!solids.isEmpty()) {
-            tank.clear();
-            solidContents = solids;
-        }
+    public void accept(ItemStack stack) {
+        getPrimaryTank().clear();
+        solidContents = stack;
+    }
 
-        super.onProcessCompleted(world, tank, solids);
+    @Override
+    public void accept(MutableFluidContainer fluid) {
+        getPrimaryTank().clear();
+        getPrimaryTank().deposit(fluid.asStack());
+    }
+
+    @Override
+    public Processable.ProcessType getProcessType() {
+        return Processable.ProcessType.FERMENT;
     }
 
     @Override
@@ -89,11 +97,11 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     public TypedActionResult<ItemStack> depositIngredient(ItemStack stack) {
         if (!FluidContainer.of(stack).getFluid(stack).isEmpty()) {
-            Resovoir tank = getTank(Direction.UP);
+            Resovoir tank = getPrimaryTank();
             if (tank.getLevel() < tank.getCapacity()) {
                 getWorld().playSound(null, getPos(), SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1, 1);
-                onIdle(getTank(Direction.UP));
-                return TypedActionResult.success(getTank(Direction.UP).deposit(stack));
+                onIdle(tank);
+                return TypedActionResult.success(tank.deposit(stack));
             }
             return TypedActionResult.fail(stack);
         }
@@ -104,7 +112,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             checkIngredients();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
             getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
-            onIdle(getTank(Direction.UP));
+            onIdle(getPrimaryTank());
             return TypedActionResult.success(stack);
         }
         return TypedActionResult.pass(stack);
@@ -113,7 +121,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     public boolean isValidIngredient(ItemStack stack) {
         return FluidContainer.of(stack, null) == null
             && world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream()
-                .filter(recipe -> recipe.getPoolFluid().test(getTank(Direction.UP)))
+                .filter(recipe -> recipe.getPoolFluid().test(getPrimaryTank()))
                 .flatMap(recipe -> recipe.getIngredients().stream())
                 .anyMatch(ingredient -> ingredient.test(stack));
     }
@@ -125,7 +133,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         var expectedRecipeMatchPair = expectedRecipe.map(recipe -> Map.entry(recipe, recipe.matchPartially(suppliedIngredients)));
         var matchedRecipes = world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream()
-                .filter(recipe -> recipe.getPoolFluid().test(getTank(Direction.UP)))
+                .filter(recipe -> recipe.getPoolFluid().test(getPrimaryTank()))
                 .map(recipe -> Map.entry(recipe, recipe.matchPartially(suppliedIngredients)))
                 .filter(pair -> pair.getValue().isMatch())
                 .toList();
@@ -150,17 +158,16 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     private void onCraftingFailed() {
         suppliedIngredients.clear();
         currentStew = Optional.empty();
-        getTank(Direction.UP).getContents()
-            .withFluid(PSFluids.SLURRY);
+        getPrimaryTank().getContents().withFluid(PSFluids.SLURRY);
         spawnBubbles(90, 0.5F, SoundEvents.BLOCK_MUD_BREAK);
-        onIdle(getTank(Direction.UP));
+        onIdle(getPrimaryTank());
     }
 
     private void spawnBubbles(int count, float spread, SoundEvent sound) {
         Random random = getWorld().getRandom();
         Vec3d center = ParticleHelper.apply(getPos().toCenterPos(), x -> random.nextTriangular(x, 0.25));
 
-        Resovoir tank = getTank(Direction.UP);
+        Resovoir tank = getPrimaryTank();
         ParticleHelper.spawnParticles(getWorld(),
                 new BubbleParticleEffect(MathUtils.unpackRgbVector(tank.getFluidType().getColor(tank.getStack())), 1F),
                 () -> ParticleHelper.apply(center, x -> random.nextTriangular(x, 0.5 + spread)).add(0, 0.5, 0),
@@ -258,10 +265,10 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
                 if (++stewTime >= recipe.getStewTime()) {
                     suppliedIngredients.clear();
-                    getTank(Direction.UP).getContents()
+                    getPrimaryTank().getContents()
                         .withFluid(recipe.getOutputFluid().fluid())
                         .withAttributes(recipe.getOutputFluid().attributes());
-                    onIdle(getTank(Direction.UP));
+                    onIdle(getPrimaryTank());
 
                     return false;
                 }

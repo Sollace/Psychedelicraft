@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.Nullable;
-
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -30,17 +29,21 @@ public interface Processable {
      * @param stack The fluid currently being processed.
      * @return The time it needs to distill, in ticks.
      */
-    int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement);
+    int getProcessingTime(Resovoir tank, ProcessType type);
 
     /**
      * Notifies the fluid that the stack has distilled, and is expected to apply this change to the stack.
      *
      * @param stack The fluid currently being distilled.
-     * @return The stack left over in the distillery.
+     * @param output Consumer for byproducts of the conversion process
      */
-    ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement);
+    void process(Resovoir tank, ProcessType type, ByProductConsumer output);
 
     void getProcessStages(ProcessType type, ProcessStageConsumer consumer);
+
+    default ProcessType modifyProcess(Resovoir tank, ProcessType type) {
+        return type;
+    }
 
     interface ProcessStageConsumer {
         void accept(int time, int change,
@@ -49,7 +52,17 @@ public interface Processable {
         );
     }
 
+    interface ByProductConsumer {
+        void accept(ItemStack stack);
+
+        void accept(MutableFluidContainer fluid);
+    }
+
     enum ProcessType {
+        /**
+         * Nothing is happening, probably due to unmet requirements
+         */
+        IDLE,
         /**
          * When processed in a distillery, used to increase the purity (proof) of existing liquers.
          */
@@ -63,6 +76,10 @@ public interface Processable {
          */
         FERMENT,
         /**
+         * When processed past its full fermentation in a vat/mash tub, starts producing acids instead of alcohols
+         */
+        ACETIFY,
+        /**
          * When processed in the evaporator, used to chemically extract purified substances
          */
         PURIFY,
@@ -71,10 +88,16 @@ public interface Processable {
          */
         REACT;
 
-        private final Text status = Text.translatable("fluid.status." + name().toLowerCase(Locale.ROOT));
+        private final String name = name().toLowerCase(Locale.ROOT);
+        private final Text status = Text.translatable("fluid.status." + name);
+        private final String timeLabel = "time.until." + name;
 
         public Text getStatus() {
             return status;
+        }
+
+        public String getTimeLabelTranslationKey() {
+            return timeLabel;
         }
     }
 }

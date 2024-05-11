@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.Nullable;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
@@ -36,7 +34,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
+    public int getProcessingTime(Resovoir tank, ProcessType type) {
         int distillation = DISTILLATION.get(tank.getContents());
         if (type == ProcessType.DISTILL && distillation < 2) {
             return Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation() * (1 + distillation);
@@ -46,17 +44,15 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
+    public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
         MutableFluidContainer contents = tank.getContents();
 
         if (type == ProcessType.DISTILL) {
-            int distillation = DISTILLATION.get(contents);
-            MutableFluidContainer drained = contents.drain(2);
-            DISTILLATION.set(drained, distillation + 1);
-            return drained.withLevel(1).asStack();
+            MutableFluidContainer drained = contents.drain(2).withLevel(1);
+            if (DISTILLATION.cycle(drained)) {
+                output.accept(drained);
+            }
         }
-
-        return ItemStack.EMPTY;
     }
 
     @Override
