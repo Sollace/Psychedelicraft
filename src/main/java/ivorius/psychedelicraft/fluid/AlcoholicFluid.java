@@ -111,6 +111,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                     output.accept(contents.drain(1).withFluid(PSFluids.SLURRY));
                 }
                 DISTILLATION.cycle(contents);
+                break;
             }
             case MATURE:
                 MATURATION.cycle(contents);
