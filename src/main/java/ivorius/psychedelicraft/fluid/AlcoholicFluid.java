@@ -85,7 +85,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
         if (type == ProcessType.DISTILL) {
-            if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS || MATURATION.get(tank.getContents()) != 0) {
+            if (FERMENTATION.get(tank.getContents()) == 0 || MATURATION.get(tank.getContents()) != 0) {
                 return UNCONVERTABLE;
             }
 
@@ -93,7 +93,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         }
 
         if (type == ProcessType.MATURE) {
-            if (FERMENTATION.get(tank.getContents()) < FERMENTATION_STEPS) {
+            if (FERMENTATION.get(tank.getContents()) == 0) {
                 return UNCONVERTABLE;
             }
             return settings.tickInfo.get().ticksPerMaturation();
@@ -115,7 +115,6 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
         if (type == ProcessType.DISTILL) {
             int fermentation = FERMENTATION.get(contents);
-
 
             if (fermentation < FERMENTATION_STEPS) {
                 return ItemStack.EMPTY;
