@@ -351,7 +351,7 @@
   "death.attack.psychedelicraft.self_molotov": "%1$s tried to drink from the wrong bottle",
   "death.attack.psychedelicraft.self_molotov.item": "%1$s tried to drink from the wrong bottle",
 
-  "commands.hallucinate.success": "Summond hallucination",
+  "commands.hallucinate.success": "Summoned a hallucination",
 
   "commands.drug.success.get": "%1$s has %2$s active drug effects:",
   "commands.drug.success.get.sober": "%1$s has no drug effects",
