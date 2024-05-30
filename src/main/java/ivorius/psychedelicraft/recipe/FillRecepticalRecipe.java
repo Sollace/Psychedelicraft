@@ -31,6 +31,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  */
 public class FillRecepticalRecipe extends ShapelessRecipe {
     private final Ingredient receptical;
+    private final DefaultedList<Ingredient> input;
     private final FluidIngredient output;
 
     public FillRecepticalRecipe(
@@ -41,6 +42,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
             DefaultedList<Ingredient> input) {
         super(group, category, ItemStack.EMPTY, RecipeUtils.checkLength(RecipeUtils.union(input, receptical)));
         this.receptical = receptical;
+        this.input = input;
         this.output = output;
     }
 
@@ -87,7 +89,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
                         CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FillRecepticalRecipe::getCategory),
                         FluidIngredient.CODEC.fieldOf("result").forGetter(i -> i.output),
                         Ingredient.ALLOW_EMPTY_CODEC.fieldOf("receptical").forGetter(i -> i.receptical),
-                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(FillRecepticalRecipe::getIngredients)
+                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(i -> i.input)
                 ).apply(instance, FillRecepticalRecipe::new)
         );
 
@@ -113,7 +115,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
             buffer.writeEnumConstant(recipe.getCategory());
             recipe.output.write(buffer);
             recipe.receptical.write(buffer);
-            buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
+            buffer.writeCollection(recipe.input, (b, c) -> c.write(b));
         }
     }
 }
