@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import net.minecraft.block.Blocks;
