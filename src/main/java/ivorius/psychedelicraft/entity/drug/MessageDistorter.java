@@ -6,23 +6,20 @@
 package ivorius.psychedelicraft.entity.drug;
 
 import net.minecraft.entity.player.PlayerEntity;
+import ivorius.psychedelicraft.util.MathUtils;
+
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.util.MathUtils;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by lukas on 22.05.14.
  */
 public class MessageDistorter {
     public static final MessageDistorter INSTANCE = new MessageDistorter();
-
-    private static final String[] FILLER_WORDS = {
-            ", like, ", "... like, ", ", uhm, ", ", uhhhh, "
-    };
-    private static final String[] HICS = { "*hic*", "*hiuc*", "*burp*", "*h-cup*", "*hup*" };
-    private static final String[] START_FILLER_WORDS = {
-            "Dude, ", "Dood, ", "Dewd, ", "Dude, like, ", "Dood, like, ", "Dewd, like, ", "Yeah... ", "And, "
-    };
 
     public String distortIncomingMessage(PlayerEntity player, String message) {
         if (player == null || !Psychedelicraft.getConfig().balancing.messageDistortion.incoming) {
@@ -54,8 +51,14 @@ public class MessageDistorter {
         return message;
     }
 
-    private String pickOne(String[] options, Random random) {
-        return options[random.nextInt(options.length)];
+    private String getRandomTranslation(String keyBeggining, Random random) {
+        int i = 0;
+        while (true) {
+            if (!I18n.hasTranslation(keyBeggining + i)) {
+                return i < 1 ? keyBeggining + i : I18n.translate(keyBeggining + random.nextInt(i));
+            }
+            i++;
+        }
     }
 
     public String distortMessage(String message, Random random, float alcohol, float zero, float cannabis) {
@@ -99,9 +102,9 @@ public class MessageDistorter {
             if ((curChar == 's' || curChar == 'S') && random.nextFloat() < sToShChance) {
                 builder.append(curChar).append(random.nextFloat() < longShChance ? "hh" : "h");
             } else if (curChar == ' ' && random.nextFloat() < fillerWordChance) {
-                builder.append(pickOne(FILLER_WORDS, random));
+                builder.append(getRandomTranslation("distortion.psychedelicraft.filler_words.", random));
             } else if (wasPoint && random.nextFloat() < startFillerWordChance) {
-                builder.append(pickOne(START_FILLER_WORDS, random)).append(curChar);
+                builder.append(getRandomTranslation("distortion.psychedelicraft.start_filler_words.", random)).append(curChar);
             } else {
                 builder.append(curChar);
             }
@@ -117,7 +120,7 @@ public class MessageDistorter {
             }
 
             if (random.nextFloat() < hicChance) {
-                builder.append(pickOne(HICS, random));
+                builder.append(getRandomTranslation("distortion.psychedelicraft.hics.", random));
             }
 
             if (random.nextFloat() < rewindChance) {
