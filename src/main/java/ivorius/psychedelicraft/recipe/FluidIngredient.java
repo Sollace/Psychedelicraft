@@ -1,16 +1,22 @@
 package ivorius.psychedelicraft.recipe;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
@@ -58,6 +64,22 @@ public record FluidIngredient (SimpleFluid fluid, int level, NbtCompound attribu
         result &= level <= 0 || container.getLevel() >= level;
         return result;
     }
+
+    public Ingredient toVanillaIngredient(Ingredient receptical) {
+        Stream<ItemStack> stacks = Stream.of(receptical)
+                .flatMap(i -> Arrays.stream(i.getMatchingStacks()))
+                .map(stack -> MutableFluidContainer.of(stack)
+                        .withFluid(fluid)
+                        .withAttributes(attributes)
+                        .withLevel(level < 0 ? FluidContainer.of(stack).getMaxCapacity(stack) : level)
+                        .asStack());
+        receptical = Ingredient.ofStacks(stacks.toArray(ItemStack[]::new));
+        if (receptical.getMatchingStacks().length == 0) {
+            return Ingredient.fromTag(PSTags.Items.DRINK_RECEPTICALS);
+        }
+        return receptical;
+    }
+
 
     public boolean test(ItemStack stack) {
         return test(MutableFluidContainer.of(stack));

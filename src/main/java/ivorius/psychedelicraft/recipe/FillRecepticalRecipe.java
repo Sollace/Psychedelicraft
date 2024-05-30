@@ -30,10 +30,17 @@ import com.google.gson.*;
  * - Original Container filled with assigned fluid and level
  */
 public class FillRecepticalRecipe extends ShapelessRecipe {
+    private final Ingredient receptical;
     private final FluidIngredient output;
 
-    public FillRecepticalRecipe(Identifier id, String group, CraftingRecipeCategory category, FluidIngredient output, DefaultedList<Ingredient> input) {
-        super(id, group, category, ItemStack.EMPTY, input);
+    public FillRecepticalRecipe(Identifier id,
+            String group,
+            CraftingRecipeCategory category,
+            FluidIngredient output,
+            Ingredient receptical,
+            DefaultedList<Ingredient> input) {
+        super(id, group, category, ItemStack.EMPTY, RecipeUtils.checkLength(RecipeUtils.union(input, receptical)));
+        this.receptical = receptical;
         this.output = output;
     }
 
@@ -51,6 +58,11 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
                     return true;
                 }).count() == getIngredients().size()
                 && recipeMatcher.match(this, null);
+    }
+
+    @Override
+    public final ItemStack getOutput(DynamicRegistryManager registryManager) {
+        return output.toVanillaIngredient(receptical).getMatchingStacks()[0];
     }
 
     @Override
@@ -77,10 +89,8 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
                     JsonHelper.getString(json, "group", ""),
                     CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC),
                     FluidIngredient.fromJson(JsonHelper.getObject(json, "result")),
-                    RecipeUtils.checkLength(RecipeUtils.union(
-                            RecipeUtils.getIngredients(JsonHelper.getArray(json, "ingredients")),
-                            Ingredient.fromJson(json.get("receptical"))
-                    ))
+                    Ingredient.fromJson(json.get("receptical")),
+                    RecipeUtils.getIngredients(JsonHelper.getArray(json, "ingredients"))
             );
         }
 
@@ -90,6 +100,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
                     buffer.readString(),
                     buffer.readEnumConstant(CraftingRecipeCategory.class),
                     new FluidIngredient(buffer),
+                    Ingredient.fromPacket(buffer),
                     buffer.readCollection(DefaultedList::ofSize, Ingredient::fromPacket)
             );
         }
@@ -99,6 +110,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
             buffer.writeString(recipe.getGroup());
             buffer.writeEnumConstant(recipe.getCategory());
             recipe.output.write(buffer);
+            recipe.receptical.write(buffer);
             buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
         }
 

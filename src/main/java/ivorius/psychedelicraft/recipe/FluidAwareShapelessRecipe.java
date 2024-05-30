@@ -35,7 +35,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         super(id, group, category, output,
                 // parent expects regular ingredients but we don't actually use them
                 input.stream()
-                .map(i -> i.receptical().orElse(Ingredient.EMPTY))
+                .map(OptionalFluidIngredient::toVanillaIngredient)
                 .collect(Collectors.toCollection(DefaultedList::of))
         );
         this.output = output;
