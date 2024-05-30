@@ -23,6 +23,7 @@ float gold_noise(vec2 xy, float seed) {
 
 void main() {
   // we have to write to it so mac is happy
+  vertexColor = vec4(0, 0, 0, 0);
   vertexDistance = 0;
   i_parent_shaders_main();
 

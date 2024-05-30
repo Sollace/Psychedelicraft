@@ -88,7 +88,12 @@ public class FlaskBlockEntity extends SyncedBlockEntity
     }
 
     @Override
-    public Resovoir getTank(Direction direction) {
+    public Resovoir getTankOnSide(Direction direction) {
+        return tank;
+    }
+
+    @Override
+    public Resovoir getPrimaryTank() {
         return tank;
     }
 
@@ -261,7 +266,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity
 
     @Override
     public Storage<FluidVariant> getFluidStorage(Direction side) {
-        return getTank(side);
+        return getTankOnSide(side);
     }
 
     class IoInventory extends SimpleInventory {

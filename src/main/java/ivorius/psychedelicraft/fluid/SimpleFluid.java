@@ -15,6 +15,7 @@ import com.mojang.serialization.Codec;
 
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.VariantMarshal;
@@ -174,6 +175,10 @@ public class SimpleFluid {
 
     }
 
+    public void appendTankTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
+
+    }
+
     @SuppressWarnings("deprecation")
     public boolean isSuitableContainer(FluidContainer container) {
         return !container.asItem().getRegistryEntry().isIn(PSTags.Items.BARRELS);
@@ -260,6 +265,8 @@ public class SimpleFluid {
 
         public abstract MutableFluidContainer set(MutableFluidContainer stack, T value);
 
+        public abstract boolean cycle(MutableFluidContainer stack);
+
         public abstract void forEachStep(BiConsumer<T , T> consumer);
 
         public static Attribute<Integer> ofInt(String name, int min, int max) {
@@ -286,6 +293,16 @@ public class SimpleFluid {
                     attributes.putInt(name, value);
                     stack.withAttributes(attributes);
                     return stack;
+                }
+
+                @Override
+                public boolean cycle(MutableFluidContainer stack) {
+                    int current = get(stack);
+                    if (current < max) {
+                        set(stack, current + 1);
+                        return true;
+                    }
+                    return false;
                 }
 
                 @Override
@@ -321,6 +338,15 @@ public class SimpleFluid {
                     attributes.putBoolean(name, value);
                     stack.withAttributes(attributes);
                     return stack;
+                }
+
+                @Override
+                public boolean cycle(MutableFluidContainer stack) {
+                    if (!get(stack)) {
+                        set(stack, true);
+                        return true;
+                    }
+                    return false;
                 }
 
                 @Override

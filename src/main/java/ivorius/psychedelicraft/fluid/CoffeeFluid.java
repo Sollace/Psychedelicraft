@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.Nullable;
-
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
@@ -75,19 +73,16 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getProcessingTime(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
+    public int getProcessingTime(Resovoir tank, ProcessType type) {
         return type == ProcessType.FERMENT && WARMTH.get(tank.getContents()) > 0 ? 300 : UNCONVERTABLE;
     }
 
     @Override
-    public ItemStack process(Resovoir tank, ProcessType type, @Nullable Resovoir complement) {
-
+    public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
         if (type == ProcessType.FERMENT) {
             MutableFluidContainer contents = tank.getContents();
             WARMTH.set(contents, Math.max(1, WARMTH.get(contents) - 1));
         }
-
-        return ItemStack.EMPTY;
     }
 
     @Override

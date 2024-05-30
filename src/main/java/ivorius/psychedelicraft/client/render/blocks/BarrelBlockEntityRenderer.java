@@ -18,7 +18,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
@@ -39,7 +38,7 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
         model.setRotationAngles(entity);
         model.render(matrices, vertices.getBuffer(model.getLayer(getBarrelTexture(entity))), light, overlay, 1, 1, 1, 1);
 
-        Resovoir tank = entity.getTank(Direction.UP);
+        Resovoir tank = entity.getPrimaryTank();
 
         SimpleFluid fluid = tank.getFluidType();
         if (!fluid.isEmpty()) {

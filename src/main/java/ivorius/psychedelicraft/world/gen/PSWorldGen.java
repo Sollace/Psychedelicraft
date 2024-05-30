@@ -143,7 +143,7 @@ public class PSWorldGen {
             );
         });
 
-        genConf.juniper.ifEnabled(spawnableBiomes -> {
+        genConf.juniper().ifEnabled(spawnableBiomes -> {
             BiomeModifications.addFeature(
                     spawnableBiomes.createPredicate(
                         BiomeSelectors.foundInOverworld().and(BiomeSelector.DRY).and(
@@ -156,31 +156,31 @@ public class PSWorldGen {
             );
         });
 
-        registerTilledPatch("cannabis", PSBlocks.CANNABIS, false, genConf.cannabis);
-        registerTilledPatch("hop", PSBlocks.HOP, false, genConf.hop);
-        registerTilledPatch("tobacco", PSBlocks.TOBACCO, false, genConf.tobacco);
-        registerTilledPatch("coffea", PSBlocks.COFFEA, false, genConf.coffea);
-        registerTilledPatch("coca", PSBlocks.COCA, true, genConf.coca);
+        registerTilledPatch("cannabis", PSBlocks.CANNABIS, false, genConf.cannabis());
+        registerTilledPatch("hop", PSBlocks.HOP, false, genConf.hop());
+        registerTilledPatch("tobacco", PSBlocks.TOBACCO, false, genConf.tobacco());
+        registerTilledPatch("coffea", PSBlocks.COFFEA, false, genConf.coffea());
+        registerTilledPatch("coca", PSBlocks.COCA, true, genConf.coca());
         registerUnTilledPatch("morning_glory", PSBlocks.MORNING_GLORY, VineStemBlock.AGE, UniformIntProvider.create(0, VineStemBlock.MAX_AGE), BiomeSelectors.includeByKey(
                 BiomeKeys.FLOWER_FOREST,
                 BiomeKeys.SUNFLOWER_PLAINS,
                 BiomeKeys.MEADOW,
                 BiomeKeys.LUSH_CAVES
-        ), genConf.morningGlories);
-        registerUnTilledPatch("belladonna", PSBlocks.BELLADONNA, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.DARK_FOREST), genConf.belladonna);
-        registerUnTilledPatch("jimsonweed", PSBlocks.JIMSONWEEED, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE), genConf.jimsonweed);
-        registerUnTilledPatch("tomato", PSBlocks.TOMATOES, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.FOREST), genConf.tomato);
+        ), genConf.morningGlories());
+        registerUnTilledPatch("belladonna", PSBlocks.BELLADONNA, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.DARK_FOREST), genConf.belladonna());
+        registerUnTilledPatch("jimsonweed", PSBlocks.JIMSONWEEED, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE), genConf.jimsonweed());
+        registerUnTilledPatch("tomato", PSBlocks.TOMATOES, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.FOREST), genConf.tomato());
         registerUnTilledPatch("peyote", PSBlocks.PEYOTE, PeyoteBlock.AGE, UniformIntProvider.create(0, PeyoteBlock.MAX_AGE), BiomeSelectors.foundInOverworld().and(
                     BiomeSelectors.tag(BiomeTags.IS_SAVANNA)
                 .or(BiomeSelectors.tag(BiomeTags.IS_BADLANDS))
                 .or(BiomeSelectors.tag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE))
                 .or(BiomeSelector.DRY)
-        ), genConf.peyote);
+        ), genConf.peyote());
         registerUnTilledPatch("agave", PSBlocks.AGAVE_PLANT, AgavePlantBlock.AGE, UniformIntProvider.create(0, AgavePlantBlock.MAX_AGE), BiomeSelectors.foundInOverworld().and(
             BiomeSelectors.tag(BiomeTags.IS_BADLANDS)
             .or(BiomeSelectors.tag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE))
             .or(BiomeSelector.DRY)
-        ), genConf.peyote);
+        ), genConf.peyote());
 
         MutableStructurePool.bootstrap();
     }

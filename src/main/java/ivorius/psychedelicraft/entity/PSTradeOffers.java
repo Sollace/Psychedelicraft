@@ -114,7 +114,7 @@ public interface PSTradeOffers {
                         PSBlocks.IRON_DRYING_TABLE.getStateManager().getStates().stream()
         ).collect(Collectors.toUnmodifiableSet()), 1, 1);
 
-        if (Psychedelicraft.getConfig().balancing.worldGeneration.farmerDrugDeals) {
+        if (Psychedelicraft.getConfig().balancing.worldGeneration.farmerDrugDeals()) {
             TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 1, factories -> {
                 factories.add(sell(2, PSItems.WINE_GRAPES, 3, 8, 1, 0.5F));
                 factories.add(sell(1, PSItems.HOP_CONES, 1, 4, 1, 0.6F));
