@@ -28,7 +28,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -102,7 +101,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         world.getBlockEntity(getBlockEntityPosition(world, pos), getBlockEntityType()).ifPresent(be -> {
-            SimpleFluid fluid = be.getTank(Direction.UP).getFluidType();
+            SimpleFluid fluid = be.getPrimaryTank().getFluidType();
             fluid.randomDisplayTick(world, pos, fluid.getPhysical().getDefaultState(), random);
         });
     }
@@ -143,7 +142,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
     public int getFluidHeight(World world, BlockState state, BlockPos pos, TagKey<Fluid> tag) {
         return world.getBlockEntity(pos, getBlockEntityType())
-                .map(be -> be.getTank(Direction.UP))
+                .map(be -> be.getPrimaryTank())
                 .filter(tank -> tank.getFluidType().getPhysical().isIn(tag) || (tag == FluidTags.WATER && tank.getFluidType().isCustomFluid()))
                 .map(tank -> (int)(((float)tank.getLevel() / tank.getCapacity()) * 8))
                 .orElse(-1);
@@ -152,7 +151,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     public boolean canFillWithFluid(PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         return world.getBlockEntity(pos, getBlockEntityType()).filter(be -> {
-            Resovoir tank = be.getTank(Direction.UP);
+            Resovoir tank = be.getPrimaryTank();
             return (tank.isEmpty()
                 || tank.getFluidType().getPhysical().isOf(fluid))
                 && tank.getCapacity() - tank.getLevel() >=  FluidVolumes.BUCKET;
@@ -181,7 +180,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         return world.getBlockEntity(getBlockEntityPosition(world, pos), getBlockEntityType()).filter(be -> {
             SimpleFluid f = SimpleFluid.forVanilla(fluidState.getFluid());
 
-            Resovoir tank = be.getTank(Direction.UP);
+            Resovoir tank = be.getPrimaryTank();
 
             if (tank.getCapacity() - tank.getLevel() <  FluidVolumes.BUCKET) {
                 return false;

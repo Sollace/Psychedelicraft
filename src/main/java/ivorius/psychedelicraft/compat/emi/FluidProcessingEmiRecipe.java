@@ -32,7 +32,6 @@ public class FluidProcessingEmiRecipe implements EmiRecipe, PSRecipe {
     private final EmiIngredient inputFluid;
     private final EmiIngredient outputFluid;
 
-    private final List<EmiIngredient> inputs;
     private final List<EmiStack> outputs;
 
     public FluidProcessingEmiRecipe(EmiRecipeCategory category,
@@ -62,10 +61,6 @@ public class FluidProcessingEmiRecipe implements EmiRecipe, PSRecipe {
         inputFluid = EmiIngredient.of(inputItems.stream().map(RecipeUtil::createFluidIngredient).distinct().toList());
         outputFluid = EmiIngredient.of(outputItems.stream().map(RecipeUtil::createFluidIngredient).distinct().toList());
 
-        this.inputs = Stream.concat(
-                Stream.of(inputFluid),
-                inputItems.stream().map(EmiStack::of)
-        ).toList();
         this.outputs = Stream.concat(Stream.concat(
                 outputFluid.getEmiStacks().stream(),
                 outputItems.stream().map(EmiStack::of)),

@@ -6,7 +6,9 @@
 package ivorius.psychedelicraft.block.entity;
 
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -21,7 +23,12 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     public int timeLeftTapOpen = 0;
 
     public BarrelBlockEntity(BlockPos pos, BlockState state) {
-        super(PSBlockEntities.BARREL, pos, state, FluidVolumes.BARREL, Processable.ProcessType.MATURE);
+        super(PSBlockEntities.BARREL, pos, state, FluidVolumes.BARREL);
+    }
+
+    @Override
+    public Processable.ProcessType getProcessType() {
+        return Processable.ProcessType.MATURE;
     }
 
     @Override
@@ -46,6 +53,14 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
         if (timeLeftTapOpen > 0 && timeLeftTapOpen % 5 == 0) {
             world.playSound(null, getPos(), SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.025F, 0.5F);
         }
+    }
+
+    @Override
+    public void accept(ItemStack stack) {
+    }
+
+    @Override
+    public void accept(MutableFluidContainer fluid) {
     }
 
     @Override

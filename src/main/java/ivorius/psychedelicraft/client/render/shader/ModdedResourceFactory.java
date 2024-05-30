@@ -30,7 +30,6 @@ class ModdedResourceFactory implements ResourceFactory {
     private Resource loadShader(Resource resource, Identifier id) {
         if (id.getPath().endsWith(".vsh") || id.getPath().endsWith(".fsh")) {
             return new Resource(resource.getPack(), () -> {
-                id.getClass();
                 try (var reader = resource.getReader()) {
                     return new ByteArrayInputStream(reader.lines().toList().stream()
                             .flatMap(this::processImport)

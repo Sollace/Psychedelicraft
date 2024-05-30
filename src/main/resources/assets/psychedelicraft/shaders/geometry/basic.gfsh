@@ -8,6 +8,8 @@ ps_in vec4 vertexColor;
 ps_out vec4 fragColor;
 
 void main() {
+  // Write to it so mac is happy
+  fragColor = vec4(0, 0, 0, 0);
   i_parent_shaders_main();
 
   float worldTicks = PS_WorldTicks;

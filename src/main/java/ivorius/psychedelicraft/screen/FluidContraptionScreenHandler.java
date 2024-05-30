@@ -39,7 +39,7 @@ public class FluidContraptionScreenHandler<T extends FlaskBlockEntity> extends S
 
     public FluidContraptionScreenHandler(ScreenHandlerType<? extends FluidContraptionScreenHandler<T>> type, int syncId, PlayerInventory inventory, T blockEntity, Direction direction) {
         super(type, syncId);
-        this.tank = blockEntity.getTank(direction);
+        this.tank = blockEntity.getTankOnSide(direction);
         this.blockEntity = blockEntity;
         addSlot(new InputSlot(blockEntity.ioInventory, 0, 21, 20));
         addSlot(new InputSlot(blockEntity.ioInventory, 1, 123, 61));

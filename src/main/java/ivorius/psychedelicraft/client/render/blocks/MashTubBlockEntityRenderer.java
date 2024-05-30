@@ -32,7 +32,7 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
 
     @Override
     public void render(MashTubBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        Resovoir tank = entity.getTank(Direction.UP);
+        Resovoir tank = entity.getPrimaryTank();
         SimpleFluid fluid = tank.getFluidType();
 
         float fluidHeight = 0.1F;

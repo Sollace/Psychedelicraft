@@ -55,9 +55,9 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (!world.isClient && stack.getItem() instanceof FluidContainer container) {
+        if (!world.isClient && stack.getItem() instanceof FluidContainer) {
             world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
-                be.getTank(Direction.UP).deposit(stack);
+                be.getPrimaryTank().deposit(stack);
             });
             ((ServerWorld)world).getChunkManager().markForUpdate(pos);
         }
@@ -126,7 +126,9 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     }
 
     public interface DirectionalFluidResovoir {
-        Resovoir getTank(Direction direction);
+        Resovoir getTankOnSide(Direction direction);
+
+        Resovoir getPrimaryTank();
 
         List<ItemStack> getDroppedStacks(FluidContainer container);
 

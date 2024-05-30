@@ -31,7 +31,7 @@ public interface PSModelPredicates {
         ModelPredicateProviderRegistry.register(PSItems.WINE_GRAPE_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> stack.getDamage() / 10F);
         ModelPredicateProviderRegistry.register(PSItems.MORNING_GLORY_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> stack.getDamage() / 10F);
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
-            if (stack.getItem() instanceof PaperBagItem item) {
+            if (stack.getItem() instanceof PaperBagItem) {
                 PaperBagItem.Contents contents = PaperBagItem.getContents(stack);
                 return contents.isEmpty() ? 0 : contents.count() > 16000 ? 1 : 0.5F;
             }
@@ -43,7 +43,7 @@ public interface PSModelPredicates {
         ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : PSItems.HARMONIUM.getColor(stack), PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
             if (layer == 0 && stack.getItem() instanceof DyeableItem dyeable) {
-                return ((DyeableItem)stack.getItem()).getColor(stack);
+                return dyeable.getColor(stack);
             }
             if (layer == 1) {
                 SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);

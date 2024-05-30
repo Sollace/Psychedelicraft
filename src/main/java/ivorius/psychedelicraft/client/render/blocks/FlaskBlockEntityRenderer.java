@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
+import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
@@ -37,21 +38,39 @@ public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements Blo
         matrices.scale(scale, scale, scale);
 
 
-        Resovoir tank = entity.getTank(Direction.UP);
+        Resovoir tank = entity.getPrimaryTank();
         SimpleFluid fluid = tank.getFluidType();
 
         if (!fluid.isEmpty()) {
-            float fluidHeight = MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
+            float fillPercentage = MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
 
             FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance()
                     .texture(vertices, tank)
                     .light(light).overlay(overlay)
                     .position(matrices);
-            fluidRenderer.draw(-1, 0, -2, 2, fluidHeight, 1, Direction.NORTH, Direction.UP);
-            fluidRenderer.draw(-1, 0,  1, 2, fluidHeight, 1, Direction.SOUTH, Direction.UP);
-            fluidRenderer.draw(-2, 0, -1, 1, fluidHeight, 2, Direction.WEST, Direction.UP);
-            fluidRenderer.draw( 1, 0, -1, 1, fluidHeight, 2, Direction.EAST, Direction.UP);
-            fluidRenderer.draw(-1, 0, -1, 2, fluidHeight, 2, Direction.UP);
+
+            float firstLevelHeight = Math.min(fillPercentage * 2, 2);
+
+            // lower
+            fluidRenderer.draw(-1, 0, -2, 2, firstLevelHeight, 1, Direction.NORTH, Direction.UP);
+            fluidRenderer.draw(-1, 0,  1, 2, firstLevelHeight, 1, Direction.SOUTH, Direction.UP);
+
+            fluidRenderer.draw( 1, 0, -1, 1, firstLevelHeight, 2, Direction.EAST, Direction.UP);
+            fluidRenderer.draw(-2, 0, -1, 1, firstLevelHeight, 2, Direction.WEST, Direction.UP);
+
+            fillPercentage = Math.max(fillPercentage - 0.5F, 0);
+            float secondLevelHeight = Math.min(fillPercentage * 2, 2);
+            if (secondLevelHeight > 0) {
+                if (!(entity instanceof DistilleryBlockEntity)) {
+                    matrices.translate(0, -1, 0);
+                }
+
+                fluidRenderer.draw(-1, 4.5F, -1.5F, 2, secondLevelHeight, 0.5F, Direction.NORTH, Direction.UP);
+                fluidRenderer.draw(-1, 4.5F,  1, 2, secondLevelHeight, 0.5F, Direction.SOUTH, Direction.UP);
+
+                fluidRenderer.draw( 1, 4.5F, -1, 0.5F, secondLevelHeight, 2, Direction.EAST, Direction.UP);
+                fluidRenderer.draw(-1.5F, 4.5F, -1, 0.5F, secondLevelHeight, 2, Direction.WEST, Direction.UP);
+            }
         }
 
         matrices.pop();

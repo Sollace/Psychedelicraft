@@ -68,6 +68,7 @@ public class Main implements EmiPlugin {
                     }
                 });
             }
+
             if (recipe.value() instanceof BottleRecipe r) {
                 ItemStack output = EmiPort.getOutput(r);
 
@@ -85,10 +86,11 @@ public class Main implements EmiPlugin {
                     }).toArray(EmiRecipe[]::new));
                 }
             }
-            if (recipe.value() instanceof PouringRecipe r) {
+
+            if (recipe.value() instanceof PouringRecipe) {
                 // TODO:
             }
-            if (recipe.value() instanceof ChangeRecepticalRecipe r) {
+            if (recipe.value() instanceof ChangeRecepticalRecipe) {
                 // TODO:
             }
             if (recipe.value() instanceof FillRecepticalRecipe r) {

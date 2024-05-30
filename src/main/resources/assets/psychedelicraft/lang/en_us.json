@@ -268,9 +268,18 @@
   "fluid.psychedelicraft.slurry": "Slurry",
   "fluid.psychedelicraft.bath_salts": "Bath Salts",
 
+  "fluid.status": "Status: %s",
+  "fluid.status.idle": "Idle",
   "fluid.status.mature": "Maturing",
   "fluid.status.ferment": "Fermenting",
   "fluid.status.distill": "Distilling",
+  
+  "time.until.acetify": "Time Until Acetified: %s",
+  "time.until.mature": "Time Until Mature: %s",
+  "time.until.ferment": "Time Until Fermented: %s",
+  "time.until.distill": "Time Until Distilled: %s",
+  
+  "psychedelicraft.container.levels": "Amount: %d/%d ml",
 
   "psychedelicraft.alcohol.maturity.young": "young",
   "psychedelicraft.alcohol.maturity.aged": "aged",
@@ -279,9 +288,9 @@
   
   "psychedelicraft.drink.levels": "Volume: %d/%d ml",
   "psychedelicraft.alcohol.flavor": "%1$s and %2$s with %3$s after-taste",
-  "psychedelicraft.alcohol.distillations": "Proof: %dx",
-  "psychedelicraft.alcohol.maturations": "Maturation: %d days (%s)",
-  "psychedelicraft.alcohol.fermentations": "Fermentation: %d days",
+  "psychedelicraft.alcohol.distillations": "Distillations: %dx",
+  "psychedelicraft.alcohol.maturations": "Maturations: %d (%s)",
+  "psychedelicraft.alcohol.fermentations": "Fermentations: %d",
   
   "psychedelicraft.alcohol.drink.tea": "%s Tea",
   "psychedelicraft.alcohol.drink.wort": "%s Wort",

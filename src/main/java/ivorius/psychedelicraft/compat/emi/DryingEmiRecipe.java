@@ -12,6 +12,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.recipe.DryingRecipe;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -28,7 +29,7 @@ public class DryingEmiRecipe implements EmiRecipe, PSRecipe {
         this.recipe = recipe;
         EmiIngredient input = EmiIngredient.of(recipe.getInput());
         this.input = Stream.generate(() -> input).limit(9).toList();
-        this.output = List.of(EmiStack.of(recipe.getResult(null)));
+        this.output = List.of(EmiStack.of(recipe.getResult(MinecraftClient.getInstance().world.getRegistryManager())));
     }
 
     @Override
