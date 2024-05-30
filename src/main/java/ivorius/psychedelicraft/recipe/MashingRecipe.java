@@ -20,6 +20,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import ivorius.psychedelicraft.item.PSItems;
 
 /**
  * Created from by Sollace on 7 Feb 2023
@@ -32,8 +33,12 @@ public class MashingRecipe extends FillRecepticalRecipe {
 
     private final FluidIngredient fluid;
 
-    public MashingRecipe(String group, CraftingRecipeCategory category, FluidIngredient output, FluidIngredient fluid, DefaultedList<Ingredient> input, int stewTime) {
-        super(group, category, output, input, Ingredient.empty());
+    public MashingRecipe(String group, CraftingRecipeCategory category,
+            FluidIngredient output,
+            FluidIngredient fluid,
+            DefaultedList<Ingredient> input,
+            int stewTime) {
+        super(group, category, output, Ingredient.ofItems(PSItems.MASH_TUB), input);
         this.fluid = fluid;
         this.stewTime = stewTime;
     }

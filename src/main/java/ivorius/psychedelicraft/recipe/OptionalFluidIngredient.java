@@ -6,7 +6,10 @@ import java.util.function.Predicate;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+
 import ivorius.psychedelicraft.util.CodecUtils;
+import ivorius.psychedelicraft.PSTags;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
@@ -37,6 +40,10 @@ public record OptionalFluidIngredient (
     public void write(PacketByteBuf buffer) {
         buffer.writeOptional(fluid, (a, b) -> b.write(a));
         buffer.writeOptional(receptical, (a, b) -> b.write(a));
+    }
+
+    public Ingredient toVanillaIngredient() {
+        return fluid.map(f -> f.toVanillaIngredient(receptical().orElse(Ingredient.fromTag(PSTags.Items.DRINK_RECEPTICALS)))).orElse(Ingredient.EMPTY);
     }
 
     @Override

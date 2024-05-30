@@ -6,15 +6,11 @@
 package ivorius.psychedelicraft.entity.drug;
 
 import net.minecraft.entity.player.PlayerEntity;
-
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.math.MathHelper;
-import ivorius.psychedelicraft.Psychedelicraft;
-import java.util.List;
-import java.util.ArrayList;
-import net.minecraft.util.math.random.Random;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.util.MathUtils;
+
+import net.minecraft.util.math.random.Random;
 
 /**
  * Created by lukas on 22.05.14.
