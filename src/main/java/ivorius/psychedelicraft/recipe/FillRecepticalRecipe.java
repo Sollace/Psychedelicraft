@@ -31,6 +31,7 @@ import com.google.gson.*;
  */
 public class FillRecepticalRecipe extends ShapelessRecipe {
     private final Ingredient receptical;
+    private final DefaultedList<Ingredient> input;
     private final FluidIngredient output;
 
     public FillRecepticalRecipe(Identifier id,
@@ -41,6 +42,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
             DefaultedList<Ingredient> input) {
         super(id, group, category, ItemStack.EMPTY, RecipeUtils.checkLength(RecipeUtils.union(input, receptical)));
         this.receptical = receptical;
+        this.input = input;
         this.output = output;
     }
 
@@ -111,7 +113,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
             buffer.writeEnumConstant(recipe.getCategory());
             recipe.output.write(buffer);
             recipe.receptical.write(buffer);
-            buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
+            buffer.writeCollection(recipe.input, (b, c) -> c.write(b));
         }
 
     }
