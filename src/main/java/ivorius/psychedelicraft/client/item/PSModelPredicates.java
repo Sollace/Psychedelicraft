@@ -7,6 +7,7 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.item.*;
+import ivorius.psychedelicraft.item.component.BagContentsComponent;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.component.type.DyedColorComponent;
@@ -34,8 +35,8 @@ public interface PSModelPredicates {
         ModelPredicateProviderRegistry.register(PSItems.MORNING_GLORY_LATTICE, Psychedelicraft.id("age"), (stack, world, entity, seed) -> stack.getDamage() / 10F);
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
             if (stack.getItem() instanceof PaperBagItem) {
-                PaperBagItem.Contents contents = PaperBagItem.getContents(stack);
-                return contents.isEmpty() ? 0 : contents.count() > 16000 ? 1 : 0.5F;
+                BagContentsComponent contents = BagContentsComponent.get(stack);
+                return contents.isEmpty() ? 0 : contents.count() > BagContentsComponent.FULL_COUNT ? 1 : 0.5F;
             }
             if (stack.getItem() instanceof BongItem item) {
                 return item.hasUsableConsumable(entity) ? 1 : 0;

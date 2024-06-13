@@ -18,6 +18,9 @@ import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.influence.HarmoniumDrugInfluence;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
+import ivorius.psychedelicraft.item.component.BagContentsComponent;
+import ivorius.psychedelicraft.item.component.PSComponents;
+import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
@@ -52,7 +55,7 @@ public interface PSItems {
     FlaskItem MASH_TUB = register("mash_tub", new MashTubItem(PSBlocks.MASH_TUB, new Settings().maxCount(16), FluidVolumes.VAT));
     FlaskItem FLASK = register("flask", new FlaskItem(PSBlocks.FLASK, new Settings().maxCount(16), FlaskBlockEntity.FLASK_CAPACITY));
     FlaskItem DISTILLERY = register("distillery", new FlaskItem(PSBlocks.DISTILLERY, new Settings().maxCount(16), DistilleryBlockEntity.DISTILLERY_CAPACITY));
-    RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings()));
+    RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings().component(PSComponents.RIFT_FRACTION, RiftFractionComponent.DEFAULT)));
 
     DrinkableItem FILLED_GLASS_BOTTLE = register("filled_glass_bottle", new ProxyDrinkableItem(Items.GLASS_BOTTLE, new Settings(), FluidVolumes.GLASS_BOTTLE, ConsumableFluid.ConsumptionType.DRINK));
     FilledBucketItem FILLED_BUCKET = register("filled_bucket", new FilledBucketItem(new Settings().maxCount(1)));
@@ -219,7 +222,7 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
 
     Item VOMIT = register("vomit", new Item(new Settings()));
-    Item PAPER_BAG = register("paper_bag", new PaperBagItem(new Settings()));
+    Item PAPER_BAG = register("paper_bag", new PaperBagItem(new Settings().component(PSComponents.BAG_CONTENTS, BagContentsComponent.EMPTY)));
     Item BAG_O_VOMIT = register("bag_o_vomit", new SuspiciousItem(new Settings()
             .food(new FoodComponent.Builder().nutrition(8).saturationModifier(0.8f).snack().alwaysEdible().build()
     ), SuspiciousItem.createForms(Items.COOKIE, Items.MUSHROOM_STEW, Items.GOLDEN_APPLE, Items.COOKED_BEEF, Items.COOKED_CHICKEN)));

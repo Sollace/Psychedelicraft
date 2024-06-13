@@ -16,7 +16,7 @@ import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
 import ivorius.psychedelicraft.item.PSItems;
-import ivorius.psychedelicraft.item.RiftJarItem;
+import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -96,7 +96,7 @@ class RiftJarBlock extends BlockWithEntity {
     public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         return Optional.ofNullable(builder.getOptional(LootContextParameters.BLOCK_ENTITY)).map(RiftJarBlockEntity.class::cast).map(be -> {
             if (!be.jarBroken) {
-                return RiftJarItem.createFilledRiftJar(be.currentRiftFraction, PSItems.RIFT_JAR);
+                return RiftFractionComponent.set(PSItems.RIFT_JAR.getDefaultStack(), be.currentRiftFraction);
             }
             return null;
         }).stream().toList();

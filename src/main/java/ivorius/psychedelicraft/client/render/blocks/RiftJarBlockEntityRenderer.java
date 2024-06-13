@@ -11,7 +11,7 @@ import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
 import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.bezier.*;
-import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.client.MinecraftClient;
@@ -47,7 +47,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
     private static final RiftJarBlockEntity ITEM_ENTITY = PSBlockEntities.RIFT_JAR.instantiate(BlockPos.ORIGIN, PSBlocks.RIFT_JAR.getDefaultState());
 
     public static void renderStack(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        ITEM_ENTITY.currentRiftFraction = PSItems.RIFT_JAR.getRiftFraction(stack);
+        ITEM_ENTITY.currentRiftFraction = RiftFractionComponent.getRiftFraction(stack);
         ITEM_ENTITY.ticksAliveVisual = (int)((System.currentTimeMillis() % 500) / 100);
         MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(ITEM_ENTITY, matrices, vertices, light, overlay);
     }

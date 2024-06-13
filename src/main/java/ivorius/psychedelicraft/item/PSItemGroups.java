@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.item;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
@@ -43,11 +44,11 @@ public interface PSItemGroups {
                 entries.add(PSItems.DARK_OAK_BARREL);
 
                 if (Psychedelicraft.getConfig().balancing.enableRiftJars) {
-                    entries.add(RiftJarItem.createFilledRiftJar(0.0F, PSItems.RIFT_JAR));
-                    entries.add(RiftJarItem.createFilledRiftJar(0.25F, PSItems.RIFT_JAR));
-                    entries.add(RiftJarItem.createFilledRiftJar(0.55F, PSItems.RIFT_JAR));
-                    entries.add(RiftJarItem.createFilledRiftJar(0.75F, PSItems.RIFT_JAR));
-                    entries.add(RiftJarItem.createFilledRiftJar(0.9F, PSItems.RIFT_JAR));
+                    entries.add(PSItems.RIFT_JAR.getDefaultStack());
+                    entries.add(RiftFractionComponent.set(PSItems.RIFT_JAR.getDefaultStack(), 0.25F));
+                    entries.add(RiftFractionComponent.set(PSItems.RIFT_JAR.getDefaultStack(), 0.55F));
+                    entries.add(RiftFractionComponent.set(PSItems.RIFT_JAR.getDefaultStack(), 0.75F));
+                    entries.add(RiftFractionComponent.set(PSItems.RIFT_JAR.getDefaultStack(), 0.9F));
                 }
 
                 entries.add(PSItems.TRAY);
