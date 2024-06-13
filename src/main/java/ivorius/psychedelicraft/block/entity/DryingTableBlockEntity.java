@@ -7,6 +7,8 @@ package ivorius.psychedelicraft.block.entity;
 
 import java.util.Optional;
 
+import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.recipe.DryingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.block.BlockState;
@@ -98,12 +100,11 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         }
 
         if (isCooking) {
-            /*dryingProgress += heatRatio / (
+            dryingProgress += heatRatio / (
                     world.getBlockState(pos).isOf(PSBlocks.IRON_DRYING_TABLE)
                     ? Psychedelicraft.getConfig().balancing.ironDryingTableTickDuration
                     : Psychedelicraft.getConfig().balancing.dryingTableTickDuration
-            );,*/
-            dryingProgress += 0.05F;
+            );
 
             int delta = (int)((1 - MathHelper.clamp(dryingProgress, 0, 1)) * 100);
 
