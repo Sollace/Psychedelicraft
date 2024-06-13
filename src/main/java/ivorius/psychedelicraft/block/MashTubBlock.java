@@ -115,18 +115,22 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     }
 
     @Override
-    protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
-        ItemStack heldStack = player.getStackInHand(hand);
+    protected ItemActionResult onInteractWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
         if (!heldStack.isEmpty()) {
             TypedActionResult<ItemStack> result = blockEntity.depositIngredient(heldStack.copy());
-            if (!player.isCreative()) {
-                player.setStackInHand(hand, result.getValue());
-            }
             if (result.getResult().isAccepted()) {
-                return result.getResult();
+                if (!player.isCreative()) {
+                    player.setStackInHand(hand, result.getValue());
+                }
+                return ItemActionResult.SUCCESS;
             }
         }
 
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, MashTubBlockEntity blockEntity) {
         if (!blockEntity.solidContents.isEmpty()) {
             PSCriteria.SIMPLY_MASHING.trigger(player, blockEntity.solidContents);
             Block.dropStack(world, pos, blockEntity.solidContents);
@@ -134,7 +138,6 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
             blockEntity.markForUpdate();
             return ActionResult.SUCCESS;
         }
-
         return ActionResult.PASS;
     }
 

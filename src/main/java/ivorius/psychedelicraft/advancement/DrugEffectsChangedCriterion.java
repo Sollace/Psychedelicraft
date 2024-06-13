@@ -15,7 +15,6 @@ import net.minecraft.predicate.NumberRange.DoubleRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
 public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsChangedCriterion.Conditions> {
@@ -32,7 +31,7 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
 
     public record Conditions(Optional<LootContextPredicate> player, List<DrugPredicate> drugs) implements AbstractCriterion.Conditions {
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
+                EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
                 DrugPredicate.CODEC.listOf().fieldOf("drugs").forGetter(Conditions::drugs)
         ).apply(instance, Conditions::new));
 
@@ -41,7 +40,7 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
         }
 
         public record DrugPredicate (DrugType type, DoubleRange range) implements Predicate<DrugProperties> {
-            public static final Codec<DrugPredicate> CODEC = Codecs.xor(
+            public static final Codec<DrugPredicate> CODEC = Codec.either(
                     DrugType.REGISTRY.getCodec().xmap(id -> new DrugPredicate(id, DoubleRange.atLeast(MathHelper.EPSILON)), DrugPredicate::type),
                     RecordCodecBuilder.<DrugPredicate>create(instance -> instance.group(
                             DrugType.REGISTRY.getCodec().fieldOf("id").forGetter(DrugPredicate::type),

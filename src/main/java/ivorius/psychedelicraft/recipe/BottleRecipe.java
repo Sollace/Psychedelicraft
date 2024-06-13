@@ -4,22 +4,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.item.DyeableItem;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.RawShapedRecipe;
-import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public class BottleRecipe extends ShapedRecipe {
     public static final Map<Item, DyeColor> COLORS = Util.make(new HashMap<>(), map -> {
@@ -40,6 +42,21 @@ public class BottleRecipe extends ShapedRecipe {
         map.put(Items.RED_STAINED_GLASS, DyeColor.RED);
         map.put(Items.BLACK_STAINED_GLASS, DyeColor.BLACK);
     });
+    public static final MapCodec<BottleRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(BottleRecipe::getGroup),
+            CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(BottleRecipe::getCategory),
+            RawShapedRecipe.CODEC.forGetter(recipe -> recipe.raw),
+            ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+            Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(BottleRecipe::showNotification)
+    ).apply(instance, BottleRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, BottleRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.STRING, BottleRecipe::getGroup,
+            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, BottleRecipe::getCategory,
+            RawShapedRecipe.PACKET_CODEC, recipe -> recipe.raw,
+            ItemStack.PACKET_CODEC, recipe -> recipe.result,
+            PacketCodecs.BOOL, BottleRecipe::showNotification,
+            BottleRecipe::new
+    );
 
     private final RawShapedRecipe raw;
     private final ItemStack result;
@@ -51,51 +68,15 @@ public class BottleRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
+    public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
         ItemStack output = getResult(registries).copy();
-        if (output.getItem() instanceof DyeableItem dyeable) {
-            RecipeUtils.stacks(inventory)
-                .map(stack -> stack.getItem())
-                .distinct()
-                .map(COLORS::get)
-                .filter(Objects::nonNull)
-                .findFirst().ifPresent(color -> {
-                    dyeable.setColor(output, color.getSignColor());
-                });
-        }
+        inventory.getStacks().stream()
+            .map(stack -> stack.getItem())
+            .distinct()
+            .map(COLORS::get)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .ifPresent(color -> output.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(color.getSignColor(), true)));
         return output;
-    }
-
-    public static class Serializer implements RecipeSerializer<BottleRecipe> {
-        private static final Codec<BottleRecipe> CODEC = RecordCodecBuilder.<BottleRecipe>create(instance -> instance.group(
-                Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(recipe -> recipe.getGroup()),
-                CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(recipe -> recipe.getCategory()),
-                RawShapedRecipe.CODEC.forGetter(recipe -> recipe.raw),
-                ItemStack.RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
-                Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_notification", true).forGetter(recipe -> recipe.showNotification())
-        ).apply(instance, BottleRecipe::new));
-
-        @Override
-        public Codec<BottleRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public BottleRecipe read(PacketByteBuf packetByteBuf) {
-            String string = packetByteBuf.readString();
-            CraftingRecipeCategory craftingRecipeCategory = packetByteBuf.readEnumConstant(CraftingRecipeCategory.class);
-            RawShapedRecipe rawShapedRecipe = RawShapedRecipe.readFromBuf(packetByteBuf);
-            ItemStack itemStack = packetByteBuf.readItemStack();
-            boolean bl = packetByteBuf.readBoolean();
-            return new BottleRecipe(string, craftingRecipeCategory, rawShapedRecipe, itemStack, bl);
-        }
-        @Override
-        public void write(PacketByteBuf packetByteBuf, BottleRecipe shapedRecipe) {
-            packetByteBuf.writeString(shapedRecipe.getGroup());
-            packetByteBuf.writeEnumConstant(shapedRecipe.getCategory());
-            shapedRecipe.raw.writeToBuf(packetByteBuf);
-            packetByteBuf.writeItemStack(shapedRecipe.result);
-            packetByteBuf.writeBoolean(shapedRecipe.showNotification());
-        }
     }
 }

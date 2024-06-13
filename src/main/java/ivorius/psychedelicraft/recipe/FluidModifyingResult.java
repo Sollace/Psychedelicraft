@@ -12,17 +12,19 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.StringIdentifiable;
 
 public record FluidModifyingResult(Map<String, Modification> attributes, ItemStack result) {
     public static final Codec<FluidModifyingResult> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.unboundedMap(Codec.STRING, Modification.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(FluidModifyingResult::attributes),
-            ItemStack.RECIPE_RESULT_CODEC.optionalFieldOf("result", ItemStack.EMPTY).forGetter(FluidModifyingResult::result)
+            ItemStack.VALIDATED_CODEC.optionalFieldOf("result", ItemStack.EMPTY).forGetter(FluidModifyingResult::result)
         ).apply(instance, FluidModifyingResult::new));
-
-    public FluidModifyingResult(PacketByteBuf buffer) {
-        this(buffer.readMap(PacketByteBuf::readString, FluidModifyingResult.Modification::new), buffer.readItemStack());
-    }
+    public static final PacketCodec<RegistryByteBuf, FluidModifyingResult> PACKET_CODEC = PacketCodec.ofStatic(
+            (a, b) -> b.write(a),
+            buffer -> new FluidModifyingResult(buffer.readMap(PacketByteBuf::readString, FluidModifyingResult.Modification::new), ItemStack.PACKET_CODEC.decode(buffer))
+    );
 
     public ItemStack applyTo(ItemStack input) {
         ItemStack stack = result.isEmpty() ? input.copyWithCount(
@@ -38,9 +40,10 @@ public record FluidModifyingResult(Map<String, Modification> attributes, ItemSta
         return stack;
     }
 
-    public void write(PacketByteBuf buffer) {
+    @Deprecated
+    private void write(RegistryByteBuf buffer) {
         buffer.writeMap(attributes, PacketByteBuf::writeString, (b, c) -> c.write(b));
-        buffer.writeItemStack(result);
+        ItemStack.PACKET_CODEC.encode(buffer, result);
     }
 
     interface Op {

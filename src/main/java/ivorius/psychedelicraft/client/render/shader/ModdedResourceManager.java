@@ -30,7 +30,7 @@ class ModdedResourceManager implements ResourceManager {
 
     @Override
     public List<Resource> getAllResources(Identifier id) {
-        List<Resource> resources = parent.getAllResources(new Identifier(defaultNamespace, id.getPath()));
+        List<Resource> resources = parent.getAllResources(Identifier.of(defaultNamespace, id.getPath()));
         if (resources.isEmpty()) {
             return parent.getAllResources(id);
         }

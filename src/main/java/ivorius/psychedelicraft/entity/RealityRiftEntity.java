@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.*;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -58,10 +59,8 @@ public class RealityRiftEntity extends Entity {
     }
 
     @Override
-    protected void initDataTracker() {
-        this.getDataTracker().startTracking(SIZE, 0F);
-        this.getDataTracker().startTracking(CLOSING, false);
-        this.getDataTracker().startTracking(INSTABILITY, 0F);
+    protected void initDataTracker(Builder builder) {
+        builder.add(SIZE, 0F).add(CLOSING, false).add(INSTABILITY, 0F);
     }
 
     public float getRiftSize() {
@@ -230,5 +229,4 @@ public class RealityRiftEntity extends Entity {
         compound.putBoolean("isRiftClosing", isRiftClosing());
         compound.putFloat("instability", getInstability());
     }
-
 }

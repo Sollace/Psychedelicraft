@@ -12,7 +12,8 @@ import org.joml.Vector3f;
 import ivorius.psychedelicraft.block.PlacedDrinksBlock;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import ivorius.psychedelicraft.particle.ExhaledSmokeParticleEffect;
+import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
+import ivorius.psychedelicraft.particle.PSParticles;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -44,7 +45,7 @@ public class SmokeableItem extends Item {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
         return 25;
     }
 
@@ -68,7 +69,7 @@ public class SmokeableItem extends Item {
             if (!stack.isDamageable()) {
                 stack.decrement(1);
             } else {
-                stack.damage(1, entity, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+                stack.damage(1, entity, EquipmentSlot.MAINHAND);
             }
         }
 
@@ -97,7 +98,7 @@ public class SmokeableItem extends Item {
             DrugProperties.of(player).addAll(drugEffects);
         });
 
-        var effect = new ExhaledSmokeParticleEffect(smokeColor, 1);
+        var effect = new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, smokeColor, 1);
         for (int i = 0; i < 30; i++) {
             ((ServerWorld)world).spawnParticles(effect,
                     world.random.nextTriangular(pos.getX() + 0.5, 0.3),

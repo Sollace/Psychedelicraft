@@ -95,18 +95,18 @@ public interface PSTradeOffers {
         });
 
         TradeOfferHelper.registerVillagerOffers(DRUG_ADDICT_PROFESSION, 1, factories -> {
-            factories.add(buy(5, PSItems.BROWN_MAGIC_MUSHROOMS, 8, 3, 3, 0.5f));
-            factories.add(buy(2, PSItems.RED_MAGIC_MUSHROOMS, 8, 3, 3, 0.5f));
-            factories.add(buy(2, PSItems.LSD_PILL, 3, 2, 3, 0.5f));
-            factories.add(buy(1, PSItems.JOINT, 2, 2, 3, 0.5f));
-            factories.add(buy(1, PSItems.CIGARETTE, 4, 2, 3, 0.8f));
-            factories.add(buy(1, PSItems.CIGAR, 5, 2, 3, 0.5f));
-            factories.add(buy(1, PSItems.HASH_MUFFIN, 2, 3, 1, 0.7f));
+            factories.add(buy(5, PSItems.BROWN_MAGIC_MUSHROOMS, 8, 3, 3));
+            factories.add(buy(2, PSItems.RED_MAGIC_MUSHROOMS, 8, 3, 3));
+            factories.add(buy(2, PSItems.LSD_PILL, 3, 2, 3));
+            factories.add(buy(1, PSItems.JOINT, 2, 2, 3));
+            factories.add(buy(1, PSItems.CIGARETTE, 4, 2, 3));
+            factories.add(buy(1, PSItems.CIGAR, 5, 2, 3));
+            factories.add(buy(1, PSItems.HASH_MUFFIN, 2, 3, 1));
 
-            factories.add(buy(4, PSItems.DRIED_CANNABIS_BUDS, 2, 8, 2, 0.9f));
-            factories.add(buy(4, PSItems.DRIED_CANNABIS_LEAF, 2, 5, 3, 0.8f));
-            factories.add(buy(5, PSItems.DRIED_PEYOTE, 10, 2, 2, 0.5f));
-            factories.add(buy(5, PSItems.DRIED_COCA_LEAVES, 20, 3, 2, 0.5f));
+            factories.add(buy(4, PSItems.DRIED_CANNABIS_BUDS, 2, 8, 2));
+            factories.add(buy(4, PSItems.DRIED_CANNABIS_LEAF, 2, 5, 3));
+            factories.add(buy(5, PSItems.DRIED_PEYOTE, 10, 2, 2));
+            factories.add(buy(5, PSItems.DRIED_COCA_LEAVES, 20, 3, 2));
         });
 
         PointOfInterestTypes.register(Registries.POINT_OF_INTEREST_TYPE, DRUG_DEALER_POI, Stream.concat(
@@ -130,16 +130,16 @@ public interface PSTradeOffers {
         }
     }
 
-    private static TradeOffers.Factory buy(int cost, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(returnItem, returnCount), new ItemStack(Items.EMERALD, cost), maxUses, experience, priceChange);
+    private static TradeOffers.Factory buy(int price, Item item, int count, int maxUses, int experience) {
+        return new TradeOffers.BuyItemFactory(item, count, maxUses, experience, price);
     }
 
-    private static TradeOffers.Factory sell(int cost, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(Items.EMERALD, cost), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
+    private static TradeOffers.Factory sell(int price, Item item, int count, int maxUses, int experience, float priceChange) {
+        return new TradeOffers.SellItemFactory(item, price, count, maxUses, experience, priceChange);
     }
 
-    private static TradeOffers.Factory trade(int cost, Item item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(Items.EMERALD, cost), new ItemStack(item, count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
+    private static TradeOffers.Factory trade(int price, Item item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
+        return new TradeOffers.ProcessItemFactory(item, count, price, returnItem, returnCount, maxUses, experience, priceChange);
     }
 
     private static RegistryKey<PointOfInterestType> poi(String id) {

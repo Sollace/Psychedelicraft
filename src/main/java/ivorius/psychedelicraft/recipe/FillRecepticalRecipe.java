@@ -8,14 +8,20 @@ package ivorius.psychedelicraft.recipe;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 /**
@@ -30,6 +36,21 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  * - Original Container filled with assigned fluid and level
  */
 public class FillRecepticalRecipe extends ShapelessRecipe {
+    public static final MapCodec<FillRecepticalRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(FillRecepticalRecipe::getGroup),
+            CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FillRecepticalRecipe::getCategory),
+            FluidIngredient.CODEC.fieldOf("result").forGetter(FillRecepticalRecipe::getOutputFluid),
+            Ingredient.ALLOW_EMPTY_CODEC.fieldOf("receptical").forGetter(i -> i.receptical),
+            RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(i -> i.input)
+    ).apply(instance, FillRecepticalRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, FillRecepticalRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.STRING, FillRecepticalRecipe::getGroup,
+            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, FillRecepticalRecipe::getCategory,
+            FluidIngredient.PACKET_CODEC, FillRecepticalRecipe::getOutputFluid,
+            Ingredient.PACKET_CODEC, recipe -> recipe.receptical,
+            RecipeUtils.INGREDIENTS_PACKET_CODEC, i -> i.input,
+            FillRecepticalRecipe::new
+    );
     private final Ingredient receptical;
     private final DefaultedList<Ingredient> input;
     private final FluidIngredient output;
@@ -56,10 +77,10 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(RecipeInputInventory inventory, World world) {
+    public boolean matches(CraftingRecipeInput inventory, World world) {
         RecipeMatcher recipeMatcher = new RecipeMatcher();
-        return RecipeUtils.recepticals(inventory).count() == 1
-                && RecipeUtils.stacks(inventory).filter(stack -> {
+        return RecipeUtils.toRecepticals(inventory.getStacks().stream()).count() == 1
+                && inventory.getStacks().stream().filter(stack -> {
                     recipeMatcher.addInput(stack, 1);
                     return true;
                 }).count() == getIngredients().size()
@@ -67,13 +88,13 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public final ItemStack getResult(DynamicRegistryManager registryManager) {
+    public final ItemStack getResult(WrapperLookup registryManager) {
         return output.toVanillaIngredient(receptical).getMatchingStacks()[0];
     }
 
     @Override
-    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
-        return RecipeUtils.recepticals(inventory).findFirst().map(receptical -> {
+    public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
+        return RecipeUtils.toRecepticals(inventory.getStacks().stream()).findFirst().map(receptical -> {
             ItemStack stack = output.fluid().getDefaultStack(receptical.getKey(), output.level() <= 0
                 ? receptical.getKey().getMaxCapacity(receptical.getValue())
                 : (output.level() + receptical.getKey().getLevel(receptical.getValue()))
@@ -81,41 +102,5 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
             stack.getOrCreateSubNbt("fluid").copyFrom(output.attributes());
             return stack;
         }).orElse(ItemStack.EMPTY);
-    }
-
-    static class Serializer implements RecipeSerializer<FillRecepticalRecipe> {
-        public static final Codec<FillRecepticalRecipe> CODEC = RecordCodecBuilder.<FillRecepticalRecipe>create(instance -> instance
-                .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(FillRecepticalRecipe::getGroup),
-                        CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FillRecepticalRecipe::getCategory),
-                        FluidIngredient.CODEC.fieldOf("result").forGetter(i -> i.output),
-                        Ingredient.ALLOW_EMPTY_CODEC.fieldOf("receptical").forGetter(i -> i.receptical),
-                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(i -> i.input)
-                ).apply(instance, FillRecepticalRecipe::new)
-        );
-
-        @Override
-        public Codec<FillRecepticalRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public FillRecepticalRecipe read(PacketByteBuf buffer) {
-            return new FillRecepticalRecipe(
-                    buffer.readString(),
-                    buffer.readEnumConstant(CraftingRecipeCategory.class),
-                    new FluidIngredient(buffer),
-                    Ingredient.fromPacket(buffer),
-                    buffer.readCollection(DefaultedList::ofSize, Ingredient::fromPacket)
-            );
-        }
-
-        @Override
-        public void write(PacketByteBuf buffer, FillRecepticalRecipe recipe) {
-            buffer.writeString(recipe.getGroup());
-            buffer.writeEnumConstant(recipe.getCategory());
-            recipe.output.write(buffer);
-            recipe.receptical.write(buffer);
-            buffer.writeCollection(recipe.input, (b, c) -> c.write(b));
-        }
     }
 }

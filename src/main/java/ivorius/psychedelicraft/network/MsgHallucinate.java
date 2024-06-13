@@ -18,14 +18,14 @@ public record MsgHallucinate (
     ) implements HandledPacket<PlayerEntity> {
 
     public MsgHallucinate(PacketByteBuf buffer) {
-        this(buffer.readVarInt(), buffer.readIdentifier(), buffer.readOptional(PacketByteBuf::readBlockPos));
+        this(buffer.readVarInt(), buffer.readIdentifier(), buffer.readOptional(buf -> buf.readBlockPos()));
     }
 
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeVarInt(entityId);
         buffer.writeIdentifier(type);
-        buffer.writeOptional(position, PacketByteBuf::writeBlockPos);
+        buffer.writeOptional(position, (buf, pos) -> buf.writeBlockPos(pos));
     }
 
     @Override

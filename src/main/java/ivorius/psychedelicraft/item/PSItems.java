@@ -21,22 +21,26 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.util.Colors;
 
 /**
  * Created by lukas on 25.04.14.
  * Updated by Sollace on 1 Jan 2023
  */
 public interface PSItems {
-    DrinkableItem WOODEN_MUG = register("wooden_mug", new DrinkableItem(new Settings(), FluidVolumes.MUG, DrinkableItem.FLUID_PER_DRINKING, Item.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem STONE_CUP = register("stone_cup", new DrinkableItem(new Settings(), FluidVolumes.CUP, DrinkableItem.FLUID_PER_DRINKING, Item.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem GLASS_CHALICE = register("glass_chalice", new DrinkableItem(new Settings(), FluidVolumes.CHALLICE, DrinkableItem.FLUID_PER_DRINKING, Item.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem SHOT_GLASS = register("shot_glass", new DrinkableItem(new Settings(), FluidVolumes.SHOT, DrinkableItem.FLUID_PER_DRINKING, Item.DEFAULT_MAX_USE_TIME / 4, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem BOTTLE = register("bottle", new BottleItem(new Settings(), FluidVolumes.BOTTLE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings().maxCount(16), FluidVolumes.BOTTLE));
+    DrinkableItem WOODEN_MUG = register("wooden_mug", new DrinkableItem(new Settings(), FluidVolumes.MUG, DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem STONE_CUP = register("stone_cup", new DrinkableItem(new Settings(), FluidVolumes.CUP, DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem GLASS_CHALICE = register("glass_chalice", new DrinkableItem(new Settings(), FluidVolumes.CHALLICE, DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem SHOT_GLASS = register("shot_glass", new DrinkableItem(new Settings(), FluidVolumes.SHOT, DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME / 4, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem BOTTLE = register("bottle", new BottleItem(new Settings().component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true)), FluidVolumes.BOTTLE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings().component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true)).maxCount(16), FluidVolumes.BOTTLE));
 
     FlaskItem OAK_BARREL = register("oak_barrel", new FlaskItem(PSBlocks.OAK_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
     FlaskItem SPRUCE_BARREL = register("spruce_barrel", new FlaskItem(PSBlocks.SPRUCE_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
@@ -55,7 +59,7 @@ public interface PSItems {
     DrinkableItem FILLED_BOWL = register("filled_bowl", new ProxyDrinkableItem(Items.BOWL, new Settings(), FluidVolumes.BOWL, ConsumableFluid.ConsumptionType.DRINK));
 
     Item WINE_GRAPES = register("wine_grapes", new WineGrapesItem(new Settings().food(
-            new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()
+            new FoodComponent.Builder().nutrition(1).saturationModifier(0.5F).snack().build()
     ), 15));
 
     Item CANNABIS_SEEDS = register("cannabis_seeds", new AliasedBlockItem(PSBlocks.CANNABIS, new Settings()));
@@ -120,7 +124,7 @@ public interface PSItems {
     Item STRIPPED_JUNIPER_LOG = register("stripped_juniper_log", PSBlocks.STRIPPED_JUNIPER_LOG);
     Item STRIPPED_JUNIPER_WOOD = register("stripped_juniper_wood", PSBlocks.STRIPPED_JUNIPER_WOOD);
     Item JUNIPER_BERRIES = register("juniper_berries", new SpecialFoodItem(
-            new Settings().food(new FoodComponent.Builder().hunger(1).saturationModifier(0.5F).meat().build()), 15
+            new Settings().food(new FoodComponent.Builder().nutrition(1).saturationModifier(0.5F).snack().build()), 15
     ));
     Item JUNIPER_SAPLING = register("juniper_sapling", PSBlocks.JUNIPER_SAPLING);
     Item JUNIPER_PLANKS = register("juniper_planks", PSBlocks.JUNIPER_PLANKS);
@@ -158,7 +162,7 @@ public interface PSItems {
     Item DRYING_TABLE = register("drying_table", PSBlocks.DRYING_TABLE);
     Item IRON_DRYING_TABLE = register("iron_drying_table", PSBlocks.IRON_DRYING_TABLE);
 
-    HarmoniumItem HARMONIUM = register("harmonium", new HarmoniumItem(new Settings()));
+    Item HARMONIUM = register("harmonium", new Item(new Settings().component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.RED, true))));
 
     Item OBSIDIAN_BOTTLE = register("obsidian_bottle", new Item(new Settings().maxCount(16)));
     Item OBSIDIAN_DUST = register("obsidian_dust", new CocainePowderItem(
@@ -194,7 +198,7 @@ public interface PSItems {
     Item BELLADONNA_LEAF = register("belladonna_leaf");
     Item DRIED_BELLADONNA_LEAF = register("dried_belladonna_leaf");
     Item BELLADONNA_BERRIES = register("belladonna_berries", new EdibleItem(
-            new Settings().food(new FoodComponent.Builder().hunger(1).saturationModifier(1.5F).alwaysEdible().build()),
+            new Settings().food(new FoodComponent.Builder().nutrition(1).saturationModifier(1.5F).alwaysEdible().build()),
             new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
     ));
 
@@ -205,19 +209,19 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.INHALED, 0.1, 0.02, 0.8F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.4, 0.1, 0.9F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.5, 0.1, 0.2F)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.INHALED, 0.04, 0.01, 0.65F, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.INHALED, 0.04, 0.01, 0.65F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
     // TODO: Play around with the bongs benefits
     BongItem BONG = register("bong", new BongItem(new Settings().maxDamage(128)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.001, 0.2F)))
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.4, 0.1, 0.4F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.5, 0.1, 0.1F)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
 
     Item VOMIT = register("vomit", new Item(new Settings()));
     Item PAPER_BAG = register("paper_bag", new PaperBagItem(new Settings()));
     Item BAG_O_VOMIT = register("bag_o_vomit", new SuspiciousItem(new Settings()
-            .food(new FoodComponent.Builder().hunger(8).saturationModifier(0.8f).meat().alwaysEdible().build()
+            .food(new FoodComponent.Builder().nutrition(8).saturationModifier(0.8f).snack().alwaysEdible().build()
     ), SuspiciousItem.createForms(Items.COOKIE, Items.MUSHROOM_STEW, Items.GOLDEN_APPLE, Items.COOKED_BEEF, Items.COOKED_CHICKEN)));
 
     Item TRAY = register("tray", PSBlocks.TRAY);

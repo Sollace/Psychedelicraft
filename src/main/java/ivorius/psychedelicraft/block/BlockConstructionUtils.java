@@ -2,7 +2,7 @@ package ivorius.psychedelicraft.block;
 
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityType;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
@@ -30,7 +30,7 @@ interface BlockConstructionUtils {
     static BarrelBlock barrel(MapColor mapColor) {
         return new BarrelBlock(Settings.create()
                 .mapColor(mapColor)
-                .instrument(Instrument.BASS)
+                .instrument(NoteBlockInstrument.BASS)
                 .sounds(BlockSoundGroup.WOOD)
                 .hardness(2)
                 .burnable()
@@ -40,7 +40,7 @@ interface BlockConstructionUtils {
     static PillarBlock log(MapColor topColor, MapColor sideColor) {
         return new PillarBlock(AbstractBlock.Settings.create()
                 .mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topColor : sideColor)
-                .instrument(Instrument.BASS)
+                .instrument(NoteBlockInstrument.BASS)
                 .strength(2.0f)
                 .sounds(BlockSoundGroup.WOOD)
                 .burnable());

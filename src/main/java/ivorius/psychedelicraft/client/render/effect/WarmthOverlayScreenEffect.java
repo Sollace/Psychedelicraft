@@ -28,7 +28,7 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, COFFEE_OVERLAY);
         RenderSystem.enableBlend();
-        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+
 
         for (int i = 0; i < 3; i++) {
             int steps = 30;
@@ -53,12 +53,12 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
                 float mY = (float) y / (float) steps * height / 7 * 5 + height / 7;
 
                 if (init) {
-                    buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-                    buffer.vertex(mXL, mY, -90).texture(0, (float) y / (float) steps).next();
-                    buffer.vertex(mXR, mY, -90).texture(1, (float) y / (float) steps).next();
-                    buffer.vertex(prevXR, prevY, -90).texture(1, (float) (y - 1) / (float) steps).next();
-                    buffer.vertex(prevXL, prevY, -90).texture(0, (float) (y - 1) / (float) steps).next();
-                    Tessellator.getInstance().draw();
+                    BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+                    buffer.vertex(mXL, mY, -90).texture(0, (float) y / (float) steps)
+                          .vertex(mXR, mY, -90).texture(1, (float) y / (float) steps)
+                          .vertex(prevXR, prevY, -90).texture(1, (float) (y - 1) / (float) steps)
+                          .vertex(prevXL, prevY, -90).texture(0, (float) (y - 1) / (float) steps);
+                    BufferRenderer.drawWithGlobalProgram(buffer.end());
                 } else {
                     init = true;
                 }

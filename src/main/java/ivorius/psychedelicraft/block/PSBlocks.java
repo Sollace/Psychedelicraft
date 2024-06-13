@@ -15,7 +15,7 @@ import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -55,17 +55,17 @@ public interface PSBlocks {
     Block STRIPPED_JUNIPER_WOOD = register("stripped_juniper_wood", BlockConstructionUtils.log(MapColor.CYAN, MapColor.LIGHT_BLUE_GRAY));
     Block JUNIPER_SAPLING = register("juniper_sapling", new SaplingBlock(PSSaplingGenerators.JUNIPER, BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
 
-    Block JUNIPER_PLANKS = register("juniper_planks", new Block(Settings.create().mapColor(MapColor.LIGHT_BLUE_GRAY).instrument(Instrument.BASS).strength(2, 3).sounds(BlockSoundGroup.WOOD).burnable()));
+    Block JUNIPER_PLANKS = register("juniper_planks", new Block(Settings.create().mapColor(MapColor.LIGHT_BLUE_GRAY).instrument(NoteBlockInstrument.BASS).strength(2, 3).sounds(BlockSoundGroup.WOOD).burnable()));
     Block JUNIPER_STAIRS = register("juniper_stairs", new StairsBlock(JUNIPER_PLANKS.getDefaultState(), Settings.copy(JUNIPER_PLANKS)));
-    Block JUNIPER_SIGN = register("juniper_sign", new SignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(Instrument.BASS).noCollision().strength(1).burnable().sounds(BlockSoundGroup.WOOD)));
-    Block JUNIPER_DOOR = register("juniper_door", new DoorBlock(PSWoodTypes.JUNIPER.setType(), Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).instrument(Instrument.BASS).strength(3.0f).nonOpaque().burnable().pistonBehavior(PistonBehavior.DESTROY)));
-    Block JUNIPER_WALL_SIGN = register("juniper_wall_sign", new WallSignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(Instrument.BASS).noCollision().strength(1).dropsLike(JUNIPER_SIGN).burnable()));
-    Block JUNIPER_HANGING_SIGN = register("juniper_hanging_sign", new HangingSignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_LOG.getDefaultMapColor()).solid().instrument(Instrument.BASS).noCollision().strength(1).burnable()));
-    Block JUNIPER_WALL_HANGING_SIGN = register("juniper_wall_hanging_sign", new WallHangingSignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_LOG.getDefaultMapColor()).solid().instrument(Instrument.BASS).noCollision().strength(1.0f).burnable().dropsLike(JUNIPER_HANGING_SIGN)));
-    Block JUNIPER_PRESSURE_PLATE = register("juniper_pressure_plate", new PressurePlateBlock(PSWoodTypes.JUNIPER.setType(), Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(Instrument.BASS).noCollision().strength(0.5F).burnable().pistonBehavior(PistonBehavior.DESTROY)));
-    Block JUNIPER_FENCE = register("juniper_fence", new FenceBlock(Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(Instrument.BASS).strength(2, 3).sounds(BlockSoundGroup.WOOD).burnable()));
-    Block JUNIPER_TRAPDOOR = register("juniper_trapdoor", new TrapdoorBlock(PSWoodTypes.JUNIPER.setType(), Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).instrument(Instrument.BASS).strength(3).nonOpaque().allowsSpawning(BlockConstructionUtils::never).burnable()));
-    Block JUNIPER_FENCE_GATE = register("juniper_fence_gate", new FenceGateBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(Instrument.BASS).strength(2, 3).burnable()));
+    Block JUNIPER_SIGN = register("juniper_sign", new SignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).burnable().sounds(BlockSoundGroup.WOOD)));
+    Block JUNIPER_DOOR = register("juniper_door", new DoorBlock(PSWoodTypes.JUNIPER.setType(), Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3.0f).nonOpaque().burnable().pistonBehavior(PistonBehavior.DESTROY)));
+    Block JUNIPER_WALL_SIGN = register("juniper_wall_sign", new WallSignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).dropsLike(JUNIPER_SIGN).burnable()));
+    Block JUNIPER_HANGING_SIGN = register("juniper_hanging_sign", new HangingSignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).burnable()));
+    Block JUNIPER_WALL_HANGING_SIGN = register("juniper_wall_hanging_sign", new WallHangingSignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0f).burnable().dropsLike(JUNIPER_HANGING_SIGN)));
+    Block JUNIPER_PRESSURE_PLATE = register("juniper_pressure_plate", new PressurePlateBlock(PSWoodTypes.JUNIPER.setType(), Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(0.5F).burnable().pistonBehavior(PistonBehavior.DESTROY)));
+    Block JUNIPER_FENCE = register("juniper_fence", new FenceBlock(Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).strength(2, 3).sounds(BlockSoundGroup.WOOD).burnable()));
+    Block JUNIPER_TRAPDOOR = register("juniper_trapdoor", new TrapdoorBlock(PSWoodTypes.JUNIPER.setType(), Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3).nonOpaque().allowsSpawning(BlockConstructionUtils::never).burnable()));
+    Block JUNIPER_FENCE_GATE = register("juniper_fence_gate", new FenceGateBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).strength(2, 3).burnable()));
     Block JUNIPER_BUTTON = register("juniper_button", BlockConstructionUtils.woodenButton(PSWoodTypes.JUNIPER.setType()));
     Block JUNIPER_SLAB = register("juniper_slab", new SlabBlock(Settings.copy(JUNIPER_PLANKS)));
 

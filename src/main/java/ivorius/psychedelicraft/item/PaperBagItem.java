@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.PSTags;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,7 +15,10 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -209,7 +211,7 @@ public class PaperBagItem extends Item {
             }
 
             if (changed) {
-                player.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, player.getSoundCategory(), 1, 1);
+                player.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 1, 1);
                 setContents(stack, builder.build());
                 inv.setStack(slot, stack);
             }
@@ -223,7 +225,7 @@ public class PaperBagItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         Contents contents = getContents(stack);
         if (!contents.isEmpty()) {
             tooltip.add(Text.literal(contents.count() + " x ").append(contents.stack().getName()));
@@ -261,8 +263,8 @@ public class PaperBagItem extends Item {
     public record Contents(ItemStack stack, int count) {
         static final Contents EMPTY = new Contents(ItemStack.EMPTY, 0);
 
-        public static Contents fromNbt(NbtCompound nbt) {
-            return from(ItemStack.fromNbt(nbt.getCompound("stack")), Math.max(0, nbt.getInt("count")));
+        public static Contents fromNbt(WrapperLookup lookup, NbtCompound nbt) {
+            return from(ItemStack.fromNbtOrEmpty(lookup, nbt.getCompound("stack")), Math.max(0, nbt.getInt("count")));
         }
 
         public static Contents from(ItemStack stack, int count) {
@@ -280,8 +282,8 @@ public class PaperBagItem extends Item {
             return stack.isEmpty() || count <= 0;
         }
 
-        public NbtCompound writeNbt(NbtCompound nbt) {
-            nbt.put("stack", stack.writeNbt(new NbtCompound()));
+        public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup lookup) {
+            nbt.put("stack", stack.encode(lookup));
             nbt.putInt("count", count);
             return nbt;
         }
@@ -306,7 +308,7 @@ public class PaperBagItem extends Item {
                 //if (stack.getItem() instanceof PaperBagItem) {
                 //    return canAdd(getContents(stack).stack());
                 //}
-                return (this.stack.isEmpty() || ItemStack.canCombine(this.stack, stack)) && count < getMaxCountForItem(stack.getItem());
+                return (this.stack.isEmpty() || ItemStack.areItemsAndComponentsEqual(this.stack, stack)) && count < getMaxCountForItem(stack.getItem());
             }
 
             public boolean add(ItemStack stack) {

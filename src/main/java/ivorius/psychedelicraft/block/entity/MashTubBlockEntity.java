@@ -17,7 +17,8 @@ import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
-import ivorius.psychedelicraft.particle.BubbleParticleEffect;
+import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
+import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -28,6 +29,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -171,7 +173,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         Resovoir tank = getPrimaryTank();
         ParticleHelper.spawnParticles(getWorld(),
-                new BubbleParticleEffect(MathUtils.unpackRgbVector(tank.getFluidType().getColor(tank.getStack())), 1F),
+                new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgbVector(tank.getFluidType().getColor(tank.getStack())), 1F),
                 () -> ParticleHelper.apply(center, x -> random.nextTriangular(x, 0.5 + spread)).add(0, 0.5, 0),
                 Suppliers.ofInstance(new Vec3d(
                         random.nextTriangular(0, 0.125),
@@ -219,10 +221,10 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public void writeNbt(NbtCompound compound) {
-        super.writeNbt(compound);
+    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.writeNbt(compound, lookup);
         if (!solidContents.isEmpty()) {
-            compound.put("solidContents", solidContents.writeNbt(new NbtCompound()));
+            compound.put("solidContents", solidContents.encodeAllowEmpty(lookup));
         }
         NbtCompound suppliedIngredsTag = new NbtCompound();
         suppliedIngredients.forEach((item, count) -> {
@@ -232,10 +234,10 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
+    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.readNbt(compound, lookup);
         solidContents = compound.contains("solidContents", NbtElement.COMPOUND_TYPE)
-                ? ItemStack.fromNbt(compound.getCompound("solidContents"))
+                ? ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("solidContents"))
                 : ItemStack.EMPTY;
         NbtCompound suppliedIngredsTag = compound.getCompound("suppliedIngredients");
         suppliedIngredients.clear();

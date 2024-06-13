@@ -43,7 +43,7 @@ public class CompoundScreenEffect implements ScreenEffect {
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
         effects.forEach(effect -> {
-            if (effect.shouldApply(client.getTickDelta())) {
+            if (effect.shouldApply(client.getRenderTickCounter().getTickDelta(false))) {
                 effect.render(matrices, vertices, screenWidth, screenHeight, ticks, pingPong);
             }
         });

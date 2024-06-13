@@ -9,6 +9,8 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -17,7 +19,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
 
 /**
  * @author Sollace
@@ -150,9 +151,8 @@ public interface PSItemGroups {
 
                 if (Psychedelicraft.getConfig().balancing.enableHarmonium) {
                     for (DyeColor dye : DyeColor.values()) {
-                        float[] color = dye.getColorComponents();
                         ItemStack harmonium = PSItems.HARMONIUM.getDefaultStack();
-                        PSItems.HARMONIUM.setColor(harmonium, MathHelper.packRgb(color[0], color[1], color[2]));
+                        harmonium.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(dye.getSignColor(), true));
                         entries.add(harmonium);
                     }
                 }

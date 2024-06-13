@@ -17,13 +17,11 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -55,9 +53,9 @@ public class DryingTableBlock extends BlockWithEntity {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
-            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory<BlockPos>() {
                 @Override
                 public Text getDisplayName() {
                     return DryingTableBlock.this.getName();
@@ -68,8 +66,8 @@ public class DryingTableBlock extends BlockWithEntity {
                 }
 
                 @Override
-                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                    buf.writeBlockPos(pos);
+                public BlockPos getScreenOpeningData(ServerPlayerEntity player) {
+                    return pos;
                 }
             });
             return ActionResult.SUCCESS;

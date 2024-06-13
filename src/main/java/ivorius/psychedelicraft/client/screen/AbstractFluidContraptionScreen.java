@@ -7,8 +7,8 @@ import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
@@ -70,7 +70,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
             if (!fluid.isEmpty()) {
                 tooltip.add(Text.translatable("psychedelicraft.container.levels", level, tank.getCapacity()).formatted(Formatting.GRAY));
             }
-            fluid.appendTooltip(tank.getStack(), null, tooltip, TooltipContext.BASIC);
+            fluid.appendTooltip(tank.getStack(), tooltip, TooltipType.BASIC);
             tooltip.addAll(details);
             context.drawTooltip(textRenderer, tooltip, mouseX, mouseY);
         }

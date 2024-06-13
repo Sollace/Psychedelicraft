@@ -5,12 +5,15 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import java.util.stream.Stream;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
@@ -25,17 +28,21 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
         inventory = DefaultedList.ofSize(size, ItemStack.EMPTY);
     }
 
-    @Override
-    public void writeNbt(NbtCompound compound) {
-        super.writeNbt(compound);
-        Inventories.writeNbt(compound, inventory);
+    protected Stream<ItemStack> getStacks() {
+        return inventory.stream();
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
+    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.writeNbt(compound, lookup);
+        Inventories.writeNbt(compound, inventory, lookup);
+    }
+
+    @Override
+    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.readNbt(compound, lookup);
         inventory.clear();
-        Inventories.readNbt(compound, inventory);
+        Inventories.readNbt(compound, inventory, lookup);
     }
 
     @Override

@@ -80,7 +80,7 @@ class RiftJarBlock extends BlockWithEntity {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.RIFT_JAR).map(be -> {
             if (player.isSneaking()) {
                 be.toggleSuckingRifts();

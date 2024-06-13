@@ -41,10 +41,10 @@ public interface BiomeSelector {
 
     static Predicate<BiomeSelectionContext> compile(String selector) {
         if (selector.startsWith("#")) {
-            return BiomeSelectors.tag(TagKey.of(RegistryKeys.BIOME, new Identifier(selector.substring(1))));
+            return BiomeSelectors.tag(TagKey.of(RegistryKeys.BIOME, Identifier.of(selector.substring(1))));
         }
 
-        return ofId(new Identifier(selector));
+        return ofId(Identifier.of(selector));
     }
 
     static Predicate<BiomeSelectionContext> ofId(Identifier tagId) {

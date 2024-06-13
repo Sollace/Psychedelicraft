@@ -7,11 +7,12 @@ package ivorius.psychedelicraft.client.render;
 
 import org.joml.Vector2f;
 
+import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.SmoothUtil;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Smoother;
 
 /**
  * Created by lukas on 23.02.14.
@@ -20,8 +21,8 @@ import net.minecraft.util.math.MathHelper;
 public class SmoothCameraHelper {
     public static final SmoothCameraHelper INSTANCE = new SmoothCameraHelper();
 
-    private final SmoothUtil xSmoother = new SmoothUtil();
-    private final SmoothUtil ySmoother = new SmoothUtil();
+    private final Smoother xSmoother = new Smoother();
+    private final Smoother ySmoother = new Smoother();
 
     private float lastTickDelta;
 
@@ -66,7 +67,7 @@ public class SmoothCameraHelper {
         float speed = getSpeed();
         cursorDelta.add(prevCursorDelta.x * speed, prevCursorDelta.y * speed);
 
-        float tickDelta = MinecraftClient.getInstance().getTickDelta();
+        float tickDelta = ShaderContext.tickDelta();
         float progress = tickDelta - lastTickDelta;
         lastTickDelta = tickDelta;
 

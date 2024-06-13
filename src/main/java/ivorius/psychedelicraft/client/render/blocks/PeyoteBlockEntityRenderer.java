@@ -13,6 +13,7 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
@@ -51,7 +52,7 @@ public class PeyoteBlockEntityRenderer implements BlockEntityRenderer<PeyoteBloc
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
         int age = entity.getCachedState().get(PeyoteBlock.AGE) % 4;
-        models[age].render(matrices, vertices.getBuffer(RenderLayer.getEntityCutout(TEXTURES[age])), light, overlay, 1, 1, 1, 1);
+        models[age].render(matrices, vertices.getBuffer(RenderLayer.getEntityCutout(TEXTURES[age])), light, overlay, Colors.WHITE);
 
         matrices.pop();
     }

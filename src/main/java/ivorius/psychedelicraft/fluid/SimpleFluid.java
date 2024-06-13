@@ -27,11 +27,14 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributeHandler;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -53,6 +56,7 @@ public class SimpleFluid {
     private static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids")), EMPTY_KEY).buildAndRegister();
     private static final Map<Identifier, SimpleFluid> VANILLA_FLUIDS = new HashMap<>();
     public static final Codec<SimpleFluid> CODEC = Identifier.CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
+    public static final PacketCodec<RegistryByteBuf, SimpleFluid> PACKET_CODEC = PacketCodecs.registryValue(REGISTRY.getKey());
 
     protected final Identifier id;
 
@@ -171,7 +175,7 @@ public class SimpleFluid {
         return Text.translatable(getTranslationKey());
     }
 
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipType type) {
 
     }
 

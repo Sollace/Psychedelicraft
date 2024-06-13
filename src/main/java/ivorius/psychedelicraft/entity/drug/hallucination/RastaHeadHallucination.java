@@ -19,6 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
@@ -90,6 +91,6 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
         matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
 
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        modelRastaHead.render(matrices, vertices.getBuffer(modelRastaHead.getLayer(TEXTURE)), dispatcher.getLight(entity, tickDelta), 0, 1, 1, 1, 1);
+        modelRastaHead.render(matrices, vertices.getBuffer(modelRastaHead.getLayer(TEXTURE)), dispatcher.getLight(entity, tickDelta), 0, Colors.WHITE);
     }
 }

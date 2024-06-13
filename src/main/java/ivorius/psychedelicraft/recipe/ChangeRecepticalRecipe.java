@@ -1,17 +1,20 @@
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.item.DyeableItem;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
@@ -26,6 +29,20 @@ import ivorius.psychedelicraft.fluid.container.FluidContainer;
  *
  */
 public class ChangeRecepticalRecipe extends ShapelessRecipe {
+    public static final MapCodec<ChangeRecepticalRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(ChangeRecepticalRecipe::getGroup),
+            CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(ChangeRecepticalRecipe::getCategory),
+            ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
+            RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ChangeRecepticalRecipe::getIngredients)
+    ).apply(instance, ChangeRecepticalRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, ChangeRecepticalRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.STRING, ChangeRecepticalRecipe::getGroup,
+            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ChangeRecepticalRecipe::getCategory,
+            ItemStack.PACKET_CODEC, recipe -> recipe.output,
+            RecipeUtils.INGREDIENTS_PACKET_CODEC, ChangeRecepticalRecipe::getIngredients,
+            ChangeRecepticalRecipe::new
+    );
+
     private final ItemStack output;
 
     public ChangeRecepticalRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
@@ -39,13 +56,13 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(RecipeInputInventory inventory, World world) {
-        return RecipeUtils.recepticals(inventory).count() == 1 && super.matches(inventory, world);
+    public boolean matches(CraftingRecipeInput inventory, World world) {
+        return RecipeUtils.toRecepticals(inventory.getStacks().stream()).count() == 1 && super.matches(inventory, world);
     }
 
     @Override
-    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
-        return RecipeUtils.recepticals(inventory).findFirst().map(pair -> {
+    public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
+        return RecipeUtils.toRecepticals(inventory.getStacks().stream()).findFirst().map(pair -> {
             // copy bottle contents to the new stack
             ItemStack input = pair.getValue().copy();
             ItemStack output = getResult(registries).copy();
@@ -53,43 +70,12 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
             if (outputContainer != null) {
                 output = outputContainer.toMutable(output).fillFrom(pair.getKey().toMutable(input)).asStack();
             }
-            if (output.getItem() instanceof DyeableItem outDyable && input.getItem() instanceof DyeableItem inDyable) {
-                outDyable.setColor(output, inDyable.getColor(input));
+
+            DyedColorComponent color = input.get(DataComponentTypes.DYED_COLOR);
+            if (color != null) {
+                output.set(DataComponentTypes.DYED_COLOR, color);
             }
             return output;
         }).orElseGet(getResult(registries)::copy);
-    }
-
-    static class Serializer implements RecipeSerializer<ChangeRecepticalRecipe> {
-        private static final Codec<ChangeRecepticalRecipe> CODEC = RecordCodecBuilder.create(instance -> instance
-                .group(Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(ChangeRecepticalRecipe::getGroup),
-                        CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(ChangeRecepticalRecipe::getCategory),
-                        ItemStack.RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
-                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ChangeRecepticalRecipe::getIngredients)
-                ).apply(instance, ChangeRecepticalRecipe::new)
-        );
-
-        @Override
-        public Codec<ChangeRecepticalRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public ChangeRecepticalRecipe read(PacketByteBuf buffer) {
-            return new ChangeRecepticalRecipe(
-                    buffer.readString(),
-                    buffer.readEnumConstant(CraftingRecipeCategory.class),
-                    buffer.readItemStack(),
-                    buffer.readCollection(DefaultedList::ofSize, Ingredient::fromPacket)
-            );
-        }
-
-        @Override
-        public void write(PacketByteBuf buffer, ChangeRecepticalRecipe recipe) {
-            buffer.writeString(recipe.getGroup());
-            buffer.writeEnumConstant(recipe.getCategory());
-            buffer.writeItemStack(recipe.output);
-            buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
-        }
     }
 }

@@ -15,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import ivorius.psychedelicraft.fluid.*;
@@ -30,7 +31,6 @@ import org.joml.Vector4f;
  * Updated by Sollace on 5 Jan 2023
  */
 public class FluidBoxRenderer {
-    private static final float[] DEFAULT_COLOR = new float[] {1, 1, 1, 1};
     private static final Vector4f POSITION_VECTOR = new Vector4f(0, 0, 0, 1);
     private static final FluidBoxRenderer INSTANCE = new FluidBoxRenderer();
 
@@ -48,7 +48,7 @@ public class FluidBoxRenderer {
     @Nullable
     private VertexConsumer buffer;
 
-    private float[] color = DEFAULT_COLOR;
+    private int color = Colors.WHITE;
 
     @Nullable
     private Matrix4f position;
@@ -84,7 +84,7 @@ public class FluidBoxRenderer {
             FluidAppearance appearance = FluidAppearance.of(fluid, tank.getStack());
 
             sprite = appearance.sprite();
-            color = appearance.rgba();
+            color = appearance.color();
             buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(appearance.texture()));
         }
 
@@ -94,7 +94,7 @@ public class FluidBoxRenderer {
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemStack stack) {
         sprite = MinecraftClient.getInstance().getItemRenderer().getModels().getModel(stack).getParticleSprite();
         buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
-        color = DEFAULT_COLOR;
+        color = Colors.WHITE;
         return this;
     }
 
@@ -107,7 +107,7 @@ public class FluidBoxRenderer {
         position.transform(POSITION_VECTOR);
         buffer.vertex(
                 POSITION_VECTOR.x * scale, POSITION_VECTOR.y * scale, POSITION_VECTOR.z * scale,
-                color[0], color[1], color[2], color[3],
+                color,
                 u, v,
                 overlay, light,
                 direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ()

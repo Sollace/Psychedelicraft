@@ -52,7 +52,7 @@ public class BongItem extends Item {
                 int slot = inventory.indexOf(consumable.getKey());
                 inventory.removeStack(slot, 1);
                 drugProperties.addAll(consumable.getValue().drugInfluences().apply(consumable.getKey()));
-                stack.damage(1, drugProperties.asEntity(), p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+                stack.damage(1, drugProperties.asEntity(), EquipmentSlot.MAINHAND);
                 drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), consumable.getValue().smokeColor);
             });
         });
@@ -103,7 +103,7 @@ public class BongItem extends Item {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
         return 30;
     }
 

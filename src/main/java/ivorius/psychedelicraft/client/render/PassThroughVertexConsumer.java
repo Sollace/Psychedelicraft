@@ -31,7 +31,7 @@ public class PassThroughVertexConsumer implements VertexConsumer {
     }
 
     @Override
-    public VertexConsumer vertex(double x, double y, double z) {
+    public VertexConsumer vertex(float x, float y, float z) {
         parent.vertex(x, y, z);
         return this;
     }
@@ -64,21 +64,6 @@ public class PassThroughVertexConsumer implements VertexConsumer {
     public VertexConsumer normal(float x, float y, float z) {
         parent.normal(x, y, z);
         return this;
-    }
-
-    @Override
-    public void next() {
-        parent.next();
-    }
-
-    @Override
-    public void fixedColor(int r, int g, int b, int a) {
-        parent.fixedColor(r, g, b, a);
-    }
-
-    @Override
-    public void unfixColor() {
-        parent.unfixColor();
     }
 
     public static class Parameters {

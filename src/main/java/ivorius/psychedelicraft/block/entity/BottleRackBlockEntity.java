@@ -4,7 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
@@ -34,16 +34,16 @@ public class BottleRackBlockEntity extends BlockEntityWithInventory {
         return direction.getAxis() == Axis.Y ? NO_SLOTS : SLOTS;
     }
 
-    public ActionResult insertItem(ItemStack stack, BlockHitResult hit, Direction facing) {
+    public ItemActionResult insertItem(ItemStack stack, BlockHitResult hit, Direction facing) {
         return getHitPos(hit, facing).map(pos -> {
             int slot = getSlot(pos);
             if (slot >= 0 && slot < 9 && getStack(slot).isEmpty() && isValid(slot, stack)) {
                 setStack(slot, stack.split(1));
                 getWorld().playSound(null, getPos(), SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1, 1.5F);
-                return ActionResult.SUCCESS;
+                return ItemActionResult.SUCCESS;
             }
-            return ActionResult.FAIL;
-        }).orElse(ActionResult.PASS);
+            return ItemActionResult.FAIL;
+        }).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
     }
 
     public TypedActionResult<ItemStack> extractItem(BlockHitResult hit, Direction facing) {

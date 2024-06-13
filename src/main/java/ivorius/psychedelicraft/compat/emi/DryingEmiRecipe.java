@@ -77,11 +77,11 @@ public class DryingEmiRecipe implements EmiRecipe, PSRecipe {
             }
         }
         widgets.addSlot(output.get(0), 92, 14 + y).large(true).recipeContext(this);
-        widgets.addText(EmiPort.ordered(EmiPort.translatable("emi.cooking.experience", recipe.getExperience())), 58, 55, -1, true);
+        widgets.addText(EmiPort.ordered(EmiPort.translatable("emi.cooking.experience", recipe.experience())), 58, 55, -1, true);
 
         widgets.addTexture(background, 95, 0, 25, 25, 177, 20);
-        widgets.addAnimatedTexture(background, 60, 18 + y, 25, 20, 177, 42, 50 * recipe.getCookingTime(), true, false, false).tooltip((mx, my) -> {
-            return List.of(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.cooking.time", recipe.getCookingTime() / 20f))));
+        widgets.addAnimatedTexture(background, 60, 18 + y, 25, 20, 177, 42, 50 * recipe.cookTime(), true, false, false).tooltip((mx, my) -> {
+            return List.of(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.cooking.time", recipe.cookTime() / 20f))));
         });
     }
 }

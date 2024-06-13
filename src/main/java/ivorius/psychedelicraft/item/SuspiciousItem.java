@@ -7,13 +7,12 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 
 public class SuspiciousItem extends Item {
 
@@ -46,9 +45,9 @@ public class SuspiciousItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         getHallucinatedItem().ifPresent(item -> {
-            item.appendTooltip(item.getDefaultStack(), world, tooltip, context);
+            item.appendTooltip(item.getDefaultStack(), context, tooltip, type);
         });
     }
 

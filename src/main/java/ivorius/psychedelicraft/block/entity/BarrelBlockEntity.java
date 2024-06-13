@@ -10,6 +10,7 @@ import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -64,15 +65,15 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public void writeNbt(NbtCompound compound) {
-        super.writeNbt(compound);
+    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.writeNbt(compound, lookup);
         compound.putInt("timeLeftTapOpen", timeLeftTapOpen);
         compound.putFloat("tapRotation", tapRotation);
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
+    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.readNbt(compound, lookup);
         timeLeftTapOpen = compound.getInt("timeLeftTapOpen");
         tapRotation = compound.getFloat("tapRotation");
     }

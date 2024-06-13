@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.client.render.shader;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.math.Vec3d;
 
 public interface ShaderContext {
     static HallucinationManager hallucinations() {
@@ -26,7 +27,7 @@ public interface ShaderContext {
     }
 
     static float tickDelta() {
-        return MinecraftClient.getInstance().getTickDelta();
+        return MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
     }
 
     static long time() {
@@ -35,5 +36,9 @@ public interface ShaderContext {
 
     static float viewDistace() {
         return MinecraftClient.getInstance().options.getViewDistance().getValue() * 16;
+    }
+
+    static Vec3d position() {
+        return MinecraftClient.getInstance().player.getPos();
     }
 }

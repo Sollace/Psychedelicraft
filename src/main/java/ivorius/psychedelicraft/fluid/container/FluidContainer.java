@@ -12,6 +12,7 @@ import net.minecraft.util.Identifier;
  * @author Sollace
  * @since 1 Jan 2023
  */
+@Deprecated
 public interface FluidContainer extends ItemConvertible {
     FluidContainer UNLIMITED = new FluidContainer() {
         @Override
@@ -100,6 +101,7 @@ public interface FluidContainer extends ItemConvertible {
 
     NbtCompound EMPTY_NBT = new NbtCompound();
 
+    @Deprecated
     static NbtCompound getFluidAttributesTag(ItemStack stack, boolean readOnly) {
         NbtCompound fluidTag = getFluidTag(stack, readOnly);
         if (!readOnly) {
@@ -113,6 +115,7 @@ public interface FluidContainer extends ItemConvertible {
         return EMPTY_NBT;
     }
 
+    @Deprecated
     static NbtCompound getFluidTag(ItemStack stack, boolean readOnly) {
         if (!readOnly) {
             return stack.getOrCreateSubNbt("fluid");

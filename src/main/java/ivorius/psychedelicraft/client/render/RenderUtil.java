@@ -18,6 +18,7 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 /**
@@ -52,7 +53,7 @@ public class RenderUtil {
     public static void vertex(VertexConsumer buffer, MatrixStack matrices, float x, float y, float z, float u, float v, int light, int overlay) {
         matrices.peek().getPositionMatrix().transform(POSITION_VECTOR.set(x, y, z, 1));
         matrices.peek().getNormalMatrix().transform(NORMAL_VECTOR.set(0, 1, 0));
-        buffer.vertex(POSITION_VECTOR.x, POSITION_VECTOR.y, POSITION_VECTOR.z, 1, 1, 1, 1, u, v, light, overlay, NORMAL_VECTOR.x, NORMAL_VECTOR.y, NORMAL_VECTOR.z);
+        buffer.vertex(POSITION_VECTOR.x, POSITION_VECTOR.y, POSITION_VECTOR.z, Colors.WHITE, u, v, light, overlay, NORMAL_VECTOR.x, NORMAL_VECTOR.y, NORMAL_VECTOR.z);
     }
 
     public static void drawQuad(MatrixStack matrices, float x0, float y0, float x1, float y1) {
@@ -60,13 +61,12 @@ public class RenderUtil {
     }
 
     public static void drawQuad(MatrixStack matrices, float x0, float y0, float x1, float y1, float z) {
-        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
-        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        fastVertex(buffer, matrices, x0, y1, z).texture(0, 1).next();
-        fastVertex(buffer, matrices, x1, y1, z).texture(1, 1).next();
-        fastVertex(buffer, matrices, x1, y0, z).texture(1, 0).next();
-        fastVertex(buffer, matrices, x0, y0, z).texture(0, 0).next();
-        Tessellator.getInstance().draw();
+        BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        fastVertex(buffer, matrices, x0, y1, z).texture(0, 1);
+        fastVertex(buffer, matrices, x1, y1, z).texture(1, 1);
+        fastVertex(buffer, matrices, x1, y0, z).texture(1, 0);
+        fastVertex(buffer, matrices, x0, y0, z).texture(0, 0);
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
     }
 
     public static void drawOverlay(MatrixStack matrices, float alpha,
@@ -77,13 +77,12 @@ public class RenderUtil {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.setShaderTexture(0, texture);
-        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
-        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        fastVertex(buffer, matrices, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1).next();
-        fastVertex(buffer, matrices, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1).next();
-        fastVertex(buffer, matrices, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0).next();
-        fastVertex(buffer, matrices, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0).next();
-        Tessellator.getInstance().draw();
+        BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        fastVertex(buffer, matrices, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1);
+        fastVertex(buffer, matrices, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1);
+        fastVertex(buffer, matrices, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0);
+        fastVertex(buffer, matrices, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0);
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 

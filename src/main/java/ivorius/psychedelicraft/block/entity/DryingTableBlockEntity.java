@@ -16,13 +16,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Heightmap.Type;
 
 public class DryingTableBlockEntity extends BlockEntityWithInventory {
-    private static final int OUTPUT_SLOT_INDEX = 0;
+    public static final int OUTPUT_SLOT_INDEX = 0;
     private static final int[] INPUT_SLOTS = new int[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     private static final int[] OUTPUT_SLOTS = new int[]{ OUTPUT_SLOT_INDEX };
 
@@ -31,7 +34,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     private float heatRatio;
     private float dryingProgress;
 
-    private boolean isCooking;
+    private Optional<Identifier> currentRecipe = Optional.empty();
 
     public final PropertyDelegate propertyDelegate = new PropertyDelegate(){
         @Override
@@ -100,7 +103,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
             }
         }
 
-        if (isCooking) {
+        if (currentRecipe.isPresent()) {
             dryingProgress += heatRatio / (
                     world.getBlockState(pos).isOf(PSBlocks.IRON_DRYING_TABLE)
                     ? Psychedelicraft.getConfig().balancing.ironDryingTableTickDuration
@@ -120,7 +123,12 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
             }
 
             if (dryingProgress >= 1) {
-                endDryingProcess();
+                DryingRecipe.Input input = new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList());
+                world.getRecipeManager().getFirstMatch(PSRecipes.DRYING_TYPE, input, world, currentRecipe.get()).ifPresent(recipe -> {
+                    craft(recipe.value(), input);
+                });
+                currentRecipe = Optional.empty();
+
                 world.getChunkManager().markForUpdate(pos);
             }
         } else {
@@ -134,46 +142,35 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         }
     }
 
-    public Optional<DryingRecipe> getRecipe() {
-        if (!getStack(OUTPUT_SLOT_INDEX).isEmpty()) {
-            return Optional.empty();
-        }
-        return getWorld().getRecipeManager()
-                .getFirstMatch(PSRecipes.DRYING_TYPE, this, this.getWorld())
-                .map(RecipeEntry::value);
-    }
-
-    public ItemStack craft() {
-        return getRecipe()
-                .map(recipe -> recipe.craft(this, getWorld().getRegistryManager()))
-                .orElse(ItemStack.EMPTY);
-    }
-
-    public void endDryingProcess() {
-        ItemStack result = craft();
-        ItemStack output = getStack(0);
+    private void craft(DryingRecipe recipe, DryingRecipe.Input input) {
+        ItemStack result = recipe.craft(input, getWorld().getRegistryManager());
         clear();
-
-        if (output.isEmpty()) {
-            output = result;
-        } else {
-            output.increment(result.getCount());
+        DefaultedList<ItemStack> remainder = recipe.getRemainder(input);
+        for (int i = 0; i < remainder.size(); i++) {
+            setStack(i + 1, remainder.get(i));
         }
-        setStack(OUTPUT_SLOT_INDEX, output);
+
+        if (!input.result().isEmpty()) {
+            result.increment(input.result().getCount());
+        }
+
+        setStack(OUTPUT_SLOT_INDEX, result);
     }
 
     @Override
-    public void writeNbt(NbtCompound compound) {
-        super.writeNbt(compound);
-        compound.putBoolean("cooking", isCooking);
+    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.writeNbt(compound, lookup);
+        currentRecipe.ifPresent(r -> {
+            compound.putString("currentRecipe", r.toString());
+        });
         compound.putFloat("heatRatio", heatRatio);
         compound.putFloat("dryingProgress", dryingProgress);
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
-        isCooking = compound.getBoolean("cooking");
+    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.readNbt(compound, lookup);
+        currentRecipe = Identifier.validate(compound.getString("currentRecipe")).result();
         heatRatio = compound.getFloat("heatRatio");
         dryingProgress = compound.getFloat("dryingProgress");
     }
@@ -186,7 +183,10 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     @Override
     public void onInventoryChanged() {
         if (!getWorld().isClient) {
-            isCooking = getRecipe().isPresent();
+            currentRecipe = getWorld()
+                    .getRecipeManager()
+                    .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), getWorld())
+                    .map(RecipeEntry::id);
             dryingProgress = 0;
         }
 

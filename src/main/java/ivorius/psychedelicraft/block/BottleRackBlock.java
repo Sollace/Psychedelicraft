@@ -94,21 +94,18 @@ public class BottleRackBlock extends BlockWithEntity {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).map(be -> {
-
-            ItemStack heldStack = player.getStackInHand(hand);
-
             if (heldStack.isEmpty()) {
                 TypedActionResult<ItemStack> extracted = be.extractItem(hit, state.get(FACING));
                 if (extracted.getResult().isAccepted()) {
                     player.setStackInHand(hand, extracted.getValue());
                 }
-                return extracted.getResult();
+                return extracted.getResult() == ActionResult.SUCCESS ? ItemActionResult.SUCCESS : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
 
             return be.insertItem(heldStack, hit, state.get(FACING));
-        }).orElse(ActionResult.FAIL);
+        }).orElse(ItemActionResult.FAIL);
     }
 
     @Deprecated

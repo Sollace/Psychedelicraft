@@ -79,7 +79,7 @@ public class BarrelModel extends Model {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g, float b, float a) {
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
         tree.render(matrices, vertices, light, overlay);
     }
 }

@@ -17,10 +17,10 @@ import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -94,9 +94,9 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         return getValidMasterPosition(world, pos).map(p -> {
-            return world.getBlockState(p).onUse(world, player, hand, new BlockHitResult(hit.getPos(), hit.getSide(), p, hit.isInsideBlock()));
+            return world.getBlockState(p).onUse(world, player, new BlockHitResult(hit.getPos(), hit.getSide(), p, hit.isInsideBlock()));
         }).orElse(ActionResult.PASS);
     }
 
@@ -165,15 +165,15 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
         }
 
         @Override
-        public void writeNbt(NbtCompound compound) {
-            super.writeNbt(compound);
+        public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
+            super.writeNbt(compound, lookup);
             compound.put("masterPos", NbtHelper.fromBlockPos(masterPos));
         }
 
         @Override
-        public void readNbt(NbtCompound compound) {
-            super.readNbt(compound);
-            masterPos = NbtHelper.toBlockPos(compound.getCompound("masterPos"));
+        public void readNbt(NbtCompound compound, WrapperLookup lookup) {
+            super.readNbt(compound, lookup);
+            masterPos = NbtHelper.toBlockPos(compound, "masterPos").orElse(BlockPos.ORIGIN);
         }
     }
 }

@@ -10,6 +10,7 @@ import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 
@@ -120,15 +121,15 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     }
 
     @Override
-    public void writeNbt(NbtCompound compound) {
-        super.writeNbt(compound);
+    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.writeNbt(compound, lookup);
         compound.putInt("timeProcessed", getTimeProcessed());
         compound.putInt("timeNeeded", getTimeNeeded());
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
+    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.readNbt(compound, lookup);
         setTimeProcessed(compound.getInt("timeProcessed"));
         setTimeNeeded(compound.getInt("timeNeeded"));
     }

@@ -22,8 +22,11 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.*;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvents;
@@ -55,12 +58,15 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
     private final int shearedAge;
 
+    private final RegistryKey<LootTable> farmingLootTableKey;
+
     public BurdenedLatticeBlock(boolean spreads, @Nullable Block stem, int shearedAge, Settings settings) {
         super(settings);
         this.spreads = spreads;
         this.stem = stem;
 
         this.shearedAge = shearedAge;
+        farmingLootTableKey = RegistryKey.of(getLootTableKey().getRegistryRef(), getLootTableKey().getValue().withPath(p -> p + "_farming"));
         setDefaultState(getDefaultState().with(AGE, 0).with(PERSISTENT, false));
     }
 
@@ -87,7 +93,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     @Deprecated
     public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         ItemStack tool = builder.getOptional(LootContextParameters.TOOL);
-        if (tool != null && !tool.isEmpty() && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, tool) > 0) {
+        if (tool != null && !tool.isEmpty() && EnchantmentHelper.getEnchantments(tool).getLevel(builder.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).entryOf(Enchantments.SILK_TOUCH)) > 0) {
             ItemStack drop = asItem().getDefaultStack();
             drop.setDamage(state.get(AGE));
             return List.of(drop);
@@ -96,35 +102,32 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (player.getStackInHand(hand).isOf(Items.SHEARS)) {
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (stack.isOf(Items.SHEARS)) {
 
             if (state.get(AGE) < MAX_AGE || state.get(PERSISTENT)) {
-                return ActionResult.FAIL;
+                return ItemActionResult.FAIL;
             }
 
             world.playSoundFromEntity(null, player, SoundEvents.ENTITY_SHEEP_SHEAR, player.getSoundCategory(), 1, 1);
 
             if (!world.isClient) {
-                Identifier lootTableId = getLootTableId().withPath(p -> p + "_farming");
-                world.getServer().getLootManager().getLootTable(lootTableId)
+                world.getServer().getReloadableRegistries().getLootTable(farmingLootTableKey)
                     .generateLoot(new LootContextParameterSet.Builder((ServerWorld)world)
                         .add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
                         .add(LootContextParameters.TOOL, player.getStackInHand(hand))
                         .add(LootContextParameters.BLOCK_STATE, state)
                         .addOptional(LootContextParameters.BLOCK_ENTITY, world.getBlockEntity(pos))
-                        .build(LootContextTypes.BLOCK)).forEach(stack -> {
-                    Block.dropStack(world, pos, stack);
-                });
+                        .build(LootContextTypes.BLOCK)).forEach(s -> Block.dropStack(world, pos, s));
                 world.setBlockState(pos, state.with(AGE, shearedAge));
             }
             if (!player.isCreative()) {
-                player.getStackInHand(hand).damage(1, player, p -> p.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
+                player.getStackInHand(hand).damage(1, player, hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             }
-            return ActionResult.SUCCESS;
+            return ItemActionResult.SUCCESS;
         }
 
-        return ActionResult.PASS;
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override

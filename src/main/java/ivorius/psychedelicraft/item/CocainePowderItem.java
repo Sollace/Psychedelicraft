@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.item;
 
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.UseAction;
 
@@ -18,7 +19,7 @@ public class CocainePowderItem extends EdibleItem {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
         return 32;
     }
 }

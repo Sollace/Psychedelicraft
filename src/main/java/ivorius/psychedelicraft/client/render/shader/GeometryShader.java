@@ -46,7 +46,7 @@ public class GeometryShader {
 
 
     public void setup(Type type, String name, InputStream stream, String domain, GlImportProcessor loader) {
-        this.name = new Identifier(name);
+        this.name = Identifier.of(name);
         this.type = type;
     }
 
@@ -72,7 +72,7 @@ public class GeometryShader {
             }
         }));
         register.accept(new BoundUniform("PS_PlayerPosition", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> {
-            Vec3d pos = isEnabled() ? MinecraftClient.getInstance().player.getPos() : Vec3d.ZERO;
+            Vec3d pos = isEnabled() ? ShaderContext.position() : Vec3d.ZERO;
             uniform.set((float)pos.getX(), (float)pos.getY(), (float)pos.getZ());
         }));
         register.accept(new BoundUniform("PS_WorldTicks", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
@@ -91,10 +91,10 @@ public class GeometryShader {
             }
         }));
         register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength(MinecraftClient.getInstance().getTickDelta()) : 0);
+            uniform.set(isWorld() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength(ShaderContext.tickDelta()) : 0);
         }));
         register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() ? ShaderContext.hallucinations().getSurfaceShatteringStrength(MinecraftClient.getInstance().getTickDelta()) : 0F);
+            uniform.set(isWorld() ? ShaderContext.hallucinations().getSurfaceShatteringStrength(ShaderContext.tickDelta()) : 0F);
         }));
     }
 

@@ -12,10 +12,11 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.block.PlacedDrinksBlock;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -25,6 +26,7 @@ import net.minecraft.world.World;
  */
 public class DrinkableItem extends Item implements FluidContainer {
     public static final int FLUID_PER_DRINKING = FluidVolumes.BUCKET / 4;
+    public static final int DEFAULT_MAX_USE_TIME = (int)(1.6F * 20);
 
     private final int capacity;
 
@@ -74,7 +76,7 @@ public class DrinkableItem extends Item implements FluidContainer {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
         return consumptionTime;
     }
 
@@ -90,12 +92,13 @@ public class DrinkableItem extends Item implements FluidContainer {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
         tooltip.add(Text.translatable("psychedelicraft.drink.levels", getLevel(stack), getMaxCapacity(stack)).formatted(Formatting.GRAY));
 
         SimpleFluid fluid = getFluid(stack);
-        fluid.appendTooltip(stack, world, tooltip, context);
-        if (context.isAdvanced()) {
+        fluid.appendTooltip(stack, tooltip, type);
+        if (type.isAdvanced()) {
             tooltip.add(Text.literal("contents: " + fluid.getId().toString()).formatted(Formatting.DARK_GRAY));
         }
     }

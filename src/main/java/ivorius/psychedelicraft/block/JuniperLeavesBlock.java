@@ -46,7 +46,7 @@ public class JuniperLeavesBlock extends LeavesBlock {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (this == PSBlocks.FRUITING_JUNIPER_LEAVES) {
             Block.dropStack(world, pos, PSItems.JUNIPER_BERRIES.getDefaultStack());
             world.setBlockState(pos, PSBlocks.JUNIPER_LEAVES.getDefaultState()

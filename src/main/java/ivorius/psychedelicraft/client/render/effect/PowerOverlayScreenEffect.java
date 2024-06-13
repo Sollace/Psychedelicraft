@@ -56,7 +56,6 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
                     GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
             );
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder buffer = tessellator.getBuffer();
 
             for (int i = 0; i < powerLightnings; i++) {
                 float lX = powerLR.nextInt(width + lightningW) - lightningW;
@@ -68,12 +67,12 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, (0.05f + power * 0.1f) * (1.0f - lightningTime));
                 RenderSystem.setShaderTexture(0, LIGHTNING_TEXTURES[lIndex]);
 
-                buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-                buffer.vertex(lX, height, -90.0).texture(0, upsideDown ? 0 : 1).next();
-                buffer.vertex(lX + lightningW, height, -90.0).texture(1, upsideDown ? 0 : 1).next();
-                buffer.vertex(lX + lightningW, 0, -90.0).texture(1, upsideDown ? 1 : 0).next();
-                buffer.vertex(lX, 0, -90.0).texture(0, upsideDown ? 1 : 0).next();
-                tessellator.draw();
+                BufferBuilder buffer = tessellator.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+                buffer.vertex(lX, height, -90F).texture(0, upsideDown ? 0 : 1)
+                      .vertex(lX + lightningW, height, -90F).texture(1, upsideDown ? 0 : 1)
+                      .vertex(lX + lightningW, 0, -90F).texture(1, upsideDown ? 1 : 0)
+                      .vertex(lX, 0, -90F).texture(0, upsideDown ? 1 : 0);
+                BufferRenderer.drawWithGlobalProgram(buffer.end());
             }
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.defaultBlendFunc();
@@ -81,19 +80,16 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
     }
 
     public void renderRandomParticles(MatrixStack matrices, int number, int width, int height, int screenWidth, int screenHeight, Random rand) {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-
-        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         for (int i = 0; i < number; i++) {
             int x = rand.nextInt(screenWidth + width) - width;
             int y = rand.nextInt(screenHeight + height) - height;
 
-            buffer.vertex(x, y + height, -90.0).texture(0, 1).next();
-            buffer.vertex(x + width, y + height, -90.0).texture(1, 1).next();
-            buffer.vertex(x + width, y, -90.0).texture(1, 0).next();
-            buffer.vertex(x, y, -90.0).texture(0, 0).next();
+            buffer.vertex(x, y + height, -90).texture(0, 1)
+                  .vertex(x + width, y + height, -90).texture(1, 1)
+                  .vertex(x + width, y, -90).texture(1, 0)
+                  .vertex(x, y, -90).texture(0, 0);
         }
-        tessellator.draw();
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
     }
 }

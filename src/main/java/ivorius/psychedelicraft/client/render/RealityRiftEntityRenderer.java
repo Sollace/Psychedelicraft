@@ -7,11 +7,13 @@ package ivorius.psychedelicraft.client.render;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.RealityRiftEntity;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -71,19 +73,19 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
 
         vector.set(0, 0, 0, 1);
         Vector4f pos = positionMatrix.transform(vector);
-        consumer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, 0, 0, light, 0, 1, 1, 1);
+        consumer.vertex(pos.x, pos.y, pos.z, Colors.WHITE, 0, 0, light, 0, 1, 1, 1);
 
         vector.set(size, 0, 0, 1);
         pos = positionMatrix.transform(vector);
-        consumer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, 1, 0, light, 0, 1, 1, 1);
+        consumer.vertex(pos.x, pos.y, pos.z, Colors.WHITE, 1, 0, light, 0, 1, 1, 1);
 
         vector.set(size, size, 0, 1);
         pos = positionMatrix.transform(vector);
-        consumer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, 1, 1, light, 0, 1, 1, 1);
+        consumer.vertex(pos.x, pos.y, pos.z, Colors.WHITE, 1, 1, light, 0, 1, 1, 1);
 
         vector.set(0, size, 0, 1);
         pos = positionMatrix.transform(vector);
-        consumer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, 0, 1, light, 0, 1, 1, 1);
+        consumer.vertex(pos.x, pos.y, pos.z, Colors.WHITE, 0, 1, light, 0, 1, 1, 1);
 
         matrices.pop();
 
@@ -135,25 +137,27 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
 
                 vector.set(0, 0, 0, 1);
                 Vector4f pos = positionMatrix.transform(vector);
-                float centerAlpha = alpha * lightAlpha;
 
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, centerAlpha, 0, 0, light, 0, 1, 1, 1);
+                int opaque = MathUtils.withAlpha(Colors.WHITE, alpha * lightAlpha);
+                int transparent = MathUtils.withAlpha(Colors.WHITE, 0);
+
+                vertices.vertex(pos.x, pos.y, pos.z, opaque, 0, 0, light, 0, 1, 1, 1);
 
                 vector.set(-width * var9, var8, -0.5F * var9, 1);
                 pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 0, 1, 0, light, 0, 1, 1, 1);
+                vertices.vertex(pos.x, pos.y, pos.z, transparent, 1, 0, light, 0, 1, 1, 1);
 
                 vector.set(width * var9, var8, -0.5F * var9, 1);
                 pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 0, 0, 1, light, 0, 1, 1, 1);
+                vertices.vertex(pos.x, pos.y, pos.z, transparent, 0, 1, light, 0, 1, 1, 1);
 
                 vector.set(0, var8, var9, 1);
                 pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 0, 1, 1, light, 0, 1, 1, 1);
+                vertices.vertex(pos.x, pos.y, pos.z, transparent, 1, 1, light, 0, 1, 1, 1);
 
                 vector.set(-width * var9, var8, -0.5F * var9, 1);
                 pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 0, 1, 1, light, 0, 1, 1, 1);
+                vertices.vertex(pos.x, pos.y, pos.z, transparent, 1, 1, light, 0, 1, 1, 1);
             }
         }
 

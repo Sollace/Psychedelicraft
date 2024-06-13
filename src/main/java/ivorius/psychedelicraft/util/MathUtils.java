@@ -68,6 +68,10 @@ public interface MathUtils {
         return (left & 0xFF) / 255F;
     }
 
+    static int withAlpha(int color, float alpha) {
+        return (color & 0xFFFFFF) | ((int)(alpha * 255) & 0xFF) << 24;
+    }
+
     static int mixColors(int left, int right, float progress) {
         return packArgb(
                 MathHelper.lerp(a(left), a(right), progress),

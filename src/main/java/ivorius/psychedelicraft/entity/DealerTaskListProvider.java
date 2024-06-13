@@ -1,10 +1,6 @@
 package ivorius.psychedelicraft.entity;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableList;
@@ -14,6 +10,8 @@ import com.mojang.datafixers.util.Pair;
 
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
+import ivorius.psychedelicraft.recipe.DryingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.RecipeUtils;
 import net.minecraft.block.BlockState;
@@ -40,14 +38,12 @@ import net.minecraft.entity.ai.brain.task.VillagerWorkTask;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.event.GameEvent;
 
@@ -75,51 +71,31 @@ public class DealerTaskListProvider {
     static class DealerWorkTask extends VillagerWorkTask {
         @Override
         protected void performAdditionalWork(ServerWorld world, VillagerEntity entity) {
-            Optional<GlobalPos> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
-            if (!optional.isPresent()) {
-                return;
-            }
-            GlobalPos globalPos = optional.get();
-            BlockState blockState = world.getBlockState(globalPos.getPos());
-            if (blockState.isIn(PSTags.DRYING_TABLES)) {
+            entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE).ifPresent(globalPos -> {
+                if (world.getBlockState(globalPos.pos()).isIn(PSTags.DRYING_TABLES)) {
+                    world.getBlockEntity(globalPos.pos(), PSBlockEntities.DRYING_TABLE).ifPresent(blockEntity -> {
+                        ItemStack output = blockEntity.getStack(DryingTableBlockEntity.OUTPUT_SLOT_INDEX);
+                        DryingRecipe.Input input = new DryingRecipe.Input(output, entity.getInventory().getHeldStacks());
 
-                DryingTableBlockEntity blockEntity = (DryingTableBlockEntity)world.getBlockEntity(globalPos.getPos());
+                        world.getRecipeManager().getFirstMatch(PSRecipes.DRYING_TYPE, input, world)
+                                .map(RecipeEntry::value)
+                                .ifPresent(recipe -> {
+                                    ItemStack result = recipe.craft(input, world.getRegistryManager());
+                                    DefaultedList<ItemStack> remainder = recipe.getRemainder(input);
+                                    entity.getInventory().clear();
+                                    for (int i = 0; i < remainder.size(); i++) {
+                                        entity.getInventory().setStack(i, remainder.get(i));
+                                    }
 
-                int[] inputSlots = blockEntity.getAvailableSlots(Direction.DOWN);
-
-                ItemStack output = blockEntity.getStack(0);
-                if (!output.isEmpty()) {
-                    blockEntity.clear();
-                    output = entity.getInventory().addStack(output);
-                    if (!output.isEmpty()) {
-                        entity.dropStack(output);
-                    }
-                }
-                world.getRecipeManager().getAllMatches(PSRecipes.DRYING_TYPE, entity.getInventory(), world)
-                        .stream()
-                        .map(RecipeEntry::value)
-                        .filter(recipe -> recipe.getIngredients().size() <= inputSlots.length)
-                        .findFirst()
-                        .ifPresent(recipe -> {
-                    List<Ingredient> ingredients = new ArrayList<>(recipe.getIngredients());
-                    List<ItemStack> consumedMaterials = new ArrayList<>();
-                    RecipeUtils.slots(entity.getInventory(), s -> !s.isEmpty(), Function.identity()).forEach(slot -> {
-                        ingredients.stream().filter(ingredient -> ingredient.test(slot.content())).findFirst().ifPresent(matchedIngredient -> {
-                            ingredients.remove(matchedIngredient);
-                            consumedMaterials.add(slot.content());
-                            slot.set(ItemStack.EMPTY);
+                                    if (output.isEmpty()) {
+                                        result.increment(output.getCount());
+                                    }
+                                    blockEntity.setStack(DryingTableBlockEntity.OUTPUT_SLOT_INDEX, result);
                         });
                     });
-                    for (int slot : inputSlots) {
-                        if (consumedMaterials.isEmpty()) {
-                            break;
-                        }
-                        blockEntity.setStack(slot, consumedMaterials.remove(0));
-                    }
-                });
-            }
+                }
+            });
         }
-
     }
 
     static class DealerVillagerTask extends MultiTickTask<VillagerEntity> { // version of FarmerVillagerTask changed to work with drug crops

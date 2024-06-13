@@ -1,16 +1,12 @@
 package ivorius.psychedelicraft.recipe;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -28,45 +24,48 @@ public class PouringRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean matches(RecipeInputInventory inventory, World world) {
-        List<MutableFluidContainer> recepticals = getRecepticals(inventory).map(e -> e.content().getKey().toMutable(e.content().getValue())).toList();
-        if (RecipeUtils.stacks(inventory).count() != recepticals.size() || recepticals.size() < 2) {
+    public boolean matches(CraftingRecipeInput inventory, World world) {
+        List<MutableFluidContainer> recepticals = RecipeUtils
+                .toRecepticals(inventory.getStacks().stream())
+                .map(e -> e.getKey().toMutable(e.getValue()))
+                .toList();
+
+        if (inventory.getStacks().size() != recepticals.size() || recepticals.size() < 2) {
             return false;
         }
 
         return recepticals.get(1).canReceive(recepticals.get(0).getFluid());
     }
 
-    private Stream<RecipeUtils.Slot<Map.Entry<FluidContainer, ItemStack>>> getRecepticals(RecipeInputInventory inventory) {
-        return RecipeUtils.recepticalSlots(inventory).limit(2);
-    }
-
     @Override
-    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
-        var recepticals = getRecepticals(inventory).toList();
+    public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
+        var recepticals = RecipeUtils.toRecepticals(inventory.getStacks().stream()).toList();
 
-        MutableFluidContainer mutableTo = recepticals.get(1).map(e -> e.getKey().toMutable(e.getValue()));
-        recepticals.get(0).map(e -> e.getKey().toMutable(e.getValue()))
-                .transfer(mutableTo.getCapacity() - mutableTo.getLevel(), mutableTo, null);
+        MutableFluidContainer mutableTo = recepticals.get(1).getKey().toMutable(recepticals.get(1).getValue());
+        MutableFluidContainer mutableFrom = recepticals.get(0).getKey().toMutable(recepticals.get(0).getValue());
+
+        mutableFrom.transfer(mutableTo.getCapacity() - mutableTo.getLevel(), mutableTo, null);
 
         return mutableTo.asStack();
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(RecipeInputInventory inventory) {
-        var recepticals = getRecepticals(inventory).toList();
+    public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput inventory) {
+        var recepticals = RecipeUtils.recepticalSlots(inventory).toList();
         if (recepticals.size() < 2) {
-            return DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
+            return DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
         }
 
         var from = recepticals.get(0);
+        var to = recepticals.get(1);
 
-        MutableFluidContainer mutableTo = recepticals.get(1).map(e -> e.getKey().toMutable(e.getValue()));
-        MutableFluidContainer mutableFrom = from.content().getKey().toMutable(from.content().getValue())
-                .transfer(mutableTo.getCapacity() - mutableTo.getLevel(), mutableTo, null);
+        MutableFluidContainer mutableTo = to.content().getKey().toMutable(to.content().getValue());
+        MutableFluidContainer mutableFrom = from.content().getKey().toMutable(from.content().getValue());
 
-        DefaultedList<ItemStack> remainder = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
-        remainder.set(from.slot(), mutableFrom.asStack());
+        mutableFrom.transfer(mutableTo.getCapacity() - mutableTo.getLevel(), mutableTo, null);
+
+        DefaultedList<ItemStack> remainder = DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
+        remainder.set(from.position(), mutableFrom.asStack());
         return remainder;
     }
 

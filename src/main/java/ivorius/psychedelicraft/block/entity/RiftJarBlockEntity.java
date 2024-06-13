@@ -17,6 +17,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World.ExplosionSourceType;
@@ -163,7 +164,7 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
     }
 
     @Override
-    public void writeNbt(NbtCompound compound) {
+    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
         compound.putFloat("currentRiftFraction", currentRiftFraction);
         compound.putBoolean("isOpening", isOpening);
         compound.putFloat("fractionOpen", fractionOpen);
@@ -173,7 +174,7 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
+    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         currentRiftFraction = compound.getFloat("currentRiftFraction");
         isOpening = compound.getBoolean("isOpening");
         fractionOpen = compound.getFloat("fractionOpen");

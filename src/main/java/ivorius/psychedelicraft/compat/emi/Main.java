@@ -23,11 +23,11 @@ import ivorius.psychedelicraft.recipe.FluidAwareShapelessRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.PouringRecipe;
 import ivorius.psychedelicraft.recipe.SmeltingFluidRecipe;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
-import net.minecraft.item.DyeableItem;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.util.Identifier;
 
 public class Main implements EmiPlugin {
     static final RecipeCategory DRYING_TABLE = RecipeCategory.register("drying_table", EmiStack.of(PSItems.DRYING_TABLE), registry -> {
@@ -72,15 +72,16 @@ public class Main implements EmiPlugin {
             if (recipe.value() instanceof BottleRecipe r) {
                 ItemStack output = EmiPort.getOutput(r);
 
-                if (output.getItem() instanceof DyeableItem dyeable) {
+                if (output.get(DataComponentTypes.DYED_COLOR) != null) {
                     var input = RecipeUtil.padIngredients(r);
                     EmiShapedRecipe.setRemainders(input, r);
                     RecipeUtil.replaceRecipe(registry, BottleRecipe.COLORS.entrySet().stream().map(variation -> {
-                        dyeable.setColor(output, variation.getValue().getSignColor());
+                        ItemStack result = output.copy();
+                        result.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(variation.getValue().getSignColor(), true));
                         return new EmiCraftingRecipe(
                                 input,
-                                EmiStack.of(output.copy()),
-                                new Identifier(recipe.id().getNamespace(), recipe.id().getPath() + "/" + variation.getValue().asString()),
+                                EmiStack.of(result),
+                                recipe.id().withPath(p -> p + "/" + variation.getValue().asString()),
                                 false
                         );
                     }).toArray(EmiRecipe[]::new));
@@ -104,9 +105,9 @@ public class Main implements EmiPlugin {
             }
         });
 
-        registry.addRecipe(createInteraction("morning_glory_flowers", EmiStack.of(PSItems.MORNING_GLORY_LATTICE), EmiIngredient.of(ConventionalItemTags.SHEARS), EmiStack.of(PSItems.MORNING_GLORY)));
-        registry.addRecipe(createInteraction("juniper_berries", EmiStack.of(PSItems.FRUITING_JUNIPER_LEAVES), EmiIngredient.of(ConventionalItemTags.SHEARS), EmiStack.of(PSItems.JUNIPER_BERRIES)));
-        registry.addRecipe(createInteraction("wine_grapes", EmiStack.of(PSItems.WINE_GRAPE_LATTICE), EmiIngredient.of(ConventionalItemTags.SHEARS), EmiStack.of(PSItems.WINE_GRAPES)));
+        registry.addRecipe(createInteraction("morning_glory_flowers", EmiStack.of(PSItems.MORNING_GLORY_LATTICE), EmiIngredient.of(ConventionalItemTags.SHEAR_TOOLS), EmiStack.of(PSItems.MORNING_GLORY)));
+        registry.addRecipe(createInteraction("juniper_berries", EmiStack.of(PSItems.FRUITING_JUNIPER_LEAVES), EmiIngredient.of(ConventionalItemTags.SHEAR_TOOLS), EmiStack.of(PSItems.JUNIPER_BERRIES)));
+        registry.addRecipe(createInteraction("wine_grapes", EmiStack.of(PSItems.WINE_GRAPE_LATTICE), EmiIngredient.of(ConventionalItemTags.SHEAR_TOOLS), EmiStack.of(PSItems.WINE_GRAPES)));
 
         SimpleFluid.all().forEach(fluid -> {
             if (!fluid.isEmpty()) {

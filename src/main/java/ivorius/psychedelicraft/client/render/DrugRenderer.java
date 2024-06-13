@@ -165,7 +165,7 @@ public class DrugRenderer {
         ModelPart rightArm = model.rightArm;
 
         DrugProperties properties = DrugProperties.of(player);
-        float tick = player.age + MinecraftClient.getInstance().getTickDelta();
+        float tick = ShaderContext.ticks();
         float shiftX = DrugEffectInterpreter.getHandShiftX(properties, tick) * 2;
 
         leftArm.pitch += shiftX;

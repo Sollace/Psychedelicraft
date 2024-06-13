@@ -5,7 +5,8 @@ import java.util.function.Supplier;
 import org.joml.Vector3f;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import ivorius.psychedelicraft.particle.ExhaledSmokeParticleEffect;
+import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
+import ivorius.psychedelicraft.particle.PSParticles;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.*;
 import net.minecraft.server.world.ServerWorld;
@@ -17,7 +18,7 @@ public interface ParticleHelper {
     static void spawnColoredParticle(Entity entity, Vector3f color, Vec3d direction, float speed, float size) {
         Vec3d velocity = entity.getVelocity().add(direction.normalize().multiply(speed));
         Vec3d pos = entity.getEyePos();
-        entity.getWorld().addParticle(new ExhaledSmokeParticleEffect(color, 1),
+        entity.getWorld().addParticle(new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, color, 1),
                 pos.x, pos.y - 0.1F, pos.z,
                 velocity.x, velocity.y + 0.03F, velocity.z);
     }

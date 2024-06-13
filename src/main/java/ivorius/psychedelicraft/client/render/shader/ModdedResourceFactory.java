@@ -22,7 +22,7 @@ class ModdedResourceFactory implements ResourceFactory {
 
     @Override
     public Optional<Resource> getResource(Identifier id) {
-        final Identifier overrideId = new Identifier(defaultNamespace, id.getPath());
+        final Identifier overrideId = Identifier.of(defaultNamespace, id.getPath());
         return parent.getResource(overrideId).map(r -> loadShader(r, overrideId))
              .or(() -> parent.getResource(id).map(r -> loadShader(r, id)));
     }

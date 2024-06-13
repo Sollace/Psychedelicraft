@@ -101,37 +101,30 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     }
 
     @Override
-    protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
-        if (!state.get(TAPPED) || state.get(FACING).getAxis() == Axis.Y) {
-            return ActionResult.FAIL;
+    protected ItemActionResult onInteractWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
+        if (!state.get(TAPPED) || state.get(FACING).getAxis() == Axis.Y || !(stack.getItem() instanceof FluidContainer container)) {
+            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        ItemStack stack = player.getStackInHand(hand);
-        if (stack.getItem() instanceof FluidContainer container) {
-
-            if (container.getLevel(stack) < container.getMaxCapacity(stack)) {
-
-                Resovoir tank = blockEntity.getTankOnSide(Direction.DOWN);
-                if (tank.getLevel() > 0 && tank.getFluidType().isSuitableContainer(container)) {
-                    if (!world.isClient) {
-                        if (stack.getCount() > 1) {
-                            player.getInventory().offerOrDrop(tank.drain(MAX_TAP_AMOUNT, stack.split(1)));
-                        } else {
-                            player.setStackInHand(hand, tank.drain(MAX_TAP_AMOUNT, stack.split(1)));
-                        }
-
-                        blockEntity.timeLeftTapOpen = 20;
-                        blockEntity.markForUpdate();
+        if (container.getLevel(stack) < container.getMaxCapacity(stack)) {
+            Resovoir tank = blockEntity.getTankOnSide(Direction.DOWN);
+            if (tank.getLevel() > 0 && tank.getFluidType().isSuitableContainer(container)) {
+                if (!world.isClient) {
+                    if (stack.getCount() > 1) {
+                        player.getInventory().offerOrDrop(tank.drain(MAX_TAP_AMOUNT, stack.split(1)));
+                    } else {
+                        player.setStackInHand(hand, tank.drain(MAX_TAP_AMOUNT, stack.split(1)));
                     }
 
-                    return ActionResult.SUCCESS;
+                    blockEntity.timeLeftTapOpen = 20;
+                    blockEntity.markForUpdate();
                 }
-            }
 
-            return ActionResult.FAIL;
+                return ItemActionResult.SUCCESS;
+            }
         }
 
-        return ActionResult.PASS;
+        return ItemActionResult.FAIL;
     }
 
     @Override

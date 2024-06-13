@@ -11,7 +11,9 @@ import ivorius.psychedelicraft.util.CodecUtils;
 import ivorius.psychedelicraft.PSTags;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -28,18 +30,14 @@ public record OptionalFluidIngredient (
             values -> DefaultedList.copyOf(EMPTY, values.toArray(OptionalFluidIngredient[]::new)),
             defaultedList -> new ArrayList<>(defaultedList)
     );
-
-    public OptionalFluidIngredient(PacketByteBuf buffer) {
-        this(buffer.readOptional(FluidIngredient::new), buffer.readOptional(Ingredient::fromPacket));
-    }
+    public static final PacketCodec<RegistryByteBuf, OptionalFluidIngredient> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.optional(FluidIngredient.PACKET_CODEC), OptionalFluidIngredient::fluid,
+            PacketCodecs.optional(Ingredient.PACKET_CODEC), OptionalFluidIngredient::receptical,
+            OptionalFluidIngredient::new
+    );
 
     public boolean isEmpty() {
         return fluid.isEmpty() && receptical.isEmpty();
-    }
-
-    public void write(PacketByteBuf buffer) {
-        buffer.writeOptional(fluid, (a, b) -> b.write(a));
-        buffer.writeOptional(receptical, (a, b) -> b.write(a));
     }
 
     public Ingredient toVanillaIngredient() {

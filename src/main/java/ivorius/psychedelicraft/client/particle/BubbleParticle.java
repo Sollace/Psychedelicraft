@@ -2,14 +2,14 @@ package ivorius.psychedelicraft.client.particle;
 
 import org.joml.Vector3f;
 
-import ivorius.psychedelicraft.particle.BubbleParticleEffect;
+import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 
 public class BubbleParticle extends SpriteBillboardParticle {
-    BubbleParticle(BubbleParticleEffect effect, SpriteProvider spriteProvider, ClientWorld world,
+    BubbleParticle(DrugDustParticleEffect effect, SpriteProvider spriteProvider, ClientWorld world,
             double x, double y, double z,
             double vX, double vY, double vZ) {
         super(world, x, y, z);

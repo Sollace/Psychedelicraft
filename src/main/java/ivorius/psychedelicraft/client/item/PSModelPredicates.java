@@ -2,13 +2,15 @@ package ivorius.psychedelicraft.client.item;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
+import ivorius.psychedelicraft.entity.MolotovCocktailEntity;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.item.*;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.item.DyeableItem;
+import net.minecraft.component.type.DyedColorComponent;
+import net.minecraft.util.Colors;
 
 /**
  * @author Sollace
@@ -23,7 +25,7 @@ public interface PSModelPredicates {
             return entity.getItemUseTimeLeft() > 0 ? 1 : 0;
         });
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("flying"), (stack, world, entity, seed) -> {
-            return stack.hasNbt() && stack.getNbt().getBoolean("flying") ? 1 : 0;
+            return (stack.getHolder() instanceof MolotovCocktailEntity) ? 1 : 0;
         });
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("tripping"), (stack, world, entity, seed) -> {
             return DrugProperties.of(entity).filter(DrugProperties::isTripping).isPresent() ? 1 : 0;
@@ -40,10 +42,10 @@ public interface PSModelPredicates {
             }
             return FluidContainer.of(stack).getFluid(stack).isEmpty() ? 0 : 1;
         });
-        ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : PSItems.HARMONIUM.getColor(stack), PSItems.HARMONIUM);
+        ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : DyedColorComponent.getColor(stack, Colors.RED), PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
-            if (layer == 0 && stack.getItem() instanceof DyeableItem dyeable) {
-                return dyeable.getColor(stack);
+            if (layer == 0) {
+                return DyedColorComponent.getColor(stack, Colors.WHITE);
             }
             if (layer == 1) {
                 SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);
@@ -51,7 +53,7 @@ public interface PSModelPredicates {
                     return FluidBoxRenderer.FluidAppearance.getItemColor(fluid, stack);
                 }
             }
-            return -1;
+            return Colors.WHITE;
         }, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.GLASS_CHALICE, PSItems.STONE_CUP, PSItems.WOODEN_MUG, PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL, PSItems.SYRINGE);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
             if (layer == 0) {
@@ -60,7 +62,7 @@ public interface PSModelPredicates {
                     return FluidBoxRenderer.FluidAppearance.getItemColor(fluid, stack);
                 }
             }
-            return -1;
+            return Colors.WHITE;
         }, PSItems.FILLED_GLASS_BOTTLE);
     }
 }

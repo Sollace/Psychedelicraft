@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
@@ -139,19 +140,19 @@ public class FlaskBlockEntity extends SyncedBlockEntity
     }
 
     @Override
-    public void writeNbt(NbtCompound compound) {
-        super.writeNbt(compound);
+    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.writeNbt(compound, lookup);
         compound.put("tank", tank.toNbt());
-        Inventories.writeNbt(compound, ioInventory.heldStacks);
+        Inventories.writeNbt(compound, ioInventory.heldStacks, lookup);
         compound.put("inputSlot", inputSlot.toNbt());
         compound.put("outputSlot", outputSlot.toNbt());
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
+    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.readNbt(compound, lookup);
         tank.fromNbt(compound.getCompound("tank"));
-        Inventories.readNbt(compound, ioInventory.heldStacks);
+        Inventories.readNbt(compound, ioInventory.heldStacks, lookup);
         inputSlot.fromNbt(compound.getCompound("inputSlot"));
         outputSlot.fromNbt(compound.getCompound("outputSlot"));
     }

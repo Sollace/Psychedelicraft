@@ -30,7 +30,7 @@ public class MolotovCocktailItem extends BottleItem {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
         return 7200;
     }
 
@@ -41,7 +41,7 @@ public class MolotovCocktailItem extends BottleItem {
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        float strength = user.getItemUseTimeLeft() / (float)getMaxUseTime(stack);
+        float strength = user.getItemUseTimeLeft() / (float)getMaxUseTime(stack, user);
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
 
         if (!world.isClient) {

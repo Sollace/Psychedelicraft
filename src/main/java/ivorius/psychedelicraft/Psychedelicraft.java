@@ -35,8 +35,9 @@ import org.apache.logging.log4j.Logger;
 
 public class Psychedelicraft implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
+    private static final String DEFAULT_NAMESPACE = "psychedelicraft";
 
-    private static final Supplier<JsonConfig.Loader<PSConfig>> CONFIG_LOADER = JsonConfig.create("psychedelicraft.json", PSConfig::new);
+    private static final Supplier<JsonConfig.Loader<PSConfig>> CONFIG_LOADER = JsonConfig.create(DEFAULT_NAMESPACE + ".json", PSConfig::new);
 
     public static Supplier<Optional<DrugProperties>> globalDrugProperties = Optional::empty;
     public static Supplier<Optional<HitResult>> crossHairTarget = Optional::empty;
@@ -58,7 +59,7 @@ public class Psychedelicraft implements ModInitializer {
     }
 
     public static Identifier id(String name) {
-        return new Identifier("psychedelicraft", name);
+        return Identifier.of(DEFAULT_NAMESPACE, name);
     }
 
     @Override

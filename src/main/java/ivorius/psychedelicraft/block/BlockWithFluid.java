@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.screen.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -37,7 +38,7 @@ import net.minecraft.world.World;
  * @since 3 Jan 2023
  */
 public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWithEntity {
-    public static final Identifier CONTENTS_DYNAMIC_DROP_ID = new Identifier("contents");
+    public static final Identifier CONTENTS_DYNAMIC_DROP_ID = Identifier.ofVanilla("contents");
 
     protected BlockWithFluid(Settings settings) {
         super(settings);
@@ -83,13 +84,13 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         return world.getBlockEntity(pos, getBlockEntityType()).map(be -> {
-            ActionResult result = onInteract(be.getCachedState(), world, be.getPos(), player, hand, be);
+            ActionResult result = onInteract(be.getCachedState(), world, be.getPos(), player, be);
             if (result != ActionResult.PASS) {
                 return result;
             }
-            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory<InteractionData>() {
                 @Override
                 public Text getDisplayName() {
                     return BlockWithFluid.this.getName();
@@ -101,16 +102,26 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
                 }
 
                 @Override
-                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                    buf.writeBlockPos(be.getPos());
-                    buf.writeEnumConstant(hit.getSide());
+                public InteractionData getScreenOpeningData(ServerPlayerEntity player) {
+                    return new InteractionData(be.getPos(), hit.getSide());
                 }
             });
             return ActionResult.SUCCESS;
         }).orElse(ActionResult.FAIL);
     }
 
-    protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, T blockEntity) {
+    @Override
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return world.getBlockEntity(pos, getBlockEntityType()).map(be -> {
+            return onInteractWithItem(stack, be.getCachedState(), world, be.getPos(), player, hand, be);
+        }).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+    }
+
+    protected ItemActionResult onInteractWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, T blockEntity) {
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, T blockEntity) {
         return ActionResult.PASS;
     }
 
@@ -123,6 +134,14 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return getBlockEntityType().instantiate(pos, state);
+    }
+
+    public record InteractionData(BlockPos pos, Direction side) {
+        public static final PacketCodec<PacketByteBuf, InteractionData> PACKET_CODEC = PacketCodec.tuple(
+                BlockPos.PACKET_CODEC, InteractionData::pos,
+                Direction.PACKET_CODEC, InteractionData::side,
+                InteractionData::new
+        );
     }
 
     public interface DirectionalFluidResovoir {

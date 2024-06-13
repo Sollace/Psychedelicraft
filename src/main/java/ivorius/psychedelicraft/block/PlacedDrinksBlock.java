@@ -1,11 +1,14 @@
 package ivorius.psychedelicraft.block;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
@@ -27,11 +30,14 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -100,10 +106,8 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.PLACED_DRINK).flatMap(be -> {
-
-            ItemStack heldStack = player.getStackInHand(hand);
 
             if (heldStack.isEmpty()) {
                 return Data.getHitPos(hit).map(be::removeDrink).map(extracted -> {
@@ -122,7 +126,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             return Data.getHitPos(hit).map(position -> {
                 return be.placeDrink(position, player.isCreative() ? heldStack.copyWithCount(1) : heldStack, player.getHeadYaw());
             });
-        }).map(TypedActionResult::getResult).orElse(ActionResult.FAIL);
+        }).map(TypedActionResult::getResult).orElse(ActionResult.FAIL).isAccepted() ? ItemActionResult.SUCCESS : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -167,9 +171,9 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         }
 
         if (state.isOf(PSBlocks.PLACED_DRINK)) {
-            return state.onUse(context.getWorld(), context.getPlayer(), context.getHand(), new BlockHitResult(
+            return state.onUseWithItem(context.getStack(), context.getWorld(), context.getPlayer(), context.getHand(), new BlockHitResult(
                     context.getHitPos(), context.getSide(), context.getBlockPos(), true
-            ));
+            )).isAccepted() ? ActionResult.SUCCESS : ActionResult.PASS;
         }
 
         BlockPos blockPos = replaceable ? context.getBlockPos() : context.getBlockPos().offset(context.getSide());
@@ -179,8 +183,8 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         BlockPos hitPos = Data.getHitPos(blockPos, context.getHitPos());
         context.getWorld().setBlockState(blockPos, PSBlocks.PLACED_DRINK.getDefaultState());
         return context.getWorld().getBlockEntity(blockPos, PSBlockEntities.PLACED_DRINK).map(be -> {
-            return be.placeDrink(hitPos, context.getStack().split(1), context.getPlayerYaw()).getResult();
-        }).orElse(ActionResult.FAIL);
+            return be.placeDrink(hitPos, context.getStack().split(1), context.getPlayerYaw()).getResult().isAccepted() ? ItemActionResult.SUCCESS : ItemActionResult.FAIL;
+        }).orElse(ItemActionResult.FAIL).isAccepted() ? ActionResult.SUCCESS : ActionResult.FAIL;
     }
 
     public static class Data extends SyncedBlockEntity {
@@ -257,12 +261,12 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         }
 
         @Override
-        public void readNbt(NbtCompound nbt) {
+        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             readEntriesFromNbt(nbt.getCompound("entries"));
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt) {
+        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             nbt.put("entries", writeEntriesToNbt(new NbtCompound()));
         }
 
@@ -272,22 +276,18 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                 int index = Integer.parseInt(key);
                 NbtList list = nbt.getList(key, NbtElement.COMPOUND_TYPE);
                 if (!list.isEmpty()) {
-                    entries.put(index, list
-                            .stream()
-                            .map(e -> (NbtCompound)e).map(Entry::new)
-                            .collect(Collectors.toCollection(Stack::new))
-                    );
+                    entries.put(index, Entry.STACK_CODEC.decode(NbtOps.INSTANCE, list).getOrThrow().getFirst());
                 }
             });
         }
 
         private NbtCompound writeEntriesToNbt(NbtCompound nbt) {
             entries.entries().forEach(entry -> {
-                NbtList list = new NbtList();
-                entry.value().forEach(e -> {
-                    list.add(e.toNbt(new NbtCompound()));
-                });
-                nbt.put(entry.key() + "", list);
+                if (!entry.value().isEmpty()) {
+                    Entry.STACK_CODEC.encodeStart(NbtOps.INSTANCE, entry.value()).result().ifPresent(stack -> {
+                        nbt.put(entry.key() + "", stack);
+                    });
+                }
             });
             return nbt;
         }
@@ -315,23 +315,16 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         }
 
         public record Entry (float x, float z, float rotation, ItemStack stack) {
-
-            public Entry(NbtCompound compound) {
-                this(
-                        compound.getFloat("x"),
-                        compound.getFloat("z"),
-                        compound.getFloat("rotation"),
-                        ItemStack.fromNbt(compound.getCompound("stack"))
-                );
-            }
-
-            public NbtCompound toNbt(NbtCompound compound) {
-                compound.putFloat("x", x);
-                compound.putFloat("z", z);
-                compound.putFloat("rotation", rotation);
-                compound.put("stack", stack.writeNbt(new NbtCompound()));
-                return compound;
-            }
+            static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                    Codec.FLOAT.fieldOf("x").forGetter(Entry::x),
+                    Codec.FLOAT.fieldOf("z").forGetter(Entry::z),
+                    Codec.FLOAT.fieldOf("rotation").forGetter(Entry::rotation),
+                    ItemStack.CODEC.fieldOf("stack").forGetter(Entry::stack)
+            ).apply(instance, Entry::new));
+            static final Codec<Stack<Entry>> STACK_CODEC = CODEC.listOf().xmap(
+                    list -> list.stream().collect(Collectors.toCollection(Stack::new)),
+                    stack -> List.copyOf(stack)
+            );
         }
 
         public interface DrinkConsumer {

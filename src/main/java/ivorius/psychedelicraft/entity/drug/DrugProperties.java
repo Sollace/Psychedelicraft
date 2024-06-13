@@ -24,6 +24,7 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -41,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public class DrugProperties implements NbtSerialisable {
-    public static final UUID DRUG_EFFECT_UUID = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1");
+    public static final Identifier DRUG_EFFECT = Psychedelicraft.id("drugs");
 
     private final Map<DrugType, Drug> drugs = DrugType.REGISTRY.stream().collect(Collectors.toMap(Function.identity(), DrugType::create));
     private final List<DrugInfluence> influences = new ArrayList<>();
@@ -316,14 +317,14 @@ public class DrugProperties implements NbtSerialisable {
         return modifier.get(this);
     }
 
-    private void changeDrugModifierMultiply(LivingEntity entity, EntityAttribute attribute, double value) {
+    private void changeDrugModifierMultiply(LivingEntity entity, RegistryEntry<EntityAttribute> attribute, double value) {
         // 2: ret *= 1.0 + value
-        changeDrugModifier(entity, attribute, value - 1.0, Operation.MULTIPLY_TOTAL);
+        changeDrugModifier(entity, attribute, value - 1.0, Operation.ADD_MULTIPLIED_TOTAL);
     }
 
-    private void changeDrugModifier(LivingEntity entity, EntityAttribute attribute, double value, Operation operation) {
+    private void changeDrugModifier(LivingEntity entity, RegistryEntry<EntityAttribute> attribute, double value, Operation operation) {
         EntityAttributeInstance speedInstance = entity.getAttributeInstance(attribute);
-        speedInstance.removeModifier(DrugProperties.DRUG_EFFECT_UUID);
-        speedInstance.addTemporaryModifier(new EntityAttributeModifier(DrugProperties.DRUG_EFFECT_UUID, "Drug Effects", value, operation));
+        speedInstance.removeModifier(DRUG_EFFECT);
+        speedInstance.addTemporaryModifier(new EntityAttributeModifier(DRUG_EFFECT, value, operation));
     }
 }

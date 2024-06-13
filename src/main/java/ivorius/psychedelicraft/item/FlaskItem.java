@@ -7,15 +7,12 @@ package ivorius.psychedelicraft.item;
 
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
-
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import net.minecraft.block.*;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.*;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
-import net.minecraft.world.World;
 
 /**
  * Created by lukas on 25.10.14.
@@ -42,8 +39,9 @@ public class FlaskItem extends BlockItem implements FluidContainer {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        if (context.isAdvanced()) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
+        if (type.isAdvanced()) {
             tooltip.add(Text.translatable("psychedelicraft.container.levels", getLevel(stack), getMaxCapacity(stack)));
         }
     }

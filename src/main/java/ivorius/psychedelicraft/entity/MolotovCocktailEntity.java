@@ -43,14 +43,14 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     @Override
     public ItemStack getStack() {
         ItemStack stack = super.getStack();
-        stack.getOrCreateNbt().putBoolean("flying", true);
+        stack.setHolder(this);
         return stack;
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (Combustable.fromStack(getItem()).getFireStrength(getStack()) > 0) {
+        if (Combustable.fromStack(getStack()).getFireStrength(getStack()) > 0) {
             spawnParticles(1);
         }
     }
@@ -76,7 +76,7 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     protected void onEntityHit(EntityHitResult hit) {
         super.onEntityHit(hit);
         damageEntity(hit.getEntity(), 1);
-        float explosionStrength = Combustable.fromStack(getItem()).getExplosionStrength(getItem());
+        float explosionStrength = Combustable.fromStack(getStack()).getExplosionStrength(getStack());
         if (explosionStrength > 0) {
             getWorld().getOtherEntities(this, getBoundingBox().expand(explosionStrength), i -> i.distanceTo(this) <= explosionStrength).forEach(e -> {
                 damageEntity(hit.getEntity(), 1 - (e.distanceTo(this) / explosionStrength));
@@ -85,9 +85,9 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     }
 
     private void damageEntity(Entity entity, float percentageScale) {
-        Combustable combustable = Combustable.fromStack(getItem());
-        float explosionStrength = combustable.getExplosionStrength(getItem());
-        float fireStrength = combustable.getFireStrength(getItem());
+        Combustable combustable = Combustable.fromStack(getStack());
+        float explosionStrength = combustable.getExplosionStrength(getStack());
+        float fireStrength = combustable.getFireStrength(getStack());
         entity.damage(PSDamageTypes.create(getWorld(), getOwner(), this, PSDamageTypes.molotov(entity, getOwner())), percentageScale * Math.max(4, explosionStrength * 0.6F + fireStrength * 0.3F));
         if (fireStrength > 0) {
             entity.isOnFire();
@@ -104,9 +104,9 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
 
         playSound(SoundEvents.BLOCK_GLASS_BREAK, 1, 1);
 
-        Combustable combustable = Combustable.fromStack(getItem());
-        float explosionStrength = combustable.getExplosionStrength(getItem());
-        float fireStrength = combustable.getFireStrength(getItem());
+        Combustable combustable = Combustable.fromStack(getStack());
+        float explosionStrength = combustable.getExplosionStrength(getStack());
+        float fireStrength = combustable.getFireStrength(getStack());
 
         if (fireStrength > 0) {
             for (int i = 0; i < fireStrength * 2; i++) {

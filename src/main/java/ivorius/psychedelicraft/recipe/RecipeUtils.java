@@ -7,7 +7,12 @@ package ivorius.psychedelicraft.recipe;
 
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.Map;
@@ -23,6 +28,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 public interface RecipeUtils {
     Codec<DefaultedList<Ingredient>> SHAPELESS_RECIPE_INGREDIENTS_CODEC = Ingredient.DISALLOW_EMPTY_CODEC.listOf().flatXmap(ingredients -> {
@@ -36,8 +42,19 @@ public interface RecipeUtils {
         return DataResult.success(DefaultedList.copyOf(Ingredient.EMPTY, ingredients2));
     }, DataResult::success);
 
+    PacketCodec<RegistryByteBuf, CraftingRecipeCategory> CRAFTING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CraftingRecipeCategory.class);
+    PacketCodec<RegistryByteBuf, CookingRecipeCategory> COOKING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CookingRecipeCategory.class);
+    PacketCodec<RegistryByteBuf, DefaultedList<Ingredient>> INGREDIENTS_PACKET_CODEC = Ingredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList(Ingredient.empty()));
+
+    @Deprecated
     static Stream<Map.Entry<FluidContainer, ItemStack>> recepticals(Inventory inventory) {
         return stacks(inventory)
+            .filter(stack -> stack.getItem() instanceof FluidContainer)
+            .map(stack -> Map.entry(FluidContainer.of(stack), stack));
+    }
+
+    static Stream<Map.Entry<FluidContainer, ItemStack>> toRecepticals(Stream<ItemStack> stacks) {
+        return stacks
             .filter(stack -> stack.getItem() instanceof FluidContainer)
             .map(stack -> Map.entry(FluidContainer.of(stack), stack));
     }
@@ -48,10 +65,23 @@ public interface RecipeUtils {
                 .filter(s -> !s.isEmpty());
     }
 
+    @Deprecated
     static Stream<Slot<Map.Entry<FluidContainer, ItemStack>>> recepticalSlots(Inventory inventory) {
         return slots(inventory, stack -> stack.getItem() instanceof FluidContainer, stack -> {
             return Map.entry(FluidContainer.of(stack), stack);
         });
+    }
+
+    static Stream<Entry<Map.Entry<FluidContainer, ItemStack>>> recepticalSlots(RecipeInput input) {
+        return slots(input, stack -> stack.getItem() instanceof FluidContainer, stack -> {
+            return Map.entry(FluidContainer.of(stack), stack);
+        });
+    }
+
+    static <T> Stream<Entry<T>> slots(RecipeInput input, Predicate<ItemStack> filter, Function<ItemStack, T> func) {
+        return IntStream.range(0, input.getSize())
+                .filter(i -> filter.test(input.getStackInSlot(i)))
+                .mapToObj(i -> new Entry<>(func.apply(input.getStackInSlot(i)), i));
     }
 
     static <T> Stream<Slot<T>> slots(Inventory inventory, Predicate<ItemStack> filter, Function<ItemStack, T> func) {
@@ -88,6 +118,8 @@ public interface RecipeUtils {
     static <T> T iDontCareWhich(Either<T, T> either) {
         return either.left().or(either::right).orElseThrow();
     }
+
+    record Entry<T>(T content, int position) {}
 
     record Slot<T>(Inventory inventory, T content, int slot) {
         public void set(ItemStack stack) {

@@ -7,12 +7,12 @@ package ivorius.psychedelicraft.screen;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.Direction;
@@ -33,8 +33,8 @@ public class FluidContraptionScreenHandler<T extends FlaskBlockEntity> extends S
     private final T blockEntity;
 
     @SuppressWarnings("unchecked")
-    public FluidContraptionScreenHandler(ScreenHandlerType<? extends FluidContraptionScreenHandler<T>> type, int syncId, PlayerInventory inventory, PacketByteBuf buffer) {
-        this(type, syncId, inventory, (T)inventory.player.getWorld().getBlockEntity(buffer.readBlockPos()), buffer.readEnumConstant(Direction.class));
+    public FluidContraptionScreenHandler(ScreenHandlerType<? extends FluidContraptionScreenHandler<T>> type, int syncId, PlayerInventory inventory, BlockWithFluid.InteractionData data) {
+        this(type, syncId, inventory, (T)inventory.player.getWorld().getBlockEntity(data.pos()), data.side());
     }
 
     public FluidContraptionScreenHandler(ScreenHandlerType<? extends FluidContraptionScreenHandler<T>> type, int syncId, PlayerInventory inventory, T blockEntity, Direction direction) {
