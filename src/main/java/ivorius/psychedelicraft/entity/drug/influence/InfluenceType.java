@@ -7,6 +7,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public record InfluenceType (String identifier, Function<InfluenceType, DrugInfluence> constructor) {
     private static final BiMap<String, InfluenceType> REGISTRY = HashBiMap.create();
@@ -24,9 +25,9 @@ public record InfluenceType (String identifier, Function<InfluenceType, DrugInfl
         return constructor.apply(this);
     }
 
-    public DrugInfluence create(NbtCompound compound) {
+    public DrugInfluence create(NbtCompound compound, WrapperLookup lookup) {
         DrugInfluence instance = create();
-        instance.fromNbt(compound);
+        instance.fromNbt(compound, lookup);
         return instance;
     }
 

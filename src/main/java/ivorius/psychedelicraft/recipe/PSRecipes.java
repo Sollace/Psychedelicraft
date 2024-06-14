@@ -26,7 +26,7 @@ public interface PSRecipes {
     RecipeSerializer<FluidAwareShapelessRecipe> SHAPELESS_FLUID = RecipeSerializer.register("psychedelicraft:shapeless_fluid", new Serializer<>(FluidAwareShapelessRecipe.CODEC, FluidAwareShapelessRecipe.PACKET_CODEC));
 
     RecipeType<MashingRecipe> MASHING_TYPE = RecipeType.register("psychedelicraft:mashing");
-    RecipeSerializer<MashingRecipe> MASHING = RecipeSerializer.register("psychedelicraft:mashing", new MashingRecipe.Serializer());
+    RecipeSerializer<MashingRecipe> MASHING = RecipeSerializer.register("psychedelicraft:mashing", new Serializer<>(MashingRecipe.CODEC, MashingRecipe.PACKET_CODEC));
 
     RecipeType<DryingRecipe> DRYING_TYPE = RecipeType.register("psychedelicraft:drying");
     RecipeSerializer<DryingRecipe> DRYING = RecipeSerializer.register("psychedelicraft:drying", new Serializer<>(DryingRecipe.CODEC, DryingRecipe.PACKET_CODEC));

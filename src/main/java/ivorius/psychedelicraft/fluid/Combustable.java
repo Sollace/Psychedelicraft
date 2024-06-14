@@ -5,7 +5,7 @@
 
 package ivorius.psychedelicraft.fluid;
 
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -14,12 +14,12 @@ import net.minecraft.item.ItemStack;
 public interface Combustable {
     Combustable NON_COMBUSTABLE = new Combustable() {
         @Override
-        public float getFireStrength(ItemStack stack) {
+        public float getFireStrength(ItemFluids stack) {
             return 0;
         }
 
         @Override
-        public float getExplosionStrength(ItemStack stack) {
+        public float getExplosionStrength(ItemFluids stack) {
             return 0;
         }
     };
@@ -30,7 +30,7 @@ public interface Combustable {
      * @param fluidStack The fluid stack.
      * @return The flame distance in blocks.
      */
-    float getFireStrength(ItemStack stack);
+    float getFireStrength(ItemFluids stack);
 
     /**
      * Determines the explosion size.
@@ -38,13 +38,17 @@ public interface Combustable {
      * @param fluidStack The fluid stack.
      * @return The explosion size in blocks.
      */
-    float getExplosionStrength(ItemStack stack);
+    float getExplosionStrength(ItemFluids stack);
 
     static Combustable fromStack(ItemStack stack) {
-        if (FluidContainer.of(stack).getFluid(stack) instanceof Combustable exploder) {
+        if (ItemFluids.of(stack).fluid() instanceof Combustable exploder) {
             return exploder;
         }
 
         return NON_COMBUSTABLE;
+    }
+
+    static Combustable fromStack(ItemFluids stack) {
+        return stack.fluid() instanceof Combustable exploder ? exploder : NON_COMBUSTABLE;
     }
 }

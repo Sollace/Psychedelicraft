@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
@@ -109,7 +110,7 @@ public class Stomach implements NbtSerialisable {
     }
 
     @Override
-    public void fromNbt(NbtCompound compound) {
+    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("hunger", NbtElement.COMPOUND_TYPE)) {
             getStomach().setLockedState(LockableHungerManager.State.fromNbt(compound.getCompound("hunger")));
         } else {
@@ -121,7 +122,7 @@ public class Stomach implements NbtSerialisable {
     }
 
     @Override
-    public void toNbt(NbtCompound compound) {
+    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
         LockableHungerManager.State lockedHungerState = getStomach().getLockedState();
         if (lockedHungerState != null) {
             compound.put("hunger", lockedHungerState.toNbt());

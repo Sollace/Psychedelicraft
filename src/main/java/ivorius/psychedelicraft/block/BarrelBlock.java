@@ -13,8 +13,9 @@ import com.mojang.serialization.MapCodec;
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
@@ -102,18 +103,25 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
 
     @Override
     protected ItemActionResult onInteractWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
-        if (!state.get(TAPPED) || state.get(FACING).getAxis() == Axis.Y || !(stack.getItem() instanceof FluidContainer container)) {
+        int capacity = FluidCapacity.get(stack);
+        if (!state.get(TAPPED) || state.get(FACING).getAxis() == Axis.Y || capacity == 0) {
             return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (container.getLevel(stack) < container.getMaxCapacity(stack)) {
+        if (ItemFluids.of(stack).amount() < capacity) {
             Resovoir tank = blockEntity.getTankOnSide(Direction.DOWN);
-            if (tank.getLevel() > 0 && tank.getFluidType().isSuitableContainer(container)) {
+            if (tank.getContents().amount() > 0 && tank.getContents().fluid().isSuitableContainer(stack)) {
                 if (!world.isClient) {
-                    if (stack.getCount() > 1) {
-                        player.getInventory().offerOrDrop(tank.drain(MAX_TAP_AMOUNT, stack.split(1)));
-                    } else {
-                        player.setStackInHand(hand, tank.drain(MAX_TAP_AMOUNT, stack.split(1)));
+
+                    ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copyWithCount(1));
+
+                    if (tank.withdraw(t, MAX_TAP_AMOUNT) > 0) {
+                        if (stack.getCount() > 1) {
+                            stack.decrement(1);
+                            player.getInventory().offerOrDrop(t.toItemStack());
+                        } else {
+                            player.setStackInHand(hand, t.toItemStack());
+                        }
                     }
 
                     blockEntity.timeLeftTapOpen = 20;

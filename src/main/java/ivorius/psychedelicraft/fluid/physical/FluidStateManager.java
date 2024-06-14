@@ -1,11 +1,12 @@
 package ivorius.psychedelicraft.fluid.physical;
 
+import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import net.minecraft.item.ItemStack;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -27,16 +28,15 @@ public record FluidStateManager (Set<FluidProperty<?>> properties) {
         return states.findFirst().map(state -> copyStateValues(state, to)).orElse(to);
     }
 
-    public ItemStack writeStack(State<?, ?> state, ItemStack stack) {
+    public void writeAttributes(State<?, ?> state, Map<String, Integer> attributes) {
         for (FluidProperty<?> property : properties) {
-            stack = property.writeToStack(state, stack);
+            property.write(state, attributes);
         }
-        return stack;
     }
 
-    public <O, S extends State<O, S>> S readStack(S state, ItemStack stack) {
+    public <O, S extends State<O, S>> S readAttributes(S state, ItemFluids stack) {
         for (FluidProperty<?> property : properties) {
-            state = property.readFromStack(state, stack);
+            state = property.read(state, stack);
         }
         return state;
     }
@@ -47,13 +47,13 @@ public record FluidStateManager (Set<FluidProperty<?>> properties) {
 
     public record FluidProperty<T extends Comparable<T>>(
             Property<T> property,
-            BiFunction<ItemStack, T, ItemStack> writer,
-            Function<ItemStack, T> reader) {
-        ItemStack writeToStack(State<?, ?> state, ItemStack stack) {
-            return writer.apply(stack, state.get(property));
+            BiConsumer<Map<String, Integer>, T> writer,
+            Function<ItemFluids, T> reader) {
+        void write(State<?, ?> state, Map<String, Integer> attributes) {
+            writer.accept(attributes, state.get(property));
         }
 
-        <O, S extends State<O, S>> S readFromStack(S state, ItemStack stack) {
+        <O, S extends State<O, S>> S read(S state, ItemFluids stack) {
             return state.with(property, reader.apply(stack));
         }
     }

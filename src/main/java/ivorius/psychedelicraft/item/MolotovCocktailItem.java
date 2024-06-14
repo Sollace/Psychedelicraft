@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.item;
 import ivorius.psychedelicraft.entity.MolotovCocktailEntity;
 import ivorius.psychedelicraft.fluid.Combustable;
 import ivorius.psychedelicraft.fluid.ConsumableFluid.ConsumptionType;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -20,8 +21,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class MolotovCocktailItem extends BottleItem {
-    public MolotovCocktailItem(Settings settings, int capacity) {
-        super(settings, capacity, 0, ConsumptionType.DRINK);
+    public MolotovCocktailItem(Settings settings) {
+        super(settings, DrinkableItem.FLUID_PER_DRINKING, ConsumptionType.DRINK);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class MolotovCocktailItem extends BottleItem {
 
     @Override
     public Text getName(ItemStack stack) {
-        if (getFluid(stack).isEmpty()) {
+        if (ItemFluids.of(stack).isEmpty()) {
             return Text.translatable(getTranslationKey(stack) + ".empty");
         }
 
@@ -75,9 +76,10 @@ public class MolotovCocktailItem extends BottleItem {
     }
 
     private int getQuality(ItemStack stack) {
-        if (getFluid(stack) instanceof Combustable exploding) {
-            float explStr = exploding.getExplosionStrength(stack) * 0.8f;
-            float fireStr = exploding.getFireStrength(stack) * 0.6f;
+        ItemFluids fluids = ItemFluids.of(stack);
+        if (fluids.fluid() instanceof Combustable exploding) {
+            float explStr = exploding.getExplosionStrength(fluids) * 0.8f;
+            float fireStr = exploding.getFireStrength(fluids) * 0.6f;
 
             return MathHelper.clamp(MathHelper.floor((fireStr + explStr) + 0.5f), 0, 7);
         }

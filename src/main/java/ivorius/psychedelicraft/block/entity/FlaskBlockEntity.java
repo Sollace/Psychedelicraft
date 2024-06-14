@@ -4,9 +4,6 @@
  */
 package ivorius.psychedelicraft.block.entity;
 
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,23 +25,19 @@ import java.util.List;
 
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 
 /**
  * Created by lukas on 25.10.14.
  * Updated by Sollace on 2 Jan 2023
  */
-public class FlaskBlockEntity extends SyncedBlockEntity
-        implements BlockWithFluid.DirectionalFluidResovoir,
-                   Resovoir.ChangeListener, SidedInventory,
-                   SidedStorageBlockEntity {
+public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
     private static final int[] NO_SLOT_ID = {};
     private static final int[] INPUT_SLOT_ID = {0};
     private static final int[] OUTPUT_SLOT_ID = {1};
-
-    public static final int FLASK_CAPACITY = FluidVolumes.BUCKET * 8;
 
     private final Resovoir tank;
     private boolean pendingSync;
@@ -57,12 +50,12 @@ public class FlaskBlockEntity extends SyncedBlockEntity
     public final PropertyDelegate propertyDelegate = new ArrayPropertyDelegate(getTotalProperties());
 
     public FlaskBlockEntity(BlockPos pos, BlockState state) {
-        this(PSBlockEntities.FLASK, pos, state, FLASK_CAPACITY);
+        this(PSBlockEntities.FLASK, pos, state, FluidVolumes.FLASK);
     }
 
     public FlaskBlockEntity(BlockEntityType<? extends FlaskBlockEntity> type, BlockPos pos, BlockState state, int capacity) {
         super(type, pos, state);
-        tank = new Resovoir(capacity, this);
+        this.tank = new Resovoir(capacity, this);
     }
 
     public void markForUpdate() {
@@ -74,23 +67,8 @@ public class FlaskBlockEntity extends SyncedBlockEntity
     }
 
     @Override
-    public void onDrain(Resovoir resovoir) {
-        onIdle(resovoir);
-    }
-
-    @Override
-    public void onFill(Resovoir resovoir, int amountFilled) {
-        onIdle(resovoir);
-    }
-
-    @Override
-    public void onIdle(Resovoir resovoir) {
+    public void onLevelChange(Resovoir resovoir, int change) {
         markForUpdate();
-    }
-
-    @Override
-    public Resovoir getTankOnSide(Direction direction) {
-        return tank;
     }
 
     @Override
@@ -102,19 +80,26 @@ public class FlaskBlockEntity extends SyncedBlockEntity
     public void tick(ServerWorld world) {
         ItemStack output = outputSlot.getStack();
         boolean playSound = false;
-        FluidContainer container = FluidContainer.of(output, null);
-        if (container != null && container.getFillPercentage(output) < 1) {
-            int oldLevel = container.getLevel(output);
-            ioInventory.setStack(1, tank.drain(50, output, outputSlot::incrementLevelsTransferred));
-            playSound |= oldLevel != FluidContainer.of(outputSlot.getStack()).getLevel(outputSlot.getStack());
+
+        if (FluidCapacity.get(output) > 0) {
+            ItemFluids.Transaction t = ItemFluids.Transaction.begin(output);
+            int amount = tank.withdraw(t, 50);
+            if (amount > 0) {
+                outputSlot.incrementLevelsTransferred(amount);
+                playSound = true;
+                outputSlot.setStack(t.toItemStack());
+            }
         }
 
         ItemStack input = inputSlot.getStack();
-        container = FluidContainer.of(input, null);
-        if (container != null && container.getFillPercentage(input) > 0) {
-            int oldLevel = container.getLevel(input);
-            ioInventory.setStack(0, tank.deposit(50, input, inputSlot::incrementLevelsTransferred));
-            playSound |= oldLevel != FluidContainer.of(inputSlot.getStack()).getLevel(inputSlot.getStack());
+        if (FluidCapacity.get(input) > 0) {
+            ItemFluids.Transaction t = ItemFluids.Transaction.begin(input);
+            int amount = tank.deposit(t, 50);
+            if (amount > 0) {
+                inputSlot.incrementLevelsTransferred(amount);
+                inputSlot.setStack(t.toItemStack());
+                playSound = true;
+            }
         }
 
         if (playSound && world.getTime() % 9 == 0) {
@@ -128,13 +113,13 @@ public class FlaskBlockEntity extends SyncedBlockEntity
         }
     }
 
+    @Deprecated
     @Override
-    public List<ItemStack> getDroppedStacks(FluidContainer container) {
+    public List<ItemStack> getDroppedStacks(ItemStack container) {
         List<ItemStack> stacks = new ArrayList<>();
-        ItemStack flaskStack = container.getDefaultStack(PSFluids.EMPTY);
-        int maxCapacity = container.getMaxCapacity(flaskStack);
-        while (!tank.isEmpty()) {
-            stacks.add(tank.drain(maxCapacity, flaskStack));
+        int maxCapacity = Math.min(FluidCapacity.get(container), tank.getContents().amount());
+        if (maxCapacity > 0) {
+            stacks.add(ItemFluids.set(container, tank.getContents().ofAmount(maxCapacity)));
         }
         return stacks;
     }
@@ -142,19 +127,19 @@ public class FlaskBlockEntity extends SyncedBlockEntity
     @Override
     public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
         super.writeNbt(compound, lookup);
-        compound.put("tank", tank.toNbt());
+        compound.put("tank", tank.toNbt(lookup));
         Inventories.writeNbt(compound, ioInventory.heldStacks, lookup);
-        compound.put("inputSlot", inputSlot.toNbt());
-        compound.put("outputSlot", outputSlot.toNbt());
+        compound.put("inputSlot", inputSlot.toNbt(lookup));
+        compound.put("outputSlot", outputSlot.toNbt(lookup));
     }
 
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
-        tank.fromNbt(compound.getCompound("tank"));
+        tank.fromNbt(compound.getCompound("tank"), lookup);
         Inventories.readNbt(compound, ioInventory.heldStacks, lookup);
-        inputSlot.fromNbt(compound.getCompound("inputSlot"));
-        outputSlot.fromNbt(compound.getCompound("outputSlot"));
+        inputSlot.fromNbt(compound.getCompound("inputSlot"), lookup);
+        outputSlot.fromNbt(compound.getCompound("outputSlot"), lookup);
     }
 
     @Override
@@ -164,7 +149,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity
 
     @Override
     public boolean isEmpty() {
-        return ioInventory.isEmpty() && tank.isEmpty();
+        return ioInventory.isEmpty() && tank.getContents().isEmpty();
     }
 
     @Override
@@ -236,11 +221,11 @@ public class FlaskBlockEntity extends SyncedBlockEntity
         }
 
         if (slot == OUTPUT_SLOT_ID[0]) {
-            return ioInventory.isValid(slot, stack) && FluidContainer.of(stack).getFillPercentage(stack) < 1;
+            return ioInventory.isValid(slot, stack) && FluidCapacity.getPercentage(stack) < 1;
         }
 
         if (slot == INPUT_SLOT_ID[0]) {
-            return ioInventory.isValid(slot, stack) && FluidContainer.of(stack).getFillPercentage(stack) > 0;
+            return ioInventory.isValid(slot, stack) && FluidCapacity.getPercentage(stack) > 0;
         }
 
         return false;
@@ -265,11 +250,6 @@ public class FlaskBlockEntity extends SyncedBlockEntity
         return false;
     }
 
-    @Override
-    public Storage<FluidVariant> getFluidStorage(Direction side) {
-        return getTankOnSide(side);
-    }
-
     class IoInventory extends SimpleInventory {
         public IoInventory() {
             super(2);
@@ -282,8 +262,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity
 
         @Override
         public boolean isValid(int slot, ItemStack stack) {
-            var container = FluidContainer.of(stack, null);
-            return container != null && (slot == 0 ? container.getFillPercentage(stack) > 0 : container.getFillPercentage(stack) < 1);
+            return slot == 0 ? FluidCapacity.getPercentage(stack) > 0 : FluidCapacity.getPercentage(stack) < 1;
         }
     }
 
@@ -309,10 +288,10 @@ public class FlaskBlockEntity extends SyncedBlockEntity
 
         public void onChange() {
             ItemStack stack = ioInventory.getStack(index);
-            var container = FluidContainer.of(stack);
-            int levels = container.getLevel(stack);
+            var fluids = ItemFluids.of(stack);
+            int levels = fluids.amount();
             if (index == 1) {
-                levels = container.getMaxCapacity(stack) - levels;
+                levels = FluidCapacity.get(stack) - levels;
             }
             propertyDelegate.set(inputtedLevelsIndex, levels);
             propertyDelegate.set(levelsTransferredIndex, 0);
@@ -322,19 +301,22 @@ public class FlaskBlockEntity extends SyncedBlockEntity
             return ioInventory.getStack(index);
         }
 
+        public void setStack(ItemStack stack) {
+            ioInventory.setStack(index, stack);
+        }
+
         public float getFillPercentage(float def) {
-            ItemStack stack = getStack();
-            return stack.getItem() instanceof FluidContainer container ? container.getFillPercentage(stack) : def;
+            return FluidCapacity.getPercentage(getStack());
         }
 
         @Override
-        public void toNbt(NbtCompound compound) {
+        public void toNbt(NbtCompound compound, WrapperLookup lookup) {
             compound.putInt("inputtedLevels", propertyDelegate.get(inputtedLevelsIndex));
             compound.putInt("levelsTransferred", propertyDelegate.get(levelsTransferredIndex));
         }
 
         @Override
-        public void fromNbt(NbtCompound compound) {
+        public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
             propertyDelegate.set(inputtedLevelsIndex, compound.getInt("inputtedLevels"));
             propertyDelegate.set(levelsTransferredIndex, compound.getInt("levelsTransferred"));
         }

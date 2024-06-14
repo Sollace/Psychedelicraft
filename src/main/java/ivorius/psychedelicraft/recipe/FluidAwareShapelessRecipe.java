@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -18,13 +17,14 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 public class FluidAwareShapelessRecipe extends ShapelessRecipe {
@@ -44,7 +44,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
 
     private final ItemStack output;
     private final DefaultedList<OptionalFluidIngredient> ingredients;
-    private final List<OptionalFluidIngredient> fluidRestrictions;
+    private final List<OptionalFluidIngredient> consumedFluids;
 
     public FluidAwareShapelessRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<OptionalFluidIngredient> input) {
         super(group, category, output,
@@ -55,7 +55,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         );
         this.output = output;
         this.ingredients = input;
-        this.fluidRestrictions = ingredients.stream().filter(i -> i.fluid().filter(f -> f.level() > 0).isPresent()).toList();
+        this.consumedFluids = ingredients.stream().filter(i -> i.fluid().filter(f -> f.level().isPresent()).isPresent()).toList();
     }
 
     public DefaultedList<OptionalFluidIngredient> getFluidAwareIngredients() {
@@ -84,19 +84,32 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
 
         for (int i = 0; i < defaultedList.size(); ++i) {
             ItemStack stack = inventory.getStackInSlot(i);
-            Item item = stack.getItem();
+            ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
 
-            defaultedList.set(i, item.hasRecipeRemainder()
-                ? new ItemStack(item.getRecipeRemainder())
-                : fluidRestrictions.stream()
-                        .filter(t -> t.test(stack))
-                        .findFirst()
-                        .flatMap(OptionalFluidIngredient::fluid)
-                        .map(fluid -> MutableFluidContainer.of(stack).decrement(fluid.level()))
-                        .map(MutableFluidContainer::asStack)
-                        .orElse(ItemStack.EMPTY)
-            );
+            if (consumedFluids.stream()
+                .filter(ingredient -> ingredient.test(stack))
+                .map(OptionalFluidIngredient::fluid)
+                .flatMap(Optional::stream)
+                .anyMatch(fluid -> {
+                    t.withdraw(fluid.level().orElse(0));
+                    return true;
+                })) {
+                if (t.fluids().isEmpty()) {
+                    ItemStack remainder = t.toItemStack().getRecipeRemainder();
+                    if (!remainder.isEmpty()) {
+                        defaultedList.set(i, remainder);
+                    }
+                } else {
+                    defaultedList.set(i, t.toItemStack());
+                }
+            } else {
+                ItemStack remainder = stack.getRecipeRemainder();
+                if (!remainder.isEmpty()) {
+                    defaultedList.set(i, remainder);
+                }
+            }
         }
         return defaultedList;
     }
+
 }

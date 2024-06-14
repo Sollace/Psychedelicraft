@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.entity.drug.type;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class HarmoniumDrug extends SimpleDrug {
     public float[] currentColor = { 1, 1, 1 };
@@ -27,16 +28,16 @@ public class HarmoniumDrug extends SimpleDrug {
     }
 
     @Override
-    public void toNbt(NbtCompound tagCompound) {
-        super.toNbt(tagCompound);
+    public void toNbt(NbtCompound tagCompound, WrapperLookup lookup) {
+        super.toNbt(tagCompound, lookup);
         tagCompound.putFloat("currentColor[0]", currentColor[0]);
         tagCompound.putFloat("currentColor[1]", currentColor[1]);
         tagCompound.putFloat("currentColor[2]", currentColor[2]);
     }
 
     @Override
-    public void fromNbt(NbtCompound tagCompound) {
-        super.fromNbt(tagCompound);
+    public void fromNbt(NbtCompound tagCompound, WrapperLookup lookup) {
+        super.fromNbt(tagCompound, lookup);
         currentColor[0] = tagCompound.getFloat("currentColor[0]");
         currentColor[1] = tagCompound.getFloat("currentColor[1]");
         currentColor[2] = tagCompound.getFloat("currentColor[2]");

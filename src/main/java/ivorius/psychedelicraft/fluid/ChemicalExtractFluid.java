@@ -7,8 +7,8 @@ import java.util.function.Consumer;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -27,7 +27,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getDrugInfluencesPerLiter(ItemStack stack, Consumer<DrugInfluence> consumer) {
+    public void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
         super.getDrugInfluencesPerLiter(stack, consumer);
 
         consumer.accept(new DrugInfluence(drug, 3, 0, 0.03, Math.pow(96F, DISTILLATION.get(stack))));
@@ -45,13 +45,8 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
 
     @Override
     public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
-        MutableFluidContainer contents = tank.getContents();
-
         if (type == ProcessType.DISTILL) {
-            MutableFluidContainer drained = contents.drain(2).withLevel(1);
-            if (DISTILLATION.cycle(drained)) {
-                output.accept(drained);
-            }
+            output.accept(DISTILLATION.cycle(tank.drain(2)));
         }
     }
 
@@ -69,13 +64,13 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public Text getName(ItemStack stack) {
+    public Text getName(ItemFluids stack) {
         int distillation = DISTILLATION.get(stack);
         return Text.translatable(getTranslationKey() + ".distilled." + distillation, distillation);
     }
 
     @Override
-    public int getColor(ItemStack stack) {
+    public int getColor(ItemFluids stack) {
         return MathUtils.mixColors(
             super.getColor(stack),
             0xFFFFFFFF,

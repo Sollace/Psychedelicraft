@@ -1,151 +1,167 @@
 package ivorius.psychedelicraft.fluid.container;
 
-import java.util.function.IntConsumer;
-
-import org.jetbrains.annotations.Nullable;
-
-import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.NbtSerialisable;
-import net.minecraft.entity.player.PlayerEntity;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * @author Sollace
  * @since 3 Jan 2023
  */
-public class Resovoir implements NbtSerialisable, VariantMarshal.StorageMarshal, FluidStore {
-    private FluidContainer container;
-    private MutableFluidContainer stack;
+public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir {
+    private ItemFluids fluids = ItemFluids.EMPTY;
+    private final int capacity;
 
     private final ChangeListener changeCallback;
 
     public Resovoir(int capacity, ChangeListener changeCallback) {
-        this.container = FluidContainer.withCapacity(Items.STONE, capacity);
-        this.stack = container.toMutable(Items.STONE.getDefaultStack());
+        this.capacity = capacity;
         this.changeCallback = changeCallback;
     }
 
-    public SimpleFluid getFluidType() {
-        return stack.getFluid();
+    @Override
+    public ItemFluids getContents() {
+        return fluids;
     }
 
-    public void transferTo(Resovoir tank) {
-        tank.stack = stack;
-        stack = container.toMutable(Items.STONE.getDefaultStack());
+    public void setContents(ItemFluids fluids) {
+        int amount = this.fluids.amount();
+        this.fluids = fluids.ofAmount(Math.min(fluids.amount(), capacity));
+        changeCallback.onLevelChange(this, this.fluids.amount() - amount);
     }
 
     @Override
-    public MutableFluidContainer getContents() {
-        return stack;
+    public long getCapacity() {
+        return capacity;
+    }
+
+    public ItemStack deposit(ItemStack stack) {
+        ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
+        deposit(t, t.capacity());
+        return t.toItemStack();
+    }
+
+    public int deposit(ItemFluids stack) {
+        if (fluids.amount() >= capacity || stack.isEmpty() || !fluids.canCombine(stack)) {
+            return 0;
+        }
+
+        int transferred = MathHelper.clamp(Math.max(0, capacity - fluids.amount()), 0, stack.amount());
+        if (transferred > 0) {
+            fluids = stack.ofAmount(fluids.amount() + transferred);
+            changeCallback.onLevelChange(this, transferred);
+        }
+
+        return transferred;
+    }
+
+    public ItemFluids drain(int maxAmount) {
+        ItemFluids extracted = fluids.ofAmount(Math.min(maxAmount, fluids.amount()));
+        if (extracted.amount() > 0) {
+            fluids = fluids.ofAmount(fluids.amount() - extracted.amount());
+            changeCallback.onLevelChange(this, extracted.amount());
+        }
+
+        return extracted;
+    }
+
+    public int deposit(ItemFluids.Transaction from, int maxAmount) {
+        if (fluids.amount() >= capacity || from.fluids().isEmpty() || !fluids.canCombine(from.fluids())) {
+            return 0;
+        }
+
+        ItemFluids transferred = from.withdraw(MathHelper.clamp(Math.max(0, capacity - fluids.amount()), 0, maxAmount));
+        fluids = transferred.ofAmount(fluids.amount() + transferred.amount());
+        if (transferred.amount() > 0) {
+            changeCallback.onLevelChange(this, transferred.amount());
+        }
+
+        return transferred.amount();
+    }
+
+    public int withdraw(ItemFluids.Transaction output, int maxAmount) {
+        if (fluids.isEmpty() || output.fluids().amount() >= output.capacity() || !fluids.canCombine(output.fluids())) {
+            return 0;
+        }
+        int initialAmount = fluids.amount();
+        fluids = output.deposit(fluids, maxAmount);
+        int transferred = initialAmount - fluids.amount();
+        if (transferred > 0) {
+            changeCallback.onLevelChange(this, -transferred);
+        }
+        return transferred;
     }
 
     @Override
-    public int getMaxCountPerStack() {
-        return 1;
-    }
+    public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        ItemFluids fluids = ItemFluids.of(resource, (int)maxAmount);
+        if (resource.isBlank() || !fluids.canCombine(this.fluids)) {
+            return 0;
+        }
 
-    @Override
-    public MutableFluidContainer deposit(int levels, MutableFluidContainer input, @Nullable IntConsumer changeCallback) {
-        return input.transfer((int)Math.min(getCapacity() - getLevel(), levels), stack, levelsChange -> {
-            this.changeCallback.onFill(this, levelsChange);
-            if (changeCallback != null) {
-                changeCallback.accept(levelsChange);
+        int accepted = (int)Math.min(fluids.amount() - capacity, maxAmount);
+        transaction.addCloseCallback((sender, result) -> {
+            if (result.wasCommitted()) {
+                this.fluids = fluids.ofAmount(this.fluids.amount() + accepted);
+                changeCallback.onLevelChange(this, accepted);
             }
         });
+        return accepted;
     }
 
     @Override
-    public MutableFluidContainer drain(int levels, MutableFluidContainer output, @Nullable IntConsumer changeCallback) {
-        stack.transfer(levels, output, levelsChange -> {
-            this.changeCallback.onDrain(this);
-            if (changeCallback != null) {
-                changeCallback.accept(levelsChange);
+    public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        if (maxAmount <= 0 || this.fluids.isEmpty()) {
+            return 0;
+        }
+        ItemFluids fluids = ItemFluids.of(resource, (int)maxAmount);
+        if (!fluids.canCombine(this.fluids)) {
+            return 0;
+        }
+        int provided = (int)Math.min(maxAmount, this.fluids.amount());
+        transaction.addCloseCallback((sender, result) -> {
+            if (result.wasCommitted()) {
+                this.fluids = this.fluids.ofAmount(this.fluids.amount() - provided);
+                changeCallback.onLevelChange(this, -provided);
             }
         });
-        return output;
+        return provided;
     }
 
-    @Override
     public void clear() {
-        stack = container.toMutable(Items.STONE.getDefaultStack());
-        changeCallback.onDrain(this);
-    }
-
-    @Override
-    public int size() {
-        return 1;
-    }
-
-    @Override
-    public ItemStack getStack(int slot) {
-        return getStack();
-    }
-
-    @Override
-    public ItemStack removeStack(int slot, int count) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public ItemStack removeStack(int slot) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
-        boolean wasEmpty = isEmpty();
-        int oldLevel = getLevel();
-        this.stack = container.toMutable(stack);
-        if (isEmpty() != wasEmpty) {
-            if (wasEmpty) {
-                changeCallback.onFill(this, getLevel());
-            } else {
-                changeCallback.onDrain(this);
-            }
-        } else if (oldLevel != getLevel()) {
-            if (oldLevel < getLevel()) {
-                changeCallback.onFill(this, getLevel() - oldLevel);
-            } else {
-                changeCallback.onDrain(this);
-            }
-        } else {
-            changeCallback.onIdle(this);
+        int amount = fluids.amount();
+        fluids = ItemFluids.EMPTY;
+        if (amount > 0) {
+            changeCallback.onLevelChange(this, -amount);
         }
     }
 
-    @Override
-    public void markDirty() {
-    }
 
     @Override
-    public boolean canPlayerUse(PlayerEntity var1) {
-        return true;
+    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+        compound.put("fluid", ItemFluids.CODEC.encodeStart(NbtOps.INSTANCE, fluids).getOrThrow());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public boolean isValid(int slot, ItemStack stack) {
-        return !FluidContainer.of(stack).getFluid(stack).isEmpty();
-    }
-
-    @Override
-    public void toNbt(NbtCompound compound) {
-        compound.put("stack", stack.asStack().writeNbt(new NbtCompound()));
-    }
-
-    @Override
-    public void fromNbt(NbtCompound compound) {
-        stack = container.toMutable(ItemStack.fromNbt(compound.getCompound("stack")));
+    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+        if (compound.contains("stack", NbtElement.COMPOUND_TYPE)) {
+            ItemStack stack = ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("stack"));
+            fluids = ItemFluids.fromCustom(stack);
+        } else {
+            fluids = ItemFluids.CODEC.decode(NbtOps.INSTANCE, compound.get("fluid")).result().map(pair -> pair.getFirst()).orElse(ItemFluids.EMPTY);
+        }
     }
 
     public interface ChangeListener {
-        void onDrain(Resovoir resovoir);
-
-        void onFill(Resovoir resovoir, int amountFilled);
-
-        default void onIdle(Resovoir resovoir) {
-
-        }
+        void onLevelChange(Resovoir resovoir, int change);
     }
+
 }

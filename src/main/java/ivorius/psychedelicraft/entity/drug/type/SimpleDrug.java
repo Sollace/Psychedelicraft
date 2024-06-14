@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -125,7 +126,7 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
-    public void fromNbt(NbtCompound compound) {
+    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         setDesiredValue(compound.getDouble("effect"));
         setActiveValue(compound.getDouble("effectActive"));
         setLocked(compound.getBoolean("locked"));
@@ -133,7 +134,7 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
-    public void toNbt(NbtCompound compound) {
+    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
         compound.putDouble("effect", getDesiredValue());
         compound.putDouble("effectActive", getActiveValue());
         compound.putBoolean("locked", isLocked());

@@ -5,9 +5,12 @@
 
 package ivorius.psychedelicraft.entity.drug.influence;
 
+import org.joml.Vector3f;
+
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.HarmoniumDrug;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -15,47 +18,47 @@ import net.minecraft.util.math.MathHelper;
  */
 public class HarmoniumDrugInfluence extends DrugInfluence {
 
-    private float[] color;
+    private final Vector3f color = new Vector3f();
 
     public HarmoniumDrugInfluence(int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color) {
         super(InfluenceType.HARMONIUM, DrugType.HARMONIUM, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
-        this.color = color;
+        this.color.set(color);
     }
 
     public HarmoniumDrugInfluence(InfluenceType type) {
         super(type);
-        color = new float[3];
     }
 
     @Override
     public void addToDrug(DrugProperties drugProperties, double value) {
         super.addToDrug(drugProperties, value);
-
-        Drug drug = drugProperties.getDrug(getDrugType());
-
-        if (drug instanceof HarmoniumDrug) {
-            HarmoniumDrug harmonium = (HarmoniumDrug) drug;
-
+        if (drugProperties.getDrug(getDrugType()) instanceof HarmoniumDrug harmonium) {
             double inf = value + (1 - value) * (1 - harmonium.getActiveValue());
-            harmonium.currentColor[0] = (float) MathHelper.lerp(inf, harmonium.currentColor[0], color[0]);
-            harmonium.currentColor[1] = (float) MathHelper.lerp(inf, harmonium.currentColor[1], color[1]);
-            harmonium.currentColor[2] = (float) MathHelper.lerp(inf, harmonium.currentColor[2], color[2]);
+            harmonium.currentColor[0] = (float) MathHelper.lerp(inf, harmonium.currentColor[0], color.x);
+            harmonium.currentColor[1] = (float) MathHelper.lerp(inf, harmonium.currentColor[1], color.y);
+            harmonium.currentColor[2] = (float) MathHelper.lerp(inf, harmonium.currentColor[2], color.z);
         }
     }
 
     @Override
-    public void fromNbt(NbtCompound compound) {
-        super.fromNbt(compound);
-        color[0] = compound.getFloat("color[0]");
-        color[1] = compound.getFloat("color[1]");
-        color[2] = compound.getFloat("color[2]");
+    protected void copyFrom(DrugInfluence old) {
+        super.copyFrom(old);
+        if (old instanceof HarmoniumDrugInfluence o) {
+            color.set(o.color);
+        }
     }
 
     @Override
-    public void toNbt(NbtCompound compound) {
-        super.toNbt(compound);
-        compound.putFloat("color[0]", color[0]);
-        compound.putFloat("color[1]", color[1]);
-        compound.putFloat("color[2]", color[2]);
+    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNbt(compound, lookup);
+        color.set(compound.getFloat("color[0]"), compound.getFloat("color[1]"), compound.getFloat("color[2]"));
+    }
+
+    @Override
+    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.toNbt(compound, lookup);
+        compound.putFloat("color[0]", color.x);
+        compound.putFloat("color[1]", color.y);
+        compound.putFloat("color[2]", color.z);
     }
 }

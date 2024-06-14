@@ -16,12 +16,12 @@ import com.mojang.serialization.Codec;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
-import ivorius.psychedelicraft.fluid.container.VariantMarshal;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
 import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.PSComponents;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributeHandler;
@@ -29,9 +29,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -69,6 +67,8 @@ public class SimpleFluid {
 
     private final PhysicalFluid physical;
 
+    private final ItemFluids defaultStack;
+
     public SimpleFluid(Identifier id, Settings settings) {
         this(id, settings, false);
     }
@@ -79,12 +79,13 @@ public class SimpleFluid {
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.custom = true;
         this.empty = empty;
+        this.defaultStack = ItemFluids.create(this, 1, Map.of());
         physical = new PhysicalFluid(id, this);
         Registry.register(REGISTRY, id, this);
         FluidVariantAttributes.register(physical.getStandingFluid(), new FluidVariantAttributeHandler() {
             @Override
             public Text getName(FluidVariant fluidVariant) {
-                return SimpleFluid.this.getName(VariantMarshal.unpackFluid(Items.STONE.getDefaultStack(), fluidVariant, 1).asStack());
+                return SimpleFluid.this.getName(ItemFluids.of(fluidVariant, 1));
             }
         });
     }
@@ -96,6 +97,7 @@ public class SimpleFluid {
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.custom = false;
         this.physical = physical;
+        this.defaultStack = ItemFluids.create(this, 1, Map.of());
     }
 
     @SuppressWarnings("unchecked")
@@ -115,20 +117,22 @@ public class SimpleFluid {
         return id;
     }
 
-    public Identifier getSymbol(ItemStack stack) {
+    public Identifier getSymbol(ItemFluids stack) {
         return symbol;
     }
 
-    public Optional<Identifier> getFlowTexture(ItemStack stack) {
+    public Optional<Identifier> getFlowTexture(ItemFluids stack) {
         return Optional.empty();
     }
 
-    public final ItemStack getStack(State<?, ?> state, FluidContainer container) {
-        return getStateManager().writeStack(state, container.getDefaultStack(this));
+    public final ItemFluids getStack(State<?, ?> state, int amount) {
+        Map<String, Integer> attributes = new HashMap<>();
+        getStateManager().writeAttributes(state, attributes);
+        return ItemFluids.create(this, amount, attributes);
     }
 
-    public final FluidState getFluidState(ItemStack stack) {
-        return getStateManager().readStack(getPhysical().getDefaultState(), stack);
+    public final FluidState getFluidState(ItemFluids stack) {
+        return getStateManager().readAttributes(getPhysical().getDefaultState(), stack);
     }
 
     public PhysicalFluid getPhysical() {
@@ -139,7 +143,7 @@ public class SimpleFluid {
         return custom;
     }
 
-    public int getColor(ItemStack stack) {
+    public int getColor(ItemFluids stack) {
         return settings.color;
     }
 
@@ -151,41 +155,37 @@ public class SimpleFluid {
         return Util.createTranslationKey(isCustomFluid() ? "fluid" : "block", id);
     }
 
-    public final ItemStack getDefaultStack(FluidContainer container) {
-        return getDefaultStack(container, container.getMaxCapacity());
+    public final ItemFluids getDefaultStack() {
+        return defaultStack;
     }
 
-    public final ItemStack getDefaultStack() {
-        return getDefaultStack(FluidContainer.UNLIMITED);
+    public final ItemFluids getDefaultStack(int amount) {
+        return amount == 1 ? getDefaultStack() : ItemFluids.create(this, amount, Map.of());
     }
 
-    public final ItemStack getDefaultStack(int level) {
-        return getDefaultStack(FluidContainer.UNLIMITED, level);
+    public void getDefaultStacks(ItemStack stack, Consumer<ItemStack> consumer) {
+        int capacity = FluidCapacity.get(stack);
+        if (capacity > 0) {
+            stack = stack.copy();
+            stack.set(PSComponents.FLUIDS, getDefaultStack(capacity));
+            consumer.accept(stack);
+        }
     }
 
-    public ItemStack getDefaultStack(FluidContainer container, int level) {
-        return container.toMutable(container.getDefaultStack(this)).withLevel(level).asStack();
-    }
-
-    public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
-        consumer.accept(getDefaultStack(container));
-    }
-
-    public Text getName(ItemStack stack) {
+    public Text getName(ItemFluids stack) {
         return Text.translatable(getTranslationKey());
     }
 
-    public void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemFluids stack, List<Text> tooltip, TooltipType type) {
 
     }
 
-    public void appendTankTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
+    public void appendTankTooltip(ItemFluids stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
 
     }
 
-    @SuppressWarnings("deprecation")
-    public boolean isSuitableContainer(FluidContainer container) {
-        return !container.asItem().getRegistryEntry().isIn(PSTags.Items.BARRELS);
+    public boolean isSuitableContainer(ItemStack container) {
+        return !container.isIn(PSTags.Items.BARRELS);
     }
 
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
@@ -261,52 +261,40 @@ public class SimpleFluid {
     }
 
     public abstract static class Attribute<T extends Comparable<T>> {
-        public abstract T get(ItemStack stack);
 
-        public abstract ItemStack set(ItemStack stack, T value);
+        public abstract ItemFluids set(ItemFluids fluids, T value);
 
-        public abstract T get(MutableFluidContainer stack);
+        public abstract T get(ItemFluids fluids);
 
-        public abstract MutableFluidContainer set(MutableFluidContainer stack, T value);
+        public final T get(ItemStack stack) {
+            return get(ItemFluids.of(stack));
+        }
 
-        public abstract boolean cycle(MutableFluidContainer stack);
+        public abstract void set(Map<String, Integer> attributes, T value);
+
+        public abstract ItemFluids cycle(ItemFluids fluids);
+
+        public final ItemStack set(ItemStack stack, T value) {
+            return ItemFluids.set(stack, set(ItemFluids.of(stack), value));
+        }
 
         public abstract void forEachStep(BiConsumer<T , T> consumer);
 
         public static Attribute<Integer> ofInt(String name, int min, int max) {
             return new Attribute<>() {
                 @Override
-                public Integer get(ItemStack stack) {
-                    return MathHelper.clamp(FluidContainer.getFluidAttributesTag(stack, true).getInt(name), min, max);
+                public ItemFluids set(ItemFluids fluids, Integer value) {
+                    return fluids.withAttribute(name, MathHelper.clamp(value, min, max));
                 }
 
                 @Override
-                public ItemStack set(ItemStack stack, Integer value) {
-                    FluidContainer.getFluidAttributesTag(stack, false).putInt(name, value);
-                    return stack;
+                public void set(Map<String, Integer> attributes, Integer value) {
+                    attributes.put(name, value);
                 }
 
                 @Override
-                public Integer get(MutableFluidContainer stack) {
-                    return MathHelper.clamp(stack.getAttributes().getInt(name), min, max);
-                }
-
-                @Override
-                public MutableFluidContainer set(MutableFluidContainer stack, Integer value) {
-                    NbtCompound attributes = stack.getAttributes().copy();
-                    attributes.putInt(name, value);
-                    stack.withAttributes(attributes);
-                    return stack;
-                }
-
-                @Override
-                public boolean cycle(MutableFluidContainer stack) {
-                    int current = get(stack);
-                    if (current < max) {
-                        set(stack, current + 1);
-                        return true;
-                    }
-                    return false;
+                public Integer get(ItemFluids fluids) {
+                    return MathHelper.clamp(fluids.attributes().getOrDefault(name, 0), min, max);
                 }
 
                 @Override
@@ -315,47 +303,46 @@ public class SimpleFluid {
                         consumer.accept(i, i + 1);
                     }
                 }
+
+                @Override
+                public ItemFluids cycle(ItemFluids fluids) {
+                    int value = get(fluids);
+                    if (value < max) {
+                        return set(fluids, value + 1);
+                    }
+                    return fluids;
+                }
             };
         }
 
         public static Attribute<Boolean> ofBoolean(String name) {
             return new Attribute<>() {
                 @Override
-                public Boolean get(ItemStack stack) {
-                    return FluidContainer.getFluidAttributesTag(stack, true).getBoolean(name);
+                public ItemFluids set(ItemFluids fluids, Boolean value) {
+                    return fluids.withAttribute(name, value ? 1 : 0);
                 }
 
                 @Override
-                public ItemStack set(ItemStack stack, Boolean value) {
-                    FluidContainer.getFluidAttributesTag(stack, false).putBoolean(name, value);
-                    return stack;
+                public void set(Map<String, Integer> attributes, Boolean value) {
+                    attributes.put(name, value ? 1 : 0);
                 }
 
                 @Override
-                public Boolean get(MutableFluidContainer stack) {
-                    return stack.getAttributes().getBoolean(name);
-                }
-
-                @Override
-                public MutableFluidContainer set(MutableFluidContainer stack, Boolean value) {
-                    NbtCompound attributes = stack.getAttributes().copy();
-                    attributes.putBoolean(name, value);
-                    stack.withAttributes(attributes);
-                    return stack;
-                }
-
-                @Override
-                public boolean cycle(MutableFluidContainer stack) {
-                    if (!get(stack)) {
-                        set(stack, true);
-                        return true;
-                    }
-                    return false;
+                public Boolean get(ItemFluids fluids) {
+                    return fluids.attributes().getOrDefault(name, 0) != 0;
                 }
 
                 @Override
                 public void forEachStep(BiConsumer<Boolean, Boolean> consumer) {
                     consumer.accept(false, true);
+                }
+
+                @Override
+                public ItemFluids cycle(ItemFluids fluids) {
+                    if (!get(fluids)) {
+                        return set(fluids, true);
+                    }
+                    return fluids;
                 }
             };
         }

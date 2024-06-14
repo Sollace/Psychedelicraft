@@ -24,8 +24,8 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -250,42 +250,41 @@ public class DrugProperties implements NbtSerialisable {
 
     public void sendCapabilities() {
         if (!entity.getWorld().isClient) {
-            Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this), entity);
-            Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this), (ServerPlayerEntity)entity);
+            Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this, entity.getRegistryManager()), entity);
         }
     }
 
     @Override
-    public void fromNbt(NbtCompound tagCompound) {
+    public void fromNbt(NbtCompound tagCompound, WrapperLookup lookup) {
         NbtCompound drugData = tagCompound.getCompound("Drugs");
         drugs.clear();
         drugData.getKeys().forEach(key -> {
             DrugType.REGISTRY.getOrEmpty(Identifier.tryParse(key)).ifPresent(type -> {
-                getDrug(type).fromNbt(drugData.getCompound(key));
+                getDrug(type).fromNbt(drugData.getCompound(key), lookup);
             });
         });
         influences.clear();
         tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE).forEach(tag -> {
-            DrugInfluence.loadFromNbt((NbtCompound)tag).ifPresent(this::addToDrug);
+            DrugInfluence.loadFromNbt((NbtCompound)tag, lookup).ifPresent(this::addToDrug);
         });
-        stomach.fromNbt(tagCompound.getCompound("stomach"));
+        stomach.fromNbt(tagCompound.getCompound("stomach"), lookup);
         dirty = false;
     }
 
     @Override
-    public void toNbt(NbtCompound compound) {
+    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
         NbtCompound drugsComp = new NbtCompound();
         drugs.forEach((key, drug) -> {
-            drugsComp.put(key.id().toString(), drug.toNbt());
+            drugsComp.put(key.id().toString(), drug.toNbt(lookup));
         });
         compound.put("Drugs", drugsComp);
 
         NbtList influenceTagList = new NbtList();
         for (DrugInfluence influence : influences) {
-            influenceTagList.add(influence.toNbt());
+            influenceTagList.add(influence.toNbt(lookup));
         }
         compound.put("drugInfluences", influenceTagList);
-        compound.put("stomach", stomach.toNbt());
+        compound.put("stomach", stomach.toNbt(lookup));
     }
 
     public void copyFrom(DrugProperties old, boolean alive) {

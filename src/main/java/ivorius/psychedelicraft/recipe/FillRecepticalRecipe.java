@@ -5,24 +5,23 @@
 
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 
 /**
  * Created from "RecipeFillDrink" by Sollace on 5 Jan 2023
@@ -79,7 +78,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     @Override
     public boolean matches(CraftingRecipeInput inventory, World world) {
         RecipeMatcher recipeMatcher = new RecipeMatcher();
-        return RecipeUtils.toRecepticals(inventory.getStacks().stream()).count() == 1
+        return RecipeUtils.recepticals(inventory.getStacks().stream()).count() == 1
                 && inventory.getStacks().stream().filter(stack -> {
                     recipeMatcher.addInput(stack, 1);
                     return true;
@@ -94,13 +93,8 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
 
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        return RecipeUtils.toRecepticals(inventory.getStacks().stream()).findFirst().map(receptical -> {
-            ItemStack stack = output.fluid().getDefaultStack(receptical.getKey(), output.level() <= 0
-                ? receptical.getKey().getMaxCapacity(receptical.getValue())
-                : (output.level() + receptical.getKey().getLevel(receptical.getValue()))
-            );
-            stack.getOrCreateSubNbt("fluid").copyFrom(output.attributes());
-            return stack;
+        return RecipeUtils.recepticals(inventory.getStacks().stream()).findFirst().map(receptical -> {
+            return ItemFluids.set(receptical, output.getAsItemFluid(FluidCapacity.get(receptical)));
         }).orElse(ItemStack.EMPTY);
     }
 }

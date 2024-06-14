@@ -22,10 +22,10 @@ import java.util.function.Consumer;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 
 /**
  * Created by lukas on 22.10.14.
@@ -39,7 +39,7 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getDrugInfluencesPerLiter(ItemStack stack, Consumer<DrugInfluence> consumer) {
+    public void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
         super.getDrugInfluencesPerLiter(stack, consumer);
         float warmth = (float)WARMTH.get(stack) / 2F;
         consumer.accept(new DrugInfluence(DrugType.CAFFEINE, 20, 0.002, 0.001, 0.25F + warmth * 0.05F));
@@ -55,21 +55,24 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public Text getName(ItemStack stack) {
+    public Text getName(ItemFluids stack) {
         return Text.translatable(getTranslationKey() + ".temperature." + WARMTH.get(stack));
     }
 
     @Override
-    public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
-        super.getDefaultStacks(container, consumer);
-        consumer.accept(WARMTH.set(getDefaultStack(container), 1));
-        consumer.accept(WARMTH.set(getDefaultStack(container), 2));
+    public void getDefaultStacks(ItemStack stack, Consumer<ItemStack> consumer) {
+        super.getDefaultStacks(stack, consumer);
+        int capacity = FluidCapacity.get(stack);
+        if (capacity > 0) {
+            WARMTH.forEachStep((from, to) -> {
+                consumer.accept(ItemFluids.set(stack.copy(), WARMTH.set(getDefaultStack(capacity), to)));
+            });
+        }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public boolean isSuitableContainer(FluidContainer container) {
-        return container.asItem().getRegistryEntry().isIn(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);
+    public boolean isSuitableContainer(ItemStack container) {
+        return container.isIn(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);
     }
 
     @Override
@@ -80,8 +83,7 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     @Override
     public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
         if (type == ProcessType.FERMENT) {
-            MutableFluidContainer contents = tank.getContents();
-            WARMTH.set(contents, Math.max(1, WARMTH.get(contents) - 1));
+            tank.setContents(WARMTH.set(tank.getContents(), Math.max(0, WARMTH.get(tank.getContents()) - 1)));
         }
     }
 

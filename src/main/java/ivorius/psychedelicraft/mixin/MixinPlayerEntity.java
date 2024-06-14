@@ -15,6 +15,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 
@@ -63,15 +64,15 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
         info.setReturnValue(info.getReturnValue() * getDrugProperties().getModifier(Drug.DIG_SPEED));
     }
 
-    @Inject(method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
-    private void onWriteCustomDataToTag(NbtCompound tag, CallbackInfo info) {
-        tag.put("psychedelicraft_drug_properties", getDrugProperties().toNbt());
+    @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
+    private void onWriteCustomDataToTag(NbtCompound tag, WrapperLookup lookup, CallbackInfo info) {
+        tag.put("psychedelicraft_drug_properties", getDrugProperties().toNbt(lookup));
     }
 
-    @Inject(method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
-    private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
+    @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
+    private void onReadCustomDataFromTag(NbtCompound tag, WrapperLookup lookup, CallbackInfo info) {
         if (tag.contains("psychedelicraft_drug_properties", NbtElement.COMPOUND_TYPE)) {
-            getDrugProperties().fromNbt(tag.getCompound("psychedelicraft_drug_properties"));
+            getDrugProperties().fromNbt(tag.getCompound("psychedelicraft_drug_properties"), lookup);
         }
     }
 }

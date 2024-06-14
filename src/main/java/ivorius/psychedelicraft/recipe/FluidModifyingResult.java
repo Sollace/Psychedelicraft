@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.recipe;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -7,10 +8,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -30,14 +30,12 @@ public record FluidModifyingResult(Map<String, Modification> attributes, ItemSta
         ItemStack stack = result.isEmpty() ? input.copyWithCount(
                 result.getItem() == Items.AIR ? 1 : result.getCount()
             ) : result.copy();
-        NbtCompound tag = stack.getOrCreateSubNbt("fluid");
-        attributes.forEach((key, modder) -> {
-            if (!tag.contains(key, NbtElement.INT_TYPE)) {
-                tag.putInt(key, 0);
-            }
-            tag.putInt(key, modder.applyAsInt(tag.getInt(key)));
+        ItemFluids fluids = ItemFluids.of(input);
+        Map<String, Integer> attributes = new HashMap<>(fluids.attributes());
+        this.attributes.forEach((key, modder) -> {
+            attributes.put(key, modder.applyAsInt(attributes.getOrDefault(key, 0).intValue()));
         });
-        return stack;
+        return ItemFluids.set(stack, ItemFluids.create(fluids.fluid(), fluids.amount(), attributes));
     }
 
     @Deprecated

@@ -16,7 +16,8 @@ import com.google.gson.JsonObject;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer.FluidAppearance;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.Context;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
@@ -112,14 +113,13 @@ public class PlacedDrinksModelProvider
 
         renderDrinkModel(stack, matrices, vertices, light, overlay, dyeColor, getGroundModelId(stack.getItem()));
 
-        FluidContainer container = FluidContainer.of(stack);
-        float fillPercentage = container.getFillPercentage(stack);
+        float fillPercentage = FluidCapacity.getPercentage(stack);
         if (fillPercentage > 0.01) {
             float origin = get(stack.getItem()).orElse(Entry.DEFAULT).fluidOrigin() / 16F;
             matrices.translate(0, origin, 0);
             matrices.scale(1, fillPercentage, 1);
             matrices.translate(0, -origin, 0);
-            int color = FluidAppearance.getItemColor(container.getFluid(stack), stack);
+            int color = FluidAppearance.getItemColor(ItemFluids.of(stack));
             renderDrinkModel(stack, matrices, vertices, light, overlay, color, getGroundModelFluidId(stack.getItem()));
         }
     }

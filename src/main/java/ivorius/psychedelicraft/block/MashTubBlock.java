@@ -12,9 +12,9 @@ import com.mojang.serialization.MapCodec;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.MashTubItem;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
@@ -109,8 +109,8 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         world.getBlockEntity(getBlockEntityPosition(world, pos), getBlockEntityType()).ifPresent(be -> {
-            SimpleFluid fluid = be.getPrimaryTank().getFluidType();
-            fluid.randomDisplayTick(world, pos, fluid.getPhysical().getDefaultState(), random);
+            ItemFluids fluid = be.getPrimaryTank().getContents();
+            fluid.fluid().randomDisplayTick(world, pos, fluid.fluid().getFluidState(fluid), random);
         });
     }
 
@@ -154,18 +154,21 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     public int getFluidHeight(World world, BlockState state, BlockPos pos, TagKey<Fluid> tag) {
         return world.getBlockEntity(pos, getBlockEntityType())
                 .map(be -> be.getPrimaryTank())
-                .filter(tank -> tank.getFluidType().getPhysical().isIn(tag) || (tag == FluidTags.WATER && tank.getFluidType().isCustomFluid()))
-                .map(tank -> (int)(((float)tank.getLevel() / tank.getCapacity()) * 8))
+                .filter(tank -> tank.getContents().fluid().getPhysical().isIn(tag) || (tag == FluidTags.WATER && tank.getContents().fluid().isCustomFluid()))
+                .map(tank -> (int)(((float)tank.getContents().amount() / tank.getCapacity()) * 8))
                 .orElse(-1);
     }
 
     @Override
-    public boolean canFillWithFluid(PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+    public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+        if (player == null) {
+            return false;
+        }
         return world.getBlockEntity(pos, getBlockEntityType()).filter(be -> {
             Resovoir tank = be.getPrimaryTank();
-            return (tank.isEmpty()
-                || tank.getFluidType().getPhysical().isOf(fluid))
-                && tank.getCapacity() - tank.getLevel() >=  FluidVolumes.BUCKET;
+            return (tank.getContents().isEmpty()
+                || tank.getContents().fluid().getPhysical().isOf(fluid))
+                && tank.getCapacity() - tank.getContents().amount() >=  FluidVolumes.BUCKET;
         }).isPresent();
     }
 
@@ -193,17 +196,11 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
 
             Resovoir tank = be.getPrimaryTank();
 
-            if (tank.getCapacity() - tank.getLevel() <  FluidVolumes.BUCKET) {
+            if (tank.getCapacity() - tank.getContents().amount() <  FluidVolumes.BUCKET) {
                 return false;
             }
 
-            ItemStack overflow = tank.deposit(f.getDefaultStack(FluidVolumes.BUCKET));
-            if (!FluidContainer.UNLIMITED.getFluid(overflow).isEmpty()) {
-                if (world instanceof World) {
-                    Block.dropStack((World)world, pos, overflow);
-                }
-            }
-
+            tank.deposit(f.getStack(fluidState, FluidVolumes.BUCKET));
             be.markForUpdate();
             return true;
         }).isPresent();

@@ -7,15 +7,13 @@ package ivorius.psychedelicraft.item;
 
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
-
 import ivorius.psychedelicraft.block.PlacedDrinksBlock;
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -24,32 +22,25 @@ import net.minecraft.world.World;
 /**
  * Created by Sollace on Jan 1 2023
  */
-public class DrinkableItem extends Item implements FluidContainer {
+public class DrinkableItem extends Item {
     public static final int FLUID_PER_DRINKING = FluidVolumes.BUCKET / 4;
+    public static final int FLUID_PER_INJECTION = 10;
     public static final int DEFAULT_MAX_USE_TIME = (int)(1.6F * 20);
-
-    private final int capacity;
 
     private final int consumptionVolume;
     private final int consumptionTime;
     private final ConsumableFluid.ConsumptionType consumptionType;
 
-    public DrinkableItem(Settings settings, int capacity, int consumptionVolume, int consumptionTime, ConsumableFluid.ConsumptionType consumptionType) {
+    public DrinkableItem(Settings settings, int consumptionVolume, int consumptionTime, ConsumableFluid.ConsumptionType consumptionType) {
         super(settings.maxCount(1));
-        this.capacity = capacity;
-        this.consumptionVolume = Math.min(capacity, consumptionVolume);
+        this.consumptionVolume = consumptionVolume;
         this.consumptionTime = consumptionTime;
         this.consumptionType = consumptionType;
     }
 
     @Override
-    public int getMaxCapacity() {
-        return capacity;
-    }
-
-    @Override
     public UseAction getUseAction(ItemStack stack) {
-        return getFluid(stack).isEmpty() ? UseAction.NONE
+        return ItemFluids.of(stack).isEmpty() ? UseAction.NONE
                 : consumptionType == ConsumableFluid.ConsumptionType.DRINK
                 ? UseAction.DRINK
                 : UseAction.BOW;
@@ -82,10 +73,10 @@ public class DrinkableItem extends Item implements FluidContainer {
 
     @Override
     public Text getName(ItemStack stack) {
-        SimpleFluid fluid = getFluid(stack);
+        ItemFluids fluid = ItemFluids.of(stack);
 
         if (!fluid.isEmpty()) {
-            return Text.translatable(getTranslationKey() + ".filled", fluid.getName(stack));
+            return Text.translatable(getTranslationKey() + ".filled", fluid.fluid().getName(fluid));
         }
 
         return super.getName(stack);
@@ -94,23 +85,23 @@ public class DrinkableItem extends Item implements FluidContainer {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("psychedelicraft.drink.levels", getLevel(stack), getMaxCapacity(stack)).formatted(Formatting.GRAY));
+        ItemFluids fluids = ItemFluids.of(stack);
+        tooltip.add(Text.translatable("psychedelicraft.drink.levels", ItemFluids.of(stack).amount(), FluidCapacity.get(stack)).formatted(Formatting.GRAY));
 
-        SimpleFluid fluid = getFluid(stack);
-        fluid.appendTooltip(stack, tooltip, type);
+        fluids.fluid().appendTooltip(fluids, tooltip, type);
         if (type.isAdvanced()) {
-            tooltip.add(Text.literal("contents: " + fluid.getId().toString()).formatted(Formatting.DARK_GRAY));
+            tooltip.add(Text.literal("contents: " + fluids.fluid().getId().toString()).formatted(Formatting.DARK_GRAY));
         }
     }
 
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
-        return !getFluid(stack).isEmpty() && getFillPercentage(stack) < 1;
+        return !ItemFluids.of(stack).isEmpty() && FluidCapacity.getPercentage(stack) < 1;
     }
 
     @Override
     public int getItemBarStep(ItemStack stack) {
-        return (int)(ITEM_BAR_STEPS * getFillPercentage(stack));
+        return (int)(ITEM_BAR_STEPS * FluidCapacity.getPercentage(stack));
     }
 
     @Override

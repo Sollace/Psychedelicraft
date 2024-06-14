@@ -1,7 +1,9 @@
 package ivorius.psychedelicraft.recipe;
 
 import java.util.List;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
+
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -25,28 +27,29 @@ public class PouringRecipe extends SpecialCraftingRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput inventory, World world) {
-        List<MutableFluidContainer> recepticals = RecipeUtils
-                .toRecepticals(inventory.getStacks().stream())
-                .map(e -> e.getKey().toMutable(e.getValue()))
+        List<ItemStack> recepticals = RecipeUtils
+                .recepticals(inventory.getStacks().stream())
                 .toList();
 
         if (inventory.getStacks().size() != recepticals.size() || recepticals.size() < 2) {
             return false;
         }
 
-        return recepticals.get(1).canReceive(recepticals.get(0).getFluid());
+        return ItemFluids.of(recepticals.get(1)).canCombine( ItemFluids.of(recepticals.get(0)))
+                && ItemFluids.of(recepticals.get(1)).amount() < FluidCapacity.get(recepticals.get(1));
     }
 
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        var recepticals = RecipeUtils.toRecepticals(inventory.getStacks().stream()).toList();
+        var recepticals = RecipeUtils.recepticals(inventory.getStacks().stream()).toList();
 
-        MutableFluidContainer mutableTo = recepticals.get(1).getKey().toMutable(recepticals.get(1).getValue());
-        MutableFluidContainer mutableFrom = recepticals.get(0).getKey().toMutable(recepticals.get(0).getValue());
+        ItemFluids.Transaction to = ItemFluids.Transaction.begin(recepticals.get(1));
+        ItemFluids.Transaction from = ItemFluids.Transaction.begin(recepticals.get(0));
 
-        mutableFrom.transfer(mutableTo.getCapacity() - mutableTo.getLevel(), mutableTo, null);
+        int maxMoved = Math.min(from.fluids().amount(), to.capacity() - to.fluids().amount());
+        to.deposit(from.withdraw(maxMoved));
 
-        return mutableTo.asStack();
+        return to.toItemStack();
     }
 
     @Override
@@ -56,16 +59,13 @@ public class PouringRecipe extends SpecialCraftingRecipe {
             return DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
         }
 
-        var from = recepticals.get(0);
-        var to = recepticals.get(1);
+        ItemFluids.Transaction to = ItemFluids.Transaction.begin(recepticals.get(1).content());
+        ItemFluids.Transaction from = ItemFluids.Transaction.begin(recepticals.get(0).content());
 
-        MutableFluidContainer mutableTo = to.content().getKey().toMutable(to.content().getValue());
-        MutableFluidContainer mutableFrom = from.content().getKey().toMutable(from.content().getValue());
-
-        mutableFrom.transfer(mutableTo.getCapacity() - mutableTo.getLevel(), mutableTo, null);
+        from.withdraw(Math.min(from.fluids().amount(), to.capacity() - to.fluids().amount()));
 
         DefaultedList<ItemStack> remainder = DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
-        remainder.set(from.position(), mutableFrom.asStack());
+        remainder.set(recepticals.get(0).position(), to.toItemStack());
         return remainder;
     }
 

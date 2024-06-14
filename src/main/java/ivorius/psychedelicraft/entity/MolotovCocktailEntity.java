@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.entity;
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.fluid.Combustable;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
@@ -47,10 +48,15 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
         return stack;
     }
 
+    public ItemFluids getFluids() {
+        return ItemFluids.of(getStack());
+    }
+
     @Override
     public void tick() {
         super.tick();
-        if (Combustable.fromStack(getStack()).getFireStrength(getStack()) > 0) {
+        ItemStack stack = getStack();
+        if (Combustable.fromStack(stack).getFireStrength(ItemFluids.of(stack)) > 0) {
             spawnParticles(1);
         }
     }
@@ -76,7 +82,8 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     protected void onEntityHit(EntityHitResult hit) {
         super.onEntityHit(hit);
         damageEntity(hit.getEntity(), 1);
-        float explosionStrength = Combustable.fromStack(getStack()).getExplosionStrength(getStack());
+        ItemFluids stack = getFluids();
+        float explosionStrength = Combustable.fromStack(stack).getExplosionStrength(stack);
         if (explosionStrength > 0) {
             getWorld().getOtherEntities(this, getBoundingBox().expand(explosionStrength), i -> i.distanceTo(this) <= explosionStrength).forEach(e -> {
                 damageEntity(hit.getEntity(), 1 - (e.distanceTo(this) / explosionStrength));
@@ -85,9 +92,10 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     }
 
     private void damageEntity(Entity entity, float percentageScale) {
-        Combustable combustable = Combustable.fromStack(getStack());
-        float explosionStrength = combustable.getExplosionStrength(getStack());
-        float fireStrength = combustable.getFireStrength(getStack());
+        ItemFluids stack = getFluids();
+        Combustable combustable = Combustable.fromStack(stack);
+        float explosionStrength = combustable.getExplosionStrength(stack);
+        float fireStrength = combustable.getFireStrength(stack);
         entity.damage(PSDamageTypes.create(getWorld(), getOwner(), this, PSDamageTypes.molotov(entity, getOwner())), percentageScale * Math.max(4, explosionStrength * 0.6F + fireStrength * 0.3F));
         if (fireStrength > 0) {
             entity.isOnFire();
@@ -104,9 +112,10 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
 
         playSound(SoundEvents.BLOCK_GLASS_BREAK, 1, 1);
 
-        Combustable combustable = Combustable.fromStack(getStack());
-        float explosionStrength = combustable.getExplosionStrength(getStack());
-        float fireStrength = combustable.getFireStrength(getStack());
+        ItemFluids stack = getFluids();
+        Combustable combustable = Combustable.fromStack(stack);
+        float explosionStrength = combustable.getExplosionStrength(stack);
+        float fireStrength = combustable.getFireStrength(stack);
 
         if (fireStrength > 0) {
             for (int i = 0; i < fireStrength * 2; i++) {

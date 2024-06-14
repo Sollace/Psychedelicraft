@@ -7,11 +7,17 @@ package ivorius.psychedelicraft.block.entity;
 
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 
 public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implements Processable.ByProductConsumer {
@@ -57,7 +63,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     public Processable.ProcessType getActiveProcess() {
         Resovoir tank = getPrimaryTank();
 
-        if (isActive() && tank.getFluidType() instanceof Processable p) {
+        if (isActive() && tank.getContents().fluid() instanceof Processable p) {
             return p.modifyProcess(tank, getProcessType());
         }
         return Processable.ProcessType.IDLE;
@@ -77,7 +83,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
 
         Resovoir tank = getPrimaryTank();
 
-        if (tank.getFluidType() instanceof Processable p) {
+        if (tank.getContents().fluid() instanceof Processable p) {
             Processable.ProcessType type = p.modifyProcess(tank, getProcessType());
             setTimeNeeded(p.getProcessingTime(tank, type));
 
@@ -108,16 +114,11 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     }
 
     @Override
-    public void onDrain(Resovoir resovoir) {
-        if (resovoir.isEmpty()) {
+    public void onLevelChange(Resovoir resovoir, int difference) {
+        if (resovoir.getContents().isEmpty()) {
             setTimeProcessed(0);
         }
-        super.onDrain(resovoir);
-    }
-
-    @Override
-    public void onFill(Resovoir resovoir, int amountFilled) {
-        super.onFill(resovoir, amountFilled);
+        super.onLevelChange(resovoir, difference);
     }
 
     @Override
@@ -132,5 +133,26 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
         super.readNbt(compound, lookup);
         setTimeProcessed(compound.getInt("timeProcessed"));
         setTimeNeeded(compound.getInt("timeNeeded"));
+    }
+
+    @Override
+    public void accept(ItemStack stack) {
+        Block.dropStack(world, getPos(), stack);
+    }
+
+    @Override
+    public void accept(ItemFluids stack) {
+        if (getWorld() instanceof ServerWorld world) {
+            int transferred = getPrimaryTank().deposit(stack);
+            if (transferred < stack.amount()) {
+                // TODO: Droplets item?
+                world.playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 0.25F, 0.02F);
+                world.spawnParticles(ParticleTypes.SPLASH,
+                        pos.getX() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                        pos.getY() + 0.6F,
+                        pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                        2, 0, 0, 0, 0);
+            }
+        }
     }
 }

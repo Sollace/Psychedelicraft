@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -49,7 +49,7 @@ import net.minecraft.world.event.GameEvent;
 /**
  * Created by Sollace on Feb 6 2023
  */
-public class FilledBucketItem extends Item implements FluidContainer {
+public class FilledBucketItem extends Item {
 
     public FilledBucketItem(Settings settings) {
         super(settings.recipeRemainder(Items.BUCKET));
@@ -58,8 +58,9 @@ public class FilledBucketItem extends Item implements FluidContainer {
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
                 ServerWorld world = pointer.world();
-                if (placeFluid(getFluid(stack).getFluidState(stack), null, world, blockPos, null)) {
-                    return new ItemStack(asEmpty());
+                ItemFluids fluids = ItemFluids.of(stack);
+                if (placeFluid(fluids.fluid().getFluidState(fluids), null, world, blockPos, null)) {
+                    return Items.BUCKET.getDefaultStack();
                 }
                 return super.dispenseSilently(pointer, stack);
             }
@@ -67,21 +68,11 @@ public class FilledBucketItem extends Item implements FluidContainer {
     }
 
     @Override
-    public int getMaxCapacity() {
-        return FluidVolumes.BUCKET;
-    }
-
-    @Override
-    public Item asEmpty() {
-        return Items.BUCKET;
-    }
-
-    @Override
     public Text getName(ItemStack stack) {
-        SimpleFluid fluid = getFluid(stack);
+        ItemFluids fluids = ItemFluids.of(stack);
 
-        if (!fluid.isEmpty()) {
-            return Text.translatable("%s %s", fluid.getName(stack), Items.BUCKET.getName(stack));
+        if (!fluids.isEmpty()) {
+            return Text.translatable("%s %s", fluids.fluid().getName(fluids), Items.BUCKET.getName(stack));
         }
 
         return Items.BUCKET.getName(stack);
@@ -91,15 +82,16 @@ public class FilledBucketItem extends Item implements FluidContainer {
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
         if (type.isAdvanced()) {
-            tooltip.add(Text.literal(getLevel(stack) + "/" + getMaxCapacity(stack)));
+            ItemFluids fluids = ItemFluids.of(stack);
+            tooltip.add(Text.literal(fluids.amount() + "/" + FluidCapacity.get(stack)));
         }
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-
-        FluidState fluid = getFluid(stack).getFluidState(stack);
+        ItemFluids fluids = ItemFluids.of(stack);
+        FluidState fluid = fluids.fluid().getFluidState(fluids);
 
         BlockHitResult hit = BucketItem.raycast(world, user, fluid.isEmpty()
                 ? RaycastContext.FluidHandling.SOURCE_ONLY
@@ -157,7 +149,7 @@ public class FilledBucketItem extends Item implements FluidContainer {
         Block block = state.getBlock();
         boolean canPlace = state.canBucketPlace(fluid.getFluid());
 
-        if (!(state.isAir() || canPlace || block instanceof FluidFillable && ((FluidFillable)(block)).canFillWithFluid(player, world, pos, state, fluid.getFluid()))) {
+        if (!(state.isAir() || canPlace || block instanceof FluidFillable f && f.canFillWithFluid(player, world, pos, state, fluid.getFluid()))) {
             return hit != null && placeFluid(fluid, player, world, hit.getBlockPos().offset(hit.getSide()), null);
         }
 
@@ -172,8 +164,8 @@ public class FilledBucketItem extends Item implements FluidContainer {
             return true;
         }
 
-        if (block instanceof FluidFillable && fluid.isOf(Fluids.WATER)) {
-            ((FluidFillable)(block)).tryFillWithFluid(world, pos, state, fluid);
+        if (block instanceof FluidFillable f && fluid.isOf(Fluids.WATER)) {
+            f.tryFillWithFluid(world, pos, state, fluid);
             playEmptyingSound(fluid.getFluid(), player, world, pos);
             return true;
         }

@@ -18,8 +18,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 
 import org.jetbrains.annotations.Nullable;
@@ -75,13 +74,11 @@ public class FluidBoxRenderer {
         return this;
     }
 
-    public FluidBoxRenderer texture(VertexConsumerProvider vertices, Resovoir tank) {
-        SimpleFluid fluid = tank.getFluidType();
-
-        if (fluid.isEmpty()) {
-            texture(vertices, tank.getStack());
+    public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemFluids fluids) {
+        if (fluids.isEmpty()) {
+            texture(vertices, fluids);
         } else {
-            FluidAppearance appearance = FluidAppearance.of(fluid, tank.getStack());
+            FluidAppearance appearance = FluidAppearance.of(fluids);
 
             sprite = appearance.sprite();
             color = appearance.color();
@@ -158,18 +155,18 @@ public class FluidBoxRenderer {
     }
 
     public record FluidAppearance(Identifier texture, Sprite sprite, int color) {
-        public static FluidAppearance of(SimpleFluid fluid, ItemStack stack) {
-            return fluid.getFlowTexture(stack).map(texture -> {
+        public static FluidAppearance of(ItemFluids stack) {
+            return stack.fluid().getFlowTexture(stack).map(texture -> {
                 Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).getSprite(texture);
                 return new FluidAppearance(sprite.getAtlasId(), sprite, 0xFFFFFFFF);
             }).orElseGet(() -> {
-                int color = fluid.getColor(stack);
+                int color = stack.fluid().getColor(stack);
                 Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
 
-                if (!fluid.isCustomFluid()) {
-                    FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getPhysical().getStandingFluid());
+                if (!stack.fluid().isCustomFluid()) {
+                    FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(stack.fluid().getPhysical().getStandingFluid());
                     if (handler != null) {
-                        FluidState state = fluid.getPhysical().getStandingFluid().getDefaultState();
+                        FluidState state = stack.fluid().getPhysical().getStandingFluid().getDefaultState();
                         color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
                         sprite = handler.getFluidSprites(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state)[0];
                     }
@@ -179,16 +176,16 @@ public class FluidBoxRenderer {
             });
         }
 
-        public static int getItemColor(SimpleFluid fluid, ItemStack stack) {
-            if (!fluid.isCustomFluid()) {
-                FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.getPhysical().getStandingFluid());
+        public static int getItemColor(ItemFluids stack) {
+            if (!stack.fluid().isCustomFluid()) {
+                FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(stack.fluid().getPhysical().getStandingFluid());
                 if (handler != null) {
-                    FluidState state = fluid.getPhysical().getStandingFluid().getDefaultState();
+                    FluidState state = stack.fluid().getPhysical().getStandingFluid().getDefaultState();
                     return handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
                 }
             }
 
-            return fluid.getColor(stack);
+            return stack.fluid().getColor(stack);
         }
 
         public float[] rgba() {

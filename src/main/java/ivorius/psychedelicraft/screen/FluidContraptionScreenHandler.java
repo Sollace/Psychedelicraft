@@ -67,7 +67,7 @@ public class FluidContraptionScreenHandler<T extends FlaskBlockEntity> extends S
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return tank.canPlayerUse(player);
+        return true;
     }
 
     @Override

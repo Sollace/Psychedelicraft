@@ -1,7 +1,5 @@
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -17,7 +15,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 
 /**
  * Created by lukas on 10.11.14.
@@ -57,25 +55,14 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput inventory, World world) {
-        return RecipeUtils.toRecepticals(inventory.getStacks().stream()).count() == 1 && super.matches(inventory, world);
+        return RecipeUtils.recepticals(inventory.getStacks().stream()).count() == 1 && super.matches(inventory, world);
     }
 
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        return RecipeUtils.toRecepticals(inventory.getStacks().stream()).findFirst().map(pair -> {
+        return RecipeUtils.recepticals(inventory.getStacks().stream()).findFirst().map(input -> {
             // copy bottle contents to the new stack
-            ItemStack input = pair.getValue().copy();
-            ItemStack output = getResult(registries).copy();
-            FluidContainer outputContainer = FluidContainer.of(output, null);
-            if (outputContainer != null) {
-                output = outputContainer.toMutable(output).fillFrom(pair.getKey().toMutable(input)).asStack();
-            }
-
-            DyedColorComponent color = input.get(DataComponentTypes.DYED_COLOR);
-            if (color != null) {
-                output.set(DataComponentTypes.DYED_COLOR, color);
-            }
-            return output;
+            return ItemFluids.set(input.withItem(getResult(registries).getItem()), ItemFluids.of(input));
         }).orElseGet(getResult(registries)::copy);
     }
 }

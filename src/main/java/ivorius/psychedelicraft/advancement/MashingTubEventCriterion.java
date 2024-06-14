@@ -9,7 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -44,7 +44,7 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
         ).apply(instance, Conditions::new));
 
         public boolean test(ServerPlayerEntity player, ItemStack stack) {
-            return FluidContainer.of(stack).getFluid(stack) == fluid
+            return ItemFluids.of(stack).fluid() == fluid
                     && fermentation.test(AlcoholicFluid.FERMENTATION.get(stack))
                     && maturation.test(AlcoholicFluid.MATURATION.get(stack))
                     && distillation.test(AlcoholicFluid.DISTILLATION.get(stack));

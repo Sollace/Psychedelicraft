@@ -8,8 +8,8 @@ package ivorius.psychedelicraft.client.render.blocks;
 import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -39,13 +39,13 @@ public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements Blo
 
 
         Resovoir tank = entity.getPrimaryTank();
-        SimpleFluid fluid = tank.getFluidType();
+        ItemFluids stack = tank.getContents();
 
-        if (!fluid.isEmpty()) {
-            float fillPercentage = MathHelper.clamp((float) tank.getLevel() / (float) tank.getCapacity(), 0, 1);
+        if (!stack.isEmpty()) {
+            float fillPercentage = MathHelper.clamp((float)stack.amount() / tank.getCapacity(), 0, 1);
 
             FluidBoxRenderer fluidRenderer = FluidBoxRenderer.getInstance()
-                    .texture(vertices, tank)
+                    .texture(vertices, stack)
                     .light(light).overlay(overlay)
                     .position(matrices);
 

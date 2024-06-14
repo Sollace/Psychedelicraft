@@ -5,9 +5,11 @@
 
 package ivorius.psychedelicraft.item;
 
+import java.util.List;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.component.DataComponentTypes;
@@ -61,10 +63,11 @@ public interface PSItemGroups {
 
                 entries.add(PSItems.BONG);
                 entries.add(PSItems.SYRINGE);
-                entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.COCAINE));
-                entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.CAFFEINE));
-                entries.add(PSItems.SYRINGE.getDefaultStack(PSFluids.BATH_SALTS));
-                entries.add(ChemicalExtractFluid.DISTILLATION.set(PSItems.SYRINGE.getDefaultStack(PSFluids.MORNING_GLORY_EXTRACT), 2));
+                List.of(PSFluids.COCAINE, PSFluids.CAFFEINE, PSFluids.BATH_SALTS).forEach(fluid -> {
+                    entries.add(ItemFluids.set(PSItems.SYRINGE.getDefaultStack(), fluid.getDefaultStack(FluidVolumes.SYRINGE)));
+                });
+                entries.add(ItemFluids.set(PSItems.SYRINGE.getDefaultStack(), PSFluids.MORNING_GLORY_EXTRACT.getDefaultStack(FluidVolumes.SYRINGE)));
+                entries.add(ItemFluids.set(PSItems.SYRINGE.getDefaultStack(), ChemicalExtractFluid.DISTILLATION.set(PSFluids.MORNING_GLORY_EXTRACT.getDefaultStack(FluidVolumes.SYRINGE), 2)));
 
                 entries.add(PSItems.COFFEA_CHERRIES);
                 entries.add(PSItems.COFFEE_BEANS);
@@ -161,25 +164,25 @@ public interface PSItemGroups {
     RegistryKey<ItemGroup> DRINKS = register("drinks", FabricItemGroup.builder()
             .icon(PSItems.OAK_BARREL::getDefaultStack)
             .entries((context, entries) -> {
-                appendAllFluids(PSItems.STONE_CUP, entries);
+                appendAllFluids(PSItems.STONE_CUP.getDefaultStack(), entries);
                 entries.add(PSItems.SHOT_GLASS);
-                PSFluids.AGAVE.getDefaultStacks(PSItems.SHOT_GLASS, entries::add);
-                appendAllFluids(PSItems.WOODEN_MUG, entries);
-                appendAllFluids(PSItems.GLASS_CHALICE, entries);
-                appendAllFluids(PSItems.BOTTLE, entries);
-                appendAllFluids(PSItems.FILLED_BUCKET, entries);
-                appendAllFluids(PSItems.FILLED_BOWL, entries);
-                appendAllFluids(PSItems.FILLED_GLASS_BOTTLE, entries);
+                PSFluids.AGAVE.getDefaultStacks(PSItems.SHOT_GLASS.getDefaultStack(), entries::add);
+                appendAllFluids(PSItems.WOODEN_MUG.getDefaultStack(), entries);
+                appendAllFluids(PSItems.GLASS_CHALICE.getDefaultStack(), entries);
+                appendAllFluids(PSItems.BOTTLE.getDefaultStack(), entries);
+                appendAllFluids(PSItems.FILLED_BUCKET.getDefaultStack(), entries);
+                appendAllFluids(PSItems.FILLED_BOWL.getDefaultStack(), entries);
+                appendAllFluids(PSItems.FILLED_GLASS_BOTTLE.getDefaultStack(), entries);
             }));
     RegistryKey<ItemGroup> WEAPONS = register("weapons", FabricItemGroup.builder()
             .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
             .entries((context, entries) -> {
                 if (!Psychedelicraft.getConfig().balancing.disableMolotovs) {
-                    appendAllFluids(PSItems.MOLOTOV_COCKTAIL, entries);
+                    appendAllFluids(PSItems.MOLOTOV_COCKTAIL.getDefaultStack(), entries);
                 }
             }));
 
-    private static void appendAllFluids(FluidContainer item, ItemGroup.Entries entries) {
+    private static void appendAllFluids(ItemStack item, ItemGroup.Entries entries) {
         SimpleFluid.all().forEach(fluid -> {
             if (fluid.isSuitableContainer(item)) {
                 fluid.getDefaultStacks(item, entries::add);

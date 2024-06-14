@@ -22,8 +22,8 @@ import net.minecraft.world.WorldView;
  * Updated by Sollace on 8 Feb 2023
  */
 public class MashTubItem extends FlaskItem {
-    public MashTubItem(Block block, Settings settings, int capacity) {
-        super(block, settings, capacity);
+    public MashTubItem(Block block, Settings settings) {
+        super(block, settings);
     }
 
     @Override

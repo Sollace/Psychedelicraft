@@ -8,8 +8,8 @@ package ivorius.psychedelicraft.client.render.blocks;
 import ivorius.psychedelicraft.block.BarrelBlock;
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.client.render.RenderUtil;
-import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -40,9 +40,9 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
 
         Resovoir tank = entity.getPrimaryTank();
 
-        SimpleFluid fluid = tank.getFluidType();
-        if (!fluid.isEmpty()) {
-            Identifier symbol = fluid.getSymbol(tank.getStack());
+        ItemFluids stack = tank.getContents();
+        if (!stack.isEmpty()) {
+            Identifier symbol = stack.fluid().getSymbol(stack);
 
             if (MinecraftClient.getInstance().getResourceManager().getResource(symbol).isPresent()) {
                 matrices.translate(0, 0.5, 0);

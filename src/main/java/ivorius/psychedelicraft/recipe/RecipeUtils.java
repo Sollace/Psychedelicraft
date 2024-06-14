@@ -15,7 +15,6 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -27,7 +26,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 public interface RecipeUtils {
@@ -46,36 +45,18 @@ public interface RecipeUtils {
     PacketCodec<RegistryByteBuf, CookingRecipeCategory> COOKING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CookingRecipeCategory.class);
     PacketCodec<RegistryByteBuf, DefaultedList<Ingredient>> INGREDIENTS_PACKET_CODEC = Ingredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList(Ingredient.empty()));
 
-    @Deprecated
-    static Stream<Map.Entry<FluidContainer, ItemStack>> recepticals(Inventory inventory) {
-        return stacks(inventory)
-            .filter(stack -> stack.getItem() instanceof FluidContainer)
-            .map(stack -> Map.entry(FluidContainer.of(stack), stack));
+    static Stream<ItemStack> recepticals(Stream<ItemStack> stacks) {
+        return stacks.filter(stack -> FluidCapacity.get(stack) > 0);
     }
 
-    static Stream<Map.Entry<FluidContainer, ItemStack>> toRecepticals(Stream<ItemStack> stacks) {
-        return stacks
-            .filter(stack -> stack.getItem() instanceof FluidContainer)
-            .map(stack -> Map.entry(FluidContainer.of(stack), stack));
+    static Stream<Entry<ItemStack>> recepticalSlots(RecipeInput input) {
+        return slots(input, stack -> FluidCapacity.get(stack) > 0, Function.identity());
     }
 
     static Stream<ItemStack> stacks(Inventory inventory) {
         return IntStream.range(0, inventory.size())
                 .mapToObj(inventory::getStack)
                 .filter(s -> !s.isEmpty());
-    }
-
-    @Deprecated
-    static Stream<Slot<Map.Entry<FluidContainer, ItemStack>>> recepticalSlots(Inventory inventory) {
-        return slots(inventory, stack -> stack.getItem() instanceof FluidContainer, stack -> {
-            return Map.entry(FluidContainer.of(stack), stack);
-        });
-    }
-
-    static Stream<Entry<Map.Entry<FluidContainer, ItemStack>>> recepticalSlots(RecipeInput input) {
-        return slots(input, stack -> stack.getItem() instanceof FluidContainer, stack -> {
-            return Map.entry(FluidContainer.of(stack), stack);
-        });
     }
 
     static <T> Stream<Entry<T>> slots(RecipeInput input, Predicate<ItemStack> filter, Function<ItemStack, T> func) {

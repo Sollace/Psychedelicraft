@@ -7,15 +7,16 @@ package ivorius.psychedelicraft.recipe;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.dynamic.Codecs;
-
 import java.util.*;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -28,12 +29,31 @@ import ivorius.psychedelicraft.item.PSItems;
  * Used by the mash table to produce a particular fluid from items dropped in.
  */
 public class MashingRecipe extends FillRecepticalRecipe {
+    public static final MapCodec<MashingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::getGroup),
+            CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(MashingRecipe::getCategory),
+            FluidIngredient.CODEC.fieldOf("result").forGetter(MashingRecipe::getOutputFluid),
+            FluidIngredient.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::getPoolFluid),
+            RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::getIngredients),
+            Codec.INT.optionalFieldOf("stew_time", 0).forGetter(recipe -> recipe.stewTime)
+    ).apply(instance, MashingRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, MashingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.STRING, MashingRecipe::getGroup,
+            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::getCategory,
+            FluidIngredient.PACKET_CODEC, MashingRecipe::getOutputFluid,
+            FluidIngredient.PACKET_CODEC, MashingRecipe::getPoolFluid,
+            RecipeUtils.INGREDIENTS_PACKET_CODEC, MashingRecipe::getIngredients,
+            PacketCodecs.INTEGER, recipe -> recipe.stewTime,
+            MashingRecipe::new
+    );
 
     private final int stewTime;
 
     private final FluidIngredient fluid;
 
-    public MashingRecipe(String group, CraftingRecipeCategory category,
+    public MashingRecipe(
+            String group,
+            CraftingRecipeCategory category,
             FluidIngredient output,
             FluidIngredient fluid,
             DefaultedList<Ingredient> input,
@@ -97,45 +117,6 @@ public class MashingRecipe extends FillRecepticalRecipe {
 
         return MatchResult.of(unmatchedInputs.isEmpty(), expectedInputs.isEmpty());
     }
-
-    static class Serializer implements RecipeSerializer<MashingRecipe> {
-        public static final Codec<MashingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(MashingRecipe::getGroup),
-                CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(MashingRecipe::getCategory),
-                FluidIngredient.CODEC.fieldOf("result").forGetter(MashingRecipe::getOutputFluid),
-                FluidIngredient.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::getPoolFluid),
-                RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::getIngredients),
-                Codec.INT.optionalFieldOf("stew_time", 0).forGetter(recipe -> recipe.stewTime)
-        ).apply(instance, MashingRecipe::new));
-
-        @Override
-        public Codec<MashingRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public MashingRecipe read(PacketByteBuf buffer) {
-            return new MashingRecipe(
-                    buffer.readString(),
-                    buffer.readEnumConstant(CraftingRecipeCategory.class),
-                    new FluidIngredient(buffer),
-                    new FluidIngredient(buffer),
-                    buffer.readCollection(DefaultedList::ofSize, Ingredient::fromPacket),
-                    buffer.readVarInt()
-            );
-        }
-
-        @Override
-        public void write(PacketByteBuf buffer, MashingRecipe recipe) {
-            buffer.writeString(recipe.getGroup());
-            buffer.writeEnumConstant(recipe.getCategory());
-            recipe.getOutputFluid().write(buffer);
-            recipe.getPoolFluid().write(buffer);
-            buffer.writeCollection(recipe.getIngredients(), (b, c) -> c.write(b));
-            buffer.writeVarInt(recipe.getStewTime());
-        }
-    }
-
 
     public enum MatchResult {
         NONE,

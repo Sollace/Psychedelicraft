@@ -8,14 +8,12 @@ package ivorius.psychedelicraft.fluid;
 import java.util.List;
 import java.util.Optional;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleUtil;
 import net.minecraft.sound.SoundCategory;
@@ -41,7 +39,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
 
     @Override
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
-        ParticleUtil.spawnParticle(world, pos, new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgbVector(getColor(ItemStack.EMPTY)), 1), ConstantIntProvider.create(5));
+        ParticleUtil.spawnParticle(world, pos, new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgbVector(getColor(getDefaultStack())), 1), ConstantIntProvider.create(5));
 
         world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS,
                 0.5F + world.getRandom().nextFloat(),
@@ -49,14 +47,14 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     }
 
     @Override
-    public Optional<Identifier> getFlowTexture(ItemStack stack) {
+    public Optional<Identifier> getFlowTexture(ItemFluids stack) {
         return flowTexture;
     }
 
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
         if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
-            return tank.getLevel() >= FLUID_PER_DIRT ? Psychedelicraft.getConfig().balancing.slurryHardeningTime : UNCONVERTABLE;
+            return tank.getContents().amount() >= FLUID_PER_DIRT ? Psychedelicraft.getConfig().balancing.slurryHardeningTime : UNCONVERTABLE;
         }
         return UNCONVERTABLE;
     }
@@ -64,9 +62,8 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     @Override
     public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
         if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
-            MutableFluidContainer contents = tank.getContents();
-            if (contents.getLevel() > FLUID_PER_DIRT) {
-                contents.drain(FLUID_PER_DIRT);
+            if (tank.getContents().amount() > FLUID_PER_DIRT) {
+                tank.drain(FLUID_PER_DIRT);
                 output.accept(Items.DIRT.getDefaultStack());
             }
         }
@@ -75,10 +72,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     @Override
     public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
         if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
-            consumer.accept(Psychedelicraft.getConfig().balancing.slurryHardeningTime, 1,
-                    stack -> List.of(getDefaultStack(FluidContainer.of(stack))),
-                    stack -> List.of(Items.DIRT.getDefaultStack())
-            );
+            consumer.accept(Psychedelicraft.getConfig().balancing.slurryHardeningTime, 1, List::of, List::of);
         }
     }
 }

@@ -7,10 +7,10 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -46,8 +46,8 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     final Settings settings;
 
     public AlcoholicFluid(Identifier id, Settings settings) {
-        super(id, settings.drinkable().with(new FluidStateManager.FluidProperty<>(IntProperty.of("variant", 0, settings.states.get().size()), (stack, variant) -> {
-            return settings.states.get().get(MathHelper.clamp(variant, 0, settings.states.get().size())).apply(stack);
+        super(id, settings.drinkable().with(new FluidStateManager.FluidProperty<>(IntProperty.of("variant", 0, settings.states.get().size()), (properties, value) -> {
+            settings.states.get().get(MathHelper.clamp(value, 0, settings.states.get().size())).apply(properties);
         }, stack -> {
             return settings.states.get().stream()
                     .filter(s -> s.entry().predicate().test(stack))
@@ -67,7 +67,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getDrugInfluencesPerLiter(ItemStack stack, Consumer<DrugInfluence> consumer) {
+    public void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
         super.getDrugInfluencesPerLiter(stack, consumer);
 
         double alcohol =
@@ -102,25 +102,25 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
-        MutableFluidContainer contents = tank.getContents();
 
         switch (type) {
             case DISTILL: {
-                int amountDrained = MathHelper.floor(contents.getLevel() * MathUtils.progress(DISTILLATION.get(contents), 0.5F));
+                int amountDrained = MathHelper.floor(tank.getContents().amount() * MathUtils.progress(DISTILLATION.get(tank.getContents()), 0.5F));
                 if (amountDrained > 0) {
-                    output.accept(contents.drain(1).withFluid(PSFluids.SLURRY));
+                    tank.drain(1);
+                    output.accept(PSFluids.SLURRY.getDefaultStack());
                 }
-                DISTILLATION.cycle(contents);
+                tank.setContents(DISTILLATION.cycle(tank.getContents()));
                 break;
             }
             case MATURE:
-                MATURATION.cycle(contents);
+                tank.setContents(MATURATION.cycle(tank.getContents()));
                 break;
             case FERMENT:
-                FERMENTATION.cycle(contents);
+                tank.setContents(FERMENTATION.cycle(tank.getContents()));
                 break;
             case ACETIFY:
-                VINEGAR.cycle(contents);
+                tank.setContents(VINEGAR.cycle(tank.getContents()));
                 break;
             default:
         }
@@ -192,16 +192,16 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public int getHash(ItemStack stack) {
-        return Objects.hash(this, settings.variants.find(stack));
+        return Objects.hash(this, settings.variants.find(ItemFluids.of(stack)));
     }
 
     @Override
-    public Text getName(ItemStack stack) {
+    public Text getName(ItemFluids stack) {
         return settings.variants.find(stack).getName(Text.translatable(getTranslationKey()));
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemFluids stack, List<Text> tooltip, TooltipType type) {
 
         int distillation = DISTILLATION.get(stack);
         int maturation = MATURATION.get(stack);
@@ -226,7 +226,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void appendTankTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
+    public void appendTankTooltip(ItemFluids stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
         int ticksProcessed = tank.getTimeProcessed();
         int ticksNeeded = tank.getTimeNeeded();
         String timeRemaining = StringHelper.formatTicks(ticksNeeded - ticksProcessed, world == null ? 20 : world.getTickManager().getTickRate());
@@ -260,7 +260,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getColor(ItemStack stack) {
+    public int getColor(ItemFluids stack) {
         return MathUtils.mixColors(
                 MathUtils.mixColors(
                         super.getColor(stack),
@@ -273,19 +273,24 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public Identifier getSymbol(ItemStack stack) {
+    public Identifier getSymbol(ItemFluids stack) {
         return settings.variants.find(stack).getSymbol(getId());
     }
 
     @Override
-    public void getDefaultStacks(FluidContainer container, Consumer<ItemStack> consumer) {
-        settings.states.get().forEach(state -> consumer.accept(state.apply(getDefaultStack(container))));
+    public void getDefaultStacks(ItemStack stack, Consumer<ItemStack> consumer) {
+        int capacity = FluidCapacity.get(stack);
+        if (capacity > 0) {
+            ItemFluids fluids = getDefaultStack(capacity);
+            settings.states.get().forEach(state -> {
+                consumer.accept(ItemFluids.set(stack.copy(), state.apply(fluids)));
+            });
+        }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public boolean isSuitableContainer(FluidContainer container) {
-        return container.asItem().getRegistryEntry().isIn(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS);
+    public boolean isSuitableContainer(ItemStack container) {
+        return container.isIn(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS);
     }
 
     public static class Settings extends DrugFluid.Settings {

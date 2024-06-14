@@ -10,14 +10,20 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SidedStorageBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
@@ -56,7 +62,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (!world.isClient && stack.getItem() instanceof FluidContainer) {
+        if (!world.isClient && FluidCapacity.get(stack) > 0) {
             world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
                 be.getPrimaryTank().deposit(stack);
             });
@@ -70,7 +76,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
         BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
         if (blockEntity instanceof DirectionalFluidResovoir container && blockEntity.getType() == getBlockEntityType()) {
             builder = builder.addDynamicDrop(CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
-                List<ItemStack> dynamicStacks = container.getDroppedStacks(FluidContainer.of(asItem()));
+                List<ItemStack> dynamicStacks = container.getDroppedStacks(asItem().getDefaultStack());
                 if (dynamicStacks.isEmpty()) {
                     lootConsumer.accept(asItem().getDefaultStack());
                 } else {
@@ -144,13 +150,26 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
         );
     }
 
-    public interface DirectionalFluidResovoir {
-        Resovoir getTankOnSide(Direction direction);
+    public interface DirectionalFluidResovoir extends SidedStorageBlockEntity, SidedInventory {
+        default Resovoir getTankOnSide(Direction direction) {
+            return getPrimaryTank();
+        }
 
         Resovoir getPrimaryTank();
 
-        List<ItemStack> getDroppedStacks(FluidContainer container);
+        List<ItemStack> getDroppedStacks(ItemStack container);
 
         void tick(ServerWorld world);
+
+        @Override
+        default Storage<FluidVariant> getFluidStorage(Direction side) {
+            return getTankOnSide(side);
+        }
+
+
+        @Override
+        default Storage<ItemVariant> getItemStorage(@Nullable Direction side) {
+            return InventoryStorage.of(this, side);
+        }
     }
 }

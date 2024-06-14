@@ -14,7 +14,7 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.util.Identifier;
 
 public class DrawingFluidEmiRecipe implements EmiRecipe, PSRecipe {
@@ -82,11 +82,11 @@ public class DrawingFluidEmiRecipe implements EmiRecipe, PSRecipe {
             Set<EmiIngredient> ingredients = new HashSet<>();
             List<EmiStack> outputs = new ArrayList<>();
             EmiIngredient.of(PSTags.Items.DRINK_RECEPTICALS).getEmiStacks().forEach(stack -> {
-               tankContents.getDefaultStacks(FluidContainer.of(stack.getItemStack().getItem()), filled -> {
+               tankContents.getDefaultStacks(stack.getItemStack(), filled -> {
                    outputs.add(EmiStack.of(filled));
-                   var container = FluidContainer.of(filled).toMutable(filled);
-                   tanks.add(RecipeUtil.createFluidIngredient(container.getFluid(), container.getLevel(), container.getAttributes()));
-                   ingredients.add(EmiStack.of(container.withLevel(0).asStack()));
+                   var fluids = ItemFluids.of(filled);
+                   tanks.add(RecipeUtil.createFluidIngredient(fluids));
+                   ingredients.add(stack);
                });
             });
             var tank = new ListEmiIngredient(tanks, FluidVolumes.VAT / 12);

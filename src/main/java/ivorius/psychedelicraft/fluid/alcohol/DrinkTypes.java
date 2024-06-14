@@ -1,10 +1,10 @@
 package ivorius.psychedelicraft.fluid.alcohol;
 
-import net.minecraft.item.ItemStack;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.AbstractIterator;
 
 import ivorius.psychedelicraft.fluid.AlcoholicFluid;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 
 /**
  * @author Sollace
@@ -26,17 +27,17 @@ public interface DrinkTypes {
 
     List<Entry> variants();
 
-    default DrinkType find(ItemStack stack) {
+    default DrinkType find(ItemFluids fluids) {
 
         if (!variants().isEmpty()) {
             for (Entry variant : variants()) {
-                if (variant.predicate.test(stack)) {
+                if (variant.predicate.test(fluids)) {
                     return variant.value();
                 }
             }
         }
 
-        throw noMatch(stack);
+        throw noMatch(fluids);
     }
 
     default Stream<State> streamStates() {
@@ -100,7 +101,7 @@ public interface DrinkTypes {
     }
 
 
-    private static NullPointerException noMatch(ItemStack stack) {
+    private static NullPointerException noMatch(ItemFluids stack) {
         return noMatch(
                 AlcoholicFluid.DISTILLATION.get(stack),
                 AlcoholicFluid.MATURATION.get(stack),
@@ -132,12 +133,17 @@ public interface DrinkTypes {
     record Entry (DrinkType value, StatePredicate predicate) { }
 
     record State (int distillation, int maturation, int fermentation, boolean vinegar, Entry entry) {
-        public ItemStack apply(ItemStack stack) {
-            stack = AlcoholicFluid.DISTILLATION.set(stack, distillation);
-            stack = AlcoholicFluid.MATURATION.set(stack, maturation);
-            stack = AlcoholicFluid.FERMENTATION.set(stack, fermentation);
-            stack = AlcoholicFluid.VINEGAR.set(stack, vinegar);
-            return stack;
+        public ItemFluids apply(ItemFluids stack) {
+            var attributes = new HashMap<>(stack.attributes());
+            apply(attributes);
+            return stack.withAttributes(attributes);
+        }
+
+        public void apply(Map<String, Integer> attributes) {
+            AlcoholicFluid.DISTILLATION.set(attributes, distillation);
+            AlcoholicFluid.MATURATION.set(attributes, maturation);
+            AlcoholicFluid.FERMENTATION.set(attributes, fermentation);
+            AlcoholicFluid.VINEGAR.set(attributes, vinegar);
         }
 
         public boolean isDefault() {

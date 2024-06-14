@@ -12,13 +12,13 @@ import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
-import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.influence.HarmoniumDrugInfluence;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.item.component.BagContentsComponent;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -38,24 +38,52 @@ import net.minecraft.util.Colors;
  * Updated by Sollace on 1 Jan 2023
  */
 public interface PSItems {
-    DrinkableItem WOODEN_MUG = register("wooden_mug", new DrinkableItem(new Settings(), FluidVolumes.MUG, DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem STONE_CUP = register("stone_cup", new DrinkableItem(new Settings(), FluidVolumes.CUP, DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem GLASS_CHALICE = register("glass_chalice", new DrinkableItem(new Settings(), FluidVolumes.CHALLICE, DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem SHOT_GLASS = register("shot_glass", new DrinkableItem(new Settings(), FluidVolumes.SHOT, DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME / 4, ConsumableFluid.ConsumptionType.DRINK));
-    DrinkableItem BOTTLE = register("bottle", new BottleItem(new Settings().component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true)), FluidVolumes.BOTTLE, DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
-    MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings().component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true)).maxCount(16), FluidVolumes.BOTTLE));
+    DrinkableItem WOODEN_MUG = register("wooden_mug", new DrinkableItem(new Settings()
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.MUG)), DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem STONE_CUP = register("stone_cup", new DrinkableItem(new Settings()
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.CUP)), DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem GLASS_CHALICE = register("glass_chalice", new DrinkableItem(new Settings()
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.CHALLICE)), DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem SHOT_GLASS = register("shot_glass", new DrinkableItem(new Settings()
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.SHOT)), DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME / 4, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem BOTTLE = register("bottle", new BottleItem(new Settings()
+            .component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true))
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BOTTLE)), DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+    MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings()
+            .component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true))
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BOTTLE))
+            .maxCount(16)));
 
-    FlaskItem OAK_BARREL = register("oak_barrel", new FlaskItem(PSBlocks.OAK_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
-    FlaskItem SPRUCE_BARREL = register("spruce_barrel", new FlaskItem(PSBlocks.SPRUCE_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
-    FlaskItem BIRCH_BARREL = register("birch_barrel", new FlaskItem(PSBlocks.BIRCH_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
-    FlaskItem JUNGLE_BARREL = register("jungle_barrel", new FlaskItem(PSBlocks.JUNGLE_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
-    FlaskItem ACACIA_BARREL = register("acacia_barrel", new FlaskItem(PSBlocks.ACACIA_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
-    FlaskItem DARK_OAK_BARREL = register("dark_oak_barrel", new FlaskItem(PSBlocks.DARK_OAK_BARREL, new Settings().maxCount(16), FluidVolumes.BARREL));
+    FlaskItem OAK_BARREL = register("oak_barrel", new FlaskItem(PSBlocks.OAK_BARREL, new Settings().maxCount(16)
+            .maxCount(16)
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
+    FlaskItem SPRUCE_BARREL = register("spruce_barrel", new FlaskItem(PSBlocks.SPRUCE_BARREL, new Settings()
+            .maxCount(16)
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
+    FlaskItem BIRCH_BARREL = register("birch_barrel", new FlaskItem(PSBlocks.BIRCH_BARREL, new Settings()
+            .maxCount(16)
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
+    FlaskItem JUNGLE_BARREL = register("jungle_barrel", new FlaskItem(PSBlocks.JUNGLE_BARREL, new Settings()
+            .maxCount(16)
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
+    FlaskItem ACACIA_BARREL = register("acacia_barrel", new FlaskItem(PSBlocks.ACACIA_BARREL, new Settings()
+            .maxCount(16)
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
+    FlaskItem DARK_OAK_BARREL = register("dark_oak_barrel", new FlaskItem(PSBlocks.DARK_OAK_BARREL, new Settings()
+            .maxCount(16)
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
 
-    FlaskItem MASH_TUB = register("mash_tub", new MashTubItem(PSBlocks.MASH_TUB, new Settings().maxCount(16), FluidVolumes.VAT));
-    FlaskItem FLASK = register("flask", new FlaskItem(PSBlocks.FLASK, new Settings().maxCount(16), FlaskBlockEntity.FLASK_CAPACITY));
-    FlaskItem DISTILLERY = register("distillery", new FlaskItem(PSBlocks.DISTILLERY, new Settings().maxCount(16), DistilleryBlockEntity.DISTILLERY_CAPACITY));
-    RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings().component(PSComponents.RIFT_FRACTION, RiftFractionComponent.DEFAULT)));
+    FlaskItem MASH_TUB = register("mash_tub", new MashTubItem(PSBlocks.MASH_TUB, new Settings()
+            .maxCount(16)
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.VAT))));
+    FlaskItem FLASK = register("flask", new FlaskItem(PSBlocks.FLASK, new Settings()
+            .maxCount(16)
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.FLASK))));
+    FlaskItem DISTILLERY = register("distillery", new FlaskItem(PSBlocks.DISTILLERY, new Settings()
+            .maxCount(16)
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.FLASK))));
+    RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings()
+            .component(PSComponents.RIFT_FRACTION, RiftFractionComponent.DEFAULT)));
 
     DrinkableItem FILLED_GLASS_BOTTLE = register("filled_glass_bottle", new ProxyDrinkableItem(Items.GLASS_BOTTLE, new Settings(), FluidVolumes.GLASS_BOTTLE, ConsumableFluid.ConsumptionType.DRINK));
     FilledBucketItem FILLED_BUCKET = register("filled_bucket", new FilledBucketItem(new Settings().maxCount(1)));
@@ -118,7 +146,9 @@ public interface PSItems {
             new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)
     ));
 
-    InjectableItem SYRINGE = register("syringe", new InjectableItem(new Settings(), FluidVolumes.SYRINGE));
+    DrinkableItem SYRINGE = register("syringe", new DrinkableItem(new Settings()
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(DrinkableItem.FLUID_PER_INJECTION)
+    ), FluidVolumes.SYRINGE, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.INJECT));
 
     Item JUNIPER_LEAVES = register("juniper_leaves", PSBlocks.JUNIPER_LEAVES);
     Item FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", PSBlocks.FRUITING_JUNIPER_LEAVES);

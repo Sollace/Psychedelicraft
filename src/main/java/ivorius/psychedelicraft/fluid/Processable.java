@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
@@ -47,15 +47,15 @@ public interface Processable {
 
     interface ProcessStageConsumer {
         void accept(int time, int change,
-                Function<ItemStack, List<ItemStack>> from,
-                Function<ItemStack, List<ItemStack>> to
+                Function<ItemFluids, List<ItemFluids>> from,
+                Function<ItemFluids, List<ItemFluids>> to
         );
     }
 
     interface ByProductConsumer {
         void accept(ItemStack stack);
 
-        void accept(MutableFluidContainer fluid);
+        void accept(ItemFluids stack);
     }
 
     enum ProcessType {

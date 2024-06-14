@@ -46,7 +46,8 @@ public record OptionalFluidIngredient (
 
     @Override
     public boolean test(ItemStack stack) {
-        return fluid.map(f -> f.test(stack)).orElse(true) && receptical.map(r -> r.test(stack)).orElse(true);
+        return fluid.map(f -> f.test(stack)).orElse(true)
+            && receptical.map(r -> r.test(stack)).orElse(true);
     }
 }
 

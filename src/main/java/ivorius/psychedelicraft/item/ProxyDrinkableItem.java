@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.item;
 
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 
@@ -17,21 +18,16 @@ public class ProxyDrinkableItem extends DrinkableItem {
     private final Item basis;
 
     public ProxyDrinkableItem(Item basis, Settings settings, int capacity, ConsumableFluid.ConsumptionType consumptionType) {
-        super(settings.recipeRemainder(basis), capacity, capacity, DEFAULT_MAX_USE_TIME, consumptionType);
+        super(settings.recipeRemainder(basis), capacity, DEFAULT_MAX_USE_TIME, consumptionType);
         this.basis = basis;
     }
 
     @Override
-    public Item asEmpty() {
-        return basis;
-    }
-
-    @Override
     public Text getName(ItemStack stack) {
-        SimpleFluid fluid = getFluid(stack);
+        ItemFluids fluids = ItemFluids.of(stack);
 
-        if (!fluid.isEmpty()) {
-            return Text.translatable("%s %s", fluid.getName(stack), basis.getName(stack));
+        if (!fluids.isEmpty()) {
+            return Text.translatable("%s %s", fluids.fluid().getName(fluids), basis.getName(stack));
         }
 
         return basis.getName(stack);

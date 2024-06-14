@@ -14,8 +14,7 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import net.minecraft.item.ItemStack;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -39,7 +38,7 @@ public class FluidProcessingEmiRecipe implements EmiRecipe, PSRecipe {
             int counter,
             int time,
             int change,
-            EmiIngredient receptical, Function<ItemStack, List<ItemStack>> from, Function<ItemStack, List<ItemStack>> to) {
+            EmiIngredient receptical, Function<ItemFluids, List<ItemFluids>> from, Function<ItemFluids, List<ItemFluids>> to) {
         this.id = category.getId().withPath(p -> "fluid_process/" + p + "/" + fluid.getId().getPath() + "/" + counter);
         this.category = category;
 
@@ -47,19 +46,11 @@ public class FluidProcessingEmiRecipe implements EmiRecipe, PSRecipe {
         this.change = change;
         this.receptical = receptical;
 
-        var inputItems = receptical.getEmiStacks().stream().flatMap(r -> {
-            var container = FluidContainer.of(r.getItemStack()).toMutable(r.getItemStack());
-            container.deposit(12, fluid);
-            return from.apply(container.asStack()).stream();
-        }).toList();
-        var outputItems = receptical.getEmiStacks().stream().flatMap(r -> {
-            var container = FluidContainer.of(r.getItemStack()).toMutable(r.getItemStack());
-            container.deposit(12, fluid);
-            return to.apply(container.asStack()).stream();
-        }).toList();
+        var inputItems = receptical.getEmiStacks().stream().flatMap(r -> from.apply(fluid.getDefaultStack(12)).stream().map(f -> ItemFluids.set(r.getItemStack().copy(), f))).toList();
+        var outputItems = receptical.getEmiStacks().stream().flatMap(r -> to.apply(fluid.getDefaultStack(12)).stream().map(f -> ItemFluids.set(r.getItemStack().copy(), f))).toList();
 
-        inputFluid = EmiIngredient.of(inputItems.stream().map(RecipeUtil::createFluidIngredient).distinct().toList());
-        outputFluid = EmiIngredient.of(outputItems.stream().map(RecipeUtil::createFluidIngredient).distinct().toList());
+        inputFluid = EmiIngredient.of(inputItems.stream().map(ItemFluids::of).distinct().map(RecipeUtil::createFluidIngredient).toList());
+        outputFluid = EmiIngredient.of(outputItems.stream().map(ItemFluids::of).distinct().map(RecipeUtil::createFluidIngredient).toList());
 
         this.outputs = Stream.concat(Stream.concat(
                 outputFluid.getEmiStacks().stream(),

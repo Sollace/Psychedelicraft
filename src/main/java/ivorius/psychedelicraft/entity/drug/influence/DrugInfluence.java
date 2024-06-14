@@ -14,12 +14,13 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Identifier;
 
 public class DrugInfluence implements NbtSerialisable {
 
-    public static Optional<DrugInfluence> loadFromNbt(NbtCompound compound) {
-        return InfluenceType.of(compound.getString("type")).map(type -> type.create(compound));
+    public static Optional<DrugInfluence> loadFromNbt(NbtCompound compound, WrapperLookup lookup) {
+        return InfluenceType.of(compound.getString("type")).map(type -> type.create(compound, lookup));
     }
 
     protected DrugType drugType;
@@ -117,12 +118,22 @@ public class DrugInfluence implements NbtSerialisable {
     }
 
     @Override
-    public DrugInfluence clone() {
-        return type.create(toNbt());
+    public final DrugInfluence clone() {
+        DrugInfluence copy = type.create();
+        copy.copyFrom(this);
+        return copy;
+    }
+
+    protected void copyFrom(DrugInfluence old) {
+        drugType = old.drugType;
+        delay = old.delay;
+        influenceSpeed = old.influenceSpeed;
+        influenceSpeedPlus = old.influenceSpeedPlus;
+        maxInfluence = old.maxInfluence;
     }
 
     @Override
-    public void fromNbt(NbtCompound compound) {
+    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("drugName", NbtElement.STRING_TYPE)) {
             drugType = DrugType.REGISTRY.get(Psychedelicraft.id(compound.getString("drugName").toLowerCase(Locale.ROOT)));
         } else {
@@ -135,7 +146,7 @@ public class DrugInfluence implements NbtSerialisable {
     }
 
     @Override
-    public void toNbt(NbtCompound compound) {
+    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
         compound.putString("type", type.identifier());
         compound.putString("drugType", drugType.id().toString());
         compound.putInt("delay", delay);

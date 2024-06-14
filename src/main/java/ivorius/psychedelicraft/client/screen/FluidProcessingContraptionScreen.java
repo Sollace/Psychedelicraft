@@ -18,7 +18,7 @@ abstract class FluidProcessingContraptionScreen<T extends FluidProcessingBlockEn
     protected List<Text> getAdditionalTankText() {
         List<Text> tooltip = new ArrayList<>();
         Resovoir tank = handler.getBlockEntity().getPrimaryTank();
-        tank.getFluidType().appendTankTooltip(tank.getStack(), handler.getBlockEntity().getWorld(), tooltip, handler.getBlockEntity());
+        tank.getContents().fluid().appendTankTooltip(tank.getContents(), handler.getBlockEntity().getWorld(), tooltip, handler.getBlockEntity());
         return tooltip;
     }
 }

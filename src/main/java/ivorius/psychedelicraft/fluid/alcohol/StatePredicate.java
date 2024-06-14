@@ -3,8 +3,8 @@ package ivorius.psychedelicraft.fluid.alcohol;
 import java.util.function.Predicate;
 
 import ivorius.psychedelicraft.fluid.AlcoholicFluid;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange.IntRange;
 
 public record StatePredicate (
@@ -12,7 +12,7 @@ public record StatePredicate (
         IntRange maturationRange,
         IntRange distillationRange,
         TriState vinegar
-) implements Predicate<ItemStack> {
+) implements Predicate<ItemFluids> {
     public static final StatePredicate ANY_DISTILLED = StatePredicate.builder().distilled().build();
     public static final StatePredicate ANY_FERMENTED = StatePredicate.builder().fermented().build();
     public static final StatePredicate ANY_VINEGAR = StatePredicate.builder().vinegar().build();
@@ -28,7 +28,7 @@ public record StatePredicate (
     }
 
     @Override
-    public boolean test(ItemStack stack) {
+    public boolean test(ItemFluids stack) {
         return test(
                 AlcoholicFluid.FERMENTATION.get(stack),
                 AlcoholicFluid.DISTILLATION.get(stack),

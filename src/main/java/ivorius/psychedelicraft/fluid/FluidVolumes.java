@@ -5,14 +5,16 @@
 
 package ivorius.psychedelicraft.fluid;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+
 /**
  * Created by lukas on 22.10.14.
  */
 public interface FluidVolumes {
-    int BUCKET = 1_000;
+    int BUCKET = (int)FluidConstants.BUCKET;
 
     int CAULDRON = BUCKET;
-    int GLASS_BOTTLE = CAULDRON / 8;
+    int GLASS_BOTTLE = (int)FluidConstants.BOTTLE;
     int BOWL = BUCKET / 20;
 
     int MUG = BUCKET / 2;
@@ -22,6 +24,7 @@ public interface FluidVolumes {
     int BOTTLE = BUCKET * 2;
     int SYRINGE = BUCKET / 100;
 
-    int BARREL = BUCKET * 16;
-    int VAT = BUCKET * 32;
+    int BARREL = BUCKET * 8;
+    int VAT = BUCKET * 9;
+    int FLASK = BUCKET * 8;
 }

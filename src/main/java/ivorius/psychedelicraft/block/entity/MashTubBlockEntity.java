@@ -14,9 +14,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.block.MashTubBlock;
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
@@ -65,12 +65,6 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public void accept(MutableFluidContainer fluid) {
-        getPrimaryTank().clear();
-        getPrimaryTank().deposit(fluid.asStack());
-    }
-
-    @Override
     public Processable.ProcessType getProcessType() {
         return Processable.ProcessType.FERMENT;
     }
@@ -82,13 +76,21 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public void onIdle(Resovoir resovoir) {
-        super.onIdle(resovoir);
-        int luminance = resovoir.getFluidType().getPhysical().getDefaultState().getBlockState().getLuminance();
+    public void onLevelChange(Resovoir resovoir, int difference) {
+        super.onLevelChange(resovoir, difference);
+        int luminance = resovoir.getContents().fluid().getPhysical().getDefaultState().getBlockState().getLuminance();
 
         int currentLuminance = getCachedState().get(MashTubBlock.LIGHT);
         if (luminance != currentLuminance) {
             world.setBlockState(getPos(), getCachedState().with(MashTubBlock.LIGHT, luminance));
+        }
+
+        if (!solidContents.isEmpty()) {
+            super.accept(solidContents);
+            solidContents = ItemStack.EMPTY;
+        }
+        if (difference > 0) {
+            setTimeProcessed(0);
         }
     }
 
@@ -99,11 +101,11 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     public TypedActionResult<ItemStack> depositIngredient(ItemStack stack) {
-        if (!FluidContainer.of(stack).getFluid(stack).isEmpty()) {
+        ItemFluids fluids = ItemFluids.of(stack);
+        if (!fluids.isEmpty()) {
             Resovoir tank = getPrimaryTank();
-            if (tank.getLevel() < tank.getCapacity()) {
+            if (tank.getAmount() < tank.getCapacity()) {
                 getWorld().playSound(null, getPos(), SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1, 1);
-                onIdle(tank);
                 return TypedActionResult.success(tank.deposit(stack));
             }
             return TypedActionResult.fail(stack);
@@ -115,17 +117,16 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             checkIngredients();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
             getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
-            onIdle(getPrimaryTank());
             return TypedActionResult.success(stack);
         }
         return TypedActionResult.pass(stack);
     }
 
     public boolean isValidIngredient(ItemStack stack) {
-        return FluidContainer.of(stack, null) == null
+        return FluidCapacity.get(stack) == 0
             && world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream()
                 .map(RecipeEntry::value)
-                .filter(recipe -> recipe.getPoolFluid().test(getPrimaryTank()))
+                .filter(recipe -> recipe.getPoolFluid().test(getPrimaryTank().getContents()))
                 .flatMap(recipe -> recipe.getIngredients().stream())
                 .anyMatch(ingredient -> ingredient.test(stack));
     }
@@ -137,7 +138,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         var expectedRecipeMatchPair = expectedRecipe.map(recipe -> Map.entry(recipe, recipe.value().matchPartially(suppliedIngredients)));
         var matchedRecipes = world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream()
-                .filter(recipe -> recipe.value().getPoolFluid().test(getPrimaryTank()))
+                .filter(recipe -> recipe.value().getPoolFluid().test(getPrimaryTank().getContents()))
                 .map(recipe -> Map.entry(recipe, recipe.value().matchPartially(suppliedIngredients)))
                 .filter(pair -> pair.getValue().isMatch())
                 .toList();
@@ -162,9 +163,8 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     private void onCraftingFailed() {
         suppliedIngredients.clear();
         currentStew = Optional.empty();
-        getPrimaryTank().getContents().withFluid(PSFluids.SLURRY);
+        getPrimaryTank().setContents(PSFluids.SLURRY.getDefaultStack(getPrimaryTank().getContents().amount()));
         spawnBubbles(90, 0.5F, SoundEvents.BLOCK_MUD_BREAK);
-        onIdle(getPrimaryTank());
     }
 
     private void spawnBubbles(int count, float spread, SoundEvent sound) {
@@ -173,7 +173,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         Resovoir tank = getPrimaryTank();
         ParticleHelper.spawnParticles(getWorld(),
-                new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgbVector(tank.getFluidType().getColor(tank.getStack())), 1F),
+                new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgbVector(tank.getContents().fluid().getColor(tank.getContents())), 1F),
                 () -> ParticleHelper.apply(center, x -> random.nextTriangular(x, 0.5 + spread)).add(0, 0.5, 0),
                 Suppliers.ofInstance(new Vec3d(
                         random.nextTriangular(0, 0.125),
@@ -196,28 +196,11 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public List<ItemStack> getDroppedStacks(FluidContainer container) {
+    public List<ItemStack> getDroppedStacks(ItemStack container) {
         if (!solidContents.isEmpty()) {
             return List.of(solidContents);
         }
         return List.of();
-    }
-
-    @Override
-    public void onDrain(Resovoir resovoir) {
-        if (!solidContents.isEmpty() && resovoir.isEmpty()) {
-            setTimeProcessed(0);
-        }
-        onIdle(resovoir);
-    }
-
-    @Override
-    public void onFill(Resovoir resovoir, int amountFilled) {
-        if (!solidContents.isEmpty()) {
-            super.onFill(resovoir, amountFilled);
-        } else {
-            onIdle(resovoir);
-        }
     }
 
     @Override
@@ -269,11 +252,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
                 if (++stewTime >= recipe.value().getStewTime()) {
                     suppliedIngredients.clear();
-                    getPrimaryTank().getContents()
-                        .withFluid(recipe.value().getOutputFluid().fluid())
-                        .withAttributes(recipe.value().getOutputFluid().attributes());
-                    onIdle(getPrimaryTank());
-
+                    getPrimaryTank().setContents(recipe.value().getOutputFluid().getAsItemFluid(getPrimaryTank().getContents().amount()));
                     return false;
                 }
             }
@@ -282,14 +261,14 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
 
         @Override
-        public void toNbt(NbtCompound compound) {
+        public void toNbt(NbtCompound compound, WrapperLookup lookup) {
             compound.putInt("stewTime", stewTime);
             compound.putString("recipe", recipe.id().toString());
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public void fromNbt(NbtCompound compound) {
+        public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
             stewTime = compound.getInt("stewTime");
             recipe = (RecipeEntry<MashingRecipe>)Optional
                     .ofNullable(Identifier.tryParse(compound.getString("recipe")))

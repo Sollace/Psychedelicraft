@@ -4,10 +4,9 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.entity.MolotovCocktailEntity;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.item.*;
 import ivorius.psychedelicraft.item.component.BagContentsComponent;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.component.type.DyedColorComponent;
@@ -41,7 +40,7 @@ public interface PSModelPredicates {
             if (stack.getItem() instanceof BongItem item) {
                 return item.hasUsableConsumable(entity) ? 1 : 0;
             }
-            return FluidContainer.of(stack).getFluid(stack).isEmpty() ? 0 : 1;
+            return ItemFluids.of(stack).isEmpty() ? 0 : 1;
         });
         ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : DyedColorComponent.getColor(stack, Colors.RED), PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
@@ -49,18 +48,18 @@ public interface PSModelPredicates {
                 return DyedColorComponent.getColor(stack, Colors.WHITE);
             }
             if (layer == 1) {
-                SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);
-                if (!fluid.isEmpty()) {
-                    return FluidBoxRenderer.FluidAppearance.getItemColor(fluid, stack);
+                ItemFluids fluids = ItemFluids.of(stack);
+                if (!fluids.isEmpty()) {
+                    return FluidBoxRenderer.FluidAppearance.getItemColor(fluids);
                 }
             }
             return Colors.WHITE;
         }, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.GLASS_CHALICE, PSItems.STONE_CUP, PSItems.WOODEN_MUG, PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL, PSItems.SYRINGE);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
             if (layer == 0) {
-                SimpleFluid fluid = FluidContainer.of(stack).getFluid(stack);
-                if (!fluid.isEmpty()) {
-                    return FluidBoxRenderer.FluidAppearance.getItemColor(fluid, stack);
+                ItemFluids fluids = ItemFluids.of(stack);
+                if (!fluids.isEmpty()) {
+                    return FluidBoxRenderer.FluidAppearance.getItemColor(fluids);
                 }
             }
             return Colors.WHITE;

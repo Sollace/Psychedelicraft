@@ -1,6 +1,8 @@
 package ivorius.psychedelicraft.fluid.physical;
 
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -39,7 +41,8 @@ public abstract class PlacedFluidBlock extends FluidBlock {
     public ItemStack tryDrainFluid(PlayerEntity player, WorldAccess world, BlockPos pos, BlockState state) {
         if (state.get(LEVEL) == 0) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
-            return getPysicalFluid().getType().getStack(state.getFluidState(), PSItems.FILLED_BUCKET);
+            ItemStack stack = PSItems.FILLED_BUCKET.getDefaultStack();
+            return ItemFluids.set(stack, getPysicalFluid().getType().getStack(state.getFluidState(), FluidCapacity.get(stack)));
         }
         return ItemStack.EMPTY;
     }

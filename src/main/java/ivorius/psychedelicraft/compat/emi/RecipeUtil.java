@@ -18,13 +18,14 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ListEmiIngredient;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.FluidIngredient;
 import ivorius.psychedelicraft.recipe.OptionalFluidIngredient;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.ShapedRecipe;
 
@@ -60,32 +61,22 @@ interface RecipeUtil {
 
     static EmiIngredient mergeReceptical(Ingredient receptical, Optional<FluidIngredient> contents) {
         return contents.map(fluid -> {
-            var exploded = Arrays.stream(receptical.getMatchingStacks()).map(stack -> {
-                var container = FluidContainer.of(stack);
-                var mutable = container.toMutable(stack);
-
-                mutable.deposit(fluid.level(), fluid.fluid());
-
-                return EmiStack.of(mutable.asStack());
-            }).toList();
+            var exploded = Arrays.stream(receptical.getMatchingStacks())
+                    .map(stack -> mergeReceptical(stack, contents))
+                    .toList();
 
             if (exploded.isEmpty()) {
                 return EmiStack.EMPTY;
             }
 
-            return (EmiIngredient)new ListEmiIngredient(exploded, 1);
+            return new ListEmiIngredient(exploded, 1);
         }).orElseGet(() -> EmiIngredient.of(receptical));
     }
 
-    static EmiStack mergeReceptical(ItemStack stack, Optional<FluidIngredient> contents) {
+    static EmiStack mergeReceptical(ItemStack receptical, Optional<FluidIngredient> contents) {
         return contents.map(fluid -> {
-            var container = FluidContainer.of(stack);
-            var mutable = container.toMutable(stack);
-
-            mutable.deposit(fluid.level(), fluid.fluid());
-
-            return EmiStack.of(mutable.asStack());
-        }).orElseGet(() -> EmiStack.of(stack));
+            return EmiStack.of(ItemFluids.set(receptical.copy(), fluid.getAsItemFluid(FluidCapacity.get(receptical))));
+        }).orElseGet(() -> EmiStack.of(receptical));
     }
 
     static SimpleFluid getFluid(EmiStack stack) {
@@ -93,23 +84,27 @@ interface RecipeUtil {
             return SimpleFluid.forVanilla(f);
         }
 
-        return FluidContainer.of(stack.getItemStack()).getFluid(stack.getItemStack());
+        return ItemFluids.of(stack.getItemStack()).fluid();
+    }
+
+    static ItemFluids getFluidStack(EmiStack stack) {
+        if (stack.getKey() instanceof Fluid f) {
+            return ItemFluids.create(SimpleFluid.forVanilla(f), (int)stack.getAmount(), ItemFluids.ATTRIBUTES_CODEC.decode(NbtOps.INSTANCE, stack.getNbt()).result().map(r -> r.getFirst()).orElse(Map.of()));
+        }
+
+        return ItemFluids.of(stack.getItemStack());
     }
 
     static EmiStack createFluidIngredient(FluidIngredient ingredient) {
-        return createFluidIngredient(ingredient.fluid(), ingredient.level(), ingredient.attributes().copy());
+        return createFluidIngredient(ingredient.getAsItemFluid(12));
     }
 
     static EmiStack createFluidIngredient(SimpleFluid fluid, int level, @Nullable NbtCompound attributes) {
         return EmiStack.of(getStackKey(fluid), attributes, level <= 0 ? 12 : level / 12);
     }
 
-    static EmiStack createFluidIngredient(ItemStack stack) {
-        var container = MutableFluidContainer.of(stack);
-        if (container.isEmpty()) {
-            return EmiStack.of(stack);
-        }
-        return createFluidIngredient(container.getFluid(), container.getLevel(), container.getAttributes().copy());
+    static EmiStack createFluidIngredient(ItemFluids fluids) {
+        return EmiStack.of(getStackKey(fluids.fluid()), (NbtCompound)ItemFluids.ATTRIBUTES_CODEC.encodeStart(NbtOps.INSTANCE, fluids.attributes()).getOrThrow(), (long)fluids.amount());
     }
 
     static Fluid getStackKey(SimpleFluid fluid) {
@@ -118,15 +113,10 @@ interface RecipeUtil {
 
     static Stream<EmiIngredient> grouped(Stream<EmiIngredient> ingredients) {
         Map<EmiIngredient, Integer> counts = new HashMap<>();
-        ingredients.forEach(ingredient -> {
-            counts.compute(ingredient, (key, count) -> {
-                return count == null ? 1 : (count + 1);
-            });
-        });
-
-        return counts.entrySet().stream().map(entry -> {
-            return entry.getKey().copy().setAmount(entry.getValue());
-        });
+        ingredients.forEach(ingredient -> counts.compute(ingredient, (key, count) -> count == null ? 1 : (count + 1)));
+        return counts.entrySet()
+                .stream()
+                .map(entry -> entry.getKey().copy().setAmount(entry.getValue()));
     }
 
 }

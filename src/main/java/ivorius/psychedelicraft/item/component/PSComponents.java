@@ -10,6 +10,8 @@ import net.minecraft.registry.Registry;
 public interface PSComponents {
     ComponentType<BagContentsComponent> BAG_CONTENTS = register("bag_contents", builder -> builder.codec(BagContentsComponent.CODEC).packetCodec(BagContentsComponent.PACKET_CODEC));
     ComponentType<RiftFractionComponent> RIFT_FRACTION = register("rift_fraction", builder -> builder.codec(RiftFractionComponent.CODEC).packetCodec(RiftFractionComponent.PACKET_CODEC));
+    ComponentType<ItemFluids> FLUIDS = register("fluids", builder -> builder.codec(ItemFluids.CODEC).packetCodec(ItemFluids.PACKET_CODEC));
+    ComponentType<FluidCapacity> FLUID_CAPACITY = register("fluid_capacity", builder -> builder.codec(FluidCapacity.CODEC).packetCodec(FluidCapacity.PACKET_CODEC));
 
     private static <T> ComponentType<T> register(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Psychedelicraft.id(id), builderOperator.apply(ComponentType.builder()).build());

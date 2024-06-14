@@ -8,13 +8,10 @@ package ivorius.psychedelicraft.block.entity;
 import ivorius.psychedelicraft.block.DistilleryBlock;
 import ivorius.psychedelicraft.block.MashTubWallBlock;
 import ivorius.psychedelicraft.fluid.*;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
-import net.minecraft.block.Block;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
@@ -28,7 +25,7 @@ import net.minecraft.util.math.Direction.Axis;
  * Created by lukas on 25.10.14.
  */
 public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
-    public static final int DISTILLERY_CAPACITY = FlaskBlockEntity.FLASK_CAPACITY;
+    public static final int DISTILLERY_CAPACITY = FluidVolumes.FLASK;
 
     public DistilleryBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.DISTILLERY, pos, state, DISTILLERY_CAPACITY);
@@ -71,20 +68,20 @@ public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
                 && getOutput(world, getPos()) instanceof FlaskBlockEntity;
     }
 
-
     @Override
-    public void accept(ItemStack stack) {
-        Block.dropStack(world, getOutputPos(), stack);
-    }
-
-    @Override
-    public void accept(MutableFluidContainer fluid) {
+    public void accept(ItemFluids stack) {
         if (getWorld() instanceof ServerWorld world) {
-            BlockPos outputPos = getOutputPos();
             if (getOutput(world, getPos()) instanceof FlaskBlockEntity destination) {
-                ItemStack overflow = destination.getTankOnSide(getFacing().getOpposite()).deposit(fluid.asStack());
-                if (FluidContainer.of(overflow).getLevel(overflow) > 0) {
-                    Block.dropStack(world, outputPos, overflow);
+                int transferred = destination.getTankOnSide(getFacing().getOpposite()).deposit(stack);
+                if (transferred < stack.amount()) {
+                    //BlockPos outputPos = getOutputPos();
+                    // TODO: Droplets item?
+                    world.playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 0.25F, 0.02F);
+                    world.spawnParticles(ParticleTypes.SPLASH,
+                            pos.getX() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                            pos.getY() + 0.6F,
+                            pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                            2, 0, 0, 0, 0);
                 }
             } else {
                 world.spawnParticles(ParticleTypes.CLOUD,

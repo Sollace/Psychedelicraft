@@ -5,8 +5,7 @@
 
 package ivorius.psychedelicraft.fluid;
 
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
-import ivorius.psychedelicraft.fluid.container.MutableFluidContainer;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -30,27 +29,27 @@ public interface ConsumableFluid {
      * @param fluidStack The fluid stack.
      * @param entity     The entity injecting the fluid.
      */
-    void consume(ItemStack stack, LivingEntity entity, ConsumptionType type);
+    void consume(ItemFluids stack, LivingEntity entity, ConsumptionType type);
 
     static boolean canConsume(ItemStack stack, LivingEntity entity, int maxConsumed, ConsumptionType type) {
-        return stack.getItem() instanceof FluidContainer container
-                && container.getLevel(stack) >= maxConsumed
-                && container.getFluid(stack) instanceof ConsumableFluid consumable
+        ItemFluids fluids = ItemFluids.of(stack);
+        return fluids.amount() >= maxConsumed
+                && fluids.fluid() instanceof ConsumableFluid consumable
                 && consumable.canConsume(stack, entity, type);
     }
 
     static ItemStack consume(ItemStack stack, LivingEntity entity, int maxConsumed, boolean consumeItem, ConsumptionType type) {
-        if (stack.getItem() instanceof FluidContainer container) {
-            if (container.getLevel(stack) >= maxConsumed) {
-                if (container.getFluid(stack) instanceof ConsumableFluid consumable && consumable.canConsume(stack, entity, type)) {
-                    MutableFluidContainer mutable = container.toMutable(stack);
-                    MutableFluidContainer drained = mutable.drain(maxConsumed);
-                    consumable.consume(drained.asStack(), entity, type);
+        if (canConsume(stack, entity, maxConsumed, type)) {
+            if (ItemFluids.of(stack).fluid() instanceof ConsumableFluid consumable) {
+                ItemFluids.Transaction transaction = ItemFluids.Transaction.begin(stack);
+                ItemFluids withdrawn = transaction.withdraw(maxConsumed);
+                if (!withdrawn.isEmpty()) {
+                    consumable.consume(withdrawn, entity, type);
                     if (entity instanceof ServerPlayerEntity player) {
                         Criteria.CONSUME_ITEM.trigger(player, stack);
                     }
-                    return consumeItem ? mutable.asStack() : stack;
                 }
+                return consumeItem ? transaction.toItemStack() : stack;
             }
         }
 

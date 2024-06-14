@@ -6,14 +6,15 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public record MsgDrugProperties (
         int entityId,
         NbtCompound compound
     ) implements HandledPacket<PlayerEntity> {
 
-    public MsgDrugProperties(DrugProperties properties) {
-        this(properties.asEntity().getId(), properties.toNbt());
+    public MsgDrugProperties(DrugProperties properties, WrapperLookup lookup) {
+        this(properties.asEntity().getId(), properties.toNbt(lookup));
     }
 
     public MsgDrugProperties(PacketByteBuf buffer) {
@@ -28,6 +29,6 @@ public record MsgDrugProperties (
 
     @Override
     public void handle(PlayerEntity sender) {
-        DrugProperties.of(sender.getWorld().getEntityById(entityId)).ifPresent(e -> e.fromNbt(compound));
+        DrugProperties.of(sender.getWorld().getEntityById(entityId)).ifPresent(e -> e.fromNbt(compound, sender.getRegistryManager()));
     }
 }

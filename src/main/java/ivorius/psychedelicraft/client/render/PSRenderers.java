@@ -14,8 +14,8 @@ import ivorius.psychedelicraft.client.render.blocks.*;
 import ivorius.psychedelicraft.client.render.shader.PSShaders;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.fluid.container.VariantMarshal;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
@@ -28,7 +28,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -71,18 +70,18 @@ public interface PSRenderers {
             FluidRenderHandlerRegistry.INSTANCE.register(fluid.getPhysical().getStandingFluid(), fluid.getPhysical().getFlowingFluid(), new SimpleFluidRenderHandler(SimpleFluidRenderHandler.WATER_STILL, SimpleFluidRenderHandler.WATER_FLOWING, SimpleFluidRenderHandler.WATER_OVERLAY, 0) {
                 @Override
                 public int getFluidColor(@Nullable BlockRenderView view, @Nullable BlockPos pos, FluidState state) {
-                    return fluid.getColor(fluid.getDefaultStack());
+                    return fluid.getColor(fluid.getDefaultStack(1));
                 }
             });
             FluidVariantRendering.register(fluid.getPhysical().getStandingFluid(), new FluidVariantRenderHandler() {
                 @Override
                 public int getColor(FluidVariant fluidVariant, @Nullable BlockRenderView view, @Nullable BlockPos pos) {
-                    return fluid.getColor(VariantMarshal.unpackFluid(Items.STONE.getDefaultStack(), fluidVariant, 1).asStack());
+                    return fluid.getColor(ItemFluids.of(fluidVariant, 1));
                 }
 
                 @Override
                 public void appendTooltip(FluidVariant fluidVariant, List<Text> tooltip, TooltipType type) {
-                    fluid.appendTooltip(VariantMarshal.unpackFluid(Items.STONE.getDefaultStack(), fluidVariant, 1).asStack(), tooltip, type);
+                    fluid.appendTooltip(ItemFluids.of(fluidVariant, 1), tooltip, type);
                 }
             });
         });

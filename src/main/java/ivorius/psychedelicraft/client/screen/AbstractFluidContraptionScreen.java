@@ -41,17 +41,14 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
     }
 
     public void drawTank(DrawContext context, Resovoir tank, int x, int y, int width, int height) {
-        if (tank.isEmpty()) {
+        if (tank.getContents().isEmpty()) {
             return;
         }
 
-        SimpleFluid fluid = tank.getFluidType();
-        int level = tank.getLevel();
-
-        float fluidHeight = MathHelper.clamp((float) level / (float) tank.getCapacity(), 0, 1);
+        float fluidHeight = MathHelper.clamp((float) tank.getContents().amount() / (float) tank.getCapacity(), 0, 1);
         int fluidHeightPixels = MathHelper.ceil(fluidHeight * height);
 
-        FluidBoxRenderer.FluidAppearance appearance = FluidBoxRenderer.FluidAppearance.of(fluid, tank.getStack());
+        FluidBoxRenderer.FluidAppearance appearance = FluidBoxRenderer.FluidAppearance.of(tank.getContents());
 
         float[] color = appearance.rgba();
 
@@ -62,15 +59,15 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
     public void drawTankTooltip(DrawContext context, Resovoir tank, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
         if (rectContains(mouseX, mouseY, x, y, width, height)) {
-            SimpleFluid fluid = tank.getFluidType();
-            int level = tank.getLevel();
+            SimpleFluid fluid = tank.getContents().fluid();
+            int level = tank.getContents().amount();
 
             List<Text> tooltip = new ArrayList<>();
-            tooltip.add(fluid.getName(tank.getStack()));
+            tooltip.add(fluid.getName(tank.getContents()));
             if (!fluid.isEmpty()) {
                 tooltip.add(Text.translatable("psychedelicraft.container.levels", level, tank.getCapacity()).formatted(Formatting.GRAY));
             }
-            fluid.appendTooltip(tank.getStack(), tooltip, TooltipType.BASIC);
+            fluid.appendTooltip(tank.getContents(), tooltip, TooltipType.BASIC);
             tooltip.addAll(details);
             context.drawTooltip(textRenderer, tooltip, mouseX, mouseY);
         }

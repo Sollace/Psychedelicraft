@@ -17,8 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.alcohol.FluidAppearance;
-import ivorius.psychedelicraft.fluid.container.FluidContainer;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,15 +51,15 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
         return foodLevel;
     }
 
-    public void getDrugInfluences(ItemStack fluidStack, List<DrugInfluence> list) {
+    public void getDrugInfluences(ItemFluids fluidStack, List<DrugInfluence> list) {
         getDrugInfluencesPerLiter(fluidStack, influence -> {
             DrugInfluence clone = influence.clone();
-            clone.setMaxInfluence(clone.getMaxInfluence() * FluidContainer.of(fluidStack).getLevel(fluidStack) / FluidVolumes.BUCKET);
+            clone.setMaxInfluence(clone.getMaxInfluence() * fluidStack.amount() / FluidVolumes.BUCKET);
             list.add(clone);
         });
     }
 
-    public void getDrugInfluencesPerLiter(ItemStack stack, Consumer<DrugInfluence> consumer) {
+    public void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
         drugInfluences.forEach(consumer);
     }
 
@@ -77,10 +77,10 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
     }
 
     @Override
-    public void consume(ItemStack fluidStack, LivingEntity entity, ConsumptionType type) {
+    public void consume(ItemFluids stack, LivingEntity entity, ConsumptionType type) {
         DrugProperties.of(entity).ifPresent(drugProperties -> {
             List<DrugInfluence> drugInfluences = new ArrayList<>();
-            getDrugInfluences(fluidStack, drugInfluences);
+            getDrugInfluences(stack, drugInfluences);
             drugProperties.addAll(drugInfluences);
         });
 
@@ -92,17 +92,17 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
     }
 
     @Override
-    public float getFireStrength(ItemStack fluidStack) {
-        return getAlcohol(fluidStack) * FluidContainer.of(fluidStack).getLevel(fluidStack) / FluidVolumes.BUCKET * 2.0f;
+    public float getFireStrength(ItemFluids fluidStack) {
+        return getAlcohol(fluidStack) * fluidStack.amount() / FluidVolumes.BUCKET * 2.0f;
     }
 
     @Override
-    public float getExplosionStrength(ItemStack fluidStack) {
-        return getAlcohol(fluidStack) * FluidContainer.of(fluidStack).getLevel(fluidStack) / FluidVolumes.BUCKET * 0.6f;
+    public float getExplosionStrength(ItemFluids fluidStack) {
+        return getAlcohol(fluidStack) * fluidStack.amount() / FluidVolumes.BUCKET * 0.6f;
     }
 
     @Override
-    public Optional<Identifier> getFlowTexture(ItemStack stack) {
+    public Optional<Identifier> getFlowTexture(ItemFluids stack) {
         return Optional.ofNullable(settings.appearance.apply(stack))
                 .map(FluidAppearance::still)
                 .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
@@ -112,7 +112,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
         return getId().withPath(p -> "block/fluid/" + name);
     }
 
-    private float getAlcohol(ItemStack fluidStack) {
+    private float getAlcohol(ItemFluids fluidStack) {
         float alcohol = 0.0f;
 
         List<DrugInfluence> drugInfluences = new ArrayList<>();
@@ -127,8 +127,8 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
     }
 
     @Override
-    public boolean isSuitableContainer(FluidContainer container) {
-        return container != PSItems.WOODEN_MUG && !settings.injectable;
+    public boolean isSuitableContainer(ItemStack container) {
+        return !container.isOf(PSItems.WOODEN_MUG) && !settings.injectable;
     }
 
     public static class Settings extends SimpleFluid.Settings {
@@ -138,7 +138,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
         private List<DrugInfluence> drugInfluences = new ArrayList<>();
         private FoodComponent foodLevel;
 
-        protected Function<ItemStack, FluidAppearance> appearance = stack -> null;
+        protected Function<ItemFluids, FluidAppearance> appearance = stack -> null;
 
         public Settings drinkable() {
             drinkable = true;
