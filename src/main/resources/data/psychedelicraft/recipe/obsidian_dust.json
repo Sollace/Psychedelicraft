@@ -3,5 +3,5 @@
   "ingredients": [
     { "item": "psychedelicraft:obsidian_bottle" }
   ],
-  "result": { "item": "psychedelicraft:obsidian_dust" }
+  "result": { "id": "psychedelicraft:obsidian_dust" }
 }

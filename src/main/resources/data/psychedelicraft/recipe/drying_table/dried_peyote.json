@@ -6,7 +6,7 @@
     "item": "psychedelicraft:peyote"
   },
   "result": {
-    "item": "psychedelicraft:dried_peyote",
+    "id": "psychedelicraft:dried_peyote",
     "count": 3
   }
 }

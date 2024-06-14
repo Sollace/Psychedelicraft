@@ -9,6 +9,6 @@
     "#": { "item": "minecraft:glass" }
   },
   "result": {
-    "item": "psychedelicraft:glass_chalice"
+    "id": "psychedelicraft:glass_chalice"
   }
 }

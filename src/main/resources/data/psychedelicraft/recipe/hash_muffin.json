@@ -11,6 +11,6 @@
     "L": { "item": "psychedelicraft:dried_cannabis_leaf" }
   },
   "result": {
-    "item": "psychedelicraft:hash_muffin"
+    "id": "psychedelicraft:hash_muffin"
   }
 }

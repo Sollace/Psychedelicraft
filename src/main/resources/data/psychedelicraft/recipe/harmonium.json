@@ -5,6 +5,6 @@
     { "item": "psychedelicraft:dried_tobacco" }
   ],
   "result": {
-    "item": "psychedelicraft:harmonium"
+    "id": "psychedelicraft:harmonium"
   }
 }

@@ -9,6 +9,6 @@
     "R": { "item": "minecraft:redstone" }
   },
   "result": {
-    "item": "psychedelicraft:drying_table"
+    "id": "psychedelicraft:drying_table"
   }
 }

@@ -4,7 +4,7 @@
     { "item": "psychedelicraft:jimsonweed_seed_pod" }
   ],
   "result": {
-    "item": "psychedelicraft:jimsonweed_seeds",
+    "id": "psychedelicraft:jimsonweed_seeds",
     "count": 6
   }
 }

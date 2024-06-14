@@ -10,6 +10,6 @@
     "O": { "tag": "minecraft:planks" }
   },
   "result": {
-    "item": "psychedelicraft:lattice"
+    "id": "psychedelicraft:lattice"
   }
 }

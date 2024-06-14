@@ -6,7 +6,7 @@
     "item": "psychedelicraft:coca_leaves"
   },
   "result": {
-    "item": "psychedelicraft:dried_coca_leaves",
+    "id": "psychedelicraft:dried_coca_leaves",
     "count": 3
   }
 }

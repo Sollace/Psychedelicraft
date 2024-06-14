@@ -6,7 +6,7 @@
     "item": "psychedelicraft:belladonna_leaf"
   },
   "result": {
-    "item": "psychedelicraft:dried_belladonna_leaf",
+    "id": "psychedelicraft:dried_belladonna_leaf",
     "count": 3
   }
 }

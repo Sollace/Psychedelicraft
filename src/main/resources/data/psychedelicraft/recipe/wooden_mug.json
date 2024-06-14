@@ -9,6 +9,6 @@
     "#": { "tag": "minecraft:planks" }
   },
   "result": {
-    "item": "psychedelicraft:wooden_mug"
+    "id": "psychedelicraft:wooden_mug"
   }
 }

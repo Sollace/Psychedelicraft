@@ -10,6 +10,6 @@
     "T": { "item": "psychedelicraft:dried_tobacco" }
   },
   "result": {
-    "item": "psychedelicraft:cigarette"
+    "id": "psychedelicraft:cigarette"
   }
 }

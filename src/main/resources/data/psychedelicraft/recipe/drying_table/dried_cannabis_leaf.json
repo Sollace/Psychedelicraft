@@ -6,7 +6,7 @@
     "item": "psychedelicraft:cannabis_leaf"
   },
   "result": {
-    "item": "psychedelicraft:dried_cannabis_leaf",
+    "id": "psychedelicraft:dried_cannabis_leaf",
     "count": 3
   }
 }

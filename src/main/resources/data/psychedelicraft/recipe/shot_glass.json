@@ -7,6 +7,6 @@
     "#": { "item": "minecraft:glass" }
   },
   "result": {
-    "item": "psychedelicraft:shot_glass"
+    "id": "psychedelicraft:shot_glass"
   }
 }

@@ -9,6 +9,6 @@
     "D": { "item": "psychedelicraft:flask" }
   },
   "result": {
-    "item": "psychedelicraft:distillery"
+    "id": "psychedelicraft:distillery"
   }
 }

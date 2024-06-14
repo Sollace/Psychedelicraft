@@ -6,7 +6,7 @@
     "item": "minecraft:brown_mushroom"
   },
   "result": {
-    "item": "psychedelicraft:brown_magic_mushrooms",
+    "id": "psychedelicraft:brown_magic_mushrooms",
     "count": 3
   }
 }

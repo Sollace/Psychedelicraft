@@ -6,7 +6,7 @@
     "item": "psychedelicraft:jimsonweed_leaf"
   },
   "result": {
-    "item": "psychedelicraft:dried_jimsonweed_leaf",
+    "id": "psychedelicraft:dried_jimsonweed_leaf",
     "count": 3
   }
 }

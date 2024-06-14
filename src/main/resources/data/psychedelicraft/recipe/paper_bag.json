@@ -9,6 +9,6 @@
     "P": { "item": "minecraft:paper" }
   },
   "result": {
-    "item": "psychedelicraft:paper_bag"
+    "id": "psychedelicraft:paper_bag"
   }
 }

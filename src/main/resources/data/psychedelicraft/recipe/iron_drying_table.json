@@ -10,6 +10,6 @@
     "I": { "item": "minecraft:iron_ingot" }
   },
   "result": {
-    "item": "psychedelicraft:iron_drying_table"
+    "id": "psychedelicraft:iron_drying_table"
   }
 }

@@ -6,7 +6,7 @@
     "item": "psychedelicraft:tobacco"
   },
   "result": {
-    "item": "psychedelicraft:dried_tobacco",
+    "id": "psychedelicraft:dried_tobacco",
     "count": 3
   }
 }

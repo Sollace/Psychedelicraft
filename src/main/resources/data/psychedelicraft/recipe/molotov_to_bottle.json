@@ -4,6 +4,6 @@
     { "item": "psychedelicraft:molotov_cocktail" }
   ],
   "result": {
-    "item": "psychedelicraft:bottle"
+    "id": "psychedelicraft:bottle"
   }
 }

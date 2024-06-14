@@ -9,6 +9,6 @@
     "#": { "item": "minecraft:clay_ball" }
   },
   "result": {
-    "item": "psychedelicraft:stone_cup"
+    "id": "psychedelicraft:stone_cup"
   }
 }

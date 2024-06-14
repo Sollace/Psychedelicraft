@@ -8,7 +8,7 @@
     "P": { "item": "minecraft:paper" }
   },
   "result": {
-    "item": "psychedelicraft:molotov_cocktail",
+    "id": "psychedelicraft:molotov_cocktail",
     "count": 4
   }
 }

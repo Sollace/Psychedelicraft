@@ -4,7 +4,7 @@
     { "item": "psychedelicraft:juniper_log" }
   ],
   "result": {
-    "item": "psychedelicraft:juniper_planks",
+    "id": "psychedelicraft:juniper_planks",
     "count": 4
   }
 }

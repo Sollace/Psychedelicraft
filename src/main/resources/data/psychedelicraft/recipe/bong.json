@@ -10,6 +10,6 @@
     "G": { "item": "minecraft:glass" }
   },
   "result": {
-    "item": "psychedelicraft:bong"
+    "id": "psychedelicraft:bong"
   }
 }

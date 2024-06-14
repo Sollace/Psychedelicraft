@@ -4,7 +4,7 @@
     { "item": "psychedelicraft:morning_glory" }
   ],
   "result": {
-    "item": "psychedelicraft:morning_glory_seeds",
+    "id": "psychedelicraft:morning_glory_seeds",
     "count": 6
   }
 }

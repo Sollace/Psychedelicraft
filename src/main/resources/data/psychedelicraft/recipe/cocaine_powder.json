@@ -3,5 +3,5 @@
   "ingredients": [
     { "item": "psychedelicraft:dried_coca_leaves" }
   ],
-  "result": { "item": "psychedelicraft:cocaine_powder" }
+  "result": { "id": "psychedelicraft:cocaine_powder" }
 }

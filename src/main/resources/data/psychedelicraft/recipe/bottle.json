@@ -9,7 +9,7 @@
     "#": { "tag": "c:glass_blocks" }
   },
   "result": {
-    "item": "psychedelicraft:bottle",
+    "id": "psychedelicraft:bottle",
     "count": 8
   }
 }

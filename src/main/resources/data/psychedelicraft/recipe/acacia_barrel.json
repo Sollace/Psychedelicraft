@@ -11,6 +11,6 @@
     "S": { "item": "minecraft:stick" }
   },
   "result": {
-    "item": "psychedelicraft:acacia_barrel"
+    "id": "psychedelicraft:acacia_barrel"
   }
 }

@@ -10,6 +10,6 @@
     "C": { "item": "psychedelicraft:dried_cannabis_buds" }
   },
   "result": {
-    "item": "psychedelicraft:joint"
+    "id": "psychedelicraft:joint"
   }
 }

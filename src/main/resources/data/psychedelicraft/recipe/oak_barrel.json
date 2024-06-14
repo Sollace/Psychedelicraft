@@ -11,6 +11,6 @@
     "S": { "item": "minecraft:stick" }
   },
   "result": {
-    "item": "psychedelicraft:oak_barrel"
+    "id": "psychedelicraft:oak_barrel"
   }
 }

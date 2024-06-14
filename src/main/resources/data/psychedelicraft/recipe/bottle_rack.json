@@ -10,6 +10,6 @@
     "I": { "item": "minecraft:stick" }
   },
   "result": {
-    "item": "psychedelicraft:bottle_rack"
+    "id": "psychedelicraft:bottle_rack"
   }
 }

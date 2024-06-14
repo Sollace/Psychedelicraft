@@ -8,7 +8,7 @@
     "#": { "item": "psychedelicraft:juniper_log" }
   },
   "result": {
-    "item": "psychedelicraft:juniper_wood",
+    "id": "psychedelicraft:juniper_wood",
     "count": 3
   }
 }

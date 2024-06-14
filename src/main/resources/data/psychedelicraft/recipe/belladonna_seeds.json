@@ -4,7 +4,7 @@
     { "item": "psychedelicraft:belladonna_berries" }
   ],
   "result": {
-    "item": "psychedelicraft:belladonna_seeds",
+    "id": "psychedelicraft:belladonna_seeds",
     "count": 6
   }
 }

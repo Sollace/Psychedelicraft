@@ -10,6 +10,6 @@
     "C": { "item": "psychedelicraft:dried_peyote" }
   },
   "result": {
-    "item": "psychedelicraft:peyote_joint"
+    "id": "psychedelicraft:peyote_joint"
   }
 }
