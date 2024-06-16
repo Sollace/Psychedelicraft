@@ -20,6 +20,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -187,15 +188,20 @@ public class DrugRenderer {
         }
     }
 
-    public void onRenderOverlay(DrawContext context, float tickDelta) {
+    public void onRenderOverlay(DrawContext context, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
         Window window = client.getWindow();
 
         RenderPhase.SCREEN.push();
 
-        getScreenEffects().render(context.getMatrices(),
+        float tickDelta = tickCounter.getTickDelta(false);
+
+        getScreenEffects().render(
+                context.getMatrices(),
                 client.getBufferBuilders().getEntityVertexConsumers(),
-                window.getScaledWidth(), window.getScaledHeight(), tickDelta, null);
+                window.getScaledWidth(), window.getScaledHeight(), tickDelta, () -> {
+                    ScreenEffect.drawScreen(window.getScaledWidth(), window.getScaledHeight());
+                });
 
         postEffects.render(tickDelta);
         client.getFramebuffer().beginWrite(true);

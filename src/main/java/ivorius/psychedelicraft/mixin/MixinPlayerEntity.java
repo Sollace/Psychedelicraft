@@ -1,5 +1,7 @@
 package ivorius.psychedelicraft.mixin;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -7,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.google.common.base.Suppliers;
 import com.mojang.datafixers.util.Either;
 
 import ivorius.psychedelicraft.entity.drug.*;
@@ -15,7 +18,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 
@@ -24,14 +26,11 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
     MixinPlayerEntity() {super(null, null);}
 
     @Nullable
-    private DrugProperties drugProperties;
+    private Supplier<DrugProperties> drugProperties = Suppliers.memoize(() -> new DrugProperties((PlayerEntity)(Object)this));
 
     @Override
     public DrugProperties getDrugProperties() {
-        if (drugProperties == null) {
-            drugProperties = new DrugProperties((PlayerEntity)(Object)this);
-        }
-        return drugProperties;
+        return drugProperties.get();
     }
 
     @Inject(method = "tick()V", at = @At("RETURN"))
@@ -65,14 +64,14 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
-    private void onWriteCustomDataToTag(NbtCompound tag, WrapperLookup lookup, CallbackInfo info) {
-        tag.put("psychedelicraft_drug_properties", getDrugProperties().toNbt(lookup));
+    private void onWriteCustomDataToTag(NbtCompound tag, CallbackInfo info) {
+        tag.put("psychedelicraft_drug_properties", getDrugProperties().toNbt(getRegistryManager()));
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
-    private void onReadCustomDataFromTag(NbtCompound tag, WrapperLookup lookup, CallbackInfo info) {
+    private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
         if (tag.contains("psychedelicraft_drug_properties", NbtElement.COMPOUND_TYPE)) {
-            getDrugProperties().fromNbt(tag.getCompound("psychedelicraft_drug_properties"), lookup);
+            getDrugProperties().fromNbt(tag.getCompound("psychedelicraft_drug_properties"), getRegistryManager());
         }
     }
 }

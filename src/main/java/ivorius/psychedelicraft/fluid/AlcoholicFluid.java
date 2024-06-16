@@ -12,8 +12,10 @@ import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -27,6 +29,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -102,7 +105,6 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
-
         switch (type) {
             case DISTILL: {
                 int amountDrained = MathHelper.floor(tank.getContents().amount() * MathUtils.progress(DISTILLATION.get(tank.getContents()), 0.5F));
@@ -127,67 +129,59 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
+    public <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
         if (type == ProcessType.DISTILL) {
-            generateRecipeConversions(settings.tickInfo.get().ticksPerDistillation(), DISTILLATION,
+            return generateRecipeConversions(settings.tickInfo.get().ticksPerDistillation(), DISTILLATION,
                     DrinkTypes.State::distillation,
                     DrinkTypes.State::maturation,
                     DrinkTypes.State::fermentation, consumer);
         }
 
         if (type == ProcessType.MATURE) {
-            generateRecipeConversions(settings.tickInfo.get().ticksPerMaturation(), MATURATION,
+            return generateRecipeConversions(settings.tickInfo.get().ticksPerMaturation(), MATURATION,
                     DrinkTypes.State::maturation,
                     DrinkTypes.State::distillation,
                     DrinkTypes.State::fermentation, consumer);
         }
 
         if (type == ProcessType.FERMENT) {
-            generateRecipeConversions(settings.tickInfo.get().ticksPerFermentation(), FERMENTATION,
+            return generateRecipeConversions(settings.tickInfo.get().ticksPerFermentation(), FERMENTATION,
                     DrinkTypes.State::fermentation,
                     DrinkTypes.State::distillation,
                     DrinkTypes.State::maturation, consumer);
         }
+
+        return Stream.empty();
     }
 
-    private void generateRecipeConversions(int time, Attribute<Integer> attribute, Function<DrinkTypes.State, Integer> valueGetter,
+    private <T> Stream<T> generateRecipeConversions(int time, Attribute<Integer> attribute, Function<DrinkTypes.State, Integer> valueGetter,
             Function<DrinkTypes.State, Integer> fixA,
             Function<DrinkTypes.State, Integer> fixB,
-            ProcessStageConsumer consumer) {
+            ProcessStageConsumer<T> consumer) {
         List<DrinkTypes.State> states = settings.states.get();
 
-        for (int i = 0; i < states.size(); i++) {
-            var state = states.get(i);
-
+        return List.copyOf(states).stream().flatMap(state -> {
             if (!state.vinegar()) {
-                states.stream()
+                return states.stream()
                         .filter(s -> {
                             return fixA.apply(s) == fixA.apply(state)
                                     && fixB.apply(s) == fixB.apply(state)
                                     && !s.vinegar();
                         })
-                        .forEach(s -> {
+                        .map(s -> {
                     int difference = valueGetter.apply(state) - valueGetter.apply(s);
-                    if (difference > 0) {
-                        consumer.accept(
-                            time,
-                            difference,
-                            stack -> List.of(s.apply(stack)),
-                            stack -> List.of(state.apply(stack))
-                        );
-                    }
-                });
-            } else if (attribute == FERMENTATION) {
-                states.stream().filter(s -> !s.vinegar()).forEach(s -> {
-                    consumer.accept(
-                        time,
-                        (FERMENTATION_STEPS + 1) - valueGetter.apply(s),
-                        stack -> List.of(s.apply(stack)),
-                        stack -> List.of(state.apply(stack))
-                    );
+                    return difference > 0 ? consumer.accept(time, difference, s, state) : null;
                 });
             }
-        }
+
+            if (attribute == FERMENTATION) {
+                return states.stream().filter(s -> !s.vinegar()).map(s -> {
+                    return consumer.accept(time, (FERMENTATION_STEPS + 1) - valueGetter.apply(s), s, state);
+                });
+            }
+
+            return Stream.empty();
+        });
     }
 
     @Override
@@ -290,7 +284,12 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public boolean isSuitableContainer(ItemStack container) {
-        return container.isIn(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS);
+        return container.isIn(getPreferredContainerTag());
+    }
+
+    @Override
+    public TagKey<Item> getPreferredContainerTag() {
+        return PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS;
     }
 
     public static class Settings extends DrugFluid.Settings {

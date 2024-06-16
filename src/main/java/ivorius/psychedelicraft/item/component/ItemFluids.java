@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.item.component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,12 +18,14 @@ import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> attributes) {
@@ -136,6 +139,14 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public boolean canCombine(ItemFluids fluids) {
         return isEmpty() || fluids.isEmpty() || (fluid() == fluids.fluid() && attributes().equals(fluids.attributes()));
+    }
+
+    public Text getName() {
+        return fluid().getName(this);
+    }
+
+    public void appendTooltip(List<Text> tooltip, TooltipType type) {
+        fluid().appendTooltip(this, tooltip, type);
     }
 
     public interface Transaction {

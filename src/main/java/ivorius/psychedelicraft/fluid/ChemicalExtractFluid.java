@@ -1,8 +1,8 @@
 package ivorius.psychedelicraft.fluid;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugType;
@@ -51,16 +51,18 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
+    public <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
         if (type == ProcessType.DISTILL) {
-            DISTILLATION.forEachStep((from, to) -> {
-                consumer.accept(Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation(),
+            return DISTILLATION.steps().map(step -> {
+                return consumer.accept(Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation(),
                         1,
-                        stack -> List.of(DISTILLATION.set(stack, from)),
-                        stack -> List.of(DISTILLATION.set(stack, to))
+                        stack -> DISTILLATION.set(stack, step.getLeft()),
+                        stack -> DISTILLATION.set(stack, step.getRight())
                 );
             });
         }
+
+        return Stream.empty();
     }
 
     @Override

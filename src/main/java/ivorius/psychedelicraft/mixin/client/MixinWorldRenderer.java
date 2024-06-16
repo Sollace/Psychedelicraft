@@ -10,17 +10,12 @@ import net.minecraft.client.render.WorldRenderer;
 
 @Mixin(WorldRenderer.class)
 abstract class MixinWorldRenderer {
-    private static final String SKY = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V";
-    private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FDDD)V";
+    private static final String SKY = "renderSky(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V";
+    private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;FDDD)V";
 
     @Inject(method = SKY, at = @At("HEAD"))
     private void beforeRenderSky(CallbackInfo info) {
         RenderPhase.SKY.push();
-    }
-
-    @Inject(method = SKY, at = @At("RETURN"))
-    private void afterRenderSky(CallbackInfo info) {
-        RenderPhase.pop();
     }
 
     @Inject(method = CLOUDS, at = @At("HEAD"))
@@ -28,7 +23,7 @@ abstract class MixinWorldRenderer {
         RenderPhase.CLOUDS.push();
     }
 
-    @Inject(method = CLOUDS, at = @At("RETURN"))
+    @Inject(method = { CLOUDS, SKY }, at = @At("RETURN"))
     private void afterRenderClouds(CallbackInfo info) {
         RenderPhase.pop();
     }

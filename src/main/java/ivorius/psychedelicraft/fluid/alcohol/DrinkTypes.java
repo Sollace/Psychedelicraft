@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -132,7 +133,9 @@ public interface DrinkTypes {
 
     record Entry (DrinkType value, StatePredicate predicate) { }
 
-    record State (int distillation, int maturation, int fermentation, boolean vinegar, Entry entry) {
+    record State (int distillation, int maturation, int fermentation, boolean vinegar, Entry entry)
+        implements Function<ItemFluids, ItemFluids> {
+        @Override
         public ItemFluids apply(ItemFluids stack) {
             var attributes = new HashMap<>(stack.attributes());
             apply(attributes);

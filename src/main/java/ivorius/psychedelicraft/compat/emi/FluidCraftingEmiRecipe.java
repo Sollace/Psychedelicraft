@@ -14,7 +14,8 @@ import ivorius.psychedelicraft.recipe.FillRecepticalRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
-public class FluidCraftingEmiRecipe extends EmiCraftingRecipe implements PSRecipe {
+@Deprecated
+class FluidCraftingEmiRecipe extends EmiCraftingRecipe implements PSRecipe {
     private final EmiIngredient output;
     private final List<EmiStack> outputs;
 

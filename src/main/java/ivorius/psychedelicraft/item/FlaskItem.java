@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.item;
 
 import java.util.List;
 
+import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.*;
@@ -38,8 +39,7 @@ public class FlaskItem extends BlockItem {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-        if (type.isAdvanced()) {
-            tooltip.add(Text.translatable("psychedelicraft.container.levels", ItemFluids.of(stack).amount(), FluidCapacity.get(stack)));
-        }
+        FluidCapacity.appendTooltip(stack, context, tooltip, type);
+        Processable.ProcessType.appendTooltip(stack, context, tooltip, type);
     }
 }

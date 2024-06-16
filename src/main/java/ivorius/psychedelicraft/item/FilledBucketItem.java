@@ -140,6 +140,7 @@ public class FilledBucketItem extends Item {
         return TypedActionResult.pass(stack);
     }
 
+    @SuppressWarnings("deprecation")
     public boolean placeFluid(FluidState fluid, @Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hit) {
         if (!(fluid.getFluid() instanceof FlowableFluid)) {
             return false;

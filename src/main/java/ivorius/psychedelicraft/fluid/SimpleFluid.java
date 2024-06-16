@@ -6,8 +6,9 @@
 package ivorius.psychedelicraft.fluid;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +29,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributeHandler;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.*;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
@@ -36,9 +38,11 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.State;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -51,7 +55,7 @@ import net.minecraft.world.World;
  */
 public class SimpleFluid {
     public static final Identifier EMPTY_KEY = Psychedelicraft.id("empty");
-    private static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids")), EMPTY_KEY).buildAndRegister();
+    public static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids")), EMPTY_KEY).buildAndRegister();
     private static final Map<Identifier, SimpleFluid> VANILLA_FLUIDS = new HashMap<>();
     public static final Codec<SimpleFluid> CODEC = Identifier.CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
     public static final PacketCodec<RegistryByteBuf, SimpleFluid> PACKET_CODEC = PacketCodecs.registryValue(REGISTRY.getKey());
@@ -188,6 +192,10 @@ public class SimpleFluid {
         return !container.isIn(PSTags.Items.BARRELS);
     }
 
+    public TagKey<Item> getPreferredContainerTag() {
+        return PSTags.Items.DRINK_RECEPTICALS;
+    }
+
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
         if (!custom) {
             state.randomDisplayTick(world, pos, random);
@@ -234,6 +242,7 @@ public class SimpleFluid {
         return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid).getFlowing() : fluid;
     }
 
+    @Deprecated
     public static Iterable<SimpleFluid> all() {
         return REGISTRY;
     }
@@ -278,7 +287,7 @@ public class SimpleFluid {
             return ItemFluids.set(stack, set(ItemFluids.of(stack), value));
         }
 
-        public abstract void forEachStep(BiConsumer<T , T> consumer);
+        public abstract Stream<Pair<T, T>> steps();
 
         public static Attribute<Integer> ofInt(String name, int min, int max) {
             return new Attribute<>() {
@@ -298,19 +307,14 @@ public class SimpleFluid {
                 }
 
                 @Override
-                public void forEachStep(BiConsumer<Integer, Integer> consumer) {
-                    for (int i = min; i < max; i++) {
-                        consumer.accept(i, i + 1);
-                    }
+                public Stream<Pair<Integer, Integer>> steps() {
+                    return IntStream.range(min, max).mapToObj(i -> new Pair<>(i, i + 1));
                 }
 
                 @Override
                 public ItemFluids cycle(ItemFluids fluids) {
                     int value = get(fluids);
-                    if (value < max) {
-                        return set(fluids, value + 1);
-                    }
-                    return fluids;
+                    return value < max ? set(fluids, value + 1) : fluids;
                 }
             };
         }
@@ -333,16 +337,13 @@ public class SimpleFluid {
                 }
 
                 @Override
-                public void forEachStep(BiConsumer<Boolean, Boolean> consumer) {
-                    consumer.accept(false, true);
+                public Stream<Pair<Boolean, Boolean>> steps() {
+                    return Stream.of(new Pair<>(false, true));
                 }
 
                 @Override
                 public ItemFluids cycle(ItemFluids fluids) {
-                    if (!get(fluids)) {
-                        return set(fluids, true);
-                    }
-                    return fluids;
+                    return !get(fluids) ? set(fluids, true) : fluids;
                 }
             };
         }

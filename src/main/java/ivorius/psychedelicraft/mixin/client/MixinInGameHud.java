@@ -8,11 +8,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ivorius.psychedelicraft.client.render.DrugRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.render.RenderTickCounter;
 
 @Mixin(InGameHud.class)
 abstract class MixinInGameHud {
-    @Inject(method = "render(Lnet/minecraft/client/gui/DrawContext;F)V", at = @At("HEAD"))
-    private void onRender(DrawContext context, float tickDelta, CallbackInfo info) {
-        DrugRenderer.INSTANCE.onRenderOverlay(context, tickDelta);
+    @Inject(method = "render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V", at = @At("HEAD"))
+    private void onRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
+        DrugRenderer.INSTANCE.onRenderOverlay(context, tickCounter);
     }
 }

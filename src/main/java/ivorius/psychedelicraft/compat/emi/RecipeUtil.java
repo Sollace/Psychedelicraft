@@ -8,8 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.collect.Lists;
 
 import dev.emi.emi.api.EmiRegistry;
@@ -17,18 +15,20 @@ import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ListEmiIngredient;
+import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.recipe.FluidIngredient;
 import ivorius.psychedelicraft.recipe.OptionalFluidIngredient;
+import net.minecraft.component.ComponentChanges;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.ShapedRecipe;
 
+@Deprecated
 interface RecipeUtil {
     static List<EmiIngredient> padIngredients(ShapedRecipe recipe) {
         List<EmiIngredient> list = Lists.newArrayList();
@@ -80,31 +80,25 @@ interface RecipeUtil {
     }
 
     static SimpleFluid getFluid(EmiStack stack) {
-        if (stack.getKey() instanceof Fluid f) {
-            return SimpleFluid.forVanilla(f);
-        }
-
-        return ItemFluids.of(stack.getItemStack()).fluid();
+        return getFluidStack(stack).fluid();
     }
 
+    @SuppressWarnings("unchecked")
     static ItemFluids getFluidStack(EmiStack stack) {
-        if (stack.getKey() instanceof Fluid f) {
-            return ItemFluids.create(SimpleFluid.forVanilla(f), (int)stack.getAmount(), ItemFluids.ATTRIBUTES_CODEC.decode(NbtOps.INSTANCE, stack.getNbt()).result().map(r -> r.getFirst()).orElse(Map.of()));
-        }
-
-        return ItemFluids.of(stack.getItemStack());
+        return ((Optional<ItemFluids>)stack.getComponentChanges().get(PSComponents.FLUIDS)).orElseGet(() -> {
+            if (stack.getKey() instanceof Fluid f) {
+                return SimpleFluid.forVanilla(f).getDefaultStack((int)stack.getAmount());
+            }
+            return ItemFluids.of(stack.getItemStack());
+        });
     }
 
     static EmiStack createFluidIngredient(FluidIngredient ingredient) {
-        return createFluidIngredient(ingredient.getAsItemFluid(12));
-    }
-
-    static EmiStack createFluidIngredient(SimpleFluid fluid, int level, @Nullable NbtCompound attributes) {
-        return EmiStack.of(getStackKey(fluid), attributes, level <= 0 ? 12 : level / 12);
+        return createFluidIngredient(ingredient.getAsItemFluid(FluidVolumes.BUCKET));
     }
 
     static EmiStack createFluidIngredient(ItemFluids fluids) {
-        return EmiStack.of(getStackKey(fluids.fluid()), (NbtCompound)ItemFluids.ATTRIBUTES_CODEC.encodeStart(NbtOps.INSTANCE, fluids.attributes()).getOrThrow(), (long)fluids.amount());
+        return EmiStack.of(getStackKey(fluids.fluid()), ComponentChanges.builder().add(PSComponents.FLUIDS, fluids).build(), 12);
     }
 
     static Fluid getStackKey(SimpleFluid fluid) {

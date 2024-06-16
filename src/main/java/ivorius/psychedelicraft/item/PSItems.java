@@ -17,6 +17,7 @@ import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.influence.HarmoniumDrugInfluence;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
+import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.BagContentsComponent;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.PSComponents;
@@ -56,31 +57,39 @@ public interface PSItems {
 
     FlaskItem OAK_BARREL = register("oak_barrel", new FlaskItem(PSBlocks.OAK_BARREL, new Settings().maxCount(16)
             .maxCount(16)
+            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
     FlaskItem SPRUCE_BARREL = register("spruce_barrel", new FlaskItem(PSBlocks.SPRUCE_BARREL, new Settings()
             .maxCount(16)
+            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
     FlaskItem BIRCH_BARREL = register("birch_barrel", new FlaskItem(PSBlocks.BIRCH_BARREL, new Settings()
             .maxCount(16)
+            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
     FlaskItem JUNGLE_BARREL = register("jungle_barrel", new FlaskItem(PSBlocks.JUNGLE_BARREL, new Settings()
             .maxCount(16)
+            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
     FlaskItem ACACIA_BARREL = register("acacia_barrel", new FlaskItem(PSBlocks.ACACIA_BARREL, new Settings()
             .maxCount(16)
+            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
     FlaskItem DARK_OAK_BARREL = register("dark_oak_barrel", new FlaskItem(PSBlocks.DARK_OAK_BARREL, new Settings()
             .maxCount(16)
+            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
 
     FlaskItem MASH_TUB = register("mash_tub", new MashTubItem(PSBlocks.MASH_TUB, new Settings()
             .maxCount(16)
+            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.FERMENT)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.VAT))));
     FlaskItem FLASK = register("flask", new FlaskItem(PSBlocks.FLASK, new Settings()
             .maxCount(16)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.FLASK))));
     FlaskItem DISTILLERY = register("distillery", new FlaskItem(PSBlocks.DISTILLERY, new Settings()
             .maxCount(16)
+            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.DISTILL)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.FLASK))));
     RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings()
             .component(PSComponents.RIFT_FRACTION, RiftFractionComponent.DEFAULT)));

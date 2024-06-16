@@ -17,7 +17,8 @@ import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.util.Identifier;
 
-public class DrawingFluidEmiRecipe implements EmiRecipe, PSRecipe {
+@Deprecated
+class DrawingFluidEmiRecipe implements EmiRecipe, PSRecipe {
 
     private final Identifier id;
     private final EmiRecipeCategory category;

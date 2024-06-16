@@ -74,7 +74,6 @@ public class LensFlareScreenEffect implements ScreenEffect {
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float tickDelta, @Nullable PingPong pingPong) {
         if (pingPong != null) {
             pingPong.pingPong();
-            ScreenEffect.drawScreen(screenWidth, screenHeight);
         }
 
         if (actualSunAlpha <= 0) {

@@ -12,7 +12,8 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
 import net.minecraft.util.Identifier;
 
-public class MashingEmiRecipe implements EmiRecipe, PSRecipe {
+@Deprecated
+class MashingEmiRecipe implements EmiRecipe, PSRecipe {
 
     private final Identifier id;
     private final List<EmiIngredient> input;
@@ -31,7 +32,7 @@ public class MashingEmiRecipe implements EmiRecipe, PSRecipe {
 
     @Override
     public EmiRecipeCategory getCategory() {
-        return Main.VAT.category();
+        return RecipeCategory.VAT.category();
     }
 
     @Override

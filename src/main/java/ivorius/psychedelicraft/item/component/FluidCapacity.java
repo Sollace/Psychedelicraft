@@ -1,5 +1,7 @@
 package ivorius.psychedelicraft.item.component;
 
+import java.util.List;
+
 import com.google.common.collect.Interner;
 import com.google.common.collect.Interners;
 import com.mojang.serialization.Codec;
@@ -7,9 +9,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.container.FluidTransferUtils;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.text.Text;
 
 public record FluidCapacity(int capacity) {
     private static final Interner<FluidCapacity> INTERNER = Interners.newStrongInterner();
@@ -33,6 +38,12 @@ public record FluidCapacity(int capacity) {
             return (int)FluidTransferUtils.getCapacity(stack);
         }
         return capacity == null ? 0 : capacity.capacity();
+    }
+
+    public static void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        if (type.isAdvanced()) {
+            tooltip.add(Text.translatable("psychedelicraft.container.levels", ItemFluids.of(stack).amount(), FluidCapacity.get(stack)));
+        }
     }
 
     public static float getPercentage(ItemStack stack) {

@@ -15,7 +15,8 @@ import ivorius.psychedelicraft.recipe.SmeltingFluidRecipe;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class SmeltingFluidEmiRecipe implements EmiRecipe {
+@Deprecated
+class SmeltingFluidEmiRecipe implements EmiRecipe {
     private final Identifier id;
     private final SmeltingFluidRecipe recipe;
     private final EmiIngredient input;

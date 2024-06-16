@@ -7,7 +7,9 @@ package ivorius.psychedelicraft.fluid;
 
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -15,9 +17,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.DrugType;
@@ -64,15 +66,20 @@ public class CoffeeFluid extends DrugFluid implements Processable {
         super.getDefaultStacks(stack, consumer);
         int capacity = FluidCapacity.get(stack);
         if (capacity > 0) {
-            WARMTH.forEachStep((from, to) -> {
-                consumer.accept(ItemFluids.set(stack.copy(), WARMTH.set(getDefaultStack(capacity), to)));
-            });
+            WARMTH.steps().map(Pair::getRight)
+                .map(warmth -> ItemFluids.set(stack.copy(), WARMTH.set(getDefaultStack(capacity), warmth)))
+                .forEach(consumer);
         }
     }
 
     @Override
     public boolean isSuitableContainer(ItemStack container) {
-        return container.isIn(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);
+        return container.isIn(getPreferredContainerTag());
+    }
+
+    @Override
+    public TagKey<Item> getPreferredContainerTag() {
+        return PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS;
     }
 
     @Override
@@ -88,13 +95,15 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
+    public <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
         if (type == ProcessType.FERMENT) {
-            consumer.accept(300, -1,
-                    stack -> List.of(WARMTH.set(stack, 2)),
-                    stack -> List.of(WARMTH.set(stack, 1))
-            );
+            return WARMTH.steps().map(step -> consumer.accept(300, -1,
+                    stack -> WARMTH.set(stack, step.getRight()),
+                    stack -> WARMTH.set(stack, step.getLeft())
+            ));
         }
+
+        return Stream.empty();
     }
 
     @Override

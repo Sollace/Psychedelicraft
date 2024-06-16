@@ -17,7 +17,8 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
-public class DryingEmiRecipe implements EmiRecipe, PSRecipe {
+@Deprecated
+class DryingEmiRecipe implements EmiRecipe, PSRecipe {
 
     private final Identifier id;
     private final DryingRecipe recipe;
@@ -34,7 +35,7 @@ public class DryingEmiRecipe implements EmiRecipe, PSRecipe {
 
     @Override
     public EmiRecipeCategory getCategory() {
-        return Main.DRYING_TABLE.category();
+        return RecipeCategory.DRYING_TABLE.category();
     }
 
     @Override

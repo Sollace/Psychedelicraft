@@ -5,8 +5,9 @@
 
 package ivorius.psychedelicraft.fluid;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
@@ -70,9 +71,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     }
 
     @Override
-    public void getProcessStages(ProcessType type, ProcessStageConsumer consumer) {
-        if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
-            consumer.accept(Psychedelicraft.getConfig().balancing.slurryHardeningTime, 1, List::of, List::of);
-        }
+    public <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
+        return Stream.empty();
     }
 }

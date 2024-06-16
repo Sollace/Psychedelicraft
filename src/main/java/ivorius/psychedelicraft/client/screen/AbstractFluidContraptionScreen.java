@@ -2,9 +2,10 @@ package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.RenderUtil;
-import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -40,7 +41,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         return handler.getTank();
     }
 
-    public void drawTank(DrawContext context, Resovoir tank, int x, int y, int width, int height) {
+    public static void drawTank(DrawContext context, Resovoir tank, int x, int y, int width, int height) {
         if (tank.getContents().isEmpty()) {
             return;
         }
@@ -57,19 +58,37 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         RenderSystem.defaultBlendFunc();
     }
 
-    public void drawTankTooltip(DrawContext context, Resovoir tank, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
-        if (rectContains(mouseX, mouseY, x, y, width, height)) {
-            SimpleFluid fluid = tank.getContents().fluid();
-            int level = tank.getContents().amount();
+    public static void drawTank(DrawContext context, ItemFluids fluids, int capacity, int x, int y, int width, int height) {
+        if (fluids.isEmpty()) {
+            return;
+        }
 
+        float fluidHeight = MathHelper.clamp((float) fluids.amount() / (float) capacity, 0, 1);
+        int fluidHeightPixels = MathHelper.ceil(fluidHeight * height);
+
+        FluidBoxRenderer.FluidAppearance appearance = FluidBoxRenderer.FluidAppearance.of(fluids);
+
+        float[] color = appearance.rgba();
+
+        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], 1);
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    }
+
+    public static void drawTankTooltip(DrawContext context, Resovoir tank, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
+        drawTankTooltip(context, tank, x, y, width, height, mouseX, mouseY, details);
+    }
+
+    public static void drawTankTooltip(DrawContext context, ItemFluids fluids, int capacity, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
+        if (rectContains(mouseX, mouseY, x, y, width, height)) {
             List<Text> tooltip = new ArrayList<>();
-            tooltip.add(fluid.getName(tank.getContents()));
-            if (!fluid.isEmpty()) {
-                tooltip.add(Text.translatable("psychedelicraft.container.levels", level, tank.getCapacity()).formatted(Formatting.GRAY));
+            tooltip.add(fluids.getName());
+            if (!fluids.isEmpty()) {
+                tooltip.add(Text.translatable("psychedelicraft.container.levels", fluids.amount(), capacity).formatted(Formatting.GRAY));
             }
-            fluid.appendTooltip(tank.getContents(), tooltip, TooltipType.BASIC);
+            fluids.appendTooltip(tooltip, TooltipType.BASIC);
             tooltip.addAll(details);
-            context.drawTooltip(textRenderer, tooltip, mouseX, mouseY);
+            context.drawTooltip(MinecraftClient.getInstance().textRenderer, tooltip, mouseX, mouseY);
         }
     }
 

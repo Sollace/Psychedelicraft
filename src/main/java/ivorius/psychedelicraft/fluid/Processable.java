@@ -8,11 +8,21 @@ package ivorius.psychedelicraft.fluid;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
+import com.mojang.serialization.Codec;
 
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.PSComponents;
+import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringIdentifiable;
 
 /**
  * A fluid that can processed in the correct container, e.g. distillery.
@@ -39,16 +49,16 @@ public interface Processable {
      */
     void process(Resovoir tank, ProcessType type, ByProductConsumer output);
 
-    void getProcessStages(ProcessType type, ProcessStageConsumer consumer);
+    <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer);
 
     default ProcessType modifyProcess(Resovoir tank, ProcessType type) {
         return type;
     }
 
-    interface ProcessStageConsumer {
-        void accept(int time, int change,
-                Function<ItemFluids, List<ItemFluids>> from,
-                Function<ItemFluids, List<ItemFluids>> to
+    interface ProcessStageConsumer<T> {
+        T accept(int time, int change,
+                Function<ItemFluids, ItemFluids> from,
+                Function<ItemFluids, ItemFluids> to
         );
     }
 
@@ -58,7 +68,7 @@ public interface Processable {
         void accept(ItemFluids stack);
     }
 
-    enum ProcessType {
+    enum ProcessType implements StringIdentifiable {
         /**
          * Nothing is happening, probably due to unmet requirements
          */
@@ -92,12 +102,27 @@ public interface Processable {
         private final Text status = Text.translatable("fluid.status." + name);
         private final String timeLabel = "time.until." + name;
 
+        public static final Codec<ProcessType> CODEC = StringIdentifiable.createBasicCodec(ProcessType::values);
+        public static final PacketCodec<RegistryByteBuf, ProcessType> PACKET_CODEC = PacketCodecUtils.ofEnum(ProcessType.class);
+
         public Text getStatus() {
             return status;
         }
 
         public String getTimeLabelTranslationKey() {
             return timeLabel;
+        }
+
+        @Override
+        public String asString() {
+            return name;
+        }
+
+        public static void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            Processable.ProcessType processType = stack.get(PSComponents.PROCESS_TYPE);
+            if (processType != null) {
+                tooltip.add(Text.translatable("psychedelicraft.container.process_type." + processType.asString()));
+            }
         }
     }
 }

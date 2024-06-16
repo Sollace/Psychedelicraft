@@ -1,7 +1,6 @@
 package ivorius.psychedelicraft.compat.emi;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -18,7 +17,8 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class FluidProcessingEmiRecipe implements EmiRecipe, PSRecipe {
+@Deprecated
+class FluidProcessingEmiRecipe implements EmiRecipe, PSRecipe {
 
     private final Identifier id;
     private final EmiRecipeCategory category;
@@ -38,7 +38,7 @@ public class FluidProcessingEmiRecipe implements EmiRecipe, PSRecipe {
             int counter,
             int time,
             int change,
-            EmiIngredient receptical, Function<ItemFluids, List<ItemFluids>> from, Function<ItemFluids, List<ItemFluids>> to) {
+            EmiIngredient receptical, Function<ItemFluids, ItemFluids> from, Function<ItemFluids, ItemFluids> to) {
         this.id = category.getId().withPath(p -> "fluid_process/" + p + "/" + fluid.getId().getPath() + "/" + counter);
         this.category = category;
 
@@ -46,8 +46,8 @@ public class FluidProcessingEmiRecipe implements EmiRecipe, PSRecipe {
         this.change = change;
         this.receptical = receptical;
 
-        var inputItems = receptical.getEmiStacks().stream().flatMap(r -> from.apply(fluid.getDefaultStack(12)).stream().map(f -> ItemFluids.set(r.getItemStack().copy(), f))).toList();
-        var outputItems = receptical.getEmiStacks().stream().flatMap(r -> to.apply(fluid.getDefaultStack(12)).stream().map(f -> ItemFluids.set(r.getItemStack().copy(), f))).toList();
+        var inputItems = receptical.getEmiStacks().stream().map(r -> ItemFluids.set(r.getItemStack().copy(), from.apply(fluid.getDefaultStack(12)))).toList();
+        var outputItems = receptical.getEmiStacks().stream().map(r -> ItemFluids.set(r.getItemStack().copy(), to.apply(fluid.getDefaultStack(12)))).toList();
 
         inputFluid = EmiIngredient.of(inputItems.stream().map(ItemFluids::of).distinct().map(RecipeUtil::createFluidIngredient).toList());
         outputFluid = EmiIngredient.of(outputItems.stream().map(ItemFluids::of).distinct().map(RecipeUtil::createFluidIngredient).toList());
@@ -59,13 +59,12 @@ public class FluidProcessingEmiRecipe implements EmiRecipe, PSRecipe {
         ).toList();
     }
 
-    public static void createRecipesFor(EmiRecipeCategory category, Processable.ProcessType type, Processable processable, SimpleFluid tankContents, Consumer<EmiRecipe> registry) {
+    public static Stream<EmiRecipe> createRecipesFor(EmiRecipeCategory category, Processable.ProcessType type, Processable processable, SimpleFluid tankContents) {
         var counter = new Object() {
             int value;
         };
-        processable.getProcessStages(type, (time, change, from, to) -> {
-            registry.accept(new FluidProcessingEmiRecipe(category, type, tankContents, counter.value += 1, time, change, EmiIngredient.of(PSTags.Items.DRINK_RECEPTICALS), from, to));
-        });
+        return processable
+            .getProcessStages(type, (time, change, from, to) -> new FluidProcessingEmiRecipe(category, type, tankContents, counter.value += 1, time, change, EmiIngredient.of(PSTags.Items.DRINK_RECEPTICALS), from, to));
     }
 
 

@@ -183,7 +183,7 @@ public interface PSItemGroups {
             }));
 
     private static void appendAllFluids(ItemStack item, ItemGroup.Entries entries) {
-        SimpleFluid.all().forEach(fluid -> {
+        SimpleFluid.REGISTRY.forEach(fluid -> {
             if (fluid.isSuitableContainer(item)) {
                 fluid.getDefaultStacks(item, entries::add);
             }
