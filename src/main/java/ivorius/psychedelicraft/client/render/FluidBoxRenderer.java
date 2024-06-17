@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -104,7 +105,7 @@ public class FluidBoxRenderer {
         position.transform(POSITION_VECTOR);
         buffer.vertex(
                 POSITION_VECTOR.x * scale, POSITION_VECTOR.y * scale, POSITION_VECTOR.z * scale,
-                color,
+                ColorHelper.Argb.fullAlpha(color),
                 u, v,
                 overlay, light,
                 direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ()
