@@ -87,17 +87,17 @@ public class DrugRenderer {
         musicManager.update(drugProperties);
     }
 
-    public void distortScreen(MatrixStack matrices, float tickDelta) {
-        DrugProperties properties = DrugProperties.of(MinecraftClient.getInstance().player);
-        if (properties == null) {
+    public void distortScreen(MatrixStack matrices, Camera camera, float tickDelta) {
+        if (MinecraftClient.getInstance().player == null) {
             return;
         }
+
+        DrugProperties properties = DrugProperties.of(MinecraftClient.getInstance().player);
 
         float wobblyness = Math.min(1, properties.getModifier(Drug.VIEW_WOBBLYNESS));
 
         float tick = properties.asEntity().age + tickDelta;
 
-        Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
         DriftingCamera driftingCam = properties.getHallucinations().getCamera();
 
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));

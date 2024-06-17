@@ -19,7 +19,7 @@ public class ZeroScreen extends RenderLayer {
     public static final float X_PIXELS = 140 / 2F;
     public static final float Y_PIXELS = 224 / 2F;
 
-    protected static final ShaderProgram ZERO_MATTER_PROGRAM = new ShaderProgram(PSShaders::getRenderTypeZeroMatterProgram);
+    protected static final ShaderProgram ZERO_MATTER_PROGRAM = new ShaderProgram(PSShaders.ZERO_MATTER);
 
     private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> of("ps_zero_screen",
             VertexFormats.POSITION_COLOR,
