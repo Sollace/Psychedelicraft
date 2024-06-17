@@ -36,7 +36,7 @@ public class LootExtensionEntry extends LeafEntry {
 
     @Override
     public LootPoolEntryType getType() {
-        return PSLootTableEntryType.LOOT_TABLE_EXTENSION;
+        return null;//PSLootTableEntryType.LOOT_TABLE_EXTENSION;
     }
 
     @Override

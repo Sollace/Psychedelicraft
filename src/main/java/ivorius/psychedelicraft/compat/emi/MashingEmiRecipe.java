@@ -24,8 +24,8 @@ class MashingEmiRecipe implements EmiRecipe, PSRecipe {
     public MashingEmiRecipe(Identifier id, MashingRecipe recipe) {
         this.id = id;
         this.input = RecipeUtil.grouped(recipe.getIngredients().stream().map(EmiIngredient::of)).toList();
-        this.output = RecipeUtil.createFluidIngredient(recipe.getOutputFluid()).getEmiStacks();
-        this.tank = RecipeUtil.createFluidIngredient(recipe.getPoolFluid());
+        this.output = RecipeUtil.createFluidIngredient(recipe.result()).getEmiStacks();
+        this.tank = RecipeUtil.createFluidIngredient(recipe.baseFluid());
         tank.setAmount(FluidVolumes.VAT / 2 / 12);
         output.get(0).setAmount(FluidVolumes.VAT / 2 / 12);
     }

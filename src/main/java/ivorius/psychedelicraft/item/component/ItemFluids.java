@@ -3,6 +3,8 @@ package ivorius.psychedelicraft.item.component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
@@ -86,7 +88,8 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     }
 
     public static ItemFluids of(FluidVariant variant, int capacity) {
-        ItemFluids fluids = variant.getComponents().get(PSComponents.FLUIDS).orElse(null);
+        Optional<? extends ItemFluids> fluidsOptional = variant.getComponents().get(PSComponents.FLUIDS);
+        ItemFluids fluids = fluidsOptional == null ? null : fluidsOptional.orElse(null);
         if (fluids == null) {
             SimpleFluid fluid = SimpleFluid.forVanilla(variant.getFluid());
             return ItemFluids.create(fluid, capacity, Map.of());

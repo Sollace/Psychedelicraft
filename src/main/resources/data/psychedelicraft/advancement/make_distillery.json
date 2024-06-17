@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:make_mash_tub",
   "display": {
     "icon": {
-      "item": "psychedelicraft:distillery"
+      "id": "psychedelicraft:distillery"
     },
     "title": {
       "translate": "advancements.psychedelicraft.make_distillery.title"

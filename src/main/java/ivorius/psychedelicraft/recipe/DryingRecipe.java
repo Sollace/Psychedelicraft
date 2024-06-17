@@ -49,15 +49,21 @@ public record DryingRecipe(
     }
 
     @Override
+    public RecipeType<?> getType() {
+        return PSRecipes.DRYING_TYPE;
+    }
+
+    @Override
+    public String getGroup() {
+        return group;
+    }
+
+    @Override
     public boolean matches(Input input, World world) {
         return (input.result.isEmpty() || ItemStack.areItemsAndComponentsEqual(output, input.result())) && input.ingredients().stream()
                 .filter(this.input)
                 .mapToInt(ItemStack::getCount)
                 .sum() >= 9;
-    }
-
-    public Ingredient getInput() {
-        return input;
     }
 
     // Suppress warnings being logged when Minecraft realises it doesn't know what category to put these recipes into
@@ -100,11 +106,6 @@ public record DryingRecipe(
         }
 
         return defaultedList;
-    }
-
-    @Override
-    public RecipeType<?> getType() {
-        return PSRecipes.DRYING_TYPE;
     }
 
     public record Input(ItemStack result, List<ItemStack> ingredients) implements RecipeInput {

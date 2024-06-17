@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:cannabis_buds",
   "display": {
     "icon": {
-      "item": "psychedelicraft:dried_cannabis_buds"
+      "id": "psychedelicraft:dried_cannabis_buds"
     },
     "title": {
       "translate": "advancements.psychedelicraft.dry_cannabis_buds.title"

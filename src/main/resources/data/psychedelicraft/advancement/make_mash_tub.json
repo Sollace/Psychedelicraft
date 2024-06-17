@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:root",
   "display": {
     "icon": {
-      "item": "psychedelicraft:mash_tub"
+      "id": "psychedelicraft:mash_tub"
     },
     "title": {
       "translate": "advancements.psychedelicraft.make_mash_tub.title"

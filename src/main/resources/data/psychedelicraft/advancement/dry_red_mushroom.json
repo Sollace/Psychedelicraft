@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:make_drying_table",
   "display": {
     "icon": {
-      "item": "psychedelicraft:red_magic_mushrooms"
+      "id": "psychedelicraft:red_magic_mushrooms"
     },
     "title": {
       "translate": "advancements.psychedelicraft.dry_red_mushrooms.title"

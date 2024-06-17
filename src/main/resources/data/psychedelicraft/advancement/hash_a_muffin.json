@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:dry_cannabis_buds",
   "display": {
     "icon": {
-      "item": "psychedelicraft:hash_muffin"
+      "id": "psychedelicraft:hash_muffin"
     },
     "title": {
       "translate": "advancements.psychedelicraft.hash_a_muffin.title"

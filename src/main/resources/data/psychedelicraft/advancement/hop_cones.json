@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:make_mash_tub",
   "display": {
     "icon": {
-      "item": "psychedelicraft:hop_cones"
+      "id": "psychedelicraft:hop_cones"
     },
     "title": {
       "translate": "advancements.psychedelicraft.hop_cones.title"

@@ -5,5 +5,7 @@
   "ingredient": {
     "item": "psychedelicraft:coffea_cherries"
   },
-  "result": "psychedelicraft:coffee_beans"
+  "result": {
+    "id": "psychedelicraft:coffee_beans"
+  }
 }

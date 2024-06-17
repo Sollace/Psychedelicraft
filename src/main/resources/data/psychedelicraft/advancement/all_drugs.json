@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:root",
   "display": {
     "icon": {
-      "item": "psychedelicraft:jolly_rancher"
+      "id": "psychedelicraft:jolly_rancher"
     },
     "title": {
       "translate": "advancements.psychedelicraft.all_drugs.title"

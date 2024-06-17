@@ -12,7 +12,11 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.RecipeInput;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.world.World;
+
 import java.util.*;
 
 import com.mojang.serialization.Codec;
@@ -21,46 +25,41 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 
 /**
  * Created from by Sollace on 7 Feb 2023
  *
  * Used by the mash table to produce a particular fluid from items dropped in.
  */
-public class MashingRecipe extends FillRecepticalRecipe {
+public record MashingRecipe (
+        String group,
+        CraftingRecipeCategory category,
+        ItemFluids baseFluid,
+        ItemFluids result,
+        DefaultedList<Ingredient> ingredients,
+        int stewTime) implements Recipe<MashingRecipe.Input> {
     public static final MapCodec<MashingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::getGroup),
-            CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(MashingRecipe::getCategory),
-            FluidIngredient.CODEC.fieldOf("result").forGetter(MashingRecipe::getOutputFluid),
-            FluidIngredient.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::getPoolFluid),
-            RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::getIngredients),
-            Codec.INT.optionalFieldOf("stew_time", 0).forGetter(recipe -> recipe.stewTime)
+            Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::group),
+            CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(MashingRecipe::category),
+            ItemFluids.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
+            ItemFluids.CODEC.fieldOf("result").forGetter(MashingRecipe::result),
+            RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::ingredients),
+            Codec.INT.optionalFieldOf("stew_time", 0).forGetter(MashingRecipe::stewTime)
     ).apply(instance, MashingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, MashingRecipe> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.STRING, MashingRecipe::getGroup,
-            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::getCategory,
-            FluidIngredient.PACKET_CODEC, MashingRecipe::getOutputFluid,
-            FluidIngredient.PACKET_CODEC, MashingRecipe::getPoolFluid,
-            RecipeUtils.INGREDIENTS_PACKET_CODEC, MashingRecipe::getIngredients,
-            PacketCodecs.INTEGER, recipe -> recipe.stewTime,
+            PacketCodecs.STRING, MashingRecipe::group,
+            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::category,
+            ItemFluids.PACKET_CODEC, MashingRecipe::baseFluid,
+            ItemFluids.PACKET_CODEC, MashingRecipe::result,
+            RecipeUtils.INGREDIENTS_PACKET_CODEC, MashingRecipe::ingredients,
+            PacketCodecs.INTEGER, MashingRecipe::stewTime,
             MashingRecipe::new
     );
 
-    private final int stewTime;
-
-    private final FluidIngredient fluid;
-
-    public MashingRecipe(
-            String group,
-            CraftingRecipeCategory category,
-            FluidIngredient output,
-            FluidIngredient fluid,
-            DefaultedList<Ingredient> input,
-            int stewTime) {
-        super(group, category, output, Ingredient.ofItems(PSItems.MASH_TUB), input);
-        this.fluid = fluid;
-        this.stewTime = stewTime;
+    @Override
+    public RecipeType<?> getType() {
+        return PSRecipes.MASHING_TYPE;
     }
 
     @Override
@@ -69,23 +68,15 @@ public class MashingRecipe extends FillRecepticalRecipe {
     }
 
     @Override
-    public RecipeType<?> getType() {
-        return PSRecipes.MASHING_TYPE;
+    public String getGroup() {
+        return group;
     }
 
-    public int getStewTime() {
-        return stewTime;
-    }
+    public MatchResult matchPartially(Input input) {
+        final List<Ingredient> expectedInputs = new ArrayList<>(ingredients);
+        final Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(input.inputs());
 
-    public FluidIngredient getPoolFluid() {
-        return fluid;
-    }
-
-    public MatchResult matchPartially(Object2IntMap<Item> inputs) {
-        final List<Ingredient> expectedInputs = new ArrayList<>(getIngredients());
-        final Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(inputs);
-
-        for (Item item : inputs.keySet()) {
+        for (Item item : input.inputs().keySet()) {
             ItemStack stack = item.getDefaultStack();
 
             if (expectedInputs.isEmpty()) {
@@ -116,6 +107,38 @@ public class MashingRecipe extends FillRecepticalRecipe {
         }
 
         return MatchResult.of(unmatchedInputs.isEmpty(), expectedInputs.isEmpty());
+    }
+
+    @Override
+    public boolean matches(Input input, World world) {
+        return baseFluid.canCombine(input.tankFluid());
+    }
+
+    @Override
+    public ItemStack craft(Input input, WrapperLookup lookup) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public boolean fits(int width, int height) {
+        return (width * height) > 0;
+    }
+
+    @Override
+    public ItemStack getResult(WrapperLookup lookup) {
+        return ItemStack.EMPTY;
+    }
+
+    public record Input(ItemFluids tankFluid, ItemStack solids, Object2IntMap<Item> inputs) implements RecipeInput {
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return solids;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
     }
 
     public enum MatchResult {

@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "psychedelicraft:cannabis_leaf"
+      "id": "psychedelicraft:cannabis_leaf"
     },
     "title": {
       "translate": "advancements.psychedelicraft.root.title"

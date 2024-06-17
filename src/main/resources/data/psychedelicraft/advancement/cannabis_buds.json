@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:make_drying_table",
   "display": {
     "icon": {
-      "item": "psychedelicraft:cannabis_buds"
+      "id": "psychedelicraft:cannabis_buds"
     },
     "title": {
       "translate": "advancements.psychedelicraft.cannabis_buds.title"

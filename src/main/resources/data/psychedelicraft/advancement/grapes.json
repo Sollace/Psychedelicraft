@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:make_mash_tub",
   "display": {
     "icon": {
-      "item": "psychedelicraft:wine_grapes"
+      "id": "psychedelicraft:wine_grapes"
     },
     "title": {
       "translate": "advancements.psychedelicraft.grapes.title"

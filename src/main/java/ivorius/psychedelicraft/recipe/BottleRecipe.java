@@ -16,6 +16,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.RawShapedRecipe;
+import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
@@ -65,6 +66,11 @@ public class BottleRecipe extends ShapedRecipe {
         super(group, category, raw, result, showNotification);
         this.raw = raw;
         this.result = result;
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return PSRecipes.CRAFTING_SHAPED;
     }
 
     @Override

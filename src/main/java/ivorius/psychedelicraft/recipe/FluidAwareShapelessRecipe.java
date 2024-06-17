@@ -38,7 +38,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
             PacketCodecs.STRING, FluidAwareShapelessRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, FluidAwareShapelessRecipe::getCategory,
             ItemStack.PACKET_CODEC, recipe -> recipe.output,
-            OptionalFluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList(OptionalFluidIngredient.EMPTY)), recipe -> recipe.ingredients,
+            OptionalFluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), recipe -> recipe.ingredients,
             FluidAwareShapelessRecipe::new
     );
 

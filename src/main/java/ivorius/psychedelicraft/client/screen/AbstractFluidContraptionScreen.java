@@ -76,10 +76,10 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
     }
 
     public static void drawTankTooltip(DrawContext context, Resovoir tank, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
-        drawTankTooltip(context, tank, x, y, width, height, mouseX, mouseY, details);
+        drawTankTooltip(context, tank.getContents(), tank.getCapacity(), x, y, width, height, mouseX, mouseY, details);
     }
 
-    public static void drawTankTooltip(DrawContext context, ItemFluids fluids, int capacity, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
+    public static void drawTankTooltip(DrawContext context, ItemFluids fluids, long capacity, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {
         if (rectContains(mouseX, mouseY, x, y, width, height)) {
             List<Text> tooltip = new ArrayList<>();
             tooltip.add(fluids.getName());

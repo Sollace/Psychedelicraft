@@ -29,9 +29,9 @@ class MashingEmiRecipe implements PSRecipe {
     public MashingEmiRecipe(RecipeEntry<MashingRecipe> recipe) {
         this.recipe = recipe;
         this.input = RecipeUtil.grouped(recipe.value().getIngredients().stream().map(TlaIngredient::ofIngredient)).toList();
-        this.outputFluid = recipe.value().getOutputFluid().getAsItemFluid(FluidVolumes.VAT);
+        this.outputFluid = recipe.value().result().ofAmount(FluidVolumes.VAT);
         this.output = RecipeUtil.toTlaStack(outputFluid);
-        this.baseFluids = recipe.value().getPoolFluid().getAsItemFluid(FluidVolumes.VAT);
+        this.baseFluids = recipe.value().baseFluid().ofAmount(FluidVolumes.VAT);
         this.fluidIngredient = RecipeUtil.toIngredient(baseFluids);
     }
 

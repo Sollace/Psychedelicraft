@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:wash_grapes",
   "display": {
     "icon": {
-      "item": "psychedelicraft:bottle"
+      "id": "psychedelicraft:bottle"
     },
     "title": {
       "translate": "advancements.psychedelicraft.splitting_headache.title"

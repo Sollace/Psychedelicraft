@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:wash_sugar_cane",
   "display": {
     "icon": {
-      "item": "psychedelicraft:wooden_mug",
+      "id": "psychedelicraft:wooden_mug",
       "tag": {
         "fluid": {
           "id": "psychedelicraft:sugar_cane",

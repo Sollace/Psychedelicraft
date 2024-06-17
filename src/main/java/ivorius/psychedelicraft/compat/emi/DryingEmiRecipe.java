@@ -28,7 +28,7 @@ class DryingEmiRecipe implements EmiRecipe, PSRecipe {
     public DryingEmiRecipe(Identifier id, DryingRecipe recipe) {
         this.id = id;
         this.recipe = recipe;
-        EmiIngredient input = EmiIngredient.of(recipe.getInput());
+        EmiIngredient input = EmiIngredient.of(recipe.input());
         this.input = Stream.generate(() -> input).limit(9).toList();
         this.output = List.of(EmiStack.of(recipe.getResult(MinecraftClient.getInstance().world.getRegistryManager())));
     }

@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:root",
   "display": {
     "icon": {
-      "item": "psychedelicraft:drying_table"
+      "id": "psychedelicraft:drying_table"
     },
     "title": {
       "translate": "advancements.psychedelicraft.make_drying_table.title"

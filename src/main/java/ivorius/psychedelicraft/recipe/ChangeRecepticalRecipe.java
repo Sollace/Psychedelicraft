@@ -29,7 +29,7 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 public class ChangeRecepticalRecipe extends ShapelessRecipe {
     public static final MapCodec<ChangeRecepticalRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(ChangeRecepticalRecipe::getGroup),
-            CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(ChangeRecepticalRecipe::getCategory),
+            CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ChangeRecepticalRecipe::getCategory),
             ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
             RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ChangeRecepticalRecipe::getIngredients)
     ).apply(instance, ChangeRecepticalRecipe::new));

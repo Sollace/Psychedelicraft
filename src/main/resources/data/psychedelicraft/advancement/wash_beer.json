@@ -2,7 +2,7 @@
   "parent": "psychedelicraft:hop_cones",
   "display": {
     "icon": {
-      "item": "minecraft:wheat"
+      "id": "minecraft:wheat"
     },
     "title": {
       "translate": "advancements.psychedelicraft.wash_beer.title"

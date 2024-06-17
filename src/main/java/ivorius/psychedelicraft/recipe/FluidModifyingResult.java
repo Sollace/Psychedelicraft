@@ -9,11 +9,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 
 public record FluidModifyingResult(Map<String, Modification> attributes, ItemStack result) {
@@ -21,9 +22,10 @@ public record FluidModifyingResult(Map<String, Modification> attributes, ItemSta
             Codec.unboundedMap(Codec.STRING, Modification.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(FluidModifyingResult::attributes),
             ItemStack.VALIDATED_CODEC.optionalFieldOf("result", ItemStack.EMPTY).forGetter(FluidModifyingResult::result)
         ).apply(instance, FluidModifyingResult::new));
-    public static final PacketCodec<RegistryByteBuf, FluidModifyingResult> PACKET_CODEC = PacketCodec.ofStatic(
-            (a, b) -> b.write(a),
-            buffer -> new FluidModifyingResult(buffer.readMap(PacketByteBuf::readString, FluidModifyingResult.Modification::new), ItemStack.PACKET_CODEC.decode(buffer))
+    public static final PacketCodec<RegistryByteBuf, FluidModifyingResult> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.map(HashMap::new, PacketCodecs.STRING, Modification.PACKET_CODEC), FluidModifyingResult::attributes,
+            ItemStack.OPTIONAL_PACKET_CODEC, FluidModifyingResult::result,
+            FluidModifyingResult::new
     );
 
     public ItemStack applyTo(ItemStack input) {
@@ -38,12 +40,6 @@ public record FluidModifyingResult(Map<String, Modification> attributes, ItemSta
         return ItemFluids.set(stack, ItemFluids.create(fluids.fluid(), fluids.amount(), attributes));
     }
 
-    @Deprecated
-    private void write(RegistryByteBuf buffer) {
-        buffer.writeMap(attributes, PacketByteBuf::writeString, (b, c) -> c.write(b));
-        ItemStack.PACKET_CODEC.encode(buffer, result);
-    }
-
     interface Op {
         int apply(int a, int b);
     }
@@ -55,6 +51,7 @@ public record FluidModifyingResult(Map<String, Modification> attributes, ItemSta
         MULTIPLY((a, b) -> a * b),
         DIVIDE((a, b) -> a / b);
         private static final Codec<Ops> CODEC = StringIdentifiable.createCodec(Ops::values);
+        private static final PacketCodec<RegistryByteBuf, Ops> PACKET_CODEC = PacketCodecUtils.ofEnum(Ops.class);
 
         private final String name;
         private final Op operation;
@@ -76,23 +73,19 @@ public record FluidModifyingResult(Map<String, Modification> attributes, ItemSta
     }
 
     public record Modification(int value, Ops type) implements Int2IntFunction {
-        private static final Codec<Modification> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final Codec<Modification> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.INT.fieldOf("value").forGetter(Modification::value),
                 Ops.CODEC.optionalFieldOf("type", Ops.ADD).forGetter(Modification::type)
         ).apply(instance, Modification::new));
-
-        Modification(PacketByteBuf buffer) {
-            this(buffer.readVarInt(), buffer.readEnumConstant(Ops.class));
-        }
+        public static final PacketCodec<RegistryByteBuf, Modification> PACKET_CODEC = PacketCodec.tuple(
+                PacketCodecs.INTEGER, Modification::value,
+                Ops.PACKET_CODEC, Modification::type,
+                Modification::new
+        );
 
         @Override
         public int get(int v) {
             return type.operation.apply(v, value);
-        }
-
-        public void write(PacketByteBuf buffer) {
-            buffer.writeVarInt(value);
-            buffer.writeEnumConstant(type);
         }
     }
 }

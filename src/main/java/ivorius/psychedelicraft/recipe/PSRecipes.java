@@ -38,7 +38,6 @@ public interface PSRecipes {
         });
     }
 
-
     static <S extends RecipeSerializer<T>, T extends Recipe<?>> S serializer(String name, S serializer) {
         return Registry.register(Registries.RECIPE_SERIALIZER, Psychedelicraft.id(name), serializer);
     }

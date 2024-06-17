@@ -24,7 +24,7 @@ class DryingEmiRecipe implements PSRecipe {
 
     public DryingEmiRecipe(RecipeEntry<DryingRecipe> recipe) {
         this.recipe = recipe;
-        TlaIngredient input = TlaIngredient.ofIngredient(recipe.value().getInput());
+        TlaIngredient input = TlaIngredient.ofIngredient(recipe.value().input());
         this.input = Stream.generate(() -> input).limit(9).toList();
         this.output = List.of(TlaStack.of(recipe.value().getResult(MinecraftClient.getInstance().world.getRegistryManager())));
     }
