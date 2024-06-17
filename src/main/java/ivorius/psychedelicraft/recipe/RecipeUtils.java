@@ -15,6 +15,7 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -72,11 +73,7 @@ public interface RecipeUtils {
     }
 
     static DefaultedList<Ingredient> union(DefaultedList<Ingredient> list, Ingredient...additional) {
-        for (Ingredient ingredient : additional) {
-            if (ingredient.isEmpty()) continue;
-            list.add(ingredient);
-        }
-        return list;
+        return DefaultedList.copyOf(Ingredient.EMPTY, Stream.concat(list.stream(), Arrays.stream(additional)).toArray(Ingredient[]::new));
     }
 
     static <T> DefaultedList<T> checkLength(DefaultedList<T> ingredients) {
