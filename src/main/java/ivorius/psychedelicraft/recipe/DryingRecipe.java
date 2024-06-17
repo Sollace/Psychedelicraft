@@ -6,6 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -56,6 +57,16 @@ public record DryingRecipe(
     @Override
     public String getGroup() {
         return group;
+    }
+
+    @Override
+    public DefaultedList<Ingredient> getIngredients() {
+        return DefaultedList.copyOf(Ingredient.EMPTY, input);
+    }
+
+    @Override
+    public ItemStack createIcon() {
+        return PSItems.DRYING_TABLE.getDefaultStack();
     }
 
     @Override

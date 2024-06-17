@@ -279,7 +279,8 @@
   "time.until.ferment": "Time Until Fermented: %s",
   "time.until.distill": "Time Until Distilled: %s",
   
-  "psychedelicraft.container.levels": "Amount: %d/%d ml",
+  "psychedelicraft.container.levels": "Amount: %1$s / %2$s",
+  "psychedelicraft.container.amount": "Amount: %1$s",
 
   "psychedelicraft.alcohol.maturity.young": "young",
   "psychedelicraft.alcohol.maturity.aged": "aged",

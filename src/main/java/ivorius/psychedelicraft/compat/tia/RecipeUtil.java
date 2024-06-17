@@ -45,7 +45,7 @@ interface RecipeUtil {
     }
 
     static TlaStack toTlaStack(ItemFluids fluids) {
-        return TlaStack.of(fluids.toVariant(), fluids.amount());
+        return TlaStack.of(fluids.toVariant(), fluids.amount() / 1000);
     }
 
     static TlaStack toTlaStack(ItemStack receptical, ItemFluids fluids) {

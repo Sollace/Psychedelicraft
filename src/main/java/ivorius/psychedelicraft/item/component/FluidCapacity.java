@@ -7,6 +7,7 @@ import com.google.common.collect.Interners;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.container.FluidTransferUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item.TooltipContext;
@@ -42,7 +43,7 @@ public record FluidCapacity(int capacity) {
 
     public static void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         if (type.isAdvanced()) {
-            tooltip.add(Text.translatable("psychedelicraft.container.levels", ItemFluids.of(stack).amount(), FluidCapacity.get(stack)));
+            tooltip.add(Text.translatable("psychedelicraft.container.levels", FluidVolumes.format(ItemFluids.of(stack).amount()), FluidVolumes.format(FluidCapacity.get(stack))));
         }
     }
 

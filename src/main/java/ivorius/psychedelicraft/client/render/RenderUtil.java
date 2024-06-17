@@ -88,9 +88,20 @@ public class RenderUtil {
 
     public static void drawRepeatingSprite(DrawContext context, Sprite sprite, int x, int y, int width, int height, float r, float g, float b, float a) {
         final int tileSize = 16;
-        for (int tileX = 0; tileX < width; tileX += tileSize) {
-            for (int tileY = 0; tileY < height; tileY += tileSize) {
-                context.drawSprite(x + tileX, y + tileY, 0, tileSize, tileSize, sprite, r, g, b, a);
+
+        int tilesX = width / tileSize;
+        int tilesY = height / tileSize;
+
+        int remainedWidth = width % tileSize;
+        int remainedHeight = height % tileSize;
+
+        for (int tileX = 0; tileX <= tilesX; tileX ++) {
+            for (int tileY = 0; tileY <= tilesY; tileY ++) {
+                int w = tileX == tilesX ? remainedWidth : tileSize;
+                int h = tileY == tilesY ? remainedHeight : tileSize;
+                if (h > 0 && w > 0) {
+                    context.drawSprite(x + tileX * tileSize, y + tileY * tileSize, 0, w, h, sprite, r, g, b, a);
+                }
             }
         }
     }

@@ -94,9 +94,9 @@ public interface PSItems {
     RiftJarItem RIFT_JAR = register("rift_jar", new RiftJarItem(PSBlocks.RIFT_JAR, new Settings()
             .component(PSComponents.RIFT_FRACTION, RiftFractionComponent.DEFAULT)));
 
-    DrinkableItem FILLED_GLASS_BOTTLE = register("filled_glass_bottle", new ProxyDrinkableItem(Items.GLASS_BOTTLE, new Settings(), FluidVolumes.GLASS_BOTTLE, ConsumableFluid.ConsumptionType.DRINK));
-    FilledBucketItem FILLED_BUCKET = register("filled_bucket", new FilledBucketItem(new Settings().maxCount(1)));
-    DrinkableItem FILLED_BOWL = register("filled_bowl", new ProxyDrinkableItem(Items.BOWL, new Settings(), FluidVolumes.BOWL, ConsumableFluid.ConsumptionType.DRINK));
+    DrinkableItem FILLED_GLASS_BOTTLE = register("filled_glass_bottle", new ProxyDrinkableItem(Items.GLASS_BOTTLE, new Settings().component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.GLASS_BOTTLE)), FluidVolumes.GLASS_BOTTLE, ConsumableFluid.ConsumptionType.DRINK));
+    FilledBucketItem FILLED_BUCKET = register("filled_bucket", new FilledBucketItem(new Settings().maxCount(1).component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BUCKET))));
+    DrinkableItem FILLED_BOWL = register("filled_bowl", new ProxyDrinkableItem(Items.BOWL, new Settings().component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BOWL)), FluidVolumes.BOWL, ConsumableFluid.ConsumptionType.DRINK));
 
     Item WINE_GRAPES = register("wine_grapes", new WineGrapesItem(new Settings().food(
             new FoodComponent.Builder().nutrition(1).saturationModifier(0.5F).snack().build()

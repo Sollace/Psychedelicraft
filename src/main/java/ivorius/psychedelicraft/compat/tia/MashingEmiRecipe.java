@@ -28,7 +28,9 @@ class MashingEmiRecipe implements PSRecipe {
 
     public MashingEmiRecipe(RecipeEntry<MashingRecipe> recipe) {
         this.recipe = recipe;
-        this.input = RecipeUtil.grouped(recipe.value().getIngredients().stream().map(TlaIngredient::ofIngredient)).toList();
+        this.input = RecipeUtil.grouped(
+                recipe.value().getIngredients().stream().map(TlaIngredient::ofIngredient)
+        ).toList();
         this.outputFluid = recipe.value().result().ofAmount(FluidVolumes.VAT);
         this.output = RecipeUtil.toTlaStack(outputFluid);
         this.baseFluids = recipe.value().baseFluid().ofAmount(FluidVolumes.VAT);
@@ -63,26 +65,39 @@ class MashingEmiRecipe implements PSRecipe {
     @Override
     public void buildGui(GuiBuilder widgets) {
         int x = 7;
-        int y = 27;
+        int y = 0;
 
         widgets.addArrow(60 + x, 21 + y, false);
         widgets.addAnimatedArrow(60 + x, 21 + y, 5000);
-        widgets.addCustomWidget(FluidBoxWidget.create(baseFluids, FluidVolumes.VAT, 13 + x, 17 + y, 30, 30));
+        var inBox = FluidBoxWidget.create(baseFluids, FluidVolumes.VAT, x, 17 + y, 60, 31, widgets);
         widgets.addTexture(IN_VAT, x, 5 + y);
+
+        widgets.addSlot(fluidIngredient, 2, getCategory().getDisplayHeight() - 16 - 4).markCatalyst();
 
         x += 85;
         y += 15;
 
-        widgets.addCustomWidget(FluidBoxWidget.create(outputFluid, FluidVolumes.VAT, 6 + x, 8 + y, 16, 16));
-        widgets.addSlot(output, 6 + x, 8 + y).disableBackground().markOutput();
+        var outBox = FluidBoxWidget.create(outputFluid, FluidVolumes.VAT, x, 8 + y, 30, 16, widgets);
+        outBox.addExclusion(widgets.addSlot(output, 6 + x, 8 + y).disableBackground().markOutput());
         widgets.addTexture(OUT_VAT, x, 5 + y);
 
-        int sOff = 0;
-        for (int i = 0; i < 9; i++) {
-            int s = i + sOff;
-            if (s >= 0 && s < input.size()) {
-                widgets.addSlot(input.get(s), (i % 4 * 16) + 7, (i / 4 * 16) + 7).disableBackground().markInput();
-            }
+        int ingredientsStackCount = input.size();
+
+        int maxIngredientsWidth = 3 * 16;
+        int maxIngredientsHeight = 2 * 16;
+
+        int ingredientsLeft = 9 + (maxIngredientsWidth - (Math.min(3, ingredientsStackCount) * 16)) / 2;
+        int ingredientsTop = 2 + (maxIngredientsHeight - (ingredientsStackCount / 4) * 8) / 2;
+
+        for (int i = 0; i < ingredientsStackCount; i++) {
+            int row = i / 3;
+            int col = i % 3;
+            inBox.addExclusion(
+                widgets.addSlot(input.get(0),
+                        col * 16 + ingredientsLeft,
+                        row * 16 + ingredientsTop + (col % 2) * 8
+                ).disableBackground().markInput()
+            );
         }
     }
 }

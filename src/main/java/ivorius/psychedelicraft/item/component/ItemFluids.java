@@ -133,6 +133,9 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
         if (amount == amount()) {
             return this;
         }
+        if (amount == 0) {
+            return EMPTY;
+        }
         return create(fluid(), amount, attributes());
     }
 

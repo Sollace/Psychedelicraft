@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.RenderUtil;
+import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
@@ -70,7 +71,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         float[] color = appearance.rgba();
 
-        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], 1);
+        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y + height - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], 1);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     }
@@ -84,7 +85,11 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
             List<Text> tooltip = new ArrayList<>();
             tooltip.add(fluids.getName());
             if (!fluids.isEmpty()) {
-                tooltip.add(Text.translatable("psychedelicraft.container.levels", fluids.amount(), capacity).formatted(Formatting.GRAY));
+                if (capacity <= 0) {
+                    tooltip.add(Text.translatable("psychedelicraft.container.amount", FluidVolumes.format(fluids.amount())).formatted(Formatting.GRAY));
+                } else {
+                    tooltip.add(Text.translatable("psychedelicraft.container.levels", FluidVolumes.format(fluids.amount()), FluidVolumes.format(capacity)).formatted(Formatting.GRAY));
+                }
             }
             fluids.appendTooltip(tooltip, TooltipType.BASIC);
             tooltip.addAll(details);

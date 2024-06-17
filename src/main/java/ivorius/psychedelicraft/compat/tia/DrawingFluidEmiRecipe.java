@@ -32,7 +32,10 @@ class DrawingFluidEmiRecipe implements PSRecipe {
     private final int capacity;
 
     public static BiConsumer<RecipeCategory, PluginContext> generate(int capacity) {
-        return (category, context) -> context.addGenerator(client -> SimpleFluid.REGISTRY.stream().map(fluid -> (TlaRecipe)new DrawingFluidEmiRecipe(category, fluid, capacity)).toList());
+        return (category, context) -> context.addGenerator(client -> SimpleFluid.REGISTRY.stream()
+                .filter(f -> !f.isEmpty())
+                .map(fluid -> (TlaRecipe)new DrawingFluidEmiRecipe(category, fluid, capacity))
+                .toList());
     }
 
     public DrawingFluidEmiRecipe(RecipeCategory category, SimpleFluid fluid, int capacity) {
@@ -72,10 +75,10 @@ class DrawingFluidEmiRecipe implements PSRecipe {
 
     @Override
     public void buildGui(GuiBuilder widgets) {
+        FluidBoxWidget.create(contents.fluid(), capacity, 50, 2, 40, 50, widgets);
         widgets.addTexture(arrow, 0, 0);
         widgets.addAnimatedTexture(arrowFill, 68, 47, 2000, true, true, true);
         widgets.addSlot(contents.output(), 107, 45).markOutput();
-        widgets.addCustomWidget(FluidBoxWidget.create(contents.fluid(), 62, 22, 19, 19, capacity));
     }
 
     record Contents(List<TlaIngredient> recepticals, List<TlaStack> outputs, List<ItemFluids> fluid, TlaIngredient output) {

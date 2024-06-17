@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
 
+import io.netty.buffer.ByteBuf;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
@@ -32,9 +33,7 @@ import net.minecraft.fluid.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -58,7 +57,7 @@ public class SimpleFluid {
     public static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids")), EMPTY_KEY).buildAndRegister();
     private static final Map<Identifier, SimpleFluid> VANILLA_FLUIDS = new HashMap<>();
     public static final Codec<SimpleFluid> CODEC = Identifier.CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
-    public static final PacketCodec<RegistryByteBuf, SimpleFluid> PACKET_CODEC = PacketCodecs.registryValue(REGISTRY.getKey());
+    public static final PacketCodec<ByteBuf, SimpleFluid> PACKET_CODEC = Identifier.PACKET_CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
 
     protected final Identifier id;
 

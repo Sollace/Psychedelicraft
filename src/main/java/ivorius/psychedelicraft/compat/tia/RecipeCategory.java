@@ -71,12 +71,12 @@ record RecipeCategory(Identifier id, CategoryIcon icon, TlaIngredient stations, 
 
     @Override
     public int getDisplayHeight() {
-        return width;
+        return height;
     }
 
     @Override
     public int getDisplayWidth() {
-        return height;
+        return width;
     }
 
     @Override

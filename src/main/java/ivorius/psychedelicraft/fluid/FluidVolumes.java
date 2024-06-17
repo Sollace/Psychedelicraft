@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.fluid;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.minecraft.component.type.AttributeModifiersComponent;
 
 /**
  * Created by lukas on 22.10.14.
@@ -27,4 +28,15 @@ public interface FluidVolumes {
     int BARREL = BUCKET * 8;
     int VAT = BUCKET * 9;
     int FLASK = BUCKET * 8;
+
+    static String format(long amount) {
+        if (amount == 0) {
+            return "0 L";
+        }
+        if (amount > BUCKET) {
+            return AttributeModifiersComponent.DECIMAL_FORMAT.format((double)amount / (double)BUCKET) + " L";
+        }
+        amount = (long)((amount / (float)FluidVolumes.BUCKET) * 1000F);
+        return amount + " ML";
+    }
 }

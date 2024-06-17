@@ -25,6 +25,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 
 /**
@@ -70,6 +71,16 @@ public record MashingRecipe (
     @Override
     public String getGroup() {
         return group;
+    }
+
+    @Override
+    public ItemStack createIcon() {
+        return PSItems.MASH_TUB.getDefaultStack();
+    }
+
+    @Override
+    public DefaultedList<Ingredient> getIngredients() {
+        return ingredients;
     }
 
     public MatchResult matchPartially(Input input) {
