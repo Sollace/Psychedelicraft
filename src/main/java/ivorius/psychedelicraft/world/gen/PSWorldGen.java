@@ -17,6 +17,7 @@ import ivorius.psychedelicraft.block.PeyoteBlock;
 import ivorius.psychedelicraft.block.VineStemBlock;
 import ivorius.psychedelicraft.config.BiomeSelector;
 import ivorius.psychedelicraft.config.PSConfig;
+import ivorius.psychedelicraft.world.gen.loot.PSLootTableEntryType;
 import ivorius.psychedelicraft.world.gen.structure.MutableStructurePool;
 import net.fabricmc.fabric.api.biome.v1.*;
 import net.minecraft.block.Block;
@@ -183,6 +184,7 @@ public class PSWorldGen {
         ), genConf.peyote());
 
         MutableStructurePool.bootstrap();
+        PSLootTableEntryType.bootstrap();
     }
 
 }

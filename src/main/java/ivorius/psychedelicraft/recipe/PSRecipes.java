@@ -3,16 +3,11 @@ package ivorius.psychedelicraft.recipe;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.entry.LootTableEntry;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 /**
@@ -48,20 +43,7 @@ public interface PSRecipes {
         return Registry.register(Registries.RECIPE_SERIALIZER, Psychedelicraft.id(name), serializer);
     }
 
-    static void bootstrap() {
-        LootTableEvents.MODIFY.register((key, supplier, source) -> {
-            Identifier id = key.getValue();
-            if (!"minecraft".contentEquals(id.getNamespace())) {
-                return;
-            }
-            // TODO: Check if table exists?
-            final boolean isVillagerChest = id.getPath().contains("village");
-            if ((isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.villageChests())
-            || (!isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.dungeonChests())) {
-                supplier.pool(LootPool.builder().with(LootTableEntry.builder(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of("psychedelicraftmc", id.getPath())))));
-            }
-        });
-    }
+    static void bootstrap() { }
 
     record Serializer<T extends Recipe<?>> (
             MapCodec<T> codec,
