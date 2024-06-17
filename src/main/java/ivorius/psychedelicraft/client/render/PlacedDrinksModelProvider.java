@@ -31,7 +31,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.BlockItem;
@@ -100,7 +99,7 @@ public class PlacedDrinksModelProvider
     public void onInitializeModelLoader(Map<Identifier, PlacedDrinksModelProvider.Entry> data, Context context) {
         entries = data;
         data.keySet().forEach(id -> {
-            context.addModels(getGroundModelId(id).id(), getGroundModelFluidId(id).id());
+            context.addModels(getGroundModelId(id), getGroundModelFluidId(id));
         });
     }
 
@@ -124,7 +123,7 @@ public class PlacedDrinksModelProvider
         }
     }
 
-    public void renderDrinkModel(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, int color, ModelIdentifier modelId) {
+    public void renderDrinkModel(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, int color, Identifier modelId) {
         ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
 
         BakedModel model = renderer.getModels().getModelManager().getModel(modelId);
@@ -151,20 +150,20 @@ public class PlacedDrinksModelProvider
         }
     }
 
-    public static ModelIdentifier getGroundModelId(Item item) {
+    public static Identifier getGroundModelId(Item item) {
         return getGroundModelId(Registries.ITEM.getId(item));
     }
 
-    public static ModelIdentifier getGroundModelFluidId(Item item) {
+    public static Identifier getGroundModelFluidId(Item item) {
         return getGroundModelFluidId(Registries.ITEM.getId(item));
     }
 
-    public static ModelIdentifier getGroundModelId(Identifier item) {
-        return new ModelIdentifier(item.withPath(p -> p + "_on_ground"), "inventory");
+    public static Identifier getGroundModelId(Identifier item) {
+        return item.withPath(p -> "item/" + p + "_on_ground");
     }
 
-    public static ModelIdentifier getGroundModelFluidId(Identifier item) {
-        return new ModelIdentifier(item.withPath(p -> p + "_on_ground_fluid"), "inventory");
+    public static Identifier getGroundModelFluidId(Identifier item) {
+        return item.withPath(p -> "item/" + p + "_on_ground_fluid");
     }
 
     public record Entry(float height, float fluidOrigin) {
