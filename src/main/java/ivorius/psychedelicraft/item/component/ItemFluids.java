@@ -35,8 +35,8 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     public static final Codec<Map<String, Integer>> ATTRIBUTES_CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT);
     public static final Codec<ItemFluids> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             SimpleFluid.CODEC.fieldOf("fluid").forGetter(ItemFluids::fluid),
-            Codec.INT.fieldOf("amount").forGetter(ItemFluids::amount),
-            ATTRIBUTES_CODEC.fieldOf("attributes").forGetter(ItemFluids::attributes)
+            Codec.INT.optionalFieldOf("amount", 1).forGetter(ItemFluids::amount),
+            ATTRIBUTES_CODEC.optionalFieldOf("attributes", Map.of()).forGetter(ItemFluids::attributes)
     ).apply(instance, ItemFluids::create));
     public static final PacketCodec<RegistryByteBuf, ItemFluids> PACKET_CODEC = PacketCodec.tuple(
             SimpleFluid.PACKET_CODEC, ItemFluids::fluid,

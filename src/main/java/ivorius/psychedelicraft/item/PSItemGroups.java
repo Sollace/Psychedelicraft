@@ -9,6 +9,7 @@ import java.util.List;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.*;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -183,11 +184,14 @@ public interface PSItemGroups {
             }));
 
     private static void appendAllFluids(ItemStack item, ItemGroup.Entries entries) {
-        SimpleFluid.REGISTRY.forEach(fluid -> {
-            if (fluid.isSuitableContainer(item)) {
-                fluid.getDefaultStacks(item, entries::add);
-            }
-        });
+        int capacity = FluidCapacity.get(item);
+        if (capacity > 0) {
+            SimpleFluid.REGISTRY.forEach(fluid -> {
+                if (fluid.isSuitableContainer(item)) {
+                    fluid.getDefaultStacks(item, entries::add);
+                }
+            });
+        }
     }
 
     static RegistryKey<ItemGroup> register(String name, ItemGroup.Builder builder) {

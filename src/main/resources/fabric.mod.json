@@ -24,7 +24,7 @@
       "ivorius.psychedelicraft.client.PsychedelicraftClient"
     ],
     "tla-api": [
-      "ivorius.psychedelicraft.compat.tla.Main"
+      "ivorius.psychedelicraft.compat.tia.Main"
     ],
     "modmenu": [
       "ivorius.psychedelicraft.compat.modmenu.Main"

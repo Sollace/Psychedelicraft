@@ -19,8 +19,7 @@ public class AgaveFluid extends AlcoholicFluid {
     public void getDefaultStacks(ItemStack container, Consumer<ItemStack> consumer) {
         boolean isShot = container.isOf(PSItems.SHOT_GLASS);
         settings.states.get().forEach(state -> {
-            boolean isTequila = "tequila".contentEquals(state.entry().value().drinkName());
-            if (isShot == isTequila) {
+            if (isShot == "tequila".contentEquals(state.entry().value().drinkName())) {
                 consumer.accept(ItemFluids.set(container.copy(), state.apply(getDefaultStack())));
             }
         });
