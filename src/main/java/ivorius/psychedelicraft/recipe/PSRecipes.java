@@ -9,6 +9,8 @@ import net.minecraft.loot.entry.LootTableEntry;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.*;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
@@ -18,18 +20,33 @@ import net.minecraft.util.Identifier;
  * @since 5 Jan 2023
  */
 public interface PSRecipes {
-    RecipeSerializer<FillRecepticalRecipe> FILL_RECEPTICAL = RecipeSerializer.register("psychedelicraft:fill_receptical", new Serializer<>(FillRecepticalRecipe.CODEC, FillRecepticalRecipe.PACKET_CODEC));
-    RecipeSerializer<ChangeRecepticalRecipe> CHANGE_RECEPTICAL = RecipeSerializer.register("psychedelicraft:change_receptical", new Serializer<>(ChangeRecepticalRecipe.CODEC, ChangeRecepticalRecipe.PACKET_CODEC));
-    RecipeSerializer<PouringRecipe> POUR_DRINK = RecipeSerializer.register("psychedelicraft:pour_drink", new SpecialRecipeSerializer<>(PouringRecipe::new));
-    RecipeSerializer<SmeltingFluidRecipe> SMELTING_RECEPTICAL = RecipeSerializer.register("psychedelicraft:smelting_receptical", new Serializer<>(SmeltingFluidRecipe.CODEC, SmeltingFluidRecipe.PACKET_CODEC));
-    RecipeSerializer<BottleRecipe> CRAFTING_SHAPED = RecipeSerializer.register("psychedelicraft:crafting_shaped", new Serializer<>(BottleRecipe.CODEC, BottleRecipe.PACKET_CODEC));
-    RecipeSerializer<FluidAwareShapelessRecipe> SHAPELESS_FLUID = RecipeSerializer.register("psychedelicraft:shapeless_fluid", new Serializer<>(FluidAwareShapelessRecipe.CODEC, FluidAwareShapelessRecipe.PACKET_CODEC));
+    RecipeSerializer<FillRecepticalRecipe> FILL_RECEPTICAL = serializer("fill_receptical", new Serializer<>(FillRecepticalRecipe.CODEC, FillRecepticalRecipe.PACKET_CODEC));
+    RecipeSerializer<ChangeRecepticalRecipe> CHANGE_RECEPTICAL = serializer("change_receptical", new Serializer<>(ChangeRecepticalRecipe.CODEC, ChangeRecepticalRecipe.PACKET_CODEC));
+    RecipeSerializer<PouringRecipe> POUR_DRINK = serializer("pour_drink", new SpecialRecipeSerializer<>(PouringRecipe::new));
+    RecipeSerializer<SmeltingFluidRecipe> SMELTING_RECEPTICAL = serializer("smelting_receptical", new Serializer<>(SmeltingFluidRecipe.CODEC, SmeltingFluidRecipe.PACKET_CODEC));
+    RecipeSerializer<BottleRecipe> CRAFTING_SHAPED = serializer("crafting_shaped", new Serializer<>(BottleRecipe.CODEC, BottleRecipe.PACKET_CODEC));
+    RecipeSerializer<FluidAwareShapelessRecipe> SHAPELESS_FLUID = serializer("shapeless_fluid", new Serializer<>(FluidAwareShapelessRecipe.CODEC, FluidAwareShapelessRecipe.PACKET_CODEC));
 
-    RecipeType<MashingRecipe> MASHING_TYPE = RecipeType.register("psychedelicraft:mashing");
-    RecipeSerializer<MashingRecipe> MASHING = RecipeSerializer.register("psychedelicraft:mashing", new Serializer<>(MashingRecipe.CODEC, MashingRecipe.PACKET_CODEC));
+    RecipeType<MashingRecipe> MASHING_TYPE = type("mashing");
+    RecipeSerializer<MashingRecipe> MASHING = serializer("mashing", new Serializer<>(MashingRecipe.CODEC, MashingRecipe.PACKET_CODEC));
 
-    RecipeType<DryingRecipe> DRYING_TYPE = RecipeType.register("psychedelicraft:drying");
-    RecipeSerializer<DryingRecipe> DRYING = RecipeSerializer.register("psychedelicraft:drying", new Serializer<>(DryingRecipe.CODEC, DryingRecipe.PACKET_CODEC));
+    RecipeType<DryingRecipe> DRYING_TYPE = type("drying");
+    RecipeSerializer<DryingRecipe> DRYING = serializer("drying", new Serializer<>(DryingRecipe.CODEC, DryingRecipe.PACKET_CODEC));
+
+    static <T extends Recipe<?>> RecipeType<T> type(String name) {
+        Identifier id = Psychedelicraft.id(name);
+        return Registry.register(Registries.RECIPE_TYPE, id, new RecipeType<T>() {
+            @Override
+            public String toString() {
+                return id.toString();
+            }
+        });
+    }
+
+
+    static <S extends RecipeSerializer<T>, T extends Recipe<?>> S serializer(String name, S serializer) {
+        return Registry.register(Registries.RECIPE_SERIALIZER, Psychedelicraft.id(name), serializer);
+    }
 
     static void bootstrap() {
         LootTableEvents.MODIFY.register((key, supplier, source) -> {
@@ -45,7 +62,6 @@ public interface PSRecipes {
             }
         });
     }
-
 
     record Serializer<T extends Recipe<?>> (
             MapCodec<T> codec,

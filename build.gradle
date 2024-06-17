@@ -62,11 +62,18 @@ dependencies {
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
 
-    modImplementation "com.github.mattidragon:tlaapi:${project.tla_version}"
-    include "com.github.mattidragon:tlaapi:${project.tla_version}"
+    modImplementation "com.github.MattiDragon:TlaApi:${project.tla_version}"
+    include "com.github.MattiDragon:TlaApi:${project.tla_version}"
 
     if (project.tmi_type == 'emi') {
-      modCompileOnly "dev.emi:emi:${project.emi_version}"
+      modCompileOnly "dev.emi:emi-fabric:${project.emi_version}"
+    }
+    if (project.tmi_type == 'rei') {
+      modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${project.rei_version}"
+      modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+      modCompileOnly "dev.architectury:architectury-fabric:${project.rei_architectury_version}"
+      modCompileOnly "me.shedaniel.cloth:basic-math:${project.rei_cloth_basic_math_version}"
+      modCompileOnly "me.shedaniel.cloth:cloth-config-fabric:${project.rei_cloth_config_version}"
     }
 }
 
