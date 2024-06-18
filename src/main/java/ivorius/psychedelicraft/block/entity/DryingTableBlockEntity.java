@@ -15,52 +15,56 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
-import net.minecraft.world.Heightmap.Type;
 
 public class DryingTableBlockEntity extends BlockEntityWithInventory {
     public static final int OUTPUT_SLOT_INDEX = 0;
     private static final int[] INPUT_SLOTS = new int[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     private static final int[] OUTPUT_SLOTS = new int[]{ OUTPUT_SLOT_INDEX };
 
-    private int ticksAlive;
+    public static long getCookingTime(float recipeDifficulty, boolean ironTable) {
+        return (long)(recipeDifficulty * (ironTable
+                ? Psychedelicraft.getConfig().balancing.ironDryingTableTickDuration
+                : Psychedelicraft.getConfig().balancing.dryingTableTickDuration));
+    }
 
-    private float heatRatio;
+    private int age;
+
+    private float heat;
     private float dryingProgress;
 
+    private long cookingTime;
     private Optional<Identifier> currentRecipe = Optional.empty();
 
     public final PropertyDelegate propertyDelegate = new PropertyDelegate(){
         @Override
         public int get(int index) {
-            switch (index) {
-                case 0: {
-                    return (int)(heatRatio * 1000);
-                }
-                case 1: {
-                    return (int)(dryingProgress * 1000);
-                }
-            }
-            return 0;
+            return switch (index) {
+                case 0 ->  (int)(heat * 1000);
+                case 1 -> (int)dryingProgress;
+                case 2 -> (int)cookingTime;
+                default -> 0;
+            };
         }
 
         @Override
         public void set(int index, int value) {
             switch (index) {
                 case 0: {
-                    heatRatio = value / 1000F;
+                    heat = value / 1000F;
                     break;
                 }
                 case 1: {
-                    dryingProgress = value / 1000F;
+                    dryingProgress = value;
+                    break;
+                }
+                case 2: {
+                    cookingTime = value;
                     break;
                 }
             }
@@ -68,7 +72,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
 
         @Override
         public int size() {
-            return 2;
+            return 3;
         }
     };
 
@@ -81,64 +85,65 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     }
 
     public float getHeatRatio() {
-        return heatRatio;
+        return heat;
     }
 
     public float getDryingProgress() {
-        return dryingProgress;
+        return cookingTime == 0 ? 0 : dryingProgress / cookingTime;
+    }
+
+    private float calculateSunStrength() {
+        float l = world.getLightLevel(pos) / 15F;
+        float h = !world.isAir(pos) ? world.getBiome(pos).value().getTemperature() * 0.75F + 0.25F : 0;
+        return MathHelper.clamp((l * l * h) * (l * l * h), 0, 1);
     }
 
     public void tick(ServerWorld world) {
         float oldProgress = dryingProgress;
-        float oldHeat = heatRatio;
+        float oldHeat = heat;
 
-        if (++ticksAlive % 30 == 0) {
-            float l = world.getLightLevel(pos) / 15F;
-            float h = !world.isAir(pos) ? world.getBiome(pos).value().getTemperature() * 0.75F + 0.25F : 0;
-            heatRatio = MathHelper.clamp((l * l * h) * (l * l * h), 0, 1);
+        if (++age % 30 == 0) {
+            heat = calculateSunStrength();
 
-            if (world.getRainGradient(1) > 0 && world.getTopPosition(Type.MOTION_BLOCKING, pos).getY() == pos.getY() + 1) {
+            if (world.getRainGradient(1) > 0 && world.isSkyVisible(pos)) {
+               // dryingProgress = heat;
+            }
+        }
+
+        if (!(world.getRainGradient(1) > 0 && world.isSkyVisible(pos))) {
+            if (currentRecipe.isPresent() && cookingTime > 0) {
+                dryingProgress += heat;
+
+                int delta = (int)((1 - MathHelper.clamp(dryingProgress / cookingTime, 0, 1)) * 100);
+
+                if (delta == 0 || world.getTime() % 30 == 0) {
+                    for (int i = 0; i < 5; i++) {
+                        world.spawnParticles(ParticleTypes.SMOKE,
+                            pos.getX() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                            pos.getY() + 0.6F,
+                            pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                            2, 0, 0, 0, 0);
+                    }
+                }
+
+                if (dryingProgress >= cookingTime) {
+                    DryingRecipe.Input input = new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList());
+                    world.getRecipeManager().getFirstMatch(PSRecipes.DRYING_TYPE, input, world, currentRecipe.get()).ifPresent(recipe -> {
+                        craft(recipe.value(), input);
+                    });
+                    currentRecipe = Optional.empty();
+                    dryingProgress = 0;
+                    cookingTime = 0;
+
+                    world.getChunkManager().markForUpdate(pos);
+                }
+            } else {
                 dryingProgress = 0;
             }
-            if (!MathHelper.approximatelyEquals(oldHeat, heatRatio)) {
-                world.updateComparators(pos, getCachedState().getBlock());
-            }
         }
 
-        if (currentRecipe.isPresent()) {
-            dryingProgress += heatRatio / (
-                    world.getBlockState(pos).isOf(PSBlocks.IRON_DRYING_TABLE)
-                    ? Psychedelicraft.getConfig().balancing.ironDryingTableTickDuration
-                    : Psychedelicraft.getConfig().balancing.dryingTableTickDuration
-            );
-
-            int delta = (int)((1 - MathHelper.clamp(dryingProgress, 0, 1)) * 100);
-
-            if (delta == 0 || world.getTime() % delta == 0) {
-                for (int i = 0; i < 5; i++) {
-                    world.spawnParticles(ParticleTypes.SMOKE,
-                        pos.getX() + world.getRandom().nextTriangular(0.5F, 0.5F),
-                        pos.getY() + 0.6F,
-                        pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
-                        2, 0, 0, 0, 0);
-                }
-                world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.1F, 1);
-            }
-
-            if (dryingProgress >= 1) {
-                DryingRecipe.Input input = new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList());
-                world.getRecipeManager().getFirstMatch(PSRecipes.DRYING_TYPE, input, world, currentRecipe.get()).ifPresent(recipe -> {
-                    craft(recipe.value(), input);
-                });
-                currentRecipe = Optional.empty();
-
-                world.getChunkManager().markForUpdate(pos);
-            }
-        } else {
-            dryingProgress = 0;
-        }
-
-        if (!MathHelper.approximatelyEquals(oldProgress, dryingProgress) || !MathHelper.approximatelyEquals(oldHeat, heatRatio)) {
+        if (!MathHelper.approximatelyEquals(oldProgress, dryingProgress) || !MathHelper.approximatelyEquals(oldHeat, heat)) {
+            world.updateComparators(pos, getCachedState().getBlock());
             world.updateNeighbors(pos, getCachedState().getBlock());
             world.getChunkManager().markForUpdate(pos);
             markDirty();
@@ -166,7 +171,8 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         currentRecipe.ifPresent(r -> {
             compound.putString("currentRecipe", r.toString());
         });
-        compound.putFloat("heatRatio", heatRatio);
+        compound.putFloat("heatRatio", heat);
+        compound.putLong("cookingTime", cookingTime);
         compound.putFloat("dryingProgress", dryingProgress);
     }
 
@@ -174,23 +180,30 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
         currentRecipe = Identifier.validate(compound.getString("currentRecipe")).result();
-        heatRatio = compound.getFloat("heatRatio");
+        heat = compound.getFloat("heatRatio");
+        cookingTime = compound.getLong("cookingTime");
         dryingProgress = compound.getFloat("dryingProgress");
     }
 
     @Override
     public void onInventoryChanged() {
         if (!getWorld().isClient) {
-            currentRecipe = getWorld()
+            getWorld()
                     .getRecipeManager()
                     .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), getWorld())
-                    .map(RecipeEntry::id);
+                    .ifPresentOrElse(recipe -> {
+                        currentRecipe = Optional.of(recipe.id());
+                        cookingTime = getCookingTime(recipe.value().cookTime(), getCachedState().isOf(PSBlocks.IRON_DRYING_TABLE));
+                    }, () -> {
+                        currentRecipe = Optional.empty();
+                        cookingTime = 0;
+                    });
             dryingProgress = 0;
+            heat = calculateSunStrength();
         }
 
         super.onInventoryChanged();
     }
-
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, Direction direction) {

@@ -1,6 +1,6 @@
 {
   "type": "psychedelicraft:drying",
-  "cookingtime": 100,
+  "cookingtime": 1.1,
   "experience": 0.2,
   "ingredient": {
     "item": "psychedelicraft:jimsonweed_leaf"

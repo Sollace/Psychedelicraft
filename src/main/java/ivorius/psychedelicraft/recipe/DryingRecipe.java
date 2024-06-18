@@ -24,7 +24,7 @@ public record DryingRecipe(
         Ingredient input,
         ItemStack output,
         float experience,
-        int cookTime
+        float cookTime
     ) implements Recipe<DryingRecipe.Input> {
     public static final MapCodec<DryingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(DryingRecipe::group),
@@ -32,7 +32,7 @@ public record DryingRecipe(
             Ingredient.ALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(DryingRecipe::input),
             ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(DryingRecipe::output),
             Codec.FLOAT.optionalFieldOf("experience", 0F).forGetter(DryingRecipe::experience),
-            Codec.INT.optionalFieldOf("cookingTime", 200).forGetter(DryingRecipe::cookTime)
+            Codec.FLOAT.optionalFieldOf("cookingTime", 1F).forGetter(DryingRecipe::cookTime)
         ).apply(instance, DryingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, DryingRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, DryingRecipe::group,
@@ -40,7 +40,7 @@ public record DryingRecipe(
             Ingredient.PACKET_CODEC, DryingRecipe::input,
             ItemStack.PACKET_CODEC, DryingRecipe::output,
             PacketCodecs.FLOAT, DryingRecipe::experience,
-            PacketCodecs.INTEGER, DryingRecipe::cookTime,
+            PacketCodecs.FLOAT, DryingRecipe::cookTime,
             DryingRecipe::new
     );
 

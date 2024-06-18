@@ -1,6 +1,6 @@
 {
   "type": "psychedelicraft:drying",
-  "cookingtime": 100,
+  "cookingtime": 0.6,
   "experience": 0.2,
   "ingredient": {
     "item": "psychedelicraft:cannabis_leaf"

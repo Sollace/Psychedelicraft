@@ -54,7 +54,17 @@ public class DryingTableScreenHandler extends ScreenHandler {
     }
 
     public float getProgress() {
-        return properties.get(1) / 1000F;
+        return getCookingTime() == 0 ? 0 : (float)properties.get(1) / getCookingTime();
+    }
+
+    public int getCookingTime() {
+        return properties.get(2);
+    }
+
+    public int getTimeRemaining() {
+        float progress = properties.get(1);
+        float timeRemaining = getCookingTime() - progress;
+        return (int)(timeRemaining / getHeatRatio());
     }
 
     @Override

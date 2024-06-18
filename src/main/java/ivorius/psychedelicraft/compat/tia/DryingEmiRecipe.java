@@ -7,12 +7,16 @@ import io.github.mattidragon.tlaapi.api.gui.GuiBuilder;
 import io.github.mattidragon.tlaapi.api.gui.TextureConfig;
 import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
+import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 import ivorius.psychedelicraft.client.screen.DryingTableScreen;
 import ivorius.psychedelicraft.recipe.DryingRecipe;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 
 class DryingEmiRecipe implements PSRecipe {
     private static final TextureConfig SUN = TextureConfig.builder().size(25, 25).texture(DryingTableScreen.TEXTURE).uv(177, 20).build();
@@ -64,11 +68,14 @@ class DryingEmiRecipe implements PSRecipe {
             widgets.addSlot(s >= 0 && s < input.size() ? input.get(s) : TlaIngredient.EMPTY, i % 3 * 18, (i / 3 * 18) + y).markInput();
         }
         widgets.addSlot(output.get(0), 92, 14 + y).makeLarge().markOutput();
-        widgets.addText(Text.translatable("emi.cooking.experience", recipe.value().experience()), 58, 55, -1, true);
+        widgets.addText(Text.translatable("psychedelicraft.recipe.experience", recipe.value().experience()), 58, 55, Colors.WHITE, true);
 
         widgets.addTexture(SUN, 95, 0);
-        widgets.addAnimatedTexture(ARROW_FILL, 60, 18 + y, 50 * recipe.value().cookTime(), true, false, false).addTooltip(
-            Text.translatable("emi.cooking.time", recipe.value().cookTime() / 20f)
+
+        long cookingTime = DryingTableBlockEntity.getCookingTime(recipe.value().cookTime(), false);
+        ClientWorld world = MinecraftClient.getInstance().world;
+        widgets.addAnimatedTexture(ARROW_FILL, 60, 18 + y, (int)cookingTime, true, false, false).addTooltip(
+            Text.translatable("psychedelicraft.recipe.drying_time", StringHelper.formatTicks((int)cookingTime, world == null ? 20 : world.getTickManager().getTickRate()))
         );
     }
 

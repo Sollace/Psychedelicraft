@@ -38,14 +38,17 @@ public class DryingTableScreen extends HandledScreen<DryingTableScreenHandler> {
         drawMouseoverTooltip(context, mouseX, mouseY);
 
         if (handler.getCursorStack().isEmpty() && (focusedSlot == null || !focusedSlot.hasStack())) {
-            int centerX = (width - backgroundWidth) / 2 + backgroundWidth;
-            int centerY = (height - backgroundHeight) / 2;
-
-            if (mouseX > centerX - 30 && mouseX < centerX
-                    && mouseY > centerY && mouseY < centerY + 30) {
-
+            if (mouseX > x + backgroundWidth - 30 && mouseX < x + backgroundWidth && mouseY > y && mouseY < y + 30) {
                 context.drawTooltip(textRenderer, Text.translatable("block.psychedelicraft.drying_table.daylight", (int)(handler.getHeatRatio() * 100)), mouseX, mouseY);
             }
+
+            if (mouseX > x + 90 && mouseX < x + 115 && mouseY > y + 35 && mouseY < y + 50) {
+                context.drawTooltip(textRenderer, Text.translatable("block.psychedelicraft.drying_table.cooking", (int)(handler.getProgress() * 100)), mouseX, mouseY);
+            }
+        }
+        int timeRemaining = handler.getTimeRemaining();
+        if (timeRemaining != 0) {
+            context.drawText(this.textRenderer, Text.literal(StringHelper.formatTicks(timeRemaining, client.world.getTickManager().getTickRate())), x + 90, y + 50, Colors.GRAY, false);
         }
     }
 

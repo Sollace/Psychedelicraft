@@ -44,6 +44,9 @@
   "tla.category.psychedelicraft.maturing": "Aging",
   "tla.category.psychedelicraft.distilling": "Distillation",
   "tla.category.psychedelicraft.fermenting": "Fermentation",
+  
+  "psychedelicraft.recipe.experience": "%d XP",
+  "psychedelicraft.recipe.drying_time": "%d minutes at full sunlight",
 
   "item.psychedelicraft.tobacco_seeds": "Tobacco Seeds",
   "item.psychedelicraft.tobacco": "Tobacco Leaf",
@@ -131,6 +134,7 @@
   "block.psychedelicraft.agave_plant": "Agave",
   "block.psychedelicraft.drying_table": "Drying Table",
   "block.psychedelicraft.drying_table.daylight": "Daylight: %d%%",
+  "block.psychedelicraft.drying_table.cooking": "Progress: %d%%",
   "block.psychedelicraft.iron_drying_table": "Iron Drying Table",
   "block.psychedelicraft.flask": "Flask",
   "block.psychedelicraft.flask.filled": "Flask of %s",

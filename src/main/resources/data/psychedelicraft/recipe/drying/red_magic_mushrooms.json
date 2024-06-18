@@ -1,6 +1,6 @@
 {
   "type": "psychedelicraft:drying",
-  "cookingtime": 100,
+  "cookingtime": 0.4,
   "experience": 0.2,
   "ingredient": {
     "item": "minecraft:red_mushroom"
