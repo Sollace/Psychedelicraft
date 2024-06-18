@@ -12,9 +12,6 @@ import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import io.github.mattidragon.tlaapi.api.recipe.TlaRecipe;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.item.component.FluidCapacity;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 class DrawingFluidEmiRecipe implements PSRecipe {
@@ -76,12 +73,5 @@ class DrawingFluidEmiRecipe implements PSRecipe {
         widgets.addAnimatedTexture(TextureConfig.builder().size(39, 64).texture(background).uv(191, 20).build(), 68, 47, 2000, true, true, true);
         widgets.addSlot(contents.empty(), 2, getCategory().getDisplayHeight() - 16 - 4).markInput();
         widgets.addSlot(contents.filled(), 107, 45).markOutput();
-
-
-        int capacity = FluidCapacity.get(Items.BUCKET.getDefaultStack());
-        widgets.addText(Text.literal(capacity + ""), 0, 0, false);
-
-        widgets.addSlot(RecipeUtil.toIngredient(Items.BUCKET.getDefaultStack(), contents.type()), 107, 55);
-
     }
 }
