@@ -179,11 +179,6 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     }
 
     @Override
-    public int getMaxCountPerStack() {
-        return 1;
-    }
-
-    @Override
     public void onInventoryChanged() {
         if (!getWorld().isClient) {
             currentRecipe = getWorld()
@@ -196,8 +191,19 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         super.onInventoryChanged();
     }
 
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, Direction direction) {
+        return slot != OUTPUT_SLOT_INDEX && getStack(slot).isEmpty();
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction direction) {
+        return slot == OUTPUT_SLOT_INDEX;
+    }
+
     @Override
     public int[] getAvailableSlots(Direction direction) {
-        return direction == Direction.UP ? OUTPUT_SLOTS : INPUT_SLOTS;
+        return direction == Direction.DOWN ? OUTPUT_SLOTS : INPUT_SLOTS;
     }
 }
