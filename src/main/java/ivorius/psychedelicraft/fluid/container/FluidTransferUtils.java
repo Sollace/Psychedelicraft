@@ -72,7 +72,7 @@ public interface FluidTransferUtils {
 
     static long getCapacity(ItemStack stack) {
         return getAsContainer(stack, ContainerItemContext.withConstant(stack))
-                .filter(c -> !c.isResourceBlank())
+                .filter(c -> !c.isResourceBlank() || true)
                 .map(container -> container.getCapacity())
                 .orElse(0L);
     }

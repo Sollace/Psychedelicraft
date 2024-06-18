@@ -14,17 +14,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 public final class FluidRefillRegistry {
-    private static final Map<SimpleFluid, Map<Item, Item>> EMPTY_TO_FULL = new HashMap<>();
+    private static final Map<SimpleFluid, Map<Item, Item>> EMPTY_TO_SPECIFIC_FULL = new HashMap<>();
     private static final Map<Item, Item> FULL_TO_EMPTY = new HashMap<>();
 
     public static void register(Item empty, SimpleFluid fluid, Item filled) {
-        EMPTY_TO_FULL.computeIfAbsent(fluid, f -> new HashMap<>()).put(empty, filled);
+        EMPTY_TO_SPECIFIC_FULL.computeIfAbsent(fluid, f -> new HashMap<>()).put(empty, filled);
         FULL_TO_EMPTY.put(filled, empty);
     }
 
     @SuppressWarnings("deprecation")
     public static ItemStack toFilled(ItemStack stack, ItemFluids fluids) {
-        Item filled = EMPTY_TO_FULL.getOrDefault(fluids.fluid(), Map.of()).getOrDefault(stack.getItem(), stack.getItem());
+        Item filled = EMPTY_TO_SPECIFIC_FULL.getOrDefault(fluids.fluid(), Map.of()).getOrDefault(stack.getItem(), stack.getItem());
         if (filled != stack.getItem()) {
             return new ItemStack(filled.getRegistryEntry(), stack.getCount(), stack.getComponentChanges());
         }

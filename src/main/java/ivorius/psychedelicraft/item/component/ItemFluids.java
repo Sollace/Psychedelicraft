@@ -114,6 +114,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
             if (capacity < fluids.amount()) {
                 fluids = create(fluids.fluid(), capacity, fluids.attributes());
             }
+            stack = fluids.isEmpty() ? FluidRefillRegistry.toEmpty(stack) : FluidRefillRegistry.toFilled(stack, fluids);
             stack.set(PSComponents.FLUIDS, fluids);
         }
         return stack;
@@ -145,6 +146,14 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public boolean canCombine(ItemFluids fluids) {
         return isEmpty() || fluids.isEmpty() || (fluid() == fluids.fluid() && attributes().equals(fluids.attributes()));
+    }
+
+    public int getHash() {
+        return fluid.getHash(this);
+    }
+
+    public boolean isRoughlyEqual(ItemFluids fluids) {
+        return fluid() == fluids.fluid() && getHash() == fluids.getHash();
     }
 
     public Text getName() {

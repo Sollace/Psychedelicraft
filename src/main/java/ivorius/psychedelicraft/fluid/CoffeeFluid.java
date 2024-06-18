@@ -26,7 +26,6 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
-import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 
 /**
@@ -61,15 +60,11 @@ public class CoffeeFluid extends DrugFluid implements Processable {
         return Text.translatable(getTranslationKey() + ".temperature." + WARMTH.get(stack));
     }
 
+
     @Override
-    public void getDefaultStacks(ItemStack stack, Consumer<ItemStack> consumer) {
-        super.getDefaultStacks(stack, consumer);
-        int capacity = FluidCapacity.get(stack);
-        if (capacity > 0) {
-            WARMTH.steps().map(Pair::getRight)
-                .map(warmth -> ItemFluids.set(stack.copy(), WARMTH.set(getDefaultStack(capacity), warmth)))
-                .forEach(consumer);
-        }
+    public Stream<ItemFluids> getDefaultStacks(int capacity) {
+        return WARMTH.steps().map(Pair::getRight)
+                .map(warmth -> WARMTH.set(getDefaultStack(capacity), warmth));
     }
 
     @Override
@@ -107,7 +102,7 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getHash(ItemStack stack) {
+    public int getHash(ItemFluids stack) {
         return Objects.hash(this, WARMTH.get(stack));
     }
 }

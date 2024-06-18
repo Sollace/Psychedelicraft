@@ -10,7 +10,6 @@ import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -81,7 +80,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getHash(ItemStack stack) {
+    public int getHash(ItemFluids stack) {
         return Objects.hash(this, DISTILLATION.get(stack));
     }
 }

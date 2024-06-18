@@ -1,10 +1,9 @@
 package ivorius.psychedelicraft.compat.tia;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiConsumer;
+
+import org.jetbrains.annotations.Nullable;
 
 import io.github.mattidragon.tlaapi.api.gui.GuiBuilder;
 import io.github.mattidragon.tlaapi.api.gui.TextureConfig;
@@ -12,39 +11,36 @@ import io.github.mattidragon.tlaapi.api.plugin.PluginContext;
 import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import io.github.mattidragon.tlaapi.api.recipe.TlaRecipe;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
-import io.github.mattidragon.tlaapi.api.recipe.TlaStack.TlaItemStack;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 class DrawingFluidEmiRecipe implements PSRecipe {
 
-    private final Identifier id;
+    //private final Identifier id;
     private final RecipeCategory category;
 
-    private final Contents contents;
-
+    private final RecipeUtil.Contents contents;
     private final Identifier background;
-
-    private final TextureConfig arrow;
-    private final TextureConfig arrowFill;
 
     private final int capacity;
 
     public static BiConsumer<RecipeCategory, PluginContext> generate(int capacity) {
         return (category, context) -> context.addGenerator(client -> SimpleFluid.REGISTRY.stream()
                 .filter(f -> !f.isEmpty())
-                .map(fluid -> (TlaRecipe)new DrawingFluidEmiRecipe(category, fluid, capacity))
+                .flatMap(fluid -> TlaIngredient.ofItemTag(fluid.getPreferredContainerTag()).getStacks().stream()
+                        .flatMap(receptical -> fluid.getDefaultStacks(capacity).map(stack -> RecipeUtil.Contents.of(receptical, stack))))
+                .map(contents -> (TlaRecipe)new DrawingFluidEmiRecipe(category, contents, capacity))
                 .toList());
     }
 
-    public DrawingFluidEmiRecipe(RecipeCategory category, SimpleFluid fluid, int capacity) {
-        this.id = category.getId().withPath(p -> "fluid_withdrawl/" + p + "/" + fluid.getId().getPath());
+    public DrawingFluidEmiRecipe(RecipeCategory category, RecipeUtil.Contents contents, int capacity) {
+        //this.id = category.getId().withPath(p -> "fluid_withdrawl/" + p + "/" + contents.type().fluid().getId().getPath());
         this.category = category;
         this.background = category.getId().withPath(p -> "textures/gui/" + p + ".png");
-        this.arrow = TextureConfig.builder().size(120, 64).texture(background).uv(15, 15).build();
-        this.arrowFill = TextureConfig.builder().size(39, 64).texture(background).uv(191, 20).build();
-        this.contents = Contents.of(fluid);
+        this.contents = contents;
         this.capacity = capacity;
     }
 
@@ -54,49 +50,38 @@ class DrawingFluidEmiRecipe implements PSRecipe {
     }
 
     @Override
-    public Identifier getId() {
-        return id;
+    public @Nullable Identifier getId() {
+        return null;
     }
 
     @Override
     public List<TlaIngredient> getInputs() {
-        return List.of();
+        return List.of(contents.empty());
     }
 
     @Override
     public List<TlaStack> getOutputs() {
-        return contents.outputs();
+        return List.copyOf(contents.filled().getStacks());
     }
 
     @Override
     public List<TlaIngredient> getCatalysts() {
-        return contents.recepticals();
+        return List.of(contents.fluid());
     }
 
     @Override
     public void buildGui(GuiBuilder widgets) {
-        FluidBoxWidget.create(contents.fluid(), capacity, 50, 2, 40, 50, widgets);
-        widgets.addTexture(arrow, 0, 0);
-        widgets.addAnimatedTexture(arrowFill, 68, 47, 2000, true, true, true);
-        widgets.addSlot(contents.output(), 107, 45).markOutput();
-    }
+        FluidBoxWidget.create(contents.type(), capacity, 50, 2, 40, 50, widgets);
+        widgets.addTexture(TextureConfig.builder().size(120, 64).texture(background).uv(15, 15).build(), 0, 0);
+        widgets.addAnimatedTexture(TextureConfig.builder().size(39, 64).texture(background).uv(191, 20).build(), 68, 47, 2000, true, true, true);
+        widgets.addSlot(contents.empty(), 2, getCategory().getDisplayHeight() - 16 - 4).markInput();
+        widgets.addSlot(contents.filled(), 107, 45).markOutput();
 
-    record Contents(List<TlaIngredient> recepticals, List<TlaStack> outputs, List<ItemFluids> fluid, TlaIngredient output) {
-        static Contents of(SimpleFluid tankContents) {
-            List<TlaIngredient> tanks = new ArrayList<>();
-            List<ItemFluids> fluids = new ArrayList<>();
-            Set<TlaIngredient> ingredients = new HashSet<>();
-            List<TlaStack> outputs = new ArrayList<>();
-            TlaIngredient.ofItemTag(tankContents.getPreferredContainerTag()).getStacks().forEach(stack -> {
-               tankContents.getDefaultStacks(((TlaItemStack)stack).getItemVariant().toStack(), filled -> {
-                   outputs.add(TlaStack.of(filled));
-                   var fluid = ItemFluids.of(filled);
-                   fluids.add(fluid);
-                   tanks.add(TlaIngredient.ofStacks(RecipeUtil.toTlaStack(fluid)));
-                   ingredients.add(TlaIngredient.ofStacks(stack));
-               });
-            });
-            return new Contents(List.of(TlaIngredient.join(ingredients)), outputs, fluids, TlaIngredient.ofStacks(outputs));
-        }
+
+        int capacity = FluidCapacity.get(Items.BUCKET.getDefaultStack());
+        widgets.addText(Text.literal(capacity + ""), 0, 0, false);
+
+        widgets.addSlot(RecipeUtil.toIngredient(Items.BUCKET.getDefaultStack(), contents.type()), 107, 55);
+
     }
 }

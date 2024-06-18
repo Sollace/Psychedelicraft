@@ -23,7 +23,6 @@ import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
 import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.item.component.PSComponents;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributeHandler;
@@ -166,12 +165,16 @@ public class SimpleFluid {
         return amount == 1 ? getDefaultStack() : ItemFluids.create(this, amount, Map.of());
     }
 
-    public void getDefaultStacks(ItemStack stack, Consumer<ItemStack> consumer) {
+    public Stream<ItemFluids> getDefaultStacks(int capacity) {
+        return Stream.of(getDefaultStack(capacity));
+    }
+
+    public final void getDefaultStacks(ItemStack stack, Consumer<ItemStack> consumer) {
         int capacity = FluidCapacity.get(stack);
-        if (capacity > 0) {
-            stack = stack.copy();
-            stack.set(PSComponents.FLUIDS, getDefaultStack(capacity));
-            consumer.accept(stack);
+        if (capacity > 0 && isSuitableContainer(stack)) {
+            getDefaultStacks(capacity).forEach(s -> {
+                consumer.accept(ItemFluids.set(stack.copy(), s));
+            });
         }
     }
 
@@ -204,11 +207,7 @@ public class SimpleFluid {
     public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
     }
 
-    public static final boolean isEquivalent(SimpleFluid fluidA, ItemStack selfStack, SimpleFluid fluidB, ItemStack otherStack) {
-        return fluidA == fluidB && fluidA.getHash(selfStack) == fluidB.getHash(otherStack);
-    }
-
-    public int getHash(ItemStack stack) {
+    public int getHash(ItemFluids stack) {
         return hashCode();
     }
 

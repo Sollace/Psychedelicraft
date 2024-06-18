@@ -10,6 +10,7 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 class MashingEmiRecipe implements PSRecipe {
@@ -67,7 +68,7 @@ class MashingEmiRecipe implements PSRecipe {
         int x = 7;
         int y = 0;
 
-        widgets.addArrow(60 + x, 21 + y, false);
+        widgets.addArrow(60 + x, 21 + y, false).addTooltip(Text.translatable("gui.psychedelicraft.recipe.stewing_time", recipe.value().stewTime()));
         widgets.addAnimatedArrow(60 + x, 21 + y, 5000);
         var inBox = FluidBoxWidget.create(baseFluids, FluidVolumes.VAT, x, 17 + y, 60, 31, widgets);
         widgets.addTexture(IN_VAT, x, 5 + y);

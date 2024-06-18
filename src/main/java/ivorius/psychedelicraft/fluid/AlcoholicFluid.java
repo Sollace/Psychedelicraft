@@ -9,7 +9,6 @@ import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
-import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.item.Item;
@@ -185,8 +184,8 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public int getHash(ItemStack stack) {
-        return Objects.hash(this, settings.variants.find(ItemFluids.of(stack)));
+    public int getHash(ItemFluids stack) {
+        return Objects.hash(this, settings.variants.find(stack));
     }
 
     @Override
@@ -272,14 +271,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getDefaultStacks(ItemStack stack, Consumer<ItemStack> consumer) {
-        int capacity = FluidCapacity.get(stack);
-        if (capacity > 0) {
-            ItemFluids fluids = getDefaultStack(capacity);
-            settings.states.get().forEach(state -> {
-                consumer.accept(ItemFluids.set(stack.copy(), state.apply(fluids)));
-            });
-        }
+    public Stream<ItemFluids> getDefaultStacks(int capacity) {
+        return settings.states.get().stream().map(state -> {
+            return state.apply(getDefaultStack(capacity));
+        });
     }
 
     @Override
