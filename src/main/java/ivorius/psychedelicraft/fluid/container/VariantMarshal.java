@@ -2,17 +2,21 @@ package ivorius.psychedelicraft.fluid.container;
 
 import java.util.Map;
 
+import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.base.FullItemFluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 /**
  * Interop layer with Fabric's "experimental" transfer api.
@@ -23,6 +27,9 @@ public final class VariantMarshal {
             ItemStack stack = context.getItemVariant().toStack();
             if (stack.get(PSComponents.FLUID_CAPACITY) != null) {
                 return new ItemFluidsStorage(context);
+            }
+            if (stack.isOf(Items.MILK_BUCKET)) {
+                return new FullItemFluidStorage(context, Items.BUCKET, FluidVariant.of(PSFluids.MILK.getPhysical().getStandingFluid()), FluidConstants.BUCKET);
             }
             return null;
         });

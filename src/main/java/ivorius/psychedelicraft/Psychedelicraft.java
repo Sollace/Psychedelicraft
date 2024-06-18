@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.PSEntities;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.fluid.PSFluids;
+import ivorius.psychedelicraft.fluid.container.VariantMarshal;
 import ivorius.psychedelicraft.item.PSItemGroups;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.network.Channel;
@@ -90,5 +91,6 @@ public class Psychedelicraft implements ModInitializer {
         PSCriteria.bootstrap();
         PSParticles.bootstrap();
         PSDamageTypes.bootstrap();
+        VariantMarshal.bootstrap();
     }
 }
