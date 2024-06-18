@@ -4,6 +4,7 @@ import java.util.Map;
 
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.item.FilledBucketItem;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
@@ -33,6 +34,7 @@ public final class VariantMarshal {
             }
             return null;
         });
+        FilledBucketItem.registerDispenserBehaviour(Items.MILK_BUCKET);
     }
 
     public static final class FabricTransaction implements ItemFluids.Transaction {

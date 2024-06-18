@@ -17,7 +17,8 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -83,46 +84,51 @@ public record MashingRecipe (
         return ingredients;
     }
 
-    public MatchResult matchPartially(Input input) {
-        final List<Ingredient> expectedInputs = new ArrayList<>(ingredients);
-        final Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(input.inputs());
+    public boolean hasMinimumRequirements(Input input) {
+        Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(input.inputs());
+        List<Ingredient> unmatchedIngredients = new ArrayList<>(ingredients);
 
-        for (Item item : input.inputs().keySet()) {
-            ItemStack stack = item.getDefaultStack();
+        var iter = unmatchedIngredients.iterator();
+        while (iter.hasNext()) {
+            Ingredient ingredient = iter.next();
 
-            if (expectedInputs.isEmpty()) {
-                // fail match as the supplied ingredients exceeds the expected inputs
-                return MatchResult.NONE;
-            }
-
-            Iterator<Ingredient> iter = expectedInputs.iterator();
-
-            while (iter.hasNext()) {
-                Ingredient ingredient = iter.next();
+            for (Item item : unmatchedInputs.keySet()) {
+                ItemStack stack = item.getDefaultStack();
                 if (ingredient.test(stack)) {
                     iter.remove();
-                    if (!unmatchedInputs.containsKey(item)) {
-                        return MatchResult.of(unmatchedInputs.isEmpty(), expectedInputs.isEmpty());
+                    int count = unmatchedInputs.getInt(item);
+                    if (count <= 1) {
+                        unmatchedInputs.removeInt(item);
+                    } else {
+                        unmatchedInputs.put(item, count - 1);
                     }
-
-                    unmatchedInputs.computeInt(item, (s, i) -> i <= 1 ? null : i - 1);
-
-                    if (unmatchedInputs.isEmpty()) {
-                        // succeed if all supplied inputs are matched.
-                        // The recipe might be expecting more additional inputs.
-                        // We don't actually care. Crafting is done when only one recipe fits our current selection.
-                        return MatchResult.of(true, expectedInputs.isEmpty());
-                    }
+                    break;
                 }
             }
         }
 
-        return MatchResult.of(unmatchedInputs.isEmpty(), expectedInputs.isEmpty());
+        if (unmatchedIngredients.isEmpty()) {
+            return true;
+        }
+        if (!unmatchedIngredients.isEmpty()) {
+            return false;
+        }
+
+        return unmatchedIngredients.stream().allMatch(i -> {
+            return input.inputs().keySet().stream().anyMatch(item -> i.test(item.getDefaultStack()));
+        });
+    }
+
+    public boolean hasUndesiredIngredients(Input input) {
+        return input.inputs().keySet().stream().anyMatch(item -> {
+            ItemStack stack = item.getDefaultStack();
+            return ingredients.stream().noneMatch(i -> i.test(stack));
+        });
     }
 
     @Override
     public boolean matches(Input input, World world) {
-        return baseFluid.canCombine(input.tankFluid());
+        return !input.tankFluid().isEmpty() && baseFluid.canCombine(input.tankFluid()) && !hasUndesiredIngredients(input);
     }
 
     @Override
@@ -138,6 +144,31 @@ public record MashingRecipe (
     @Override
     public ItemStack getResult(WrapperLookup lookup) {
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public DefaultedList<ItemStack> getRemainder(Input input) {
+        Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(input.inputs());
+
+        for (Ingredient ingredient : ingredients) {
+            for (Item item : unmatchedInputs.keySet()) {
+                ItemStack stack = item.getDefaultStack();
+                if (ingredient.test(stack)) {
+                    unmatchedInputs.computeInt(item, (i, count) -> count == 1 ? null : (count - 1));
+                    break;
+                }
+            }
+        }
+
+        DefaultedList<ItemStack> stacks = DefaultedList.ofSize(unmatchedInputs.size());
+        unmatchedInputs.forEach((item, count) -> {
+            while (count > 0) {
+                ItemStack stack = new ItemStack(item, Math.min(item.getMaxCount(), count));
+                count-= stack.getCount();
+                stacks.add(stack);
+            }
+        });
+        return stacks;
     }
 
     public record Input(ItemFluids tankFluid, ItemStack solids, Object2IntMap<Item> inputs) implements RecipeInput {

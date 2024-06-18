@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -53,18 +55,7 @@ public class FilledBucketItem extends Item {
 
     public FilledBucketItem(Settings settings) {
         super(settings.recipeRemainder(Items.BUCKET));
-        DispenserBlock.registerBehavior(this, new ItemDispenserBehavior(){
-            @Override
-            public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-                BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
-                ServerWorld world = pointer.world();
-                ItemFluids fluids = ItemFluids.of(stack);
-                if (placeFluid(fluids.fluid().getFluidState(fluids), null, world, blockPos, null)) {
-                    return Items.BUCKET.getDefaultStack();
-                }
-                return super.dispenseSilently(pointer, stack);
-            }
-        });
+        registerDispenserBehaviour(this);
     }
 
     @Override
@@ -140,8 +131,23 @@ public class FilledBucketItem extends Item {
         return TypedActionResult.pass(stack);
     }
 
+    public static void registerDispenserBehaviour(Item item) {
+        DispenserBlock.registerBehavior(item, new ItemDispenserBehavior(){
+            @Override
+            public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+                BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
+                ServerWorld world = pointer.world();
+                ItemFluids fluids = ItemFluids.of(stack);
+                if (placeFluid(fluids.fluid().getFluidState(fluids), null, world, blockPos, null)) {
+                    return Items.BUCKET.getDefaultStack();
+                }
+                return super.dispenseSilently(pointer, stack);
+            }
+        });
+    }
+
     @SuppressWarnings("deprecation")
-    public boolean placeFluid(FluidState fluid, @Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hit) {
+    private static boolean placeFluid(FluidState fluid, @Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hit) {
         if (!(fluid.getFluid() instanceof FlowableFluid)) {
             return false;
         }
@@ -165,8 +171,7 @@ public class FilledBucketItem extends Item {
             return true;
         }
 
-        if (block instanceof FluidFillable f && fluid.isOf(Fluids.WATER)) {
-            f.tryFillWithFluid(world, pos, state, fluid);
+        if (block instanceof FluidFillable f && f.tryFillWithFluid(world, pos, state, fluid)) {
             playEmptyingSound(fluid.getFluid(), player, world, pos);
             return true;
         }
@@ -182,9 +187,8 @@ public class FilledBucketItem extends Item {
         return false;
     }
 
-    protected void playEmptyingSound(Fluid fluid, @Nullable PlayerEntity player, WorldAccess world, BlockPos pos) {
-        @SuppressWarnings("deprecation")
-        SoundEvent soundEvent = fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
+    private static void playEmptyingSound(Fluid fluid, @Nullable PlayerEntity player, WorldAccess world, BlockPos pos) {
+        SoundEvent soundEvent = FluidVariantAttributes.getEmptySound(FluidVariant.of(fluid));
         world.playSound(player, pos, soundEvent, SoundCategory.BLOCKS, 1, 1);
         world.emitGameEvent(player, GameEvent.FLUID_PLACE, pos);
     }

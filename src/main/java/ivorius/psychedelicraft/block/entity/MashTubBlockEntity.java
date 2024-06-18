@@ -25,10 +25,13 @@ import ivorius.psychedelicraft.recipe.MashingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.util.MathUtils;
 import ivorius.psychedelicraft.util.NbtSerialisable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -73,6 +76,21 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     @Override
     public void tick(ServerWorld world) {
         if (currentStew.isEmpty()) {
+
+            Vec3d center = getPos().toCenterPos();
+            Box box = Box.of(center, 1.5, 0.5, 1.5);
+            for (ItemEntity item : world.getEntitiesByClass(ItemEntity.class, box, EntityPredicates.VALID_ENTITY)) {
+                ItemStack stack = item.getStack();
+                if (isValidIngredient(stack)) {
+                    suppliedIngredients.put(stack.getItem(), suppliedIngredients.getInt(stack.getItem()) + stack.getCount());
+                    beginStewing();
+                    markForUpdate();
+                    spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
+                    getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
+                    item.discard();
+                }
+            }
+
             super.tick(world);
         }
         currentStew = currentStew.filter(Stew::tick);
@@ -134,11 +152,11 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     public boolean isValidIngredient(ItemStack stack) {
         return FluidCapacity.get(stack) == 0
-            && world.getRecipeManager()
+            && (world.getRecipeManager()
                 .listAllOfType(PSRecipes.MASHING_TYPE).stream()
                 .filter(recipe -> recipe.value().baseFluid().canCombine(getPrimaryTank().getContents()))
                 .flatMap(recipe -> recipe.value().getIngredients().stream())
-                .anyMatch(i -> i.test(stack));
+                .anyMatch(i -> i.test(stack)));
     }
 
     public void beginStewing() {
@@ -146,11 +164,12 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             return;
         }
 
-        var matchedRecipe = world.getRecipeManager().getAllMatches(PSRecipes.MASHING_TYPE, new MashingRecipe.Input(this.getPrimaryTank().getContents(), solidContents, suppliedIngredients), getWorld());
+        var input = new MashingRecipe.Input(this.getPrimaryTank().getContents(), solidContents, suppliedIngredients);
+        var matchedRecipe = world.getRecipeManager().getAllMatches(PSRecipes.MASHING_TYPE, input, getWorld());
 
         if (matchedRecipe.isEmpty()) {
             onCraftingFailed();
-        } else if (matchedRecipe.size() == 1) {
+        } else if (matchedRecipe.size() == 1 && matchedRecipe.get(0).value().hasMinimumRequirements(input)) {
             currentStew = Optional.of(new Stew(matchedRecipe.get(0)));
         }
     }
@@ -246,11 +265,15 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
                 spawnBubbles(9, 0.5F, SoundEvents.BLOCK_BUBBLE_COLUMN_UPWARDS_INSIDE);
                 markDirty();
                 if (--stewTime <= 0) {
-                    suppliedIngredients.clear();
-
                     if (world.getRecipeManager().get(recipe).map(RecipeEntry::value).orElse(null) instanceof MashingRecipe recipe) {
+                        var input = new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients);
                         getPrimaryTank().setContents(recipe.result().ofAmount(getPrimaryTank().getContents().amount()));
+
+                        recipe.getRemainder(input).forEach(stack -> {
+                           Block.dropStack(world, getPos(), stack);
+                        });
                     }
+                    suppliedIngredients.clear();
 
                     return false;
                 }
