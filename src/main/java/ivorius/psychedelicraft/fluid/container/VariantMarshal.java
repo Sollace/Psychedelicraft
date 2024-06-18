@@ -73,6 +73,15 @@ public final class VariantMarshal {
         @Override
         public ItemFluids deposit(ItemFluids fluids, int maxAmount) {
             var result = FluidTransferUtils.deposit(stack, fluids.toVariant(), Math.min(maxAmount, fluids.amount()));
+            if (fluids().amount() < capacity() && result.getRight() == maxAmount) {
+                // Fabric's transfer api doesn't support partial deposits!!!!
+                // We have to simulate it now. F$*#$
+                ItemFluids.Transaction t = new ItemFluids.DirectTransaction(stack, capacity(), fluids);
+                ItemFluids remainder = t.deposit(fluids, maxAmount);
+                stack = t.toItemStack();
+                fluids = t.fluids();
+                return remainder;
+            }
             stack = result.getLeft();
             this.fluids = null;
             return fluids.ofAmount(result.getRight().intValue());

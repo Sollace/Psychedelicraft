@@ -14,6 +14,11 @@ import net.minecraft.world.World;
 
 /**
  * Recipe for pouring fluid from one container to another.
+ *
+ * The left container in the grid must contain fluid to pour
+ * The right container in the grid must either be empty or have the same fluid with room to pour into
+ *
+ * cup of water + empty bucket -> empty cup + bucket (partially filled) of water
  */
 public class PouringRecipe extends SpecialCraftingRecipe {
     public PouringRecipe(CraftingRecipeCategory category) {
@@ -31,20 +36,24 @@ public class PouringRecipe extends SpecialCraftingRecipe {
                 .recepticals(inventory.getStacks().stream())
                 .toList();
 
-        if (inventory.getStacks().size() != recepticals.size() || recepticals.size() < 2) {
+        if (inventory.getStacks().size() != 2) {
             return false;
         }
 
-        return ItemFluids.of(recepticals.get(1)).canCombine( ItemFluids.of(recepticals.get(0)))
-                && ItemFluids.of(recepticals.get(1)).amount() < FluidCapacity.get(recepticals.get(1));
+        ItemFluids to = ItemFluids.of(recepticals.get(1));
+        ItemFluids from = ItemFluids.of(recepticals.get(0));
+
+        return to.canCombine(from)
+                && FluidCapacity.getPercentage(recepticals.get(0)) > 0
+                && FluidCapacity.getPercentage(recepticals.get(1)) < 1;
     }
 
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
         var recepticals = RecipeUtils.recepticals(inventory.getStacks().stream()).toList();
 
-        ItemFluids.Transaction to = ItemFluids.Transaction.begin(recepticals.get(1));
-        ItemFluids.Transaction from = ItemFluids.Transaction.begin(recepticals.get(0));
+        ItemFluids.Transaction to = ItemFluids.Transaction.begin(recepticals.get(1).copy());
+        ItemFluids.Transaction from = ItemFluids.Transaction.begin(recepticals.get(0).copy());
 
         int maxMoved = Math.min(from.fluids().amount(), to.capacity() - to.fluids().amount());
         to.deposit(from.withdraw(maxMoved));
@@ -65,7 +74,7 @@ public class PouringRecipe extends SpecialCraftingRecipe {
         from.withdraw(Math.min(from.fluids().amount(), to.capacity() - to.fluids().amount()));
 
         DefaultedList<ItemStack> remainder = DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
-        remainder.set(recepticals.get(0).position(), to.toItemStack());
+        remainder.set(recepticals.get(0).position(), from.toItemStack());
         return remainder;
     }
 
