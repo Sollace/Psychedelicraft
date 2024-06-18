@@ -17,7 +17,7 @@ import org.joml.*;
  */
 public interface PsycheMatrixHelper {
     private static Matrix4f getProjectionMatrix(Camera camera) {
-        return new Matrix4f().rotate(new Quaternionf(camera.getRotation()).invert());
+        return new Matrix4f().rotation(camera.getRotation().invert(new Quaternionf()));
     }
 
     private static Vector3f projectPointView(Camera camera, Vector3f point) {

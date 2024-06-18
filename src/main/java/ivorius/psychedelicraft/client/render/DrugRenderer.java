@@ -83,7 +83,7 @@ public class DrugRenderer {
             screenBackgroundBlur = Math.max(0, screenBackgroundBlur - 0.25F);
         }
 
-        screenEffects.update(ShaderContext.tickDelta());
+        getScreenEffects().update(ShaderContext.tickDelta());
         musicManager.update(drugProperties);
     }
 

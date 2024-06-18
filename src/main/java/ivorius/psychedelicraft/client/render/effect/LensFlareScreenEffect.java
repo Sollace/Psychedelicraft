@@ -26,7 +26,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.lang.Math;
@@ -72,10 +71,6 @@ public class LensFlareScreenEffect implements ScreenEffect {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float tickDelta, @Nullable PingPong pingPong) {
-        if (pingPong != null) {
-            pingPong.pingPong();
-        }
-
         if (actualSunAlpha <= 0) {
             return;
         }
@@ -86,15 +81,13 @@ public class LensFlareScreenEffect implements ScreenEffect {
         float genSize = screenWidth > screenHeight ? screenWidth : screenHeight;
         float sunRadians = world.getSkyAngleRadians(tickDelta);
 
-        Vector3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(new Vector3f(
-                -MathHelper.sin(sunRadians) * 120,
-                MathHelper.cos(sunRadians) * 120,
-                0
-        ));
+        Vector3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(
+                PsycheMatrixHelper.fromPolar(sunRadians, 120)
+        );
 
         Vector3f normSunPos = sunPositionOnScreen.normalize(new Vector3f());
 
-        if (sunPositionOnScreen.z <= 0) {
+        if (sunPositionOnScreen.z > 0) {
             return;
         }
 

@@ -30,12 +30,11 @@ public interface MeteorlogicalUtil {
 
         float sunRadians = world.getSkyAngleRadians(tickDelta);
 
-
         Vector3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(
                 PsycheMatrixHelper.fromPolar(sunRadians, 120)
         ).normalize();
 
-        if (sunPositionOnScreen.z() < 0) {
+        if (sunPositionOnScreen.z() > 0) {
             return 0;
         }
 
