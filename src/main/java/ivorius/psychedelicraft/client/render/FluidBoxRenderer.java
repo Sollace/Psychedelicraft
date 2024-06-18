@@ -182,11 +182,11 @@ public class FluidBoxRenderer {
                 FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(stack.fluid().getPhysical().getStandingFluid());
                 if (handler != null) {
                     FluidState state = stack.fluid().getPhysical().getStandingFluid().getDefaultState();
-                    return handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
+                    return ColorHelper.Argb.fullAlpha(handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state));
                 }
             }
 
-            return stack.fluid().getColor(stack);
+            return ColorHelper.Argb.fullAlpha(stack.fluid().getColor(stack));
         }
 
         public float[] rgba() {
