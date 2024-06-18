@@ -66,7 +66,7 @@ class DrawingFluidEmiRecipe implements PSRecipe {
 
     @Override
     public List<TlaIngredient> getCatalysts() {
-        return List.of(contents.fluid());
+        return List.of(contents.contents());
     }
 
     @Override

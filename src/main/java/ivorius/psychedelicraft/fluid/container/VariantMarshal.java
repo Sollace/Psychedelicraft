@@ -75,7 +75,7 @@ public final class VariantMarshal {
         }
     }
 
-    public interface FabricResovoir extends SingleSlotStorage<FluidVariant> {
+    interface FabricResovoir extends SingleSlotStorage<FluidVariant> {
 
         ItemFluids getContents();
 

@@ -12,8 +12,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.fluid.container.FluidRefillRegistry;
 import ivorius.psychedelicraft.fluid.container.FluidTransferUtils;
+import ivorius.psychedelicraft.fluid.container.RecepticalHandler;
 import ivorius.psychedelicraft.fluid.container.VariantMarshal;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.component.ComponentChanges;
@@ -114,7 +114,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
             if (capacity < fluids.amount()) {
                 fluids = create(fluids.fluid(), capacity, fluids.attributes());
             }
-            stack = fluids.isEmpty() ? FluidRefillRegistry.toEmpty(stack) : FluidRefillRegistry.toFilled(stack, fluids);
+            stack = fluids.isEmpty() ? RecepticalHandler.get(stack).toEmpty(stack.getItem()) : RecepticalHandler.get(stack).toFilled(stack.getItem(), fluids);
             stack.set(PSComponents.FLUIDS, fluids);
         }
         return stack;
@@ -253,13 +253,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
         @Override
         public ItemStack toItemStack() {
-            if (fluids.isEmpty()) {
-                stack = FluidRefillRegistry.toEmpty(stack);
-            } else {
-                stack = FluidRefillRegistry.toFilled(stack, fluids);
-            }
-            stack.set(PSComponents.FLUIDS, this.fluids);
-            return stack;
+            return set(stack, fluids);
         }
     }
 }
