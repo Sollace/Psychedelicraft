@@ -107,8 +107,8 @@ public record DryingRecipe(
         for (int i = 0; i < defaultedList.size(); i++) {
             ItemStack stack = input.getStackInSlot(i);
             if (toConsume > 0 && input().test(stack)) {
-                stack = stack.copy().split(toConsume);
-                toConsume -= stack.getCount();
+                stack = stack.copy();
+                toConsume -= stack.split(toConsume).getCount();
             }
 
             if (!stack.isEmpty()) {
