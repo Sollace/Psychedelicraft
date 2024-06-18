@@ -92,7 +92,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
         ItemFluids fluids = fluidsOptional == null ? null : fluidsOptional.orElse(null);
         if (fluids == null) {
             SimpleFluid fluid = SimpleFluid.forVanilla(variant.getFluid());
-            return ItemFluids.create(fluid, capacity, Map.of());
+            return create(fluid, capacity, Map.of());
         }
         return fluids.ofAmount(capacity);
     }
@@ -223,12 +223,9 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
             if (capacity <= 0) {
                 return EMPTY;
             }
-            int maxRemoved = Math.min(amount, fluids.amount());
-            if (maxRemoved > 0) {
-                this.fluids = fluids.ofAmount(fluids.amount() - maxRemoved);
-                return fluids.ofAmount(maxRemoved);
-            }
-            return EMPTY;
+            ItemFluids removed = fluids.ofAmount(Math.min(amount, fluids.amount()));
+            this.fluids = fluids.ofAmount(fluids.amount() - removed.amount());
+            return removed;
         }
 
         @Override

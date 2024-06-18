@@ -49,6 +49,6 @@ public record FluidCapacity(int capacity) {
 
     public static float getPercentage(ItemStack stack) {
         int capacity = get(stack);
-        return capacity == 0 ? 0 : ItemFluids.of(stack).amount() / capacity;
+        return capacity == 0 ? 0 : ItemFluids.of(stack).amount() / (float)capacity;
     }
 }

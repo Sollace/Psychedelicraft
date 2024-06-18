@@ -54,6 +54,15 @@ public final class VariantMarshal {
         @Override
         public ItemFluids withdraw(int amount) {
             var result = FluidTransferUtils.extract(stack, amount);
+            if (result.getRight().isEmpty() && fluids.amount() > 0) {
+                // Fabric's transfer api doesn't support partial withdrawl!!!!
+                // We have to simulate it now. F$*#$
+                ItemFluids.Transaction t = new ItemFluids.DirectTransaction(stack, capacity(), fluids);
+                ItemFluids removed = t.withdraw(amount);
+                stack = t.toItemStack();
+                fluids = t.fluids();
+                return removed;
+            }
             stack = result.getLeft();
             fluids = null;
             return result.getRight().map(fluid -> {

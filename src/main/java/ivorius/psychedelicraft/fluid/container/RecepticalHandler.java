@@ -72,7 +72,7 @@ public class RecepticalHandler {
     }
 
     static {
-        register(stack -> stack.isIn(ConventionalItemTags.BUCKETS) || stack.isIn(ConventionalItemTags.EMPTY_BUCKETS), new RecepticalHandler() {
+        register(stack -> stack.isIn(ConventionalItemTags.BUCKETS) || stack.isIn(ConventionalItemTags.EMPTY_BUCKETS) || stack.isOf(PSItems.FILLED_BUCKET), new RecepticalHandler() {
             private final Function<SimpleFluid, Optional<Item>> filledBuckets = Util.memoize(fluid -> {
                 String path = fluid.getId().getPath() + "_bucket";
                 return Registries.ITEM.getIds().stream().filter(id -> id.getPath().equals(path)).findFirst().map(Registries.ITEM::get);
