@@ -19,6 +19,8 @@ import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
@@ -120,6 +122,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
                         pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
                         2, 0, 0, 0, 0);
                 }
+                world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.1F, 1);
             }
 
             if (dryingProgress >= 1) {
