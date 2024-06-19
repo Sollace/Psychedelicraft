@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.compat.modmenu;
+package ivorius.psychedelicraft.client.screen;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * In-Game options menu.
  *
  */
-class SettingsScreen extends GameGui {
+public class SettingsScreen extends GameGui {
     private final JsonConfig.Loader<PSClientConfig> config;
     private final JsonConfig.Loader<PSConfig> serverConfig;
     private final PSClientConfig defaultConfigValues = new PSClientConfig();
