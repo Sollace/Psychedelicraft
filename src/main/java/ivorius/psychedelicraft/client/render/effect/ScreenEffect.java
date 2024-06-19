@@ -1,8 +1,9 @@
 package ivorius.psychedelicraft.client.render.effect;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.Window;
 
 public interface ScreenEffect extends AutoCloseable {
     default boolean shouldApply(float tickDelta) {
@@ -11,8 +12,9 @@ public interface ScreenEffect extends AutoCloseable {
 
     void update(float tickDelta);
 
-    void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, PingPong pingPong);
+    void render(DrawContext context, Window window, float tickDelta);
 
+    @Deprecated
     static void drawScreen(int screenWidth, int screenHeight) {
         BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         buffer.vertex(0, 0, 0).texture(0, 1)

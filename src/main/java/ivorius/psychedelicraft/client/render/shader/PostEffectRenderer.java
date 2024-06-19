@@ -5,6 +5,7 @@ import java.util.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.PostEffectProcessor;
 
 public class PostEffectRenderer {
@@ -21,6 +22,8 @@ public class PostEffectRenderer {
             } else {
                 shaders.forEach(shader -> shader.render(tickDelta));
             }
+
+            MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
         }
     }
 

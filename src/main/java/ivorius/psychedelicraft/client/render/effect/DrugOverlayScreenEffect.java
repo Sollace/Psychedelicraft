@@ -4,8 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.entity.drug.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.Window;
 import net.minecraft.entity.Entity;
 
 public abstract class DrugOverlayScreenEffect<D extends Drug> implements ScreenEffect {
@@ -28,19 +28,21 @@ public abstract class DrugOverlayScreenEffect<D extends Drug> implements ScreenE
 
     @SuppressWarnings("unchecked")
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
-        DrugProperties properties = DrugProperties.of(MinecraftClient.getInstance().player);
-        matrices.push();
-        RenderSystem.enableBlend();
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.defaultBlendFunc();
-        render(matrices, vertices, screenWidth, screenHeight, ticks, properties, (D)properties.getDrug(type));
-        RenderSystem.enableDepthTest();
-        matrices.pop();
+    public void render(DrawContext context, Window window, float tickDelta) {
+        if (MinecraftClient.getInstance().player != null) {
+            DrugProperties properties = DrugProperties.of(MinecraftClient.getInstance().player);
+            context.getMatrices().push();
+            RenderSystem.enableBlend();
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.defaultBlendFunc();
+            render(context, window, tickDelta, properties, (D)properties.getDrug(type));
+            RenderSystem.enableDepthTest();
+            context.getMatrices().pop();
+        }
     }
 
-    protected abstract void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenheight, float ticks, DrugProperties properties, D drug);
+    protected abstract void render(DrawContext context, Window window, float tickDelta, DrugProperties properties, D drug);
 
     @Override
     public void close() throws Exception {

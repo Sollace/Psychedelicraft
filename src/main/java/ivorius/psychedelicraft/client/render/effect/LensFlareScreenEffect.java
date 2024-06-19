@@ -7,7 +7,6 @@ package ivorius.psychedelicraft.client.render.effect;
 
 import java.util.stream.IntStream;
 
-import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
@@ -21,9 +20,8 @@ import ivorius.psychedelicraft.client.render.PsycheMatrixHelper;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.*;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.Window;
 import net.minecraft.util.*;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
@@ -70,13 +68,19 @@ public class LensFlareScreenEffect implements ScreenEffect {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float tickDelta, @Nullable PingPong pingPong) {
+    public void render(DrawContext context, Window window, float tickDelta) {
         if (actualSunAlpha <= 0) {
             return;
         }
 
         World world = client.world;
-        Entity renderEntity = client.getCameraEntity();
+
+        if (world == null) {
+            return;
+        }
+
+        int screenWidth = window.getScaledWidth();
+        int screenHeight = window.getScaledHeight();
 
         float genSize = screenWidth > screenHeight ? screenWidth : screenHeight;
         float sunRadians = world.getSkyAngleRadians(tickDelta);
@@ -94,18 +98,13 @@ public class LensFlareScreenEffect implements ScreenEffect {
         float xDist = normSunPos.x * screenWidth;
         float yDist = normSunPos.y * screenHeight;
 
-        int colorValue = world.getBiome(renderEntity.getBlockPos()).value().getFogColor();
+        int colorValue = world.getBiome(client.gameRenderer.getCamera().getBlockPos()).value().getFogColor();
         int fogRed = ColorHelper.Abgr.getRed(colorValue);
         int fogGreen = ColorHelper.Abgr.getGreen(colorValue);
         int fogBlue = ColorHelper.Abgr.getBlue(colorValue);
 
         float alpha = Math.min(1, sunPositionOnScreen.z);
-
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 
         float screenCenterX = screenWidth * 0.5f;
         float screenCenterY = screenHeight * 0.5f;
@@ -117,7 +116,7 @@ public class LensFlareScreenEffect implements ScreenEffect {
 
             RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, (alpha * i == 8 ? 1F : 0.5F) * actualSunAlpha * getIntensity());
             RenderSystem.setShaderTexture(0, FLARES[i]);
-            RenderUtil.drawQuad(matrices,
+            RenderUtil.drawQuad(context.getMatrices(),
                     flareCenterX - flareSizeHalf,
                     flareCenterY - flareSizeHalf,
                     flareCenterX + flareSizeHalf,
@@ -136,21 +135,16 @@ public class LensFlareScreenEffect implements ScreenEffect {
             float blendAlpha = Math.min(1, blendingSize / genSize / 150F);
 
             RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, blendAlpha * actualSunAlpha);
-            RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
             RenderSystem.setShaderTexture(0, BLINDNESS_OVERLAY);
-            RenderUtil.drawQuad(matrices,
+            RenderUtil.drawQuad(context.getMatrices(),
                     blendCenterX - blendingSizeHalf,
                     blendCenterY - blendingSizeHalf,
                     blendCenterX + blendingSizeHalf,
                     blendCenterY + blendingSizeHalf
             );
         }
-
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.disableBlend();
     }
 
     @Override

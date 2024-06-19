@@ -61,12 +61,15 @@ public class RenderUtil {
     }
 
     public static void drawQuad(MatrixStack matrices, float x0, float y0, float x1, float y1, float z) {
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.enableBlend();
         BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         fastVertex(buffer, matrices, x0, y1, z).texture(0, 1);
         fastVertex(buffer, matrices, x1, y1, z).texture(1, 1);
         fastVertex(buffer, matrices, x1, y0, z).texture(1, 0);
         fastVertex(buffer, matrices, x0, y0, z).texture(0, 0);
         BufferRenderer.drawWithGlobalProgram(buffer.end());
+        RenderSystem.disableBlend();
     }
 
     public static void drawOverlay(MatrixStack matrices, float alpha,

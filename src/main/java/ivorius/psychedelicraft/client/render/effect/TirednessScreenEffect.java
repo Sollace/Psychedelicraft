@@ -14,8 +14,8 @@ import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.Window;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
@@ -63,21 +63,19 @@ public class TirednessScreenEffect implements ScreenEffect {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
-        matrices.push();
+    public void render(DrawContext context, Window window, float tickDelta) {
+        float opacity = MathHelper.lerp(tickDelta, prevOverlayOpacity, overlayOpacity);
+
+        if (opacity <= 0) {
+            return;
+        }
+
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.defaultBlendFunc();
-
-        float opacity = MathHelper.lerp(ticks, prevOverlayOpacity, overlayOpacity);
-
-        if (opacity > 0) {
-            RenderUtil.drawOverlay(matrices, opacity * 0.8F, screenWidth, screenHeight, EYELID_OVERLAY, 0, 0, 1, 1, (int)(opacity * 5.8F));
-        }
-
+        RenderUtil.drawOverlay(context.getMatrices(), opacity * 0.8F, window.getScaledWidth(), window.getScaledHeight(), EYELID_OVERLAY, 0, 0, 1, 1, (int)(opacity * 5.8F));
         RenderSystem.enableDepthTest();
-        matrices.pop();
     }
 
     @Override

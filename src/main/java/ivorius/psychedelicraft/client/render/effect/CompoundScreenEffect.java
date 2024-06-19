@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.Window;
 
 public class CompoundScreenEffect implements ScreenEffect {
 
@@ -36,15 +36,20 @@ public class CompoundScreenEffect implements ScreenEffect {
     }
 
     @Override
+    public boolean shouldApply(float tickDelta) {
+        return client.player != null;
+    }
+
+    @Override
     public void update(float tickDelta) {
         effects.forEach(effect -> effect.update(tickDelta));
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
+    public void render(DrawContext context, Window window, float tickDelta) {
         effects.forEach(effect -> {
-            if (effect.shouldApply(client.getRenderTickCounter().getTickDelta(false))) {
-                effect.render(matrices, vertices, screenWidth, screenHeight, ticks, pingPong);
+            if (effect.shouldApply(tickDelta)) {
+                effect.render(context, window, tickDelta);
             }
         });
     }

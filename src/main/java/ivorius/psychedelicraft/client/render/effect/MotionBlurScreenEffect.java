@@ -22,9 +22,9 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.SimpleFramebuffer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.Window;
 
 /**
  * Created by lukas on 21.02.14.
@@ -42,17 +42,20 @@ public class MotionBlurScreenEffect implements ScreenEffect {
 
     @Override
     public void update(float tickDelta) {
-        DrugProperties drugProperties = DrugProperties.of(MinecraftClient.getInstance().player);
-
-        if (PsychedelicraftClient.getConfig().visual.doMotionBlur && drugProperties != null) {
-            motionBlur = drugProperties.getModifier(Drug.MOTION_BLUR);
-        } else {
-            motionBlur = 0;
-        }
+        motionBlur = PsychedelicraftClient.getConfig().visual.doMotionBlur && MinecraftClient.getInstance().player != null
+                ? DrugProperties.of(MinecraftClient.getInstance().player).getModifier(Drug.MOTION_BLUR)
+                : 0;
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
+    public void render(DrawContext context, Window window, float tickDelta) {
+
+        if (MinecraftClient.getInstance().player == null) {
+            return;
+        }
+
+        int screenWidth = window.getScaledWidth();
+        int screenHeight = window.getScaledHeight();
 
         if (motionBlur > 0) {
             if (textures != null && textures.sizeChanged(screenWidth, screenHeight)) {
@@ -63,25 +66,22 @@ public class MotionBlurScreenEffect implements ScreenEffect {
                 textures = new GlTextureSet(MAX_SAMPLES, screenWidth, screenHeight);
             }
 
-            ticks += MinecraftClient.getInstance().player.age;
+            tickDelta += MinecraftClient.getInstance().player.age;
 
-            if (previousTicks > ticks) {
-                previousTicks = ticks;
-            } else if (previousTicks + SAMPLE_FREQUENCY * MAX_SAMPLES < ticks) {
-                previousTicks = ticks - SAMPLE_FREQUENCY * MAX_SAMPLES;
+            if (previousTicks > tickDelta) {
+                previousTicks = tickDelta;
+            } else if (previousTicks + SAMPLE_FREQUENCY * MAX_SAMPLES < tickDelta) {
+                previousTicks = tickDelta - SAMPLE_FREQUENCY * MAX_SAMPLES;
             }
 
-            while (previousTicks + SAMPLE_FREQUENCY <= ticks) {
+            while (previousTicks + SAMPLE_FREQUENCY <= tickDelta) {
                 currentSample++;
                 currentSample %= MAX_SAMPLES;
                 textures.getTexture(currentSample).sample();
                 previousTicks += SAMPLE_FREQUENCY;
             }
 
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
-            textures.drawToScreen(currentSample);
-            RenderSystem.disableBlend();
+            textures.drawToScreen(context, currentSample);
         } else if (textures != null) {
             currentSample++;
             currentSample %= MAX_SAMPLES;
@@ -118,9 +118,9 @@ public class MotionBlurScreenEffect implements ScreenEffect {
             return this.width != width || this.height != height;
         }
 
-        public void drawToScreen(int currentSample) {
+        public void drawToScreen(DrawContext context, int currentSample) {
             for (int i = 0; i < textures.size(); i++) {
-                textures.get((i + currentSample) % textures.size()).drawToScreen();
+                textures.get((i + currentSample) % textures.size()).drawToScreen(context);
             }
         }
 
@@ -163,15 +163,17 @@ public class MotionBlurScreenEffect implements ScreenEffect {
             prepared = false;
         }
 
-        public void drawToScreen() {
+        public void drawToScreen(DrawContext context) {
             float alpha = Math.min(1, sample * 0.002f * motionBlur);
 
             if (prepared && alpha > 0) {
                 RenderSystem.setShader(GameRenderer::getPositionTexProgram);
                 RenderSystem.setShaderColor(1, 1, 1, alpha);
                 RenderSystem.enableBlend();
+                RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
                 RenderSystem.setShaderTexture(0, output.getColorAttachment());
                 ScreenEffect.drawScreen(output.viewportWidth, output.viewportHeight);
+                RenderSystem.disableBlend();
             }
         }
 

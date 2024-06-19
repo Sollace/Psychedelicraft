@@ -9,9 +9,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.PowerDrug;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.Window;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -27,17 +28,18 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
     }
 
     @Override
-    protected void render(MatrixStack matrices, VertexConsumerProvider vertices, int width, int height, float partialTicks, DrugProperties properties, PowerDrug drug) {
+    protected void render(DrawContext context, Window window, float tickDelta, DrugProperties properties, PowerDrug drug) {
 
         PlayerEntity entity = properties.asEntity();
+
+        int width = window.getScaledWidth();
+        int height = window.getScaledHeight();
 
         float power = (float)drug.getActiveValue();
         Random powerR = new Random(entity.age); // 20 changes / sec is alright
         int powerParticles = MathHelper.floor(powerR.nextFloat() * 200.0f * power);
         if (powerParticles > 0) {
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-            RenderSystem.setShaderTexture(0, POWER_PARTICLE_TEXTURE);
-            renderRandomParticles(matrices, powerParticles, height / 10, MathHelper.ceil(height / 10 * power), width, height, powerR);
+            renderRandomParticles(context, powerParticles, width / 10, MathHelper.ceil(height / 10 * power), width, height, powerR);
         }
 
         Random powerLR = new Random(entity.age / 2 * 21124871824l); // Chaos principle doesn't apply ;_;
@@ -59,10 +61,10 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
 
             for (int i = 0; i < powerLightnings; i++) {
                 float lX = powerLR.nextInt(width + lightningW) - lightningW;
-                lX += (powerLR.nextFloat() - 0.5f) * lightningW * partialTicks * 2.0f;
+                lX += (powerLR.nextFloat() - 0.5f) * lightningW * tickDelta * 2.0f;
                 int lIndex = powerLR.nextInt(LIGHTNING_TEXTURES.length);
                 boolean upsideDown = powerLR.nextBoolean();
-                float lightningTime = ((entity.age % 2) + partialTicks) * 0.5f;
+                float lightningTime = ((entity.age % 2) + tickDelta) * 0.5f;
 
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, (0.05f + power * 0.1f) * (1.0f - lightningTime));
                 RenderSystem.setShaderTexture(0, LIGHTNING_TEXTURES[lIndex]);
@@ -79,17 +81,12 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
         }
     }
 
-    public void renderRandomParticles(MatrixStack matrices, int number, int width, int height, int screenWidth, int screenHeight, Random rand) {
-        BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+    private void renderRandomParticles(DrawContext context, int number, int width, int height, int screenWidth, int screenHeight, Random rand) {
         for (int i = 0; i < number; i++) {
             int x = rand.nextInt(screenWidth + width) - width;
             int y = rand.nextInt(screenHeight + height) - height;
 
-            buffer.vertex(x, y + height, -90).texture(0, 1)
-                  .vertex(x + width, y + height, -90).texture(1, 1)
-                  .vertex(x + width, y, -90).texture(1, 0)
-                  .vertex(x, y, -90).texture(0, 0);
+            context.drawTexture(POWER_PARTICLE_TEXTURE, x, y, -90, 0, 0, width, height, 16, 16);
         }
-        BufferRenderer.drawWithGlobalProgram(buffer.end());
     }
 }

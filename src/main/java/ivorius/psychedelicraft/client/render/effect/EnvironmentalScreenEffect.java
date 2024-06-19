@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.client.render.effect;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -14,8 +16,8 @@ import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.Window;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
@@ -89,29 +91,33 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int screenWidth, int screenHeight, float ticks, PingPong pingPong) {
-        matrices.push();
-        RenderSystem.enableBlend();
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.defaultBlendFunc();
-
+    public void render(DrawContext context, Window window, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
+        @Nullable
         PlayerEntity entity = client.player;
+        if (entity == null) {
+            return;
+        }
         DrugProperties properties = DrugProperties.of(entity);
 
-        float pulseStrength = properties.getMusicManager().getHeartbeatPulseStrength(ticks);
+        float pulseStrength = properties.getMusicManager().getHeartbeatPulseStrength(tickDelta);
 
         if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled && (entity.hurtTime > 0 || experiencedHealth < 5 || pulseStrength > 0)) {
+            context.getMatrices().push();
+            RenderSystem.enableBlend();
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.defaultBlendFunc();
+
             float p1 = Math.max((float)entity.hurtTime / entity.maxHurtTime, pulseStrength);
             float p2 = (5 - (experiencedHealth * (1 - pulseStrength))) / 6F;
 
             float p = p1 > 0 ? p1 : p2 > 0 ? p2 : 0;
-            RenderUtil.drawOverlay(matrices, p, screenWidth, screenHeight, HURT_OVERLAY, 0, 0, 1, 1, (int) ((1 - p) * 40));
-        }
+            RenderUtil.drawOverlay(context.getMatrices(), p, window.getScaledWidth(), window.getScaledHeight(), HURT_OVERLAY, 0, 0, 1, 1, (int) ((1 - p) * 40));
 
-        RenderSystem.enableDepthTest();
-        matrices.pop();
+            RenderSystem.enableDepthTest();
+            context.getMatrices().pop();
+        }
     }
 
     @Override
