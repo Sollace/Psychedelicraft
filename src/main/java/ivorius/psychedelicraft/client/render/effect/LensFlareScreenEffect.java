@@ -115,8 +115,7 @@ public class LensFlareScreenEffect implements ScreenEffect {
             float flareCenterY = screenCenterY + yDist * FLARE_INFLUENCES[i];
 
             RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, (alpha * i == 8 ? 1F : 0.5F) * actualSunAlpha * getIntensity());
-            RenderSystem.setShaderTexture(0, FLARES[i]);
-            RenderUtil.drawQuad(context.getMatrices(),
+            RenderUtil.drawQuad(context, FLARES[i],
                     flareCenterX - flareSizeHalf,
                     flareCenterY - flareSizeHalf,
                     flareCenterX + flareSizeHalf,
@@ -136,8 +135,7 @@ public class LensFlareScreenEffect implements ScreenEffect {
 
             RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, blendAlpha * actualSunAlpha);
             RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
-            RenderSystem.setShaderTexture(0, BLINDNESS_OVERLAY);
-            RenderUtil.drawQuad(context.getMatrices(),
+            RenderUtil.drawQuad(context, BLINDNESS_OVERLAY,
                     blendCenterX - blendingSizeHalf,
                     blendCenterY - blendingSizeHalf,
                     blendCenterX + blendingSizeHalf,

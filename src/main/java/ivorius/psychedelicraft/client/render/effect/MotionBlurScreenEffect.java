@@ -12,18 +12,14 @@ import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
-import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.Window;
 
 /**
@@ -167,13 +163,7 @@ public class MotionBlurScreenEffect implements ScreenEffect {
             float alpha = Math.min(1, sample * 0.002f * motionBlur);
 
             if (prepared && alpha > 0) {
-                RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-                RenderSystem.setShaderColor(1, 1, 1, alpha);
-                RenderSystem.enableBlend();
-                RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
-                RenderSystem.setShaderTexture(0, output.getColorAttachment());
-                ScreenEffect.drawScreen(output.viewportWidth, output.viewportHeight);
-                RenderSystem.disableBlend();
+                RenderUtil.drawBuffer(output, 1, 1, 1, alpha);
             }
         }
 

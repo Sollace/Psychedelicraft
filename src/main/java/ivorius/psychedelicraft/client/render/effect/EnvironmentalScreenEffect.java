@@ -103,7 +103,6 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         float pulseStrength = properties.getMusicManager().getHeartbeatPulseStrength(tickDelta);
 
         if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled && (entity.hurtTime > 0 || experiencedHealth < 5 || pulseStrength > 0)) {
-            context.getMatrices().push();
             RenderSystem.enableBlend();
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
@@ -113,10 +112,9 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
             float p2 = (5 - (experiencedHealth * (1 - pulseStrength))) / 6F;
 
             float p = p1 > 0 ? p1 : p2 > 0 ? p2 : 0;
-            RenderUtil.drawOverlay(context.getMatrices(), p, window.getScaledWidth(), window.getScaledHeight(), HURT_OVERLAY, 0, 0, 1, 1, (int) ((1 - p) * 40));
+            RenderUtil.drawOverlay(context, HURT_OVERLAY, p, window.getScaledWidth(), window.getScaledHeight(), 0, 0, 1, 1, (int) ((1 - p) * 40));
 
             RenderSystem.enableDepthTest();
-            context.getMatrices().pop();
         }
     }
 

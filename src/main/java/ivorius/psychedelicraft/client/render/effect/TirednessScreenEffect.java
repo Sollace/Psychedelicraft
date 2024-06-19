@@ -38,11 +38,14 @@ public class TirednessScreenEffect implements ScreenEffect {
     public void update(float tickDelta) {
 
         PlayerEntity entity = MinecraftClient.getInstance().player;
-        DrugProperties properties = DrugProperties.of(entity);
+        if (entity == null) {
+            return;
+        }
+        float baseDrowsyness = DrugProperties.of(entity).getModifier(Drug.DROWSYNESS);
 
         prevOverlayOpacity = overlayOpacity;
 
-        float drowsyness = Math.max(0, properties.getModifier(Drug.DROWSYNESS) - 0.6F);
+        float drowsyness = Math.max(0, baseDrowsyness - 0.6F);
 
         overlayOpacity = MathUtils.approach(overlayOpacity, ticksBlinking > 0 ? drowsyness * 0.9F + MathHelper.sin(entity.age / 10F) : 0, 0.03F);
         if (drowsyness > 0.3F && overlayOpacity > 0.6F) {
@@ -56,7 +59,7 @@ public class TirednessScreenEffect implements ScreenEffect {
             return;
         }
 
-        if (--ticksBlinking <= 0 && (ticksBlinking < -300 || entity.getWorld().random.nextFloat() < properties.getModifier(Drug.DROWSYNESS))) {
+        if (--ticksBlinking <= 0 && (ticksBlinking < -300 || entity.getWorld().random.nextFloat() < baseDrowsyness)) {
             ticksBlinking = (int)entity.getWorld().random.nextTriangular(300, 200);
             entity.sendMessage(Text.literal("...I should really sleep..."), true);
         }
@@ -70,11 +73,10 @@ public class TirednessScreenEffect implements ScreenEffect {
             return;
         }
 
-        RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.defaultBlendFunc();
-        RenderUtil.drawOverlay(context.getMatrices(), opacity * 0.8F, window.getScaledWidth(), window.getScaledHeight(), EYELID_OVERLAY, 0, 0, 1, 1, (int)(opacity * 5.8F));
+        RenderUtil.drawOverlay(context, EYELID_OVERLAY, opacity * 0.8F, window.getScaledWidth(), window.getScaledHeight(), 0, 0, 1, 1, (int)(opacity * 5.8F));
         RenderSystem.enableDepthTest();
     }
 
