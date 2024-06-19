@@ -5,38 +5,21 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 
 /**
  * Created by lukas on 01.11.14.
  */
 public class BrownShroomsDrug extends SimpleDrug {
+    public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
+            .put(COLOR_HALLUCINATION_STRENGTH, 0.8F)
+            .put(MOVEMENT_HALLUCINATION_STRENGTH, 1)
+            .put(CONTEXTUAL_HALLUCINATION_STRENGTH, 0.35F)
+            .put(VIEW_WOBBLYNESS, 0.03F)
+            .put(HUNGER_SUPPRESSION, 0.1F)
+            .build();
     public BrownShroomsDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.BROWN_SHROOMS, decSpeed, decSpeedPlus);
-    }
-
-    @Override
-    public float colorHallucinationStrength() {
-        return (float) getActiveValue() * 0.8F;
-    }
-
-    @Override
-    public float movementHallucinationStrength() {
-        return (float) getActiveValue();
-    }
-
-    @Override
-    public float contextualHallucinationStrength() {
-        return (float) getActiveValue() * 0.35F;
-    }
-
-    @Override
-    public float viewWobblyness() {
-        return (float) getActiveValue() * 0.03F;
-    }
-
-    @Override
-    public float hungerSuppression() {
-        return (float)getActiveValue() * 0.1F;
     }
 }

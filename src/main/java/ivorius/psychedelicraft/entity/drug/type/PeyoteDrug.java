@@ -5,23 +5,20 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 
 /**
  * Created by lukas on 01.11.14.
  */
 public class PeyoteDrug extends SimpleDrug {
+    public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
+            .put(COLOR_HALLUCINATION_STRENGTH, 0.3F)
+            .put(CONTEXTUAL_HALLUCINATION_STRENGTH, 0.3F)
+            .build();
+
     public PeyoteDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.PEYOTE, decSpeed, decSpeedPlus);
-    }
 
-    @Override
-    public float colorHallucinationStrength() {
-        return (float) getActiveValue() * 0.3F;
-    }
-
-    @Override
-    public float contextualHallucinationStrength() {
-        return (float) getActiveValue() * 0.6F;
     }
 }

@@ -139,27 +139,31 @@ public class HallucinationManager {
     }
 
     public float getSlowColorRotation(float tickDelta) {
-        return getMultiplier(HallucinationTypes.SLOW_COLOR_ROTATION);
+        return Drug.SLOW_COLOR_ROTATION.get(getMultiplier(HallucinationTypes.SLOW_COLOR_ROTATION), properties);
     }
 
     public float getQuickColorRotation(float tickDelta) {
-        return getMultiplier(HallucinationTypes.QUICK_COLOR_ROTATION);
+        return Drug.FAST_COLOR_ROTATION.get(getMultiplier(HallucinationTypes.QUICK_COLOR_ROTATION), properties);
     }
 
     public float getBigWaveStrength(float tickDelta) {
-        return getMultiplier(HallucinationTypes.BIG_WAVES) * 0.6F;
+        return Drug.BIG_WAVES.get(getMultiplier(HallucinationTypes.BIG_WAVES) * 0.6F, properties);
     }
 
     public float getSmallWaveStrength(float tickDelta) {
-        return getMultiplier(HallucinationTypes.SMALL_WAVES) * 0.5F;
+        return Drug.SMALL_WAVES.get(getMultiplier(HallucinationTypes.SMALL_WAVES) * 0.5F, properties);
     }
 
     public float getWiggleWaveStrength(float tickDelta) {
-        return getMultiplier(HallucinationTypes.WIGGLE_WAVES) * 0.7F;
+        return Drug.WIGGLE_WAVES.get(getMultiplier(HallucinationTypes.WIGGLE_WAVES) * 0.7F, properties);
     }
 
     public float getSurfaceFractalStrength(float tickDelta) {
         return getMultiplier(HallucinationTypes.SURFACE_FRACTALS);
+    }
+
+    public float getSurfaceBubblingStrength(float tickDelta) {
+        return 0;
     }
 
     public float getDistantWorldDeformationStrength(float tickDelta) {

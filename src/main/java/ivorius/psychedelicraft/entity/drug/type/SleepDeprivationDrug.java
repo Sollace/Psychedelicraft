@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.entity.drug.type;
 
 import ivorius.psychedelicraft.PSGameRules;
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -18,6 +19,17 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 public class SleepDeprivationDrug extends SimpleDrug {
     public static final int TICKS_PER_DAY = 24000;
     public static final int TICKS_UNTIL_PHANTOM_SPAWN = TICKS_PER_DAY * 3;
+
+    public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
+            .put(MOVEMENT_HALLUCINATION_STRENGTH, f -> Math.max(0, f - 0.8F) * 3)
+            .put(CONTEXTUAL_HALLUCINATION_STRENGTH, f -> Math.max(0, f - 0.8F) * 4)
+            .put(SOUND_VOLUME, f -> 1 + Math.max(0, (f - 0.5F) * 2))
+            .put(DESATURATION_HALLUCINATION_STRENGTH, f -> Math.max(0, (f - 0.5F) * 2))
+            .put(DROWSYNESS, 1)
+            .put(MOTION_BLUR, f -> Math.max(0, f - 0.6F) * 3)
+            .put(DIG_SPEED, f -> 1 - Math.max(0, f * 0.9F - 0.4F))
+            .put(SPEED, f -> 1 - Math.max(0, f * 0.9F - 0.4F))
+            .build();
 
     private static final float INCREASE_PER_TICKS = 1F / TICKS_UNTIL_PHANTOM_SPAWN;
 
@@ -56,51 +68,6 @@ public class SleepDeprivationDrug extends SimpleDrug {
     }
 
     @Override
-    public float digSpeedModifier() {
-        return 1 - Math.max(0, (float)getActiveValue() * 0.9F - 0.4F);
-    }
-
-    @Override
-    public float speedModifier() {
-        return digSpeedModifier();
-    }
-
-    @Override
-    public float motionBlur() {
-        return Math.max(0, (float)getActiveValue() - 0.6F) * 3;
-    }
-
-    @Override
-    public float drowsyness() {
-        return (float)getActiveValue();
-    }
-
-    @Override
-    public float headMotionInertness() {
-        return 0;
-    }
-
-    @Override
-    public float desaturationHallucinationStrength() {
-        return Math.max(0, ((float)getActiveValue() - 0.5F) * 2);
-    }
-
-    @Override
-    public float soundVolumeModifier() {
-        return 1 + desaturationHallucinationStrength();
-    }
-
-    @Override
-    public float contextualHallucinationStrength() {
-        return Math.max(0, (float)getActiveValue() - 0.8F) * 4;
-    }
-
-    @Override
-    public float movementHallucinationStrength() {
-        return Math.max(0, (float)getActiveValue() - 0.8F) * 3;
-    }
-
-    @Override
     public void reset(DrugProperties drugProperties) {
         super.reset(drugProperties);
         if (!locked) {
@@ -119,5 +86,4 @@ public class SleepDeprivationDrug extends SimpleDrug {
         super.toNbt(compound, lookup);
         compound.putFloat("storedEnergy", storedEnergy);
     }
-
 }

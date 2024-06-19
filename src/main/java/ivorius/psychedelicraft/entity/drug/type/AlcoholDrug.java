@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.entity.drug.type;
 
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.advancement.PSCriteria;
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -19,23 +20,14 @@ import net.minecraft.util.math.random.Random;
  * Created by lukas on 01.11.14.
  */
 public class AlcoholDrug extends SimpleDrug {
+    public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
+            .put(VIEW_WOBBLYNESS, 0.5F)
+            .put(DOUBLE_VISION, f -> MathUtils.inverseLerp(f, 0.25f, 1))
+            .put(MOTION_BLUR, f -> MathUtils.inverseLerp(f, 0.5f, 1) * 0.3F)
+            .build();
+
     public AlcoholDrug(DrugType type, double decSpeed, double decSpeedPlus) {
         super(type, decSpeed, decSpeedPlus);
-    }
-
-    @Override
-    public float viewWobblyness() {
-        return (float)getActiveValue() * 0.5F;
-    }
-
-    @Override
-    public float doubleVision() {
-        return MathUtils.inverseLerp((float)getActiveValue(), 0.25f, 1);
-    }
-
-    @Override
-    public float motionBlur() {
-        return MathUtils.inverseLerp((float)getActiveValue(), 0.5f, 1) * 0.3F;
     }
 
     @Override

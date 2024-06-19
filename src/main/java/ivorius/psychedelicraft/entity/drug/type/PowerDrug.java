@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 
 /**
@@ -12,22 +13,14 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
  * Updated by Sollace on 4 Jan 2023
  */
 public class PowerDrug extends SimpleDrug {
+    public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
+            .put(SOUND_VOLUME, f -> 1 - f)
+            .put(DESATURATION_HALLUCINATION_STRENGTH, 0.75F)
+            .put(MOTION_BLUR, 0.3F)
+            .build();
+
     public PowerDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.POWER, decSpeed, decSpeedPlus, true);
-    }
 
-    @Override
-    public float soundVolumeModifier() {
-        return 1 - (float) getActiveValue();
-    }
-
-    @Override
-    public float desaturationHallucinationStrength() {
-        return (float)getActiveValue() * 0.75F;
-    }
-
-    @Override
-    public float motionBlur() {
-        return (float) getActiveValue() * 0.3F;
     }
 }

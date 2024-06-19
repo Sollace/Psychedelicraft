@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.entity.drug.type;
 
 import java.util.Optional;
 
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.text.Text;
@@ -18,92 +19,33 @@ import net.minecraft.util.math.BlockPos;
 public class CaffeineDrug extends SimpleDrug {
     static final Optional<Text> SLEEP_STATUS = Optional.of(Text.translatable("psychedelicraft.sleep.fail.insomnia"));
 
-    private final float breathVolumeMultiplier;
+    public static DrugAttributeFunctions functions(float breathVolumeMultiplier) {
+        return DrugAttributeFunctions.builder()
+                .put(HEART_BEAT_VOLUME, (f, t) -> breathVolumeMultiplier * MathUtils.inverseLerp(f, 0.6F, 1) + (t * 0.001F))
+                .put(HEART_BEAT_SPEED, (f, t) -> breathVolumeMultiplier * f * 0.2f + (t * 0.001F))
+                .put(BREATH_VOLUME, f -> breathVolumeMultiplier * MathUtils.inverseLerp(f, 0.4F, 1) * 0.5F)
+                .put(BREATH_SPEED, f -> breathVolumeMultiplier * f * 0.3F)
+                .put(JUMP_CHANCE, f -> MathUtils.inverseLerp(f, 0.6F, 1) * 0.07F)
+                .put(PUNCH_CHANCE, f -> MathUtils.inverseLerp(f, 0.3F, 1) * 0.05F)
+                .put(SPEED, f -> 1 + f * 0.2F)
+                .put(DIG_SPEED, f -> 1 + f * 0.2F)
+                .put(SUPER_SATURATION_HALLUCINATION_STRENGTH, 0.3F)
+                .put(COLOR_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f * 1.3F, 0.7F, 1) * 0.03F)
+                .put(MOVEMENT_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f * 1.3F, 0.7F, 1) * 0.03F)
+                .put(CONTEXTUAL_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f * 1.3F, 0.7F, 1) * 0.05F)
+                .put(HAND_TREMBLE_STRENGTH, f -> MathUtils.inverseLerp(f, 0.6F, 1))
+                .put(VIEW_TREMBLE_STRENGTH, f -> MathUtils.inverseLerp(f, 0.8F, 1))
+                .put(HUNGER_SUPPRESSION, 0.15F)
+                .build();
+    }
 
-    public CaffeineDrug(DrugType type, double decSpeed, double decSpeedPlus, float breathVolumeMultiplier) {
+    public CaffeineDrug(DrugType type, double decSpeed, double decSpeedPlus) {
         super(type, decSpeed, decSpeedPlus);
-        this.breathVolumeMultiplier = breathVolumeMultiplier;
-    }
 
-    @Override
-    public float heartbeatVolume() {
-        return breathVolumeMultiplier * MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1) + (getTicksActive() * 0.001F);
-    }
-
-    @Override
-    public float heartbeatSpeed() {
-        return breathVolumeMultiplier * (float) getActiveValue() * 0.2f + (getTicksActive() * 0.001F);
-    }
-
-    @Override
-    public float breathVolume() {
-        return breathVolumeMultiplier * MathUtils.inverseLerp((float) getActiveValue(), 0.4F, 1) * 0.5F;
-    }
-
-    @Override
-    public float breathSpeed() {
-        return breathVolumeMultiplier * (float) getActiveValue() * 0.3F;
-    }
-
-    @Override
-    public float randomJumpChance() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1) * 0.07F;
-    }
-
-    @Override
-    public float randomPunchChance() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.3F, 1) * 0.05F;
-    }
-
-    @Override
-    public float speedModifier() {
-        return 1 + (float) getActiveValue() * 0.2F;
-    }
-
-    @Override
-    public float digSpeedModifier() {
-        return 1 + (float) getActiveValue() * 0.2F;
     }
 
     @Override
     public Optional<Text> trySleep(BlockPos pos) {
-        return getActiveValue() > 0.1
-                ? SLEEP_STATUS
-                : Optional.empty();
-    }
-
-    @Override
-    public float superSaturationHallucinationStrength() {
-        return (float)getActiveValue() * 0.3F;
-    }
-
-    @Override
-    public float handTrembleStrength() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1);
-    }
-
-    @Override
-    public float viewTrembleStrength() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.8F, 1);
-    }
-
-    @Override
-    public float colorHallucinationStrength() {
-        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.03F;
-    }
-
-    @Override
-    public float movementHallucinationStrength() {
-        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.03F;
-    }
-
-    @Override
-    public float contextualHallucinationStrength() {
-        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
-    }
-
-    @Override
-    public float hungerSuppression() {
-        return (float)getActiveValue() * 0.15F;
+        return getActiveValue() > 0.1 ? SLEEP_STATUS : Optional.empty();
     }
 }

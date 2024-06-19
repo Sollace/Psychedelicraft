@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.entity.drug.type;
 
 import ivorius.psychedelicraft.PSDamageTypes;
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -16,6 +17,18 @@ import net.minecraft.util.math.random.Random;
  * Created by lukas on 01.11.14.
  */
 public class AtropineDrug extends SimpleDrug {
+    public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
+            .put(HEART_BEAT_VOLUME, (f, t) -> MathUtils.inverseLerp(f, 0.4F, 1) + (t * 0.0001F) * 1.2F)
+            .put(HEART_BEAT_SPEED, (f, t) -> f * 0.1F + (t * 0.0001F))
+            .put(COLOR_HALLUCINATION_STRENGTH, 1.4F)
+            .put(MOVEMENT_HALLUCINATION_STRENGTH, 0.7F)
+            .put(CONTEXTUAL_HALLUCINATION_STRENGTH, 1.2F)
+            .put(HAND_TREMBLE_STRENGTH, 0.3F)
+            .put(VIEW_TREMBLE_STRENGTH, 0.4F)
+            .put(VIEW_WOBBLYNESS, 0.003F)
+            .put(HUNGER_SUPPRESSION, 0.1F)
+            .build();
+
     public AtropineDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.ATROPINE, decSpeed, decSpeedPlus);
     }
@@ -40,50 +53,5 @@ public class AtropineDrug extends SimpleDrug {
                 }
             }
         }
-    }
-
-    @Override
-    public float heartbeatVolume() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.4F, 1) + (getTicksActive() * 0.0001F) * 1.2F;
-    }
-
-    @Override
-    public float heartbeatSpeed() {
-        return (float) getActiveValue() * 0.1F + (getTicksActive() * 0.0001F);
-    }
-
-    @Override
-    public float colorHallucinationStrength() {
-        return (float) getActiveValue() * 1.4F;
-    }
-
-    @Override
-    public float movementHallucinationStrength() {
-        return (float) getActiveValue() * 0.7F;
-    }
-
-    @Override
-    public float contextualHallucinationStrength() {
-        return (float) getActiveValue() * 1.2F;
-    }
-
-    @Override
-    public float handTrembleStrength() {
-        return (float) getActiveValue() * 0.3F;
-    }
-
-    @Override
-    public float viewTrembleStrength() {
-        return (float) getActiveValue() * 0.4F;
-    }
-
-    @Override
-    public float viewWobblyness() {
-        return (float) getActiveValue() * 0.003F;
-    }
-
-    @Override
-    public float hungerSuppression() {
-        return (float)getActiveValue() * 0.1F;
     }
 }

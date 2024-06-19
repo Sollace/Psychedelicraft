@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.entity.drug.type;
 import java.util.Optional;
 
 import ivorius.psychedelicraft.PSDamageTypes;
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -21,6 +22,24 @@ import net.minecraft.util.math.random.Random;
  */
 public class CocaineDrug extends SimpleDrug {
     static final Optional<Text> SLEEP_STATUS = Optional.of(Text.translatable("psychedelicraft.sleep.fail.coccaine"));
+    public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
+            .put(HEART_BEAT_VOLUME, (f, t) -> MathUtils.inverseLerp(f, 0.4F, 1) + (t * 0.0001F) * 1.2F)
+            .put(HEART_BEAT_SPEED, (f, t) -> f * 0.1F + (t * 0.0001F))
+            .put(BREATH_VOLUME, f -> MathUtils.inverseLerp(f, 0.4f, 1.0f) * 1.5F)
+            .put(BREATH_SPEED, 0.8F)
+            .put(JUMP_CHANCE, f -> MathUtils.inverseLerp(f, 0.6F, 1) * 0.03F)
+            .put(PUNCH_CHANCE, f -> MathUtils.inverseLerp(f, 0.5F, 1) * 0.02F)
+            .put(SPEED, f -> 1.0F + f * 0.15F)
+            .put(DIG_SPEED, f -> 1.0F + f * 0.15F)
+            .put(DESATURATION_HALLUCINATION_STRENGTH, 0.75F)
+            .put(HAND_TREMBLE_STRENGTH, f -> MathUtils.inverseLerp(f, 0.6F, 1))
+            .put(VIEW_TREMBLE_STRENGTH, f -> MathUtils.inverseLerp(f, 0.8F, 1))
+            .put(HEAD_MOTION_INERTNESS, 10)
+            .put(BLOOM_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f, 0, 0.6F) * 1.5F)
+            .put(COLOR_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f * 1.3F, 0.7F, 1) * 0.05F)
+            .put(MOVEMENT_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f * 1.3F, 0.7F, 1) * 0.05F)
+            .put(CONTEXTUAL_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f * 1.3F, 0.7F, 1) * 0.05F)
+            .build();
 
     public CocaineDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.COCAINE, decSpeed, decSpeedPlus);
@@ -48,89 +67,9 @@ public class CocaineDrug extends SimpleDrug {
     }
 
     @Override
-    public float heartbeatVolume() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.4F, 1) + (getTicksActive() * 0.0001F) * 1.2F;
-    }
-
-    @Override
-    public float heartbeatSpeed() {
-        return (float) getActiveValue() * 0.1F + (getTicksActive() * 0.0001F);
-    }
-
-    @Override
-    public float breathVolume() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.4f, 1.0f) * 1.5F;
-    }
-
-    @Override
-    public float breathSpeed() {
-        return (float) getActiveValue() * 0.8F;
-    }
-
-    @Override
-    public float randomJumpChance() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1) * 0.03F;
-    }
-
-    @Override
-    public float randomPunchChance() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.5F, 1) * 0.02F;
-    }
-
-    @Override
-    public float speedModifier() {
-        return 1.0F + (float) getActiveValue() * 0.15F;
-    }
-
-    @Override
-    public float digSpeedModifier() {
-        return 1.0F + (float) getActiveValue() * 0.15F;
-    }
-
-    @Override
     public Optional<Text> trySleep(BlockPos pos) {
         return getActiveValue() > 0.4
                 ? SLEEP_STATUS
                 : Optional.empty();
-    }
-
-    @Override
-    public float desaturationHallucinationStrength() {
-        return (float)getActiveValue() * 0.75f;
-    }
-
-    @Override
-    public float handTrembleStrength() {
-        return MathUtils.inverseLerp((float)getActiveValue(), 0.6F, 1);
-    }
-
-    @Override
-    public float viewTrembleStrength() {
-        return MathUtils.inverseLerp((float)getActiveValue(), 0.8F, 1);
-    }
-
-    @Override
-    public float headMotionInertness() {
-        return (float)getActiveValue() * 10;
-    }
-
-    @Override
-    public float bloomHallucinationStrength() {
-        return MathUtils.inverseLerp((float)getActiveValue(), 0, 0.6F) * 1.5F;
-    }
-
-    @Override
-    public float colorHallucinationStrength() {
-        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
-    }
-
-    @Override
-    public float movementHallucinationStrength() {
-        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
-    }
-
-    @Override
-    public float contextualHallucinationStrength() {
-        return MathUtils.inverseLerp((float) getActiveValue() * 1.3F, 0.7F, 1) * 0.05F;
     }
 }

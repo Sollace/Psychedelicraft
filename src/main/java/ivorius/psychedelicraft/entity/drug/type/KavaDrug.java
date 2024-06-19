@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.entity.drug.type;
 
 import ivorius.psychedelicraft.PSDamageTypes;
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -20,45 +21,18 @@ import net.minecraft.util.math.random.Random;
  *
  */
 public class KavaDrug extends SimpleDrug {
+    public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
+            .put(VIEW_WOBBLYNESS, 0.5F)
+            .put(DROWSYNESS, 0.4F)
+            .put(SOUND_VOLUME, f -> 1 - f)
+            .put(SPEED, -0.2F)
+            .put(DIG_SPEED, -0.2F)
+            .put(DESATURATION_HALLUCINATION_STRENGTH, (f, t) -> f * 0.75f * ((MathHelper.clamp(t, 50, 250) - 50) / 200F))
+            .put(HEART_BEAT_VOLUME, (f, t) -> MathUtils.inverseLerp(f, 0.4F, 1) * 1.2F * ((MathHelper.clamp(t, 50, 250) - 50) / 200F))
+            .build();
+
     public KavaDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.KAVA, decSpeed, decSpeedPlus);
-    }
-
-    @Override
-    public float viewWobblyness() {
-        return (float)getActiveValue() * 0.5F;
-    }
-
-    @Override
-    public float drowsyness() {
-        return (float)getActiveValue() * 0.4F;
-    }
-
-    @Override
-    public float soundVolumeModifier() {
-        return 1 - (float)getActiveValue();
-    }
-
-    @Override
-    public float speedModifier() {
-        return (float) getActiveValue() * -0.2F;
-    }
-
-    @Override
-    public float digSpeedModifier() {
-        return (float) getActiveValue() * -0.2F;
-    }
-
-    @Override
-    public float desaturationHallucinationStrength() {
-        float strength = (MathHelper.clamp(getTicksActive(), 50, 250) - 50) / 200F;
-        return (float)getActiveValue() * 0.75f * strength;
-    }
-
-    @Override
-    public float heartbeatVolume() {
-        float strength = (MathHelper.clamp(getTicksActive(), 50, 250) - 50) / 200F;
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.4F, 1) * 1.2F * strength;
     }
 
     @Override

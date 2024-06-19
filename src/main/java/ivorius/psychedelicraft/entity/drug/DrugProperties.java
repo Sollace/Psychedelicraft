@@ -312,7 +312,7 @@ public class DrugProperties implements NbtSerialisable {
         return getAllDrugs().stream().flatMap(drug -> drug.trySleep(pos).stream()).findFirst();
     }
 
-    public float getModifier(Drug.AggregateModifier modifier) {
+    public float getModifier(Attribute modifier) {
         return modifier.get(this);
     }
 

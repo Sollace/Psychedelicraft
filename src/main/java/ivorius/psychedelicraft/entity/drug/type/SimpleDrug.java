@@ -60,6 +60,7 @@ public class SimpleDrug implements Drug {
         return effect;
     }
 
+    @Override
     public int getTicksActive() {
         return ticksActive;
     }
@@ -96,7 +97,7 @@ public class SimpleDrug implements Drug {
         if (getActiveValue() > 0) {
             ticksActive++;
 
-            if (heartbeatSpeed() > 3) {
+            if (get(Drug.HEART_BEAT_SPEED) > 3) {
                 drugProperties.asEntity().damage(drugProperties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
                 reset(drugProperties);
             }
@@ -144,16 +145,6 @@ public class SimpleDrug implements Drug {
     @Override
     public Optional<Text> trySleep(BlockPos pos) {
         return Optional.empty();
-    }
-
-    @Override
-    public void applyContrastColorization(float[] rgba) {
-
-    }
-
-    @Override
-    public void applyColorBloom(float[] rgba) {
-
     }
 
     protected static void rotateEntityPitch(Entity entity, double amount) {

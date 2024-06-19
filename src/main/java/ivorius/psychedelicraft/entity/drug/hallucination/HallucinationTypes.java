@@ -59,9 +59,9 @@ public class HallucinationTypes {
     private static class Category {
         public final List<Integer> hallucinations;
         public float currentValue;
-        private final Drug.AggregateModifier modifier;
+        private final Attribute modifier;
 
-        public Category(List<Integer> hallucinations, Drug.AggregateModifier modifier) {
+        public Category(List<Integer> hallucinations, Attribute modifier) {
             this.hallucinations = new ArrayList<>(hallucinations);
             this.modifier = modifier;
         }

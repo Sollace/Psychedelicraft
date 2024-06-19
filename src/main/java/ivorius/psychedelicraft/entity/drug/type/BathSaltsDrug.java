@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.entity.drug.type;
 
 import ivorius.psychedelicraft.PSDamageTypes;
+import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -19,8 +20,18 @@ import net.minecraft.util.math.random.Random;
  * Created by Sollace on Feb 6 2023.
  */
 public class BathSaltsDrug extends SimpleDrug {
+    public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
+            .put(JUMP_CHANCE, f -> MathUtils.inverseLerp(f, 0.6F, 1) * 0.03F)
+            .put(PUNCH_CHANCE, f -> MathUtils.inverseLerp(f, 0.5F, 1) * 0.02F)
+            .put(COLOR_HALLUCINATION_STRENGTH, 0.8F)
+            .put(MOVEMENT_HALLUCINATION_STRENGTH, 1F)
+            .put(BLOOM_HALLUCINATION_STRENGTH, 0.12F)
+            .put(INVERSION_HALLUCINATION_STRENGTH, f -> MathHelper.clamp(f * f * 5.3F, 0, 1.5F))
+            .build();
+
     public BathSaltsDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.BATH_SALTS, decSpeed, decSpeedPlus);
+
     }
 
     @Override
@@ -66,37 +77,5 @@ public class BathSaltsDrug extends SimpleDrug {
         } else {
             super.onWakeUp(drugProperties);
         }
-    }
-
-    @Override
-    public float randomJumpChance() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.6F, 1) * 0.03F;
-    }
-
-    @Override
-    public float randomPunchChance() {
-        return MathUtils.inverseLerp((float) getActiveValue(), 0.5F, 1) * 0.02F;
-    }
-
-    @Override
-    public float colorHallucinationStrength() {
-        return (float) getActiveValue() * 0.8F;
-    }
-
-    @Override
-    public float movementHallucinationStrength() {
-        return (float) getActiveValue();
-    }
-
-    @Override
-    public float bloomHallucinationStrength() {
-        return (float) getActiveValue() * 0.12F;
-    }
-
-    @Override
-    public float colorInversionHallucinationStrength() {
-        float value = (float) getActiveValue();
-        value *= value;
-        return MathHelper.clamp(value * 5.3F, 0, 1.5F);
     }
 }

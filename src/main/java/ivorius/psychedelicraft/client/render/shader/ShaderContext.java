@@ -18,7 +18,7 @@ public interface ShaderContext {
         return properties().getDrugValue(type);
     }
 
-    static float modifier(Drug.AggregateModifier type) {
+    static float modifier(Attribute type) {
         return type.get(properties());
     }
 
