@@ -30,7 +30,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     .program("heat_distortion", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getHeatDistortion();
 
-                        if (strength <= 0 || !PsychedelicraftClient.getConfig().visual.doHeatDistortion) {
+                        if (strength <= 0) {
                             return;
                         }
 
@@ -42,13 +42,11 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
             .addShader("underwater_distortion", UniformBinding.start()
                     .program("heat_distortion", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterDistortion();
-                        float peyote = ShaderContext.drug(DrugType.PEYOTE);
 
-                        if (peyote <= 0 && (strength <= 0 || !PsychedelicraftClient.getConfig().visual.doWaterDistortion)) {
+                        if (strength <= 0) {
                             return;
                         }
 
-                        strength = Math.max(peyote * 0.01073F, strength);
                         setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
                         setter.set("strength", strength);
                         setter.set("ticks", ShaderContext.ticks() * 0.03f);
@@ -65,7 +63,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                          | setter.setIfNonZero("slowColorRotation", h.getSlowColorRotation(tickDelta))
                          | setter.setIfNonZero("desaturation", h.getDesaturation(tickDelta))
                          | setter.setIfNonZero("colorIntensification", h.getColorIntensification(tickDelta))
-                         | setter.setIfNonZero("inversion", ShaderContext.modifier(Drug.INVERSION_HALLUCINATION_STRENGTH))
+                         | setter.setIfNonZero("inversion", h.getColorInversion(tickDelta))
                          | h.getPulseColor(tickDelta)[3] > 0
                          | h.getContrastColorization(tickDelta)[3] > 0) {
                             pass.run();
@@ -79,7 +77,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                          | h.getSlowColorRotation(tickDelta) > 0
                          | h.getDesaturation(tickDelta) > 0
                          | h.getColorIntensification(tickDelta) > 0
-                         | ShaderContext.modifier(Drug.INVERSION_HALLUCINATION_STRENGTH) > 0
+                         | h.getColorInversion(tickDelta) > 0
                          // | pulses[3] > 0
                          | worldColorization[3] > 0) {
                             //setter.set("pulses", pulses);
@@ -90,22 +88,15 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("ps_blur", UniformBinding.start()
                     .program("ps_blur", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        float menuBlur = DrugRenderer.INSTANCE.getMenuBlur() + Math.max(0, ShaderContext.drug(DrugType.SLEEP_DEPRIVATION) - 0.7F) * ShaderContext.tickDelta() * 15;
-                        float vBlur = ShaderContext.drug(DrugType.POWER) + menuBlur;
-                        float hBlur = menuBlur + (
-                              ShaderContext.drug(DrugType.BATH_SALTS) * 6F
-                            + ShaderContext.drug(DrugType.BATH_SALTS) * (ShaderContext.ticks() % 5)
-                        );
+                        float[] blur = ShaderContext.hallucinations().getBlur(tickDelta);
 
-                        if (vBlur <= 0 && hBlur <= 0) {
-                            return;
+                        if (blur[0] > 0 || blur[0] > 0) {
+                            setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
+                            setter.set("hBlur", blur[0]);
+                            setter.set("vBlur", blur[1]);
+                            setter.set("repeats", MathHelper.ceil(Math.max(blur[0], blur[1])));
+                            pass.run();
                         }
-
-                        setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
-                        setter.set("hBlur", hBlur);
-                        setter.set("vBlur", vBlur);
-                        setter.set("repeats", MathHelper.ceil(Math.max(hBlur, vBlur)));
-                        pass.run();
                     }))
             .addShader("depth_of_field", UniformBinding.start()
                     .program("depth_of_field", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
@@ -181,14 +172,12 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     .program("double_vision", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = ShaderContext.modifier(Drug.DOUBLE_VISION);
 
-                        if (strength <= 0 || !PsychedelicraftClient.getConfig().visual.doWaterDistortion) {
-                            return;
+                        if (strength > 0) {
+                            setter.set("totalAlpha", strength);
+                            setter.set("distance", MathHelper.sin(ShaderContext.ticks() / 20F) * 0.05f * strength);
+                            setter.set("stretch", 1 + strength);
+                            pass.run();
                         }
-
-                        setter.set("totalAlpha", strength);
-                        setter.set("distance", MathHelper.sin(ShaderContext.ticks() / 20F) * 0.05f * strength);
-                        setter.set("stretch", 1 + strength);
-                        pass.run();
                     }))
             .addShader("ps_blur_noise", UniformBinding.start()
                     .program("ps_blur_noise", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
@@ -207,15 +196,13 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     .program("distortion_map", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterScreenDistortion();
 
-                        if (strength <= 0 || !PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {
-                            return;
+                        if (strength > 0) {
+                            setter.set("totalAlpha", strength);
+                            setter.set("strength", strength * 0.2F);
+                            setter.set("texTranslation0", 0, ShaderContext.ticks() * 0.005F);
+                            setter.set("texTranslation1", 0.5F, ShaderContext.ticks() * 0.007F);
+                            pass.run();
                         }
-
-                        setter.set("totalAlpha", strength);
-                        setter.set("strength", strength * 0.2F);
-                        setter.set("texTranslation0", 0, ShaderContext.ticks() * 0.005F);
-                        setter.set("texTranslation1", 0.5F, ShaderContext.ticks() * 0.007F);
-                        pass.run();
                     }))
             .addShader("digital", UniformBinding.start()
                     .program("digital_depth", (setter, tickDelta, screenWidth, screenHeight, pass) -> {

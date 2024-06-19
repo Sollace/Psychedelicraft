@@ -19,7 +19,7 @@ public interface ShaderContext {
     }
 
     static float modifier(Drug.AggregateModifier type) {
-        return properties().getModifier(type);
+        return type.get(properties());
     }
 
     static float ticks() {
@@ -39,6 +39,6 @@ public interface ShaderContext {
     }
 
     static Vec3d position() {
-        return MinecraftClient.getInstance().player.getPos();
+        return MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
     }
 }

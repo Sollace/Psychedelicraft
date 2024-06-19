@@ -48,8 +48,6 @@ public class PSClientConfig {
         public float dofFocalPointFar = 128;
         public float dofFocalBlurFar = 0;
 
-        public float pauseMenuBlur = 0;
-
         public boolean shader2DEnabled = true;
         public boolean shader3DEnabled = true;
         // (Sollace) made transient because this config was disabled before

@@ -13,7 +13,9 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.MeteorlogicalUtil;
 import ivorius.psychedelicraft.client.render.RenderUtil;
+import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -42,15 +44,20 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
     private float currentHeat;
 
     public float getHeatDistortion() {
+        if (!PsychedelicraftClient.getConfig().visual.doHeatDistortion) {
+            return 0;
+        }
         return wasInWater ? 0 : MathHelper.clamp(((currentHeat - 1) * 0.0015f), 0, 0.01F);
     }
 
     public float getWaterDistortion() {
-        return wasInWater ? 0.025F : 0;
+        float peyote = ShaderContext.drug(DrugType.PEYOTE);
+        float wetness = !PsychedelicraftClient.getConfig().visual.doWaterDistortion && wasInWater ? 0.025F : 0;
+        return Math.max(peyote * 0.01073F, wetness);
     }
 
     public float getWaterScreenDistortion() {
-        return timeScreenWet > 0 && !wasInWater ? Math.min(1, timeScreenWet / 80F) : 0;
+        return PsychedelicraftClient.getConfig().visual.waterOverlayEnabled && timeScreenWet > 0 && !wasInWater ? Math.min(1, timeScreenWet / 80F) : 0;
     }
 
     @Override
@@ -58,10 +65,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
 
         PlayerEntity entity = MinecraftClient.getInstance().player;
 
-        if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled) {
-            experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
-        }
-
+        experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
         wasInWater = entity.getWorld().getFluidState(BlockPos.ofFloored(entity.getEyePos())).isIn(FluidTags.WATER);
         wasInRain = entity.getWorld().getRainGradient(tickDelta) > 0
                 && entity.getWorld().getBiome(entity.getBlockPos()).value().getPrecipitation(entity.getBlockPos()) == Precipitation.RAIN

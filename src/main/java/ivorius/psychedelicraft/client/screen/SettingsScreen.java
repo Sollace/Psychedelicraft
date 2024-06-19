@@ -85,7 +85,6 @@ public class SettingsScreen extends GameGui {
         createToggle(LEFT, row += 20, "gui.psychedelicraft.option.heat_distortion", visual.doHeatDistortion, z -> visual.doHeatDistortion = z);
         createToggle(LEFT, row += 20, "gui.psychedelicraft.option.water_distortion", visual.doWaterDistortion, z -> visual.doWaterDistortion = z);
         createToggle(LEFT, row += 20, "gui.psychedelicraft.option.motion_blur", visual.doMotionBlur, z -> visual.doMotionBlur = z);
-        createFormattedSlider(LEFT, row += 25, 0, 8, "gui.psychedelicraft.option.pause_menu_blur", config.getData().visual.pauseMenuBlur, f -> visual.pauseMenuBlur = f);
         row += 10;
         content.addButton(new Label(LEFT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.overlays");
         createToggle(LEFT, row += 25, "gui.psychedelicraft.option.water_overlay", visual.waterOverlayEnabled, z -> visual.waterOverlayEnabled = z);

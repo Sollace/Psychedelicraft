@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ivorius.psychedelicraft.client.render.RenderPhase;
+import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.util.math.MathHelper;
@@ -125,6 +126,10 @@ public class HallucinationManager {
         return Drug.SUPER_SATURATION_HALLUCINATION_STRENGTH.get(getMultiplier(HallucinationTypes.SUPER_SATURATION), properties);
     }
 
+    public float getColorInversion(float tickDelta) {
+        return Drug.INVERSION_HALLUCINATION_STRENGTH.get(properties);
+    }
+
     public float getBloom(float tickDelta) {
         return Drug.BLOOM_HALLUCINATION_STRENGTH.get(getMultiplier(HallucinationTypes.BLOOM), properties);
     }
@@ -188,5 +193,15 @@ public class HallucinationManager {
                 MathHelper.clamp(getMultiplier(HallucinationTypes.COLOR_CONTRAST), 0, 1),
                 true
         );
+    }
+
+    public float[] getBlur(float tickDelta) {
+        float menuBlur = Math.max(0, ShaderContext.drug(DrugType.SLEEP_DEPRIVATION) - 0.7F) * ShaderContext.tickDelta() * 15;
+        float vBlur = ShaderContext.drug(DrugType.POWER) + menuBlur;
+        float hBlur = menuBlur + (
+              ShaderContext.drug(DrugType.BATH_SALTS) * 6F
+            + ShaderContext.drug(DrugType.BATH_SALTS) * (ShaderContext.ticks() % 5)
+        );
+        return new float[] { hBlur, vBlur };
     }
 }

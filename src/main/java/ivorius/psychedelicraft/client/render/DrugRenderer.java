@@ -6,7 +6,6 @@
 package ivorius.psychedelicraft.client.render;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.effect.*;
 import ivorius.psychedelicraft.client.render.shader.PostEffectRenderer;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
@@ -57,8 +56,6 @@ public class DrugRenderer {
 
     private final ClientDrugMusicManager musicManager = new ClientDrugMusicManager();
 
-    private float screenBackgroundBlur;
-
     public ScreenEffect getScreenEffects() {
         return screenEffects;
     }
@@ -71,17 +68,7 @@ public class DrugRenderer {
         return environmentalEffects;
     }
 
-    public float getMenuBlur() {
-        return PsychedelicraftClient.getConfig().visual.pauseMenuBlur * screenBackgroundBlur * screenBackgroundBlur * screenBackgroundBlur;
-    }
-
     public void update(DrugProperties drugProperties, LivingEntity entity) {
-        if (MinecraftClient.getInstance().isPaused()) {
-            screenBackgroundBlur = Math.min(1, screenBackgroundBlur + 0.25F);
-        } else {
-            screenBackgroundBlur = Math.max(0, screenBackgroundBlur - 0.25F);
-        }
-
         getScreenEffects().update(ShaderContext.tickDelta());
         musicManager.update(drugProperties);
     }
