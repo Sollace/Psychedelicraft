@@ -104,10 +104,6 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
 
         if (++age % 30 == 0) {
             heat = calculateSunStrength();
-
-            if (world.getRainGradient(1) > 0 && world.isSkyVisible(pos)) {
-               // dryingProgress = heat;
-            }
         }
 
         if (!(world.getRainGradient(1) > 0 && world.isSkyVisible(pos))) {
@@ -128,9 +124,9 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
 
                 if (dryingProgress >= cookingTime) {
                     DryingRecipe.Input input = new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList());
-                    world.getRecipeManager().getFirstMatch(PSRecipes.DRYING_TYPE, input, world, currentRecipe.get()).ifPresent(recipe -> {
-                        craft(recipe.value(), input);
-                    });
+                    world.getRecipeManager()
+                        .getFirstMatch(PSRecipes.DRYING_TYPE, input, world, currentRecipe.get())
+                        .ifPresent(recipe -> craft(recipe.value(), input));
                     currentRecipe = Optional.empty();
                     dryingProgress = 0;
                     cookingTime = 0;
@@ -143,10 +139,17 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         }
 
         if (!MathHelper.approximatelyEquals(oldProgress, dryingProgress) || !MathHelper.approximatelyEquals(oldHeat, heat)) {
-            world.updateComparators(pos, getCachedState().getBlock());
-            world.updateNeighbors(pos, getCachedState().getBlock());
-            world.getChunkManager().markForUpdate(pos);
             markDirty();
+        }
+    }
+
+    @Override
+    public void markDirty() {
+        super.markDirty();
+        if (getWorld() instanceof ServerWorld sw) {
+            sw.updateComparators(pos, getCachedState().getBlock());
+            sw.updateNeighbors(pos, getCachedState().getBlock());
+            sw.getChunkManager().markForUpdate(getPos());
         }
     }
 
