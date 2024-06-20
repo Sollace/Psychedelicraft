@@ -7,7 +7,7 @@
   },
   "result": {
     "attributes": {
-      "temperature": {
+      "warmth": {
          "type": "add",
          "value": 1
       }
