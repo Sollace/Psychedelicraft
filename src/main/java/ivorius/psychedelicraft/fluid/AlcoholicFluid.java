@@ -272,9 +272,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public Stream<ItemFluids> getDefaultStacks(int capacity) {
-        return settings.states.get().stream().map(state -> {
-            return state.apply(getDefaultStack(capacity));
-        });
+        return Stream.concat(
+            super.getDefaultStacks(capacity),
+            settings.states.get().stream().map(state -> state.apply(getDefaultStack(capacity)))
+        ).distinct();
     }
 
     @Override

@@ -63,8 +63,10 @@ public class CoffeeFluid extends DrugFluid implements Processable {
 
     @Override
     public Stream<ItemFluids> getDefaultStacks(int capacity) {
-        return WARMTH.steps().map(Pair::getRight)
-                .map(warmth -> WARMTH.set(getDefaultStack(capacity), warmth));
+        return Stream.concat(
+                super.getDefaultStacks(capacity),
+                WARMTH.steps().map(Pair::getRight).map(warmth -> WARMTH.set(getDefaultStack(capacity), warmth))
+        );
     }
 
     @Override
