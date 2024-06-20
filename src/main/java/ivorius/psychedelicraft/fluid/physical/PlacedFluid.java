@@ -86,6 +86,11 @@ public abstract class PlacedFluid extends WaterFluid {
         );
     }
 
+    @Override
+    protected boolean isInfinite(World world) {
+        return false;
+    }
+
     static PlacedFluid still(PhysicalFluid physical) {
         return new PlacedFluid() {
             @Override
