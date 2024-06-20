@@ -158,9 +158,7 @@ public class GeometryShader {
 
         @Override
         public void upload() {
-            if (!MinecraftClient.getInstance().isPaused()) {
-                valueGetter.accept(this);
-            }
+            valueGetter.accept(this);
             super.upload();
         }
     }
