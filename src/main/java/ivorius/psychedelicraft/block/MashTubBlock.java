@@ -160,6 +160,11 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     }
 
     @Override
+    protected boolean canBucketPlace(BlockState state, Fluid fluid) {
+        return false;
+    }
+
+    @Override
     public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         if (player == null) {
             return false;
