@@ -111,7 +111,7 @@ public interface PSItems {
     Item DRIED_CANNABIS_BUDS = register("dried_cannabis_buds");
 
     Item HASH_MUFFIN = register("hash_muffin", new EdibleItem(
-            new Settings().food(EdibleItem.HAS_MUFFIN),
+            new Settings().food(EdibleItem.HASH_MUFFIN),
             new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.METABOLISED, 0.004, 0.002, 0.7f)
     ));
 
@@ -138,15 +138,15 @@ public interface PSItems {
 
     SmokeableItem CIGARETTE = register("cigarette", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(1), 2, SmokeableItem.WHITE,
-            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7f)
+            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
     ));
     SmokeableItem CIGAR = register("cigar", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(3), 4, new Vector3f(0.6F, 0.6F, 0.5F),
-            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7f)
+            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
     ));
     SmokeableItem JOINT = register("joint", new SmokeableItem(
             new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.9F, 0.9F, 0.9F),
-            new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20f)
+            new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)
     ));
 
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));

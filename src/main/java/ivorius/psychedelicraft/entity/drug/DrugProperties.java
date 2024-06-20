@@ -142,7 +142,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public void addToDrug(DrugInfluence influence) {
-        influences.add(influence);
+        influences.add(influence.clone());
         markDirty();
     }
 
