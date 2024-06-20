@@ -262,7 +262,6 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
 
     @Override
     public void reload(ResourceManager manager) {
-        renderer.onShadersLoaded(List.of());
         renderer.onShadersLoaded(activeShaderIds.entrySet().stream().map(this::loadShader).filter(Objects::nonNull).toList());
     }
 

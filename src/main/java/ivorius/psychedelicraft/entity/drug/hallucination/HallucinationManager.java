@@ -89,7 +89,7 @@ public class HallucinationManager {
     }
 
     private void removeRandomHallucination(Random random) {
-        activeHallucinations.removeInt(activeHallucinations.getInt(random.nextInt(activeHallucinations.size())));
+        activeHallucinations.removeInt(random.nextInt(activeHallucinations.size()));
     }
 
     private boolean addRandomHallucination(Random random) {
