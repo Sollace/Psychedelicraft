@@ -85,13 +85,7 @@ public class DrinkableItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-        ItemFluids fluids = ItemFluids.of(stack);
-        tooltip.add(Text.translatable("psychedelicraft.drink.levels", ItemFluids.of(stack).amount(), FluidCapacity.get(stack)).formatted(Formatting.GRAY));
-
-        fluids.fluid().appendTooltip(fluids, tooltip, type);
-        if (type.isAdvanced()) {
-            tooltip.add(Text.literal("contents: " + fluids.fluid().getId().toString()).formatted(Formatting.DARK_GRAY));
-        }
+        FluidCapacity.appendTooltip(stack, context, tooltip, type);
     }
 
     @Override

@@ -72,10 +72,7 @@ public class FilledBucketItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-        if (type.isAdvanced()) {
-            ItemFluids fluids = ItemFluids.of(stack);
-            tooltip.add(Text.literal(fluids.amount() + "/" + FluidCapacity.get(stack)));
-        }
+        FluidCapacity.appendTooltip(stack, context, tooltip, type);
     }
 
     @Override

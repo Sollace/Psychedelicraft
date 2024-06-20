@@ -77,7 +77,7 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
             return 0;
         }
 
-        ItemFluids transferred = from.withdraw(MathHelper.clamp(Math.max(0, capacity - fluids.amount()), 0, maxAmount));
+        ItemFluids transferred = from.withdraw(Math.min(Math.max(0, capacity - fluids.amount()), maxAmount));
         fluids = transferred.ofAmount(fluids.amount() + transferred.amount());
         if (transferred.amount() > 0) {
             changeCallback.onLevelChange(this, transferred.amount());

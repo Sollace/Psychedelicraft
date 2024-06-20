@@ -166,8 +166,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public interface Transaction {
         static Transaction begin(ItemStack initialStack) {
-            var storage = FluidTransferUtils.getAsStorage(initialStack, FluidTransferUtils.standalone(initialStack));
-            if (storage.isPresent() && !(storage.get() instanceof VariantMarshal.ItemFluidsStorage)) {
+            if (initialStack.get(PSComponents.FLUIDS) == null) {
                 return new VariantMarshal.FabricTransaction(initialStack);
             }
             return new DirectTransaction(initialStack);

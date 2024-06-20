@@ -26,7 +26,8 @@ public final class VariantMarshal {
     public static void bootstrap() {
         FluidStorage.GENERAL_COMBINED_PROVIDER.register(context -> {
             ItemStack stack = context.getItemVariant().toStack();
-            if (stack.get(PSComponents.FLUID_CAPACITY) != null) {
+            if (stack.get(PSComponents.FLUIDS) != null) {
+                // F***k the fabric apis. Use something that actually works
                 return new ItemFluidsStorage(context);
             }
             if (stack.isOf(Items.MILK_BUCKET)) {
@@ -81,11 +82,12 @@ public final class VariantMarshal {
 
         @Override
         public ItemFluids deposit(ItemFluids fluids, int maxAmount) {
-            var result = FluidTransferUtils.deposit(stack, fluids.toVariant(), Math.min(maxAmount, fluids.amount()));
+            maxAmount = Math.min(maxAmount, fluids.amount());
+            var result = FluidTransferUtils.deposit(stack, fluids.toVariant(), maxAmount);
             if (fluids().amount() < capacity() && result.getRight() == maxAmount) {
                 // Fabric's transfer api doesn't support partial deposits!!!!
                 // We have to simulate it now. F$*#$
-                ItemFluids.Transaction t = new ItemFluids.DirectTransaction(stack, capacity(), fluids);
+                ItemFluids.Transaction t = new ItemFluids.DirectTransaction(stack, capacity(), this.fluids);
                 ItemFluids remainder = t.deposit(fluids, maxAmount);
                 stack = t.toItemStack();
                 fluids = t.fluids();
@@ -93,7 +95,8 @@ public final class VariantMarshal {
             }
             stack = result.getLeft();
             this.fluids = null;
-            return fluids.ofAmount(result.getRight().intValue());
+            maxAmount -= result.getRight().intValue();
+            return fluids.ofAmount(fluids.amount() - maxAmount);
         }
 
         @Override
@@ -162,9 +165,10 @@ public final class VariantMarshal {
         public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
             ItemFluids.Transaction t = new ItemFluids.DirectTransaction(getCurrentStack(), (int)getCapacity(), ItemFluids.direct(getCurrentStack()));
             ItemFluids withdrawn = t.withdraw((int)maxAmount);
-            if (context.exchange(ItemVariant.of(t.toItemStack()), 1, transaction) == 1) {
+            // What even is this for??
+            /*if (context.exchange(ItemVariant.of(t.toItemStack()), 1, transaction) == 1) {
                 return t.capacity();
-            }
+            }*/
             return withdrawn.amount();
         }
 
