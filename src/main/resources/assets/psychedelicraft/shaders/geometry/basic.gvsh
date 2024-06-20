@@ -4,7 +4,7 @@ ps_in vec2 texCoord0;
 uniform sampler2D PS_SurfaceFractalSampler;
 
 uniform float PS_WorldTicks;
-uniform vec3 PS_WavesMatrix;
+uniform vec4 PS_WavesMatrix;
 uniform float PS_DistantWorldDeformation;
 uniform vec4 PS_SurfaceFractalCoords;
 uniform float PS_SurfaceFractalStrength;
@@ -32,8 +32,11 @@ void main() {
   float smallWaves = PS_WavesMatrix[0];
   float bigWaves = PS_WavesMatrix[1];
   float wiggleWaves = PS_WavesMatrix[2];
+  float bubbling = PS_WavesMatrix[3];
   float distantWorldDeformation = PS_DistantWorldDeformation;
   float surfaceFractalStrength = PS_SurfaceFractalStrength;
+
+  float tau = 3.14159 * 2.0;
 
   vec3 playerPos = PS_PlayerPosition;
 
@@ -49,16 +52,25 @@ void main() {
   if (smallWaves > 0.0) {
     float w1 = 8.0;
 
-    gl_Position[1] += sin((Position.x + worldTicks / 5.0) / w1 * 3.14159 * 2.0) * sin((Position.z + worldTicks / 5.0) / w1 * 3.14159 * 2.0) * smallWaves * 1.5;
-    gl_Position[1] -= sin((playerPos.x + worldTicks / 5.0) / w1 * 3.14159 * 2.0) * sin((playerPos.z + worldTicks / 5.0) / w1 * 3.14159 * 2.0) * smallWaves * 1.5;
+    gl_Position[1] += sin((Position.x + worldTicks / 5.0) / w1 * tau) * sin((Position.z + worldTicks / 5.0) / w1 * tau) * smallWaves * 1.5;
+    gl_Position[1] -= sin((playerPos.x + worldTicks / 5.0) / w1 * tau) * sin((playerPos.z + worldTicks / 5.0) / w1 * tau) * smallWaves * 1.5;
 
     float w2 = 16.0;
 
-    gl_Position.y += sin((Position.x + worldTicks / 8.0) / w2 * 3.14159 * 2.0) * sin((Position.z) / w2 * 3.14159 * 2.0) * smallWaves * 3.0;
-    gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w2 * 3.14159 * 2.0) * sin((playerPos.z) / w2 * 3.14159 * 2.0) * smallWaves * 3.0;
+    gl_Position.y += sin((Position.x + worldTicks / 8.0) / w2 * tau) * sin((Position.z) / w2 * tau) * smallWaves * 3.0;
+    gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w2 * tau) * sin((playerPos.z) / w2 * tau) * smallWaves * 3.0;
 
-    gl_Position.x = mix(gl_Position.x, gl_Position[0] * (1.0 + fogFragCoord / 20.0), smallWaves);
-    gl_Position.y = mix(gl_Position.y, gl_Position[1] * (1.0 + fogFragCoord / 20.0), smallWaves);
+    gl_Position.x = mix(gl_Position.x, gl_Position.x * (1.0 + fogFragCoord / 20.0), smallWaves);
+    gl_Position.y = mix(gl_Position.y, gl_Position.y * (1.0 + fogFragCoord / 20.0), smallWaves);
+  }
+
+  if (bubbling > 0.0) {
+    float w3 = 4.0;
+
+    gl_Position.y += sin((Position.x + worldTicks / 8.0) / w3 * tau) * sin((Position.z) / w3 * tau) * bubbling * 3.0;
+    gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w3 * tau) * sin((playerPos.z) / w3 * tau) * bubbling * 3.0;
+
+    gl_Position.y = mix(gl_Position.y, gl_Position.y * (1.0 + fogFragCoord / 20.0), bubbling);
   }
 
   float fractalFractureStrength = PS_FractalFractureStrength;
@@ -71,13 +83,13 @@ void main() {
 
   if (wiggleWaves > 0.0) {
     float w1 = 8.0;
-    gl_Position.x += sin((Position.y + worldTicks / 8.0) / w1 * 3.14159 * 2.0)
-                    * sin((Position.z + worldTicks / 5.0) / w1 * 3.14159 * 2.0)
+    gl_Position.x += sin((Position.y + worldTicks / 8.0) / w1 * tau)
+                    * sin((Position.z + worldTicks / 5.0) / w1 * tau)
                     * wiggleWaves;
   }
 
   if (distantWorldDeformation > 0.0 && fogFragCoord > 5.0) {
-    gl_Position.y += (sin(fogFragCoord / 8.0 * 3.14159 * 2.0) + 1.0)
+    gl_Position.y += (sin(fogFragCoord / 8.0 * tau) + 1.0)
                      * distantWorldDeformation
                      * (fogFragCoord - 5.0) / 8.0;
   }
