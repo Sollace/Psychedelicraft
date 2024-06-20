@@ -72,6 +72,7 @@ class DrawingFluidEmiRecipe implements PSRecipe {
         widgets.addTexture(TextureConfig.builder().size(120, 64).texture(background).uv(15, 15).build(), 0, 0);
         widgets.addAnimatedTexture(TextureConfig.builder().size(39, 64).texture(background).uv(191, 20).build(), 68, 47, 2000, true, true, true);
         widgets.addSlot(contents.empty(), 2, getCategory().getDisplayHeight() - 16 - 4).markInput();
+        widgets.addSlot(contents.contents(), 2 + 16 + 4, getCategory().getDisplayHeight() - 16 - 4).markCatalyst();
         widgets.addSlot(contents.filled(), 107, 45).markOutput();
     }
 }

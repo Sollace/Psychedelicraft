@@ -159,7 +159,7 @@ public class FluidBoxRenderer {
         public static FluidAppearance of(ItemFluids stack) {
             return stack.fluid().getFlowTexture(stack).map(texture -> {
                 Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).getSprite(texture);
-                return new FluidAppearance(sprite.getAtlasId(), sprite, 0xFFFFFFFF);
+                return new FluidAppearance(sprite.getAtlasId(), sprite, Colors.WHITE);
             }).orElseGet(() -> {
                 int color = stack.fluid().getColor(stack);
                 Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();

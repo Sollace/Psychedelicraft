@@ -54,7 +54,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         float[] color = appearance.rgba();
 
-        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], 1);
+        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], color[3]);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     }
@@ -71,7 +71,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         float[] color = appearance.rgba();
 
-        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y + height - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], 1);
+        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y + height - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], color[3]);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     }

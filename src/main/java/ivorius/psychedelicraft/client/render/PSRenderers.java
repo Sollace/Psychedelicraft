@@ -70,7 +70,7 @@ public interface PSRenderers {
             FluidRenderHandlerRegistry.INSTANCE.register(fluid.getPhysical().getStandingFluid(), fluid.getPhysical().getFlowingFluid(), new SimpleFluidRenderHandler(SimpleFluidRenderHandler.WATER_STILL, SimpleFluidRenderHandler.WATER_FLOWING, SimpleFluidRenderHandler.WATER_OVERLAY, 0) {
                 @Override
                 public int getFluidColor(@Nullable BlockRenderView view, @Nullable BlockPos pos, FluidState state) {
-                    return fluid.getColor(fluid.getDefaultStack(1));
+                    return fluid.getColor(fluid.getStack(state, 1));
                 }
             });
             FluidVariantRendering.register(fluid.getPhysical().getStandingFluid(), new FluidVariantRenderHandler() {
