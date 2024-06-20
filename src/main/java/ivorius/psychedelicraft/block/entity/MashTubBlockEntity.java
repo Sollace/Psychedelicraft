@@ -25,6 +25,8 @@ import ivorius.psychedelicraft.recipe.MashingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.util.MathUtils;
 import ivorius.psychedelicraft.util.NbtSerialisable;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ItemEntity;
@@ -121,19 +123,32 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
     }
 
-    public TypedActionResult<ItemStack> depositIngredient(ItemStack stack) {
+    public TypedActionResult<ItemStack> interactWithItem(ItemStack stack) {
 
         if (!currentStew.isEmpty()) {
             return TypedActionResult.fail(stack);
         }
 
-        ItemFluids fluids = ItemFluids.of(stack);
-        if (!fluids.isEmpty()) {
+        if (getWorld().isClient) {
+            return TypedActionResult.success(stack);
+        }
+
+        if (FluidCapacity.get(stack) > 0) {
+            ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
             Resovoir tank = getPrimaryTank();
-            if (tank.getAmount() < tank.getCapacity()) {
-                getWorld().playSound(null, getPos(), SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1, 1);
-                return TypedActionResult.success(tank.deposit(stack));
+            FluidVariant variant = t.fluids().toVariant();
+            if (!t.fluids().isEmpty()) {
+                if (tank.deposit(t, t.capacity()) > 0) {
+                    getWorld().playSound(null, getPos(), FluidVariantAttributes.getEmptySound(variant), SoundCategory.BLOCKS, 1, 1);
+                    return TypedActionResult.success(t.toItemStack());
+                }
+            } else {
+                if (tank.withdraw(t, t.capacity()) > 0) {
+                    getWorld().playSound(null, getPos(), FluidVariantAttributes.getFillSound(variant), SoundCategory.BLOCKS, 1, 1);
+                    return TypedActionResult.success(t.toItemStack());
+                }
             }
+
             return TypedActionResult.fail(stack);
         }
 

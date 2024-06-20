@@ -117,7 +117,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     @Override
     protected ItemActionResult onInteractWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
         if (!heldStack.isEmpty()) {
-            TypedActionResult<ItemStack> result = blockEntity.depositIngredient(heldStack.copy());
+            TypedActionResult<ItemStack> result = blockEntity.interactWithItem(heldStack.copy());
             if (result.getResult().isAccepted()) {
                 if (!player.isCreative()) {
                     player.setStackInHand(hand, result.getValue());
@@ -199,15 +199,11 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         return world.getBlockEntity(getBlockEntityPosition(world, pos), getBlockEntityType()).filter(be -> {
             SimpleFluid f = SimpleFluid.forVanilla(fluidState.getFluid());
 
-            Resovoir tank = be.getPrimaryTank();
-
-            if (tank.getCapacity() - tank.getContents().amount() <  FluidVolumes.BUCKET) {
-                return false;
+            if (be.getPrimaryTank().deposit(f.getStack(fluidState, FluidVolumes.BUCKET)) > 0) {
+                be.markForUpdate();
+                return true;
             }
-
-            tank.deposit(f.getStack(fluidState, FluidVolumes.BUCKET));
-            be.markForUpdate();
-            return true;
+            return false;
         }).isPresent();
     }
 
