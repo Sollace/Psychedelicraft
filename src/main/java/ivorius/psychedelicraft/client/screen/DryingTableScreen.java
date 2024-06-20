@@ -69,7 +69,7 @@ public class DryingTableScreen extends HandledScreen<DryingTableScreenHandler> {
         int progress = (int)(handler.getProgress() * 24); //Max 24, progress
         context.drawTexture(TEXTURE, centerX + 88, centerY + 34, 176, 42, progress + 1, 16);
 
-        int heat = (int) (handler.getHeatRatio() * 20); //Max 20, sun
-        context.drawTexture(TEXTURE, centerX + 148, centerY + 6 + (20 - heat), 176, 21 + (20 - heat), 20, heat);
+        int heat = (int) (handler.getHeatRatio() * 21); //Max 20, sun
+        context.drawTexture(TEXTURE, centerX + 148, centerY + 6 + (21 - heat), 176, 21 + (21 - heat), 21, heat);
     }
 }
