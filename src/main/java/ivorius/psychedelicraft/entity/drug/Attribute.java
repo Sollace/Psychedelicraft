@@ -5,14 +5,15 @@ import java.util.function.Function;
 
 import org.joml.Vector4f;
 
-public record Attribute(float initial, Combiner combiner) {
+public record Attribute(float initial, Combiner combiner) implements DrugAttributeFunctions.Func {
     public float get(DrugProperties properties) {
         return get(initial, properties);
     }
 
     public float get(float value, DrugProperties properties) {
         for (Drug drug : properties.getAllDrugs()) {
-            value = combiner.combine(value, drug.get(this));
+            var func = drug.getType().functions().get(this);
+            value = combiner.combine(value, func.apply((float)drug.getActiveValue(), drug.getTicksActive()));
         }
         return value;
     }
@@ -26,6 +27,11 @@ public record Attribute(float initial, Combiner combiner) {
             }
             return initial;
         };
+    }
+
+    @Override
+    public float apply(float strength, int duration) {
+        return initial;
     }
 
     public interface Combiner {

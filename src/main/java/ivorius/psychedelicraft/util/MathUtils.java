@@ -144,20 +144,15 @@ public interface MathUtils {
         return cubicMix(v1, v1, v2, v2, delta);
     }
 
-    static double mixEaseInOut(double v1, double v2, double delta) {
-        return cubicMix(v1, v1, v2, v2, delta);
-    }
-
-    static double easeZeroToOne(double delta) {
-        return cubicMix(0, 0, 1, 1, MathHelper.clamp(delta, 0, 1));
-    }
-
     static float easeZeroToOne(float delta) {
         return cubicMix(0, 0, 1, 1, MathHelper.clamp(delta, 0, 1));
     }
 
-    static float inverseLerp(float value, float start, float end) {
-        return MathHelper.clamp(MathHelper.getLerpProgress(value, start, end), 0, 1);
+    /**
+     * Maps a value into a 0-1 range based on where it lies between a given min and max.
+     */
+    static float project(float value, float min, float max) {
+        return MathHelper.clamp(MathHelper.getLerpProgress(value, min, max), 0, 1);
     }
 
     static Vector3d cubicMix(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, double delta, Vector3d dest) {

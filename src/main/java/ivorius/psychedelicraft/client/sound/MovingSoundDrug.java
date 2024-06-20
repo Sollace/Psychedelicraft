@@ -57,6 +57,6 @@ public class MovingSoundDrug extends MovingSoundInstance {
         if (activeValue <= ClientDrugMusicManager.PLAY_THRESHOLD) {
             return 0;
         }
-        return MathUtils.inverseLerp(MathHelper.clamp((float)activeValue, 0, 1), 0, 0.4F);
+        return MathUtils.project(MathHelper.clamp((float)activeValue, 0, 1), 0, 0.4F);
     }
 }

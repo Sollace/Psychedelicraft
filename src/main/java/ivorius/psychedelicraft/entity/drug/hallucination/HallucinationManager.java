@@ -53,7 +53,7 @@ public class HallucinationManager {
         entities.update();
         camera.update(properties);
 
-        float totalHallucinationValue = hallucinationTypes.getTotal(properties);
+        float totalHallucinationValue = hallucinationTypes.update(properties);
         int desiredHallucinations = Math.max(0, MathHelper.floor(totalHallucinationValue * 4F + 0.9f));
 
         Random random = properties.asEntity().getRandom();
@@ -83,7 +83,9 @@ public class HallucinationManager {
     }
 
     private float getDesiredValue(Random random, int key) {
-        return activeHallucinations.contains(key) ? MathUtils.randomColor(random, properties.getAge(), hallucinationTypes.getMultiplier(key), 0.5f, 0.00121f, 0.0019318f) : 0;
+        return activeHallucinations.contains(key)
+                ? MathUtils.randomColor(random, properties.getAge(), hallucinationTypes.getMultiplier(key), 0.5f, 0.00121f, 0.0019318f)
+                : 0;
     }
 
     private void removeRandomHallucination(Random random) {
@@ -160,7 +162,7 @@ public class HallucinationManager {
     }
 
     public float getSurfaceBubblingStrength() {
-        return 0;
+        return 0F;
     }
 
     public float getDistantWorldDeformationStrength() {

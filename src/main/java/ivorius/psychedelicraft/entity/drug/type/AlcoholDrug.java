@@ -22,8 +22,8 @@ import net.minecraft.util.math.random.Random;
 public class AlcoholDrug extends SimpleDrug {
     public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
             .put(VIEW_WOBBLYNESS, 0.5F)
-            .put(DOUBLE_VISION, f -> MathUtils.inverseLerp(f, 0.25f, 1))
-            .put(MOTION_BLUR, f -> MathUtils.inverseLerp(f, 0.5f, 1) * 0.3F)
+            .put(DOUBLE_VISION, f -> MathUtils.project(f, 0.25F, 1))
+            .put(MOTION_BLUR, f -> MathUtils.project(f, 0.5F, 1) * 0.3F)
             .build();
 
     public AlcoholDrug(DrugType type, double decSpeed, double decSpeedPlus) {
@@ -31,40 +31,35 @@ public class AlcoholDrug extends SimpleDrug {
     }
 
     @Override
-    public void update(DrugProperties drugProperties) {
-        super.update(drugProperties);
+    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+        PlayerEntity entity = properties.asEntity();
 
-        if (getActiveValue() > 0) {
-            PlayerEntity entity = drugProperties.asEntity();
-            Random random = entity.getRandom();
+        double activeValue = getActiveValue();
 
-            double activeValue = getActiveValue();
-
-            if ((entity.age % 20) == 0) {
-                double damageChance = (activeValue - 0.9F) * 2;
-
-                if (entity.age % 20 == 0 && random.nextFloat() < damageChance) {
-                    entity.damage(PSDamageTypes.create(entity.getWorld(), PSDamageTypes.ALCOHOL_POSIONING), (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
-                }
+        if ((getTicksActive() % 20) == 0 && random.nextFloat() < (activeValue - 0.9F) * 2) {
+            entity.damage(PSDamageTypes.create(entity.getWorld(), PSDamageTypes.ALCOHOL_POSIONING), (int) ((activeValue - 0.9F) * 50 + 4));
+            if (entity.isDead()) {
+                return true;
             }
-
-            double motionEffect = Math.min(activeValue, 0.8);
-
-            rotateEntityPitch(entity, MathHelper.sin(entity.age / 600F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
-            rotateEntityYaw(entity, MathHelper.cos(entity.age / 500F * (float) Math.PI) / 1.3F * motionEffect * (random.nextFloat() + 0.5F));
-
-            rotateEntityPitch(entity, MathHelper.sin(entity.age / 180F * (float) Math.PI) / 3F * motionEffect * (random.nextFloat() + 0.5F));
-            rotateEntityYaw(entity, MathHelper.cos(entity.age / 150F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
         }
+
+        double motionEffect = Math.min(activeValue, 0.8);
+
+        rotateEntityPitch(entity, MathHelper.sin(entity.age / 600F * MathHelper.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
+        rotateEntityYaw(entity, MathHelper.cos(entity.age / 500F * MathHelper.PI) / 1.3F * motionEffect * (random.nextFloat() + 0.5F));
+
+        rotateEntityPitch(entity, MathHelper.sin(entity.age / 180F * MathHelper.PI) / 3F * motionEffect * (random.nextFloat() + 0.5F));
+        rotateEntityYaw(entity, MathHelper.cos(entity.age / 150F * MathHelper.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
+
+        return super.tickSideEffects(properties, random);
     }
 
     @Override
     public void onWakeUp(DrugProperties drugProperties) {
         double value = getActiveValue();
+        super.onWakeUp(drugProperties);
 
         if (value > 0) {
-            super.onWakeUp(drugProperties);
-
             PlayerEntity player = drugProperties.asEntity();
             Random random = player.getWorld().random;
 
@@ -74,8 +69,6 @@ public class AlcoholDrug extends SimpleDrug {
                 drugProperties.addToDrug(DrugType.SLEEP_DEPRIVATION, 0.25F);
                 PSCriteria.HANGOVER.trigger(player);
             }
-        } else {
-            super.onWakeUp(drugProperties);
         }
     }
 }

@@ -25,10 +25,10 @@ public class KavaDrug extends SimpleDrug {
             .put(VIEW_WOBBLYNESS, 0.5F)
             .put(DROWSYNESS, 0.4F)
             .put(SOUND_VOLUME, f -> 1 - f)
-            .put(SPEED, -0.2F)
-            .put(DIG_SPEED, -0.2F)
+            .put(SPEED, f -> 1 - (f * 0.2F))
+            .put(DIG_SPEED, f -> 1 - (f * 0.2F))
             .put(DESATURATION_HALLUCINATION_STRENGTH, (f, t) -> f * 0.75f * ((MathHelper.clamp(t, 50, 250) - 50) / 200F))
-            .put(HEART_BEAT_VOLUME, (f, t) -> MathUtils.inverseLerp(f, 0.4F, 1) * 1.2F * ((MathHelper.clamp(t, 50, 250) - 50) / 200F))
+            .put(HEART_BEAT_VOLUME, (f, t) -> MathUtils.project(f, 0.4F, 1) * 1.2F * ((MathHelper.clamp(t, 50, 250) - 50) / 200F))
             .build();
 
     public KavaDrug(double decSpeed, double decSpeedPlus) {
@@ -36,30 +36,24 @@ public class KavaDrug extends SimpleDrug {
     }
 
     @Override
-    public void update(DrugProperties drugProperties) {
-        super.update(drugProperties);
+    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+        PlayerEntity entity = properties.asEntity();
 
-        if (getActiveValue() > 0) {
-            PlayerEntity entity = drugProperties.asEntity();
-            Random random = entity.getRandom();
+        double activeValue = getActiveValue();
 
-            double activeValue = getActiveValue();
-
-            if ((entity.age % 20) == 0 && getTicksActive() > 100) {
-                double damageChance = (activeValue - 1.3F) * 2;
-
-                if (entity.age % 10 == 0 && random.nextFloat() < damageChance) {
-                    entity.damage(drugProperties.damageOf(PSDamageTypes.HEART_FAILURE), (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
-                }
-            }
-
-            double motionEffect = Math.min(activeValue, 0.8);
-
-            rotateEntityPitch(entity, MathHelper.sin(entity.age / 600F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
-            rotateEntityYaw(entity, MathHelper.cos(entity.age / 500F * (float) Math.PI) / 1.3F * motionEffect * (random.nextFloat() + 0.5F));
-
-            rotateEntityPitch(entity, MathHelper.sin(entity.age / 180F * (float) Math.PI) / 3F * motionEffect * (random.nextFloat() + 0.5F));
-            rotateEntityYaw(entity, MathHelper.cos(entity.age / 150F * (float) Math.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
+        if ((getTicksActive() % 20) == 0 && getTicksActive() > 100 && random.nextFloat() < (activeValue - 1.3F) * 2) {
+            entity.damage(properties.damageOf(PSDamageTypes.HEART_FAILURE), (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
+            return true;
         }
+
+        double motionEffect = Math.min(activeValue, 0.8);
+
+        rotateEntityPitch(entity, MathHelper.sin(entity.age / 600F * MathHelper.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
+        rotateEntityYaw(entity, MathHelper.cos(entity.age / 500F * MathHelper.PI) / 1.3F * motionEffect * (random.nextFloat() + 0.5F));
+
+        rotateEntityPitch(entity, MathHelper.sin(entity.age / 180F * MathHelper.PI) / 3F * motionEffect * (random.nextFloat() + 0.5F));
+        rotateEntityYaw(entity, MathHelper.cos(entity.age / 150F * MathHelper.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
+
+        return super.tickSideEffects(properties, random);
     }
 }

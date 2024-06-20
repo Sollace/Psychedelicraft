@@ -7,6 +7,8 @@ import java.util.function.Function;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 
 public interface DrugAttributeFunctions {
+    DrugAttributeFunctions EMPTY = attribute -> attribute;
+
     Func get(Attribute attribute);
 
     public interface Func {
@@ -18,11 +20,10 @@ public interface DrugAttributeFunctions {
     }
 
     static DrugAttributeFunctions empty() {
-        return attribute -> Builder.DEFAULT_FUNC;
+        return EMPTY;
     }
 
     public static class Builder {
-        static final Func DEFAULT_FUNC = (strength, time) -> 0F;
         private final Impl functions = new Impl(new HashMap<>());
 
         private Builder() {}
@@ -52,7 +53,7 @@ public interface DrugAttributeFunctions {
         private record Impl(Map<Attribute, Func> functions) implements DrugAttributeFunctions {
             @Override
             public Func get(Attribute attribute) {
-                return functions.getOrDefault(attribute, DEFAULT_FUNC);
+                return functions.getOrDefault(attribute, attribute);
             }
         }
     }

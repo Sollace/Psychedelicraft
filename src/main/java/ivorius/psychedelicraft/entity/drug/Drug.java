@@ -82,10 +82,6 @@ public interface Drug extends NbtSerialisable {
 
     Optional<Text> trySleep(BlockPos pos);
 
-    default float get(Attribute attribute) {
-        return getType().functions().get(attribute).apply((float)getActiveValue(), getTicksActive());
-    }
-
     default void applyContrastColorization(Vector4f rgba) {
 
     }

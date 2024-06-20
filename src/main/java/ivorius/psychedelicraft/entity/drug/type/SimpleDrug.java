@@ -16,6 +16,7 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 
 public class SimpleDrug implements Drug {
     protected double effect;
@@ -93,13 +94,18 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
-    public void update(DrugProperties drugProperties) {
+    public final void update(DrugProperties properties) {
         if (getActiveValue() > 0) {
             ticksActive++;
+            if (ticksActive == 1) {
+                properties.markDirty();
+            }
 
-            if (get(Drug.HEART_BEAT_SPEED) > 3) {
-                drugProperties.asEntity().damage(drugProperties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
-                reset(drugProperties);
+            if (!properties.asEntity().getWorld().isClient) {
+                if (tickSideEffects(properties, properties.asEntity().getWorld().random)) {
+                    reset(properties);
+                    properties.markDirty();
+                }
             }
         } else {
             ticksActive = 0;
@@ -112,6 +118,14 @@ public class SimpleDrug implements Drug {
 
         effect = MathHelper.clamp(effect, 0, 1);
         setActiveValue(MathUtils.nearValue(effectActive, effect, 0.05, 0.005));
+    }
+
+    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+        if (Drug.HEART_BEAT_SPEED.get(properties) > 3) {
+            properties.asEntity().damage(properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
+            return true;
+        }
+        return false;
     }
 
     @Override

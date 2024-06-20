@@ -23,6 +23,9 @@ public interface ShaderContext {
     }
 
     static float ticks() {
+        if (MinecraftClient.getInstance().player == null) {
+            return 0;
+        }
         return MinecraftClient.getInstance().player.age + tickDelta();
     }
 

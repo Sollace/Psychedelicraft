@@ -21,8 +21,8 @@ import net.minecraft.util.math.random.Random;
  */
 public class BathSaltsDrug extends SimpleDrug {
     public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
-            .put(JUMP_CHANCE, f -> MathUtils.inverseLerp(f, 0.6F, 1) * 0.03F)
-            .put(PUNCH_CHANCE, f -> MathUtils.inverseLerp(f, 0.5F, 1) * 0.02F)
+            .put(JUMP_CHANCE, f -> MathUtils.project(f, 0.6F, 1) * 0.03F)
+            .put(PUNCH_CHANCE, f -> MathUtils.project(f, 0.5F, 1) * 0.02F)
             .put(COLOR_HALLUCINATION_STRENGTH, 0.8F)
             .put(MOVEMENT_HALLUCINATION_STRENGTH, 1F)
             .put(BLOOM_HALLUCINATION_STRENGTH, 0.12F)
@@ -35,29 +35,33 @@ public class BathSaltsDrug extends SimpleDrug {
     }
 
     @Override
-    public void update(DrugProperties drugProperties) {
-        super.update(drugProperties);
+    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+        PlayerEntity entity = properties.asEntity();
+        double chance = (getActiveValue() - 0.8F) * 0.051F;
 
-        if (getActiveValue() > 0) {
-            PlayerEntity entity = drugProperties.asEntity();
-            Random random = entity.getWorld().random;
+        if (entity.age % 20 == 0 && random.nextFloat() < chance) {
+            if (random.nextFloat() < 0.4F) {
+                entity.damage(properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
+                return true;
+            }
 
-            if (!entity.getWorld().isClient) {
-                double chance = (getActiveValue() - 0.8F) * 0.051F;
+            if (random.nextFloat() < 0.5F) {
+                entity.damage(properties.damageOf(PSDamageTypes.HEART_FAILURE), Integer.MAX_VALUE);
+                return true;
+            }
 
-                if (entity.age % 20 == 0 && random.nextFloat() < chance) {
-                    if (random.nextFloat() < 0.4F) {
-                        entity.damage(drugProperties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
-                    } else if (random.nextFloat() < 0.5F) {
-                        entity.damage(drugProperties.damageOf(PSDamageTypes.HEART_FAILURE), Integer.MAX_VALUE);
-                    } else if (random.nextFloat() < 0.5F) {
-                        entity.damage(drugProperties.damageOf(PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
-                    } else if (random.nextFloat() < 0.5F) {
-                        entity.damage(drugProperties.damageOf(PSDamageTypes.KIDNEY_FAILURE), Integer.MAX_VALUE);
-                    }
-                }
+            if (random.nextFloat() < 0.5F) {
+                entity.damage(properties.damageOf(PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
+                return true;
+            }
+
+            if (random.nextFloat() < 0.5F) {
+                entity.damage(properties.damageOf(PSDamageTypes.KIDNEY_FAILURE), Integer.MAX_VALUE);
+                return true;
             }
         }
+
+        return super.tickSideEffects(properties, random);
     }
 
     @Override

@@ -23,22 +23,22 @@ import net.minecraft.util.math.random.Random;
 public class CocaineDrug extends SimpleDrug {
     static final Optional<Text> SLEEP_STATUS = Optional.of(Text.translatable("psychedelicraft.sleep.fail.coccaine"));
     public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
-            .put(HEART_BEAT_VOLUME, (f, t) -> MathUtils.inverseLerp(f, 0.4F, 1) + (t * 0.0001F) * 1.2F)
+            .put(HEART_BEAT_VOLUME, (f, t) -> MathUtils.project(f, 0.4F, 1) + (t * 0.0001F) * 1.2F)
             .put(HEART_BEAT_SPEED, (f, t) -> f * 0.1F + (t * 0.0001F))
-            .put(BREATH_VOLUME, f -> MathUtils.inverseLerp(f, 0.4f, 1.0f) * 1.5F)
+            .put(BREATH_VOLUME, f -> MathUtils.project(f, 0.4f, 1.0f) * 1.5F)
             .put(BREATH_SPEED, 0.8F)
-            .put(JUMP_CHANCE, f -> MathUtils.inverseLerp(f, 0.6F, 1) * 0.03F)
-            .put(PUNCH_CHANCE, f -> MathUtils.inverseLerp(f, 0.5F, 1) * 0.02F)
-            .put(SPEED, f -> 1.0F + f * 0.15F)
-            .put(DIG_SPEED, f -> 1.0F + f * 0.15F)
+            .put(JUMP_CHANCE, f -> MathUtils.project(f, 0.6F, 1) * 0.03F)
+            .put(PUNCH_CHANCE, f -> MathUtils.project(f, 0.5F, 1) * 0.02F)
+            .put(SPEED, f -> 1 + f * 0.15F)
+            .put(DIG_SPEED, f -> 1 + f * 0.15F)
             .put(DESATURATION_HALLUCINATION_STRENGTH, 0.75F)
-            .put(HAND_TREMBLE_STRENGTH, f -> MathUtils.inverseLerp(f, 0.6F, 1))
-            .put(VIEW_TREMBLE_STRENGTH, f -> MathUtils.inverseLerp(f, 0.8F, 1))
+            .put(HAND_TREMBLE_STRENGTH, f -> MathUtils.project(f, 0.6F, 1))
+            .put(VIEW_TREMBLE_STRENGTH, f -> MathUtils.project(f, 0.8F, 1))
             .put(HEAD_MOTION_INERTNESS, 10)
-            .put(BLOOM_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f, 0, 0.6F) * 1.5F)
-            .put(COLOR_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f * 1.3F, 0.7F, 1) * 0.05F)
-            .put(MOVEMENT_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f * 1.3F, 0.7F, 1) * 0.05F)
-            .put(CONTEXTUAL_HALLUCINATION_STRENGTH, f -> MathUtils.inverseLerp(f * 1.3F, 0.7F, 1) * 0.05F)
+            .put(BLOOM_HALLUCINATION_STRENGTH, f -> MathUtils.project(f, 0, 0.6F) * 1.5F)
+            .put(COLOR_HALLUCINATION_STRENGTH, f -> MathUtils.project(f * 1.3F, 0.7F, 1) * 0.05F)
+            .put(MOVEMENT_HALLUCINATION_STRENGTH, f -> MathUtils.project(f * 1.3F, 0.7F, 1) * 0.05F)
+            .put(CONTEXTUAL_HALLUCINATION_STRENGTH, f -> MathUtils.project(f * 1.3F, 0.7F, 1) * 0.05F)
             .build();
 
     public CocaineDrug(double decSpeed, double decSpeedPlus) {
@@ -46,24 +46,22 @@ public class CocaineDrug extends SimpleDrug {
     }
 
     @Override
-    public void update(DrugProperties drugProperties) {
-        super.update(drugProperties);
+    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+        PlayerEntity entity = properties.asEntity();
+        double chance = (getActiveValue() - 0.8F) * 0.1F;
 
-        if (getActiveValue() > 0) {
-            PlayerEntity entity = drugProperties.asEntity();
-            Random random = entity.getWorld().random;
-            if (!entity.getWorld().isClient) {
-                double chance = (getActiveValue() - 0.8F) * 0.1F;
-
-                if (entity.age % 20 == 0 && random.nextFloat() < chance) {
-                    entity.damage(drugProperties.damageOf(random.nextFloat() < 0.4F
-                            ? PSDamageTypes.STROKE
-                            : random.nextFloat() < 0.5F
-                            ? PSDamageTypes.HEART_FAILURE
-                            : PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
-                }
+        if (entity.age % 20 == 0 && random.nextFloat() < chance) {
+            entity.damage(properties.damageOf(random.nextFloat() < 0.4F
+                    ? PSDamageTypes.STROKE
+                    : random.nextFloat() < 0.5F
+                    ? PSDamageTypes.HEART_FAILURE
+                    : PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
+            if (entity.isDead()) {
+                return true;
             }
         }
+
+        return super.tickSideEffects(properties, random);
     }
 
     @Override

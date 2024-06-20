@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Created by Sollace on April 19 2023.
@@ -40,20 +41,20 @@ public class SleepDeprivationDrug extends SimpleDrug {
     }
 
     @Override
-    public void update(DrugProperties drugProperties) {
-        super.update(drugProperties);
-
-        float caffiene = drugProperties.getDrugValue(DrugType.CAFFEINE) + drugProperties.getDrugValue(DrugType.COCAINE);
+    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+        float caffiene = properties.getDrugValue(DrugType.CAFFEINE) + properties.getDrugValue(DrugType.COCAINE) * 3;
 
         storedEnergy = MathUtils.approach(storedEnergy, Math.min(1, caffiene * 10F), 0.02F);
 
         if (caffiene > 0.1F) {
             setDesiredValue(0);
         } else {
-            if (drugProperties.asEntity().getWorld().getGameRules().getBoolean(PSGameRules.DO_SLEEP_DEPRIVATION)) {
+            if (properties.asEntity().getWorld().getGameRules().getBoolean(PSGameRules.DO_SLEEP_DEPRIVATION)) {
                 setDesiredValue(getDesiredValue() + (INCREASE_PER_TICKS / 3));
             }
         }
+
+        return super.tickSideEffects(properties, random);
     }
 
     @Override

@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
 
@@ -32,41 +34,35 @@ public class HallucinationTypes {
     private static final IntList CONTEXTUAL = IntList.of(ENTITIES);
     public static final IntList ALL = IntList.of(Stream.of(COLOR, MOVEMENT, CONTEXTUAL).flatMapToInt(IntList::intStream).toArray());
 
-    private final List<Category> categories = List.of(
+    private static final List<Category> CATEGORIES = List.of(
             new Category(COLOR, Drug.COLOR_HALLUCINATION_STRENGTH),
             new Category(MOVEMENT, Drug.MOVEMENT_HALLUCINATION_STRENGTH),
             new Category(CONTEXTUAL, Drug.CONTEXTUAL_HALLUCINATION_STRENGTH)
     );
 
-    public float getTotal(DrugProperties properties) {
+    private final Object2FloatMap<Category> values = new Object2FloatOpenHashMap<>();
+
+    public float update(DrugProperties properties) {
         float totalHallucinationValue = 0;
-        for (Category type : categories) {
-            type.currentValue = MathUtils.nearValue(type.currentValue, type.getDesiredValue(properties), 0.01F, 0.01F);
-            totalHallucinationValue += type.currentValue;
+        for (Category category : CATEGORIES) {
+            totalHallucinationValue += values.computeFloat(category, (c, currentValue) -> {
+                return MathUtils.nearValue(currentValue == null ? 0 : currentValue, c.getDesiredValue(properties), 0.01F, 0.01F);
+            });
         }
         return totalHallucinationValue;
     }
 
     public float getMultiplier(int hallucination) {
         float value = 1;
-        for (Category c : categories) {
+        for (Category c : CATEGORIES) {
             if (c.hallucinations.contains(hallucination)) {
-                value *= MathUtils.inverseLerp(c.currentValue, 0, 0.5F);
+                value *= MathUtils.project(values.getFloat(c), 0, 0.5F);
             }
         }
         return value;
     }
 
-    private static class Category {
-        public final List<Integer> hallucinations;
-        public float currentValue;
-        private final Attribute modifier;
-
-        public Category(List<Integer> hallucinations, Attribute modifier) {
-            this.hallucinations = new ArrayList<>(hallucinations);
-            this.modifier = modifier;
-        }
-
+    private record Category(IntList hallucinations, Attribute modifier) {
         public float getDesiredValue(DrugProperties properties) {
             return properties.getModifier(modifier);
         }

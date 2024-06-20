@@ -44,7 +44,7 @@ public class GeometryShader {
         map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
     });
 
-    private static final Vector4f ZERO = new Vector4f();
+    private static final Vector4f ZERO = new Vector4f(0, 0, 0, 0);
 
     public void setup(Type type, String name, InputStream stream, String domain, GlImportProcessor loader) {
         this.name = Identifier.of(name);

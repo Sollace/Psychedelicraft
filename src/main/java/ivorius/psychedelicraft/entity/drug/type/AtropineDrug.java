@@ -18,7 +18,7 @@ import net.minecraft.util.math.random.Random;
  */
 public class AtropineDrug extends SimpleDrug {
     public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
-            .put(HEART_BEAT_VOLUME, (f, t) -> MathUtils.inverseLerp(f, 0.4F, 1) + (t * 0.0001F) * 1.2F)
+            .put(HEART_BEAT_VOLUME, (f, t) -> MathUtils.project(f, 0.4F, 1) + (t * 0.0001F) * 1.2F)
             .put(HEART_BEAT_SPEED, (f, t) -> f * 0.1F + (t * 0.0001F))
             .put(COLOR_HALLUCINATION_STRENGTH, 1.4F)
             .put(MOVEMENT_HALLUCINATION_STRENGTH, 0.7F)
@@ -34,24 +34,23 @@ public class AtropineDrug extends SimpleDrug {
     }
 
     @Override
-    public void update(DrugProperties drugProperties) {
-        super.update(drugProperties);
+    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+        PlayerEntity entity = properties.asEntity();
 
-        if (getActiveValue() > 0) {
-            PlayerEntity entity = drugProperties.asEntity();
-            Random random = entity.getWorld().random;
+        double chance = (getActiveValue() - 0.8F) * 0.051F;
 
-            if (!entity.getWorld().isClient) {
-                double chance = (getActiveValue() - 0.8F) * 0.051F;
+        if (entity.age % 20 == 0 && random.nextFloat() < chance) {
+            if (random.nextFloat() < 0.8F) {
+                entity.damage(properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
+                return true;
+            }
 
-                if (entity.age % 20 == 0 && random.nextFloat() < chance) {
-                    if (random.nextFloat() < 0.8F) {
-                        entity.damage(drugProperties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
-                    } else if (random.nextFloat() < 0.5F) {
-                        entity.damage(drugProperties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
-                    }
-                }
+            if (random.nextFloat() < 0.5F) {
+                entity.damage(properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
+                return true;
             }
         }
+
+        return super.tickSideEffects(properties, random);
     }
 }
