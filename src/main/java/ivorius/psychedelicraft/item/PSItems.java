@@ -16,7 +16,6 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import ivorius.psychedelicraft.entity.drug.influence.HarmoniumDrugInfluence;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.Processable;
@@ -254,14 +253,14 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.INHALED, 0.1, 0.02, 0.8F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.4, 0.1, 0.9F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.5, 0.1, 0.2F)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.INHALED, 0.04, 0.01, 0.65F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.INHALED, 0.04, 0.01, 0.65F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
     // TODO: Play around with the bongs benefits
     BongItem BONG = register("bong", new BongItem(new Settings().maxDamage(128)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.001, 0.2F)))
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.4, 0.1, 0.4F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.5, 0.1, 0.1F)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new HarmoniumDrugInfluence(DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
 
     Item VOMIT = register("vomit", new Item(new Settings()));
     Item PAPER_BAG = register("paper_bag", new PaperBagItem(new Settings().component(PSComponents.BAG_CONTENTS, BagContentsComponent.EMPTY)));

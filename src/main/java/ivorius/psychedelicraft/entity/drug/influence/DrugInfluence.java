@@ -5,23 +5,52 @@
 
 package ivorius.psychedelicraft.entity.drug.influence;
 
-import java.util.Locale;
+import java.util.List;
 import java.util.Optional;
 
-import ivorius.psychedelicraft.Psychedelicraft;
+import org.joml.Vector3f;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
-import ivorius.psychedelicraft.util.NbtSerialisable;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.util.Identifier;
+import ivorius.psychedelicraft.entity.drug.type.HarmoniumDrug;
+import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 
-public class DrugInfluence implements NbtSerialisable {
-
-    public static Optional<DrugInfluence> loadFromNbt(NbtCompound compound, WrapperLookup lookup) {
-        return InfluenceType.of(compound.getString("type")).map(type -> type.create(compound, lookup));
-    }
+public class DrugInfluence {
+    private static final Codec<Vector3f> COLOR_CODEC = RecordCodecBuilder.create(i -> i.group(
+            Codec.FLOAT.fieldOf("r").forGetter(Vector3f::x),
+            Codec.FLOAT.fieldOf("g").forGetter(Vector3f::y),
+            Codec.FLOAT.fieldOf("b").forGetter(Vector3f::z)
+    ).apply(i, Vector3f::new));
+    private static final PacketCodec<RegistryByteBuf, Optional<Vector3f>> COLOR_PACKET_CODEC = PacketCodecs.optional(PacketCodec.tuple(
+        PacketCodecs.FLOAT, Vector3f::x,
+        PacketCodecs.FLOAT, Vector3f::y,
+        PacketCodecs.FLOAT, Vector3f::z,
+        Vector3f::new
+    ));
+    public static final Codec<DrugInfluence> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            DrugType.REGISTRY.getCodec().fieldOf("drugType").forGetter(DrugInfluence::getDrugType),
+            Codec.INT.fieldOf("delay").forGetter(DrugInfluence::getDelay),
+            Codec.DOUBLE.fieldOf("influenceSpeed").forGetter(DrugInfluence::getInfluenceSpeed),
+            Codec.DOUBLE.fieldOf("influenceSpeedPlus").forGetter(DrugInfluence::getInfluenceSpeedPlus),
+            Codec.DOUBLE.fieldOf("maxInfluence").forGetter(DrugInfluence::getMaxInfluence),
+            COLOR_CODEC.optionalFieldOf("color").forGetter(DrugInfluence::getColor)
+    ).apply(instance, DrugInfluence::new));
+    public static final Codec<List<DrugInfluence>> LIST_CODEC = CODEC.listOf();
+    public static final PacketCodec<RegistryByteBuf, DrugInfluence> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.registryValue(DrugType.REGISTRY.getKey()), DrugInfluence::getDrugType,
+            PacketCodecs.INTEGER, DrugInfluence::getDelay,
+            PacketCodecs.DOUBLE, DrugInfluence::getInfluenceSpeed,
+            PacketCodecs.DOUBLE, DrugInfluence::getInfluenceSpeedPlus,
+            PacketCodecs.DOUBLE, DrugInfluence::getMaxInfluence,
+            COLOR_PACKET_CODEC, DrugInfluence::getColor,
+            DrugInfluence::new
+    );
 
     protected DrugType drugType;
 
@@ -32,26 +61,23 @@ public class DrugInfluence implements NbtSerialisable {
 
     protected double maxInfluence;
 
-    private final InfluenceType type;
+    private final Optional<Vector3f> color;
 
     public DrugInfluence(DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence) {
-        this(InfluenceType.DEFAULT, drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
+        this(drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence, Optional.empty());
     }
 
-    public DrugInfluence(InfluenceType type, DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence) {
-        this(type);
+    public DrugInfluence(DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, Vector3f color) {
+        this(drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence, Optional.of(color));
+    }
+
+    private DrugInfluence(DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, Optional<Vector3f> color) {
         this.drugType = drugType;
-
         this.delay = delay;
-
         this.influenceSpeed = influenceSpeed;
         this.influenceSpeedPlus = influenceSpeedPlus;
-
         this.maxInfluence = maxInfluence;
-    }
-
-    protected DrugInfluence(InfluenceType type) {
-        this.type = type;
+        this.color = color;
     }
 
     public final DrugType getDrugType() {
@@ -66,32 +92,20 @@ public class DrugInfluence implements NbtSerialisable {
         return delay;
     }
 
-    public void setDelay(int delay) {
-        this.delay = delay;
-    }
-
     public double getInfluenceSpeed() {
         return influenceSpeed;
-    }
-
-    public void setInfluenceSpeed(double influenceSpeed) {
-        this.influenceSpeed = influenceSpeed;
     }
 
     public double getInfluenceSpeedPlus() {
         return influenceSpeedPlus;
     }
 
-    public void setInfluenceSpeedPlus(double influenceSpeedPlus) {
-        this.influenceSpeedPlus = influenceSpeedPlus;
-    }
-
     public double getMaxInfluence() {
         return maxInfluence;
     }
 
-    public void setMaxInfluence(double maxInfluence) {
-        this.maxInfluence = maxInfluence;
+    public Optional<Vector3f> getColor() {
+        return color;
     }
 
     public boolean update(DrugProperties drugProperties) {
@@ -111,48 +125,24 @@ public class DrugInfluence implements NbtSerialisable {
 
     public void addToDrug(DrugProperties drugProperties, double value) {
         drugProperties.addToDrug(drugType, value);
+        color.ifPresent(color -> {
+            if (drugProperties.getDrug(getDrugType()) instanceof HarmoniumDrug harmonium) {
+                MathUtils.lerp((float)(value + (1 - value) * (1 - harmonium.getActiveValue())), harmonium.currentColor, color);
+            }
+        });
     }
 
     public boolean isDone() {
         return maxInfluence <= 0.0;
     }
 
+    public DrugInfluence copyWithMaximum(double maxInfluence) {
+        return new DrugInfluence(drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence, color);
+    }
+
     @Override
     public final DrugInfluence clone() {
-        DrugInfluence copy = type.create();
-        copy.copyFrom(this);
-        return copy;
-    }
-
-    protected void copyFrom(DrugInfluence old) {
-        drugType = old.drugType;
-        delay = old.delay;
-        influenceSpeed = old.influenceSpeed;
-        influenceSpeedPlus = old.influenceSpeedPlus;
-        maxInfluence = old.maxInfluence;
-    }
-
-    @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        if (compound.contains("drugName", NbtElement.STRING_TYPE)) {
-            drugType = DrugType.REGISTRY.get(Psychedelicraft.id(compound.getString("drugName").toLowerCase(Locale.ROOT)));
-        } else {
-            drugType = DrugType.REGISTRY.get(Identifier.tryParse(compound.getString("drugType")));
-        }
-        delay = compound.getInt("delay");
-        influenceSpeed = compound.getDouble("influenceSpeed");
-        influenceSpeedPlus = compound.getDouble("influenceSpeedPlus");
-        maxInfluence = compound.getDouble("maxInfluence");
-    }
-
-    @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        compound.putString("type", type.identifier());
-        compound.putString("drugType", drugType.id().toString());
-        compound.putInt("delay", delay);
-        compound.putDouble("influenceSpeed", influenceSpeed);
-        compound.putDouble("influenceSpeedPlus", influenceSpeedPlus);
-        compound.putDouble("maxInfluence", maxInfluence);
+        return copyWithMaximum(maxInfluence);
     }
 
     public interface DelayType {

@@ -266,9 +266,10 @@ public class DrugProperties implements NbtSerialisable {
             });
         });
         influences.clear();
-        tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE).forEach(tag -> {
-            DrugInfluence.loadFromNbt((NbtCompound)tag, lookup).ifPresent(this::addToDrug);
-        });
+        DrugInfluence.LIST_CODEC.decode(NbtOps.INSTANCE, tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE))
+            .result()
+            .map(i -> i.getFirst())
+            .ifPresent(this.influences::addAll);
         stomach.fromNbt(tagCompound.getCompound("stomach"), lookup);
         dirty = false;
     }
@@ -280,12 +281,9 @@ public class DrugProperties implements NbtSerialisable {
             drugsComp.put(key.id().toString(), drug.toNbt(lookup));
         });
         compound.put("Drugs", drugsComp);
-
-        NbtList influenceTagList = new NbtList();
-        for (DrugInfluence influence : influences) {
-            influenceTagList.add(influence.toNbt(lookup));
-        }
-        compound.put("drugInfluences", influenceTagList);
+        DrugInfluence.LIST_CODEC.encodeStart(NbtOps.INSTANCE, influences).result().ifPresent(influenceTagList -> {
+            compound.put("drugInfluences", influenceTagList);
+        });
         compound.put("stomach", stomach.toNbt(lookup));
     }
 

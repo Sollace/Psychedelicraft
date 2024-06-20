@@ -40,7 +40,7 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
+    protected void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
         super.getDrugInfluencesPerLiter(stack, consumer);
         float warmth = (float)WARMTH.get(stack) / 2F;
         consumer.accept(new DrugInfluence(DrugType.CAFFEINE, 20, 0.002, 0.001, 0.25F + warmth * 0.05F));

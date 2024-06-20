@@ -26,7 +26,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
+    protected void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
         super.getDrugInfluencesPerLiter(stack, consumer);
 
         consumer.accept(new DrugInfluence(drug, 3, 0, 0.03, Math.pow(96F, DISTILLATION.get(stack))));

@@ -53,13 +53,11 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
 
     public void getDrugInfluences(ItemFluids fluidStack, List<DrugInfluence> list) {
         getDrugInfluencesPerLiter(fluidStack, influence -> {
-            DrugInfluence clone = influence.clone();
-            clone.setMaxInfluence(clone.getMaxInfluence() * fluidStack.amount() / FluidVolumes.BUCKET);
-            list.add(clone);
+            list.add(influence.copyWithMaximum((influence.getMaxInfluence() / FluidVolumes.BUCKET) * fluidStack.amount()));
         });
     }
 
-    public void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
+    protected void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
         drugInfluences.forEach(consumer);
     }
 
