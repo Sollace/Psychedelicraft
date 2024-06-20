@@ -83,7 +83,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
 
         if (FluidCapacity.get(output) > 0) {
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(output);
-            int amount = tank.withdraw(t, FluidVolumes.CUP);
+            int amount = tank.withdraw(t, FluidVolumes.BOWL);
             if (amount > 0) {
                 outputSlot.incrementLevelsTransferred(amount);
                 playSound = true;
@@ -95,7 +95,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
         if (FluidCapacity.get(input) > 0) {
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(input);
 
-            int amount = tank.deposit(t, FluidVolumes.CUP);
+            int amount = tank.deposit(t, FluidVolumes.BOWL);
             if (amount > 0) {
                 inputSlot.incrementLevelsTransferred(amount);
                 inputSlot.setStack(t.toItemStack());

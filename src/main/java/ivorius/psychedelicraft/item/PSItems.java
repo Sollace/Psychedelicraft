@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.item;
 
+import java.util.List;
+
 import org.joml.Vector3f;
 
 import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
@@ -18,6 +20,7 @@ import ivorius.psychedelicraft.entity.drug.influence.HarmoniumDrugInfluence;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.Processable;
+import ivorius.psychedelicraft.fluid.container.FluidCauldronBehavior;
 import ivorius.psychedelicraft.item.component.BagContentsComponent;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.PSComponents;
@@ -289,5 +292,9 @@ public interface PSItems {
         FuelRegistry.INSTANCE.add(CIGAR, 80);
         FuelRegistry.INSTANCE.add(CIGARETTE, 50);
         FuelRegistry.INSTANCE.add(WOODEN_MUG, 50);
+
+        List.of(
+            WOODEN_MUG, STONE_CUP, GLASS_CHALICE, SHOT_GLASS, BOTTLE, FILLED_BUCKET, FILLED_BOWL, FILLED_GLASS_BOTTLE
+        ).forEach(FluidCauldronBehavior::register);
     }
 }

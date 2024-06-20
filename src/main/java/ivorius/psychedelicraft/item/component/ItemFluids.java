@@ -176,6 +176,11 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
         ItemFluids withdraw(int amount);
 
+        /**
+         * Deposits up to {maxAmount} of the given fluid.
+         *
+         * @return The remaining fluid that could not be inserted.
+         */
         default ItemFluids deposit(ItemFluids fluids) {
             return deposit(fluids, fluids.amount());
         }
@@ -190,6 +195,14 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
         ItemFluids fluids();
 
         ItemStack toItemStack();
+
+        default boolean canAccept(ItemFluids fluids) {
+            return canAccept(fluids, fluids.amount());
+        }
+
+        default boolean canAccept(ItemFluids fluids, int amount) {
+            return fluids().canCombine(fluids) && Math.min(fluids.amount(), (capacity() - fluids().amount())) >= amount;
+        }
     }
 
     public static class DirectTransaction implements Transaction {

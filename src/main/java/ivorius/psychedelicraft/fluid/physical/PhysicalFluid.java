@@ -50,6 +50,17 @@ public final class PhysicalFluid {
     }
 
     @Nullable
+    public Block getCauldron() {
+        if (standing == Fluids.WATER) {
+            return Blocks.WATER_CAULDRON;
+        }
+        if (standing == Fluids.LAVA) {
+            return Blocks.LAVA_CAULDRON;
+        }
+        return null;
+    }
+
+    @Nullable
     public SimpleFluid getType() {
         return type;
     }
