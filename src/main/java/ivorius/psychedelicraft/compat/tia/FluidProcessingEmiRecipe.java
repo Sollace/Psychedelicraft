@@ -11,8 +11,11 @@ import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 
 class FluidProcessingEmiRecipe implements PSRecipe {
     private final Identifier id;
@@ -89,7 +92,8 @@ class FluidProcessingEmiRecipe implements PSRecipe {
     @Override
     public void buildGui(GuiBuilder widgets) {
         widgets.addArrow(50, 5, false);
-        widgets.addAnimatedArrow(50, 5, time / 20).addTooltip(Text.translatable("emi.cooking.time", time / 20F));
+        ClientWorld world = MinecraftClient.getInstance().world;
+        widgets.addAnimatedArrow(50, 5, (time * change) / 20).addTooltip(Text.literal(StringHelper.formatTicks(time * change, world == null ? 20 : world.getTickManager().getTickRate())));
         widgets.addText(Text.literal(change + "x"), 45, 14, -1, true);
         widgets.addSlot(input, 19, 5).markInput();
         widgets.addSlot(output, 85, 5).markOutput();
