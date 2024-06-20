@@ -30,23 +30,21 @@ public class DryingTableScreenHandler extends ScreenHandler {
 
         for (int x = 0; x < 3; ++x) {
             for (int y = 0; y < 3; ++y) {
-                this.addSlot(new Slot(container, 1 + x * 3 + y, 30 + x * 18, 17 + y * 18));
+                addSlot(new Slot(container, 1 + x * 3 + y, 30 + x * 18, 17 + y * 18));
             }
         }
 
-        int var3;
-
-        for (var3 = 0; var3 < 3; ++var3) {
-            for (int var4 = 0; var4 < 9; ++var4) {
-                this.addSlot(new Slot(inventory, var4 + var3 * 9 + 9, 8 + var4 * 18, 84 + var3 * 18));
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 9; ++col) {
+                addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
             }
         }
 
-        for (var3 = 0; var3 < 9; ++var3) {
-            this.addSlot(new Slot(inventory, var3, 8 + var3 * 18, 142));
+        for (int col = 0; col < 9; ++col) {
+            addSlot(new Slot(inventory, col, 8 + col * 18, 142));
         }
 
-        this.addProperties(properties);
+        addProperties(properties);
     }
 
     public float getHeatRatio() {

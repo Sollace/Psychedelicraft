@@ -33,8 +33,6 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
                 : Psychedelicraft.getConfig().balancing.dryingTableTickDuration));
     }
 
-    private int age;
-
     private float heat;
     private float dryingProgress;
 
@@ -102,9 +100,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         float oldProgress = dryingProgress;
         float oldHeat = heat;
 
-        if (++age % 30 == 0) {
-            heat = calculateSunStrength();
-        }
+        heat = calculateSunStrength();
 
         if (!(world.getRainGradient(1) > 0 && world.isSkyVisible(pos))) {
             if (currentRecipe.isPresent() && cookingTime > 0) {
