@@ -12,8 +12,10 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
+
+import com.minelittlepony.common.util.render.RenderLayerUtil;
+
 import ivorius.psychedelicraft.client.render.PassThroughVertexConsumer;
-import ivorius.psychedelicraft.client.render.RenderLayerUtil;
 
 public abstract class AbstractEntityHallucination extends Hallucination {
 

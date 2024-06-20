@@ -177,12 +177,12 @@ public class FilledBucketItem extends Item {
             world.breakBlock(pos, true);
         }
 
-        if (world.getBlockState(pos).isOf(fluid.getBlockState().getBlock())) {
+        //if (world.getBlockState(pos).isOf(fluid.getBlockState().getBlock())) {
             if (world.setBlockState(pos, fluid.getBlockState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD) || state.getFluidState().isStill()) {
                playEmptyingSound(fluid.getFluid(), player, world, pos);
                 return true;
             }
-        }
+        //}
         return false;
     }
 

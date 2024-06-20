@@ -2,8 +2,12 @@ package ivorius.psychedelicraft.fluid.physical;
 
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.particle.FluidParticleEffect;
+import ivorius.psychedelicraft.particle.PSParticles;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.Fluid;
@@ -11,6 +15,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.WaterFluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -89,6 +94,12 @@ public abstract class PlacedFluid extends WaterFluid {
     @Override
     protected boolean isInfinite(World world) {
         return false;
+    }
+
+    @Nullable
+    @Override
+    public ParticleEffect getParticle() {
+        return new FluidParticleEffect(PSParticles.DRIPPING_FLUID, getType());
     }
 
     static PlacedFluid still(PhysicalFluid physical) {
