@@ -6,37 +6,34 @@
 package ivorius.psychedelicraft.entity.drug.influence;
 
 import org.joml.Vector3f;
-
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.HarmoniumDrug;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by lukas on 10.03.14.
  */
 public class HarmoniumDrugInfluence extends DrugInfluence {
 
-    private final Vector3f color = new Vector3f();
+    private final Vector3f color;
 
-    public HarmoniumDrugInfluence(int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, float[] color) {
+    public HarmoniumDrugInfluence(int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, Vector3f color) {
         super(InfluenceType.HARMONIUM, DrugType.HARMONIUM, delay, influenceSpeed, influenceSpeedPlus, maxInfluence);
-        this.color.set(color);
+        this.color = color;
     }
 
     public HarmoniumDrugInfluence(InfluenceType type) {
         super(type);
+        color = new Vector3f(1, 1, 1);
     }
 
     @Override
     public void addToDrug(DrugProperties drugProperties, double value) {
         super.addToDrug(drugProperties, value);
         if (drugProperties.getDrug(getDrugType()) instanceof HarmoniumDrug harmonium) {
-            double inf = value + (1 - value) * (1 - harmonium.getActiveValue());
-            harmonium.currentColor[0] = (float) MathHelper.lerp(inf, harmonium.currentColor[0], color.x);
-            harmonium.currentColor[1] = (float) MathHelper.lerp(inf, harmonium.currentColor[1], color.y);
-            harmonium.currentColor[2] = (float) MathHelper.lerp(inf, harmonium.currentColor[2], color.z);
+            MathUtils.lerp((float)(value + (1 - value) * (1 - harmonium.getActiveValue())), harmonium.currentColor, color);
         }
     }
 

@@ -42,7 +42,7 @@ public class ChatBot {
     private void emitMessage(String sender, Text message) {
         HallucinationManager hallucinations = DrugProperties.of(player).getHallucinations();
 
-        if (hallucinations.getEntities().getForcedAlpha(1) > 0 || hallucinations.getHallucinationStrength(1) > 0) {
+        if (hallucinations.getEntities().getForcedAlpha(1) > 0 || hallucinations.getEntityHallucinationStrength() > 0) {
             player.sendMessage(message);
             incomingMessageQueue.add(() -> {
                 getResponsiveCharacters(sender, message).forEach(character -> character.wakeUp(sender, message, false));

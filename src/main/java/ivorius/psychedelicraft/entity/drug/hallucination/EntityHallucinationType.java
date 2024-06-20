@@ -32,7 +32,7 @@ public record EntityHallucinationType (Identifier id, Function<PlayerEntity, Hal
     public static Stream<EntityHallucinationType> getCandidates(EntityHallucinationList list) {
         Random weight = list.getProperties().asEntity().getRandom();
         return REGISTRY.values().stream()
-                .filter(i -> i.strengthRange().test(list.getManager().getHallucinationStrength(1))
+                .filter(i -> i.strengthRange().test(list.getManager().getEntityHallucinationStrength())
                             && weight.nextFloat() <= i.chance()
                             && (i.condition() == null || i.condition().test(list)
                 ));

@@ -8,6 +8,8 @@ package ivorius.psychedelicraft.entity.drug;
 import java.util.*;
 import java.util.function.*;
 
+import org.joml.Vector4f;
+
 import ivorius.psychedelicraft.entity.drug.Attribute.Combiner;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.text.Text;
@@ -50,8 +52,8 @@ public interface Drug extends NbtSerialisable {
     Attribute SMALL_WAVES = new Attribute(0, Combiner.SUM);
     Attribute WIGGLE_WAVES = new Attribute(0, Combiner.SUM);
 
-    Function<DrugProperties, float[]> CONTRAST_COLORIZATION = Attribute.createColorModification(Drug::applyContrastColorization);
-    Function<DrugProperties, float[]> BLOOM = Attribute.createColorModification(Drug::applyColorBloom);
+    Function<DrugProperties, Vector4f> CONTRAST_COLORIZATION = Attribute.createColorModification(Drug::applyContrastColorization);
+    Function<DrugProperties, Vector4f> BLOOM = Attribute.createColorModification(Drug::applyColorBloom);
 
     DrugType getType();
 
@@ -84,11 +86,11 @@ public interface Drug extends NbtSerialisable {
         return getType().functions().get(attribute).apply((float)getActiveValue(), getTicksActive());
     }
 
-    default void applyContrastColorization(float[] rgba) {
+    default void applyContrastColorization(Vector4f rgba) {
 
     }
 
-    default void applyColorBloom(float[] rgba) {
+    default void applyColorBloom(Vector4f rgba) {
 
     }
 }

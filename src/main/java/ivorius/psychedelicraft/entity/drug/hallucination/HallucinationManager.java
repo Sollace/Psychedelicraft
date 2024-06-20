@@ -1,9 +1,13 @@
 package ivorius.psychedelicraft.entity.drug.hallucination;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.entity.drug.*;
@@ -16,12 +20,13 @@ import net.minecraft.util.math.random.Random;
  * Updated by Sollace on 14 Jan 2023
  */
 public class HallucinationManager {
-    protected final float[] currentMindColor = new float[]{1.0f, 1.0f, 1.0f};
+    private final Vector3f currentMindColor = new Vector3f(1, 1, 1);
+    private final Vector4f pulseColor = new Vector4f();
 
     private final HallucinationTypes hallucinationTypes = new HallucinationTypes();
 
-    private final List<Integer> activeHallucinations = new ArrayList<>();
-    private final Map<Integer, Float> hallucinationStrengths = HallucinationTypes.ALL.stream().collect(Collectors.toMap(Function.identity(), i -> 0F));
+    private final IntList activeHallucinations = new IntArrayList();
+    private final Int2FloatMap hallucinationStrengths = new Int2FloatOpenHashMap();
 
     private final DrugProperties properties;
     private final EntityHallucinationList entities = new EntityHallucinationList(this);
@@ -70,34 +75,26 @@ public class HallucinationManager {
             }
         }
 
-        for (Integer hKey : hallucinationStrengths.keySet()) {
-            float val = hallucinationStrengths.get(hKey);
-
-            if (activeHallucinations.contains(hKey)) {
-                float desiredValue = MathUtils.randomColor(random, properties.getAge(), hallucinationTypes.getMultiplier(hKey), 0.5f, 0.00121f, 0.0019318f);
-
-                val = MathUtils.nearValue(val, desiredValue, 0.002f, 0.002f);
-                hallucinationStrengths.put(hKey, val);
-            } else {
-                val = MathUtils.nearValue(val, 0.0f, 0.002f, 0.002f);
-                hallucinationStrengths.put(hKey, val);
-            }
+        for (int hKey : HallucinationTypes.ALL) {
+            hallucinationStrengths.compute(hKey, (k, val) -> MathUtils.nearValue(val == null ? 0 : val, getDesiredValue(random, k), 0.002f, 0.002f));
         }
 
-        currentMindColor[0] = MathUtils.nearValue(currentMindColor[0], MathUtils.randomColor(random, properties.getAge(), 0.5f, 0.5f, 0.0012371f, 0.0017412f), 0.002f, 0.002f);
-        currentMindColor[1] = MathUtils.nearValue(currentMindColor[1], MathUtils.randomColor(random, properties.getAge(), 0.5f, 0.5f, 0.0011239f, 0.0019321f), 0.002f, 0.002f);
-        currentMindColor[2] = MathUtils.nearValue(currentMindColor[2], MathUtils.randomColor(random, properties.getAge(), 0.5f, 0.5f, 0.0011541f, 0.0018682f), 0.002f, 0.002f);
+        MathUtils.apply(currentMindColor, component -> MathUtils.nearValue(component, MathUtils.randomColor(random, properties.getAge(), 0.5f, 0.5f, 0.0012371f, 0.0017412f), 0.002f, 0.002f));
+    }
+
+    private float getDesiredValue(Random random, int key) {
+        return activeHallucinations.contains(key) ? MathUtils.randomColor(random, properties.getAge(), hallucinationTypes.getMultiplier(key), 0.5f, 0.00121f, 0.0019318f) : 0;
     }
 
     private void removeRandomHallucination(Random random) {
-        activeHallucinations.remove(activeHallucinations.get(random.nextInt(activeHallucinations.size())));
+        activeHallucinations.removeInt(activeHallucinations.getInt(random.nextInt(activeHallucinations.size())));
     }
 
     private boolean addRandomHallucination(Random random) {
-        float maxValue = 0.0f;
+        float maxValue = 0;
         int currentHallucination = -1;
 
-        for (int hKey : hallucinationStrengths.keySet()) {
+        for (int hKey : HallucinationTypes.ALL) {
             if (!activeHallucinations.contains(hKey)) {
                 float value = random.nextFloat() * hallucinationTypes.getMultiplier(hKey);
 
@@ -114,83 +111,81 @@ public class HallucinationManager {
         return currentHallucination >= 0;
     }
 
-    public float getMultiplier(int hallucination) {
+    private float getMultiplier(int hallucination) {
         return hallucinationTypes.getMultiplier(hallucination) * hallucinationStrengths.get(hallucination);
     }
 
-    public float getDesaturation(float tickDelta) {
+    public float getDesaturation() {
         return Drug.DESATURATION_HALLUCINATION_STRENGTH.get(getMultiplier(HallucinationTypes.DESATURATION), properties);
     }
 
-    public float getColorIntensification(float tickDelta) {
+    public float getColorIntensification() {
         return Drug.SUPER_SATURATION_HALLUCINATION_STRENGTH.get(getMultiplier(HallucinationTypes.SUPER_SATURATION), properties);
     }
 
-    public float getColorInversion(float tickDelta) {
+    public float getColorInversion() {
         return Drug.INVERSION_HALLUCINATION_STRENGTH.get(properties);
     }
 
-    public float getBloom(float tickDelta) {
+    public float getBloom() {
         return Drug.BLOOM_HALLUCINATION_STRENGTH.get(getMultiplier(HallucinationTypes.BLOOM), properties);
     }
 
-    public float getHallucinationStrength(float tickDelta) {
+    public float getEntityHallucinationStrength() {
         return getMultiplier(HallucinationTypes.ENTITIES) * 0.4F;
     }
 
-    public float getSlowColorRotation(float tickDelta) {
+    public float getSlowColorRotation() {
         return Drug.SLOW_COLOR_ROTATION.get(getMultiplier(HallucinationTypes.SLOW_COLOR_ROTATION), properties);
     }
 
-    public float getQuickColorRotation(float tickDelta) {
+    public float getQuickColorRotation() {
         return Drug.FAST_COLOR_ROTATION.get(getMultiplier(HallucinationTypes.QUICK_COLOR_ROTATION), properties);
     }
 
-    public float getBigWaveStrength(float tickDelta) {
+    public float getBigWaveStrength() {
         return Drug.BIG_WAVES.get(getMultiplier(HallucinationTypes.BIG_WAVES) * 0.6F, properties);
     }
 
-    public float getSmallWaveStrength(float tickDelta) {
+    public float getSmallWaveStrength() {
         return Drug.SMALL_WAVES.get(getMultiplier(HallucinationTypes.SMALL_WAVES) * 0.5F, properties);
     }
 
-    public float getWiggleWaveStrength(float tickDelta) {
+    public float getWiggleWaveStrength() {
         return Drug.WIGGLE_WAVES.get(getMultiplier(HallucinationTypes.WIGGLE_WAVES) * 0.7F, properties);
     }
 
-    public float getSurfaceFractalStrength(float tickDelta) {
+    public float getSurfaceFractalStrength() {
         return getMultiplier(HallucinationTypes.SURFACE_FRACTALS);
     }
 
-    public float getSurfaceBubblingStrength(float tickDelta) {
+    public float getSurfaceBubblingStrength() {
         return 0;
     }
 
-    public float getDistantWorldDeformationStrength(float tickDelta) {
+    public float getDistantWorldDeformationStrength() {
         return getMultiplier(HallucinationTypes.DISTANT_WORLD_DEFORMATION);
     }
 
-    public float getSurfaceShatteringStrength(float tickDelta) {
+    public float getSurfaceShatteringStrength() {
         return properties.getDrugValue(DrugType.LSD) * 0.06F;
     }
 
-    public float[] getPulseColor(float tickDelta) {
-        return new float[] {
-                currentMindColor[0],
-                currentMindColor[1],
-                currentMindColor[2],
-                RenderPhase.current() == RenderPhase.SKY ? 0 : MathHelper.clamp(getMultiplier(HallucinationTypes.PULSES), 0, 1)
-        };
+    public Vector4f getPulseColor() {
+        return pulseColor.set(
+                currentMindColor,
+                RenderPhase.current() == RenderPhase.SKY ? 0F : MathHelper.clamp(getMultiplier(HallucinationTypes.PULSES), 0, 1)
+        );
     }
 
-    public float[] getColorBloom(float tickDelta) {
+    public Vector4fc getColorBloom() {
         return MathUtils.mixColorsDynamic(
                 currentMindColor,
                 Drug.BLOOM.apply(properties),
                 MathHelper.clamp(1.5f * getMultiplier(HallucinationTypes.COLOR_BLOOM), 0, 1), false);
     }
 
-    public float[] getContrastColorization(float tickDelta) {
+    public Vector4fc getContrastColorization() {
         return MathUtils.mixColorsDynamic(
                 currentMindColor,
                 Drug.CONTRAST_COLORIZATION.apply(properties),
@@ -199,7 +194,7 @@ public class HallucinationManager {
         );
     }
 
-    public float[] getBlur(float tickDelta) {
+    public float[] getBlur() {
         float menuBlur = Math.max(0, ShaderContext.drug(DrugType.SLEEP_DEPRIVATION) - 0.7F) * ShaderContext.tickDelta() * 15;
         float vBlur = ShaderContext.drug(DrugType.POWER) + menuBlur;
         float hBlur = menuBlur + (

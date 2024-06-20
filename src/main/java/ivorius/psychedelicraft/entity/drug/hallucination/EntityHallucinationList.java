@@ -31,7 +31,7 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
     }
 
     public void update() {
-        float hallucinationChance = manager.getHallucinationStrength(1) * 0.05f;
+        float hallucinationChance = manager.getEntityHallucinationStrength() * 0.05f;
 
         if (forcedTicks > 0) {
             prevForcedTicks = forcedTicks;

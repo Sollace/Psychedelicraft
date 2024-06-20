@@ -23,9 +23,7 @@ class WorldInteractionEmiRecipe implements PSRecipe {
 
     private final List<TlaStack> outputs;
 
-    private final int slotHeight = 18;
     private int leftSize = 1, rightSize = 1, outputSize = 1;
-    private int leftHeight, rightHeight, outputHeight;
 
     public static void generate(RecipeCategory category, PluginContext context) {
         context.addGenerator(client -> List.of(

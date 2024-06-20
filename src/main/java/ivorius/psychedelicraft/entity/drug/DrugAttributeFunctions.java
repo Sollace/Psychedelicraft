@@ -23,7 +23,7 @@ public interface DrugAttributeFunctions {
 
     public static class Builder {
         static final Func DEFAULT_FUNC = (strength, time) -> 0F;
-        private final Map<Attribute, Func> functions = new HashMap<>();
+        private final Impl functions = new Impl(new HashMap<>());
 
         private Builder() {}
 
@@ -36,21 +36,24 @@ public interface DrugAttributeFunctions {
         }
 
         public Builder put(Attribute attribute, Func function) {
-            functions.put(attribute, function);
+            functions.functions().put(attribute, function);
             return this;
         }
 
         public Builder add(Attribute attribute, Function<Func, Func> function) {
-            functions.put(attribute, function.apply(get(attribute)));
+            functions.functions().put(attribute, function.apply(functions.get(attribute)));
             return this;
         }
 
-        private Func get(Attribute attribute) {
-            return functions.getOrDefault(attribute, DEFAULT_FUNC);
+        public DrugAttributeFunctions build() {
+            return new Impl(Map.copyOf(functions.functions()));
         }
 
-        public DrugAttributeFunctions build() {
-            return new HashMap<>(functions)::get;
+        private record Impl(Map<Attribute, Func> functions) implements DrugAttributeFunctions {
+            @Override
+            public Func get(Attribute attribute) {
+                return functions.getOrDefault(attribute, DEFAULT_FUNC);
+            }
         }
     }
 }

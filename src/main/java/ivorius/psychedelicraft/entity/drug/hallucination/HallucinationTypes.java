@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.entity.drug.hallucination;
 import java.util.*;
 import java.util.stream.Stream;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
 
@@ -26,10 +27,10 @@ public class HallucinationTypes {
     public static final int COLOR_BLOOM = 102;
     public static final int COLOR_CONTRAST = 103;
 
-    private static final List<Integer> COLOR = List.of(DESATURATION, SUPER_SATURATION, SLOW_COLOR_ROTATION, QUICK_COLOR_ROTATION, PULSES, SURFACE_FRACTALS, BLOOM, COLOR_BLOOM, COLOR_CONTRAST);
-    private static final List<Integer> MOVEMENT = List.of(BIG_WAVES, SMALL_WAVES, WIGGLE_WAVES, DISTANT_WORLD_DEFORMATION, SHATTERING_FRACTALS);
-    private static final List<Integer> CONTEXTUAL = List.of(ENTITIES);
-    public static final List<Integer> ALL = Stream.of(COLOR, MOVEMENT, CONTEXTUAL).flatMap(List::stream).toList();
+    private static final IntList COLOR = IntList.of(DESATURATION, SUPER_SATURATION, SLOW_COLOR_ROTATION, QUICK_COLOR_ROTATION, PULSES, SURFACE_FRACTALS, BLOOM, COLOR_BLOOM, COLOR_CONTRAST);
+    private static final IntList MOVEMENT = IntList.of(BIG_WAVES, SMALL_WAVES, WIGGLE_WAVES, DISTANT_WORLD_DEFORMATION, SHATTERING_FRACTALS);
+    private static final IntList CONTEXTUAL = IntList.of(ENTITIES);
+    public static final IntList ALL = IntList.of(Stream.of(COLOR, MOVEMENT, CONTEXTUAL).flatMapToInt(IntList::intStream).toArray());
 
     private final List<Category> categories = List.of(
             new Category(COLOR, Drug.COLOR_HALLUCINATION_STRENGTH),

@@ -190,7 +190,7 @@ public class DrugRenderer {
 
     public void renderAllHallucinations(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, DrugProperties drugProperties) {
         HallucinationManager hallucinations = drugProperties.getHallucinations();
-        float alpha = MathHelper.clamp(hallucinations.getHallucinationStrength(tickDelta) * 15, 0, 1);
+        float alpha = MathHelper.clamp(hallucinations.getEntityHallucinationStrength() * 15, 0, 1);
         float forcedAlpha = hallucinations.getEntities().getForcedAlpha(tickDelta);
         if (forcedAlpha > 0) {
             alpha += forcedAlpha;

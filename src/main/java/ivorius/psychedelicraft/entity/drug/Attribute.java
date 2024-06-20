@@ -3,6 +3,8 @@ package ivorius.psychedelicraft.entity.drug;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.joml.Vector4f;
+
 public record Attribute(float initial, Combiner combiner) {
     public float get(DrugProperties properties) {
         return get(initial, properties);
@@ -15,9 +17,10 @@ public record Attribute(float initial, Combiner combiner) {
         return value;
     }
 
-    public static Function<DrugProperties, float[]> createColorModification(BiConsumer<Drug, float[]> modifier) {
+    public static Function<DrugProperties, Vector4f> createColorModification(BiConsumer<Drug, Vector4f> modifier) {
+        final Vector4f initial = new Vector4f(1, 1, 1, 0);
         return properties -> {
-            float[] initial = {1, 1, 1, 0};
+            initial.set(1, 1, 1, 0);
             for (Drug drug : properties.getAllDrugs()) {
                 modifier.accept(drug, initial);
             }

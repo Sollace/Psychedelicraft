@@ -40,7 +40,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
 
     @Override
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
-        ParticleUtil.spawnParticle(world, pos, new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgbVector(getColor(getDefaultStack())), 1), ConstantIntProvider.create(5));
+        ParticleUtil.spawnParticle(world, pos, new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgb(getColor(getDefaultStack())), 1), ConstantIntProvider.create(5));
 
         world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS,
                 0.5F + world.getRandom().nextFloat(),

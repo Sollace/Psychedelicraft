@@ -2,6 +2,8 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.io.IOException;
 import java.util.*;
+
+import org.joml.Vector4fc;
 import org.slf4j.Logger;
 
 import com.google.gson.JsonSyntaxException;
@@ -59,27 +61,27 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     })
                     .program("simple_effects", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var h = ShaderContext.hallucinations();
-                        if (setter.setIfNonZero("quickColorRotation", h.getQuickColorRotation(tickDelta))
-                         | setter.setIfNonZero("slowColorRotation", h.getSlowColorRotation(tickDelta))
-                         | setter.setIfNonZero("desaturation", h.getDesaturation(tickDelta))
-                         | setter.setIfNonZero("colorIntensification", h.getColorIntensification(tickDelta))
-                         | setter.setIfNonZero("inversion", h.getColorInversion(tickDelta))
-                         | h.getPulseColor(tickDelta)[3] > 0
-                         | h.getContrastColorization(tickDelta)[3] > 0) {
+                        if (setter.setIfNonZero("quickColorRotation", h.getQuickColorRotation())
+                         | setter.setIfNonZero("slowColorRotation", h.getSlowColorRotation())
+                         | setter.setIfNonZero("desaturation", h.getDesaturation())
+                         | setter.setIfNonZero("colorIntensification", h.getColorIntensification())
+                         | setter.setIfNonZero("inversion", h.getColorInversion())
+                         | h.getPulseColor().w() > 0
+                         | h.getContrastColorization().w() > 0) {
                             pass.run();
                         }
                     })
                     .program("simple_effects_depth", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var h = ShaderContext.hallucinations();
                         // var pulses = h.getPulseColor(tickDelta);
-                        var worldColorization = h.getContrastColorization(tickDelta);
-                        if (h.getQuickColorRotation(tickDelta) > 0
-                         | h.getSlowColorRotation(tickDelta) > 0
-                         | h.getDesaturation(tickDelta) > 0
-                         | h.getColorIntensification(tickDelta) > 0
-                         | h.getColorInversion(tickDelta) > 0
+                        var worldColorization = h.getContrastColorization();
+                        if (h.getQuickColorRotation() > 0
+                         | h.getSlowColorRotation() > 0
+                         | h.getDesaturation() > 0
+                         | h.getColorIntensification() > 0
+                         | h.getColorInversion() > 0
                          // | pulses[3] > 0
-                         | worldColorization[3] > 0) {
+                         | worldColorization.w() > 0) {
                             //setter.set("pulses", pulses);
                             setter.set("colorSafeMode", GLStateProxy.isColorSafeMode() ? 1 : 0);
                             setter.set("worldColorization", worldColorization);
@@ -88,7 +90,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("ps_blur", UniformBinding.start()
                     .program("ps_blur", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        float[] blur = ShaderContext.hallucinations().getBlur(tickDelta);
+                        float[] blur = ShaderContext.hallucinations().getBlur();
 
                         if (blur[0] > 0 || blur[0] > 0) {
                             setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
@@ -140,7 +142,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("ps_bloom", UniformBinding.start()
                     .program("ps_bloom", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        float bloom = ShaderContext.hallucinations().getBloom(tickDelta);
+                        float bloom = ShaderContext.hallucinations().getBloom();
                         setter.set("pixelSize", 1F / screenWidth * 2F, 1F / screenHeight * 2F);
                         for (int n = 0; n < MathHelper.ceil(bloom); n++) {
                             setter.set("totalAlpha", Math.min(1, bloom - n));
@@ -152,16 +154,16 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("ps_colored_bloom", UniformBinding.start()
                     .program("ps_colored_bloom", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        float[] color = ShaderContext.hallucinations().getColorBloom(tickDelta);
-                        if (color[3] <= 0) {
+                        Vector4fc color = ShaderContext.hallucinations().getColorBloom();
+                        if (color.w() <= 0) {
                             return;
                         }
 
-                        setter.set("bloomColor", color[0], color[1], color[2]);
+                        setter.set("bloomColor", color.x(), color.y(), color.z());
                         setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
 
-                        for (int n = 0; n < MathHelper.ceil(color[3]); n++) {
-                            setter.set("totalAlpha", Math.max(1, color[3] - n));
+                        for (int n = 0; n < MathHelper.ceil(color.w()); n++) {
+                            setter.set("totalAlpha", Math.max(1, color.w() - n));
                             for (int i = 0; i < 2; i++) {
                                 setter.set("vertical", i);
                                 pass.run();

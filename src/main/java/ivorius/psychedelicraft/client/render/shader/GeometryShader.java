@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
+import org.joml.Vector4f;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RenderPhase;
@@ -21,7 +22,6 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
 public class GeometryShader {
     private static final String GEO_DIRECTORY = "shaders/geometry/";
@@ -44,6 +44,7 @@ public class GeometryShader {
         map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
     });
 
+    private static final Vector4f ZERO = new Vector4f();
 
     public void setup(Type type, String name, InputStream stream, String domain, GlImportProcessor loader) {
         this.name = Identifier.of(name);
@@ -60,10 +61,10 @@ public class GeometryShader {
 
     public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
         register.accept(new BoundUniform("PS_SurfaceFractalStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().getSurfaceFractalStrength(ShaderContext.tickDelta()), 0, 1) : 0);
+            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().getSurfaceFractalStrength(), 0, 1) : 0);
         }));
         register.accept(new BoundUniform("PS_Pulses", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
-            uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor(ShaderContext.tickDelta()) : new float[4]);
+            uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor() : ZERO);
         }));
         register.accept(new BoundUniform("PS_SurfaceFractalCoords", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
             if (isEnabled()) {
@@ -72,29 +73,28 @@ public class GeometryShader {
             }
         }));
         register.accept(new BoundUniform("PS_PlayerPosition", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> {
-            Vec3d pos = isEnabled() ? ShaderContext.position() : Vec3d.ZERO;
-            uniform.set((float)pos.getX(), (float)pos.getY(), (float)pos.getZ());
+            uniform.set(ShaderContext.position().toVector3f());
         }));
         register.accept(new BoundUniform("PS_WorldTicks", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isEnabled() ? ShaderContext.ticks() : 0);
+            uniform.set(ShaderContext.ticks());
         }));
-        register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> {
+        register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
             if (isWorld()) {
-                float tickDelta = ShaderContext.tickDelta();
                 uniform.set(
-                    ShaderContext.hallucinations().getSmallWaveStrength(tickDelta),
-                    ShaderContext.hallucinations().getBigWaveStrength(tickDelta),
-                    ShaderContext.hallucinations().getWiggleWaveStrength(tickDelta)
+                    ShaderContext.hallucinations().getSmallWaveStrength(),
+                    ShaderContext.hallucinations().getBigWaveStrength(),
+                    ShaderContext.hallucinations().getWiggleWaveStrength(),
+                    ShaderContext.hallucinations().getSurfaceBubblingStrength()
                 );
             } else {
-                uniform.set(0F, 0F, 0F);
+                uniform.set(ZERO);
             }
         }));
         register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength(ShaderContext.tickDelta()) : 0);
+            uniform.set(isWorld() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength() : 0);
         }));
         register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() ? ShaderContext.hallucinations().getSurfaceShatteringStrength(ShaderContext.tickDelta()) : 0F);
+            uniform.set(isWorld() ? ShaderContext.hallucinations().getSurfaceShatteringStrength() : 0F);
         }));
     }
 

@@ -187,7 +187,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         Resovoir tank = getPrimaryTank();
         ParticleHelper.spawnParticles(getWorld(),
-                new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgbVector(tank.getContents().fluid().getColor(tank.getContents())), 1F),
+                new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgb(tank.getContents().fluid().getColor(tank.getContents())), 1F),
                 () -> ParticleHelper.apply(center, x -> random.nextTriangular(x, 0.5 + spread)).add(0, 0.5, 0),
                 Suppliers.ofInstance(new Vec3d(
                         random.nextTriangular(0, 0.125),

@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.*;
 
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
+import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -141,10 +144,19 @@ class LoadedShader extends PostEffectProcessor {
         }
 
         @Override
-        public void set(String name, Vector3f values) {
+        public void set(String name, Vector3fc values) {
             var uniform = program.getUniformByName(name);
             if (uniform != null) {
                 var copy = new Vector3f(values);
+                replay.add(uniformSetter(name, f -> uniform.set(copy)));
+            }
+        }
+
+        @Override
+        public void set(String name, Vector4fc values) {
+            var uniform = program.getUniformByName(name);
+            if (uniform != null) {
+                var copy = new Vector4f(values);
                 replay.add(uniformSetter(name, f -> uniform.set(copy)));
             }
         }
