@@ -59,7 +59,7 @@ record RecipeCategory(Identifier id, CategoryIcon icon, TlaIngredient stations, 
                     recipeConstructor.accept(category, registry);
                 }
             } catch (Throwable t) {
-                Psychedelicraft.LOGGER.fatal(t);
+                Psychedelicraft.LOGGER.fatal("Error occured whilst registering recipes for category " + category.getId(), t);
             }
         });
     }

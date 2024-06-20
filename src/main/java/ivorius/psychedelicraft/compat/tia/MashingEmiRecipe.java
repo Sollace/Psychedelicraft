@@ -94,7 +94,7 @@ class MashingEmiRecipe implements PSRecipe {
             int row = i / 3;
             int col = i % 3;
             inBox.addExclusion(
-                widgets.addSlot(input.get(0),
+                widgets.addSlot(input.get(i),
                         col * 16 + ingredientsLeft,
                         row * 16 + ingredientsTop + (col % 2) * 8
                 ).disableBackground().markInput()

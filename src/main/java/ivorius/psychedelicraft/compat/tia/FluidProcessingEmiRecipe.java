@@ -8,11 +8,9 @@ import io.github.mattidragon.tlaapi.api.plugin.PluginContext;
 import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import io.github.mattidragon.tlaapi.api.recipe.TlaRecipe;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
-import io.github.mattidragon.tlaapi.api.recipe.TlaStack.TlaItemStack;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -36,7 +34,7 @@ class FluidProcessingEmiRecipe implements PSRecipe {
                 .flatMap(fluid -> {
             var counter = new Object() { int value; };
             return ((Processable)fluid).getProcessStages(type, (time, change, from, to) -> {
-                return (TlaRecipe)new FluidProcessingEmiRecipe(category, type, capacity, fluid, counter.value += 1, time, change, TlaIngredient.ofItemTag(fluid.getPreferredContainerTag()), from, to);
+                return (TlaRecipe)new FluidProcessingEmiRecipe(category, type, capacity, fluid, counter.value += 1, time, change, from, to);
             });
         }).toList());
     }
@@ -46,23 +44,21 @@ class FluidProcessingEmiRecipe implements PSRecipe {
             int counter,
             int time,
             int change,
-            TlaIngredient receptical, Function<ItemFluids, ItemFluids> from, Function<ItemFluids, ItemFluids> to) {
+            Function<ItemFluids, ItemFluids> from, Function<ItemFluids, ItemFluids> to) {
         this.id = category.getId().withPath(p -> "fluid_process/" + p + "/" + fluid.getId().getPath() + "/" + counter);
         this.category = category;
 
         this.time = time;
         this.change = change;
-        this.receptical = receptical;
+        this.receptical = category.stations();
 
         ItemFluids def = fluid.getDefaultStack();
         ItemFluids fromFluid = from.apply(def);
         ItemFluids toFluid = to.apply(def);
 
-        List<ItemStack> recepticals = receptical.getStacks().stream().map(r -> ((TlaItemStack)r).toStack()).toList();
-
-        input = TlaIngredient.ofStacks(recepticals.stream().map(s -> RecipeUtil.toTlaStack(s, fromFluid)).toList());
-        outputs = recepticals.stream().map(s -> RecipeUtil.toTlaStack(s, toFluid)).toList();
-        output = TlaIngredient.ofStacks(outputs);
+        input = RecipeUtil.toIngredient(fromFluid);
+        output = RecipeUtil.toIngredient(toFluid);
+        outputs = List.of(RecipeUtil.toTlaStack(toFluid));
     }
 
     @Override

@@ -170,7 +170,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                         .map(s -> {
                     int difference = valueGetter.apply(state) - valueGetter.apply(s);
                     return difference > 0 ? consumer.accept(time, difference, s, state) : null;
-                });
+                }).filter(Objects::nonNull);
             }
 
             if (attribute == FERMENTATION) {
