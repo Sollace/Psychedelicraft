@@ -12,6 +12,7 @@ import org.joml.Vector4f;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RenderPhase;
+import ivorius.psychedelicraft.entity.drug.Drug;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
@@ -61,7 +62,7 @@ public class GeometryShader {
 
     public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
         register.accept(new BoundUniform("PS_SurfaceFractalStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().getSurfaceFractalStrength(), 0, 1) : 0);
+            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().get(Drug.FRACTALS), 0, 1) : 0);
         }));
         register.accept(new BoundUniform("PS_Pulses", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
             uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor() : ZERO);
@@ -81,20 +82,20 @@ public class GeometryShader {
         register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
             if (isWorld()) {
                 uniform.set(
-                    ShaderContext.hallucinations().getSmallWaveStrength(),
-                    ShaderContext.hallucinations().getBigWaveStrength(),
-                    ShaderContext.hallucinations().getWiggleWaveStrength(),
-                    ShaderContext.hallucinations().getSurfaceBubblingStrength()
+                    ShaderContext.hallucinations().get(Drug.SMALL_WAVES),
+                    ShaderContext.hallucinations().get(Drug.BIG_WAVES),
+                    ShaderContext.hallucinations().get(Drug.WIGGLE_WAVES),
+                    ShaderContext.hallucinations().get(Drug.BUBBLING_WAVES)
                 );
             } else {
                 uniform.set(ZERO);
             }
         }));
         register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() ? ShaderContext.hallucinations().getDistantWorldDeformationStrength() : 0);
+            uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.DISTANT_WAVES) : 0);
         }));
         register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() ? ShaderContext.hallucinations().getSurfaceShatteringStrength() : 0F);
+            uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.SHATTERING_WAVES) : 0F);
         }));
     }
 

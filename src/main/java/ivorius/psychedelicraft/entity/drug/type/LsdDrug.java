@@ -30,6 +30,7 @@ public class LsdDrug extends SimpleDrug {
             .put(SUPER_SATURATION_HALLUCINATION_STRENGTH, 0.8F)
             .put(HUNGER_SUPPRESSION, 0.2F)
             .put(WEIGHTLESSNESS, f -> f * (f > 0.6 ? 0.8F : 0.2F))
+            .put(SHATTERING_WAVES, 0.06F)
             .build();
 
     public LsdDrug(DrugType type, double decSpeed, double decSpeedPlus) {

@@ -48,9 +48,13 @@ public interface Drug extends NbtSerialisable {
     Attribute SLOW_COLOR_ROTATION = new Attribute("slow_color_rotation", 0, Combiner.SUM);
     Attribute FAST_COLOR_ROTATION = new Attribute("fast_color_rotation", 0, Combiner.SUM);
 
+    Attribute DISTANT_WAVES = new Attribute("distant_waves", 0, Combiner.SUM);
     Attribute BIG_WAVES = new Attribute("big_waves", 0, Combiner.SUM);
     Attribute SMALL_WAVES = new Attribute("small_waves", 0, Combiner.SUM);
     Attribute WIGGLE_WAVES = new Attribute("wiggle_waves", 0, Combiner.SUM);
+    Attribute BUBBLING_WAVES = new Attribute("bubbling_waves", 0, Combiner.SUM);
+    Attribute SHATTERING_WAVES = new Attribute("shattering_waves", 0, Combiner.SUM);
+    Attribute FRACTALS = new Attribute("fractals", 0, Combiner.SUM);
 
     Function<DrugProperties, Vector4f> CONTRAST_COLORIZATION = Attribute.createColorModification(Drug::applyContrastColorization);
     Function<DrugProperties, Vector4f> BLOOM = Attribute.createColorModification(Drug::applyColorBloom);

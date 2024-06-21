@@ -61,11 +61,11 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     })
                     .program("simple_effects", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var h = ShaderContext.hallucinations();
-                        if (setter.setIfNonZero("quickColorRotation", h.getQuickColorRotation())
-                         | setter.setIfNonZero("slowColorRotation", h.getSlowColorRotation())
-                         | setter.setIfNonZero("desaturation", h.getDesaturation())
-                         | setter.setIfNonZero("colorIntensification", h.getColorIntensification())
-                         | setter.setIfNonZero("inversion", h.getColorInversion())
+                        if (setter.setIfNonZero("quickColorRotation", h.get(Drug.FAST_COLOR_ROTATION))
+                         | setter.setIfNonZero("slowColorRotation", h.get(Drug.SLOW_COLOR_ROTATION))
+                         | setter.setIfNonZero("desaturation", h.get(Drug.DESATURATION_HALLUCINATION_STRENGTH))
+                         | setter.setIfNonZero("colorIntensification", h.get(Drug.SUPER_SATURATION_HALLUCINATION_STRENGTH))
+                         | setter.setIfNonZero("inversion", h.get(Drug.INVERSION_HALLUCINATION_STRENGTH))
                          | h.getPulseColor().w() > 0
                          | h.getContrastColorization().w() > 0) {
                             pass.run();
@@ -75,11 +75,11 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         var h = ShaderContext.hallucinations();
                         // var pulses = h.getPulseColor(tickDelta);
                         var worldColorization = h.getContrastColorization();
-                        if (h.getQuickColorRotation() > 0
-                         | h.getSlowColorRotation() > 0
-                         | h.getDesaturation() > 0
-                         | h.getColorIntensification() > 0
-                         | h.getColorInversion() > 0
+                        if (h.get(Drug.FAST_COLOR_ROTATION) > 0
+                         | h.get(Drug.SLOW_COLOR_ROTATION) > 0
+                         | h.get(Drug.DESATURATION_HALLUCINATION_STRENGTH) > 0
+                         | h.get(Drug.SUPER_SATURATION_HALLUCINATION_STRENGTH) > 0
+                         | h.get(Drug.INVERSION_HALLUCINATION_STRENGTH) > 0
                          // | pulses[3] > 0
                          | worldColorization.w() > 0) {
                             //setter.set("pulses", pulses);
@@ -142,13 +142,15 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("ps_bloom", UniformBinding.start()
                     .program("ps_bloom", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        float bloom = ShaderContext.hallucinations().getBloom();
-                        setter.set("pixelSize", 1F / screenWidth * 2F, 1F / screenHeight * 2F);
-                        for (int n = 0; n < MathHelper.ceil(bloom); n++) {
-                            setter.set("totalAlpha", Math.min(1, bloom - n));
-                            for (int i = 0; i < 2; i++) {
-                                setter.set("vertical", i);
-                                pass.run();
+                        float bloom = ShaderContext.hallucinations().get(Drug.BLOOM_HALLUCINATION_STRENGTH);
+                        if (bloom > 0) {
+                            setter.set("pixelSize", 1F / screenWidth * 2F, 1F / screenHeight * 2F);
+                            for (int n = 0; n < MathHelper.ceil(bloom); n++) {
+                                setter.set("totalAlpha", Math.min(1, bloom - n));
+                                for (int i = 0; i < 2; i++) {
+                                    setter.set("vertical", i);
+                                    pass.run();
+                                }
                             }
                         }
                     }))
