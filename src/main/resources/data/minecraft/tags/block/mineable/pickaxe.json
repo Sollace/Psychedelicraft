@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "psychedelicraft:iron_drying_table"
+    "psychedelicraft:iron_drying_table",
+    "psychedelicraft:bunsen_burner"
   ]
 }

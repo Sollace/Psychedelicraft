@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "nrn",
+    "n n"
+  ],
+  "key": {
+    "r": { "item": "minecraft:redstone" },
+    "n": { "item": "minecraft:iron_nugget" }
+  },
+  "result": {
+    "id": "psychedelicraft:bunsen_burner"
+  }
+}

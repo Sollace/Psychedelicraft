@@ -1,0 +1,6 @@
+{
+  "parent": "psychedelicraft:block/bunsen_burner",
+	"textures": {
+		"texture": "psychedelicraft:block/burner_base_top_lit"
+	}
+}

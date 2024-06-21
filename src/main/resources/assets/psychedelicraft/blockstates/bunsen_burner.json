@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "lit=false": {
       "model": "psychedelicraft:block/bunsen_burner"
+    },
+    "lit=true": {
+      "model": "psychedelicraft:block/bunsen_burner_lit"
     }
   }
 }
