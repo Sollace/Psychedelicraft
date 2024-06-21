@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.block;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
@@ -27,6 +28,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -130,15 +133,16 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    @Deprecated
-    public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
-        world.getBlockEntity(pos, PSBlockEntities.PLACED_DRINK).ifPresent(be -> {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+        List<ItemStack> stacks = new ArrayList<>(super.getDroppedStacks(state, builder));
+        if (builder.getOptional(LootContextParameters.BLOCK_ENTITY) instanceof Data be) {
             be.forEachDrink((y, entry) -> {
-                Block.dropStack(world, pos, entry.stack());
+                stacks.add(entry.stack());
                 return 0;
             });
             be.entries.clear();
-        });
+        }
+        return stacks;
     }
 
     @Override
