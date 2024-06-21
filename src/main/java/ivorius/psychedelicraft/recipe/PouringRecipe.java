@@ -36,7 +36,7 @@ public class PouringRecipe extends SpecialCraftingRecipe {
                 .recepticals(inventory.getStacks().stream())
                 .toList();
 
-        if (inventory.getStacks().size() != 2) {
+        if (inventory.getStacks().size() != 2 || recepticals.size() != 2) {
             return false;
         }
 
