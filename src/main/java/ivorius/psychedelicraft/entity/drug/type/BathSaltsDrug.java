@@ -31,7 +31,6 @@ public class BathSaltsDrug extends SimpleDrug {
 
     public BathSaltsDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.BATH_SALTS, decSpeed, decSpeedPlus);
-
     }
 
     @Override

@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.GLStateProxy;
+import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -66,15 +67,15 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                          | setter.setIfNonZero("desaturation", h.get(Drug.DESATURATION_HALLUCINATION_STRENGTH))
                          | setter.setIfNonZero("colorIntensification", h.get(Drug.SUPER_SATURATION_HALLUCINATION_STRENGTH))
                          | setter.setIfNonZero("inversion", h.get(Drug.INVERSION_HALLUCINATION_STRENGTH))
-                         | h.getPulseColor().w() > 0
-                         | h.getContrastColorization().w() > 0) {
+                         | h.getPulseColor(tickDelta, RenderPhase.current() == RenderPhase.SKY).w() > 0
+                         | h.getContrastColorization(tickDelta).w() > 0) {
                             pass.run();
                         }
                     })
                     .program("simple_effects_depth", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var h = ShaderContext.hallucinations();
                         // var pulses = h.getPulseColor(tickDelta);
-                        var worldColorization = h.getContrastColorization();
+                        var worldColorization = h.getContrastColorization(tickDelta);
                         if (h.get(Drug.FAST_COLOR_ROTATION) > 0
                          | h.get(Drug.SLOW_COLOR_ROTATION) > 0
                          | h.get(Drug.DESATURATION_HALLUCINATION_STRENGTH) > 0
@@ -102,6 +103,11 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("depth_of_field", UniformBinding.start()
                     .program("depth_of_field", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+
+                        if (MinecraftClient.getInstance().currentScreen != null) {
+                            return;
+                        }
+
                         var config = PsychedelicraftClient.getConfig().visual;
 
                         if ((config.dofFocalBlurFar <= 0 && config.dofFocalBlurNear <= 0)
@@ -156,7 +162,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("ps_colored_bloom", UniformBinding.start()
                     .program("ps_colored_bloom", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        Vector4fc color = ShaderContext.hallucinations().getColorBloom();
+                        Vector4fc color = ShaderContext.hallucinations().getColorBloom(tickDelta, RenderPhase.current() == RenderPhase.SKY);
                         if (color.w() <= 0) {
                             return;
                         }

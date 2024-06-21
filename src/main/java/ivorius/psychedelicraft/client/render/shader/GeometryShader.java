@@ -8,12 +8,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
-import org.joml.Vector4f;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
-import net.minecraft.block.Blocks;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.gl.ShaderStage.Type;
@@ -45,8 +43,6 @@ public class GeometryShader {
         map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
     });
 
-    private static final Vector4f ZERO = new Vector4f(0, 0, 0, 0);
-
     public void setup(Type type, String name, InputStream stream, String domain, GlImportProcessor loader) {
         this.name = Identifier.of(name);
         this.type = type;
@@ -65,22 +61,20 @@ public class GeometryShader {
             uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().get(Drug.FRACTALS), 0, 1) : 0);
         }));
         register.accept(new BoundUniform("PS_Pulses", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
-            uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor() : ZERO);
+            uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor(ShaderContext.tickDelta(), RenderPhase.current() == RenderPhase.SKY) : MathUtils.ZERO);
         }));
         register.accept(new BoundUniform("PS_SurfaceFractalCoords", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
-            if (isEnabled()) {
-                Sprite sprite = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
+            if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) > 0) {
+                Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
                 uniform.set(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
+            } else {
+                uniform.set(MathUtils.ZERO);
             }
         }));
-        register.accept(new BoundUniform("PS_PlayerPosition", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> {
-            uniform.set(ShaderContext.position().toVector3f());
-        }));
-        register.accept(new BoundUniform("PS_WorldTicks", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(ShaderContext.ticks());
-        }));
+        register.accept(new BoundUniform("PS_PlayerPosition", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> uniform.set(ShaderContext.position().toVector3f())));
+        register.accept(new BoundUniform("PS_WorldTicks", GlUniform.getTypeIndex("float"), 1, program, uniform -> uniform.set(ShaderContext.ticks())));
         register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
-            if (isWorld()) {
+            if (isWorld() && RenderPhase.current() != RenderPhase.CLOUDS) {
                 uniform.set(
                     ShaderContext.hallucinations().get(Drug.SMALL_WAVES),
                     ShaderContext.hallucinations().get(Drug.BIG_WAVES),
@@ -88,7 +82,7 @@ public class GeometryShader {
                     ShaderContext.hallucinations().get(Drug.BUBBLING_WAVES)
                 );
             } else {
-                uniform.set(ZERO);
+                uniform.set(MathUtils.ZERO);
             }
         }));
         register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {

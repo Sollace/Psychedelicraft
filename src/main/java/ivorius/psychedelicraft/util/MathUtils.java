@@ -13,6 +13,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public interface MathUtils {
+    Vector4f ZERO = new Vector4f(0, 0, 0, 0);
+    Vector4f TEMP_VECTOR = new Vector4f();
+
     static float nearValue(float from, float to, float delta, float adjustmentRate) {
         return approach(MathHelper.lerp(delta, from, to), to, adjustmentRate);
     }
@@ -87,38 +90,29 @@ public interface MathUtils {
         return ColorHelper.Argb.fromFloats(a, r, g, b);
     }
 
-    static float[] mixColorsDynamic(float[] color, float[] colorBase, float alpha, boolean fixAlpha) {
-        if (alpha > 0) {
-            float max = alpha + colorBase[3];
-            colorBase[0] = MathHelper.lerp(alpha / max, colorBase[0], color[0]);
-            colorBase[1] = MathHelper.lerp(alpha / max, colorBase[1], color[1]);
-            colorBase[2] = MathHelper.lerp(alpha / max, colorBase[2], color[2]);
-            colorBase[3] = max;
-        }
-        if (fixAlpha) {
-            colorBase[3] = MathHelper.clamp(colorBase[3], 0, 1);
-        }
-        return colorBase;
-    }
-
-    static Vector4fc mixColorsDynamic(Vector3fc color, Vector4f colorBase, float alpha, boolean fixAlpha) {
+    static Vector4fc mixColorsDynamic(Vector3fc color, Vector4f colorBase, float alpha) {
         if (alpha > 0) {
             float max = alpha + colorBase.w;
-            colorBase.set(
+            return colorBase.set(
                     MathHelper.lerp(alpha / max, colorBase.x, color.x()),
                     MathHelper.lerp(alpha / max, colorBase.y, color.y()),
                     MathHelper.lerp(alpha / max, colorBase.z, color.z()),
-                    max
+                    MathHelper.clamp(max, 0, 1)
             );
-        }
-        if (fixAlpha) {
-            colorBase.w = MathHelper.clamp(colorBase.w, 0, 1);
         }
         return colorBase;
     }
 
     static Vector3f lerp(float delta, Vector3f a, Vector3fc b) {
         return a.set(
+                MathHelper.lerp(delta, a.x(), b.x()),
+                MathHelper.lerp(delta, a.y(), b.y()),
+                MathHelper.lerp(delta, a.z(), b.z())
+        );
+    }
+
+    static Vector3f lerp(float delta, Vector3fc a, Vector3fc b, Vector3f out) {
+        return out.set(
                 MathHelper.lerp(delta, a.x(), b.x()),
                 MathHelper.lerp(delta, a.y(), b.y()),
                 MathHelper.lerp(delta, a.z(), b.z())
@@ -176,6 +170,15 @@ public interface MathUtils {
                 function.get(vector.x),
                 function.get(vector.y),
                 function.get(vector.z)
+        );
+    }
+
+    static Vector4f apply(Vector4f vector, Float2FloatFunction function) {
+        return vector.set(
+                function.get(vector.x),
+                function.get(vector.y),
+                function.get(vector.z),
+                function.get(vector.w)
         );
     }
 

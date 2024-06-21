@@ -22,12 +22,12 @@ public class HarmoniumDrug extends SimpleDrug {
 
     @Override
     public void applyContrastColorization(Vector4f rgba) {
-        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue(), false);
+        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue());
     }
 
     @Override
     public void applyColorBloom(Vector4f rgba) {
-        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue() * 3, false);
+        MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue() * 3);
     }
 
     @Override
