@@ -18,7 +18,8 @@ public interface PSParticles {
 
     ParticleType<FluidParticleEffect> DRIPPING_FLUID = register("dripping_fluid", false, FluidParticleEffect::createCodec, FluidParticleEffect::createPacketCodec);
     ParticleType<FluidParticleEffect> FALLING_FLUID = register("falling_fluid", false, FluidParticleEffect::createCodec, FluidParticleEffect::createPacketCodec);
-    ParticleType<FluidParticleEffect> SPLASH = register("splash", false, FluidParticleEffect::createCodec, FluidParticleEffect::createPacketCodec);
+    ParticleType<FluidParticleEffect> FLUID_SPLASH = register("fluid_splash", false, FluidParticleEffect::createCodec, FluidParticleEffect::createPacketCodec);
+    ParticleType<FluidParticleEffect> FLUID_BUBBLE = register("fluid_bubble", false, FluidParticleEffect::createCodec, FluidParticleEffect::createPacketCodec);
 
     static <T extends ParticleType<?>> T register(String name, T type) {
         return Registry.register(Registries.PARTICLE_TYPE, Psychedelicraft.id(name), type);

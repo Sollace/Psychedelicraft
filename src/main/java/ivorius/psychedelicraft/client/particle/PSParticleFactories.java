@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.client.particle;
 
 import org.joml.Vector3f;
 
+import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.FluidParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -24,8 +25,9 @@ import net.minecraft.particle.ParticleTypes;
 public interface PSParticleFactories {
     static void bootstrap() {
         ParticleFactoryRegistry.getInstance().register(PSParticles.EXHALED_SMOKE, createFactory(ExhaledSmokeParticle::new));
-        ParticleFactoryRegistry.getInstance().register(PSParticles.BUBBLE, createFactory(BubbleParticle::new));
-        ParticleFactoryRegistry.getInstance().register(PSParticles.SPLASH, createFactory(createSplash()));
+        ParticleFactoryRegistry.getInstance().register(PSParticles.BUBBLE, PSParticleFactories.<DrugDustParticleEffect>createFactory(FluidBubbleParticle::new));
+        ParticleFactoryRegistry.getInstance().register(PSParticles.FLUID_SPLASH, createFactory(createSplash()));
+        ParticleFactoryRegistry.getInstance().register(PSParticles.FLUID_BUBBLE, PSParticleFactories.<FluidParticleEffect>createFactory(FluidBubbleParticle::new));
         ParticleFactoryRegistry.getInstance().register(PSParticles.DRIPPING_FLUID, createFactory(PSParticleFactories::createDrippingFluid));
         ParticleFactoryRegistry.getInstance().register(PSParticles.FALLING_FLUID, createFactory(PSParticleFactories::createFallingFluid));
     }
@@ -43,10 +45,10 @@ public interface PSParticleFactories {
     static Particle createFallingFluid(FluidParticleEffect type, ClientWorld world,
             double x, double y, double z,
             double velocityX, double velocityY, double velocityZ) {
-        return setColor(new BlockLeakParticle.ContinuousFalling(world, x, y, z, type.fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.SPLASH, type.fluid())), type);
+        return setColor(new BlockLeakParticle.ContinuousFalling(world, x, y, z, type.fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.FLUID_SPLASH, type.fluid())), type);
     }
 
-    private static Particle setColor(Particle particle, FluidParticleEffect effect) {
+    static Particle setColor(Particle particle, FluidParticleEffect effect) {
         Vector3f color = MathUtils.unpackRgb(effect.fluid().getColor(effect.fluid().getDefaultStack()));
         particle.setColor(color.x, color.y, color.z);
         return particle;

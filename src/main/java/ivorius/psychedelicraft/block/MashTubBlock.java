@@ -22,8 +22,6 @@ import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.fluid.*;
 import net.minecraft.item.*;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -39,7 +37,7 @@ import net.minecraft.world.*;
  * Created by lukas on 27.10.14.
  * Updated by Sollace on 12 Jan 2023
  */
-public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements FluidFillable {
+public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements FluidFilled {
     public static final MapCodec<MashTubBlock> CODEC = createCodec(MashTubBlock::new);
     public static final int SIZE = 15;
     public static final int BORDER_SIZE = 1;
@@ -151,12 +149,20 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         builder.add(LIGHT);
     }
 
-    public int getFluidHeight(World world, BlockState state, BlockPos pos, TagKey<Fluid> tag) {
+    @Override
+    public int getFluidHeight(World world, BlockState state, BlockPos pos) {
         return world.getBlockEntity(pos, getBlockEntityType())
                 .map(be -> be.getPrimaryTank())
-                .filter(tank -> tank.getContents().fluid().getPhysical().isIn(tag) || (tag == FluidTags.WATER && tank.getContents().fluid().isCustomFluid()))
                 .map(tank -> (int)(((float)tank.getContents().amount() / tank.getCapacity()) * 8))
                 .orElse(-1);
+    }
+
+    @Override
+    public FluidState getContainedFluid(World world, BlockState state, BlockPos pos) {
+        return world.getBlockEntity(pos, getBlockEntityType())
+                .map(be -> be.getPrimaryTank())
+                .map(tank -> tank.getContents().fluid().getFluidState(tank.getContents()))
+                .orElse(Fluids.EMPTY.getDefaultState());
     }
 
     @Override
