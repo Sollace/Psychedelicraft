@@ -35,7 +35,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -155,6 +154,11 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             world.removeBlock(pos, false);
             world.playSound(null, pos, SoundEvents.BLOCK_CANDLE_PLACE, SoundCategory.BLOCKS);
         }
+    }
+
+    @Override
+    protected void spawnBreakParticles(World world, PlayerEntity player, BlockPos pos, BlockState state) {
+
     }
 
     @Override
