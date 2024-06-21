@@ -176,14 +176,9 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public void onTick() {
-        if (entity.age % 5 == 0) { //4 times / sec is enough
-            influences.removeIf(influence -> {
-                if (influence.update(this)) {
-                    markDirty();
-                    return true;
-                }
-                return false;
-            });
+        //4 times / sec is enough
+        if (entity.age % 5 == 0 && influences.removeIf(influence -> influence.update(this))) {
+            markDirty();
         }
 
         if (entity.getActiveItem().isOf(PSItems.BONG) && entity.getWorld().random.nextInt(3) == 0) {
@@ -200,8 +195,6 @@ public class DrugProperties implements NbtSerialisable {
         if (entity.getWorld().isClient) {
             hallucinations.update();
 
-
-
             if (entity.isOnGround() && random.nextFloat() < getModifier(Drug.JUMP_CHANCE)) {
                 ((MixinLivingEntity)entity).invokeJump();
             }
@@ -212,6 +205,11 @@ public class DrugProperties implements NbtSerialisable {
         } else {
             if (random.nextFloat() < getModifier(Drug.DROWSYNESS)) {
                 entity.addExhaustion(0.05F);
+            }
+
+            if (Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0
+                    && random.nextInt(Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn) == 0) {
+                RealityRiftEntity.spawn(entity);
             }
         }
 
@@ -241,12 +239,6 @@ public class DrugProperties implements NbtSerialisable {
         if (dirty) {
             dirty = false;
             sendCapabilities();
-        }
-
-        if (!entity.getWorld().isClient && Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0) {
-            if (random.nextInt(Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn) == 0) {
-                RealityRiftEntity.spawn(entity);
-            }
         }
     }
 

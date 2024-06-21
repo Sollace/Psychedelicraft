@@ -106,6 +106,8 @@ public class SimpleDrug implements Drug {
                     reset(properties);
                     properties.markDirty();
                 }
+            } else {
+                tickClientEffects(properties, properties.asEntity().getWorld().random);
             }
         } else {
             ticksActive = 0;
@@ -126,6 +128,10 @@ public class SimpleDrug implements Drug {
             return true;
         }
         return false;
+    }
+
+    protected void tickClientEffects(DrugProperties properties, Random random) {
+
     }
 
     @Override
@@ -166,6 +172,7 @@ public class SimpleDrug implements Drug {
     }
 
     protected static void rotateEntityYaw(Entity entity, double amount) {
-        entity.setYaw(entity.getYaw() + (float)amount);
+        entity.setYaw((entity.getYaw() + (float)amount) % 360);
+        entity.prevYaw = entity.getYaw();
     }
 }

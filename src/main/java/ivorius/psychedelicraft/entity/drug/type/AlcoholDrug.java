@@ -43,15 +43,19 @@ public class AlcoholDrug extends SimpleDrug {
             }
         }
 
-        double motionEffect = Math.min(activeValue, 0.8);
+        return super.tickSideEffects(properties, random);
+    }
 
+    @Override
+    protected void tickClientEffects(DrugProperties properties, Random random) {
+        PlayerEntity entity = properties.asEntity();
+        double activeValue = getActiveValue();
+        double motionEffect = Math.min(activeValue, 0.8) + (MathHelper.clamp(entity.getVelocity().length(), 0, 1) * 3) * activeValue;
         rotateEntityPitch(entity, MathHelper.sin(entity.age / 600F * MathHelper.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
         rotateEntityYaw(entity, MathHelper.cos(entity.age / 500F * MathHelper.PI) / 1.3F * motionEffect * (random.nextFloat() + 0.5F));
 
         rotateEntityPitch(entity, MathHelper.sin(entity.age / 180F * MathHelper.PI) / 3F * motionEffect * (random.nextFloat() + 0.5F));
         rotateEntityYaw(entity, MathHelper.cos(entity.age / 150F * MathHelper.PI) / 2F * motionEffect * (random.nextFloat() + 0.5F));
-
-        return super.tickSideEffects(properties, random);
     }
 
     @Override
