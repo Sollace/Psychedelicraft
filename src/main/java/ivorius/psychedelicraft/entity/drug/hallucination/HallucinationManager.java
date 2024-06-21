@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.entity.drug.hallucination;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.joml.Vector4f;
@@ -31,7 +30,12 @@ public class HallucinationManager {
     private final MindColor pulseColor = new MindColor(this);
     private final MindColor skyColor = new MindColor(this);
 
-    private final List<Block> fractalTypes = new ArrayList<>();
+    private final List<Block> fractalTypes = List.of(
+            Blocks.NETHER_PORTAL,
+            Blocks.AMETHYST_BLOCK,
+            Blocks.BRICKS,
+            Blocks.CHISELED_RED_SANDSTONE
+    );
     private int fractalType = 0;
 
     public HallucinationManager(DrugProperties properties) {
@@ -45,14 +49,6 @@ public class HallucinationManager {
         surfaceColor.update();
         bloomColor.update();
         pulseColor.update();
-
-        fractalTypes.clear();
-        fractalTypes.addAll(List.of(
-                Blocks.NETHER_PORTAL,
-                Blocks.AMETHYST_BLOCK,
-                Blocks.BRICKS,
-                Blocks.CHISELED_RED_SANDSTONE
-        ));
 
         if (get(Drug.FRACTALS) > 0) {
             Random random = properties.asEntity().getWorld().random;
