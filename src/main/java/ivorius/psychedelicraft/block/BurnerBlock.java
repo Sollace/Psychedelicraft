@@ -5,9 +5,17 @@
 
 package ivorius.psychedelicraft.block;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.serialization.MapCodec;
 
+import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,6 +23,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -25,12 +35,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
-public class BurnerBlock extends Block {
+public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     public static final MapCodec<BurnerBlock> CODEC = createCodec(BurnerBlock::new);
     private static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(5, 2, 5);
 
@@ -87,6 +99,11 @@ public class BurnerBlock extends Block {
             return ItemActionResult.SUCCESS;
         }
 
+        if (world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).filter(data -> data.interact(stack, player, hand, hit.getSide())).isPresent()) {
+            world.playSound(player, pos.up(), BlockSoundGroup.GLASS.getPlaceSound(), SoundCategory.BLOCKS, 1, world.random.nextFloat() * 0.4F + 0.8F);
+            return ItemActionResult.SUCCESS;
+        }
+
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
@@ -100,9 +117,45 @@ public class BurnerBlock extends Block {
     }
 
     @Override
+    public boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+        return input && direction == Direction.UP && world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).filter(data -> data.hasBottle()).isPresent();
+    }
+
+    @Override
+    public int tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, ItemFluids fluids) {
+        if (direction != Direction.DOWN) {
+            return SPILL_STATUS;
+        }
+        return world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).map(data -> {
+            if (data.hasBottle()) {
+                return data.getTankOnSide(Direction.UP).deposit(fluids);
+            }
+            return SPILL_STATUS;
+        }).orElse(SPILL_STATUS);
+    }
+
+    @Override
     protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (state.get(LIT) && !entity.isSneaking() && entity.age % 10 == 0) {
             entity.damage(entity.getDamageSources().inFire(), 1);
         }
     }
+
+    @Override
+    @Deprecated
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new BurnerBlockEntity(pos, state);
+    }
+
+    @Override
+    @Nullable
+    public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
+        return world.isClient ? null : validateTicker(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.tick((ServerWorld)w));
+    }
+
 }

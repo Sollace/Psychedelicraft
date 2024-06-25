@@ -16,14 +16,19 @@ import net.minecraft.util.math.MathHelper;
  * @since 3 Jan 2023
  */
 public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir {
-    private ItemFluids fluids = ItemFluids.EMPTY;
+    private ItemFluids fluids;
     private final int capacity;
 
     private final ChangeListener changeCallback;
 
     public Resovoir(int capacity, ChangeListener changeCallback) {
+        this(capacity, changeCallback, ItemFluids.EMPTY);
+    }
+
+    public Resovoir(int capacity, ChangeListener changeCallback, ItemFluids fluids) {
         this.capacity = capacity;
         this.changeCallback = changeCallback;
+        this.fluids = fluids;
     }
 
     @Override
@@ -142,7 +147,6 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
             changeCallback.onLevelChange(this, -amount);
         }
     }
-
 
     @Override
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {

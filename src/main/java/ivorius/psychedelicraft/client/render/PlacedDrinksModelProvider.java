@@ -16,6 +16,7 @@ import com.google.gson.JsonObject;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer.FluidAppearance;
+import ivorius.psychedelicraft.client.render.blocks.BurnerBlockEntityRenderer;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -101,6 +102,7 @@ public class PlacedDrinksModelProvider
         data.keySet().forEach(id -> {
             context.addModels(getGroundModelId(id), getGroundModelFluidId(id));
         });
+        context.addModels(BurnerBlockEntityRenderer.BEAKER_MODEL);
     }
 
     public Optional<Entry> get(Item item) {

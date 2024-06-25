@@ -166,7 +166,6 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
             return getTankOnSide(side);
         }
 
-
         @Override
         default Storage<ItemVariant> getItemStorage(@Nullable Direction side) {
             return InventoryStorage.of(this, side);

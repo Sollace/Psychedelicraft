@@ -125,6 +125,11 @@ public interface PSBlocks {
 
     Block TRAY = register("tray", new TrayBlock(Settings.create().mapColor(MapColor.IRON_GRAY).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
     Block BUNSEN_BURNER = register("bunsen_burner", new BurnerBlock(Settings.create().mapColor(MapColor.IRON_GRAY).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
+    Block GLASS_TUBING = register("glass_tubing", new GlassTubeBlock(Settings.create().mapColor(MapColor.OFF_WHITE).strength(0.3F).sounds(BlockSoundGroup.GLASS).nonOpaque()
+            .allowsSpawning(Blocks::never)
+            .solidBlock(Blocks::never)
+            .suffocates(Blocks::never)
+            .blockVision(Blocks::never)));
 
     static <T extends Block> T register(String name, T block) {
         return Registry.register(Registries.BLOCK, Psychedelicraft.id(name), block);
