@@ -42,6 +42,7 @@ repositories {
     maven { name 'minelp'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
     maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
     maven { name 'TerraformersMC'; url 'https://maven.terraformersmc.com/' }
+    maven { name 'Modrinth'; url 'https://api.modrinth.com/maven' }
     maven { name 'Jitpack'; url 'https://jitpack.io' }
 }
 
@@ -64,6 +65,13 @@ dependencies {
 
     modImplementation "com.github.MattiDragon:TlaApi:${project.tla_version}"
     include "com.github.MattiDragon:TlaApi:${project.tla_version}"
+
+    if (project.use_sodium == '1') {
+      modCompileOnly "maven.modrinth:sodium:${project.sodium_version}", { exclude group: "net.fabricmc.fabric-api" }
+      if (project.use_iris == '1') {
+        modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
+      }
+    }
 
     if (project.tmi_type == 'emi') {
       modCompileOnly "dev.emi:emi-fabric:${project.emi_version}"

@@ -2,16 +2,21 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.gl.ShaderStage.Type;
@@ -38,13 +43,18 @@ public class GeometryShader {
     private final Map<Identifier, Optional<String>> loadedPrograms = new HashMap<>();
 
 
-    private final Map<String, Supplier<Object>> samplers = Util.make(new HashMap<>(), map -> {
+    private final Map<String, Supplier<Integer>> samplers = Util.make(new HashMap<>(), map -> {
         map.put("PS_DepthSampler", () -> MinecraftClient.getInstance().getFramebuffer().getDepthAttachment());
-        map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
+        map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).getGlId());
     });
 
-    public void setup(Type type, String name, InputStream stream, String domain, GlImportProcessor loader) {
+    public void setup(Type type, String domain, String name) {
         this.name = Identifier.of(name);
+        this.type = type;
+    }
+
+    public void setup(Type type, Identifier name) {
+        this.name = name;
         this.type = type;
     }
 
@@ -54,6 +64,13 @@ public class GeometryShader {
 
     public boolean isWorld() {
         return (RenderPhase.current() == RenderPhase.WORLD || RenderPhase.current() == RenderPhase.CLOUDS) && client.world != null && client.player != null;
+    }
+
+    public BuiltGemoetryShader buildShader(int program, int lastUniformId, int lastSamplerId) {
+        var shader = new BuiltGemoetryShader(program);
+        samplers.forEach(shader::addSampler);
+        addUniforms(shader, shader::addUniform);
+        return shader;
     }
 
     public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
@@ -93,11 +110,21 @@ public class GeometryShader {
         }));
     }
 
-    public Map<String, Supplier<Object>> getSamplers() {
+    public Map<String, Supplier<Integer>> getSamplers() {
         return samplers;
     }
 
     public String injectShaderSources(String source) {
+        if (source.indexOf("PSYCHEDELICRAFT") != -1) {
+            Psychedelicraft.LOGGER.info("Skipping already-processed shader " + name);
+            return source;
+        }
+
+        if (source.indexOf("void main()") == -1) {
+            Psychedelicraft.LOGGER.info("Skipping partial source " + name);
+            return source;
+        }
+
         if (type == Type.VERTEX) {
             return loadProgram(name.withPath(p -> GEO_DIRECTORY + p + ".gvsh")).or(() -> {
                 return loadProgram(BASIC.withPath(p -> GEO_DIRECTORY + p + ".gvsh"));
@@ -114,10 +141,12 @@ public class GeometryShader {
             }).orElse(source);
         }
 
+        Psychedelicraft.LOGGER.info("Skipping unknown shader " + name);
         return source;
     }
 
     private String combineSources(String vertexSources, String geometrySources) {
+        writeSources(vertexSources, "before");
         geometrySources = PS_VARIABLE_PATTERN.matcher(geometrySources).replaceAll(match -> {
             String fieldSlug = Arrays.stream(match.group(3).split(","))
                     .map(String::trim)
@@ -125,9 +154,25 @@ public class GeometryShader {
                     .collect(Collectors.joining(", "));
             return fieldSlug.isEmpty() ? "/* " + match.group(0) + "*/" : match.group(2) + " " + fieldSlug + ";";
         });
-
         String newline = System.lineSeparator();
-        return vertexSources.replace("void main()", "void i_parent_shaders_main()" + newline) + newline + geometrySources;
+        return writeSources(vertexSources.replace("void main()", "void i_parent_shaders_main()" + newline) + newline + "/*PSYCHEDELICRAFT START*/" + newline + geometrySources + newline + "/*PSYCHEDELICRAFT END*/", "merged");
+    }
+
+    private String writeSources(String sources, String suffex) {
+        Path output = FabricLoader.getInstance().getGameDir().resolve("logs/shader_compilation/" + name.getNamespace() + "/" + name.getPath() + "_" + suffex);
+        try {
+            Files.createDirectories(output.getParent());
+            Files.deleteIfExists(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try (var writer = Files.newBufferedWriter(output, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+            writer.append(sources);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sources;
     }
 
     private Optional<String> loadProgram(Identifier id) {

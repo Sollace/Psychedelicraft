@@ -32,6 +32,9 @@
       "client.MixinHeldItemRenderer",
       "client.MixinInGameHud",
       "client.MixinItemModels",
-      "client.MixinLivingEntityRenderer"
+      "client.MixinLivingEntityRenderer",
+      "client.sodium.MixinGlProgram",
+      "client.sodium.MixinGlProgram_Builder",
+      "client.sodium.MixinShaderLoader"
     ]
 }

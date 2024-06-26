@@ -44,20 +44,20 @@ void main() {
 
   if (surfaceFractalStrength > 0.0) {
     vertexColor = vec4(mix(vertexColor.rgb, texture(PS_SurfaceFractalSampler, vec2(
-        mix(PS_SurfaceFractalCoords[0], PS_SurfaceFractalCoords[2], (mod(Position.x + Position.y, 4.0)) / 4.0),
-        mix(PS_SurfaceFractalCoords[1], PS_SurfaceFractalCoords[3], (mod(Position.z + Position.y, 4.0)) / 4.0)
+        mix(PS_SurfaceFractalCoords[0], PS_SurfaceFractalCoords[2], (mod(gl_Position.x + gl_Position.y, 4.0)) / 4.0),
+        mix(PS_SurfaceFractalCoords[1], PS_SurfaceFractalCoords[3], (mod(gl_Position.z + gl_Position.y, 4.0)) / 4.0)
     )).rgb, surfaceFractalStrength), vertexColor.a);
   }
 
   if (smallWaves > 0.0) {
     float w1 = 8.0;
 
-    gl_Position[1] += sin((Position.x + worldTicks / 5.0) / w1 * tau) * sin((Position.z + worldTicks / 5.0) / w1 * tau) * smallWaves * 1.5;
+    gl_Position[1] += sin((gl_Position.x + worldTicks / 5.0) / w1 * tau) * sin((gl_Position.z + worldTicks / 5.0) / w1 * tau) * smallWaves * 1.5;
     gl_Position[1] -= sin((playerPos.x + worldTicks / 5.0) / w1 * tau) * sin((playerPos.z + worldTicks / 5.0) / w1 * tau) * smallWaves * 1.5;
 
     float w2 = 16.0;
 
-    gl_Position.y += sin((Position.x + worldTicks / 8.0) / w2 * tau) * sin((Position.z) / w2 * tau) * smallWaves * 3.0;
+    gl_Position.y += sin((gl_Position.x + worldTicks / 8.0) / w2 * tau) * sin((gl_Position.z) / w2 * tau) * smallWaves * 3.0;
     gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w2 * tau) * sin((playerPos.z) / w2 * tau) * smallWaves * 3.0;
 
     gl_Position.x = mix(gl_Position.x, gl_Position.x * (1.0 + fogFragCoord / 20.0), smallWaves);
@@ -67,7 +67,7 @@ void main() {
   if (bubbling > 0.0) {
     float w3 = 4.0;
 
-    gl_Position.y += sin((Position.x + worldTicks / 8.0) / w3 * tau) * sin((Position.z) / w3 * tau) * bubbling * 3.0;
+    gl_Position.y += sin((gl_Position.x + worldTicks / 8.0) / w3 * tau) * sin((gl_Position.z) / w3 * tau) * bubbling * 3.0;
     gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w3 * tau) * sin((playerPos.z) / w3 * tau) * bubbling * 3.0;
 
     gl_Position.y = mix(gl_Position.y, gl_Position.y * (1.0 + fogFragCoord / 20.0), bubbling);
@@ -77,14 +77,14 @@ void main() {
 
   if (fractalFractureStrength > 0) {
     float fractalScollSpeed = worldTicks / 100;
-    gl_Position.x += sin(gold_noise(Position.xy, Position.x + fractalScollSpeed)) * fractalFractureStrength;
-    gl_Position.y += sin(gold_noise(Position.xy, Position.y + fractalScollSpeed)) * fractalFractureStrength;
+    gl_Position.x += sin(gold_noise(gl_Position.xy, gl_Position.x + fractalScollSpeed)) * fractalFractureStrength;
+    gl_Position.y += sin(gold_noise(gl_Position.xy, gl_Position.y + fractalScollSpeed)) * fractalFractureStrength;
   }
 
   if (wiggleWaves > 0.0) {
     float w1 = 8.0;
-    gl_Position.x += sin((Position.y + worldTicks / 8.0) / w1 * tau)
-                    * sin((Position.z + worldTicks / 5.0) / w1 * tau)
+    gl_Position.x += sin((gl_Position.y + worldTicks / 8.0) / w1 * tau)
+                    * sin((gl_Position.z + worldTicks / 5.0) / w1 * tau)
                     * wiggleWaves;
   }
 

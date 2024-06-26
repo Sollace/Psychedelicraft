@@ -59,6 +59,6 @@ abstract class MixinGLImportProcessor {
 abstract class MixinShaderStage {
     @Inject(method = "load", at = @At("HEAD"))
     private static void onLoad(Type type, String name, InputStream stream, String domain, GlImportProcessor loader, CallbackInfoReturnable<Integer> info) throws IOException {
-        GeometryShader.INSTANCE.setup(type, name, stream, domain, loader);
+        GeometryShader.INSTANCE.setup(type, domain, name);
     }
 }
