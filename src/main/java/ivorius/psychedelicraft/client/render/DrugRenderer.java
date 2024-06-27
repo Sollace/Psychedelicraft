@@ -178,7 +178,6 @@ public class DrugRenderer {
         MinecraftClient client = MinecraftClient.getInstance();
 
         RenderPhase.SCREEN.push();
-
         float tickDelta = tickCounter.getTickDelta(false);
 
         postEffects.render(tickDelta);

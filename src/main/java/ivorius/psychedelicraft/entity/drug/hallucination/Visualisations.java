@@ -22,14 +22,13 @@ public class Visualisations {
 
     void update(DrugProperties properties) {
         float totalHallucinationValue = hallucinationTypes.update(properties);
-        int desiredHallucinations = Math.max(0, MathHelper.floor(totalHallucinationValue * 4F + 0.9f));
+        int desiredHallucinations = Math.max(0, MathHelper.floor(totalHallucinationValue * 8F + 0.9f));
 
         Random random = properties.asEntity().getRandom();
 
         if (activeHallucinations.size() > 0) {
             while (random.nextFloat() < 1f / (20 * 60 * 5 / activeHallucinations.size())) {
                 removeRandomHallucination(random);
-                addRandomHallucination(random);
             }
         }
 
@@ -72,8 +71,9 @@ public class Visualisations {
 
         if (currentHallucination >= 0) {
             activeHallucinations.add(currentHallucination);
+            return true;
         }
-        return currentHallucination >= 0;
+        return false;
     }
 
 }
