@@ -24,7 +24,7 @@ public interface PSBlockEntities {
     ));
     BlockEntityType<BurnerBlockEntity> BUNSEN_BURNER = create("bunsen_burner", BlockEntityType.Builder.create(BurnerBlockEntity::new, PSBlocks.BUNSEN_BURNER));
     BlockEntityType<PlacedDrinksBlock.Data> PLACED_DRINK = create("placed_drink", BlockEntityType.Builder.create(PlacedDrinksBlock.Data::new, PSBlocks.PLACED_DRINK));
-    BlockEntityType<GlassTubeBlock.Data> GLASS_TUBING = create("glass_tubing", BlockEntityType.Builder.create(GlassTubeBlock.Data::new, PSBlocks.GLASS_TUBING));
+    BlockEntityType<GlassTubeBlock.Data> GLASS_TUBE = create("glass_tube", BlockEntityType.Builder.create(GlassTubeBlock.Data::new, PSBlocks.GLASS_TUBE));
 
     static <T extends BlockEntity> BlockEntityType<T> create(String id, Builder<T> builder) {
         return Registry.register(Registries.BLOCK_ENTITY_TYPE, Psychedelicraft.id(id), builder.build(null));

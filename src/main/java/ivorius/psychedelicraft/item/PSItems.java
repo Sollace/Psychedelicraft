@@ -270,7 +270,7 @@ public interface PSItems {
 
     Item TRAY = register("tray", PSBlocks.TRAY);
     Item BUNSEN_BURNER = register("bunsen_burner", PSBlocks.BUNSEN_BURNER);
-    Item GLASS_TUBING = register("glasss_tubing", PSBlocks.GLASS_TUBING);
+    Item GLASS_TUBE = register("glass_tube", PSBlocks.GLASS_TUBE);
 
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Settings()));

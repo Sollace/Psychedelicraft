@@ -22,6 +22,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.Fluids;
@@ -33,9 +34,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
@@ -43,6 +48,25 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
 
     public static final EnumProperty<IODirection> IN = EnumProperty.of("in", IODirection.class);
     public static final EnumProperty<IODirection> OUT = EnumProperty.of("out", IODirection.class);
+
+    private static final double RADIUS = 0.1;
+    private static final VoxelShape DEFAULT_SHAPE = VoxelShapes.cuboid(0.4, 0.4, 0.4, 0.6, 0.6, 0.6);
+    private static final Function<Direction, VoxelShape> SHAPE_PART_CACHE = Util.memoize(direction -> {
+        return VoxelShapes.cuboid(
+                0.5 + Math.min(-RADIUS, direction.getOffsetX() * 0.5),
+                0.5 + Math.min(-RADIUS, direction.getOffsetY() * 0.5),
+                0.5 + Math.min(-RADIUS, direction.getOffsetZ() * 0.5),
+                0.5 + Math.max(RADIUS, direction.getOffsetX() * 0.5),
+                0.5 + Math.max(RADIUS, direction.getOffsetY() * 0.5),
+                0.5 + Math.max(RADIUS, direction.getOffsetZ() * 0.5)
+            );
+    });
+    private static final Function<BlockState, VoxelShape> SHAPE_CACHE = Util.memoize(state -> {
+        return Stream.of(state.get(IN), state.get(OUT))
+            .map(IODirection::getDirection).flatMap(Optional::stream)
+            .map(SHAPE_PART_CACHE).reduce(VoxelShapes::union)
+            .orElse(DEFAULT_SHAPE);
+    });
 
     protected GlassTubeBlock(Settings settings) {
         super(settings);
@@ -65,6 +89,11 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(IN, OUT);
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE_CACHE.apply(state);
     }
 
     @Override
@@ -118,7 +147,6 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return IODirection.LOOKUP.entrySet().stream().filter(pair -> {
             BlockPos nieghborPos = pos.offset(pair.getKey());
             BlockState neighborState = world.getBlockState(nieghborPos);
-            var ss = state;
             IODirection dir = neighborState.getOrEmpty(property).orElse(null);
             if (dir == null && PipeInsertable.canConnectWith(world, state, pos, neighborState, nieghborPos, pair.getKey(), property == OUT)) {
                 return true;
@@ -130,7 +158,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
 
     @Override
     protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBING).ifPresent(data -> {
+        world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).ifPresent(data -> {
             if (data.tank.getContents().amount() > 0 && state.get(OUT)
                     .getDirection()
                     .map(direction -> PipeInsertable.tryInsert(world, pos.offset(direction), direction, data.tank)).orElse(SPILL_STATUS) == SPILL_STATUS) {
@@ -200,7 +228,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     @Override
     public int tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, ItemFluids fluids) {
         if (state.get(IN).direction == direction.getOpposite()) {
-            return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBING).map(data -> {
+            return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> {
                 return data.tank.deposit(fluids);
             }).orElse(0);
         }
@@ -212,7 +240,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         private final Resovoir tank = new Resovoir(3, this);
 
         public Data(BlockPos pos, BlockState state) {
-            super(PSBlockEntities.GLASS_TUBING, pos, state);
+            super(PSBlockEntities.GLASS_TUBE, pos, state);
         }
 
         @Override

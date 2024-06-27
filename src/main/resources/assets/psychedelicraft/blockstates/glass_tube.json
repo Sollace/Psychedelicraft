@@ -1,0 +1,54 @@
+{
+  "multipart": [
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_out", "x": 180, "y": 0 },
+      "when": { "out": "up" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_out", "x": 0, "y": 0 },
+      "when": { "out": "down" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_out", "x": 90, "y": -90 },
+      "when": { "out": "east" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_out", "x": 90, "y": 90 },
+      "when": { "out": "west" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_out", "x": 90, "y": 180 },
+      "when": { "out": "north" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_out", "x": 90, "y": 0 },
+      "when": { "out": "south" }
+    },
+
+    
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_in", "x": 180, "y": 0 },
+      "when": { "in": "up" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_in", "x": 0, "y": 0 },
+      "when": { "in": "down" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_in", "x": 90, "y": -90 },
+      "when": { "in": "east" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_in", "x": 90, "y": 90 },
+      "when": { "in": "west" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_in", "x": 90, "y": 180 },
+      "when": { "in": "north" }
+    },
+    {
+      "apply": { "model": "psychedelicraft:block/glass_tube_in", "x": 90, "y": 0 },
+      "when": { "in": "south" }
+    }
+  ]
+}
