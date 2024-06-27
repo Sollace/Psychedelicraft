@@ -71,7 +71,7 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
         ItemFluids extracted = fluids.ofAmount(Math.min(maxAmount, fluids.amount()));
         if (extracted.amount() > 0) {
             fluids = fluids.ofAmount(fluids.amount() - extracted.amount());
-            changeCallback.onLevelChange(this, extracted.amount());
+            changeCallback.onLevelChange(this, -extracted.amount());
         }
 
         return extracted;
