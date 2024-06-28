@@ -10,12 +10,16 @@ import java.util.function.*;
 
 import org.joml.Vector4f;
 
+import com.mojang.serialization.Codec;
+
 import ivorius.psychedelicraft.entity.drug.Attribute.Combiner;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 public interface Drug extends NbtSerialisable {
+    Codec<Drug> CODEC = DrugType.REGISTRY.getCodec().dispatch(Drug::getType, DrugType::codec);
+
     Attribute SPEED = new Attribute("movement_speed", 1, Combiner.MUL);
     Attribute DIG_SPEED = new Attribute("mining_speed", 1, Combiner.MUL);
     Attribute SOUND_VOLUME = new Attribute("sound_volume", 1, Combiner.MUL);
@@ -59,7 +63,7 @@ public interface Drug extends NbtSerialisable {
     Function<DrugProperties, Vector4f> CONTRAST_COLORIZATION = Attribute.createColorModification(Drug::applyContrastColorization);
     Function<DrugProperties, Vector4f> BLOOM = Attribute.createColorModification(Drug::applyColorBloom);
 
-    DrugType getType();
+    DrugType<?> getType();
 
     void update(DrugProperties properties);
 

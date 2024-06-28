@@ -52,7 +52,7 @@ public class DrugInfluence {
             DrugInfluence::new
     );
 
-    protected DrugType drugType;
+    protected DrugType<?> drugType;
 
     protected int delay;
 
@@ -63,15 +63,15 @@ public class DrugInfluence {
 
     private final Optional<Vector3f> color;
 
-    public DrugInfluence(DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence) {
+    public DrugInfluence(DrugType<?> drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence) {
         this(drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence, Optional.empty());
     }
 
-    public DrugInfluence(DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, Vector3f color) {
+    public DrugInfluence(DrugType<?> drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, Vector3f color) {
         this(drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence, Optional.of(color));
     }
 
-    private DrugInfluence(DrugType drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, Optional<Vector3f> color) {
+    private DrugInfluence(DrugType<?> drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, Optional<Vector3f> color) {
         this.drugType = drugType;
         this.delay = delay;
         this.influenceSpeed = influenceSpeed;
@@ -80,11 +80,11 @@ public class DrugInfluence {
         this.color = color;
     }
 
-    public final DrugType getDrugType() {
+    public final DrugType<?> getDrugType() {
         return drugType;
     }
 
-    public boolean isOf(DrugType type) {
+    public boolean isOf(DrugType<?> type) {
         return getDrugType() == type;
     }
 

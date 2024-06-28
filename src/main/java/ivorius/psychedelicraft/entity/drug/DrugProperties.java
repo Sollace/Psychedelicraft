@@ -42,10 +42,15 @@ import java.util.stream.*;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+
 public class DrugProperties implements NbtSerialisable {
     public static final Identifier DRUG_EFFECT = Psychedelicraft.id("drugs");
 
-    private final Map<DrugType, Drug> drugs = DrugType.REGISTRY.stream().collect(Collectors.toMap(Function.identity(), DrugType::create));
+    private static final Codec<Map<DrugType<?>, Drug>> DRUGS_CODEC = Codec.unboundedMap(DrugType.REGISTRY.getCodec(), Drug.CODEC);
+
+    private final Map<DrugType<?>, Drug> drugs = DrugType.REGISTRY.stream().collect(Collectors.toMap(Function.identity(), DrugType::create));
     private final List<DrugInfluence> influences = new ArrayList<>();
 
     private boolean dirty;
@@ -108,18 +113,19 @@ public class DrugProperties implements NbtSerialisable {
         return soundManager;
     }
 
-    public Drug getDrug(DrugType type) {
-        return drugs.computeIfAbsent(type, DrugType::create);
+    @SuppressWarnings("unchecked")
+    public <T extends Drug> T getDrug(DrugType<T> type) {
+        return (T)drugs.computeIfAbsent(type, DrugType::create);
     }
 
-    public float getDrugValue(DrugType type) {
+    public float getDrugValue(DrugType<?> type) {
         if (!drugs.containsKey(type)) {
             return 0F;
         }
         return (float) getDrug(type).getActiveValue();
     }
 
-    public boolean isDrugActive(DrugType type) {
+    public boolean isDrugActive(DrugType<?> type) {
         return drugs.containsKey(type) && getDrugValue(type) > MathHelper.EPSILON;
     }
 
@@ -130,13 +136,13 @@ public class DrugProperties implements NbtSerialisable {
         return f > 0.7F;
     }
 
-    public void addToDrug(DrugType type, double effect) {
+    public void addToDrug(DrugType<?> type, double effect) {
         getDrug(type).addToDesiredValue(effect);
         PSCriteria.DRUG_EFFECTS_CHANGED.trigger(this);
         markDirty();
     }
 
-    public void setDrugValue(DrugType type, double effect) {
+    public void setDrugValue(DrugType<?> type, double effect) {
         getDrug(type).setDesiredValue(effect);
         PSCriteria.DRUG_EFFECTS_CHANGED.trigger(this);
         markDirty();
@@ -156,7 +162,7 @@ public class DrugProperties implements NbtSerialisable {
         return drugs.values();
     }
 
-    public Set<DrugType> getAllDrugNames() {
+    public Set<DrugType<?>> getAllDrugNames() {
         return drugs.keySet();
     }
 
@@ -252,32 +258,18 @@ public class DrugProperties implements NbtSerialisable {
 
     @Override
     public void fromNbt(NbtCompound tagCompound, WrapperLookup lookup) {
-        NbtCompound drugData = tagCompound.getCompound("Drugs");
         drugs.clear();
-        drugData.getKeys().forEach(key -> {
-            DrugType.REGISTRY.getOrEmpty(Identifier.tryParse(key)).ifPresent(type -> {
-                getDrug(type).fromNbt(drugData.getCompound(key), lookup);
-            });
-        });
+        DRUGS_CODEC.decode(NbtOps.INSTANCE, tagCompound.getCompound("Drugs")).result().map(Pair::getFirst).ifPresent(drugs::putAll);
         influences.clear();
-        DrugInfluence.LIST_CODEC.decode(NbtOps.INSTANCE, tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE))
-            .result()
-            .map(i -> i.getFirst())
-            .ifPresent(this.influences::addAll);
+        DrugInfluence.LIST_CODEC.decode(NbtOps.INSTANCE, tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE)).result().map(Pair::getFirst).ifPresent(influences::addAll);
         stomach.fromNbt(tagCompound.getCompound("stomach"), lookup);
         dirty = false;
     }
 
     @Override
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        NbtCompound drugsComp = new NbtCompound();
-        drugs.forEach((key, drug) -> {
-            drugsComp.put(key.id().toString(), drug.toNbt(lookup));
-        });
-        compound.put("Drugs", drugsComp);
-        DrugInfluence.LIST_CODEC.encodeStart(NbtOps.INSTANCE, influences).result().ifPresent(influenceTagList -> {
-            compound.put("drugInfluences", influenceTagList);
-        });
+        DRUGS_CODEC.encodeStart(NbtOps.INSTANCE, drugs).result().ifPresent(drugs -> compound.put("Drugs", drugs));
+        DrugInfluence.LIST_CODEC.encodeStart(NbtOps.INSTANCE, influences).result().ifPresent(influenceTagList -> compound.put("drugInfluences", influenceTagList));
         compound.put("stomach", stomach.toNbt(lookup));
     }
 

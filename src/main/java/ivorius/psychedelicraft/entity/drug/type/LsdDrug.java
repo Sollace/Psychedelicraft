@@ -38,7 +38,7 @@ public class LsdDrug extends SimpleDrug {
             )
             .build();
 
-    public LsdDrug(DrugType type, double decSpeed, double decSpeedPlus) {
+    public LsdDrug(DrugType<LsdDrug> type, double decSpeed, double decSpeedPlus) {
         super(type, decSpeed, decSpeedPlus);
     }
 

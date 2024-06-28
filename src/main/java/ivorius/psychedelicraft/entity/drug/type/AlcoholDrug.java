@@ -26,7 +26,7 @@ public class AlcoholDrug extends SimpleDrug {
             .put(MOTION_BLUR, f -> MathUtils.project(f, 0.5F, 1) * 0.3F)
             .build();
 
-    public AlcoholDrug(DrugType type, double decSpeed, double decSpeedPlus) {
+    public AlcoholDrug(DrugType<AlcoholDrug> type, double decSpeed, double decSpeedPlus) {
         super(type, decSpeed, decSpeedPlus);
     }
 

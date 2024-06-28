@@ -5,6 +5,10 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import ivorius.psychedelicraft.PSGameRules;
 import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
@@ -20,6 +24,20 @@ import net.minecraft.util.math.random.Random;
 public class SleepDeprivationDrug extends SimpleDrug {
     public static final int TICKS_PER_DAY = 24000;
     public static final int TICKS_UNTIL_PHANTOM_SPAWN = TICKS_PER_DAY * 3;
+
+    public static final MapCodec<SleepDeprivationDrug> CODEC = RecordCodecBuilder.mapCodec(instance -> {
+        return SimpleDrug.<SleepDeprivationDrug>fillCodecFields(instance).and(
+                Codec.FLOAT.fieldOf("storedEnergy").forGetter(f -> f.storedEnergy)
+        ).apply(instance, (effect, effectActive, locked, ticksActive, storedEnergy) -> {
+            var i = new SleepDeprivationDrug();
+            i.setActiveValue(effectActive);
+            i.setDesiredValue(effect);
+            i.setLocked(locked);
+            i.setTicksActive(ticksActive);
+            i.storedEnergy = storedEnergy;
+            return i;
+        });
+    });
 
     public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
             .put(MOVEMENT_HALLUCINATION_STRENGTH, f -> Math.max(0, f - 0.8F) * 3)

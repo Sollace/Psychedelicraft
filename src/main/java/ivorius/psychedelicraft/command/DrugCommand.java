@@ -145,7 +145,7 @@ class DrugCommand {
         return 0;
     }
 
-    static void applyDrugChange(CommandContext<ServerCommandSource> context, Identifier drugName, BiConsumer<DrugProperties, DrugType> change, FeedbackConsumer feedback) throws CommandSyntaxException {
+    static void applyDrugChange(CommandContext<ServerCommandSource> context, Identifier drugName, BiConsumer<DrugProperties, DrugType<?>> change, FeedbackConsumer feedback) throws CommandSyntaxException {
         ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "target");
         DrugProperties properties = DrugProperties.of(player);
 

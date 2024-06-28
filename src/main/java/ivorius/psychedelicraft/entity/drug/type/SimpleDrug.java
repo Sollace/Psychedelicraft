@@ -7,6 +7,10 @@ package ivorius.psychedelicraft.entity.drug.type;
 
 import java.util.Optional;
 
+import com.mojang.datafixers.Products.P4;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -19,6 +23,27 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public class SimpleDrug implements Drug {
+    static <T extends SimpleDrug> P4<RecordCodecBuilder.Mu<T>, Double, Double, Boolean, Integer> fillCodecFields(RecordCodecBuilder.Instance<T> instance) {
+        return instance.group(
+                Codec.DOUBLE.fieldOf("effect").forGetter(SimpleDrug::getDesiredValue),
+                Codec.DOUBLE.fieldOf("effectActive").forGetter(SimpleDrug::getActiveValue),
+                Codec.BOOL.fieldOf("locked").forGetter(SimpleDrug::isLocked),
+                Codec.INT.fieldOf("ticksActive").forGetter(SimpleDrug::getTicksActive)
+        );
+    }
+    public static <T extends SimpleDrug> MapCodec<T> createCodec(DrugType<T> type) {
+        return RecordCodecBuilder.<T>mapCodec(instance -> {
+            return SimpleDrug.<T>fillCodecFields(instance).apply(instance, (effect, effectActive, locked, ticksActive) -> {
+                var i = type.create();
+                i.setActiveValue(effectActive);
+                i.setDesiredValue(effect);
+                i.setLocked(locked);
+                i.setTicksActive(ticksActive);
+                return i;
+            });
+        });
+    }
+
     protected double effect;
     protected double effectActive;
     protected boolean locked = false;
@@ -27,15 +52,15 @@ public class SimpleDrug implements Drug {
     private final double decreaseSpeedPlus;
     private final boolean invisible;
 
-    private final DrugType type;
+    private final DrugType<? extends SimpleDrug> type;
 
     private int ticksActive;
 
-    public SimpleDrug(DrugType type, double decSpeed, double decSpeedPlus) {
+    public SimpleDrug(DrugType<? extends SimpleDrug> type, double decSpeed, double decSpeedPlus) {
         this(type, decSpeed, decSpeedPlus, false);
     }
 
-    public SimpleDrug(DrugType type, double decSpeed, double decSpeedPlus, boolean invisible) {
+    public SimpleDrug(DrugType<? extends SimpleDrug> type, double decSpeed, double decSpeedPlus, boolean invisible) {
         this.type = type;
         decreaseSpeed = decSpeed;
         decreaseSpeedPlus = decSpeedPlus;
@@ -44,7 +69,7 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
-    public final DrugType getType() {
+    public final DrugType<? extends SimpleDrug> getType() {
         return type;
     }
 
@@ -64,6 +89,10 @@ public class SimpleDrug implements Drug {
     @Override
     public int getTicksActive() {
         return ticksActive;
+    }
+
+    protected void setTicksActive(int ticksActive) {
+        this.ticksActive = ticksActive;
     }
 
     @Override
@@ -159,7 +188,7 @@ public class SimpleDrug implements Drug {
         compound.putDouble("effect", getDesiredValue());
         compound.putDouble("effectActive", getActiveValue());
         compound.putBoolean("locked", isLocked());
-        compound.putInt("ticksActive", ticksActive);
+        compound.putInt("ticksActive", getTicksActive());
     }
 
     @Override

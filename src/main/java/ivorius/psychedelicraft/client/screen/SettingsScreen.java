@@ -123,7 +123,7 @@ public class SettingsScreen extends GameGui {
 
         content.addButton(new Label(RIGHT - 5, row)).getStyle().setText("gui.psychedelicraft.options.sounds");
         content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.themes");
-        for (DrugType type : DrugType.REGISTRY) {
+        for (DrugType<?> type : DrugType.REGISTRY) {
             createToggle(RIGHT, row += 20, type.id().getPath(), audio.hasBackgroundMusic(type), value -> audio.setHasBackgroundMusic(type, value));
         }
 

@@ -17,9 +17,9 @@ import net.minecraft.util.math.random.Random;
  */
 public class MovingSoundDrug extends MovingSoundInstance {
     private final DrugProperties properties;
-    private final DrugType drugType;
+    private final DrugType<?> drugType;
 
-    public MovingSoundDrug(SoundEvent event, SoundCategory category, DrugProperties properties, DrugType drugType) {
+    public MovingSoundDrug(SoundEvent event, SoundCategory category, DrugProperties properties, DrugType<?> drugType) {
         super(event, category, Random.create());
         this.properties = properties;
         this.drugType = drugType;
@@ -30,7 +30,7 @@ public class MovingSoundDrug extends MovingSoundInstance {
         setDone();
     }
 
-    public DrugType getType() {
+    public DrugType<?> getType() {
         return drugType;
     }
 

@@ -39,9 +39,8 @@ public class CaffeineDrug extends SimpleDrug {
                 .build();
     }
 
-    public CaffeineDrug(DrugType type, double decSpeed, double decSpeedPlus) {
+    public CaffeineDrug(DrugType<CaffeineDrug> type, double decSpeed, double decSpeedPlus) {
         super(type, decSpeed, decSpeedPlus);
-
     }
 
     @Override

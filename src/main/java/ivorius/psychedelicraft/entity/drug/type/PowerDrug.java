@@ -21,6 +21,5 @@ public class PowerDrug extends SimpleDrug {
 
     public PowerDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.POWER, decSpeed, decSpeedPlus, true);
-
     }
 }

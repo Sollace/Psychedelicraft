@@ -19,6 +19,5 @@ public class PeyoteDrug extends SimpleDrug {
 
     public PeyoteDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.PEYOTE, decSpeed, decSpeedPlus);
-
     }
 }

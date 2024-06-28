@@ -39,16 +39,14 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
             return drugs.stream().allMatch(predicate -> predicate.test(properties));
         }
 
-        public record DrugPredicate (DrugType type, DoubleRange range) implements Predicate<DrugProperties> {
+        public record DrugPredicate (DrugType<?> type, DoubleRange range) implements Predicate<DrugProperties> {
             public static final Codec<DrugPredicate> CODEC = Codec.either(
                     DrugType.REGISTRY.getCodec().xmap(id -> new DrugPredicate(id, DoubleRange.atLeast(MathHelper.EPSILON)), DrugPredicate::type),
                     RecordCodecBuilder.<DrugPredicate>create(instance -> instance.group(
                             DrugType.REGISTRY.getCodec().fieldOf("id").forGetter(DrugPredicate::type),
                             DoubleRange.CODEC.fieldOf("value").forGetter(DrugPredicate::range)
                     ).apply(instance, DrugPredicate::new))
-            ).xmap(pair -> {
-                return pair.left().or(pair::right).get();
-            }, predicate -> Either.right(predicate));
+            ).xmap(pair -> pair.left().or(pair::right).get(), Either::right);
 
             @Override
             public boolean test(DrugProperties properties) {

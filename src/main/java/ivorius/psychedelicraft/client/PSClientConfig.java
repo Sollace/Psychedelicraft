@@ -26,11 +26,11 @@ public class PSClientConfig {
             return drugsWithBackgroundMusicSet;
         }
 
-        public boolean hasBackgroundMusic(DrugType drugType) {
+        public boolean hasBackgroundMusic(DrugType<?> drugType) {
             return loadMusicSet().contains(drugType.id().toString());
         }
 
-        public boolean setHasBackgroundMusic(DrugType drugType, boolean value) {
+        public boolean setHasBackgroundMusic(DrugType<?> drugType, boolean value) {
             Set<String> musicSet = loadMusicSet();
             if (value) {
                 musicSet.add(drugType.id().toString());

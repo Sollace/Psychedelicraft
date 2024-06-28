@@ -113,7 +113,7 @@ public class HallucinationManager {
     }
 
     public float[] getBlur() {
-        float menuBlur = Math.max(0, ShaderContext.drug(DrugType.SLEEP_DEPRIVATION) - 0.7F) * ShaderContext.tickDelta() * 15;
+        float menuBlur = Math.max(0, properties.getDrugValue(DrugType.SLEEP_DEPRIVATION) - 0.7F) * ShaderContext.tickDelta() * 15;
         float vBlur = ShaderContext.drug(DrugType.POWER) + menuBlur;
         float hBlur = menuBlur + (
               ShaderContext.drug(DrugType.BATH_SALTS) * 6F

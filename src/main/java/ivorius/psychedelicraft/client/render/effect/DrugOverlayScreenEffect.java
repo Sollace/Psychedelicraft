@@ -10,9 +10,9 @@ import net.minecraft.entity.Entity;
 
 public abstract class DrugOverlayScreenEffect<D extends Drug> implements ScreenEffect {
 
-    private final DrugType type;
+    private final DrugType<?> type;
 
-    public DrugOverlayScreenEffect(DrugType type) {
+    public DrugOverlayScreenEffect(DrugType<?> type) {
         this.type = type;
     }
 
