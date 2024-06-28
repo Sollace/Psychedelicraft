@@ -265,6 +265,9 @@
   "fluid.psychedelicraft.coffee.temperature.1": "Warm Coffee",
   "fluid.psychedelicraft.coffee.temperature.2": "Hot Coffee",
 
+  "fluid.psychedelicraft.ethanol": "Ethanol",
+  "fluid.psychedelicraft.acid": "ACID",
+  "fluid.psychedelicraft.atropine": "Atropine",
   "fluid.psychedelicraft.coca_tea": "Coca Tea",
   "fluid.psychedelicraft.cannabis_tea": "Cannabis Tea",
   "fluid.psychedelicraft.peyote_juice": "Peyote Juice",
@@ -292,12 +295,13 @@
   "psychedelicraft.alcohol.maturity.aged": "aged",
   "psychedelicraft.alcohol.maturity.mature": "mature",
   "psychedelicraft.alcohol.maturity.very_mature": "very mature",
-  
+
   "psychedelicraft.drink.levels": "Volume: %d/%d ml",
   "psychedelicraft.alcohol.flavor": "%1$s and %2$s with %3$s after-taste",
   "psychedelicraft.alcohol.distillations": "Distillations: %dx",
   "psychedelicraft.alcohol.maturations": "Maturations: %d (%s)",
   "psychedelicraft.alcohol.fermentations": "Fermentations: %d",
+  "psychedelicraft.alcohol.potency": "Potency: %s",
   
   "psychedelicraft.alcohol.drink.tea": "%s Tea",
   "psychedelicraft.alcohol.drink.wort": "%s Wort",

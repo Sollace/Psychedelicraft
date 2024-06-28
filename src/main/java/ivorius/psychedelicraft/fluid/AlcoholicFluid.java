@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -72,15 +73,23 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     public void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
         super.getDrugInfluencesPerLiter(stack, consumer);
 
-        double alcohol =
-                  settings.fermentationAlcohol * (FERMENTATION.get(stack) / (double) FERMENTATION_STEPS)
-                + settings.distillationAlcohol * MathUtils.progress(DISTILLATION.get(stack))
-                + settings.maturationAlcohol * MathUtils.progress(MATURATION.get(stack) * 0.2F);
+        double alcohol = getAlcoholContent(stack);
 
-        consumer.accept(new DrugInfluence(settings.drugType, 20, 0.003, 0.002, alcohol));
+        if (alcohol > 0) {
+            consumer.accept(new DrugInfluence(settings.drugType, 20, 0.003, 0.002, alcohol));
+        }
         settings.variants.find(stack).extraDrug().ifPresent(drug -> {
             consumer.accept(drug.clone());
         });
+    }
+
+    double getAlcoholContent(ItemFluids stack) {
+        if (VINEGAR.get(stack)) {
+            return 0;
+        }
+        return settings.fermentationAlcohol * (FERMENTATION.get(stack) / (double) FERMENTATION_STEPS)
+                + settings.distillationAlcohol * MathUtils.progress(DISTILLATION.get(stack))
+                + settings.maturationAlcohol * MathUtils.progress(MATURATION.get(stack) * 0.2F);
     }
 
     @Override
@@ -123,6 +132,14 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             case ACETIFY:
                 tank.setContents(VINEGAR.cycle(tank.getContents()));
                 break;
+            case REACT:
+                double alcohol = getAlcoholContent(tank.getContents()) / 10;
+                if (alcohol == 0) {
+                    output.accept(SimpleFluid.forVanilla(Fluids.WATER).getDefaultStack(1));
+                } else {
+                    output.accept(PSFluids.ETHANOL.getDefaultStack((int)Math.ceil(alcohol)));
+                }
+                break;
             default:
         }
     }
@@ -148,6 +165,18 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                     DrinkTypes.State::fermentation,
                     DrinkTypes.State::distillation,
                     DrinkTypes.State::maturation, consumer);
+        }
+
+        if (type == ProcessType.REACT) {
+            return settings.states.get().stream().map(state -> {
+                return consumer.accept(0, 1, state::apply, to -> {
+                    double alcohol = getAlcoholContent(state.apply(to)) / 10;
+                    if (alcohol == 0) {
+                        return SimpleFluid.forVanilla(Fluids.WATER).getDefaultStack(1);
+                    }
+                    return PSFluids.ETHANOL.getDefaultStack((int)Math.ceil(alcohol));
+                });
+            });
         }
 
         return Stream.empty();
@@ -211,6 +240,8 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         if (maturation > 0) {
             tooltip.add(Text.translatable("psychedelicraft.alcohol.maturations", maturation, Maturity.getMaturity(maturation).getName()).formatted(Formatting.GRAY));
         }
+
+        tooltip.add(Text.translatable("psychedelicraft.alcohol.potency", getAlcoholContent(stack)).formatted(Formatting.GRAY));
 
         //if (distillation > 0 || maturation > 0 || fermentation > 0) {
         //    tooltip.add(Text.empty());
@@ -298,7 +329,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         private int matureColor = 0xcc592518;
         private int distilledColor = 0x33ffffff;
 
-        DrugType drugType = DrugType.ALCOHOL;
+        DrugType<?> drugType = DrugType.ALCOHOL;
 
         final Supplier<List<DrinkTypes.State>> states = Suppliers.memoize(() -> variants.streamStates().toList());
 
@@ -308,7 +339,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             this.appearance = stack -> variants.find(stack).appearance();
         }
 
-        public Settings drug(DrugType drug) {
+        public Settings drug(DrugType<?> drug) {
             this.drugType = drug;
             return this;
         }

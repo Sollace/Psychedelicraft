@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.PSTags;
@@ -89,6 +90,10 @@ public class CoffeeFluid extends DrugFluid implements Processable {
         if (type == ProcessType.FERMENT) {
             tank.setContents(WARMTH.set(tank.getContents(), Math.max(0, WARMTH.get(tank.getContents()) - 1)));
         }
+        if (type == ProcessType.REACT) {
+            tank.drain(2);
+            output.accept(PSFluids.CAFFEINE.getDefaultStack(1));
+        }
     }
 
     @Override
@@ -98,6 +103,12 @@ public class CoffeeFluid extends DrugFluid implements Processable {
                     stack -> WARMTH.set(stack, step.getRight()),
                     stack -> WARMTH.set(stack, step.getLeft())
             ));
+        }
+        if (type == ProcessType.REACT) {
+            return WARMTH.steps()
+                    .flatMapToInt(step -> IntStream.of(step.getLeft(), step.getRight()))
+                    .distinct()
+                    .mapToObj(warmth -> consumer.accept(0, 1, from -> WARMTH.set(from, warmth).ofAmount(2), to -> PSFluids.CAFFEINE.getDefaultStack(1)));
         }
 
         return Stream.empty();

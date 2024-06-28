@@ -17,12 +17,15 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     public static final Attribute<Integer> DISTILLATION = Attribute.ofInt("distillation", 0, 2);
 
     final Settings settings;
-    private final DrugType drug;
+    private final DrugType<?> drug;
 
-    public ChemicalExtractFluid(Identifier id, Settings settings, DrugType drug) {
+    private final DrugFluid purifiedForm;
+
+    public ChemicalExtractFluid(Identifier id, Settings settings, DrugType<?> drug, DrugFluid purifiedForm) {
         super(id, settings.drinkable());
         this.settings = settings;
         this.drug = drug;
+        this.purifiedForm = purifiedForm;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
         int distillation = DISTILLATION.get(tank.getContents());
-        if (type == ProcessType.DISTILL && distillation < 2) {
+        if (type == ProcessType.REACT) {
             return Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation() * (1 + distillation);
         }
 
@@ -44,21 +47,27 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
 
     @Override
     public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
-        if (type == ProcessType.DISTILL) {
-            output.accept(DISTILLATION.cycle(tank.drain(2)));
+        if (type == ProcessType.REACT) {
+            if (DISTILLATION.get(tank.getContents()) < 2) {
+                output.accept(DISTILLATION.cycle(tank.drain(2)));
+            } else {
+                tank.drain(2);
+                output.accept(purifiedForm.getDefaultStack(1));
+            }
         }
     }
 
     @Override
     public <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
-        if (type == ProcessType.DISTILL) {
-            return DISTILLATION.steps().map(step -> {
-                return consumer.accept(Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation(),
+        if (type == ProcessType.REACT) {
+            int distillRate = Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation();
+            return Stream.concat(DISTILLATION.steps().map(step -> {
+                return consumer.accept(distillRate * (1 + step.getLeft()),
                         1,
                         stack -> DISTILLATION.set(stack, step.getLeft()),
                         stack -> DISTILLATION.set(stack, step.getRight())
                 );
-            });
+            }), Stream.of(consumer.accept(distillRate * 3, 1, from -> DISTILLATION.set(from, 3).ofAmount(2), to -> purifiedForm.getDefaultStack(1))));
         }
 
         return Stream.empty();
