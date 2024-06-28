@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import com.mojang.datafixers.util.Pair;
+
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.BurnerBlock;
 import ivorius.psychedelicraft.block.GlassTubeBlock;
@@ -23,6 +25,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
@@ -36,15 +39,15 @@ import net.minecraft.world.WorldEvents;
 public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
 
     private int temperature;
-    private boolean hasBottle;
+    private ItemStack container;
     //private final Map<Direction, Resovoir> ingredientTanks = new HashMap<>();
 
     public BurnerBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.BUNSEN_BURNER, pos, state, FluidVolumes.GLASS_BOTTLE);
     }
 
-    public void setHasBottle(boolean hasBottle) {
-        this.hasBottle = hasBottle;
+    public void setContainer(ItemStack container) {
+        this.container = container;
         markDirty();
     }
 
@@ -64,8 +67,8 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
         }
     }
 
-    public boolean hasBottle() {
-        return hasBottle;
+    public ItemStack getContainer() {
+        return container;
     }
 
     public int getTemperature() {
@@ -74,24 +77,29 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
 
     public boolean interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
 
-        if (hasBottle() && stack.isEmpty()) {
+        if (hand != Hand.MAIN_HAND) {
+            return false;
+        }
+
+        if (!getContainer().isEmpty() && stack.isEmpty()) {
             Resovoir tank = getPrimaryTank();
-            ItemFluids.Transaction t = ItemFluids.Transaction.begin(Items.GLASS_BOTTLE.getDefaultStack());
+            ItemFluids.Transaction t = ItemFluids.Transaction.begin(getContainer());
             tank.withdraw(t, FluidVolumes.GLASS_BOTTLE);
             player.setStackInHand(hand, t.toItemStack());
-            setHasBottle(false);
+            setContainer(ItemStack.EMPTY);
         }
 
         ItemFluids fluid = ItemFluids.of(stack);
         boolean consumeItem = false;
 
-        if (!hasBottle() && (stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(PSItems.FILLED_GLASS_BOTTLE) || stack.isOf(Items.POTION))) {
-            setHasBottle(true);
-            stack.decrementUnlessCreative(1, player);
+        if (getContainer().isEmpty() && (
+                stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(PSItems.FILLED_GLASS_BOTTLE) || stack.isOf(Items.POTION) || stack.isOf(PSItems.BOTTLE)
+        )) {
+            setContainer(ItemFluids.set(stack.splitUnlessCreative(1, player), ItemFluids.EMPTY));
             consumeItem = true;
         }
 
-        if (hasBottle() && !fluid.isEmpty()) {
+        if (!getContainer().isEmpty() && !fluid.isEmpty()) {
             Resovoir tank = getTankOnSide(side);
             if (consumeItem) {
                 tank.deposit(fluid);
@@ -107,7 +115,7 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
 
     @Override
     public void tick(ServerWorld world) {
-        if (hasBottle()) {
+        if (!getContainer().isEmpty()) {
             if (world.getTime() % 14 == 0) {
                 if (getCachedState().get(BurnerBlock.LIT)) {
                     if (temperature < (getPrimaryTank().getContents().isEmpty() ? 200 : 100)) {
@@ -134,7 +142,7 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
                     if (temperature > 180 && world.random.nextInt(3) == 0) {
                         world.playSound(null, getPos(), SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, 1.25F, 0.02F);
                         world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, getPos(), Block.getRawIdFromState(Blocks.GLASS_PANE.getDefaultState()));
-                        setHasBottle(false);
+                        setContainer(ItemStack.EMPTY);
                     }
                 } else {
                     if (temperature > 100) {
@@ -190,7 +198,7 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
     @Override
     public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
         super.writeNbt(compound, lookup);
-        compound.putBoolean("hasBottle", hasBottle);
+        ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, container).result().ifPresent(container -> compound.put("container", container));
         compound.putInt("temperature", temperature);
         /*NbtCompound ingredientTanksNbt = new NbtCompound();
         ingredientTanks.forEach((direction, tank) -> {
@@ -202,7 +210,7 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
-        hasBottle = compound.getBoolean("hasBottle");
+        container = ItemStack.OPTIONAL_CODEC.decode(NbtOps.INSTANCE, compound.get("container")).result().map(Pair::getFirst).orElse(ItemStack.EMPTY);
         temperature = compound.getInt("temperature");
         //ingredientTanks.clear();
         /*NbtCompound ingredients = compound.getCompound("ingredients");

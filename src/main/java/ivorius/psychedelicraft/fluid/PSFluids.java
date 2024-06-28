@@ -238,7 +238,7 @@ public interface PSFluids {
             .appearance(FluidAppearance.COFFEE)
             .color(0xffa77d55)
     );
-    DrugFluid COCA_TEA = new DrugFluid(Psychedelicraft.id("coca_tea"), new DrugFluid.Settings()
+    DrugFluid COCA_TEA = new CocaTeaFluid(Psychedelicraft.id("coca_tea"), new DrugFluid.Settings()
             .drinkable()
             .appearance(FluidAppearance.TEA)
             .influence(new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.METABOLISED, 0.005, 0.002, 0.2))
@@ -263,12 +263,10 @@ public interface PSFluids {
             .color(0x779bab62)
     );
 
-    DrugFluid COCAINE = new DrugFluid(Psychedelicraft.id("cocaine"), new DrugFluid.Settings()
-            .injectable()
-            .appearance(FluidAppearance.CLEAR)
-            .influence(new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.005, 0.01, 50))
-            .color(0x44e8f4f8)
-    );
+    DrugFluid ETHANOL = new DrugFluid(Psychedelicraft.id("ethanol"), chemicalSolution(DrugType.ALCOHOL));
+    DrugFluid ACID = new DrugFluid(Psychedelicraft.id("acid"), chemicalSolution(DrugType.LSD));
+    DrugFluid ATROPINE = new DrugFluid(Psychedelicraft.id("atropine"), chemicalSolution(DrugType.ATROPINE));
+    DrugFluid COCAINE = new DrugFluid(Psychedelicraft.id("cocaine"), chemicalSolution(DrugType.COCAINE));
     DrugFluid CAFFEINE = new DrugFluid(Psychedelicraft.id("caffeine"), new DrugFluid.Settings()
             .injectable()
             .appearance(FluidAppearance.CLEAR)
@@ -281,18 +279,20 @@ public interface PSFluids {
             .influence(new DrugInfluence(DrugType.BATH_SALTS, DrugInfluence.DelayType.IMMEDIATE, 0.005, 0.01, 50))
             .color(0x2233f4f8)
     );
-    ChemicalExtractFluid MORNING_GLORY_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("morning_glory_extract"), new DrugFluid.Settings()
-            .injectable()
-            .color(0x66eee2d3), DrugType.LSD
-    );
-    ChemicalExtractFluid BELLADONA_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("belladonna_extract"), new DrugFluid.Settings()
-            .color(0x66eee2d3), DrugType.ATROPINE
-    );
-    ChemicalExtractFluid JIMSONWEED_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("jimsonweed_extract"), new DrugFluid.Settings()
-            .color(0x66eee2d3), DrugType.ATROPINE
-    );
+
+    ChemicalExtractFluid MORNING_GLORY_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("morning_glory_extract"), new DrugFluid.Settings().color(0x66eee2d3), DrugType.LSD, ACID);
+    ChemicalExtractFluid BELLADONA_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("belladonna_extract"), new DrugFluid.Settings().color(0x66eee2d3), DrugType.ATROPINE, ATROPINE);
+    ChemicalExtractFluid JIMSONWEED_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("jimsonweed_extract"), new DrugFluid.Settings().color(0x66eee2d3), DrugType.ATROPINE, ATROPINE);
 
     SimpleFluid SLURRY = new SlurryFluid(Psychedelicraft.id("slurry"), new SimpleFluid.Settings().color(0xcc704E21).viscocity(4));
+
+    static DrugFluid.Settings chemicalSolution(DrugType<?> type) {
+        return new DrugFluid.Settings()
+                .injectable()
+                .appearance(FluidAppearance.CLEAR)
+                .influence(new DrugInfluence(type, DrugInfluence.DelayType.IMMEDIATE, 0.05, 0.01, 50))
+                .color(0x44e8f4f8);
+    }
 
     static void bootstrap() { }
 }

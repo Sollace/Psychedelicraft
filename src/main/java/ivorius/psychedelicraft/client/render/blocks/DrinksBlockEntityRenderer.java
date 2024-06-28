@@ -32,13 +32,13 @@ public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrin
     @Override
     public void render(PlacedDrinksBlock.Data entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         entity.forEachDrink((y, drink) -> {
-            PlacedDrinksModelProvider.Entry geometry = PlacedDrinksModelProvider.INSTANCE.get(drink.stack().getItem()).orElse(PlacedDrinksModelProvider.Entry.DEFAULT);
+            PlacedDrinksModelProvider.Entry geometry = PlacedDrinksModelProvider.INSTANCE.get("ground", drink.stack().getItem()).orElse(PlacedDrinksModelProvider.Entry.DEFAULT);
             matrices.push();
             matrices.translate(drink.x(), y, drink.z());
             matrices.translate(0.5F, 0, 0.5F);
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(drink.rotation()));
             matrices.translate(-0.5F, 0, -0.5F);
-            PlacedDrinksModelProvider.INSTANCE.renderDrink(drink.stack(), matrices, vertices, light, overlay);
+            PlacedDrinksModelProvider.INSTANCE.renderDrink("ground", drink.stack(), matrices, vertices, light, overlay);
             matrices.pop();
 
             return geometry.height();

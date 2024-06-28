@@ -118,7 +118,7 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
 
     @Override
     public boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
-        return input && direction == Direction.UP && world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).filter(data -> data.hasBottle()).isPresent();
+        return input && direction == Direction.UP && world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).filter(data -> !data.getContainer().isEmpty()).isPresent();
     }
 
     @Override
@@ -127,7 +127,7 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
             return SPILL_STATUS;
         }
         return world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).map(data -> {
-            if (data.hasBottle()) {
+            if (!data.getContainer().isEmpty()) {
                 return data.getTankOnSide(Direction.UP).deposit(fluids);
             }
             return SPILL_STATUS;

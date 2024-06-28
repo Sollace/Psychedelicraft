@@ -4,19 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer.FluidAppearance;
-import ivorius.psychedelicraft.client.render.blocks.BurnerBlockEntityRenderer;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -37,7 +35,6 @@ import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Colors;
@@ -47,8 +44,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
 public class PlacedDrinksModelProvider
-        implements PreparableModelLoadingPlugin<Map<Identifier, PlacedDrinksModelProvider.Entry>>,
-        PreparableModelLoadingPlugin.DataLoader<Map<Identifier, PlacedDrinksModelProvider.Entry>> {
+        implements PreparableModelLoadingPlugin<Map<String, Map<Identifier, PlacedDrinksModelProvider.Entry>>>,
+        PreparableModelLoadingPlugin.DataLoader<Map<String, Map<Identifier, PlacedDrinksModelProvider.Entry>>> {
     private static final Identifier CONFIG_LOCATION = Psychedelicraft.id("placeable_drinks.json");
     private static final Gson GSON = new Gson();
     private static final Random RNG = Random.create();
@@ -56,38 +53,16 @@ public class PlacedDrinksModelProvider
 
     public static final PlacedDrinksModelProvider INSTANCE = new PlacedDrinksModelProvider();
 
-    private Map<Identifier, Entry> entries = Map.of();
+    private static final Codec<Map<String, Map<Identifier, Entry>>> CODEC = Codec.unboundedMap(Codec.STRING, Entry.MAP_CODEC);
+
+    private Map<String, Map<Identifier, Entry>> entries = Map.of();
 
     @Override
-    public CompletableFuture<Map<Identifier, PlacedDrinksModelProvider.Entry>> load(ResourceManager resourceManager, Executor executor) {
+    public CompletableFuture<Map<String, Map<Identifier, Entry>>> load(ResourceManager resourceManager, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
             return resourceManager.getResource(CONFIG_LOCATION).map(resource -> {
                 try (BufferedReader reader = resource.getReader()) {
-                    return JsonHelper.getArray(JsonHelper.asObject(JsonHelper.deserialize(GSON, reader, JsonElement.class), "root"), "values")
-                        .asList()
-                        .stream()
-                        .map(element -> {
-                            try {
-                                return JsonHelper.asObject(element, "root.values[i]");
-                            } catch (Exception e) {
-                                Psychedelicraft.LOGGER.error(e);
-                            }
-                            return null;
-                        })
-                        .filter(Objects::nonNull)
-                        .map(element -> {
-                            if (!element.has("id") || !element.get("id").isJsonPrimitive()) {
-                                return null;
-                            }
-                            Identifier id = Identifier.tryParse(JsonHelper.getString(element, "id"));
-                            if (id == null) {
-                                Psychedelicraft.LOGGER.warn("Invalid identifier: " + element);
-                                return null;
-                            }
-                            return Map.entry(id, new Entry(element));
-                        })
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    return CODEC.decode(JsonOps.INSTANCE, JsonHelper.deserialize(GSON, reader, JsonElement.class)).getOrThrow().getFirst();
                 } catch (IOException e) {
                     Psychedelicraft.LOGGER.error("Could not load client drinks file", e);
                 }
@@ -97,32 +72,36 @@ public class PlacedDrinksModelProvider
     }
 
     @Override
-    public void onInitializeModelLoader(Map<Identifier, PlacedDrinksModelProvider.Entry> data, Context context) {
+    public void onInitializeModelLoader(Map<String, Map<Identifier, PlacedDrinksModelProvider.Entry>> data, Context context) {
         entries = data;
-        data.keySet().forEach(id -> {
-            context.addModels(getGroundModelId(id), getGroundModelFluidId(id));
+        data.forEach((type, entries) -> {
+            entries.keySet().forEach(id -> {
+                context.addModels(getGroundModelId(type, id), getGroundModelFluidId(type, id));
+            });
         });
-        context.addModels(BurnerBlockEntityRenderer.BEAKER_MODEL);
     }
 
-    public Optional<Entry> get(Item item) {
-        return Optional.ofNullable(entries.get(Registries.ITEM.getId(item)));
+    public Optional<Entry> get(String type, Item item) {
+        return Optional.ofNullable(entries.get(type).get(Registries.ITEM.getId(item)));
     }
 
-    public void renderDrink(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        int dyeColor = DyedColorComponent.getColor(stack, Colors.WHITE);
-
-        renderDrinkModel(stack, matrices, vertices, light, overlay, dyeColor, getGroundModelId(stack.getItem()));
-
+    public void renderDrink(String type, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        renderEmptyDrink(type, stack, matrices, vertices, light, overlay);
         float fillPercentage = FluidCapacity.getPercentage(stack);
         if (fillPercentage > 0.01) {
-            float origin = get(stack.getItem()).orElse(Entry.DEFAULT).fluidOrigin() / 16F;
+            float origin = get(type, stack.getItem()).orElse(Entry.DEFAULT).fluidOrigin() / 16F;
             matrices.translate(0, origin, 0);
             matrices.scale(1, fillPercentage, 1);
             matrices.translate(0, -origin, 0);
             int color = FluidAppearance.getItemColor(ItemFluids.of(stack));
-            renderDrinkModel(stack, matrices, vertices, light, overlay, color, getGroundModelFluidId(stack.getItem()));
+            renderDrinkModel(stack, matrices, vertices, light, overlay, color, getGroundModelFluidId(type, stack.getItem()));
         }
+    }
+
+    public void renderEmptyDrink(String type, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        int dyeColor = DyedColorComponent.getColor(stack, Colors.WHITE);
+
+        renderDrinkModel(stack, matrices, vertices, light, overlay, dyeColor, getGroundModelId(type, stack.getItem()));
     }
 
     public void renderDrinkModel(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, int color, Identifier modelId) {
@@ -152,37 +131,28 @@ public class PlacedDrinksModelProvider
         }
     }
 
-    public static Identifier getGroundModelId(Item item) {
-        return getGroundModelId(Registries.ITEM.getId(item));
+    public static Identifier getGroundModelId(String type, Item item) {
+        return getGroundModelId(type, Registries.ITEM.getId(item));
     }
 
-    public static Identifier getGroundModelFluidId(Item item) {
-        return getGroundModelFluidId(Registries.ITEM.getId(item));
+    public static Identifier getGroundModelFluidId(String type, Item item) {
+        return getGroundModelFluidId(type, Registries.ITEM.getId(item));
     }
 
-    public static Identifier getGroundModelId(Identifier item) {
-        return item.withPath(p -> "item/" + p + "_on_ground");
+    public static Identifier getGroundModelId(String type, Identifier item) {
+        return item.withPath(p -> "item/" + p + "_on_" + type);
     }
 
-    public static Identifier getGroundModelFluidId(Identifier item) {
-        return item.withPath(p -> "item/" + p + "_on_ground_fluid");
+    public static Identifier getGroundModelFluidId(String type, Identifier item) {
+        return getGroundModelId(type, item).withSuffixedPath("_fluid");
     }
 
     public record Entry(float height, float fluidOrigin) {
+        public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.FLOAT.fieldOf("height").forGetter(Entry::height),
+                Codec.FLOAT.fieldOf("fluid_origin").forGetter(Entry::fluidOrigin)
+        ).apply(instance, Entry::new));
+        public static final Codec<Map<Identifier, Entry>> MAP_CODEC = Codec.unboundedMap(Identifier.CODEC, CODEC);
         public static final Entry DEFAULT = new Entry(0.5F, 0F);
-        Entry(JsonObject json) {
-            this(JsonHelper.getFloat(json, "height"), JsonHelper.getFloat(json, "fluid_origin"));
-        }
-
-        public Entry(NbtCompound compound) {
-            this(compound.getFloat("height"), compound.getFloat("fluidOrigin"));
-        }
-
-
-        public NbtCompound toNbt(NbtCompound compound) {
-            compound.putFloat("height", height);
-            compound.putFloat("fluidOrigin", fluidOrigin);
-            return compound;
-        }
     }
 }

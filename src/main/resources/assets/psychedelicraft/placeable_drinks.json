@@ -1,34 +1,38 @@
 {
-  "values": [
-    {
-      "id": "psychedelicraft:wooden_mug",
+  "ground": {
+    "psychedelicraft:wooden_mug": {
       "height": 0.25,
       "fluid_origin": 0.5
     },
-    {
-      "id": "psychedelicraft:stone_cup",
+    "psychedelicraft:stone_cup": {
       "height": 0.25,
       "fluid_origin": 0.5
     },
-    {
-      "id": "psychedelicraft:shot_glass",
+    "psychedelicraft:shot_glass": {
       "height": 0.2,
       "fluid_origin": 0.5
     },
-    {
-      "id": "psychedelicraft:glass_chalice",
+    "psychedelicraft:glass_chalice": {
       "height": 0.4,
       "fluid_origin": 3.5
     },
-    {
-      "id": "psychedelicraft:bottle",
+    "psychedelicraft:bottle": {
       "height": 0.5,
       "fluid_origin": 0.5
     },
-    {
-      "id": "psychedelicraft:molotov_cocktail",
+    "psychedelicraft:molotov_cocktail": {
       "height": 0.5,
       "fluid_origin": 0.5
     }
-  ]
+  },
+  "burner": {
+    "psychedelicraft:bottle": {
+      "height": 0.5,
+      "fluid_origin": 0.5
+    },
+    "minecraft:glass_bottle": {
+      "height": 0.5,
+      "fluid_origin": 0.5
+    }
+  }
 }

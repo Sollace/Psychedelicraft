@@ -53,7 +53,7 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rot * 4));
                 matrices.translate(0, -rotPoint, -rotPoint * -1.2F);
 
-                PlacedDrinksModelProvider.INSTANCE.renderDrink(bottle, matrices, vertices, light, overlay);
+                PlacedDrinksModelProvider.INSTANCE.renderDrink("ground", bottle, matrices, vertices, light, overlay);
 
                 matrices.pop();
             }
