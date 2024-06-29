@@ -3,7 +3,7 @@
   "display": {
     "icon": {
       "id": "psychedelicraft:wooden_mug",
-      "components": 
+      "components": {
         "psychedelicraft:fluids": {
           "fluid": "psychedelicraft:sugar_cane",
           "attributes": {

@@ -3,7 +3,7 @@
   "display": {
     "icon": {
       "id": "psychedelicraft:wooden_mug",
-      "components": 
+      "components": {
         "psychedelicraft:fluids": {
           "fluid": "psychedelicraft:wheat_hop",
           "attributes": {
@@ -28,7 +28,7 @@
       "trigger": "minecraft:consume_item",
       "conditions": {
         "item": {
-          "predicates": 
+          "predicates": {
             "psychedelicraft:fluids": {
               "fluid": "psychedelicraft:wheat_hop",
               "attributes": {
