@@ -3,11 +3,12 @@
   "display": {
     "icon": {
       "id": "psychedelicraft:wooden_mug",
-      "tag": {
-        "fluid": {
-          "id": "psychedelicraft:sugar_cane",
-          "fermentation": 0,
-          "maturation": 7
+      "components": 
+        "psychedelicraft:fluids": {
+          "fluid": "psychedelicraft:sugar_cane",
+          "attributes": {
+            "maturation": 7
+          }
         }
       }
     },
@@ -27,7 +28,15 @@
       "trigger": "minecraft:consume_item",
       "conditions": {
         "item": {
-          "nbt": "{\"fluid\": { \"id\": \"psychedelicraft:sugar_cane\", \"fermentation\": 0, \"maturation\": 7 } }"
+          "predicates": {
+            "psychedelicraft:fluids": {
+              "fluid": "psychedelicraft:sugar_cane",
+              "attributes": {
+                "fermentation": 0,
+                "maturation": 7
+              }
+            }
+          }
         }
       }
     }

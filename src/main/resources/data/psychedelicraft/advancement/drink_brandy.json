@@ -3,11 +3,13 @@
   "display": {
     "icon": {
       "id": "psychedelicraft:wooden_mug",
-      "tag": {
-        "fluid": {
-          "id": "psychedelicraft:red_grapes",
-          "fermentation": 1,
-          "maturation": 7
+      "components": 
+        "psychedelicraft:fluids": {
+          "fluid": "psychedelicraft:red_grapes",
+          "attributes": {
+            "fermentation": 1,
+            "maturation": 7
+          }
         }
       }
     },
@@ -27,7 +29,15 @@
       "trigger": "minecraft:consume_item",
       "conditions": {
         "item": {
-          "nbt": "{\"fluid\": { \"id\": \"psychedelicraft:red_grapes\", \"fermentation\": 1, \"maturation\": 7 } }"
+          "predicates": 
+            "psychedelicraft:fluids": {
+              "fluid": "psychedelicraft:red_grapes",
+              "attributes": {
+                "fermentation": 1,
+                "maturation": 7
+              }
+            }
+          }
         }
       }
     }

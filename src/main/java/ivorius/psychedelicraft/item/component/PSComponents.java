@@ -20,5 +20,6 @@ public interface PSComponents {
     }
 
     static void bootstrap() {
+        PSSubPredicates.bootstrap();
     }
 }

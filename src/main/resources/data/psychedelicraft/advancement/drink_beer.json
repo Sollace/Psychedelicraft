@@ -3,11 +3,9 @@
   "display": {
     "icon": {
       "id": "psychedelicraft:wooden_mug",
-      "tag": {
-        "fluid": {
-          "id": "psychedelicraft:wheat_hop",
-          "fermentation": 0,
-          "maturation": 0
+      "components": 
+        "psychedelicraft:fluids": {
+          "fluid": "psychedelicraft:wheat_hop"
         }
       }
     },
@@ -27,7 +25,11 @@
       "trigger": "minecraft:consume_item",
       "conditions": {
         "item": {
-          "nbt": "{\"fluid\": { \"id\": \"psychedelicraft:wheat_hop\" } }"
+          "predicates": {
+            "psychedelicraft:fluids": {
+              "fluid": "psychedelicraft:wheat_hop"
+            }
+          }
         }
       }
     }

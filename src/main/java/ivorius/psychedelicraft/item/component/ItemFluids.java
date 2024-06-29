@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -17,6 +16,7 @@ import ivorius.psychedelicraft.fluid.container.RecepticalHandler;
 import ivorius.psychedelicraft.fluid.container.VariantMarshal;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.component.ComponentChanges;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
@@ -27,6 +27,8 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.predicate.NumberRange.IntRange;
+import net.minecraft.predicate.item.ComponentSubPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -162,6 +164,26 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public void appendTooltip(List<Text> tooltip, TooltipType type) {
         fluid().appendTooltip(this, tooltip, type);
+    }
+
+    public record Predicate(Optional<SimpleFluid> fluid, IntRange amount, Map<String, IntRange> attributes) implements ComponentSubPredicate<ItemFluids> {
+        public static final Codec<Predicate> CODEC = RecordCodecBuilder.create(i -> i.group(
+                SimpleFluid.CODEC.optionalFieldOf("fluid").forGetter(Predicate::fluid),
+                IntRange.CODEC.optionalFieldOf("amount", IntRange.ANY).forGetter(Predicate::amount),
+                Codec.unboundedMap(Codec.STRING, IntRange.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(Predicate::attributes)
+        ).apply(i, Predicate::new));
+
+        @Override
+        public ComponentType<ItemFluids> getComponentType() {
+            return PSComponents.FLUIDS;
+        }
+
+        @Override
+        public boolean test(ItemStack stack, ItemFluids fluids) {
+            return (fluid.isEmpty() || fluid.get() == fluids.fluid())
+                && amount.test(fluids.amount())
+                && (attributes.isEmpty() || attributes.entrySet().stream().allMatch(entry -> fluids.attributes().containsKey(entry.getKey()) && entry.getValue().test(fluids.attributes().get(entry.getKey()))));
+        }
     }
 
     public interface Transaction {
