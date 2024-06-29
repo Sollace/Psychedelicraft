@@ -26,7 +26,7 @@ abstract class MixinGlProgram_Builder {
     @Shadow
     private @Final int program;
 
-    private @Nullable BuiltGemoetryShader psychedelicraft_shader;
+    private @Nullable BuiltGemoetryShader.Builder psychedelicraft_shader;
 
     @Inject(method = "bindAttribute", at = @At("HEAD"))
     private void onBindAttribute(String name, int index, CallbackInfoReturnable<?> info) {
@@ -40,13 +40,13 @@ abstract class MixinGlProgram_Builder {
 
     @Inject(method = "link", at = @At("HEAD"))
     private void onLink(Function<?, ?> factory, CallbackInfoReturnable<?> info) {
-        psychedelicraft_shader = GeometryShader.INSTANCE.buildShader(program, maxAttributes, maxFragments);
+        psychedelicraft_shader = GeometryShader.INSTANCE.createShaderBuilder(program, maxAttributes, maxFragments);
     }
 
     @Inject(method = "link", at = @At("RETURN"))
     private void afterLink(Function<?, ?> factory, CallbackInfoReturnable<?> info) {
-        if (info.getReturnValue() instanceof BuiltGemoetryShader.Holder holder) {
-            holder.attachUniformData(psychedelicraft_shader);
+        if (info.getReturnValue() instanceof BuiltGemoetryShader.Holder holder && psychedelicraft_shader != null) {
+            holder.attachUniformData(psychedelicraft_shader.build());
         }
     }
 }

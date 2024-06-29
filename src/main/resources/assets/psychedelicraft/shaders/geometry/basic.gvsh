@@ -13,9 +13,11 @@ uniform float PS_FractalFractureStrength;
 uniform vec3 PS_PlayerPosition;
 
 ps_out vec4 vertexColor;
+
 ps_out float vertexDistance;
 
 float PHI = 1.61803398874989484820459;
+float TAU = 6.283185307;
 
 float gold_noise(vec2 xy, float seed) {
   return fract(tan(distance(xy * PHI, xy) * seed) * xy.x);
@@ -25,7 +27,6 @@ void main() {
   // we have to write to it so mac is happy
   vertexColor = vec4(0, 0, 0, 0);
   vertexDistance = 0;
-  i_parent_shaders_main();
 
   float worldTicks = PS_WorldTicks;
 
@@ -35,30 +36,32 @@ void main() {
   float bubbling = PS_WavesMatrix[3];
   float distantWorldDeformation = PS_DistantWorldDeformation;
   float surfaceFractalStrength = PS_SurfaceFractalStrength;
-
-  float tau = 3.14159 * 2.0;
-
+  vec4 surfaceFractalCoords = PS_SurfaceFractalCoords;
   vec3 playerPos = PS_PlayerPosition;
+
+  i_parent_shaders_main();
 
   float fogFragCoord = length(gl_Position);
 
   if (surfaceFractalStrength > 0.0) {
+    float fractalScale = 4.0;
+
     vertexColor = vec4(mix(vertexColor.rgb, texture(PS_SurfaceFractalSampler, vec2(
-        mix(PS_SurfaceFractalCoords[0], PS_SurfaceFractalCoords[2], (mod(gl_Position.x + gl_Position.y, 4.0)) / 4.0),
-        mix(PS_SurfaceFractalCoords[1], PS_SurfaceFractalCoords[3], (mod(gl_Position.z + gl_Position.y, 4.0)) / 4.0)
+        mix(surfaceFractalCoords[0], surfaceFractalCoords[2], (mod(gl_Position.x + gl_Position.y, fractalScale)) / fractalScale),
+        mix(surfaceFractalCoords[1], surfaceFractalCoords[3], (mod(gl_Position.z + gl_Position.y, fractalScale)) / fractalScale)
     )).rgb, surfaceFractalStrength), vertexColor.a);
   }
 
   if (smallWaves > 0.0) {
     float w1 = 8.0;
 
-    gl_Position[1] += sin((gl_Position.x + worldTicks / 5.0) / w1 * tau) * sin((gl_Position.z + worldTicks / 5.0) / w1 * tau) * smallWaves * 1.5;
-    gl_Position[1] -= sin((playerPos.x + worldTicks / 5.0) / w1 * tau) * sin((playerPos.z + worldTicks / 5.0) / w1 * tau) * smallWaves * 1.5;
+    gl_Position[1] += sin((gl_Position.x + worldTicks / 5.0) / w1 * TAU) * sin((gl_Position.z + worldTicks / 5.0) / w1 * TAU) * smallWaves * 1.5;
+    gl_Position[1] -= sin((playerPos.x + worldTicks / 5.0) / w1 * TAU) * sin((playerPos.z + worldTicks / 5.0) / w1 * TAU) * smallWaves * 1.5;
 
     float w2 = 16.0;
 
-    gl_Position.y += sin((gl_Position.x + worldTicks / 8.0) / w2 * tau) * sin((gl_Position.z) / w2 * tau) * smallWaves * 3.0;
-    gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w2 * tau) * sin((playerPos.z) / w2 * tau) * smallWaves * 3.0;
+    gl_Position.y += sin((gl_Position.x + worldTicks / 8.0) / w2 * TAU) * sin((gl_Position.z) / w2 * TAU) * smallWaves * 3.0;
+    gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w2 * TAU) * sin((playerPos.z) / w2 * TAU) * smallWaves * 3.0;
 
     gl_Position.x = mix(gl_Position.x, gl_Position.x * (1.0 + fogFragCoord / 20.0), smallWaves);
     gl_Position.y = mix(gl_Position.y, gl_Position.y * (1.0 + fogFragCoord / 20.0), smallWaves);
@@ -67,8 +70,8 @@ void main() {
   if (bubbling > 0.0) {
     float w3 = 4.0;
 
-    gl_Position.y += sin((gl_Position.x + worldTicks / 8.0) / w3 * tau) * sin((gl_Position.z) / w3 * tau) * bubbling * 3.0;
-    gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w3 * tau) * sin((playerPos.z) / w3 * tau) * bubbling * 3.0;
+    gl_Position.y += sin((gl_Position.x + worldTicks / 8.0) / w3 * TAU) * sin((gl_Position.z) / w3 * TAU) * bubbling * 3.0;
+    gl_Position.y -= sin((playerPos.x + worldTicks / 8.0) / w3 * TAU) * sin((playerPos.z) / w3 * TAU) * bubbling * 3.0;
 
     gl_Position.y = mix(gl_Position.y, gl_Position.y * (1.0 + fogFragCoord / 20.0), bubbling);
   }
@@ -83,13 +86,13 @@ void main() {
 
   if (wiggleWaves > 0.0) {
     float w1 = 8.0;
-    gl_Position.x += sin((gl_Position.y + worldTicks / 8.0) / w1 * tau)
-                    * sin((gl_Position.z + worldTicks / 5.0) / w1 * tau)
+    gl_Position.x += sin((gl_Position.y + worldTicks / 8.0) / w1 * TAU)
+                    * sin((gl_Position.z + worldTicks / 5.0) / w1 * TAU)
                     * wiggleWaves;
   }
 
   if (distantWorldDeformation > 0.0 && fogFragCoord > 5.0) {
-    gl_Position.y += (sin(fogFragCoord / 8.0 * tau) + 1.0)
+    gl_Position.y += (sin(fogFragCoord / 8.0 * TAU) + 1.0)
                      * distantWorldDeformation
                      * (fogFragCoord - 5.0) / 8.0;
   }

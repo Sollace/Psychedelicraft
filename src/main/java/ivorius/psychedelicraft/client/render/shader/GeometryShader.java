@@ -66,22 +66,22 @@ public class GeometryShader {
         return (RenderPhase.current() == RenderPhase.WORLD || RenderPhase.current() == RenderPhase.CLOUDS) && client.world != null && client.player != null;
     }
 
-    public BuiltGemoetryShader buildShader(int program, int lastUniformId, int lastSamplerId) {
-        var shader = new BuiltGemoetryShader(program);
-        samplers.forEach(shader::addSampler);
-        addUniforms(shader, shader::addUniform);
-        return shader;
+    public BuiltGemoetryShader.Builder createShaderBuilder(int program, int lastUniformId, int lastSamplerId) {
+        var builder = new BuiltGemoetryShader.Builder(program, lastUniformId, lastSamplerId);
+        samplers.forEach(builder::addSampler);
+        addUniforms(builder, builder::addUniform);
+        return builder;
     }
 
     public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
         register.accept(new BoundUniform("PS_SurfaceFractalStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().get(Drug.FRACTALS), 0, 1) : 0);
+            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().get(Drug.FRACTALS), 0, 1) + 1 : 0);
         }));
         register.accept(new BoundUniform("PS_Pulses", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
             uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor(ShaderContext.tickDelta(), RenderPhase.current() == RenderPhase.SKY) : MathUtils.ZERO);
         }));
         register.accept(new BoundUniform("PS_SurfaceFractalCoords", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
-            if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) > 0) {
+            if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) >= 0) {
                 Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
                 uniform.set(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
             } else {
@@ -121,7 +121,6 @@ public class GeometryShader {
         }
 
         if (source.indexOf("void main()") == -1) {
-            Psychedelicraft.LOGGER.info("Skipping partial source " + name);
             return source;
         }
 
@@ -147,6 +146,11 @@ public class GeometryShader {
 
     private String combineSources(String vertexSources, String geometrySources) {
         writeSources(vertexSources, "before");
+
+        if (vertexSources.indexOf("out vec4 v_Color") != -1) {
+            geometrySources = geometrySources.replaceAll("vertexColor", "v_Color");
+        }
+
         geometrySources = PS_VARIABLE_PATTERN.matcher(geometrySources).replaceAll(match -> {
             String fieldSlug = Arrays.stream(match.group(3).split(","))
                     .map(String::trim)
@@ -159,7 +163,7 @@ public class GeometryShader {
     }
 
     private String writeSources(String sources, String suffex) {
-        Path output = FabricLoader.getInstance().getGameDir().resolve("logs/shader_compilation/" + name.getNamespace() + "/" + name.getPath() + "_" + suffex);
+        Path output = FabricLoader.getInstance().getGameDir().resolve("logs/shader_compilation/" + type.name().toLowerCase(Locale.ROOT) + "/" + name.getNamespace() + "/" + name.getPath() + "_" + suffex);
         try {
             Files.createDirectories(output.getParent());
             Files.deleteIfExists(output);
