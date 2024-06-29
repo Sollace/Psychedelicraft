@@ -52,26 +52,13 @@ public interface Processable {
      */
     void process(Context context, ProcessType type, ByProductConsumer output);
 
-    @Deprecated
-    default <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
-        return Stream.empty();
-    }
-
     Stream<Process> getProcesses();
 
     default ProcessType modifyProcess(Resovoir tank, ProcessType type) {
         return type;
     }
 
-    @Deprecated
-    interface ProcessStageConsumer<T> {
-        T accept(int time, int multiplier,
-                Function<ItemFluids, ItemFluids> from,
-                Function<ItemFluids, ItemFluids> to
-        );
-    }
-
-    record Process(Identifier id, List<Transition> transitions) {}
+    record Process(SimpleFluid fluid, Identifier id, List<Transition> transitions) {}
 
     record Transition(
             ProcessType type,

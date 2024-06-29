@@ -13,7 +13,6 @@ import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
-import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.item.ItemConvertible;
@@ -29,9 +28,12 @@ record RecipeCategory(Identifier id, CategoryIcon icon, TlaIngredient stations, 
     public static final RecipeCategory DISTILLERY = RecipeCategory.register("distillery", PSItems.DISTILLERY, 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.FLASK));
     public static final RecipeCategory FLASK = RecipeCategory.register("flask", PSItems.FLASK, 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.FLASK));
 
-    public static final RecipeCategory FERMENTING = register("fermenting", PSItems.MASH_TUB, 130, 28, FluidProcessingEmiRecipe.generate(ProcessType.FERMENT, FluidVolumes.VAT));
-    public static final RecipeCategory MATURING = RecipeCategory.register("maturing", PSItems.OAK_BARREL, TlaIngredient.ofItemTag(PSTags.Items.BARRELS), 130, 28, FluidProcessingEmiRecipe.generate(ProcessType.MATURE, FluidVolumes.BARREL));
-    public static final RecipeCategory DISTILLING = RecipeCategory.register("distilling", PSItems.DISTILLERY, 130, 28, FluidProcessingEmiRecipe.generate(ProcessType.DISTILL, FluidVolumes.FLASK));
+    public static final RecipeCategory PREPARATION = register("fluid_preparation", PSItems.BOTTLE, TlaIngredient.join(
+            TlaIngredient.ofItemTag(PSTags.Items.BARRELS),
+            TlaStack.of(PSItems.DISTILLERY).asIngredient(),
+            TlaStack.of(PSItems.MASH_TUB).asIngredient(),
+            TlaStack.of(PSItems.BUNSEN_BURNER).asIngredient()
+    ), 260, 20, FluidStagesEmiRecipe.generate());
 
     public static final RecipeCategory WORLD_INTERACTION = register(new RecipeCategory(Identifier.of("emi", "world_interaction"), CategoryIcon.item(Items.GRASS_BLOCK), TlaStack.of(Items.GRASS_BLOCK).asIngredient(), 125, 18), WorldInteractionEmiRecipe::generate);
 
@@ -71,12 +73,12 @@ record RecipeCategory(Identifier id, CategoryIcon icon, TlaIngredient stations, 
 
     @Override
     public int getDisplayHeight() {
-        return height;
+        return this == PREPARATION ? 20 : height;
     }
 
     @Override
     public int getDisplayWidth() {
-        return width;
+        return this == PREPARATION ? 260 : width;
     }
 
     @Override

@@ -46,12 +46,12 @@ interface RecipeUtil {
     }
 
     record Contents(ItemFluids type, TlaIngredient contents, TlaIngredient empty, TlaIngredient filled) {
-        static Contents of(TlaStack receptical, ItemFluids fluid) {
+        static Contents of(TlaIngredient recepticals, ItemFluids fluid) {
             return new Contents(
                     fluid,
                     toIngredient(fluid),
-                    toFilled(receptical, ItemFluids.EMPTY),
-                    toFilled(receptical, fluid)
+                    TlaIngredient.join(recepticals.getStacks().stream().map(receptical -> toFilled(receptical, ItemFluids.EMPTY)).toList()),
+                    TlaIngredient.join(recepticals.getStacks().stream().map(receptical -> toFilled(receptical, fluid)).toList())
             );
         }
     }

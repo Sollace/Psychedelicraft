@@ -104,11 +104,11 @@ public class CoffeeFluid extends DrugFluid implements Processable {
             .flatMapToInt(step -> IntStream.of(step.getLeft(), step.getRight()))
             .distinct()
             .mapToObj(warmth -> {
-                return new Process(getId().withSuffixedPath("_purifying"), List.of(
+                return new Process(this, getId().withSuffixedPath("_purifying"), List.of(
                         new Transition(ProcessType.PURIFY, 0, 1, from -> WARMTH.set(from, warmth).ofAmount(2), to -> PSFluids.CAFFEINE.getDefaultStack(1))
                 ));
             }), Stream.of(
-                    new Process(getId().withSuffixedPath("_cooling"), WARMTH.steps().map(step -> new Transition(ProcessType.FERMENT, 300, -1,
+                    new Process(this, getId().withSuffixedPath("_cooling"), WARMTH.steps().map(step -> new Transition(ProcessType.FERMENT, 300, -1,
                             stack -> WARMTH.set(stack, step.getRight()),
                             stack -> WARMTH.set(stack, step.getLeft())
                     )).toList())

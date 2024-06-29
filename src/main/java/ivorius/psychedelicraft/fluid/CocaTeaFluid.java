@@ -35,7 +35,7 @@ public class CocaTeaFluid extends DrugFluid implements Processable {
 
     @Override
     public Stream<Process> getProcesses() {
-        return Stream.of(new Process(getId(), List.of(
+        return Stream.of(new Process(this, getId().withSuffixedPath("_purified"), List.of(
             new Transition(ProcessType.PURIFY, 0, 1, from -> from.ofAmount(2), to -> PSFluids.COCAINE.getDefaultStack(1))
         )));
     }

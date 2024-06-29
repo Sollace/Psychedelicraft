@@ -1,7 +1,6 @@
 package ivorius.psychedelicraft.fluid;
 
 import ivorius.psychedelicraft.PSTags;
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
@@ -150,8 +149,8 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             AlcoholicFluidState state = variant.predicate().state();
             String key = variant.value().getUniqueKey();
             return Stream.of(
-                    new Process(Psychedelicraft.id(key + "_alco"), getAlcoTransitions(state)),
-                    new Process(Psychedelicraft.id(key + "_chem"), getChemTransitions(state))
+                    new Process(this, getId().withSuffixedPath(key + "_alco"), getAlcoTransitions(state)),
+                    new Process(this, getId().withSuffixedPath(key + "_chem"), getChemTransitions(state))
             );
         });
     }

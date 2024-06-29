@@ -35,15 +35,14 @@
   "gui.psychedelicraft.slider.value": "%s: %d",
   "gui.psychedelicraft.slider.value.off": "%s: Off",
   "gui.psychedelicraft.recipe.stewing_time": "%s seconds",
+  "gui.psychedelicraft.recipe.fluid_process": "%s for %s",
   
   "tla.category.psychedelicraft.drying_table": "Drying",
   "tla.category.psychedelicraft.wooden_vat": "Soaking",
   "tla.category.psychedelicraft.barrel": "Barrel Interaction",
   "tla.category.psychedelicraft.distillery": "Distillery Interaction",
   "tla.category.psychedelicraft.flask": "Flask Interaction",
-  "tla.category.psychedelicraft.maturing": "Aging",
-  "tla.category.psychedelicraft.distilling": "Distillation",
-  "tla.category.psychedelicraft.fermenting": "Fermentation",
+  "tla.category.psychedelicraft.fluid_preparation": "Fluid Preparation",
   
   "psychedelicraft.recipe.experience": "%d XP",
   "psychedelicraft.recipe.drying_time": "%d minutes at full sunlight",
@@ -282,12 +281,15 @@
   "fluid.status.mature": "Maturing",
   "fluid.status.ferment": "Fermenting",
   "fluid.status.distill": "Distilling",
-  
+  "fluid.status.purify": "Purifiying",
+  "fluid.status.acetify": "Acetify",
+
   "time.until.acetify": "Time Until Acetified: %s",
   "time.until.mature": "Time Until Mature: %s",
   "time.until.ferment": "Time Until Fermented: %s",
   "time.until.distill": "Time Until Distilled: %s",
-  
+  "time.until.purify": "Time Until Purified: %s",
+
   "psychedelicraft.container.levels": "Amount: %1$s / %2$s",
   "psychedelicraft.container.amount": "Amount: %1$s",
 

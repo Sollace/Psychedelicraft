@@ -16,7 +16,6 @@ import net.minecraft.util.Identifier;
 
 class DrawingFluidEmiRecipe implements PSRecipe {
 
-    //private final Identifier id;
     private final RecipeCategory category;
 
     private final RecipeUtil.Contents contents;
@@ -27,14 +26,12 @@ class DrawingFluidEmiRecipe implements PSRecipe {
     public static BiConsumer<RecipeCategory, PluginContext> generate(int capacity) {
         return (category, context) -> context.addGenerator(client -> SimpleFluid.REGISTRY.stream()
                 .filter(f -> !f.isEmpty())
-                .flatMap(fluid -> TlaIngredient.ofItemTag(fluid.getPreferredContainerTag()).getStacks().stream()
-                        .flatMap(receptical -> fluid.getDefaultStacks(capacity).map(stack -> RecipeUtil.Contents.of(receptical, stack))))
+                .flatMap(fluid -> fluid.getDefaultStacks(capacity).map(stack -> RecipeUtil.Contents.of(TlaIngredient.ofItemTag(fluid.getPreferredContainerTag()), stack)))
                 .map(contents -> (TlaRecipe)new DrawingFluidEmiRecipe(category, contents, capacity))
                 .toList());
     }
 
     public DrawingFluidEmiRecipe(RecipeCategory category, RecipeUtil.Contents contents, int capacity) {
-        //this.id = category.getId().withPath(p -> "fluid_withdrawl/" + p + "/" + contents.type().fluid().getId().getPath());
         this.category = category;
         this.background = category.getId().withPath(p -> "textures/gui/" + p + ".png");
         this.contents = contents;

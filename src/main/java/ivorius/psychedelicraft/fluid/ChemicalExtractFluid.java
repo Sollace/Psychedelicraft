@@ -63,14 +63,14 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
         int distillRate = Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation();
 
         return Stream.of(
-                new Process(getId().withSuffixedPath("_reducing"), DISTILLATION.steps().map(step -> {
+                new Process(this, getId().withSuffixedPath("_reducing"), DISTILLATION.steps().map(step -> {
                     return new Transition(ProcessType.PURIFY, distillRate * (1 + step.getLeft()),
                             1,
                             from -> DISTILLATION.set(from, step.getLeft()),
                             to -> DISTILLATION.set(to, step.getRight())
                     );
                 }).toList()),
-                new Process(getId().withSuffixedPath("_purifying"), DISTILLATION.steps().map(step -> {
+                new Process(this, getId().withSuffixedPath("_purifying"), DISTILLATION.steps().map(step -> {
                     return new Transition(ProcessType.PURIFY, distillRate * 3,
                             1,
                             from -> DISTILLATION.set(from, 2).ofAmount(2),
