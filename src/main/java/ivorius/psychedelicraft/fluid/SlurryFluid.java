@@ -61,8 +61,9 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     }
 
     @Override
-    public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
+    public void process(Context context, ProcessType type, ByProductConsumer output) {
         if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
+            Resovoir tank = context.getPrimaryTank();
             if (tank.getContents().amount() > FLUID_PER_DIRT) {
                 tank.drain(FLUID_PER_DIRT);
                 output.accept(Items.DIRT.getDefaultStack());
@@ -71,7 +72,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     }
 
     @Override
-    public <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
+    public Stream<Process> getProcesses() {
         return Stream.empty();
     }
 }

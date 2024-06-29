@@ -17,6 +17,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 
+/**
+ * To be replaced with a more user-friendly type of recipe
+ */
+@Deprecated
 class FluidProcessingEmiRecipe implements PSRecipe {
     private final Identifier id;
     private final RecipeCategory category;

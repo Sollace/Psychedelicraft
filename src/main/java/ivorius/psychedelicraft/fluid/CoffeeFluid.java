@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -86,32 +87,32 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
+    public void process(Context context, ProcessType type, ByProductConsumer output) {
+        Resovoir tank = context.getPrimaryTank();
         if (type == ProcessType.FERMENT) {
             tank.setContents(WARMTH.set(tank.getContents(), Math.max(0, WARMTH.get(tank.getContents()) - 1)));
         }
-        if (type == ProcessType.REACT) {
+        if (type == ProcessType.PURIFY) {
             tank.drain(2);
             output.accept(PSFluids.CAFFEINE.getDefaultStack(1));
         }
     }
 
     @Override
-    public <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
-        if (type == ProcessType.FERMENT) {
-            return WARMTH.steps().map(step -> consumer.accept(300, -1,
-                    stack -> WARMTH.set(stack, step.getRight()),
-                    stack -> WARMTH.set(stack, step.getLeft())
-            ));
-        }
-        if (type == ProcessType.REACT) {
-            return WARMTH.steps()
-                    .flatMapToInt(step -> IntStream.of(step.getLeft(), step.getRight()))
-                    .distinct()
-                    .mapToObj(warmth -> consumer.accept(0, 1, from -> WARMTH.set(from, warmth).ofAmount(2), to -> PSFluids.CAFFEINE.getDefaultStack(1)));
-        }
-
-        return Stream.empty();
+    public Stream<Process> getProcesses() {
+        return Stream.concat(WARMTH.steps()
+            .flatMapToInt(step -> IntStream.of(step.getLeft(), step.getRight()))
+            .distinct()
+            .mapToObj(warmth -> {
+                return new Process(getId().withSuffixedPath("_purifying"), List.of(
+                        new Transition(ProcessType.PURIFY, 0, 1, from -> WARMTH.set(from, warmth).ofAmount(2), to -> PSFluids.CAFFEINE.getDefaultStack(1))
+                ));
+            }), Stream.of(
+                    new Process(getId().withSuffixedPath("_cooling"), WARMTH.steps().map(step -> new Transition(ProcessType.FERMENT, 300, -1,
+                            stack -> WARMTH.set(stack, step.getRight()),
+                            stack -> WARMTH.set(stack, step.getLeft())
+                    )).toList())
+                ));
     }
 
     @Override

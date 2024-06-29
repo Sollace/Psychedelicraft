@@ -11,21 +11,17 @@ public record StatePredicate (
         IntRange fermentationRange,
         IntRange maturationRange,
         IntRange distillationRange,
-        TriState vinegar
+        TriState vinegar,
+        AlcoholicFluidState state
 ) implements Predicate<ItemFluids> {
-    public static final StatePredicate ANY_DISTILLED = StatePredicate.builder().distilled().build();
-    public static final StatePredicate ANY_FERMENTED = StatePredicate.builder().fermented().build();
-    public static final StatePredicate ANY_VINEGAR = StatePredicate.builder().vinegar().build();
-
-    public interface Standard {
-        StatePredicate ANY = StatePredicate.builder().vinegar(TriState.DEFAULT).build();
-        StatePredicate BASE = StatePredicate.builder().undistilled().unfermented().unmatured().build();
-        StatePredicate VINEGAR = StatePredicate.builder().vinegar().build();
-        StatePredicate DISTILLED = StatePredicate.builder().distilled().build();
-        StatePredicate MATURED = StatePredicate.builder().matured().build();
-        StatePredicate FERMENTED_1 = StatePredicate.builder().fermentation(IntRange.exactly(1)).build();
-        StatePredicate FERMENTED_2 = StatePredicate.builder().fermentation(IntRange.atLeast(2)).build();
-    }
+    public static final StatePredicate ANY = StatePredicate.builder().build();
+    public static final StatePredicate BASE = StatePredicate.builder().vinegar(false).distills(0).ferments(0).maturation(0).build();
+    public static final StatePredicate VINEGAR = StatePredicate.builder().vinegar(true).build();
+    public static final StatePredicate FERMENTED_1 = StatePredicate.builder().vinegar(false).maturation(0).distills(0).ferments(1).build();
+    public static final StatePredicate FERMENTED_2 = StatePredicate.builder().vinegar(false).maturation(0).distills(0).ferments(2).build();
+    public static final StatePredicate FERMENTED_DISTILLED = StatePredicate.builder().vinegar(false).minFerments(1).minDistills(1).maturation(0).build();
+    public static final StatePredicate FERMENTED_MATURED = StatePredicate.builder().vinegar(false).minFerments(1).minMaturity(1).distills(0).build();
+    public static final StatePredicate FERMENTED_MATURED_DISTILLED = StatePredicate.builder().vinegar(false).minFerments(1).minMaturity(1).minDistills(1).build();
 
     @Override
     public boolean test(ItemFluids stack) {
@@ -35,6 +31,10 @@ public record StatePredicate (
                 AlcoholicFluid.MATURATION.get(stack),
                 AlcoholicFluid.VINEGAR.get(stack)
         );
+    }
+
+    public boolean test(AlcoholicFluidState state) {
+        return test(state.fermentation(), state.distillation(), state.maturation(), state.vinegar());
     }
 
     public boolean test(int fermentation, int distillation, int maturation, boolean vinegar) {
@@ -52,28 +52,32 @@ public record StatePredicate (
         private IntRange fermentationRange = IntRange.ANY;
         private IntRange maturationRange = IntRange.ANY;
         private IntRange distillationRange = IntRange.ANY;
-        private TriState vinegar = TriState.FALSE;
+        private TriState vinegar = TriState.DEFAULT;
 
-        public StatePredicate.Builder vinegar() {
-            return vinegar(TriState.TRUE);
-        }
-
-        public StatePredicate.Builder vinegar(TriState vinegar) {
-            this.vinegar = vinegar;
+        public StatePredicate.Builder vinegar(boolean vinegar) {
+            this.vinegar = TriState.of(vinegar);
             return this;
         }
 
-        public StatePredicate.Builder fermentation(IntRange range) {
+        public StatePredicate.Builder minFerments(int fermented) {
+            return ferments(IntRange.atLeast(fermented));
+        }
+
+        public StatePredicate.Builder ferments(int fermentation) {
+            return ferments(IntRange.exactly(fermentation));
+        }
+
+        public StatePredicate.Builder ferments(IntRange range) {
             fermentationRange = range;
             return this;
         }
 
-        public StatePredicate.Builder fermented() {
-            return fermentation(IntRange.atLeast(1));
+        public StatePredicate.Builder maturation(int maturation) {
+            return maturation(IntRange.exactly(maturation));
         }
 
-        public StatePredicate.Builder unfermented() {
-            return fermentation(IntRange.exactly(0));
+        public StatePredicate.Builder minMaturity(int maturity) {
+            return maturation(IntRange.atLeast(maturity));
         }
 
         public StatePredicate.Builder maturation(IntRange range) {
@@ -81,12 +85,12 @@ public record StatePredicate (
             return this;
         }
 
-        public StatePredicate.Builder matured() {
-            return maturation(IntRange.atLeast(1));
+        public StatePredicate.Builder minDistills(int distills) {
+            return distillation(IntRange.atLeast(distills));
         }
 
-        public StatePredicate.Builder unmatured() {
-            return maturation(IntRange.exactly(0));
+        public StatePredicate.Builder distills(int distillations) {
+            return distillation(IntRange.exactly(distillations));
         }
 
         public StatePredicate.Builder distillation(IntRange range) {
@@ -94,16 +98,15 @@ public record StatePredicate (
             return this;
         }
 
-        public StatePredicate.Builder distilled() {
-            return distillation(IntRange.atLeast(1));
-        }
-
-        public StatePredicate.Builder undistilled() {
-            return distillation(IntRange.exactly(0));
-        }
-
         public StatePredicate build() {
-            return new StatePredicate(fermentationRange, maturationRange, distillationRange, vinegar);
+            AlcoholicFluidState.Builder stateBuilder = AlcoholicFluidState.builder();
+            fermentationRange.min().ifPresent(stateBuilder::fermentation);
+            maturationRange.min().ifPresent(stateBuilder::maturation);
+            distillationRange.min().ifPresent(stateBuilder::distillation);
+            if (vinegar == TriState.TRUE) {
+                stateBuilder.vinegar();
+            }
+            return new StatePredicate(fermentationRange, maturationRange, distillationRange, vinegar, stateBuilder.build());
         }
     }
 }

@@ -1,16 +1,20 @@
 package ivorius.psychedelicraft.fluid;
 
 import ivorius.psychedelicraft.PSTags;
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.alcohol.AlcoholicFluidState;
+import ivorius.psychedelicraft.fluid.alcohol.DrinkType;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,6 +28,7 @@ import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -32,8 +37,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
-
-import com.google.common.base.Suppliers;
 
 /**
  * Created by lukas on 25.11.14.
@@ -49,15 +52,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     final Settings settings;
 
     public AlcoholicFluid(Identifier id, Settings settings) {
-        super(id, settings.drinkable().with(new FluidStateManager.FluidProperty<>(IntProperty.of("variant", 0, settings.states.get().size()), (properties, value) -> {
-            settings.states.get().get(MathHelper.clamp(value, 0, settings.states.get().size())).apply(properties);
-        }, stack -> {
-            return settings.states.get().stream()
-                    .filter(s -> s.entry().predicate().test(stack))
-                    .findFirst()
-                    .map(match -> settings.states.get().indexOf(match))
-                    .orElse(0);
-        })));
+        super(id, settings.drinkable().with(new FluidStateManager.FluidProperty<>(IntProperty.of("variant", 0, settings.variants.variants().size()),
+                (properties, value) -> settings.variants.findState(value).apply(properties),
+                stack -> settings.variants.findId(stack)))
+        );
         this.settings = settings;
     }
 
@@ -84,7 +82,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     double getAlcoholContent(ItemFluids stack) {
-        if (VINEGAR.get(stack)) {
+        if (settings.variants.find(stack).isOf(DrinkType.VINEGAR)) {
             return 0;
         }
         return settings.fermentationAlcohol * (FERMENTATION.get(stack) / (double) FERMENTATION_STEPS)
@@ -103,16 +101,18 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
         return switch (type) {
+            case FERMENT -> settings.tickInfo.get().ticksPerFermentation();
             case DISTILL -> FERMENTATION.get(tank.getContents()) == 0 || MATURATION.get(tank.getContents()) != 0 ? UNCONVERTABLE : settings.tickInfo.get().ticksPerDistillation();
             case MATURE -> FERMENTATION.get(tank.getContents()) == 0 ? UNCONVERTABLE : settings.tickInfo.get().ticksPerMaturation();
-            case FERMENT -> settings.tickInfo.get().ticksPerFermentation();
             case ACETIFY -> VINEGAR.get(tank.getContents()) ? settings.tickInfo.get().ticksUntilAcetification() : UNCONVERTABLE;
+            case PURIFY -> 1;
             default -> UNCONVERTABLE;
         };
     }
 
     @Override
-    public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
+    public void process(Context context, ProcessType type, ByProductConsumer output) {
+        Resovoir tank = context.getPrimaryTank();
         switch (type) {
             case DISTILL: {
                 int amountDrained = MathHelper.floor(tank.getContents().amount() * MathUtils.progress(DISTILLATION.get(tank.getContents()), 0.5F));
@@ -130,9 +130,9 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                 tank.setContents(FERMENTATION.cycle(tank.getContents()));
                 break;
             case ACETIFY:
-                tank.setContents(VINEGAR.cycle(tank.getContents()));
+                tank.setContents(VINEGAR.set(getDefaultStack(tank.getContents().amount()), true));
                 break;
-            case REACT:
+            case PURIFY:
                 double alcohol = getAlcoholContent(tank.getContents()) / 10;
                 if (alcohol == 0) {
                     output.accept(SimpleFluid.forVanilla(Fluids.WATER).getDefaultStack(1));
@@ -145,71 +145,48 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
-        if (type == ProcessType.DISTILL) {
-            return generateRecipeConversions(settings.tickInfo.get().ticksPerDistillation(), DISTILLATION,
-                    DrinkTypes.State::distillation,
-                    DrinkTypes.State::maturation,
-                    DrinkTypes.State::fermentation, consumer);
-        }
-
-        if (type == ProcessType.MATURE) {
-            return generateRecipeConversions(settings.tickInfo.get().ticksPerMaturation(), MATURATION,
-                    DrinkTypes.State::maturation,
-                    DrinkTypes.State::distillation,
-                    DrinkTypes.State::fermentation, consumer);
-        }
-
-        if (type == ProcessType.FERMENT) {
-            return generateRecipeConversions(settings.tickInfo.get().ticksPerFermentation(), FERMENTATION,
-                    DrinkTypes.State::fermentation,
-                    DrinkTypes.State::distillation,
-                    DrinkTypes.State::maturation, consumer);
-        }
-
-        if (type == ProcessType.REACT) {
-            return settings.states.get().stream().map(state -> {
-                return consumer.accept(0, 1, state::apply, to -> {
-                    double alcohol = getAlcoholContent(state.apply(to)) / 10;
-                    if (alcohol == 0) {
-                        return SimpleFluid.forVanilla(Fluids.WATER).getDefaultStack(1);
-                    }
-                    return PSFluids.ETHANOL.getDefaultStack((int)Math.ceil(alcohol));
-                });
-            });
-        }
-
-        return Stream.empty();
+    public Stream<Process> getProcesses() {
+        return settings.variants.variants().stream().flatMap(variant -> {
+            AlcoholicFluidState state = variant.predicate().state();
+            String key = variant.value().getUniqueKey();
+            return Stream.of(
+                    new Process(Psychedelicraft.id(key + "_alco"), getAlcoTransitions(state)),
+                    new Process(Psychedelicraft.id(key + "_chem"), getChemTransitions(state))
+            );
+        });
     }
 
-    private <T> Stream<T> generateRecipeConversions(int time, Attribute<Integer> attribute, Function<DrinkTypes.State, Integer> valueGetter,
-            Function<DrinkTypes.State, Integer> fixA,
-            Function<DrinkTypes.State, Integer> fixB,
-            ProcessStageConsumer<T> consumer) {
-        List<DrinkTypes.State> states = settings.states.get();
+    private List<Transition> getAlcoTransitions(AlcoholicFluidState state) {
+        int fermentations = state.fermentation();
+        int distillations = state.distillation();
+        int maturations = state.maturation();
 
-        return List.copyOf(states).stream().flatMap(state -> {
-            if (!state.vinegar()) {
-                return states.stream()
-                        .filter(s -> {
-                            return fixA.apply(s) == fixA.apply(state)
-                                    && fixB.apply(s) == fixB.apply(state)
-                                    && !s.vinegar();
-                        })
-                        .map(s -> {
-                    int difference = valueGetter.apply(state) - valueGetter.apply(s);
-                    return difference > 0 ? consumer.accept(time, difference, s, state) : null;
-                }).filter(Objects::nonNull);
-            }
+        Function<ItemFluids, ItemFluids> withFerment = i -> FERMENTATION.set(i, fermentations);
+        Function<ItemFluids, ItemFluids> withDistil = withFerment.andThen(i -> DISTILLATION.set(i, distillations));
+        Function<ItemFluids, ItemFluids> withMature = withDistil.andThen(i -> MATURATION.set(i, maturations));
 
-            if (attribute == FERMENTATION) {
-                return states.stream().filter(s -> !s.vinegar()).map(s -> {
-                    return consumer.accept(time, (FERMENTATION_STEPS + 1) - valueGetter.apply(s), s, state);
-                });
-            }
+        List<Transition> result = new ArrayList<>();
 
-            return Stream.empty();
-        });
+        if (fermentations > 0) {
+            result.add(new Transition(ProcessType.FERMENT, settings.tickInfo.get().ticksPerFermentation(), fermentations, Function.identity(), withFerment));
+        }
+        if (state.vinegar()) {
+            result.add(new Transition(ProcessType.ACETIFY, settings.tickInfo.get().ticksPerFermentation(), FERMENTATION_STEPS + 1, withMature, state::apply));
+        }
+        if (distillations > 0) {
+            result.add(new Transition(ProcessType.DISTILL, settings.tickInfo.get().ticksPerDistillation(), distillations, withFerment, withDistil));
+        }
+        if (maturations > 0) {
+            result.add(new Transition(ProcessType.MATURE, settings.tickInfo.get().ticksPerMaturation(), maturations, withDistil, withMature));
+        }
+        return result;
+    }
+
+    private List<Transition> getChemTransitions(AlcoholicFluidState state) {
+        return List.of(new Transition(ProcessType.PURIFY, 0, 1, state::apply, to -> {
+            double alcohol = getAlcoholContent(state.apply(to)) / 10;
+            return alcohol == 0 ? SimpleFluid.forVanilla(Fluids.WATER).getDefaultStack(1) : PSFluids.ETHANOL.getDefaultStack((int)Math.ceil(alcohol));
+        }));
     }
 
     @Override
@@ -229,6 +206,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         int maturation = MATURATION.get(stack);
         int fermentation = FERMENTATION.get(stack);
 
+
         if (distillation > 0) {
             tooltip.add(Text.translatable("psychedelicraft.alcohol.distillations", distillation).formatted(Formatting.GRAY));
         }
@@ -241,12 +219,12 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             tooltip.add(Text.translatable("psychedelicraft.alcohol.maturations", maturation, Maturity.getMaturity(maturation).getName()).formatted(Formatting.GRAY));
         }
 
-        tooltip.add(Text.translatable("psychedelicraft.alcohol.potency", getAlcoholContent(stack)).formatted(Formatting.GRAY));
+        tooltip.add(Text.translatable("psychedelicraft.alcohol.potency", AttributeModifiersComponent.DECIMAL_FORMAT.format(getAlcoholContent(stack))).formatted(Formatting.GRAY));
 
-        //if (distillation > 0 || maturation > 0 || fermentation > 0) {
-        //    tooltip.add(Text.empty());
-        //    tooltip.add(settings.profile.getFlavour(distillation, fermentation, maturation));
-        //}
+        /*if (distillation > 0 || maturation > 0 || fermentation > 0) {
+            tooltip.add(Text.empty());
+            tooltip.add(FlavorProfile.DEFAULT.getFlavour(distillation, fermentation, maturation));
+        }*/
     }
 
     @Override
@@ -303,10 +281,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public Stream<ItemFluids> getDefaultStacks(int capacity) {
-        return Stream.concat(
-            super.getDefaultStacks(capacity),
-            settings.states.get().stream().map(state -> state.apply(getDefaultStack(capacity)))
-        ).distinct();
+        return settings.variants.variants().stream().map(variant -> variant.predicate().state().apply(getDefaultStack(capacity)));
     }
 
     @Override
@@ -330,8 +305,6 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         private int distilledColor = 0x33ffffff;
 
         DrugType<?> drugType = DrugType.ALCOHOL;
-
-        final Supplier<List<DrinkTypes.State>> states = Suppliers.memoize(() -> variants.streamStates().toList());
 
         public Supplier<PSConfig.Balancing.FluidProperties.TickInfo> tickInfo;
 

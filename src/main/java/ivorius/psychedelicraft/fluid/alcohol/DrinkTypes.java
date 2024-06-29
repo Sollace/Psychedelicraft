@@ -1,156 +1,104 @@
 package ivorius.psychedelicraft.fluid.alcohol;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-import org.jetbrains.annotations.Nullable;
+import com.google.common.base.Preconditions;
 
-import com.google.common.collect.AbstractIterator;
-
-import ivorius.psychedelicraft.fluid.AlcoholicFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * @author Sollace
  * @since 2 Jan 2023
  */
 public interface DrinkTypes {
+    DrinkTypes EMPTY = new Builder(List.of(), Set.of());
     static DrinkTypes empty() {
-        return List::of;
+        return EMPTY;
     }
 
-    List<Entry> variants();
+    List<Variant> variants();
 
     default DrinkType find(ItemFluids fluids) {
 
         if (!variants().isEmpty()) {
-            for (Entry variant : variants()) {
+            for (Variant variant : variants()) {
                 if (variant.predicate.test(fluids)) {
                     return variant.value();
                 }
             }
         }
 
-        throw noMatch(fluids);
+        return variants().get(0).value();
     }
 
-    default Stream<State> streamStates() {
-        return StreamSupport.stream(generateStateTable().spliterator(), false);
+    default int findId(ItemFluids fluids) {
+        for (int i = 0; i < variants().size(); i++) {
+            if (variants().get(i).predicate().test(fluids)) {
+                return i;
+            }
+        }
+
+        return 0;
     }
 
-    default Iterable<State> generateStateTable() {
-        final int max = 2 * 3 * 16 * 16;
-        Set<String> previouslyReturned = new HashSet<>();
-
-        return () -> {
-            return new AbstractIterator<>() {
-                {
-                    findMatch(17, 17, 3, false);
-                }
-
-                int index;
-                @Nullable
-                @Override
-                protected State computeNext() {
-                    if (variants().isEmpty()) {
-                        endOfData();
-                        return null;
-                    }
-
-                    while (true) {
-                        int i = index;
-                        index++;
-
-                        boolean vinegar = i % 2 == 1;
-                        i /= 2;
-                        int distillation = i % 17;
-                        i /= 16;
-                        int maturation = i % 17;
-                        i /= 16;
-                        int fermentation = i % 3;
-
-                        if (i > max) {
-                            endOfData();
-                            return null;
-                        }
-
-                        Entry match = findMatch(distillation, maturation, fermentation, vinegar);
-
-                        if (previouslyReturned.add(match.value().getUniqueKey())) {
-                            return new State(distillation, maturation, fermentation, vinegar, match);
-                        }
-                    }
-                }
-
-                private Entry findMatch(int distillation, int maturation, int fermentation, boolean vinegar) {
-                    for (Entry variant : variants()) {
-                        if (variant.predicate.test(fermentation, distillation, maturation, vinegar)) {
-                            return variant;
-                        }
-                    }
-                    throw noMatch(distillation, maturation, fermentation, vinegar);
-                }
-            };
-        };
+    default AlcoholicFluidState findState(int id) {
+        return variants().get(MathHelper.clamp(id, 0, variants().size())).predicate().state();
     }
 
-
-    private static NullPointerException noMatch(ItemFluids stack) {
-        return noMatch(
-                AlcoholicFluid.DISTILLATION.get(stack),
-                AlcoholicFluid.MATURATION.get(stack),
-                AlcoholicFluid.FERMENTATION.get(stack),
-                AlcoholicFluid.VINEGAR.get(stack)
-        );
-    }
-
-    private static NullPointerException noMatch(int distillation, int maturation, int fermentation, boolean vinegar) {
-        return new NullPointerException("No drink type specified for state { vinegar: " + vinegar + ", dist: " + distillation + ", ferm: " + fermentation + ", mat: " + maturation + " }");
-    }
-
-    static record Builder(List<Entry> variants) implements DrinkTypes {
+    static record Builder(List<Variant> variants, Set<AlcoholicFluidState> states) implements DrinkTypes {
 
         public Builder add(DrinkType variant, StatePredicate.Builder builder) {
             return add(variant, builder.build());
         }
 
         public Builder add(DrinkType variant, StatePredicate predicate) {
-            variants.add(new Entry(variant, predicate));
+            variants.add(new Variant(variant, predicate));
+            Preconditions.checkArgument(states.add(predicate.state()), "Drink type overlap for " + variant + " and " + predicate);
             return this;
         }
-    }
 
-    static Builder builder() {
-        return new Builder(new ArrayList<>());
-    }
-
-    record Entry (DrinkType value, StatePredicate predicate) { }
-
-    record State (int distillation, int maturation, int fermentation, boolean vinegar, Entry entry)
-        implements Function<ItemFluids, ItemFluids> {
-        @Override
-        public ItemFluids apply(ItemFluids stack) {
-            var attributes = new HashMap<>(stack.attributes());
-            apply(attributes);
-            return stack.withAttributes(attributes);
+        public Builder vinegar(DrinkType type) {
+            return add(type, StatePredicate.VINEGAR);
         }
 
-        public void apply(Map<String, Integer> attributes) {
-            AlcoholicFluid.DISTILLATION.set(attributes, distillation);
-            AlcoholicFluid.MATURATION.set(attributes, maturation);
-            AlcoholicFluid.FERMENTATION.set(attributes, fermentation);
-            AlcoholicFluid.VINEGAR.set(attributes, vinegar);
+        public Builder firstFerment(DrinkType type) {
+            return add(type, StatePredicate.FERMENTED_1);
         }
 
-        public boolean isDefault() {
-            return distillation == 0 && maturation == 0 && fermentation == 0 && !vinegar;
+        public Builder secondFerment(DrinkType type) {
+            return add(type, StatePredicate.FERMENTED_2);
+        }
+
+        public Builder distilled(DrinkType type) {
+            return add(type, StatePredicate.FERMENTED_DISTILLED);
+        }
+
+        public Builder matured(DrinkType type) {
+            return add(type, StatePredicate.FERMENTED_MATURED);
+        }
+
+        public Builder matureDistilled(DrinkType type) {
+            return add(type, StatePredicate.FERMENTED_MATURED_DISTILLED);
         }
     }
+
+    static Builder builder(DrinkType baseForm) {
+        return new Builder(new ArrayList<>(), new HashSet<>()).add(baseForm, StatePredicate.BASE);
+    }
+
+    static Builder builder(String wort) {
+        return builder(DrinkType.WORT.withVariation(wort));
+    }
+
+    static Builder builder(FluidAppearance wort) {
+        return builder(DrinkType.WORT.withAppearance(wort));
+    }
+
+    record Variant (DrinkType value, StatePredicate predicate) { }
+
+    record Entry(AlcoholicFluidState state, Variant variant) {}
 }

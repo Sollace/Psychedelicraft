@@ -62,6 +62,10 @@ public record DrinkType(String drinkName, String symbolName, Optional<String> va
         return variant.map(v -> v + drinkName).orElse(drinkName);
     }
 
+    public boolean isOf(DrinkType type) {
+        return drinkName.equalsIgnoreCase(type.drinkName());
+    }
+
     public Text getName(Text fluidName) {
         Text name = Text.translatable("psychedelicraft.alcohol.drink." + drinkName, fluidName);
 

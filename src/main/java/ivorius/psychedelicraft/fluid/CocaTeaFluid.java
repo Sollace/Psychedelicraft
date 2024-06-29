@@ -6,6 +6,8 @@
 package ivorius.psychedelicraft.fluid;
 
 import net.minecraft.util.*;
+
+import java.util.List;
 import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.fluid.container.Resovoir;
@@ -20,23 +22,21 @@ public class CocaTeaFluid extends DrugFluid implements Processable {
 
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
-        return type != ProcessType.REACT ? Processable.UNCONVERTABLE : 1;
+        return type != ProcessType.PURIFY ? Processable.UNCONVERTABLE : 1;
     }
 
     @Override
-    public void process(Resovoir tank, ProcessType type, ByProductConsumer output) {
-        if (type == ProcessType.REACT) {
-            tank.drain(2);
+    public void process(Context context, ProcessType type, ByProductConsumer output) {
+        if (type == ProcessType.PURIFY) {
+            context.getPrimaryTank().drain(2);
             output.accept(PSFluids.COCAINE.getDefaultStack(1));
         }
     }
 
     @Override
-    public <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
-        if (type == ProcessType.REACT) {
-            return Stream.of(consumer.accept(0, 1, from -> from.ofAmount(2), to -> PSFluids.COCAINE.getDefaultStack(1)));
-        }
-        return Stream.empty();
+    public Stream<Process> getProcesses() {
+        return Stream.of(new Process(getId(), List.of(
+            new Transition(ProcessType.PURIFY, 0, 1, from -> from.ofAmount(2), to -> PSFluids.COCAINE.getDefaultStack(1))
+        )));
     }
-
 }

@@ -151,10 +151,8 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
                     }
                     world.playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.25F, 0.02F);
                     BlockPos pipePos = getPos().up();
-                    Resovoir tank = getPrimaryTank();
-
-                    if (tank.getContents().fluid() instanceof Processable processable) {
-                        processable.process(tank, ProcessType.REACT, new ByProductConsumer() {
+                    if (getPrimaryTank().getContents().fluid() instanceof Processable processable) {
+                        processable.process(this, ProcessType.PURIFY, new ByProductConsumer() {
                             @Override
                             public void accept(ItemStack stack) {
                                 Block.dropStack(world, getPos(), stack);

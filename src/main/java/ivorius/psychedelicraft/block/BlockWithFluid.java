@@ -10,7 +10,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
-import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -150,12 +150,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
         );
     }
 
-    public interface DirectionalFluidResovoir extends SidedStorageBlockEntity, SidedInventory {
-        default Resovoir getTankOnSide(Direction direction) {
-            return getPrimaryTank();
-        }
-
-        Resovoir getPrimaryTank();
+    public interface DirectionalFluidResovoir extends SidedStorageBlockEntity, SidedInventory, Processable.Context {
 
         List<ItemStack> getDroppedStacks(ItemStack container);
 

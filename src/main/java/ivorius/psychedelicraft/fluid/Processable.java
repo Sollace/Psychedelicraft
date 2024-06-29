@@ -17,12 +17,15 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.minecraft.item.ItemStack;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.math.Direction;
 
 /**
  * A fluid that can processed in the correct container, e.g. distillery.
@@ -47,25 +50,49 @@ public interface Processable {
      * @param stack The fluid currently being distilled.
      * @param output Consumer for byproducts of the conversion process
      */
-    void process(Resovoir tank, ProcessType type, ByProductConsumer output);
+    void process(Context context, ProcessType type, ByProductConsumer output);
 
-    <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer);
+    @Deprecated
+    default <T> Stream<T> getProcessStages(ProcessType type, ProcessStageConsumer<T> consumer) {
+        return Stream.empty();
+    }
+
+    Stream<Process> getProcesses();
 
     default ProcessType modifyProcess(Resovoir tank, ProcessType type) {
         return type;
     }
 
+    @Deprecated
     interface ProcessStageConsumer<T> {
-        T accept(int time, int change,
+        T accept(int time, int multiplier,
                 Function<ItemFluids, ItemFluids> from,
                 Function<ItemFluids, ItemFluids> to
         );
     }
 
+    record Process(Identifier id, List<Transition> transitions) {}
+
+    record Transition(
+            ProcessType type,
+            int time,
+            int multiplier,
+            Function<ItemFluids, ItemFluids> input,
+            Function<ItemFluids, ItemFluids> output
+    ) {}
+
     interface ByProductConsumer {
         void accept(ItemStack stack);
 
         void accept(ItemFluids stack);
+    }
+
+    interface Context extends Inventory {
+        default Resovoir getTankOnSide(Direction direction) {
+            return getPrimaryTank();
+        }
+
+        Resovoir getPrimaryTank();
     }
 
     enum ProcessType implements StringIdentifiable {
@@ -94,7 +121,7 @@ public interface Processable {
          */
         PURIFY,
         /**
-         * When fluids of differing types are mixed in a flask, used to change their properties when they combine.
+         * When fluids of differing types are mixed on a bunsen burner, used to change their properties when they combine.
          */
         REACT;
 
