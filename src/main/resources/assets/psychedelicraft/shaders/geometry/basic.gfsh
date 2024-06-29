@@ -16,11 +16,11 @@ void main() {
 
   float fogFragCoord = vertexDistance;
   float unusedbecausemacisgarbage = vertexColor.r;
-
-  vec3 outcolor = fragColor.rgb;
   vec4 pulses = PS_Pulses;
 
   if (pulses.a > 0.0) {
+    vec3 outcolor = fragColor.rgb;
+
     float pulseA = (sin((fogFragCoord - worldTicks) / 5.0) - 0.4) * pulses.a;
 
     if (pulseA > 0.0) {

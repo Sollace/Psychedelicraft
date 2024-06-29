@@ -75,13 +75,13 @@ public class GeometryShader {
 
     public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
         register.accept(new BoundUniform("PS_SurfaceFractalStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().get(Drug.FRACTALS), 0, 1) + 1 : 0);
+            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().get(Drug.FRACTALS), 0, 1) : 0);
         }));
         register.accept(new BoundUniform("PS_Pulses", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
             uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor(ShaderContext.tickDelta(), RenderPhase.current() == RenderPhase.SKY) : MathUtils.ZERO);
         }));
         register.accept(new BoundUniform("PS_SurfaceFractalCoords", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
-            if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) >= 0) {
+            if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) > 0) {
                 Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
                 uniform.set(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
             } else {
@@ -103,7 +103,7 @@ public class GeometryShader {
             }
         }));
         register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.DISTANT_WAVES) : 0);
+            uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.DISTANT_WAVES) : 0F);
         }));
         register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
             uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.SHATTERING_WAVES) : 0F);
@@ -147,8 +147,14 @@ public class GeometryShader {
     private String combineSources(String vertexSources, String geometrySources) {
         writeSources(vertexSources, "before");
 
-        if (vertexSources.indexOf("out vec4 v_Color") != -1) {
+        if (vertexSources.indexOf("out vec4 v_Color") != -1
+            || vertexSources.indexOf("in vec4 v_Color") != -1) {
             geometrySources = geometrySources.replaceAll("vertexColor", "v_Color");
+            geometrySources = geometrySources.replaceAll("/\\*replaceme\\*/Position", "_vert_position");
+        }
+        if (vertexSources.indexOf("out float v_FragDistance") != -1
+            || vertexSources.indexOf("in float v_FragDistance") != -1) {
+            geometrySources = geometrySources.replaceAll("vertexDistance", "v_FragDistance");
         }
 
         geometrySources = PS_VARIABLE_PATTERN.matcher(geometrySources).replaceAll(match -> {
