@@ -129,7 +129,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                 tank.setContents(FERMENTATION.cycle(tank.getContents()));
                 break;
             case ACETIFY:
-                tank.setContents(VINEGAR.set(getDefaultStack(tank.getContents().amount()), true));
+                tank.setContents(VINEGAR.set(tank.getContents(), true));
                 break;
             case PURIFY:
                 double alcohol = getAlcoholContent(tank.getContents()) / 10;
