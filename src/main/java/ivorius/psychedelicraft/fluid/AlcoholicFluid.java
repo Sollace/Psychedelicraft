@@ -103,7 +103,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             case FERMENT -> settings.tickInfo.get().ticksPerFermentation();
             case DISTILL -> FERMENTATION.get(tank.getContents()) == 0 || MATURATION.get(tank.getContents()) != 0 ? UNCONVERTABLE : settings.tickInfo.get().ticksPerDistillation();
             case MATURE -> FERMENTATION.get(tank.getContents()) == 0 ? UNCONVERTABLE : settings.tickInfo.get().ticksPerMaturation();
-            case ACETIFY -> VINEGAR.get(tank.getContents()) ? settings.tickInfo.get().ticksUntilAcetification() : UNCONVERTABLE;
+            case ACETIFY -> VINEGAR.get(tank.getContents()) ? UNCONVERTABLE : settings.tickInfo.get().ticksUntilAcetification();
             case PURIFY -> 1;
             default -> UNCONVERTABLE;
         };
