@@ -15,8 +15,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.item.component.ItemFluids;
-
 /**
  * Created by lukas on 10.11.14.
  * Updated by Sollace on 5 Jan 2023
@@ -60,9 +58,6 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
 
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        return RecipeUtils.recepticals(inventory.getStacks().stream()).findFirst().map(input -> {
-            // copy bottle contents to the new stack
-            return ItemFluids.set(input.withItem(getResult(registries).getItem()), ItemFluids.of(input));
-        }).orElseGet(getResult(registries)::copy);
+        return RecipeUtils.copyInputFluidToResult(getResult(registries).copy(), inventory.getStacks());
     }
 }

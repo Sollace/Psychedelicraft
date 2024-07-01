@@ -16,6 +16,7 @@ import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -28,6 +29,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 public interface RecipeUtils {
@@ -45,6 +47,13 @@ public interface RecipeUtils {
     PacketCodec<RegistryByteBuf, CraftingRecipeCategory> CRAFTING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CraftingRecipeCategory.class);
     PacketCodec<RegistryByteBuf, CookingRecipeCategory> COOKING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CookingRecipeCategory.class);
     PacketCodec<RegistryByteBuf, DefaultedList<Ingredient>> INGREDIENTS_PACKET_CODEC = Ingredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList());
+
+    static ItemStack copyInputFluidToResult(ItemStack result, List<ItemStack> inputs) {
+        return RecipeUtils.recepticals(inputs.stream()).findFirst().map(input -> {
+            // copy bottle contents to the new stack
+            return ItemFluids.set(input.copyComponentsToNewStack(result.getItem(), result.getCount()), ItemFluids.of(input));
+        }).orElse(result);
+    }
 
     static Stream<ItemStack> recepticals(Stream<ItemStack> stacks) {
         return stacks.filter(stack -> FluidCapacity.get(stack) > 0);

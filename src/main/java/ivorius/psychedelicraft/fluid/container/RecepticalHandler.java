@@ -52,23 +52,27 @@ public class RecepticalHandler {
     public static void registerPair(Item empty, Item filled) {
         registerPair(empty, filled, new RecepticalHandler() {
             @Override
-            public ItemStack toFilled(Item item, ItemFluids contents) {
-                return filled.getDefaultStack();
+            public ItemStack toFilled(ItemStack item, ItemFluids contents) {
+                return changeStackType(item, filled);
             }
 
             @Override
-            public ItemStack toEmpty(Item item) {
-                return empty.getDefaultStack();
+            public ItemStack toEmpty(ItemStack item) {
+                return changeStackType(item, empty);
             }
         });
     }
 
-    public ItemStack toFilled(Item item, ItemFluids contents) {
-        return item.getDefaultStack();
+    public static ItemStack changeStackType(ItemStack item, Item newType) {
+        return item.getItem() == newType ? item : item.withItem(newType);
     }
 
-    public ItemStack toEmpty(Item item) {
-        return item.getDefaultStack();
+    public ItemStack toFilled(ItemStack item, ItemFluids contents) {
+        return item;
+    }
+
+    public ItemStack toEmpty(ItemStack item) {
+        return item;
     }
 
     static {
@@ -79,16 +83,16 @@ public class RecepticalHandler {
             });
 
             @Override
-            public ItemStack toFilled(Item item, ItemFluids contents) {
+            public ItemStack toFilled(ItemStack item, ItemFluids contents) {
                 if (contents.amount() < FluidVolumes.BUCKET) {
-                    return PSItems.FILLED_BUCKET.getDefaultStack();
+                    return changeStackType(item, PSItems.FILLED_BUCKET);
                 }
-                return filledBuckets.apply(contents.fluid()).orElse(PSItems.FILLED_BUCKET).getDefaultStack();
+                return changeStackType(item, filledBuckets.apply(contents.fluid()).orElse(PSItems.FILLED_BUCKET));
             }
 
             @Override
-            public ItemStack toEmpty(Item item) {
-                return Items.BUCKET.getDefaultStack();
+            public ItemStack toEmpty(ItemStack item) {
+                return changeStackType(item, Items.BUCKET);
             }
         });
         registerPair(Items.BOWL, PSItems.FILLED_BOWL);
@@ -100,19 +104,19 @@ public class RecepticalHandler {
             });
 
             @Override
-            public ItemStack toFilled(Item item, ItemFluids contents) {
+            public ItemStack toFilled(ItemStack item, ItemFluids contents) {
                 if (contents.amount() < FluidVolumes.BOTTLE) {
-                    return PSItems.FILLED_GLASS_BOTTLE.getDefaultStack();
+                    return changeStackType(item, PSItems.FILLED_GLASS_BOTTLE);
                 }
                 if (contents.fluid() == SimpleFluid.forVanilla(Fluids.WATER)) {
                     return PotionContentsComponent.createStack(Items.POTION, Potions.WATER);
                 }
-                return filledBottles.apply(contents.fluid()).orElse(PSItems.FILLED_GLASS_BOTTLE).getDefaultStack();
+                return changeStackType(item, filledBottles.apply(contents.fluid()).orElse(PSItems.FILLED_GLASS_BOTTLE));
             }
 
             @Override
-            public ItemStack toEmpty(Item item) {
-                return Items.GLASS_BOTTLE.getDefaultStack();
+            public ItemStack toEmpty(ItemStack item) {
+                return changeStackType(item, Items.GLASS_BOTTLE);
             }
         });
     }

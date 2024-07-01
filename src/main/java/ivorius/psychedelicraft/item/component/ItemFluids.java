@@ -116,10 +116,16 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
             if (capacity < fluids.amount()) {
                 fluids = create(fluids.fluid(), capacity, fluids.attributes());
             }
-            stack = fluids.isEmpty() ? RecepticalHandler.get(stack).toEmpty(stack.getItem()) : RecepticalHandler.get(stack).toFilled(stack.getItem(), fluids);
+            stack = getItemForFluids(stack, fluids);
             stack.set(PSComponents.FLUIDS, fluids);
         }
         return stack;
+    }
+
+    public static ItemStack getItemForFluids(ItemStack original, ItemFluids fluids) {
+        return fluids.isEmpty()
+                ? RecepticalHandler.get(original).toEmpty(original)
+                : RecepticalHandler.get(original).toFilled(original, fluids);
     }
 
     public ItemFluids withAttribute(String attribute, int value) {

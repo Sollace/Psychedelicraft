@@ -205,7 +205,6 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         int maturation = MATURATION.get(stack);
         int fermentation = FERMENTATION.get(stack);
 
-
         if (distillation > 0) {
             tooltip.add(Text.translatable("psychedelicraft.alcohol.distillations", distillation).formatted(Formatting.GRAY));
         }
