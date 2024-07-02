@@ -264,7 +264,7 @@ public interface PSFluids {
             .color(0x779bab62)
     );
 
-    DrugFluid ETHANOL = new DrugFluid(Psychedelicraft.id("ethanol"), chemicalSolution(DrugType.ALCOHOL));
+    DrugFluid ETHANOL = new EthanolFluid(Psychedelicraft.id("ethanol"), chemicalSolution(DrugType.ALCOHOL));
     DrugFluid ACID = new DrugFluid(Psychedelicraft.id("acid"), chemicalSolution(DrugType.LSD));
     DrugFluid ATROPINE = new DrugFluid(Psychedelicraft.id("atropine"), chemicalSolution(DrugType.ATROPINE));
     DrugFluid COCAINE = new DrugFluid(Psychedelicraft.id("cocaine"), chemicalSolution(DrugType.COCAINE));

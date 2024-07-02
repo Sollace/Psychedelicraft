@@ -198,6 +198,10 @@ public class SimpleFluid {
         return PSTags.Items.DRINK_RECEPTICALS;
     }
 
+    public boolean hasRandomTicks() {
+        return false;
+    }
+
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
         if (!custom) {
             state.randomDisplayTick(world, pos, random);

@@ -61,6 +61,11 @@ public abstract class PlacedFluid extends WaterFluid {
     }
 
     @Override
+    protected boolean hasRandomTicks() {
+        return getType().hasRandomTicks();
+    }
+
+    @Override
     public int getLevelDecreasePerBlock(WorldView world) {
         return getType().getViscocity();
     }

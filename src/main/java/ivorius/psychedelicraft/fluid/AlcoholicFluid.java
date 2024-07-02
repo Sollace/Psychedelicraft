@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.fluid;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
 import ivorius.psychedelicraft.config.PSConfig;
+import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.alcohol.AlcoholicFluidState;
@@ -14,6 +15,7 @@ import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,7 +26,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -58,6 +63,11 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         this.settings = settings;
     }
 
+    @Override
+    public boolean hasRandomTicks() {
+        return true;
+    }
+
     protected int getDistilledColor() {
         return settings.distilledColor;
     }
@@ -87,6 +97,20 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         return settings.fermentationAlcohol * (FERMENTATION.get(stack) / (double) FERMENTATION_STEPS)
                 + settings.distillationAlcohol * MathUtils.progress(DISTILLATION.get(stack))
                 + settings.maturationAlcohol * MathUtils.progress(MATURATION.get(stack) * 0.2F);
+    }
+
+
+    @Override
+    public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+        if (getAlcoholContent(getStack(state, 1)) > 0.3) {
+            world.getOtherEntities(null, Box.of(pos.toCenterPos(), 5, 5, 5)).forEach(entity -> {
+                if (random.nextInt(450) == 0) {
+                    DrugProperties.of(entity).ifPresent(properties -> {
+                        properties.addToDrug(DrugType.ALCOHOL, 0.1);
+                    });
+                }
+            });
+        }
     }
 
     @Override
