@@ -7,7 +7,8 @@ package ivorius.psychedelicraft.item;
 
 import ivorius.psychedelicraft.entity.MolotovCocktailEntity;
 import ivorius.psychedelicraft.fluid.Combustable;
-import ivorius.psychedelicraft.fluid.ConsumableFluid.ConsumptionType;
+import ivorius.psychedelicraft.fluid.ConsumableFluid;
+import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,9 +21,9 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class MolotovCocktailItem extends BottleItem {
+public class MolotovCocktailItem extends DrinkableItem {
     public MolotovCocktailItem(Settings settings) {
-        super(settings, DrinkableItem.FLUID_PER_DRINKING, ConsumptionType.DRINK);
+        super(settings, FluidVolumes.BOTTLE, DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK);
     }
 
     @Override

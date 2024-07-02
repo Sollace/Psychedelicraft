@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.item.BottleItem;
+import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.PaperBagItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.TooltipContext;
@@ -60,7 +60,7 @@ public record BagContentsComponent(ItemStack stack, int count) implements Toolti
     }
 
     public static int getMaxCountForItem(Item item) {
-        if (item instanceof BottleItem) {
+        if (item == PSItems.BOTTLE || item == PSItems.MOLOTOV_COCKTAIL) {
             return 1;
         }
         return 64 * 1000;
