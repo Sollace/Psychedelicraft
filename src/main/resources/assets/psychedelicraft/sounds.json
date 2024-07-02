@@ -11,6 +11,14 @@
       "psychedelicraft:breath"
     ]
   },
+  "item.syringe.inject": {
+    "category": "player",
+    "subtitle": "subtitle.psychedelicraft.item_syringe_inject",
+    "sounds": [
+      "psychedelicraft:inject/inject1",
+      "psychedelicraft:inject/inject2"
+    ]
+  },
   "block.rift_jar.toggle": {
     "category": "block",
     "subtitle": "subtitle.psychedelicraft.rift_jar_toggles",

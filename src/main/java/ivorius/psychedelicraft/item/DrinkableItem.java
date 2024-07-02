@@ -7,6 +7,8 @@ package ivorius.psychedelicraft.item;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.block.PlacedDrinksBlock;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
@@ -15,6 +17,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -24,7 +28,7 @@ import net.minecraft.world.World;
  */
 public class DrinkableItem extends Item {
     public static final int FLUID_PER_DRINKING = FluidVolumes.BUCKET / 4;
-    public static final int FLUID_PER_INJECTION = 10;
+    public static final int FLUID_PER_INJECTION = FluidVolumes.SYRINGE;
     public static final int DEFAULT_MAX_USE_TIME = (int)(1.6F * 20);
 
     private final int consumptionVolume;
@@ -48,13 +52,30 @@ public class DrinkableItem extends Item {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        return ConsumableFluid.consume(stack, entity, consumptionVolume, !(entity instanceof PlayerEntity p && p.isCreative()), consumptionType);
+        return use(stack, world, entity, entity);
+    }
+
+    protected boolean canUse(ItemStack stack, World world, LivingEntity entity) {
+        return ConsumableFluid.canConsume(stack, entity, consumptionVolume, consumptionType);
+    }
+
+    protected ItemStack use(ItemStack stack, World world, LivingEntity entity, LivingEntity user) {
+        @Nullable SoundEvent sound = getUseSound();
+        if (sound != null) {
+            entity.playSound(sound, 2, (float)entity.getRandom().nextTriangular(0.5, 0.2));
+        }
+        return ConsumableFluid.consume(stack, entity, consumptionVolume, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(user), consumptionType);
+    }
+
+    @Nullable
+    protected SoundEvent getUseSound() {
+        return null;
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        if (ConsumableFluid.canConsume(stack, player, consumptionVolume, consumptionType)) {
+        if (canUse(stack, world, player)) {
             player.setCurrentHand(hand);
             return TypedActionResult.consume(stack);
         }

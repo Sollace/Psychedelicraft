@@ -157,9 +157,9 @@ public interface PSItems {
             new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)
     ));
 
-    DrinkableItem SYRINGE = register("syringe", new DrinkableItem(new Settings()
+    DrinkableItem SYRINGE = register("syringe", new SyringeItem(new Settings()
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(DrinkableItem.FLUID_PER_INJECTION)
-    ), FluidVolumes.SYRINGE, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.INJECT));
+    )));
 
     Item JUNIPER_LEAVES = register("juniper_leaves", PSBlocks.JUNIPER_LEAVES);
     Item FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", PSBlocks.FRUITING_JUNIPER_LEAVES);

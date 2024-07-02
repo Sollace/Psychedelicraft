@@ -18,6 +18,8 @@ public interface PSSounds {
     SoundEvent BLOCK_RIFT_JAR_OPEN = register("block.rift_jar.open");
     SoundEvent BLOCK_RIFT_JAR_CLOSE = register("block.rift_jar.close");
 
+    SoundEvent ITEM_SYRINGE_INJECT = register("item.syringe.inject");
+
     SoundEvent DRUG_GENERIC = register("drug.generic");
 
     static SoundEvent register(String name) {
