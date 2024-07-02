@@ -10,6 +10,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.UseAction;
 
 /**
  * A fluid that is possible to be consumed.
@@ -57,7 +58,17 @@ public interface ConsumableFluid {
     }
 
     public enum ConsumptionType {
-        DRINK,
-        INJECT
+        DRINK(UseAction.DRINK),
+        INJECT(UseAction.BOW);
+
+        private final UseAction action;
+
+        ConsumptionType(UseAction action) {
+            this.action = action;
+        }
+
+        public UseAction getUseAction() {
+            return action;
+        }
     }
 }

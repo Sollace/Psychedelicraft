@@ -29,6 +29,8 @@ public interface FluidVolumes {
     int VAT = BUCKET * 9;
     int FLASK = BUCKET * 8;
 
+    int GULP = BUCKET / 4;
+
     static String format(long amount) {
         if (amount == 0) {
             return "0 L";

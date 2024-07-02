@@ -27,7 +27,6 @@ import net.minecraft.world.World;
  * Created by Sollace on Jan 1 2023
  */
 public class DrinkableItem extends Item {
-    public static final int FLUID_PER_DRINKING = FluidVolumes.BUCKET / 4;
     public static final int FLUID_PER_INJECTION = FluidVolumes.SYRINGE;
     public static final int DEFAULT_MAX_USE_TIME = (int)(1.6F * 20);
 
@@ -44,10 +43,7 @@ public class DrinkableItem extends Item {
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return ItemFluids.of(stack).isEmpty() ? UseAction.NONE
-                : consumptionType == ConsumableFluid.ConsumptionType.DRINK
-                ? UseAction.DRINK
-                : UseAction.BOW;
+        return ItemFluids.of(stack).isEmpty() ? UseAction.NONE : consumptionType.getUseAction();
     }
 
     @Override

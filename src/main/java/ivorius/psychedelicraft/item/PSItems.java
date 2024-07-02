@@ -42,16 +42,16 @@ import net.minecraft.util.Colors;
  */
 public interface PSItems {
     DrinkableItem WOODEN_MUG = register("wooden_mug", new DrinkableItem(new Settings()
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.MUG)), DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.MUG)), FluidVolumes.GULP, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
     DrinkableItem STONE_CUP = register("stone_cup", new DrinkableItem(new Settings()
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.CUP)), DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.CUP)), FluidVolumes.GULP, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
     DrinkableItem GLASS_CHALICE = register("glass_chalice", new DrinkableItem(new Settings()
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.CHALLICE)), DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.CHALLICE)), FluidVolumes.GULP, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
     DrinkableItem SHOT_GLASS = register("shot_glass", new DrinkableItem(new Settings()
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.SHOT)), DrinkableItem.FLUID_PER_DRINKING, DrinkableItem.DEFAULT_MAX_USE_TIME / 4, ConsumableFluid.ConsumptionType.DRINK));
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.SHOT)), FluidVolumes.GULP, DrinkableItem.DEFAULT_MAX_USE_TIME / 4, ConsumableFluid.ConsumptionType.DRINK));
     DrinkableItem BOTTLE = register("bottle", new BottleItem(new Settings()
             .component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true))
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BOTTLE)), DrinkableItem.FLUID_PER_DRINKING, ConsumableFluid.ConsumptionType.DRINK));
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BOTTLE)), FluidVolumes.GULP, ConsumableFluid.ConsumptionType.DRINK));
     MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", new MolotovCocktailItem(new Settings()
             .component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true))
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BOTTLE))
