@@ -50,7 +50,7 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
 
     @Override
     public int getMaxAge(BlockState state) {
-        return 7;
+        return Properties.AGE_7_MAX;
     }
 
     @Override
@@ -64,27 +64,7 @@ public class TobaccoPlantBlock extends CannabisPlantBlock {
     }
 
     @Override
-    public void applyGrowth(World world, BlockPos pos, BlockState state, boolean bonemeal) {
-        int number = bonemeal ? world.random.nextInt(2) + 1 : 1;
-
-        for (int i = 0; i < number; i++) {
-            final boolean freeOver = world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight();
-
-            if (state.get(getAgeProperty()) < getMaxAge(state)) {
-                state = state.cycle(getAgeProperty());
-                world.setBlockState(pos, state, Block.NOTIFY_ALL);
-            }
-            if (freeOver && state.get(getAgeProperty()) >= getMaxAge(state)) {
-                pos = pos.up();
-                state = getDefaultState().with(TOP, true);
-                world.setBlockState(pos, state, Block.NOTIFY_ALL);
-            }
-        }
-    }
-
-    @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
-        return (world.isAir(pos.up()) && getPlantSize(world, pos) < getMaxHeight())
-                || state.get(getAgeProperty()) < getMaxAge(state);
+    protected int getMaxBonemealGrowth() {
+        return 2;
     }
 }

@@ -105,19 +105,54 @@ public class CannabisPlantBlock extends CropBlock {
         }
     }
 
-    public void applyGrowth(World world, BlockPos pos, BlockState state, boolean bonemeal) {
-        int number = bonemeal ? world.random.nextInt(4) + 1 : 1;
+    protected int getMaxBonemealGrowth() {
+        return 4;
+    }
 
-        for (int i = 0; i < number; i++) {
-            if (state.get(getAgeProperty()) < getMaxAge(state)) {
-                state = state.cycle(getAgeProperty());
+    public void applyGrowth(World world, final BlockPos initialPos, BlockState state, boolean bonemeal) {
+        int number = bonemeal ? world.random.nextInt(getMaxBonemealGrowth()) + 1 : 1;
+
+        BlockPos.Mutable pos = initialPos.mutableCopy();
+        BlockPos.Mutable up = initialPos.up().mutableCopy();
+
+        while (number > 0) {
+            int age = state.get(getAgeProperty());
+            int maxAge = getMaxAge(state);
+            if (age < maxAge) {
+                int increment = Math.min(number, maxAge - age);
+                number -= increment;
+                state = state.with(getAgeProperty(), age + increment).with(GROWING, world.isAir(up) && getPlantSize(world, pos) < getMaxHeight());
                 world.setBlockState(pos, state, Block.NOTIFY_ALL);
-            } else if (canGrowUpwards(world, pos, state)) {
-                pos = pos.up();
-                state = getDefaultState();
-                world.setBlockState(pos, state, Block.NOTIFY_ALL);
+            } else {
+                int y = getPlantSize(world, pos);
+                if (y >= getMaxHeight()) {
+                    break;
+                }
+
+                BlockState above = world.getBlockState(up);
+                if (above.isOf(this)) {
+                    pos.move(Direction.UP);
+                    up.move(Direction.UP);
+                    state = above;
+                } else if (canGrowUpwards(world, pos, state)) {
+                    pos.move(Direction.UP);
+                    up.move(Direction.UP);
+                    number--;
+                    state = getStateForHeight(y + 1).with(GROWING, world.isAir(up) && getPlantSize(world, pos) < getMaxHeight());
+                    world.setBlockState(pos, state, Block.NOTIFY_ALL);
+                }
             }
         }
+    }
+
+    @Override
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
+        if (!isMature(state)) {
+            return true;
+        }
+        pos = pos.up();
+        state = world.getBlockState(pos);
+        return state.isOf(this) && isFertilizable(world, pos, state);
     }
 
     protected int getPlantSize(WorldView world, BlockPos pos) {
@@ -128,10 +163,10 @@ public class CannabisPlantBlock extends CropBlock {
         return plantSize;
     }
 
-    protected boolean canGrowUpwards(World world, BlockPos pos, BlockState state) {
+    protected boolean canGrowUpwards(WorldView world, BlockPos pos, BlockState state) {
         return world.isAir(pos.up())
                 && getPlantSize(world, pos) < getMaxHeight()
-                && state.get(getAgeProperty()) > MAX_AGE_WHILE_COVERED;
+                && state.get(getAgeProperty()) > Math.min(MAX_AGE_WHILE_COVERED, getMaxAge(state) - 1);
     }
 
     @Override
