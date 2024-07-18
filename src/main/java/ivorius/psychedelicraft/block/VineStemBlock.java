@@ -9,6 +9,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ConnectingBlock;
+import net.minecraft.block.Fertilizable;
 import net.minecraft.block.FlowerBlock;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemPlacementContext;
@@ -23,8 +24,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
-public class VineStemBlock extends FlowerBlock {
+public class VineStemBlock extends FlowerBlock implements Fertilizable {
     public static final MapCodec<VineStemBlock> CODEC = RecordCodecBuilder.<VineStemBlock>mapCodec(instance -> instance.group(
             Registries.BLOCK.getCodec().<Supplier<Block>>xmap(block -> () -> block, Supplier::get).fieldOf("lattice").forGetter(b -> b.lattice),
             AbstractBlock.createSettingsCodec()
@@ -52,18 +54,7 @@ public class VineStemBlock extends FlowerBlock {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-
-        if (state.get(AGE) < MAX_AGE) {
-            world.setBlockState(pos, state.cycle(AGE));
-        }
-
-        for (BlockPos mPos : BlockPos.iterateInSquare(pos, 1, Direction.NORTH, Direction.EAST)) {
-            BlockState s = world.getBlockState(mPos);
-            if (s.isOf(PSBlocks.LATTICE)) {
-                world.setBlockState(mPos, LatticeBlock.copyStateProperties(lattice.get().getDefaultState(), s));
-                return;
-            }
-        }
+        grow(world, random, pos, state);
     }
 
     @Override
@@ -92,5 +83,30 @@ public class VineStemBlock extends FlowerBlock {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(NORTH, EAST, WEST, SOUTH, AGE);
+    }
+
+    @Override
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
+        return state.get(AGE) < MAX_AGE;
+    }
+
+    @Override
+    public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+        return true;
+    }
+
+    @Override
+    public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+        if (state.get(AGE) < MAX_AGE) {
+            world.setBlockState(pos, state.cycle(AGE));
+        }
+
+        for (BlockPos mPos : BlockPos.iterateInSquare(pos, 1, Direction.NORTH, Direction.EAST)) {
+            BlockState s = world.getBlockState(mPos);
+            if (s.isOf(PSBlocks.LATTICE)) {
+                world.setBlockState(mPos, LatticeBlock.copyStateProperties(lattice.get().getDefaultState(), s));
+                return;
+            }
+        }
     }
 }
