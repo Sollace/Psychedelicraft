@@ -285,6 +285,7 @@ public interface PSItems {
     }
 
     static void bootstrap() {
+        PSComponents.bootstrap();
         FuelRegistry.INSTANCE.add(LATTICE, 700);
         FuelRegistry.INSTANCE.add(SMOKING_PIPE, 200);
         FuelRegistry.INSTANCE.add(JOINT, 20);
