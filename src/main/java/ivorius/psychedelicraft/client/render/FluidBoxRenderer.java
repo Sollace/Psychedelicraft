@@ -77,7 +77,9 @@ public class FluidBoxRenderer {
 
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemFluids fluids) {
         if (fluids.isEmpty()) {
-            texture(vertices, fluids);
+            sprite = null;
+            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
+            color = Colors.WHITE;
         } else {
             FluidAppearance appearance = FluidAppearance.of(fluids);
 
@@ -113,6 +115,9 @@ public class FluidBoxRenderer {
     }
 
     private void renderFluidFace(float x, float y, float z, float width, float height, float length, Direction... directions) {
+        if (sprite == null) {
+            return;
+        }
         for (Direction direction : directions) {
             switch (direction) {
                 case DOWN:
