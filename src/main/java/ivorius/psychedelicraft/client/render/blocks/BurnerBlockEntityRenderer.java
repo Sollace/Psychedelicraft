@@ -27,7 +27,7 @@ public class BurnerBlockEntityRenderer implements BlockEntityRenderer<BurnerBloc
 
     @Override
     public void render(BurnerBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        if (entity.getContents() instanceof Processable.Context contents) {
+        if (entity.getContents() instanceof Processable.Context contents && !entity.getContainer().isEmpty()) {
             matrices.push();
 
             if (entity.getTemperature() >= 99) {
