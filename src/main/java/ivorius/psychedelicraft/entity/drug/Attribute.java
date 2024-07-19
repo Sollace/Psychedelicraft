@@ -18,7 +18,6 @@ public record Attribute(String name, float initial, float fallback, Combiner com
         for (Drug drug : properties.getAllDrugs()) {
             var func = drug.getType().functions().get(this);
             value = combiner.combine(value, func.apply((float)drug.getActiveValue(), drug.getTicksActive()));
-
         }
         return value;
     }

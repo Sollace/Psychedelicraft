@@ -42,6 +42,7 @@ public record DrugType<T extends Drug> (
     public static final DrugType<SleepDeprivationDrug> SLEEP_DEPRIVATION = register("sleep_deprivation", SleepDeprivationDrug.FUNCTIONS, SleepDeprivationDrug.CODEC, type -> new SleepDeprivationDrug());
     public static final DrugType<LsdDrug> LSD = register("lsd", LsdDrug.FUNCTIONS, SimpleDrug::createCodec, type -> new LsdDrug(type, 1, 0.0003d));
     public static final DrugType<AtropineDrug> ATROPINE = register("atropine", AtropineDrug.FUNCTIONS, SimpleDrug::createCodec, type -> new AtropineDrug(1, 0.0003d));
+    public static final DrugType<MorphineDrug> MORPHINE = register("morphine", MorphineDrug.FUNCTIONS, SimpleDrug::createCodec, type -> new MorphineDrug(1, 0.0003d));
     public static final DrugType<KavaDrug> KAVA = register("kava", KavaDrug.FUNCTIONS, SimpleDrug::createCodec, type -> new KavaDrug(1, 0.0002d));
     public static final DrugType<WarmthDrug> WARMTH = register("warmth", WarmthDrug.FUNCTIONS, SimpleDrug::createCodec, type -> new WarmthDrug(1, 0.004d));
     public static final DrugType<PeyoteDrug> PEYOTE = register("peyote", PeyoteDrug.FUNCTIONS, SimpleDrug::createCodec, type -> new PeyoteDrug(1, 0.0002d));

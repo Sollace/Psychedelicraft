@@ -7,7 +7,6 @@ package ivorius.psychedelicraft.recipe;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
@@ -19,54 +18,61 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 
 /**
- * Created from by Sollace on 7 Feb 2023
+ * Created by Sollace on 7 Feb 2023
  *
  * Used by the mash table to produce a particular fluid from items dropped in.
  */
 public record MashingRecipe (
+        RecipeType<?> type,
+        RecipeSerializer<?> serializer,
         String group,
         CraftingRecipeCategory category,
         ItemFluids baseFluid,
         ItemFluids result,
         DefaultedList<Ingredient> ingredients,
         int stewTime) implements Recipe<MashingRecipe.Input> {
-    public static final MapCodec<MashingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::group),
-            CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(MashingRecipe::category),
-            ItemFluids.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
-            ItemFluids.CODEC.fieldOf("result").forGetter(MashingRecipe::result),
-            RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::ingredients),
-            Codec.INT.optionalFieldOf("stew_time", 0).forGetter(MashingRecipe::stewTime)
-    ).apply(instance, MashingRecipe::new));
-    public static final PacketCodec<RegistryByteBuf, MashingRecipe> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.STRING, MashingRecipe::group,
-            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::category,
-            ItemFluids.PACKET_CODEC, MashingRecipe::baseFluid,
-            ItemFluids.PACKET_CODEC, MashingRecipe::result,
-            RecipeUtils.INGREDIENTS_PACKET_CODEC, MashingRecipe::ingredients,
-            PacketCodecs.INTEGER, MashingRecipe::stewTime,
-            MashingRecipe::new
-    );
+
+    public static PSRecipes.Serializer<MashingRecipe> createSerializer(RecipeType<MashingRecipe> type) {
+        AtomicReference<PSRecipes.Serializer<MashingRecipe>> serializer = new AtomicReference<>(null);
+        serializer.set(new PSRecipes.Serializer<>(
+                RecordCodecBuilder.mapCodec(instance -> instance.group(
+                        Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::group),
+                        CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(MashingRecipe::category),
+                        ItemFluids.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
+                        ItemFluids.CODEC.fieldOf("result").forGetter(MashingRecipe::result),
+                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::ingredients),
+                        Codec.INT.optionalFieldOf("stew_time", 0).forGetter(MashingRecipe::stewTime)
+                ).apply(instance, (group, category, baseFluid, result, ingredients, stewTime) -> new MashingRecipe(type, serializer.get(), group, category, baseFluid, result, ingredients, stewTime))),
+                PacketCodec.tuple(
+                        PacketCodecs.STRING, MashingRecipe::group,
+                        RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::category,
+                        ItemFluids.PACKET_CODEC, MashingRecipe::baseFluid,
+                        ItemFluids.PACKET_CODEC, MashingRecipe::result,
+                        RecipeUtils.INGREDIENTS_PACKET_CODEC, MashingRecipe::ingredients,
+                        PacketCodecs.INTEGER, MashingRecipe::stewTime,
+                        (group, category, baseFluid, result, ingredients, stewTime) -> new MashingRecipe(type, serializer.get(), group, category, baseFluid, result, ingredients, stewTime)
+                )));
+
+        return serializer.get();
+    }
 
     @Override
     public RecipeType<?> getType() {
-        return PSRecipes.MASHING_TYPE;
+        return type;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PSRecipes.MASHING;
+        return serializer;
     }
 
     @Override
@@ -85,23 +91,18 @@ public record MashingRecipe (
     }
 
     public boolean hasMinimumRequirements(Input input) {
-        Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(input.inputs());
+        ItemMound unmatchedInputs = new ItemMound(input.inputs());
         List<Ingredient> unmatchedIngredients = new ArrayList<>(ingredients);
 
         var iter = unmatchedIngredients.iterator();
         while (iter.hasNext()) {
             Ingredient ingredient = iter.next();
 
-            for (Item item : unmatchedInputs.keySet()) {
+            for (Item item : unmatchedInputs.getCounts().keySet()) {
                 ItemStack stack = item.getDefaultStack();
                 if (ingredient.test(stack)) {
                     iter.remove();
-                    int count = unmatchedInputs.getInt(item);
-                    if (count <= 1) {
-                        unmatchedInputs.removeInt(item);
-                    } else {
-                        unmatchedInputs.put(item, count - 1);
-                    }
+                    unmatchedInputs.remove(item, 1);
                     break;
                 }
             }
@@ -115,12 +116,12 @@ public record MashingRecipe (
         }
 
         return unmatchedIngredients.stream().allMatch(i -> {
-            return input.inputs().keySet().stream().anyMatch(item -> i.test(item.getDefaultStack()));
+            return input.inputs().getCounts().keySet().stream().anyMatch(item -> i.test(item.getDefaultStack()));
         });
     }
 
     public boolean hasUndesiredIngredients(Input input) {
-        return input.inputs().keySet().stream().anyMatch(item -> {
+        return input.inputs().getCounts().keySet().stream().anyMatch(item -> {
             ItemStack stack = item.getDefaultStack();
             return ingredients.stream().noneMatch(i -> i.test(stack));
         });
@@ -148,30 +149,21 @@ public record MashingRecipe (
 
     @Override
     public DefaultedList<ItemStack> getRemainder(Input input) {
-        Object2IntMap<Item> unmatchedInputs = new Object2IntOpenHashMap<>(input.inputs());
+        ItemMound unmatchedInputs = new ItemMound(input.inputs());
 
         for (Ingredient ingredient : ingredients) {
-            for (Item item : unmatchedInputs.keySet()) {
+            for (Item item : unmatchedInputs.getCounts().keySet()) {
                 ItemStack stack = item.getDefaultStack();
                 if (ingredient.test(stack)) {
-                    unmatchedInputs.computeInt(item, (i, count) -> count == 1 ? null : (count - 1));
+                    unmatchedInputs.remove(item, 1);
                     break;
                 }
             }
         }
-
-        DefaultedList<ItemStack> stacks = DefaultedList.ofSize(unmatchedInputs.size());
-        unmatchedInputs.forEach((item, count) -> {
-            while (count > 0) {
-                ItemStack stack = new ItemStack(item, Math.min(item.getMaxCount(), count));
-                count-= stack.getCount();
-                stacks.add(stack);
-            }
-        });
-        return stacks;
+        return unmatchedInputs.convertToItemStacks();
     }
 
-    public record Input(ItemFluids tankFluid, ItemStack solids, Object2IntMap<Item> inputs) implements RecipeInput {
+    public record Input(ItemFluids tankFluid, ItemStack solids, ItemMound inputs) implements RecipeInput {
         @Override
         public ItemStack getStackInSlot(int slot) {
             return solids;

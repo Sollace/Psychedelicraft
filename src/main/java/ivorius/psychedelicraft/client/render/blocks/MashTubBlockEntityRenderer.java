@@ -56,7 +56,7 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
         matrices.push();
         matrices.translate(0, 0.75f, 0);
 
-        Object2IntMap<Item> ingredients = entity.getSuppliedIngredients();
+        Object2IntMap<Item> ingredients = entity.getSuppliedIngredients().getCounts();
 
         long seed = entity.getPos().asLong() + 1;
         Random random = new Random(seed);

@@ -17,7 +17,11 @@ import ivorius.psychedelicraft.fluid.Processable.ByProductConsumer;
 import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.recipe.ItemMound;
+import ivorius.psychedelicraft.recipe.MashingRecipe;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,6 +46,9 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
     private ItemStack container;
     //private final Map<Direction, Resovoir> ingredientTanks = new HashMap<>();
 
+    private final ItemMound ingredients = new ItemMound();
+    private int processingTime;
+
     public BurnerBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.BUNSEN_BURNER, pos, state, FluidVolumes.GLASS_BOTTLE);
     }
@@ -49,6 +56,18 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
     public void setContainer(ItemStack container) {
         this.container = container;
         markDirty();
+    }
+
+    public ItemStack getContainer() {
+        return container;
+    }
+
+    public int getTemperature() {
+        return temperature;
+    }
+
+    public ItemMound getIngredients() {
+        return ingredients;
     }
 
     @Override
@@ -65,14 +84,6 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
         if (change > 0) {
             getWorld().playSound(null, getPos(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS);
         }
-    }
-
-    public ItemStack getContainer() {
-        return container;
-    }
-
-    public int getTemperature() {
-        return temperature;
     }
 
     public boolean interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
@@ -110,7 +121,22 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
             return tank.deposit(t, (int)tank.getCapacity()) > 0;
         }
 
+        if (ingredients.size() < 6 && isValidIngredient(stack)) {
+            ingredients.addStack(stack.splitUnlessCreative(1, player));
+            player.setStackInHand(hand, stack);
+            return true;
+        }
+
         return false;
+    }
+
+    public boolean isValidIngredient(ItemStack stack) {
+        return FluidCapacity.get(stack) == 0
+            && (world.getRecipeManager()
+                .listAllOfType(PSRecipes.REACTING_TYPE).stream()
+                .filter(recipe -> recipe.value().baseFluid().canCombine(getPrimaryTank().getContents()))
+                .flatMap(recipe -> recipe.value().getIngredients().stream())
+                .anyMatch(i -> i.test(stack)));
     }
 
     @Override
@@ -168,7 +194,21 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
 
                         });
                     } else {
-                        if (PipeInsertable.tryInsert(world, pipePos, Direction.UP, getPrimaryTank()) == GlassTubeBlock.SPILL_STATUS) {
+                        if (!ingredients.isEmpty()) {
+                            var ingredient = ingredients.getCounts().object2IntEntrySet().stream().findFirst().get();
+                            var input = new MashingRecipe.Input(getPrimaryTank().getContents(), ItemStack.EMPTY, new ItemMound());
+                            input.inputs().add(ingredient.getKey(), ingredient.getIntValue());
+                            var matchedRecipe = world.getRecipeManager().getAllMatches(PSRecipes.REACTING_TYPE, input, getWorld());
+
+                            if (matchedRecipe.size() == 1 && matchedRecipe.get(0).value().ingredients().size() == 1) {
+                                if (++processingTime >= matchedRecipe.get(0).value().stewTime()) {
+                                    ingredients.remove(ingredient.getKey(), 1);
+                                }
+                                if (PipeInsertable.tryInsert(world, pipePos, Direction.UP, matchedRecipe.get(0).value().result().ofAmount(ingredient.getIntValue())) == GlassTubeBlock.SPILL_STATUS) {
+                                    onFluidWasted(world);
+                                }
+                            }
+                        } else if (PipeInsertable.tryInsert(world, pipePos, Direction.UP, getPrimaryTank()) == GlassTubeBlock.SPILL_STATUS) {
                             getPrimaryTank().drain(1);
                             onFluidWasted(world);
                         }
@@ -198,11 +238,7 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
         super.writeNbt(compound, lookup);
         ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, container).result().ifPresent(container -> compound.put("container", container));
         compound.putInt("temperature", temperature);
-        /*NbtCompound ingredientTanksNbt = new NbtCompound();
-        ingredientTanks.forEach((direction, tank) -> {
-            ingredientTanksNbt.put(direction.asString(), tank.toNbt(lookup));
-        });
-        compound.put("ingredients", ingredientTanksNbt);*/
+        compound.put("ingredients", ingredients.toNbt(lookup));
     }
 
     @Override
@@ -210,16 +246,6 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
         super.readNbt(compound, lookup);
         container = ItemStack.OPTIONAL_CODEC.decode(NbtOps.INSTANCE, compound.get("container")).result().map(Pair::getFirst).orElse(ItemStack.EMPTY);
         temperature = compound.getInt("temperature");
-        //ingredientTanks.clear();
-        /*NbtCompound ingredients = compound.getCompound("ingredients");
-        ingredients.getKeys().forEach(key -> {
-            Direction direction = Direction.byName(key);
-            if (direction != null) {
-                Resovoir tank = new Resovoir(FluidVolumes.BOTTLE, this);
-                tank.fromNbt(ingredients.getCompound(key), lookup);
-                ingredientTanks.put(direction, tank);
-            }
-        });*/
+        ingredients.fromNbt(compound.getCompound("ingredients"), lookup);
     }
-
 }

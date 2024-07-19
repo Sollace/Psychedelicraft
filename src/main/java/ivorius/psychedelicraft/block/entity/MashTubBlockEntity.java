@@ -11,8 +11,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.block.MashTubBlock;
 import ivorius.psychedelicraft.fluid.*;
@@ -21,6 +19,7 @@ import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
+import ivorius.psychedelicraft.recipe.ItemMound;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -35,7 +34,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -54,13 +52,13 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     private Optional<Stew> currentStew = Optional.empty();
 
-    private final Object2IntMap<Item> suppliedIngredients = new Object2IntOpenHashMap<>();
+    private final ItemMound suppliedIngredients = new ItemMound();
 
     public MashTubBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.MASH_TUB, pos, state, FluidVolumes.VAT);
     }
 
-    public Object2IntMap<Item> getSuppliedIngredients() {
+    public ItemMound getSuppliedIngredients() {
         return suppliedIngredients;
     }
 
@@ -84,7 +82,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             for (ItemEntity item : world.getEntitiesByClass(ItemEntity.class, box, EntityPredicates.VALID_ENTITY)) {
                 ItemStack stack = item.getStack();
                 if (isValidIngredient(stack)) {
-                    suppliedIngredients.put(stack.getItem(), suppliedIngredients.getInt(stack.getItem()) + stack.getCount());
+                    suppliedIngredients.addStack(stack);
                     beginStewing();
                     markForUpdate();
                     spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
@@ -154,7 +152,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         if (isValidIngredient(stack)) {
             ItemStack consumed = stack.split(1);
-            suppliedIngredients.computeInt(consumed.getItem(), (s, i) -> i == null ? 1 : (i + 1));
+            suppliedIngredients.add(consumed.getItem(), 1);
             beginStewing();
             markForUpdate();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
@@ -179,7 +177,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             return;
         }
 
-        var input = new MashingRecipe.Input(this.getPrimaryTank().getContents(), solidContents, suppliedIngredients);
+        var input = new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients);
         var matchedRecipe = world.getRecipeManager().getAllMatches(PSRecipes.MASHING_TYPE, input, getWorld());
 
         if (matchedRecipe.isEmpty()) {
@@ -238,11 +236,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         if (!solidContents.isEmpty()) {
             compound.put("solidContents", solidContents.encodeAllowEmpty(lookup));
         }
-        NbtCompound suppliedIngredsTag = new NbtCompound();
-        suppliedIngredients.forEach((item, count) -> {
-            suppliedIngredsTag.putInt(Registries.ITEM.getId(item).toString(), count);
-        });
-        compound.put("suppliedIngredients", suppliedIngredsTag);
+        compound.put("suppliedIngredients", suppliedIngredients.toNbt(lookup));
     }
 
     @Override
@@ -251,13 +245,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         solidContents = compound.contains("solidContents", NbtElement.COMPOUND_TYPE)
                 ? ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("solidContents"))
                 : ItemStack.EMPTY;
-        NbtCompound suppliedIngredsTag = compound.getCompound("suppliedIngredients");
-        suppliedIngredients.clear();
-        suppliedIngredsTag.getKeys().forEach(key -> {
-            Optional.ofNullable(Identifier.tryParse(key)).map(Registries.ITEM::get).filter(Objects::nonNull).ifPresent(item -> {
-                suppliedIngredients.put(item, suppliedIngredsTag.getInt(key));
-            });
-        });
+        suppliedIngredients.fromNbt(compound.getCompound("suppliedIngredients"), lookup);
     }
 
     class Stew implements NbtSerialisable {

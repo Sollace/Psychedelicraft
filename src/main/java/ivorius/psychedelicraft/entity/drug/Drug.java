@@ -32,6 +32,7 @@ public interface Drug extends NbtSerialisable {
 
     Attribute WEIGHTLESSNESS = new Attribute("weightlessness", 0, Combiner.SUM);
     Attribute HUNGER_SUPPRESSION = new Attribute("hunger_suppression", 0, Combiner.SUM);
+    Attribute PAIN_SUPPRESSION = new Attribute("pain_suppression", 1, Combiner.MUL);
     Attribute HEAD_MOTION_INERTNESS = new Attribute("head_motion_inertness", 0, Combiner.SUM);
     Attribute VIEW_TREMBLE_STRENGTH = new Attribute("view_tremble_strength", 0, Combiner.INVERSE_MUL);
     Attribute VIEW_WOBBLYNESS = new Attribute("view_wobblyness", 0, Combiner.SUM);

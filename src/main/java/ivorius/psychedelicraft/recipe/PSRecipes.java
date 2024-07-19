@@ -23,7 +23,10 @@ public interface PSRecipes {
     RecipeSerializer<FluidAwareShapelessRecipe> SHAPELESS_FLUID = serializer("shapeless_fluid", new Serializer<>(FluidAwareShapelessRecipe.CODEC, FluidAwareShapelessRecipe.PACKET_CODEC));
 
     RecipeType<MashingRecipe> MASHING_TYPE = type("mashing");
-    RecipeSerializer<MashingRecipe> MASHING = serializer("mashing", new Serializer<>(MashingRecipe.CODEC, MashingRecipe.PACKET_CODEC));
+    RecipeSerializer<MashingRecipe> MASHING = serializer("mashing", MashingRecipe.createSerializer(MASHING_TYPE));
+
+    RecipeType<MashingRecipe> REACTING_TYPE = type("reacting");
+    RecipeSerializer<MashingRecipe> REDUCING = serializer("reducing", MashingRecipe.createSerializer(REACTING_TYPE));
 
     RecipeType<DryingRecipe> DRYING_TYPE = type("drying");
     RecipeSerializer<DryingRecipe> DRYING = serializer("drying", new Serializer<>(DryingRecipe.CODEC, DryingRecipe.PACKET_CODEC));

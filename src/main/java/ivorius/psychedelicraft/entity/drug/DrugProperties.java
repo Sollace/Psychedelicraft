@@ -12,7 +12,6 @@ import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.sound.DrugMusicManager;
 import ivorius.psychedelicraft.item.PSItems;
-import ivorius.psychedelicraft.mixin.MixinLivingEntity;
 import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgDrugProperties;
 import ivorius.psychedelicraft.util.NbtSerialisable;
@@ -203,7 +202,7 @@ public class DrugProperties implements NbtSerialisable {
             hallucinations.update();
 
             if (entity.isOnGround() && random.nextFloat() < getModifier(Drug.JUMP_CHANCE)) {
-                ((MixinLivingEntity)entity).invokeJump();
+                ((LivingEntityDuck)entity).invokeJump();
             }
 
             if (!entity.handSwinging && random.nextFloat() < getModifier(Drug.PUNCH_CHANCE)) {
