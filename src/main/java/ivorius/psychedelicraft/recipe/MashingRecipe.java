@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.recipe;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
@@ -18,9 +19,8 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.PSItems;
@@ -32,47 +32,38 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
  * Used by the mash table to produce a particular fluid from items dropped in.
  */
 public record MashingRecipe (
-        RecipeType<?> type,
-        RecipeSerializer<?> serializer,
         String group,
         CraftingRecipeCategory category,
         ItemFluids baseFluid,
         ItemFluids result,
         DefaultedList<Ingredient> ingredients,
         int stewTime) implements Recipe<MashingRecipe.Input> {
-
-    public static PSRecipes.Serializer<MashingRecipe> createSerializer(RecipeType<MashingRecipe> type) {
-        AtomicReference<PSRecipes.Serializer<MashingRecipe>> serializer = new AtomicReference<>(null);
-        serializer.set(new PSRecipes.Serializer<>(
-                RecordCodecBuilder.mapCodec(instance -> instance.group(
-                        Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::group),
-                        CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(MashingRecipe::category),
-                        ItemFluids.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
-                        ItemFluids.CODEC.fieldOf("result").forGetter(MashingRecipe::result),
-                        RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::ingredients),
-                        Codec.INT.optionalFieldOf("stew_time", 0).forGetter(MashingRecipe::stewTime)
-                ).apply(instance, (group, category, baseFluid, result, ingredients, stewTime) -> new MashingRecipe(type, serializer.get(), group, category, baseFluid, result, ingredients, stewTime))),
-                PacketCodec.tuple(
-                        PacketCodecs.STRING, MashingRecipe::group,
-                        RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::category,
-                        ItemFluids.PACKET_CODEC, MashingRecipe::baseFluid,
-                        ItemFluids.PACKET_CODEC, MashingRecipe::result,
-                        RecipeUtils.INGREDIENTS_PACKET_CODEC, MashingRecipe::ingredients,
-                        PacketCodecs.INTEGER, MashingRecipe::stewTime,
-                        (group, category, baseFluid, result, ingredients, stewTime) -> new MashingRecipe(type, serializer.get(), group, category, baseFluid, result, ingredients, stewTime)
-                )));
-
-        return serializer.get();
-    }
+    public static final MapCodec<MashingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::group),
+            CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(MashingRecipe::category),
+            ItemFluids.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
+            ItemFluids.CODEC.fieldOf("result").forGetter(MashingRecipe::result),
+            RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::ingredients),
+            Codec.INT.optionalFieldOf("stew_time", 0).forGetter(MashingRecipe::stewTime)
+    ).apply(instance, MashingRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, MashingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.STRING, MashingRecipe::group,
+            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::category,
+            ItemFluids.PACKET_CODEC, MashingRecipe::baseFluid,
+            ItemFluids.PACKET_CODEC, MashingRecipe::result,
+            RecipeUtils.INGREDIENTS_PACKET_CODEC, MashingRecipe::ingredients,
+            PacketCodecs.INTEGER, MashingRecipe::stewTime,
+            MashingRecipe::new
+    );
 
     @Override
     public RecipeType<?> getType() {
-        return type;
+        return PSRecipes.MASHING_TYPE;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return serializer;
+        return PSRecipes.MASHING;
     }
 
     @Override

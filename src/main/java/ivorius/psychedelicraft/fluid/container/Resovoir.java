@@ -16,6 +16,12 @@ import net.minecraft.util.math.MathHelper;
  * @since 3 Jan 2023
  */
 public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir {
+    public static final Resovoir EMPTY = new Resovoir(0, (r, l) -> {}) {
+        @Override
+        public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+
+        }
+    };
     private ItemFluids fluids;
     private final int capacity;
 

@@ -283,6 +283,12 @@ public interface PSFluids {
             .influence(new DrugInfluence(DrugType.BATH_SALTS, DrugInfluence.DelayType.IMMEDIATE, 0.005, 0.01, 50))
             .color(0x2233f4f8)
     );
+    DrugFluid MORPHINE = new DrugFluid(Psychedelicraft.id("morphine"), new DrugFluid.Settings()
+            .injectable()
+            .appearance(FluidAppearance.CLEAR)
+            .influence(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.005, 0.01, 50))
+            .color(0x2233f4f8)
+    );
 
     ChemicalExtractFluid MORNING_GLORY_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("morning_glory_extract"), new DrugFluid.Settings().color(0x66eee2d3), DrugType.LSD, ACID);
     ChemicalExtractFluid BELLADONA_EXTRACT = new ChemicalExtractFluid(Psychedelicraft.id("belladonna_extract"), new DrugFluid.Settings().color(0x66eee2d3), DrugType.ATROPINE, ATROPINE);

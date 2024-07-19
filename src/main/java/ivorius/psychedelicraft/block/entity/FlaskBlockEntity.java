@@ -16,7 +16,6 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -35,9 +34,9 @@ import ivorius.psychedelicraft.util.NbtSerialisable;
  * Updated by Sollace on 2 Jan 2023
  */
 public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
-    private static final int[] NO_SLOT_ID = {};
     private static final int[] INPUT_SLOT_ID = {0};
     private static final int[] OUTPUT_SLOT_ID = {1};
+    private static final int[] BOTH_SLOT_ID = {0, 1};
 
     private final Resovoir tank;
     private boolean pendingSync;
@@ -196,55 +195,25 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
 
     @Override
     public int[] getAvailableSlots(Direction direction) {
-        Direction facing = getCachedState().getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.UP);
-        if (facing.getAxis() != Direction.Axis.Y && direction.getAxis() != Direction.Axis.Y) {
-            direction = Direction.fromRotation(facing.asRotation() - direction.asRotation());
-        }
-
-        if (direction == Direction.EAST) {
-            return INPUT_SLOT_ID;
-        }
-        if (direction == Direction.WEST) {
-            return OUTPUT_SLOT_ID;
-        }
-        if (direction == Direction.UP || direction == Direction.DOWN) {
-            return new int[] {0, 1};
-        }
-        return NO_SLOT_ID;
+        return switch (direction.getAxis()) {
+            case X /* EW */ -> INPUT_SLOT_ID;
+            case Z /* NS */ -> OUTPUT_SLOT_ID;
+            case Y /* UD */ -> BOTH_SLOT_ID;
+        };
     }
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, Direction direction) {
-        int[] availableSlots = getAvailableSlots(direction);
-
-        if (availableSlots.length == 0) {
-            return false;
-        }
-
-        if (slot == OUTPUT_SLOT_ID[0]) {
-            return ioInventory.isValid(slot, stack) && FluidCapacity.getPercentage(stack) < 1;
-        }
-
-        if (slot == INPUT_SLOT_ID[0]) {
-            return ioInventory.isValid(slot, stack) && FluidCapacity.getPercentage(stack) > 0;
-        }
-
-        return false;
+        return ioInventory.isValid(slot, stack);
     }
 
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction direction) {
-        int[] availableSlots = getAvailableSlots(direction);
-
-        if (availableSlots.length == 0) {
-            return false;
-        }
-
-        if (slot == OUTPUT_SLOT_ID[0] && outputSlot.getFillPercentage(-1) >= 1) {
+        if (slot == OUTPUT_SLOT_ID[0] && outputSlot.getFillPercentage() >= 1) {
             return true;
         }
 
-        if (slot == INPUT_SLOT_ID[0] && inputSlot.getFillPercentage(1) <= 0) {
+        if (slot == INPUT_SLOT_ID[0] && inputSlot.getFillPercentage() <= 0) {
             return true;
         }
 
@@ -263,7 +232,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
 
         @Override
         public boolean isValid(int slot, ItemStack stack) {
-            return slot == 0 ? FluidCapacity.getPercentage(stack) > 0 : FluidCapacity.getPercentage(stack) < 1;
+            return slot < size() && FluidCapacity.get(stack) > 0 && (slot == 0 ? FluidCapacity.getPercentage(stack) > 0 : FluidCapacity.getPercentage(stack) < 1);
         }
     }
 
@@ -306,7 +275,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
             ioInventory.setStack(index, stack);
         }
 
-        public float getFillPercentage(float def) {
+        public float getFillPercentage() {
             return FluidCapacity.getPercentage(getStack());
         }
 

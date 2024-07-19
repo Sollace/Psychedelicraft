@@ -237,7 +237,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     public static class Data extends BlockEntity implements Resovoir.ChangeListener {
-        private final Resovoir tank = new Resovoir(3, this);
+        private final Resovoir tank = new Resovoir(30, this);
 
         public Data(BlockPos pos, BlockState state) {
             super(PSBlockEntities.GLASS_TUBE, pos, state);
@@ -246,7 +246,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         @Override
         public void onLevelChange(Resovoir tank, int change) {
             if (tank.getAmount() > 0 && this.getWorld() instanceof ServerWorld sw) {
-                sw.scheduleBlockTick(getPos(), getCachedState().getBlock(), 3);
+                sw.scheduleBlockTick(getPos(), getCachedState().getBlock(), 10);
             }
             markDirty();
         }

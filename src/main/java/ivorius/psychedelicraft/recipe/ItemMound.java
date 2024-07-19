@@ -1,5 +1,7 @@
 package ivorius.psychedelicraft.recipe;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -15,6 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 public class ItemMound implements NbtSerialisable {
+    private final List<Item> indexes = new ArrayList<>();
     private final Object2IntMap<Item> items = new Object2IntOpenHashMap<>();
 
     public ItemMound() {
@@ -23,18 +26,34 @@ public class ItemMound implements NbtSerialisable {
 
     public ItemMound(ItemMound original) {
         items.putAll(original.items);
+        indexes.addAll(original.indexes);
     }
 
     public void addStack(ItemStack stack) {
         add(stack.getItem(), stack.getCount());
     }
 
+    public ItemStack removeStack(int index, int amount) {
+        if (index >= 0 && index < indexes.size()) {
+            Item item = indexes.get(index);
+            amount = Math.min(items.getInt(item), amount);
+            remove(item, amount);
+            return new ItemStack(item, amount);
+        }
+        return ItemStack.EMPTY;
+    }
+
     public void add(Item item, int amount) {
         items.compute(item, (i, count) -> (count == null ? 0 : count) + amount);
+        if (!indexes.contains(item)) {
+            indexes.add(item);
+        }
     }
 
     public void remove(Item item, int amount) {
-        items.compute(item, (i, count) -> count <= amount ? null : (count - amount));
+        if (items.compute(item, (i, count) -> count <= amount ? null : (count - amount)) == null) {
+            indexes.remove(item);
+        }
     }
 
     public boolean isEmpty() {
@@ -75,10 +94,11 @@ public class ItemMound implements NbtSerialisable {
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         items.clear();
+        indexes.clear();
         compound.getKeys().forEach(key -> {
-            Optional.ofNullable(Identifier.tryParse(key)).map(Registries.ITEM::get).filter(Objects::nonNull).ifPresent(item -> {
-                items.put(item, compound.getInt(key));
-            });
+            Optional.ofNullable(Identifier.tryParse(key)).map(Registries.ITEM::get)
+                .filter(Objects::nonNull)
+                .ifPresent(item -> add(item, compound.getInt(key)));
         });
     }
 }

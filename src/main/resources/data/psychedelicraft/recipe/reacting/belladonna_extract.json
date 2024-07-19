@@ -1,0 +1,9 @@
+{
+  "type": "psychedelicraft:reducing",
+  "ingredient": { "item": "psychedelicraft:belladonna_seeds" },
+  "remainder": { "id": "minecraft:coal" },
+  "result": {
+    "fluid": "psychedelicraft:belladonna_extract",
+    "level": 50
+  }
+}

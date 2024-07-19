@@ -5,52 +5,56 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.datafixers.util.Pair;
 
 import ivorius.psychedelicraft.block.BlockWithFluid;
+import ivorius.psychedelicraft.block.BlockWithFluid.DirectionalFluidResovoir;
 import ivorius.psychedelicraft.block.BurnerBlock;
-import ivorius.psychedelicraft.block.GlassTubeBlock;
 import ivorius.psychedelicraft.block.PipeInsertable;
-import ivorius.psychedelicraft.fluid.FluidVolumes;
+import ivorius.psychedelicraft.block.entity.contents.EmptyContents;
+import ivorius.psychedelicraft.block.entity.contents.LargeContents;
+import ivorius.psychedelicraft.block.entity.contents.SmallContents;
 import ivorius.psychedelicraft.fluid.Processable;
-import ivorius.psychedelicraft.fluid.Processable.ByProductConsumer;
-import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
-import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
-import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.recipe.ItemMound;
-import ivorius.psychedelicraft.recipe.MashingRecipe;
-import ivorius.psychedelicraft.recipe.PSRecipes;
-import net.minecraft.block.Block;
+import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldEvents;
+import net.minecraft.util.math.Direction.Axis;
 
-public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
+public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFluid.DirectionalFluidResovoir {
+    static final int[] CONTAINER_SLOT_ID = {0};
 
     private int temperature;
-    private ItemStack container;
-    //private final Map<Direction, Resovoir> ingredientTanks = new HashMap<>();
+    private ItemStack container = ItemStack.EMPTY;
 
-    private final ItemMound ingredients = new ItemMound();
-    private int processingTime;
+    private Contents contents = new EmptyContents(this);
 
     public BurnerBlockEntity(BlockPos pos, BlockState state) {
-        super(PSBlockEntities.BUNSEN_BURNER, pos, state, FluidVolumes.GLASS_BOTTLE);
+        super(PSBlockEntities.BUNSEN_BURNER, pos, state);
     }
 
     public void setContainer(ItemStack container) {
@@ -66,8 +70,13 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
         return temperature;
     }
 
-    public ItemMound getIngredients() {
-        return ingredients;
+    public void setTemperature(int temperature) {
+        this.temperature = temperature;
+        markDirty();
+    }
+
+    public Contents getContents() {
+        return contents;
     }
 
     @Override
@@ -78,174 +87,174 @@ public class BurnerBlockEntity extends FlaskBlockEntity implements BlockWithFlui
         }
     }
 
-    @Override
-    public void onLevelChange(Resovoir resovoir, int change) {
-        super.onLevelChange(resovoir, change);
-        if (change > 0) {
-            getWorld().playSound(null, getPos(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS);
-        }
-    }
-
     public boolean interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
 
         if (hand != Hand.MAIN_HAND) {
             return false;
         }
 
-        if (!getContainer().isEmpty() && stack.isEmpty()) {
-            Resovoir tank = getPrimaryTank();
-            ItemFluids.Transaction t = ItemFluids.Transaction.begin(getContainer());
-            tank.withdraw(t, FluidVolumes.GLASS_BOTTLE);
-            player.setStackInHand(hand, t.toItemStack());
-            setContainer(ItemStack.EMPTY);
-        }
-
-        ItemFluids fluid = ItemFluids.of(stack);
-        boolean consumeItem = false;
-
-        if (getContainer().isEmpty() && (
-                stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(PSItems.FILLED_GLASS_BOTTLE) || stack.isOf(Items.POTION) || stack.isOf(PSItems.BOTTLE)
-        )) {
-            setContainer(ItemFluids.set(stack.splitUnlessCreative(1, player), ItemFluids.EMPTY));
-            consumeItem = true;
-        }
-
-        if (!getContainer().isEmpty() && !fluid.isEmpty()) {
-            Resovoir tank = getTankOnSide(side);
-            if (consumeItem) {
-                tank.deposit(fluid);
-                return true;
-            }
-
-            ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
-            return tank.deposit(t, (int)tank.getCapacity()) > 0;
-        }
-
-        if (ingredients.size() < 6 && isValidIngredient(stack)) {
-            ingredients.addStack(stack.splitUnlessCreative(1, player));
-            player.setStackInHand(hand, stack);
-            return true;
-        }
-
-        return false;
+        var action = contents.interact(stack, player, hand, side);
+        contents = action.getValue();
+        return action.getResult().isAccepted();
     }
 
-    public boolean isValidIngredient(ItemStack stack) {
-        return FluidCapacity.get(stack) == 0
-            && (world.getRecipeManager()
-                .listAllOfType(PSRecipes.REACTING_TYPE).stream()
-                .filter(recipe -> recipe.value().baseFluid().canCombine(getPrimaryTank().getContents()))
-                .flatMap(recipe -> recipe.value().getIngredients().stream())
-                .anyMatch(i -> i.test(stack)));
+    public void playSound(@Nullable PlayerEntity player, SoundEvent sound) {
+        if (world != null && pos != null) {
+            world.playSound(player, pos.up(), sound, SoundCategory.BLOCKS, 1, world.random.nextFloat() * 0.4F + 0.8F);
+        }
     }
 
     @Override
     public void tick(ServerWorld world) {
-        if (!getContainer().isEmpty()) {
-            if (world.getTime() % 14 == 0) {
-                if (getCachedState().get(BurnerBlock.LIT)) {
-                    if (temperature < (getPrimaryTank().getContents().isEmpty() ? 200 : 100)) {
-                        temperature++;
-                        markDirty();
-                    }
-                } else {
-                    if (temperature > 0) {
-                        temperature--;
-                        markDirty();
-                    }
+        if (world.getTime() % 14 == 0) {
+            if (getCachedState().get(BurnerBlock.LIT)) {
+                if (temperature < (getPrimaryTank().getContents().isEmpty() ? 200 : 100)) {
+                    temperature++;
+                    markDirty();
                 }
-            }
-
-            if (temperature > 50 && world.getTime() % 5 == world.random.nextInt(3)) {
-                if (getPrimaryTank().getContents().isEmpty()) {
-                    world.playSound(null, getPos(), SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 1.25F, 0.02F);
-                    world.spawnParticles(ParticleTypes.SMOKE,
-                            pos.getX() + world.getRandom().nextTriangular(0.5F, 0.1F),
-                            pos.getY() + 0.6F,
-                            pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.1F),
-                            2, 0, 0, 0, 0);
-
-                    if (temperature > 180 && world.random.nextInt(3) == 0) {
-                        world.playSound(null, getPos(), SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, 1.25F, 0.02F);
-                        world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, getPos(), Block.getRawIdFromState(Blocks.GLASS_PANE.getDefaultState()));
-                        setContainer(ItemStack.EMPTY);
-                    }
-                } else {
-                    if (temperature > 100) {
-                        temperature -= 2;
-                        markDirty();
-                    }
-                    world.playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.25F, 0.02F);
-                    BlockPos pipePos = getPos().up();
-                    if (getPrimaryTank().getContents().fluid() instanceof Processable processable) {
-                        processable.process(this, ProcessType.PURIFY, new ByProductConsumer() {
-                            @Override
-                            public void accept(ItemStack stack) {
-                                Block.dropStack(world, getPos(), stack);
-                            }
-
-                            @Override
-                            public void accept(ItemFluids fluids) {
-                                int amount = PipeInsertable.tryInsert(world, pipePos, Direction.UP, fluids);
-                                if (amount < fluids.amount()) {
-                                    onFluidWasted(world);
-                                }
-                            }
-
-                        });
-                    } else {
-                        if (!ingredients.isEmpty()) {
-                            var ingredient = ingredients.getCounts().object2IntEntrySet().stream().findFirst().get();
-                            var input = new MashingRecipe.Input(getPrimaryTank().getContents(), ItemStack.EMPTY, new ItemMound());
-                            input.inputs().add(ingredient.getKey(), ingredient.getIntValue());
-                            var matchedRecipe = world.getRecipeManager().getAllMatches(PSRecipes.REACTING_TYPE, input, getWorld());
-
-                            if (matchedRecipe.size() == 1 && matchedRecipe.get(0).value().ingredients().size() == 1) {
-                                if (++processingTime >= matchedRecipe.get(0).value().stewTime()) {
-                                    ingredients.remove(ingredient.getKey(), 1);
-                                }
-                                if (PipeInsertable.tryInsert(world, pipePos, Direction.UP, matchedRecipe.get(0).value().result().ofAmount(ingredient.getIntValue())) == GlassTubeBlock.SPILL_STATUS) {
-                                    onFluidWasted(world);
-                                }
-                            }
-                        } else if (PipeInsertable.tryInsert(world, pipePos, Direction.UP, getPrimaryTank()) == GlassTubeBlock.SPILL_STATUS) {
-                            getPrimaryTank().drain(1);
-                            onFluidWasted(world);
-                        }
-                    }
+            } else {
+                if (temperature > 0) {
+                    temperature--;
+                    markDirty();
                 }
             }
         }
+
+        contents.tick(world);
     }
 
-    private void onFluidWasted(ServerWorld world) {
-        world.spawnParticles(ParticleTypes.DUST_PLUME,
-                pos.getX() + world.getRandom().nextTriangular(0.5F, 0.1F),
-                pos.getY() + 0.6F,
-                pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.1F),
-                2, 0, 0, 0, 0);
+    @Override
+    public Resovoir getPrimaryTank() {
+        return contents instanceof Processable.Context c ? c.getPrimaryTank() : Resovoir.EMPTY;
     }
 
     @Override
     public Resovoir getTankOnSide(Direction direction) {
-        //if (direction == Direction.DOWN) {
-            return super.getTankOnSide(direction);
-        //}
-        //return ingredientTanks.computeIfAbsent(direction, d -> new Resovoir(FluidVolumes.BOTTLE, this));
+        return contents instanceof Processable.Context c ? c.getTankOnSide(direction) : Resovoir.EMPTY;
     }
+
+    @Override
+    public List<Resovoir> getAuxiliaryTanks() {
+        return contents instanceof Processable.Context c ? c.getAuxiliaryTanks() : List.of();
+    }
+
+    @Override
+    public void clear() {
+        contents = new EmptyContents(this);
+        container = ItemStack.EMPTY;
+    }
+
     @Override
     public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
         super.writeNbt(compound, lookup);
         ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, container).result().ifPresent(container -> compound.put("container", container));
-        compound.putInt("temperature", temperature);
-        compound.put("ingredients", ingredients.toNbt(lookup));
+        compound.putString("contents_type", contents.getId().toString());
+        compound.put("contents", contents.toNbt(lookup));
     }
 
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
         container = ItemStack.OPTIONAL_CODEC.decode(NbtOps.INSTANCE, compound.get("container")).result().map(Pair::getFirst).orElse(ItemStack.EMPTY);
-        temperature = compound.getInt("temperature");
-        ingredients.fromNbt(compound.getCompound("ingredients"), lookup);
+        contents = Contents.TYPES.getOrDefault(Identifier.of(compound.getString("contents_type")), Contents.TYPES.get(EmptyContents.ID)).apply(this, 0);
+        contents.fromNbt(compound.getCompound("contents"), lookup);
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        return side.getAxis() == Axis.Y ? CONTAINER_SLOT_ID : contents instanceof SidedInventory l ? l.getAvailableSlots(side) : new int[0];
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, Direction dir) {
+        if (slot == CONTAINER_SLOT_ID[0] && dir == Direction.UP) {
+            return container.isEmpty() && FluidCapacity.get(stack) > 0;
+        }
+        return contents instanceof SidedInventory l && l.canInsert(slot - 1, stack, dir);
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        if (slot == CONTAINER_SLOT_ID[0] && container.isEmpty()) {
+            return false;
+        }
+        return contents instanceof SidedInventory l && l.canExtract(slot - 1, stack, dir);
+    }
+
+    @Override
+    public int size() {
+        return 1 + (contents instanceof Inventory i ? i.size() : 0);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return container.isEmpty() && contents.isEmpty();
+    }
+
+    @Override
+    public ItemStack getStack(int slot) {
+        if (slot == 0) {
+            return container;
+        }
+        return contents instanceof Inventory l ? l.getStack(slot - 1) : ItemStack.EMPTY;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot, int amount) {
+        if (slot == 0) {
+            return container.split(amount);
+        }
+        return contents instanceof Inventory l ? l.removeStack(slot - 1, amount) : ItemStack.EMPTY;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot) {
+        if (slot == 0) {
+            return container.split(container.getCount());
+        }
+        return contents instanceof Inventory l ? l.removeStack(slot - 1) : ItemStack.EMPTY;
+    }
+
+    @Override
+    public void setStack(int slot, ItemStack stack) {
+        if (slot == 0) {
+            container = stack.split(1);
+        } else if (contents instanceof Inventory l) {
+            l.setStack(slot - 1, stack);
+        }
+    }
+
+    @Override
+    public boolean canPlayerUse(PlayerEntity player) {
+        return true;
+    }
+
+    @Override
+    public List<ItemStack> getDroppedStacks(ItemStack container) {
+        List<ItemStack> stacks = new ArrayList<>();
+        if (!container.isEmpty()) {
+            stacks.add(container);
+        }
+        if (contents instanceof DirectionalFluidResovoir l) {
+            stacks.addAll(l.getDroppedStacks(container));
+        }
+        return stacks;
+    }
+
+    public interface Contents extends NbtSerialisable, PipeInsertable {
+        Map<Identifier, BiFunction<BurnerBlockEntity, Integer, Contents>> TYPES = Util.make(new HashMap<>(), map -> {
+            map.put(EmptyContents.ID, (entity, capacity) -> new EmptyContents(entity));
+            map.put(SmallContents.ID, SmallContents::new);
+            map.put(LargeContents.ID, LargeContents::new);
+        });
+
+        Identifier getId();
+
+        void tick(ServerWorld world);
+
+        boolean isEmpty();
+
+        @Nullable
+        TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side);
     }
 }

@@ -24,7 +24,6 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -100,7 +99,6 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
         }
 
         if (world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).filter(data -> data.interact(stack, player, hand, hit.getSide())).isPresent()) {
-            world.playSound(player, pos.up(), BlockSoundGroup.GLASS.getPlaceSound(), SoundCategory.BLOCKS, 1, world.random.nextFloat() * 0.4F + 0.8F);
             return ItemActionResult.SUCCESS;
         }
 
@@ -118,7 +116,7 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
 
     @Override
     public boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
-        return input && direction == Direction.UP && world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).filter(data -> !data.getContainer().isEmpty()).isPresent();
+        return input && direction == Direction.UP;
     }
 
     @Override
@@ -127,10 +125,7 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
             return SPILL_STATUS;
         }
         return world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).map(data -> {
-            if (!data.getContainer().isEmpty()) {
-                return data.getTankOnSide(Direction.UP).deposit(fluids);
-            }
-            return SPILL_STATUS;
+            return data.getContents().tryInsert(world, state, pos, direction, fluids);
         }).orElse(SPILL_STATUS);
     }
 

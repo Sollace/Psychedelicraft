@@ -1,0 +1,9 @@
+{
+  "type": "psychedelicraft:reducing",
+  "ingredient": { "item": "psychedelicraft:jimsonweed_seeds" },
+  "remainder": { "id": "minecraft:coal" },
+  "result": {
+    "fluid": "psychedelicraft:jimsonweed_extract",
+    "level": 50
+  }
+}

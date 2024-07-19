@@ -19,7 +19,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     @Invoker
     public abstract void invokeJump();
 
-    @ModifyVariable(method = "modifyAppliedDamage", at = @At("HEAD"), index = 0, argsOnly = true)
+    @ModifyVariable(method = "modifyAppliedDamage", at = @At("HEAD"), index = 1, argsOnly = true)
     private float modifyDamageOnModifyAppliedDamage(float amount) {
         return amount * DrugProperties.of(this).map(properties -> {
             return properties.getModifier(Drug.PAIN_SUPPRESSION);
