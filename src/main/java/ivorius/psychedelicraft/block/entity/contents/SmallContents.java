@@ -202,11 +202,13 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
 
     @Override
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+        compound.putInt("capacity", capacity);
         compound.put("fluids", NbtSerialisable.fromList(auxiliaryTanks, lookup));
     }
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+        capacity = compound.getInt("capacity");
         NbtSerialisable.toList(auxiliaryTanks, compound.getList("fluids", NbtElement.COMPOUND_TYPE), lookup, this::createTank);
     }
 

@@ -111,7 +111,6 @@ public class LargeContents extends SmallContents {
         for (Resovoir auxTank : getAuxiliaryTanks()) {
             transferred = auxTank.deposit(t, maxToInsert);
             if (transferred > 0) {
-                getAuxiliaryTanks().add(auxTank);
                 return true;
             }
         }
@@ -119,6 +118,8 @@ public class LargeContents extends SmallContents {
             Resovoir auxTank = createTank();
             transferred = auxTank.deposit(t, maxToInsert);
             if (transferred > 0) {
+                getAuxiliaryTanks().add(auxTank);
+                entity.markDirty();
                 return true;
             }
         }
@@ -142,6 +143,7 @@ public class LargeContents extends SmallContents {
             int transferred = auxTank.deposit(fluids);
             if (transferred > 0) {
                 getAuxiliaryTanks().add(auxTank);
+                entity.markDirty();
                 return transferred;
             }
         }
@@ -156,7 +158,7 @@ public class LargeContents extends SmallContents {
 
     @Override
     protected boolean shouldProduceEvaporate(ServerWorld world) {
-        return getTotalFluidVolume() < capacity && ingredients.getCounts().object2IntEntrySet().stream().filter(ingredient -> {
+        return getTotalFluidVolume() >= capacity || ingredients.getCounts().object2IntEntrySet().stream().filter(ingredient -> {
             var input = new ReducingRecipe.Input(ingredient.getKey().getDefaultStack());
             return world.getRecipeManager().getFirstMatch(PSRecipes.REACTING_TYPE, input, world).filter(recipe -> {
                 if (++processingTime >= recipe.value().stewTime()) {
@@ -194,14 +196,12 @@ public class LargeContents extends SmallContents {
     @Override
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {
         super.toNbt(compound, lookup);
-        compound.putInt("capacity", capacity);
         compound.put("ingredients", ingredients.toNbt(lookup));
     }
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         super.fromNbt(compound, lookup);
-        capacity = compound.getInt("capacity");
         ingredients.fromNbt(compound.getCompound("ingredients"), lookup);
     }
 

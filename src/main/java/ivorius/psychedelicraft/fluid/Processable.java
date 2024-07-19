@@ -84,7 +84,7 @@ public interface Processable {
         }
 
         default int getTotalFluidVolume() {
-            return getAuxiliaryTanks().stream().mapToInt(r -> r.getContents().amount()).sum() + getPrimaryTank().getContents().amount();
+            return getAuxiliaryTanks().stream().mapToInt(r -> r.getContents().amount()).sum();
         }
 
         Resovoir getPrimaryTank();
