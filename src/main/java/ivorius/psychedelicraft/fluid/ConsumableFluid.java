@@ -34,7 +34,7 @@ public interface ConsumableFluid {
 
     static boolean canConsume(ItemStack stack, LivingEntity entity, int maxConsumed, ConsumptionType type) {
         ItemFluids fluids = ItemFluids.of(stack);
-        return fluids.amount() >= maxConsumed
+        return fluids.amount() > 0
                 && fluids.fluid() instanceof ConsumableFluid consumable
                 && consumable.canConsume(stack, entity, type);
     }
