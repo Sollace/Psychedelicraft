@@ -100,7 +100,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         IODirection placedDir = IODirection.LOOKUP.get(ctx.getSide());
         BlockState state = super.getPlacementState(ctx);
-        IODirection out = getValidConnections(ctx.getWorld(), ctx.getBlockPos(), state, IN, placedDir).findFirst().orElse(placedDir);
+        IODirection out = getValidConnections(ctx.getWorld(), ctx.getBlockPos(), state, IN, placedDir).findFirst().orElse(placedDir.getOpposite());
         IODirection in = getValidConnections(ctx.getWorld(), ctx.getBlockPos(), state.with(OUT, out), OUT, out).findFirst().orElse(out.getOpposite());
         return setDirection(state, in, out);
     }
