@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2014, Lukas Tenbrink.
+ *  * http://lukas.axxim.net
+ */
+
 package ivorius.psychedelicraft.block;
 
 import java.util.Arrays;
@@ -49,7 +54,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     public static final EnumProperty<IODirection> IN = EnumProperty.of("in", IODirection.class);
     public static final EnumProperty<IODirection> OUT = EnumProperty.of("out", IODirection.class);
 
-    private static final double RADIUS = 0.1;
+    private static final double RADIUS = 0.05;
     private static final VoxelShape DEFAULT_SHAPE = VoxelShapes.cuboid(0.4, 0.4, 0.4, 0.6, 0.6, 0.6);
     private static final Function<Direction, VoxelShape> SHAPE_PART_CACHE = Util.memoize(direction -> {
         return VoxelShapes.cuboid(
