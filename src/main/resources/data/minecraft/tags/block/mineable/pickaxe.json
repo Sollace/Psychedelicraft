@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "psychedelicraft:iron_drying_table",
-    "psychedelicraft:bunsen_burner"
+    "psychedelicraft:bunsen_burner",
+    "psychedelicraft:glass_tube"
   ]
 }
