@@ -49,9 +49,16 @@
               "function": "minecraft:set_count"
             },
             {
-              "add": false,
-              "tag": "{ \"fluid\": { \"id\": \"psychedelicraft:coffee\", \"level\": 500 } }",
-              "function": "minecraft:set_nbt"
+              "components": {
+                "psychedelicraft:fluids": {
+                  "fluid": "psychedelicraft:coffee",
+                  "amount": 500,
+                  "attributes": {
+                    "warmth": 2
+                  }
+                }
+              },
+              "function": "minecraft:set_components"
             }
           ],
           "name": "psychedelicraft:wooden_mug",
