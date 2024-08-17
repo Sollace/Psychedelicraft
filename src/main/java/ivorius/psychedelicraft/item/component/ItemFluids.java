@@ -30,6 +30,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.predicate.item.ComponentSubPredicate;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> attributes) {
@@ -87,6 +88,11 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
             }
         }
         return fluids == null ? EMPTY : fluids;
+    }
+
+    public static List<ItemFluids> allOf(ItemStack stack) {
+        ItemFluidsMixture mixture = ItemFluidsMixture.of(stack);
+        return mixture.isEmpty() ? List.of(of(stack)) : mixture.fluids();
     }
 
     public static ItemFluids of(FluidVariant variant, int capacity) {
@@ -170,6 +176,9 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public void appendTooltip(List<Text> tooltip, TooltipType type) {
         fluid().appendTooltip(this, tooltip, type);
+        if (type.isAdvanced()) {
+            tooltip.add(Text.literal("contents: " + fluid().getId().toString()).formatted(Formatting.DARK_GRAY));
+        }
     }
 
     public record Predicate(Optional<SimpleFluid> fluid, IntRange amount, Map<String, IntRange> attributes) implements ComponentSubPredicate<ItemFluids> {
@@ -270,7 +279,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
         @Override
         public ItemFluids deposit(ItemFluids fluids, int maxAmount) {
-            if (capacity <= 0 || !this.fluids().canCombine(fluids)) {
+            if (capacity <= 0 || !this.fluids.canCombine(fluids)) {
                 return fluids;
             }
 

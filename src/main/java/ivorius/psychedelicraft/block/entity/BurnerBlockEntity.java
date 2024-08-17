@@ -5,12 +5,9 @@
 
 package ivorius.psychedelicraft.block.entity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.datafixers.util.Pair;
@@ -148,16 +145,21 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
         super.writeNbt(compound, lookup);
         ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, container).result().ifPresent(container -> compound.put("container", container));
-        compound.putString("contents_type", contents.getId().toString());
+        compound.putString("contentsType", contents.getId().toString());
         compound.put("contents", contents.toNbt(lookup));
     }
 
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
-        container = ItemStack.OPTIONAL_CODEC.decode(NbtOps.INSTANCE, compound.get("container")).result().map(Pair::getFirst).orElse(ItemStack.EMPTY);
-        contents = Contents.TYPES.getOrDefault(Identifier.of(compound.getString("contents_type")), Contents.TYPES.get(EmptyContents.ID)).apply(this, 0);
-        contents.fromNbt(compound.getCompound("contents"), lookup);
+        container = ItemStack.OPTIONAL_CODEC
+                .decode(NbtOps.INSTANCE, compound.get("container"))
+                .result()
+                .map(Pair::getFirst)
+                .orElse(ItemStack.EMPTY);
+        contents = Contents.TYPES
+                .getOrDefault(Identifier.of(compound.getString("contentsType")), Contents.TYPES.get(EmptyContents.ID))
+                .create(this, compound.getCompound("contents"), lookup);
     }
 
     @Override
@@ -230,20 +232,19 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     }
 
     @Override
-    public List<ItemStack> getDroppedStacks(ItemStack container) {
-        List<ItemStack> stacks = new ArrayList<>();
-        if (!container.isEmpty()) {
-            stacks.add(container);
-        }
+    public List<ItemStack> getDroppedStacks(ItemStack ignored) {
         if (contents instanceof DirectionalFluidResovoir l) {
-            stacks.addAll(l.getDroppedStacks(container));
+            return l.getDroppedStacks(getContainer());
         }
-        return stacks;
+        if (!getContainer().isEmpty()) {
+            return List.of(getContainer());
+        }
+        return List.of();
     }
 
     public interface Contents extends NbtSerialisable, PipeInsertable {
-        Map<Identifier, BiFunction<BurnerBlockEntity, Integer, Contents>> TYPES = Util.make(new HashMap<>(), map -> {
-            map.put(EmptyContents.ID, (entity, capacity) -> new EmptyContents(entity));
+        Map<Identifier, Factory> TYPES = Util.make(new HashMap<>(), map -> {
+            map.put(EmptyContents.ID, (entity, nbt, lookup) -> new EmptyContents(entity));
             map.put(SmallContents.ID, SmallContents::new);
             map.put(LargeContents.ID, LargeContents::new);
         });
@@ -256,5 +257,9 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
         @Nullable
         TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side);
+
+        interface Factory {
+            Contents create(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup);
+        }
     }
 }

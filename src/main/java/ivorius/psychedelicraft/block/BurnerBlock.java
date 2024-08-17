@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
@@ -21,6 +23,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
@@ -127,6 +130,13 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
         return world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).map(data -> {
             return data.getContents().tryInsert(world, state, pos, direction, fluids);
         }).orElse(SPILL_STATUS);
+    }
+
+    @Deprecated
+    @Override
+    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+        BlockWithFluid.appendDroppedStacks(ItemStack.EMPTY, state, builder);
+        return super.getDroppedStacks(state, builder);
     }
 
     @Override

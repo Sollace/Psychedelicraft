@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2014, Lukas Tenbrink.
+ *  * http://lukas.axxim.net
+ */
+
 package ivorius.psychedelicraft.block.entity.contents;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -42,7 +47,7 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
             entity.setContainer(ItemFluids.set(stack.splitUnlessCreative(1, player), ItemFluids.EMPTY));
             entity.playSound(player, BlockSoundGroup.GLASS.getPlaceSound());
             int capacity = FluidCapacity.get(stack);
-            return TypedActionResult.success(stack.isOf(PSItems.BOTTLE) ? new LargeContents(entity, capacity) : new SmallContents(entity, capacity));
+            return TypedActionResult.success(stack.isOf(PSItems.BOTTLE) ? new LargeContents(entity, capacity, stack) : new SmallContents(entity, capacity, stack));
         }
 
         return TypedActionResult.fail(this);

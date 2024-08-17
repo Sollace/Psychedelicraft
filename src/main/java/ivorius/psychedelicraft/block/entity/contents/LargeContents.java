@@ -8,6 +8,7 @@ import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
 import ivorius.psychedelicraft.recipe.ItemMound;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.ReducingRecipe;
@@ -34,8 +35,17 @@ public class LargeContents extends SmallContents {
     private final ItemMound ingredients = new ItemMound();
     private int processingTime;
 
-    public LargeContents(BurnerBlockEntity entity, int capacity) {
-        super(entity, capacity);
+    public LargeContents(BurnerBlockEntity entity, int capacity, ItemStack stack) {
+        super(entity, capacity, stack);
+    }
+
+    public LargeContents(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup) {
+        super(entity, compound, lookup);
+    }
+
+    @Override
+    protected void loadContents(ItemStack stack) {
+        ItemFluids.allOf(stack).forEach(this::deposit);
     }
 
     @Override
@@ -87,6 +97,14 @@ public class LargeContents extends SmallContents {
             return TypedActionResult.fail(this);
         }
 
+        ItemFluidsMixture mixture = ItemFluidsMixture.of(stack);
+        if (!mixture.isEmpty()) {
+            stack = ItemFluidsMixture.set(stack, mixture.fluids().stream().map(this::deposit).toList());
+            entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
+            player.setStackInHand(hand, stack);
+            return TypedActionResult.success(this);
+        }
+
         Resovoir tank = player.isSneaking() ? getLastTank() : getPrimaryTank();
         if (!tank.getContents().isEmpty()) {
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copyWithCount(1));
@@ -124,6 +142,28 @@ public class LargeContents extends SmallContents {
             }
         }
         return false;
+    }
+
+    protected ItemFluids deposit(ItemFluids stack) {
+        int maxToInsert = Math.min(stack.amount(), Math.max(0, capacity - getTotalFluidVolume()));
+        ItemFluids toInsert = stack.ofAmount(maxToInsert);
+        int transferred = 0;
+        for (Resovoir auxTank : getAuxiliaryTanks()) {
+            transferred = auxTank.deposit(toInsert);
+            if (transferred > 0) {
+                return stack.ofAmount(stack.amount() - transferred);
+            }
+        }
+        if (getAuxiliaryTanks().size() < 4) {
+            Resovoir auxTank = createTank();
+            transferred = auxTank.deposit(toInsert);
+            if (transferred > 0) {
+                getAuxiliaryTanks().add(auxTank);
+                entity.markDirty();
+                return stack.ofAmount(stack.amount() - transferred);
+            }
+        }
+        return stack;
     }
 
     @Override

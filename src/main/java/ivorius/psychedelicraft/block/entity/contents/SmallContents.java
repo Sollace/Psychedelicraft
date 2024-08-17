@@ -15,6 +15,7 @@ import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -42,10 +43,20 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
     protected int capacity;
     protected final BurnerBlockEntity entity;
 
-    public SmallContents(BurnerBlockEntity entity, int capacity) {
+    public SmallContents(BurnerBlockEntity entity, int capacity, ItemStack stack) {
         this.entity = entity;
         this.capacity = capacity;
         auxiliaryTanks.add(createTank());
+        loadContents(stack);
+    }
+
+    public SmallContents(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup) {
+        this.entity = entity;
+        fromNbt(compound, lookup);
+    }
+
+    protected void loadContents(ItemStack stack) {
+        getPrimaryTank().deposit(ItemFluids.of(stack));
     }
 
     @Override
@@ -68,12 +79,8 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
     @Override
     public TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         if (stack.isEmpty()) {
-            if (getAuxiliaryTanks().size() > 1) {
-                return TypedActionResult.fail(this);
-            }
-            Resovoir tank = player.isSneaking() ? getLastTank() : getPrimaryTank();
-            player.setStackInHand(hand, ItemFluids.set(entity.getContainer(), tank.getContents()));
-            tank.clear();
+            player.setStackInHand(hand, ItemFluidsMixture.set(entity.getContainer(), getAuxiliaryTanks().stream().map(Resovoir::getContents).toList()));
+            clear();
             entity.setContainer(ItemStack.EMPTY);
             entity.playSound(player, SoundEvents.ENTITY_ITEM_PICKUP);
             return TypedActionResult.success(new EmptyContents(entity));
@@ -264,6 +271,12 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
 
     @Override
     public List<ItemStack> getDroppedStacks(ItemStack container) {
-        return List.of();
+        if (!isEmpty()) {
+            if (auxiliaryTanks.size() == 1) {
+                return List.of(ItemFluids.set(container.copy(), getPrimaryTank().getContents()));
+            }
+            return List.of(ItemFluidsMixture.set(container.copy(), auxiliaryTanks.stream().map(Resovoir::getContents).toList()));
+        }
+        return List.of(container);
     }
 }
