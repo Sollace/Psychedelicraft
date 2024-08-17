@@ -77,6 +77,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
         return super.getDroppedStacks(state, builder);
     }
 
+    @Deprecated
     public static void appendDroppedStacks(ItemStack defaultStack, BlockState state, LootContextParameterSet.Builder builder) {
         BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
         if (blockEntity instanceof DirectionalFluidResovoir container) {

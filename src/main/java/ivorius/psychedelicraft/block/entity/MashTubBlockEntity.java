@@ -222,6 +222,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
     }
 
+    @Deprecated
     @Override
     public List<ItemStack> getDroppedStacks(ItemStack container) {
         if (!solidContents.isEmpty()) {

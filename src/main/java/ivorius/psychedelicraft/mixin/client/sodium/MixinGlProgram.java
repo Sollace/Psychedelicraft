@@ -13,7 +13,7 @@ import ivorius.psychedelicraft.client.render.shader.BuiltGemoetryShader;
 @Mixin(targets = {
         //"net.caffeinemc.mods.sodium.client.gl.shader.GlProgram",
         "me.jellysquid.mods.sodium.client.gl.shader.GlProgram"
-})
+}, remap = false)
 abstract class MixinGlProgram implements BuiltGemoetryShader.Holder {
     private @Nullable BuiltGemoetryShader psychedelicraft_uniformData;
 

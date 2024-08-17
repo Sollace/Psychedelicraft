@@ -233,6 +233,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         return true;
     }
 
+    @Deprecated
     @Override
     public List<ItemStack> getDroppedStacks(ItemStack ignored) {
         if (contents instanceof DirectionalFluidResovoir l) {

@@ -18,10 +18,10 @@ import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 @Mixin(targets = {
         //"net.caffeinemc.mods.sodium.client.gl.shader.GlProgram$Builder",
         "me.jellysquid.mods.sodium.client.gl.shader.GlProgram$Builder"
-})
+}, remap = false)
 abstract class MixinGlProgram_Builder {
-    private int maxAttributes = -1;
-    private int maxFragments = -1;
+    private int psychedelicraft_maxAttributes = -1;
+    private int psychedelicraft_maxFragments = -1;
 
     @Shadow
     private @Final int program;
@@ -30,17 +30,17 @@ abstract class MixinGlProgram_Builder {
 
     @Inject(method = "bindAttribute", at = @At("HEAD"))
     private void onBindAttribute(String name, int index, CallbackInfoReturnable<?> info) {
-        maxAttributes = Math.max(maxAttributes, index);
+        psychedelicraft_maxAttributes = Math.max(psychedelicraft_maxAttributes, index);
     }
 
     @Inject(method = "bindFragmentData", at = @At("HEAD"))
     private void onBindFragmentData(String name, int index, CallbackInfoReturnable<?> info) {
-        maxFragments = Math.max(maxFragments, index);
+        psychedelicraft_maxFragments = Math.max(psychedelicraft_maxFragments, index);
     }
 
     @Inject(method = "link", at = @At("HEAD"))
     private void onLink(Function<?, ?> factory, CallbackInfoReturnable<?> info) {
-        psychedelicraft_shader = GeometryShader.INSTANCE.createShaderBuilder(program, maxAttributes, maxFragments);
+        psychedelicraft_shader = GeometryShader.INSTANCE.createShaderBuilder(program, psychedelicraft_maxAttributes, psychedelicraft_maxFragments);
     }
 
     @Inject(method = "link", at = @At("RETURN"))
