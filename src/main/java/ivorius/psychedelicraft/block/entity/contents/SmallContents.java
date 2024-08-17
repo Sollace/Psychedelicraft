@@ -34,6 +34,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldEvents;
 
 public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
@@ -278,5 +279,23 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
             return List.of(ItemFluidsMixture.set(container.copy(), auxiliaryTanks.stream().map(Resovoir::getContents).toList()));
         }
         return List.of(container);
+    }
+
+    @Override
+    public ItemStack getFilled(ItemStack container, boolean dryRun, float drainPercentage) {
+        if (!isEmpty()) {
+            if (auxiliaryTanks.size() == 1) {
+                return ItemFluids.set(container.copy(), copyOrWithdraw(getPrimaryTank(), dryRun, drainPercentage));
+            }
+            return ItemFluidsMixture.set(container.copy(), auxiliaryTanks.stream()
+                    .map(tank -> copyOrWithdraw(tank, dryRun, drainPercentage))
+                    .toList());
+        }
+        return container;
+    }
+
+    private ItemFluids copyOrWithdraw(Resovoir tank, boolean dryRun, float drainPercentage) {
+        int amount = MathHelper.ceil(tank.getContents().amount() * drainPercentage);
+        return dryRun ? tank.drain(amount) : tank.getContents().ofAmount(Math.min(amount, tank.getContents().amount()));
     }
 }

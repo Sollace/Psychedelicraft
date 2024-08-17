@@ -196,7 +196,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     @Override
     public ItemStack getStack(int slot) {
         if (slot == 0) {
-            return container;
+            return contents.getFilled(container, true, 1);
         }
         return contents instanceof Inventory l ? l.getStack(slot - 1) : ItemStack.EMPTY;
     }
@@ -204,7 +204,8 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     @Override
     public ItemStack removeStack(int slot, int amount) {
         if (slot == 0) {
-            return container.split(amount);
+            float drainPercentage = container.getCount() / (float)amount;
+            return contents.getFilled(container.split(amount), false, drainPercentage);
         }
         return contents instanceof Inventory l ? l.removeStack(slot - 1, amount) : ItemStack.EMPTY;
     }
@@ -212,7 +213,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     @Override
     public ItemStack removeStack(int slot) {
         if (slot == 0) {
-            return container.split(container.getCount());
+            return contents.getFilled(container.split(container.getCount()), false, 1);
         }
         return contents instanceof Inventory l ? l.removeStack(slot - 1) : ItemStack.EMPTY;
     }
@@ -221,6 +222,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     public void setStack(int slot, ItemStack stack) {
         if (slot == 0) {
             container = stack.split(1);
+            contents = new EmptyContents(this).getForStack(getWorld(), getPos(), getCachedState(), stack);
         } else if (contents instanceof Inventory l) {
             l.setStack(slot - 1, stack);
         }
@@ -254,6 +256,8 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         void tick(ServerWorld world);
 
         boolean isEmpty();
+
+        ItemStack getFilled(ItemStack container, boolean dryRun, float drainPercentage);
 
         @Nullable
         TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side);

@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.block;
 
-import java.util.List;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
@@ -23,7 +21,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
@@ -35,6 +32,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -132,11 +130,10 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
         }).orElse(SPILL_STATUS);
     }
 
-    @Deprecated
     @Override
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-        BlockWithFluid.appendDroppedStacks(ItemStack.EMPTY, state, builder);
-        return super.getDroppedStacks(state, builder);
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        ItemScatterer.onStateReplaced(state, newState, world, pos);
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
@@ -162,5 +159,4 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
         return world.isClient ? null : validateTicker(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
-
 }
