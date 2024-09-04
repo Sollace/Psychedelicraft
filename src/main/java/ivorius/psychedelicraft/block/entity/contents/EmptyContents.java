@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.block.entity.contents;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.BurnerBlock;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
 import ivorius.psychedelicraft.item.PSItems;
@@ -25,6 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
 public class EmptyContents implements BurnerBlockEntity.Contents {
@@ -34,6 +36,11 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
 
     public EmptyContents(BurnerBlockEntity entity) {
         this.entity = entity;
+    }
+
+    @Override
+    public VoxelShape getOutlineShape() {
+        return BurnerBlock.SHAPE;
     }
 
     @Override

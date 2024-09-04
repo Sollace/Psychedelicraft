@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.block.entity.contents;
 import java.util.List;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.ShapeUtil;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
@@ -25,12 +26,14 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
 
 public class LargeContents extends SmallContents {
     public static final Identifier ID = Psychedelicraft.id("large");
     static final int MAX_INGREDIENTS = 4;
     static final int[] CONTAINER_SLOT_ID = {0};
     static final int[] INGREDIENT_SLOT_ID = {1, 2, 3, 4};
+    static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(5, 18, 5);
 
     private ItemMound ingredients = new ItemMound();
     private int processingTime;
@@ -41,6 +44,11 @@ public class LargeContents extends SmallContents {
 
     public LargeContents(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup) {
         super(entity, compound, lookup);
+    }
+
+    @Override
+    public VoxelShape getOutlineShape() {
+        return SHAPE;
     }
 
     @Override

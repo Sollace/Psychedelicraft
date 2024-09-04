@@ -7,6 +7,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.GlassTubeBlock;
 import ivorius.psychedelicraft.block.PipeInsertable;
+import ivorius.psychedelicraft.block.ShapeUtil;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
 import ivorius.psychedelicraft.fluid.Processable;
@@ -35,11 +36,13 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.WorldEvents;
 
 public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
     public static final Identifier ID = Psychedelicraft.id("small");
     private final List<Resovoir> auxiliaryTanks = new ArrayList<>();
+    private static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(1.5F, 8, 1.5F);
 
     protected int capacity;
     protected final BurnerBlockEntity entity;
@@ -54,6 +57,11 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
     public SmallContents(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup) {
         this.entity = entity;
         fromNbt(compound, lookup);
+    }
+
+    @Override
+    public VoxelShape getOutlineShape() {
+        return SHAPE;
     }
 
     protected void loadContents(ItemStack stack) {

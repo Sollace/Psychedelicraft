@@ -41,6 +41,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
+import net.minecraft.util.shape.VoxelShape;
 
 public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFluid.DirectionalFluidResovoir {
     static final int[] CONTAINER_SLOT_ID = {0};
@@ -262,6 +263,8 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
         @Nullable
         TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side);
+
+        VoxelShape getOutlineShape();
 
         interface Factory {
             Contents create(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup);

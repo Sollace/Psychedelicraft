@@ -5,12 +5,15 @@
 
 package ivorius.psychedelicraft.block;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
+import ivorius.psychedelicraft.block.entity.contents.EmptyContents;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -31,26 +34,34 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     public static final MapCodec<BurnerBlock> CODEC = createCodec(BurnerBlock::new);
-    private static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(5, 2, 5);
+    public static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(5, 2, 5);
+    private static final Map<Identifier, VoxelShape> SHAPE_CACHE = Util.make(new HashMap<>(), shapes -> {
+        shapes.put(EmptyContents.ID, SHAPE);
+    });
 
     public static final BooleanProperty LIT = Properties.LIT;
+
 
     public BurnerBlock(Settings settings) {
         super(settings
                 .nonOpaque()
+                .dynamicBounds()
                 .emissiveLighting((state, world, pos) -> state.getOrEmpty(LIT).orElse(false))
         );
         setDefaultState(getDefaultState().with(LIT, false));
@@ -69,7 +80,10 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return SHAPE;
+        BurnerBlockEntity be = world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).orElse(null);
+        return be == null || be.getContents().getId() == EmptyContents.ID
+                ? SHAPE
+                : SHAPE_CACHE.computeIfAbsent(be.getContents().getId(), id -> VoxelShapes.union(SHAPE, be.getContents().getOutlineShape()));
     }
 
     @Override
