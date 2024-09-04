@@ -102,7 +102,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustab
     @Override
     public Optional<Identifier> getFlowTexture(ItemFluids stack) {
         return Optional.ofNullable(settings.appearance.apply(stack))
-                .map(FluidAppearance::still)
+                .map(FluidAppearance::flowing)
                 .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
     }
 

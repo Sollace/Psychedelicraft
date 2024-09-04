@@ -162,10 +162,10 @@ public class FluidBoxRenderer {
 
     public record FluidAppearance(Identifier texture, Sprite sprite, int color) {
         public static FluidAppearance of(ItemFluids stack) {
-            return stack.fluid().getFlowTexture(stack).map(texture -> {
+            /*return stack.fluid().getFlowTexture(stack).map(texture -> {
                 Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).getSprite(texture);
                 return new FluidAppearance(sprite.getAtlasId(), sprite, Colors.WHITE);
-            }).orElseGet(() -> {
+            }).orElseGet(() -> {*/
                 int color = stack.fluid().getColor(stack);
                 Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
 
@@ -179,7 +179,7 @@ public class FluidBoxRenderer {
                 }
 
                 return new FluidAppearance(sprite.getAtlasId(), sprite, color);
-            });
+            //});
         }
 
         public static int getItemColor(ItemFluids stack) {
