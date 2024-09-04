@@ -26,10 +26,8 @@ public class Visualisations {
 
         Random random = properties.asEntity().getRandom();
 
-        if (activeHallucinations.size() > 0) {
-            while (random.nextFloat() < 1f / (20 * 60 * 5 / activeHallucinations.size())) {
-                removeRandomHallucination(random);
-            }
+        while (activeHallucinations.size() > 0 && random.nextFloat() < 1f / (20 * 60 * 5 / activeHallucinations.size())) {
+            removeRandomHallucination(random);
         }
 
         while (activeHallucinations.size() > desiredHallucinations) {
