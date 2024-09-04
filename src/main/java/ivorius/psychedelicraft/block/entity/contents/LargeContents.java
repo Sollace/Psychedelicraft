@@ -32,7 +32,7 @@ public class LargeContents extends SmallContents {
     static final int[] CONTAINER_SLOT_ID = {0};
     static final int[] INGREDIENT_SLOT_ID = {1, 2, 3, 4};
 
-    private final ItemMound ingredients = new ItemMound();
+    private ItemMound ingredients = new ItemMound();
     private int processingTime;
 
     public LargeContents(BurnerBlockEntity entity, int capacity, ItemStack stack) {
@@ -237,12 +237,14 @@ public class LargeContents extends SmallContents {
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {
         super.toNbt(compound, lookup);
         compound.put("ingredients", ingredients.toNbt(lookup));
+        compound.putInt("processingTime", processingTime);
     }
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         super.fromNbt(compound, lookup);
-        ingredients.fromNbt(compound.getCompound("ingredients"), lookup);
+        ingredients = new ItemMound(compound.getCompound("ingredients"), lookup);
+        processingTime = compound.getInt("processingTime");
     }
 
     @Override

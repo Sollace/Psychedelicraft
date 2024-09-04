@@ -29,6 +29,10 @@ public class ItemMound implements NbtSerialisable {
         indexes.addAll(original.indexes);
     }
 
+    public ItemMound(NbtCompound compound, WrapperLookup lookup) {
+        fromNbt(compound, lookup);
+    }
+
     public void addStack(ItemStack stack) {
         add(stack.getItem(), stack.getCount());
     }
