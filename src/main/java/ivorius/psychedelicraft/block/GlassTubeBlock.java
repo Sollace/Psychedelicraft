@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.block;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -46,6 +48,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
@@ -72,6 +75,10 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
             .map(SHAPE_PART_CACHE).reduce(VoxelShapes::union)
             .orElse(DEFAULT_SHAPE);
     });
+
+    static EnumProperty<IODirection> getInverseProperty(EnumProperty<IODirection> property) {
+        return property == IN ? OUT : IN;
+    }
 
     protected GlassTubeBlock(Settings settings) {
         super(settings);
@@ -105,9 +112,28 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         IODirection placedDir = IODirection.LOOKUP.get(ctx.getSide());
         BlockState state = super.getPlacementState(ctx);
-        IODirection out = getValidConnections(ctx.getWorld(), ctx.getBlockPos(), state, IN, placedDir).findFirst().orElse(placedDir.getOpposite());
-        IODirection in = getValidConnections(ctx.getWorld(), ctx.getBlockPos(), state.with(OUT, out), OUT, out).findFirst().orElse(out.getOpposite());
-        return setDirection(state, in, out);
+
+        World world = ctx.getWorld();
+        BlockPos neighborPos = ctx.getBlockPos().offset(ctx.getSide().getOpposite());
+        BlockState neighborState = world.getBlockState(neighborPos);
+
+        return getConnectionsForRedirection(world, neighborPos, neighborState)
+                .findFirst()
+                .map(placingConnection -> {
+                    IODirection other = getValidConnectionDirections(ctx.getWorld(), ctx.getBlockPos(), placingConnection, placedDir.getOpposite())
+                            .findFirst()
+                            .orElse(IODirection.NONE);
+
+                    return state
+                            .with(getInverseProperty(placingConnection), placedDir.getOpposite())
+                            .with(placingConnection, other);
+                }).orElseGet(() -> {
+                    // try to place output against neighbour
+                    IODirection in = getValidConnectionDirections(ctx.getWorld(), ctx.getBlockPos(), OUT, placedDir).findFirst().orElse(placedDir.getOpposite());
+                    IODirection out = getValidConnectionDirections(ctx.getWorld(), ctx.getBlockPos(), IN, in).findFirst().orElse(in.getOpposite());
+                    setDirection(state, in, out);
+                    return Blocks.STONE.getDefaultState();
+                });
     }
 
     @Override
@@ -122,7 +148,10 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         IODirection current = state.get(property);
 
         if (PipeInsertable.canConnectWith(world, state, pos, neighbor, neighborPos, direction, property == IN)) {
-            if (current == IODirection.NONE || !PipeInsertable.canConnectWith(world, state, pos, world.getBlockState(pos.offset(current.direction)), pos.offset(current.direction), current.direction, property == IN)) {
+            if (current == IODirection.NONE || !PipeInsertable.canConnectWith(world, state, pos,
+                    world.getBlockState(pos.offset(current.direction)),
+                    pos.offset(current.direction), current.direction, property == IN)
+                ) {
                 return IODirection.LOOKUP.get(direction);
             }
         } else if (current.direction == direction) {
@@ -136,8 +165,15 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return neighborState.isOf(this) && (state.get(input ? OUT : IN).direction == direction);
     }
 
-    static EnumProperty<IODirection> getInverseProperty(EnumProperty<IODirection> property) {
-        return property == IN ? OUT : IN;
+    @Override
+    public int tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, ItemFluids fluids) {
+        if (state.get(IN).direction == direction.getOpposite()) {
+            return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> {
+                return data.tank.deposit(fluids);
+            }).orElse(0);
+        }
+
+        return SPILL_STATUS;
     }
 
     public BlockState setDirection(BlockState state, IODirection in, IODirection out) {
@@ -148,17 +184,36 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return state.with(IN, in).with(OUT, out);
     }
 
-    private static Stream<IODirection> getValidConnections(WorldAccess world, BlockPos pos, BlockState state, EnumProperty<IODirection> property, IODirection exclude) {
-        return IODirection.LOOKUP.entrySet().stream().filter(pair -> {
-            BlockPos nieghborPos = pos.offset(pair.getKey());
-            BlockState neighborState = world.getBlockState(nieghborPos);
-            IODirection dir = neighborState.getOrEmpty(property).orElse(null);
-            if (dir == null && PipeInsertable.canConnectWith(world, state, pos, neighborState, nieghborPos, pair.getKey(), property == OUT)) {
+    private static Stream<IODirection> getValidConnectionDirections(WorldAccess world, BlockPos pos, EnumProperty<IODirection> property, IODirection exclude) {
+        return List.of(IODirection.NORTH, IODirection.SOUTH, IODirection.EAST, IODirection.WEST, IODirection.DOWN, IODirection.UP).stream().filter(direction -> {
+            if (direction == exclude) {
+                return false;
+            }
+            BlockPos neighborPos = pos.offset(direction.direction);
+            BlockState neighborState = world.getBlockState(neighborPos);
+            IODirection neighborComplimentaryDirection = neighborState.getOrEmpty(getInverseProperty(property)).orElse(null);
+            if (neighborComplimentaryDirection == null && !PipeInsertable.canConnectWith(world, neighborState, pos, neighborState, neighborPos, direction.direction, property == OUT)) {
+                return false;
+            }
+            return getConnectionsForRedirection(world, neighborPos, neighborState).anyMatch(openConnection -> openConnection == getInverseProperty(property));
+        });
+    }
+
+    private static Stream<EnumProperty<IODirection>> getConnectionsForRedirection(WorldAccess world, BlockPos pos, BlockState state) {
+        return Stream.of(IN, OUT).filter(property -> {
+            IODirection currentDirection = state.getOrEmpty(property).orElse(IODirection.NONE);
+            if (currentDirection == IODirection.NONE) {
                 return true;
             }
-
-            return (dir == pair.getValue().getOpposite() || dir == IODirection.NONE) && (exclude != IODirection.NONE && dir != exclude);
-        }).map(Map.Entry::getValue);
+            BlockPos neighborPos = pos.offset(currentDirection.direction);
+            BlockState neighborState = world.getBlockState(neighborPos);
+            IODirection neighborComplimentaryDirection = neighborState.getOrEmpty(getInverseProperty(property)).orElse(null);
+            if (neighborComplimentaryDirection == null && !PipeInsertable.canConnectWith(world, state, pos, neighborState, neighborPos, currentDirection.direction, property == OUT)) {
+                return true;
+            }
+            return neighborComplimentaryDirection != null
+                && neighborComplimentaryDirection != currentDirection.getOpposite();
+        });
     }
 
     @Override
@@ -185,7 +240,6 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         });
     }
 
-
     @Override
     protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
@@ -208,6 +262,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         static final Map<Direction, IODirection> LOOKUP = Arrays.stream(values())
                 .filter(i -> i.getDirection().isPresent())
                 .collect(Collectors.toMap(i -> i.getDirection().get(), Function.identity()));
+        static final List<IODirection> VALUES = LOOKUP.values().stream().toList();
 
         private final Direction direction;
         private final String name = name().toLowerCase(Locale.ROOT);
@@ -228,17 +283,6 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         public String asString() {
             return name;
         }
-    }
-
-    @Override
-    public int tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, ItemFluids fluids) {
-        if (state.get(IN).direction == direction.getOpposite()) {
-            return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> {
-                return data.tank.deposit(fluids);
-            }).orElse(0);
-        }
-
-        return SPILL_STATUS;
     }
 
     public static class Data extends BlockEntity implements Resovoir.ChangeListener {
