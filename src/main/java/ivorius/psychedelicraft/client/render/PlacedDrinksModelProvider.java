@@ -75,8 +75,11 @@ public class PlacedDrinksModelProvider
     public void onInitializeModelLoader(Map<String, Map<Identifier, PlacedDrinksModelProvider.Entry>> data, Context context) {
         entries = data;
         data.forEach((type, entries) -> {
-            entries.keySet().forEach(id -> {
-                context.addModels(getGroundModelId(type, id), getGroundModelFluidId(type, id));
+            entries.forEach((id, entry) -> {
+                context.addModels(getGroundModelId(type, id));
+                if (entry.showFluid()) {
+                    context.addModels(getGroundModelFluidId(type, id));
+                }
             });
         });
     }
@@ -86,22 +89,20 @@ public class PlacedDrinksModelProvider
     }
 
     public void renderDrink(String type, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        renderEmptyDrink(type, stack, matrices, vertices, light, overlay);
+        int dyeColor = DyedColorComponent.getColor(stack, Colors.WHITE);
+
+        renderDrinkModel(stack, matrices, vertices, light, overlay, dyeColor, getGroundModelId(type, stack.getItem()));
+
         float fillPercentage = FluidCapacity.getPercentage(stack);
-        if (fillPercentage > 0.01) {
-            float origin = get(type, stack.getItem()).orElse(Entry.DEFAULT).fluidOrigin() / 16F;
+        Entry entry = get(type, stack.getItem()).orElse(Entry.DEFAULT);
+        if (fillPercentage > 0.01 && entry.showFluid()) {
+            float origin = entry.fluidOrigin() / 16F;
             matrices.translate(0, origin, 0);
             matrices.scale(1, fillPercentage, 1);
             matrices.translate(0, -origin, 0);
             int color = FluidAppearance.getItemColor(ItemFluids.of(stack));
             renderDrinkModel(stack, matrices, vertices, light, overlay, color, getGroundModelFluidId(type, stack.getItem()));
         }
-    }
-
-    public void renderEmptyDrink(String type, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        int dyeColor = DyedColorComponent.getColor(stack, Colors.WHITE);
-
-        renderDrinkModel(stack, matrices, vertices, light, overlay, dyeColor, getGroundModelId(type, stack.getItem()));
     }
 
     public void renderDrinkModel(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, int color, Identifier modelId) {
@@ -147,12 +148,13 @@ public class PlacedDrinksModelProvider
         return getGroundModelId(type, item).withSuffixedPath("_fluid");
     }
 
-    public record Entry(float height, float fluidOrigin) {
+    public record Entry(float height, float fluidOrigin, boolean showFluid) {
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.FLOAT.fieldOf("height").forGetter(Entry::height),
-                Codec.FLOAT.fieldOf("fluid_origin").forGetter(Entry::fluidOrigin)
+                Codec.FLOAT.fieldOf("fluid_origin").forGetter(Entry::fluidOrigin),
+                Codec.BOOL.optionalFieldOf("show_fluid", false).forGetter(Entry::showFluid)
         ).apply(instance, Entry::new));
         public static final Codec<Map<Identifier, Entry>> MAP_CODEC = Codec.unboundedMap(Identifier.CODEC, CODEC);
-        public static final Entry DEFAULT = new Entry(0.5F, 0F);
+        public static final Entry DEFAULT = new Entry(0.5F, 0F, false);
     }
 }

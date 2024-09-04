@@ -28,11 +28,13 @@
   "burner": {
     "psychedelicraft:bottle": {
       "height": 0.5,
-      "fluid_origin": 0.5
+      "fluid_origin": 0.5,
+      "show_fluid": false
     },
     "minecraft:glass_bottle": {
       "height": 0.5,
-      "fluid_origin": 0.5
+      "fluid_origin": 0.5,
+      "show_fluid": false
     }
   }
 }

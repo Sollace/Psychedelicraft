@@ -49,7 +49,7 @@ public class BurnerBlockEntityRenderer implements BlockEntityRenderer<BurnerBloc
             }
             matrices.translate(0, 0.12, 0);
 
-            PlacedDrinksModelProvider.INSTANCE.renderEmptyDrink("burner", entity.getContainer(), matrices, vertices, light, overlay);
+            PlacedDrinksModelProvider.INSTANCE.renderDrink("burner", entity.getContainer(), matrices, vertices, light, overlay);
 
             if (contents instanceof LargeContents largeContents) {
                 renderFlaskMultiFluids(largeContents, matrices, vertices, light, overlay);
