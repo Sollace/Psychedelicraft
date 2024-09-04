@@ -23,9 +23,6 @@
     "client": [
       "ivorius.psychedelicraft.client.PsychedelicraftClient"
     ],
-    "emi": [
-      "ivorius.psychedelicraft.compat.emi.Main"
-    ],
     "tla-api": [
       "ivorius.psychedelicraft.compat.tia.Main"
     ],
