@@ -42,7 +42,7 @@ void main() {
   i_parent_shaders_main();
 
   float fogFragCoord = length(gl_Position);
-  vec3 vertexPosition = /*replaceme*/Position;
+  vec3 vertexPosition = /*replaceme*/Position.xyz;
 
   if (surfaceFractalStrength > 0.0) {
     float fractalScale = 4.0;
