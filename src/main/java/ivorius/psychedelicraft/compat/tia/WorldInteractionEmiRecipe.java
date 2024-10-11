@@ -75,7 +75,7 @@ class WorldInteractionEmiRecipe implements PSRecipe {
         int rl = (lr + ol) / 2 - rightSize * 9 - 4;
         int rr = rl + rightSize * 18;
 
-        widgets.addTexture(TextureConfig.builder().texture(Identifier.of("emi", "textures/gui/widgets.png")).size(13, 13).uv(82, 0).build(), (lr + rl) / 2 - PLUS_WIDTH / 2, 0);
+        widgets.addTexture(TextureConfig.builder().texture(Main.WIDGETS).size(13, 13).uv(82, 0).build(), (lr + rl) / 2 - PLUS_WIDTH / 2, 0);
 
         widgets.addArrow((rr + ol) / 2 - ARROW_WIDTH / 2, 0, false);
 

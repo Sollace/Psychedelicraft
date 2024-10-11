@@ -5,10 +5,14 @@ import java.util.stream.Stream;
 import io.github.mattidragon.tlaapi.api.plugin.PluginContext;
 import io.github.mattidragon.tlaapi.api.plugin.TlaApiPlugin;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStackComparison;
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
+import net.minecraft.util.Identifier;
 
 public class Main implements TlaApiPlugin {
+    static final Identifier WIDGETS = Psychedelicraft.id("textures/gui/widgets.png");
+
     @Override
     public void register(PluginContext context) {
         RecipeCategory.bootstrap(context);
@@ -20,6 +24,6 @@ public class Main implements TlaApiPlugin {
         );
         context.getFluidComparisons().register(TlaStackComparison.compareComponents(), SimpleFluid.REGISTRY.stream().flatMap(f -> {
             return Stream.of(f.getPhysical().getStandingFluid(), f.getPhysical().getFlowingFluid());
-        }));
+        }).toList());
     }
 }
