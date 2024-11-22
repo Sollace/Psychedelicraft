@@ -9,7 +9,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.container.FluidTransferUtils;
+import ivorius.psychedelicraft.fluid.container.RecepticalHandler;
 import net.minecraft.item.ItemStack;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
@@ -36,7 +39,20 @@ public record FluidCapacity(int capacity) {
     public static int get(ItemStack stack) {
         FluidCapacity capacity = stack.get(PSComponents.FLUID_CAPACITY);
         if (capacity == null) {
-            return (int)FluidTransferUtils.getCapacity(stack);
+
+            int maxLevel = (int)FluidTransferUtils.getCapacity(stack);
+
+            if (maxLevel == 0) {
+                ItemStack filledStack = RecepticalHandler.get(stack).toFilled(stack, ItemFluids.of(FluidVariant.of(Fluids.WATER), 1));
+                if (filledStack != stack && filledStack.getItem() != stack.getItem()) {
+                    capacity = filledStack.get(PSComponents.FLUID_CAPACITY);
+                    if (capacity != null) {
+                        return capacity.capacity();
+                    }
+                }
+            }
+
+            return maxLevel;
         }
         return capacity == null ? 0 : capacity.capacity();
     }

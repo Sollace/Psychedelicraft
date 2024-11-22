@@ -19,6 +19,7 @@ import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
@@ -204,6 +205,15 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     public interface Transaction {
         static Transaction begin(ItemStack initialStack) {
             if (initialStack.get(PSComponents.FLUIDS) == null) {
+                if (FluidTransferUtils.getCapacity(initialStack) == 0) {
+                    ItemStack filledStack = RecepticalHandler.get(initialStack).toFilled(initialStack, ItemFluids.of(FluidVariant.of(Fluids.WATER), 1));
+                    if (filledStack != initialStack && filledStack.getItem() != initialStack.getItem()) {
+                        if (filledStack.get(PSComponents.FLUID_CAPACITY) != null) {
+                            return new DirectTransaction(initialStack);
+                        }
+                    }
+                }
+
                 return new VariantMarshal.FabricTransaction(initialStack);
             }
             return new DirectTransaction(initialStack);
