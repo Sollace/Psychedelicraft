@@ -9,6 +9,12 @@
                 "psychedelicraft:filled": 1
             },
             "model": "psychedelicraft:item/wooden_mug_filled"
+        },
+        {
+            "predicate": {
+                "psychedelicraft:filled_with_lava": 1
+            },
+            "model": "psychedelicraft:item/wooden_mug_filled_lava"
         }
     ]
 }

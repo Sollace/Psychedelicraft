@@ -9,6 +9,12 @@
                 "psychedelicraft:filled": 1
             },
             "model": "psychedelicraft:item/stone_cup_filled"
+        },
+        {
+            "predicate": {
+                "psychedelicraft:filled_with_lava": 1
+            },
+            "model": "psychedelicraft:item/stone_cup_filled_lava"
         }
     ]
 }

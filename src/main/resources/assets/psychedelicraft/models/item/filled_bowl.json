@@ -2,5 +2,13 @@
     "parent": "minecraft:item/bowl",
     "textures": {
         "layer1": "psychedelicraft:item/bowl_liquid"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:filled_with_lava": 1
+            },
+            "model": "psychedelicraft:item/lava_bowl"
+        }
+    ]
 }

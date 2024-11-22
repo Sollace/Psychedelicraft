@@ -15,6 +15,13 @@
         },
         {
             "predicate": {
+                "psychedelicraft:filled_with_lava": 1,
+                "psychedelicraft:flying": 0
+            },
+            "model": "psychedelicraft:item/molotov_cocktail_filled_lava"
+        },
+        {
+            "predicate": {
                 "psychedelicraft:flying": 1
             },
             "model": "psychedelicraft:item/thrown_molotov_cocktail"

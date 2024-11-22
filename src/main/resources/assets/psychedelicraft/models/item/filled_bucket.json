@@ -2,5 +2,13 @@
     "parent": "minecraft:item/bucket",
     "textures": {
         "layer1": "psychedelicraft:item/bucket_liquid"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "psychedelicraft:filled_with_lava": 1
+            },
+            "model": "minecraft:item/lava_bucket"
+        }
+    ]
 }

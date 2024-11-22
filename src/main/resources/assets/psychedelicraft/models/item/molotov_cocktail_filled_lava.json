@@ -2,7 +2,7 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "psychedelicraft:item/molotov_cocktail",
-        "layer1": "psychedelicraft:item/bottle_liquid",
+        "layer1": "psychedelicraft:item/bottle_liquid_lava",
         "layer2": "psychedelicraft:item/molotov_cocktail_overlay"
     }
 }

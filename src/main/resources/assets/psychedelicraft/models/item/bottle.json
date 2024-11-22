@@ -11,6 +11,12 @@
                 "psychedelicraft:filled": 1
             },
             "model": "psychedelicraft:item/bottle_filled"
+        },
+        {
+            "predicate": {
+                "psychedelicraft:filled_with_lava": 1
+            },
+            "model": "psychedelicraft:item/bottle_filled_lava"
         }
     ]
 }
