@@ -10,6 +10,8 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
 
+import net.minecraft.util.collection.DefaultedList;
+
 public interface CodecUtils {
     /**
      * Combines the result of two unrelated codecs into a single object.
@@ -57,5 +59,11 @@ public interface CodecUtils {
                 ), input));
             }
         });
+    }
+
+    static <T> Codec<DefaultedList<T>> toDefaultedList(Codec<T> elementCodec, T def) {
+        return elementCodec.listOf(1, 9).flatXmap(ingredients -> {
+            return DataResult.success(new DefaultedList<>(ingredients, def) {});
+        }, DataResult::success);
     }
 }

@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -17,14 +16,14 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.CodecUtils;
+import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 /**
  * Created by Sollace on 7 Feb 2023
@@ -36,14 +35,14 @@ public record MashingRecipe (
         CraftingRecipeCategory category,
         ItemFluids baseFluid,
         ItemFluids result,
-        DefaultedList<Ingredient> ingredients,
+        Ingredients ingredients,
         int stewTime) implements Recipe<MashingRecipe.Input> {
     public static final MapCodec<MashingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::group),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(MashingRecipe::category),
             ItemFluids.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
             ItemFluids.CODEC.fieldOf("result").forGetter(MashingRecipe::result),
-            RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(MashingRecipe::ingredients),
+            Ingredients.CODEC.fieldOf("ingredients").forGetter(MashingRecipe::ingredients),
             Codec.INT.optionalFieldOf("stew_time", 0).forGetter(MashingRecipe::stewTime)
     ).apply(instance, MashingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, MashingRecipe> PACKET_CODEC = PacketCodec.tuple(
@@ -51,7 +50,7 @@ public record MashingRecipe (
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::category,
             ItemFluids.PACKET_CODEC, MashingRecipe::baseFluid,
             ItemFluids.PACKET_CODEC, MashingRecipe::result,
-            RecipeUtils.INGREDIENTS_PACKET_CODEC, MashingRecipe::ingredients,
+            Ingredients.PACKET_CODEC, MashingRecipe::ingredients,
             PacketCodecs.INTEGER, MashingRecipe::stewTime,
             MashingRecipe::new
     );
@@ -73,54 +72,24 @@ public record MashingRecipe (
 
     @Override
     public ItemStack createIcon() {
+        this.isIgnoredInRecipeBook();
         return PSItems.MASH_TUB.getDefaultStack();
     }
 
     @Override
     public DefaultedList<Ingredient> getIngredients() {
-        return ingredients;
-    }
-
-    public boolean hasMinimumRequirements(Input input) {
-        ItemMound unmatchedInputs = new ItemMound(input.inputs());
-        List<Ingredient> unmatchedIngredients = new ArrayList<>(ingredients);
-
-        var iter = unmatchedIngredients.iterator();
-        while (iter.hasNext()) {
-            Ingredient ingredient = iter.next();
-
-            for (Item item : unmatchedInputs.getCounts().keySet()) {
-                ItemStack stack = item.getDefaultStack();
-                if (ingredient.test(stack)) {
-                    iter.remove();
-                    unmatchedInputs.remove(item, 1);
-                    break;
-                }
-            }
-        }
-
-        if (unmatchedIngredients.isEmpty()) {
-            return true;
-        }
-        if (!unmatchedIngredients.isEmpty()) {
-            return false;
-        }
-
-        return unmatchedIngredients.stream().allMatch(i -> {
-            return input.inputs().getCounts().keySet().stream().anyMatch(item -> i.test(item.getDefaultStack()));
-        });
+        return ingredients.ingredients();
     }
 
     public boolean hasUndesiredIngredients(Input input) {
-        return input.inputs().getCounts().keySet().stream().anyMatch(item -> {
-            ItemStack stack = item.getDefaultStack();
-            return ingredients.stream().noneMatch(i -> i.test(stack));
-        });
+        return !getRemainder(input).isEmpty();
     }
 
     @Override
     public boolean matches(Input input, World world) {
-        return !input.tankFluid().isEmpty() && baseFluid.canCombine(input.tankFluid()) && !hasUndesiredIngredients(input);
+        return !input.tankFluid().isEmpty()
+                && baseFluid.canCombine(input.tankFluid())
+                && ingredients.hasMinimumRequirements(input);
     }
 
     @Override
@@ -141,17 +110,13 @@ public record MashingRecipe (
     @Override
     public DefaultedList<ItemStack> getRemainder(Input input) {
         ItemMound unmatchedInputs = new ItemMound(input.inputs());
-
-        for (Ingredient ingredient : ingredients) {
-            for (Item item : unmatchedInputs.getCounts().keySet()) {
-                ItemStack stack = item.getDefaultStack();
-                if (ingredient.test(stack)) {
-                    unmatchedInputs.remove(item, 1);
-                    break;
-                }
-            }
-        }
+        ingredients.removeMatches(unmatchedInputs);
         return unmatchedInputs.convertToItemStacks();
+    }
+
+    @Override
+    public boolean isIgnoredInRecipeBook() {
+        return true;
     }
 
     public record Input(ItemFluids tankFluid, ItemStack solids, ItemMound inputs) implements RecipeInput {
@@ -164,6 +129,44 @@ public record MashingRecipe (
         public int getSize() {
             return 1;
         }
+    }
+
+    public record Ingredients (DefaultedList<Entry> counts, DefaultedList<Ingredient> ingredients) {
+        public static final Codec<Ingredients> CODEC = CodecUtils.toDefaultedList(Entry.CODEC, Entry.EMPTY).xmap(Ingredients::new, Ingredients::counts);
+        public static final PacketCodec<RegistryByteBuf, Ingredients> PACKET_CODEC = Entry.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()).xmap(Ingredients::new, Ingredients::counts);
+
+        public Ingredients(DefaultedList<Entry> counts) {
+            this(counts, DefaultedList.copyOf(Ingredient.EMPTY, counts.stream().map(Entry::ingredient).toArray(Ingredient[]::new)));
+        }
+
+
+        public boolean hasMinimumRequirements(Input input) {
+            return removeMatches(new ItemMound(input.inputs()));
+        }
+
+        /**
+         * @param inputs The mound of items to consume
+         * @return True if all ingredients are satisfied
+         */
+        public boolean removeMatches(ItemMound inputs) {
+            return counts().stream().filter(ingredient -> {
+                return !inputs.removeWhere(ingredient.ingredient(), ingredient.minimum());
+            }).count() == 0;
+        }
+
+        public record Entry(Ingredient ingredient, int minimum) {
+            public static final Entry EMPTY = new Entry(Ingredient.EMPTY, 0);
+            public static final Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(
+                    Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(Entry::ingredient),
+                    Codec.INT.fieldOf("count").forGetter(Entry::minimum)
+            ).apply(i, Entry::new));
+            public static final PacketCodec<RegistryByteBuf, Entry> PACKET_CODEC = PacketCodec.tuple(
+                    Ingredient.PACKET_CODEC, Entry::ingredient,
+                    PacketCodecs.INTEGER, Entry::minimum,
+                    Entry::new
+            );
+        }
+
     }
 
     public enum MatchResult {

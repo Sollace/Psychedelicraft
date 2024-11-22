@@ -5,13 +5,7 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "c:rice" },
-    { "tag": "c:rice" },
-    { "tag": "c:rice" },
-    { "tag": "c:rice" },
-    { "tag": "c:rice" },
-    { "tag": "c:rice" },
-    { "tag": "c:rice" }
+    { "ingredient": { "tag": "c:rice" }, "count": 7 }
   ],
   "result": {
     "fluid": "psychedelicraft:rice"

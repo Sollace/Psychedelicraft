@@ -5,14 +5,7 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "psychedelicraft:grapes" },
-    { "tag": "psychedelicraft:grapes" },
-    { "tag": "psychedelicraft:grapes" },
-    { "tag": "psychedelicraft:grapes" },
-    { "tag": "psychedelicraft:grapes" },
-    { "tag": "psychedelicraft:grapes" },
-    { "tag": "psychedelicraft:grapes" },
-    { "tag": "psychedelicraft:grapes" }
+    { "ingredient": { "tag": "psychedelicraft:grapes" }, "count": 8 }
   ],
   "result": {
     "fluid": "psychedelicraft:red_grapes"

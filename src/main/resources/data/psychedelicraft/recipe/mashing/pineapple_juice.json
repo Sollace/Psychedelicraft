@@ -5,14 +5,7 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "c:pineapples" },
-    { "tag": "c:pineapples" },
-    { "tag": "c:pineapples" },
-    { "tag": "c:pineapples" },
-    { "tag": "c:pineapples" },
-    { "tag": "c:pineapples" },
-    { "tag": "c:pineapples" },
-    { "tag": "c:pineapples" }
+    { "ingredient": { "tag": "c:pineapples" }, "count": 8 }
   ],
   "result": {
     "fluid": "psychedelicraft:pineapple"

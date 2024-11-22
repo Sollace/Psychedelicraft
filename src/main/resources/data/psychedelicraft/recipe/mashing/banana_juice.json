@@ -5,14 +5,7 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "c:bananas" },
-    { "tag": "c:bananas" },
-    { "tag": "c:bananas" },
-    { "tag": "c:bananas" },
-    { "tag": "c:bananas" },
-    { "tag": "c:bananas" },
-    { "tag": "c:bananas" },
-    { "tag": "c:bananas" }
+    { "ingredient": { "tag": "c:bananas" }, "count": 8 }
   ],
   "result": {
     "fluid": "psychedelicraft:banana"

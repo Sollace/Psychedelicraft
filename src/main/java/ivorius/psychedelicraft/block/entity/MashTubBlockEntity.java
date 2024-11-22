@@ -180,9 +180,16 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         var input = new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients);
         var matchedRecipe = world.getRecipeManager().getAllMatches(PSRecipes.MASHING_TYPE, input, getWorld());
 
+        if (matchedRecipe.size() > 1) {
+            var exactMatch = matchedRecipe.stream().filter(recipe -> !recipe.value().hasUndesiredIngredients(input)).findFirst();
+            if (exactMatch.isPresent()) {
+                matchedRecipe = List.of(exactMatch.get());
+            }
+        }
+
         if (matchedRecipe.isEmpty()) {
-            onCraftingFailed();
-        } else if (matchedRecipe.size() == 1 && matchedRecipe.get(0).value().hasMinimumRequirements(input)) {
+            //onCraftingFailed();
+        } else if (matchedRecipe.size() == 1) {
             currentStew = Optional.of(new Stew(matchedRecipe.get(0)));
         }
     }

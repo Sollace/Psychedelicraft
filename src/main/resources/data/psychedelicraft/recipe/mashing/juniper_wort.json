@@ -5,14 +5,10 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "item": "psychedelicraft:juniper_berries" },
-    { "item": "psychedelicraft:juniper_berries" },
-    { "item": "psychedelicraft:juniper_berries" },
-    { "item": "psychedelicraft:juniper_berries" },
-    { "item": "minecraft:sugar" },
-    { "tag": "psychedelicraft:grapes" },
-    { "tag": "psychedelicraft:grapes" },
-    { "item": "minecraft:wheat" }
+    { "ingredient": { "item": "psychedelicraft:juniper_berries" }, "count": 4 },
+    { "ingredient": { "tag": "psychedelicraft:grapes" }, "count": 2 },
+    { "ingredient": { "item": "minecraft:sugar" }, "count": 1 },
+    { "ingredient": { "item": "minecraft:wheat" }, "count": 1 }
   ],
   "result": {
     "fluid": "psychedelicraft:juniper"

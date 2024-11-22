@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -58,6 +59,25 @@ public class ItemMound implements NbtSerialisable {
         if (items.compute(item, (i, count) -> count <= amount ? null : (count - amount)) == null) {
             indexes.remove(item);
         }
+    }
+
+    public boolean removeWhere(Predicate<ItemStack> predicate, int max) {
+        for (Item item : items.keySet().stream().filter(i -> predicate.test(i.getDefaultStack())).toList()) {
+            int available = Math.min(max, items.getInt(item));
+            max -= available;
+            remove(item, available);
+            if (max <= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int countMatches(Predicate<ItemStack> predicate) {
+        return items.object2IntEntrySet().stream()
+                .filter(i -> predicate.test(i.getKey().getDefaultStack()))
+                .mapToInt(Object2IntMap.Entry::getIntValue)
+                .sum();
     }
 
     public boolean isEmpty() {

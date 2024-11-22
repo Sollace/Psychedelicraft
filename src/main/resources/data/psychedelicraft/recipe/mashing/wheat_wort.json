@@ -5,13 +5,7 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "item": "minecraft:wheat" },
-    { "item": "minecraft:wheat" },
-    { "item": "minecraft:wheat" },
-    { "item": "minecraft:wheat" },
-    { "item": "minecraft:wheat" },
-    { "item": "minecraft:wheat" },
-    { "item": "minecraft:wheat" }
+    { "ingredient": { "item": "minecraft:wheat" }, "count": 7 }
   ],
   "result": {
     "fluid": "psychedelicraft:wheat"

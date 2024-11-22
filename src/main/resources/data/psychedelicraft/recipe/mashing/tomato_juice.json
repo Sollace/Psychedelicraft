@@ -5,13 +5,7 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "item": "psychedelicraft:tomato" },
-    { "item": "psychedelicraft:tomato" },
-    { "item": "psychedelicraft:tomato" },
-    { "item": "psychedelicraft:tomato" },
-    { "item": "psychedelicraft:tomato" },
-    { "item": "psychedelicraft:tomato" },
-    { "item": "psychedelicraft:tomato" }
+    { "ingredient": { "item": "psychedelicraft:tomato" }, "count": 7 }
   ],
   "result": {
     "fluid": "psychedelicraft:tomato"

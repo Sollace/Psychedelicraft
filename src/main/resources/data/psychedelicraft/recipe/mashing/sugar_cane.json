@@ -5,13 +5,7 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "item": "minecraft:sugar_cane" },
-    { "item": "minecraft:sugar_cane" },
-    { "item": "minecraft:sugar_cane" },
-    { "item": "minecraft:sugar_cane" },
-    { "item": "minecraft:sugar_cane" },
-    { "item": "minecraft:sugar_cane" },
-    { "item": "minecraft:sugar_cane" }
+    { "ingredient": { "item": "minecraft:sugar_cane" }, "count": 7 }
   ],
   "result": {
     "fluid": "psychedelicraft:sugar_cane"

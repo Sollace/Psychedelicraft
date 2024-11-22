@@ -5,14 +5,7 @@
     "fluid": "minecraft:water"
   },
   "ingredients": [
-    { "tag": "psychedelicraft:honey" },
-    { "tag": "psychedelicraft:honey" },
-    { "tag": "psychedelicraft:honey" },
-    { "tag": "psychedelicraft:honey" },
-    { "tag": "psychedelicraft:honey" },
-    { "tag": "psychedelicraft:honey" },
-    { "tag": "psychedelicraft:honey" },
-    { "tag": "psychedelicraft:honey" }
+    { "ingredient": { "tag": "psychedelicraft:honey" }, "count": 8 }
   ],
   "result": {
     "fluid": "psychedelicraft:honey"
