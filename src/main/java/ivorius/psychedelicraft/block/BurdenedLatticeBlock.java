@@ -58,7 +58,8 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
     private final int shearedAge;
 
-    private final RegistryKey<LootTable> farmingLootTableKey;
+    @Nullable
+    private RegistryKey<LootTable> farmingLootTableKey;
 
     public BurdenedLatticeBlock(boolean spreads, @Nullable Block stem, int shearedAge, Settings settings) {
         super(settings);
@@ -66,7 +67,6 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
         this.stem = stem;
 
         this.shearedAge = shearedAge;
-        farmingLootTableKey = RegistryKey.of(getLootTableKey().getRegistryRef(), getLootTableKey().getValue().withPath(p -> p + "_farming"));
         setDefaultState(getDefaultState().with(AGE, 0).with(PERSISTENT, false));
     }
 
@@ -112,7 +112,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
             world.playSoundFromEntity(null, player, SoundEvents.ENTITY_SHEEP_SHEAR, player.getSoundCategory(), 1, 1);
 
             if (!world.isClient) {
-                world.getServer().getReloadableRegistries().getLootTable(farmingLootTableKey)
+                world.getServer().getReloadableRegistries().getLootTable(getFarmingLootTableKey())
                     .generateLoot(new LootContextParameterSet.Builder((ServerWorld)world)
                         .add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
                         .add(LootContextParameters.TOOL, player.getStackInHand(hand))
@@ -129,6 +129,15 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
+
+    public final RegistryKey<LootTable> getFarmingLootTableKey() {
+        if (farmingLootTableKey == null) {
+            farmingLootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, getLootTableKey().getValue().withSuffixedPath("_farming"));
+        }
+
+        return farmingLootTableKey;
+    }
+
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
