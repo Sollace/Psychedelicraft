@@ -297,5 +297,17 @@ public interface PSItems {
         List.of(
             WOODEN_MUG, STONE_CUP, GLASS_CHALICE, SHOT_GLASS, BOTTLE, FILLED_BUCKET, FILLED_BOWL, FILLED_GLASS_BOTTLE
         ).forEach(FluidCauldronBehavior::register);
+
+        /*UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
+
+            if (player.isSpectator()) {
+                return ActionResult.PASS;
+            }
+
+            ItemStack stack = player.getStackInHand(hand);
+            if (stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(Items.))
+
+            return ActionResult.PASS;
+        });*/
     }
 }
