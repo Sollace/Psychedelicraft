@@ -216,6 +216,11 @@
   "tag.item.psychedelicraft.suitable_hot_drink_recepticals": "Hot Drink Holders",
   "tag.item.psychedelicraft.can_go_into_paper_bag": "Can Insert Into Paper Bag",
 
+  "tag.item.c.corn": "Corn",
+  "tag.item.c.bananas": "Bananas",
+  "tag.item.c.pineapples": "Pineapples",
+  "tag.item.c.rice": "Rice",
+
   "entity.psychedelicraft.molotov_cocktail": "Molotov Cocktail",
   "entity.psychedelicraft.reality_rift": "Zero Rift",
 
