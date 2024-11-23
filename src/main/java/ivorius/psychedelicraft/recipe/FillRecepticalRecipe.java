@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.recipe;
 
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -16,10 +17,13 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 
@@ -77,13 +81,15 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput inventory, World world) {
-        RecipeMatcher recipeMatcher = new RecipeMatcher();
-        return RecipeUtils.recepticals(inventory.getStacks().stream()).count() == 1
-                && inventory.getStacks().stream().filter(stack -> {
-                    recipeMatcher.addInput(stack, 1);
-                    return true;
-                }).count() == getIngredients().size()
-                && recipeMatcher.match(this, null);
+        List<ItemStack> recepticals = RecipeUtils.recepticals(inventory.getStacks()
+                .stream())
+                .filter(receptical -> input.stream().noneMatch(i -> i.test(receptical)))
+                .toList();
+
+        return recepticals.size() == 1
+                && ItemFluids.of(recepticals.get(0)).fluid() == SimpleFluid.forVanilla(Fluids.WATER)
+                && FluidCapacity.getPercentage(recepticals.get(0)) >= 1
+                && inventory.getRecipeMatcher().match(this, null);
     }
 
     @Override
@@ -94,7 +100,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
         return RecipeUtils.recepticals(inventory.getStacks().stream()).findFirst().map(receptical -> {
-            return ItemFluids.set(receptical, output.getAsItemFluid(FluidCapacity.get(receptical)));
+            return ItemFluids.set(receptical.copy(), output.getAsItemFluid(FluidCapacity.get(receptical)));
         }).orElse(ItemStack.EMPTY);
     }
 }

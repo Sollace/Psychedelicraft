@@ -2,7 +2,6 @@
   "type": "psychedelicraft:fill_receptical",
   "receptical": { "tag": "psychedelicraft:suitable_hot_drink_recepticals" },
   "ingredients": [
-    { "item": "minecraft:water_bucket" },
     { "item": "psychedelicraft:coffee_beans" },
     { "item": "psychedelicraft:coffee_beans" }
   ],

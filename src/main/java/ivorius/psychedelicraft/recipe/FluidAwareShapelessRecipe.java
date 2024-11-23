@@ -70,12 +70,15 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     @Override
     public boolean matches(CraftingRecipeInput inventory, World world) {
         List<OptionalFluidIngredient> unmatchedInputs = new ArrayList<>(ingredients);
-        return inventory.getStacks().stream()
+        long matches = inventory.getStacks().stream()
                     .filter(stack -> unmatchedInputs.stream()
                         .filter(ingredient -> ingredient.test(stack))
                         .findFirst()
                         .map(unmatchedInputs::remove)
-                        .orElse(false)).count() == ingredients.size() && unmatchedInputs.isEmpty();
+                        .orElse(false)).count();
+        return matches == ingredients.size()
+                //&& matches == inventory.getStacks().size()
+                && unmatchedInputs.isEmpty();
     }
 
     @Override
