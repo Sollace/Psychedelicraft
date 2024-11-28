@@ -63,11 +63,13 @@ public interface PSItemGroups {
 
                 entries.add(PSItems.BONG);
                 entries.add(PSItems.SYRINGE);
-                List.of(PSFluids.COCAINE, PSFluids.CAFFEINE, PSFluids.BATH_SALTS).forEach(fluid -> {
+                List.of(PSFluids.COCAINE, PSFluids.CAFFEINE, PSFluids.BATH_SALTS, PSFluids.MORPHINE, PSFluids.ATROPINE).forEach(fluid -> {
                     entries.add(ItemFluids.set(PSItems.SYRINGE.getDefaultStack(), fluid.getDefaultStack(FluidVolumes.SYRINGE)));
                 });
-                entries.add(ItemFluids.set(PSItems.SYRINGE.getDefaultStack(), PSFluids.MORNING_GLORY_EXTRACT.getDefaultStack(FluidVolumes.SYRINGE)));
-                entries.add(ItemFluids.set(PSItems.SYRINGE.getDefaultStack(), ChemicalExtractFluid.DISTILLATION.set(PSFluids.MORNING_GLORY_EXTRACT.getDefaultStack(FluidVolumes.SYRINGE), 2)));
+                List.of(PSFluids.MORNING_GLORY_EXTRACT, PSFluids.BELLADONA_EXTRACT, PSFluids.JIMSONWEED_EXTRACT).forEach(fluid -> {
+                    entries.add(ItemFluids.set(PSItems.SYRINGE.getDefaultStack(), fluid.getDefaultStack(FluidVolumes.SYRINGE)));
+                    entries.add(ItemFluids.set(PSItems.SYRINGE.getDefaultStack(), ChemicalExtractFluid.DISTILLATION.set(fluid.getDefaultStack(FluidVolumes.SYRINGE), 2)));
+                });
 
                 entries.add(PSItems.COFFEA_CHERRIES);
                 entries.add(PSItems.COFFEE_BEANS);
