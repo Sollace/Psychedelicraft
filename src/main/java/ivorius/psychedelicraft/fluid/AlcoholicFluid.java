@@ -252,7 +252,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     @Override
     public void appendTankTooltip(ItemFluids stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
         int ticksProcessed = tank.getTimeProcessed();
-        int ticksNeeded = tank.getTimeNeeded();
+        int ticksNeeded = Math.abs(tank.getTimeNeeded());
         String timeRemaining = StringHelper.formatTicks(ticksNeeded - ticksProcessed, world == null ? 20 : world.getTickManager().getTickRate());
         ProcessType processType = tank.getActiveProcess();
         tooltip.add(Text.translatable("fluid.status", processType.getStatus()));
