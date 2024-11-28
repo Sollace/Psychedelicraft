@@ -28,7 +28,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -57,7 +56,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     public static final EnumProperty<IODirection> IN = EnumProperty.of("in", IODirection.class);
     public static final EnumProperty<IODirection> OUT = EnumProperty.of("out", IODirection.class);
 
-    private static final double RADIUS = 0.05;
+    private static final double RADIUS = 0.06;
     private static final VoxelShape DEFAULT_SHAPE = VoxelShapes.cuboid(0.4, 0.4, 0.4, 0.6, 0.6, 0.6);
     private static final Function<Direction, VoxelShape> SHAPE_PART_CACHE = Util.memoize(direction -> {
         return VoxelShapes.cuboid(
@@ -122,7 +121,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
                 .map(placingConnection -> {
                     IODirection other = getValidConnectionDirections(ctx.getWorld(), ctx.getBlockPos(), placingConnection, placedDir.getOpposite())
                             .findFirst()
-                            .orElse(IODirection.NONE);
+                            .orElse(placedDir);
 
                     return state
                             .with(getInverseProperty(placingConnection), placedDir.getOpposite())
@@ -131,8 +130,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
                     // try to place output against neighbour
                     IODirection in = getValidConnectionDirections(ctx.getWorld(), ctx.getBlockPos(), OUT, placedDir).findFirst().orElse(placedDir.getOpposite());
                     IODirection out = getValidConnectionDirections(ctx.getWorld(), ctx.getBlockPos(), IN, in).findFirst().orElse(in.getOpposite());
-                    setDirection(state, in, out);
-                    return Blocks.STONE.getDefaultState();
+                    return setDirection(state, in, out);
                 });
     }
 
@@ -192,7 +190,8 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
             BlockPos neighborPos = pos.offset(direction.direction);
             BlockState neighborState = world.getBlockState(neighborPos);
             IODirection neighborComplimentaryDirection = neighborState.getOrEmpty(getInverseProperty(property)).orElse(null);
-            if (neighborComplimentaryDirection == null && !PipeInsertable.canConnectWith(world, neighborState, pos, neighborState, neighborPos, direction.direction, property == OUT)) {
+            if (neighborComplimentaryDirection == null
+                    && !PipeInsertable.canConnectWith(world, neighborState, pos, neighborState, neighborPos, direction.direction, property == IN)) {
                 return false;
             }
             return getConnectionsForRedirection(world, neighborPos, neighborState).anyMatch(openConnection -> openConnection == getInverseProperty(property));
@@ -203,12 +202,13 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return Stream.of(IN, OUT).filter(property -> {
             IODirection currentDirection = state.getOrEmpty(property).orElse(IODirection.NONE);
             if (currentDirection == IODirection.NONE) {
-                return true;
+                return false;
             }
             BlockPos neighborPos = pos.offset(currentDirection.direction);
             BlockState neighborState = world.getBlockState(neighborPos);
             IODirection neighborComplimentaryDirection = neighborState.getOrEmpty(getInverseProperty(property)).orElse(null);
-            if (neighborComplimentaryDirection == null && !PipeInsertable.canConnectWith(world, state, pos, neighborState, neighborPos, currentDirection.direction, property == OUT)) {
+            if (neighborComplimentaryDirection == null
+                    && !PipeInsertable.canConnectWith(world, state, pos, neighborState, neighborPos, currentDirection.direction, property == IN)) {
                 return true;
             }
             return neighborComplimentaryDirection != null
