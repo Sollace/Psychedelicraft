@@ -7,12 +7,14 @@ package ivorius.psychedelicraft;
 
 import net.minecraft.registry.*;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
 public interface PSSounds {
 
     SoundEvent ENTITY_PLAYER_HEARTBEAT = register("entity.player.heartbeat");
     SoundEvent ENTITY_PLAYER_BREATH = register("entity.player.breath");
+    SoundEvent ENTITY_PLAYER_PACIFIER_SQUEAK = SoundEvents.BLOCK_SLIME_BLOCK_FALL;
 
     SoundEvent BLOCK_RIFT_JAR_TOGGLE = register("block.rift_jar.toggle");
     SoundEvent BLOCK_RIFT_JAR_OPEN = register("block.rift_jar.open");

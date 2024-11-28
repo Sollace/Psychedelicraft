@@ -11,10 +11,14 @@ import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.sound.DrugMusicManager;
+import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.PacifierItem;
 import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgDrugProperties;
 import ivorius.psychedelicraft.util.NbtSerialisable;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FireBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
@@ -33,6 +37,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.event.GameEvent;
 
 import java.util.*;
 import java.util.function.Function;
@@ -64,6 +69,9 @@ public class DrugProperties implements NbtSerialisable {
     private final PlayerEntity entity;
 
     private final Stomach stomach;
+
+    private float teethGrindingRate;
+    private int pacifierSqueakDelay = -1;
 
     public DrugProperties(PlayerEntity entity) {
         this.entity = entity;
@@ -173,6 +181,12 @@ public class DrugProperties implements NbtSerialisable {
         entity.getWorld().playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 0.02F, 1.5F);
     }
 
+    public void increaseTeethGrindingSideEffect() {
+        if (entity.age % 10 == 0) {
+            teethGrindingRate = MathHelper.clamp(teethGrindingRate + 0.001F, 0, 100);
+        }
+    }
+
     public boolean isBreathingSmoke() {
         return timeBreathingSmoke > 0;
     }
@@ -211,6 +225,33 @@ public class DrugProperties implements NbtSerialisable {
         } else {
             if (random.nextFloat() < getModifier(Drug.DROWSYNESS)) {
                 entity.addExhaustion(0.05F);
+            }
+
+            if (getDrugValue(DrugType.METHAMPHETAMINE) <= 0.001F
+                    && teethGrindingRate > 0
+                    && random.nextFloat() * (entity.isSleeping() ? 2 : 1) < teethGrindingRate / 100F) {
+                if (!PacifierItem.consumePacifier(entity)) {
+                    entity.damage(damageOf(PSDamageTypes.TEETH_GRINDING), 1);
+                } else {
+                    pacifierSqueakDelay = 5 + entity.getRandom().nextInt(15);
+                    entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,
+                            entity.getSoundCategory(),
+                            (float)entity.getRandom().nextTriangular(1, 0.2F),
+                            (float)entity.getRandom().nextTriangular(1, 0.2F)
+                    );
+                    entity.getWorld().emitGameEvent(entity, GameEvent.BLOCK_PLACE, entity.getBlockPos());
+                }
+            }
+
+            ((FireBlock)Blocks.FIRE).registerFlammableBlock(PSFluids.ATROPINE.getPhysical().getBlock(), 60, 100);
+
+            if (pacifierSqueakDelay > 0 && --pacifierSqueakDelay == 0) {
+                entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,
+                        entity.getSoundCategory(),
+                        (float)entity.getRandom().nextTriangular(1, 0.2F),
+                        (float)entity.getRandom().nextTriangular(1, 0.2F)
+                );
+                entity.getWorld().emitGameEvent(entity, GameEvent.BLOCK_PLACE, entity.getBlockPos());
             }
 
             if (Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0
@@ -262,6 +303,7 @@ public class DrugProperties implements NbtSerialisable {
         influences.clear();
         DrugInfluence.LIST_CODEC.decode(NbtOps.INSTANCE, tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE)).result().map(Pair::getFirst).ifPresent(influences::addAll);
         stomach.fromNbt(tagCompound.getCompound("stomach"), lookup);
+        teethGrindingRate = tagCompound.getFloat("teethGrindingRate");
         dirty = false;
     }
 
@@ -270,6 +312,7 @@ public class DrugProperties implements NbtSerialisable {
         DRUGS_CODEC.encodeStart(NbtOps.INSTANCE, drugs).result().ifPresent(drugs -> compound.put("Drugs", drugs));
         DrugInfluence.LIST_CODEC.encodeStart(NbtOps.INSTANCE, influences).result().ifPresent(influenceTagList -> compound.put("drugInfluences", influenceTagList));
         compound.put("stomach", stomach.toNbt(lookup));
+        compound.putFloat("teethGrindingRate", teethGrindingRate);
     }
 
     public void copyFrom(DrugProperties old, boolean alive) {

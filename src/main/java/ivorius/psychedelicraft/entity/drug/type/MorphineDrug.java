@@ -25,8 +25,8 @@ public class MorphineDrug extends SimpleDrug {
             .put(PAIN_SUPPRESSION, 0.5F)
             .build();
 
-    public MorphineDrug(double decSpeed, double decSpeedPlus) {
-        super(DrugType.MORPHINE, decSpeed, decSpeedPlus);
+    public MorphineDrug(DrugType<MorphineDrug> type, double decSpeed, double decSpeedPlus) {
+        super(type, decSpeed, decSpeedPlus);
     }
 
     @Override
@@ -45,6 +45,10 @@ public class MorphineDrug extends SimpleDrug {
                 entity.damage(properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
                 return true;
             }
+        }
+
+        if (getType() == DrugType.METHAMPHETAMINE) {
+            properties.increaseTeethGrindingSideEffect();
         }
 
         return super.tickSideEffects(properties, random);

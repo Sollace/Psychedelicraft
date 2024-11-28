@@ -86,6 +86,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.MORNING_GLORY_SEEDS);
                 entries.add(PSItems.LSA_SQUARE);
                 entries.add(PSItems.LSD_PILL);
+                entries.add(PSItems.PACIFIER);
 
                 entries.add(PSItems.JIMSONWEED_SEEDS);
                 entries.add(PSItems.JIMSONWEED_SEED_POD);

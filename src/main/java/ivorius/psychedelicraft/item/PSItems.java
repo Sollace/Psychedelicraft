@@ -272,6 +272,7 @@ public interface PSItems {
     Item BUNSEN_BURNER = register("bunsen_burner", PSBlocks.BUNSEN_BURNER);
     Item GLASS_TUBE = register("glass_tube", PSBlocks.GLASS_TUBE);
 
+    Item PACIFIER = register("pacifier", new PacifierItem(new Item.Settings().maxDamage(50)));
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Settings()));
     }
