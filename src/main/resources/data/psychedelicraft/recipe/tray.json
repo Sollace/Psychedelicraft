@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "n n",
+    "iii"
+  ],
+  "key": {
+    "n": { "item": "minecraft:iron_nugget" },
+    "i": { "item": "minecraft:iron_ingot" }
+  },
+  "result": {
+    "id": "psychedelicraft:tray"
+  }
+}
