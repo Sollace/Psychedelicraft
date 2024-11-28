@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.entity.drug;
 
 import ivorius.psychedelicraft.*;
 import ivorius.psychedelicraft.advancement.PSCriteria;
+import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
@@ -252,6 +253,13 @@ public class DrugProperties implements NbtSerialisable {
                         (float)entity.getRandom().nextTriangular(1, 0.2F)
                 );
                 entity.getWorld().emitGameEvent(entity, GameEvent.BLOCK_PLACE, entity.getBlockPos());
+            }
+
+            if (entity.isOnFire()) {
+                BlockPos headPos = BlockPos.ofFloored(entity.getEyePos());
+                if (entity.getWorld().getBlockState(headPos).isOf(PSBlocks.FLAMMABLE_GAS)) {
+                    entity.getWorld().setBlockState(headPos, Blocks.FIRE.getDefaultState());
+                }
             }
 
             if (Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0

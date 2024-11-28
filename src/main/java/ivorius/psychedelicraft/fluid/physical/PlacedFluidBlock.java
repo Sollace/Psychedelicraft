@@ -28,7 +28,7 @@ public abstract class PlacedFluidBlock extends FluidBlock {
     }
 
     PlacedFluidBlock(FlowableFluid fluid) {
-        super(fluid, Settings.copy(Blocks.WATER));
+        super(fluid, Settings.copy(Blocks.WATER).ticksRandomly());
     }
 
     @Override
