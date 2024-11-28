@@ -123,6 +123,8 @@ public interface PSBlocks {
             .air().nonOpaque().noBlockBreakParticles().dropsNothing()
     ));
 
+    Block FLAMMABLE_GAS = register("flammable_gas", new FlammableGasBlock(Settings.create().replaceable().noCollision().dropsNothing().air()));
+
     Block TRAY = register("tray", new TrayBlock(Settings.create().mapColor(MapColor.IRON_GRAY).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
     Block BUNSEN_BURNER = register("bunsen_burner", new BurnerBlock(Settings.create().mapColor(MapColor.IRON_GRAY).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
     Block GLASS_TUBE = register("glass_tube", new GlassTubeBlock(Settings.create().mapColor(MapColor.OFF_WHITE).strength(0.3F).sounds(BlockSoundGroup.GLASS).nonOpaque()

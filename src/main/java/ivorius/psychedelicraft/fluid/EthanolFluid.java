@@ -33,6 +33,7 @@ public class EthanolFluid extends DrugFluid {
 
     @Override
     public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+        super.onRandomTick(world, pos, state, random);
         world.getOtherEntities(null, Box.of(pos.toCenterPos(), 5, 5, 5)).forEach(entity -> {
             if (random.nextInt(30) == 0) {
                 DrugProperties.of(entity).ifPresentOrElse(properties -> {

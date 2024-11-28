@@ -31,7 +31,7 @@ import java.util.function.Function;
 /**
  * Created by lukas on 22.10.14.
  */
-public class DrugFluid extends SimpleFluid implements ConsumableFluid, Combustable {
+public class DrugFluid extends SimpleFluid implements ConsumableFluid {
     protected final List<DrugInfluence> drugInfluences;
     protected final FoodComponent foodLevel;
 

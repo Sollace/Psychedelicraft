@@ -17,6 +17,7 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
@@ -27,6 +28,7 @@ import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributeHandler;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.*;
 import net.minecraft.item.Item;
@@ -51,7 +53,7 @@ import net.minecraft.world.World;
  * Created by lukas on 29.10.14.
  * Updated by Sollace
  */
-public class SimpleFluid {
+public class SimpleFluid implements Combustable {
     public static final Identifier EMPTY_KEY = Psychedelicraft.id("empty");
     public static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids")), EMPTY_KEY).buildAndRegister();
     private static final Map<Identifier, SimpleFluid> VANILLA_FLUIDS = new HashMap<>();
@@ -209,6 +211,12 @@ public class SimpleFluid {
     }
 
     public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+        if (getFireStrength(getDefaultStack()) > 0) {
+            BlockState above = world.getBlockState(pos.up());
+            if (above.isAir() && !above.isOf(PSBlocks.FLAMMABLE_GAS)) {
+                world.setBlockState(pos.up(), PSBlocks.FLAMMABLE_GAS.getDefaultState());
+            }
+        }
     }
 
     public int getHash(ItemFluids stack) {
@@ -244,6 +252,16 @@ public class SimpleFluid {
         return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid).getFlowing() : fluid;
     }
 
+    @Override
+    public float getFireStrength(ItemFluids stack) {
+        return settings.flammability * stack.amount();
+    }
+
+    @Override
+    public float getExplosionStrength(ItemFluids stack) {
+        return settings.explosiveness * stack.amount();
+    }
+
     @Deprecated
     public static Iterable<SimpleFluid> all() {
         return REGISTRY;
@@ -253,6 +271,8 @@ public class SimpleFluid {
     public static class Settings {
         private int color;
         private int viscocity = 1;
+        private float explosiveness;
+        private float flammability;
         final FluidStateManager stateManager = new FluidStateManager(new HashSet<>());
 
         public <T extends Settings> T color(int color) {
@@ -262,6 +282,12 @@ public class SimpleFluid {
 
         public <T extends Settings> T viscocity(int viscocity) {
             this.viscocity = viscocity;
+            return (T)this;
+        }
+
+        public <T extends Settings> T flammability(float flammability, float explosiveness) {
+            this.explosiveness = explosiveness;
+            this.flammability = flammability;
             return (T)this;
         }
 
