@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.client.render;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +28,12 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
@@ -68,10 +72,39 @@ public interface PSRenderers {
         BuiltinItemRendererRegistry.INSTANCE.register(PSItems.RIFT_JAR, RiftJarBlockEntityRenderer::renderStack);
 
         SimpleFluid.REGISTRY.forEach(fluid -> {
-            FluidRenderHandlerRegistry.INSTANCE.register(fluid.getPhysical().getStandingFluid(), fluid.getPhysical().getFlowingFluid(), new SimpleFluidRenderHandler(SimpleFluidRenderHandler.WATER_STILL, SimpleFluidRenderHandler.WATER_FLOWING, SimpleFluidRenderHandler.WATER_OVERLAY, 0) {
+            BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(),
+                    fluid.getPhysical().getStandingFluid(),
+                    fluid.getPhysical().getFlowingFluid()
+            );
+            FluidRenderHandlerRegistry.INSTANCE.register(fluid.getPhysical().getStandingFluid(), fluid.getPhysical().getFlowingFluid(), new SimpleFluidRenderHandler(
+                    SimpleFluidRenderHandler.WATER_STILL,
+                    SimpleFluidRenderHandler.WATER_FLOWING,
+                    SimpleFluidRenderHandler.WATER_OVERLAY, 0) {
+
+                private Function<ItemFluids, Sprite[]> spriteCache = fluid -> sprites;
+
                 @Override
                 public int getFluidColor(@Nullable BlockRenderView view, @Nullable BlockPos pos, FluidState state) {
                     return fluid.getColor(fluid.getStack(state, 1));
+                }
+
+                @Override
+                public Sprite[] getFluidSprites(@Nullable BlockRenderView view, @Nullable BlockPos pos, FluidState state) {
+                    return spriteCache.apply(fluid.getStack(state, 1));
+                }
+
+                @Override
+                public void reloadTextures(SpriteAtlasTexture textureAtlas) {
+                    super.reloadTextures(textureAtlas);
+                    spriteCache = Util.memoize(fluids -> {
+                        Sprite[] sprites = new Sprite[3];
+                        sprites[0] = textureAtlas.getSprite(fluid.getStandingTexture(fluids).orElse(stillTexture));
+                        sprites[1] = textureAtlas.getSprite(fluid.getFlowTexture(fluids).orElse(flowingTexture));
+                        if (overlayTexture != null) {
+                            sprites[2] = textureAtlas.getSprite(overlayTexture);
+                        }
+                        return sprites;
+                    });
                 }
             });
             FluidVariantRendering.register(fluid.getPhysical().getStandingFluid(), new FluidVariantRenderHandler() {

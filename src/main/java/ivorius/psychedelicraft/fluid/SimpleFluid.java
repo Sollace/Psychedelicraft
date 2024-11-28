@@ -45,6 +45,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -126,7 +127,11 @@ public class SimpleFluid implements Combustable {
     }
 
     public Optional<Identifier> getFlowTexture(ItemFluids stack) {
-        return Optional.empty();
+        return settings.flowTexture;
+    }
+
+    public Optional<Identifier> getStandingTexture(ItemFluids stack) {
+        return settings.stillTexture;
     }
 
     public final ItemFluids getStack(State<?, ?> state, int amount) {
@@ -201,7 +206,7 @@ public class SimpleFluid implements Combustable {
     }
 
     public boolean hasRandomTicks() {
-        return false;
+        return getFireStrength(getDefaultStack()) > 0;
     }
 
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
@@ -212,9 +217,12 @@ public class SimpleFluid implements Combustable {
 
     public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
         if (getFireStrength(getDefaultStack()) > 0) {
-            BlockState above = world.getBlockState(pos.up());
-            if (above.isAir() && !above.isOf(PSBlocks.FLAMMABLE_GAS)) {
-                world.setBlockState(pos.up(), PSBlocks.FLAMMABLE_GAS.getDefaultState());
+            for (Direction direction : Direction.values()) {
+                BlockPos side = pos.offset(direction);
+                BlockState above = world.getBlockState(side);
+                if (above.isAir() && !above.isOf(PSBlocks.FLAMMABLE_GAS)) {
+                    world.setBlockState(side, PSBlocks.FLAMMABLE_GAS.getDefaultState());
+                }
             }
         }
     }
@@ -275,6 +283,9 @@ public class SimpleFluid implements Combustable {
         private float flammability;
         final FluidStateManager stateManager = new FluidStateManager(new HashSet<>());
 
+        private Optional<Identifier> flowTexture = Optional.empty();
+        private Optional<Identifier> stillTexture = Optional.empty();
+
         public <T extends Settings> T color(int color) {
             this.color = color;
             return (T)this;
@@ -293,6 +304,12 @@ public class SimpleFluid implements Combustable {
 
         public <T extends Settings> T with(FluidStateManager.FluidProperty<?> property) {
             stateManager.properties().add(property);
+            return (T)this;
+        }
+
+        public <T extends Settings> T sprites(Identifier flowing, Identifier still) {
+            flowTexture = Optional.ofNullable(flowing);
+            stillTexture = Optional.ofNullable(still);
             return (T)this;
         }
     }

@@ -5,12 +5,10 @@
 
 package ivorius.psychedelicraft.fluid;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
-import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -31,11 +29,11 @@ import net.minecraft.world.World;
 public class SlurryFluid extends SimpleFluid implements Processable {
     public static final int FLUID_PER_DIRT = FluidVolumes.BUCKET * 4;
 
-    private final Optional<Identifier> flowTexture;
-
     public SlurryFluid(Identifier id, Settings settings) {
-        super(id, settings);
-        this.flowTexture = Optional.of(getId().withPath(p -> "block/fluid/" + p + "_still"));
+        super(id, settings.sprites(
+                id.withPath(p -> "block/fluid/" + p + "_flow"),
+                id.withPath(p -> "block/fluid/" + p + "_still")
+        ));
     }
 
     @Override
@@ -45,11 +43,6 @@ public class SlurryFluid extends SimpleFluid implements Processable {
         world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS,
                 0.5F + world.getRandom().nextFloat(),
                 0.3F + world.getRandom().nextFloat(), true);
-    }
-
-    @Override
-    public Optional<Identifier> getFlowTexture(ItemFluids stack) {
-        return flowTexture;
     }
 
     @Override

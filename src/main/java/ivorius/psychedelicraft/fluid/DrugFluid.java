@@ -38,6 +38,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid {
     protected final Settings settings;
 
     protected final Map<String, Identifier> flowTextures = new HashMap<>();
+    protected final Map<String, Identifier> stillTextures = new HashMap<>();
 
     public DrugFluid(Identifier id, Settings settings) {
         super(id, settings);
@@ -104,6 +105,13 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid {
         return Optional.ofNullable(settings.appearance.apply(stack))
                 .map(FluidAppearance::flowing)
                 .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
+    }
+
+    @Override
+    public Optional<Identifier> getStandingTexture(ItemFluids stack) {
+        return Optional.ofNullable(settings.appearance.apply(stack))
+                .map(FluidAppearance::still)
+                .map(name -> stillTextures.computeIfAbsent(name, this::getFlowTexture));
     }
 
     protected Identifier getFlowTexture(String name) {

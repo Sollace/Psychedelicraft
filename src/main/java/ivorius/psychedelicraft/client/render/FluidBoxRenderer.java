@@ -165,13 +165,11 @@ public class FluidBoxRenderer {
             int color = stack.fluid().getColor(stack);
             Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
 
-            if (!stack.fluid().isCustomFluid()) {
-                FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(stack.fluid().getPhysical().getStandingFluid());
-                if (handler != null) {
-                    FluidState state = stack.fluid().getPhysical().getStandingFluid().getDefaultState();
-                    color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
-                    sprite = handler.getFluidSprites(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state)[0];
-                }
+            FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(stack.fluid().getPhysical().getStandingFluid());
+            if (handler != null) {
+                FluidState state = stack.fluid().getFluidState(stack);
+                color = handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state);
+                sprite = handler.getFluidSprites(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state)[0];
             }
 
             return new FluidAppearance(sprite.getAtlasId(), sprite, color);
