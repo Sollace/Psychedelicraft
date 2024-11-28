@@ -125,6 +125,7 @@
   "item.psychedelicraft.lsd_square": "LSA Square",
   "item.psychedelicraft.lsd_pill": "LSD Tablet",
 
+  "block.psychedelicraft.flammable_gas": "Flammable Gas",
   "block.psychedelicraft.peyote": "Peyote",
   "block.psychedelicraft.hop": "Hops",
   "block.psychedelicraft.coca": "Coca",
@@ -271,8 +272,11 @@
   "fluid.psychedelicraft.coffee.temperature.2": "Hot Coffee",
 
   "fluid.psychedelicraft.ethanol": "Ethanol",
+  "fluid.psychedelicraft.petrolium": "Petrolium",
+  "fluid.psychedelicraft.gasoline": "Gasoline",
   "fluid.psychedelicraft.acid": "ACID",
   "fluid.psychedelicraft.atropine": "Atropine",
+  "fluid.psychedelicraft.morphine": "Morphine",
   "fluid.psychedelicraft.coca_tea": "Coca Tea",
   "fluid.psychedelicraft.cannabis_tea": "Cannabis Tea",
   "fluid.psychedelicraft.peyote_juice": "Peyote Juice",
