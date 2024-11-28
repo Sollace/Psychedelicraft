@@ -118,6 +118,7 @@ public interface Processable {
         /**
          * When fluids of differing types are mixed on a bunsen burner, used to change their properties when they combine.
          */
+        @Deprecated
         REACT;
 
         private final String name = name().toLowerCase(Locale.ROOT);

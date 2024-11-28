@@ -23,6 +23,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.Ingredient;
 
 public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> level, Map<String, Integer> attributes) {
+    public static final FluidIngredient EMPTY = new FluidIngredient(Optional.empty(), Optional.empty(), Map.of());
     public static final Codec<FluidIngredient> CODEC = Codec.either(
             SimpleFluid.CODEC.xmap(fluid -> new FluidIngredient(Optional.of(fluid), Optional.empty(), Map.of()), i -> i.fluid().orElse(PSFluids.EMPTY)),
             RecordCodecBuilder.<FluidIngredient>create(instance -> instance.group(

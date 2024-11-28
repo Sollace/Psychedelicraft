@@ -14,12 +14,13 @@ import ivorius.psychedelicraft.fluid.alcohol.DrinkType;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkType.Variation;
 import ivorius.psychedelicraft.fluid.alcohol.StatePredicate;
+import net.minecraft.util.Colors;
 
 /**
  * Created by lukas on 22.10.14.
  */
 public interface PSFluids {
-    SimpleFluid EMPTY = new SimpleFluid(SimpleFluid.EMPTY_KEY, new Settings().color(0xFFFFFFFF), true);
+    SimpleFluid EMPTY = new SimpleFluid(SimpleFluid.EMPTY_KEY, new Settings().color(Colors.WHITE), true);
     AlcoholicFluid WHEAT_HOP = new AlcoholicFluid(Psychedelicraft.id("wheat_hop"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoWheatHop())

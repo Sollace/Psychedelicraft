@@ -1,7 +1,6 @@
 package ivorius.psychedelicraft.block.entity.contents;
 
 import java.util.List;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.ShapeUtil;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
@@ -153,6 +152,9 @@ public class LargeContents extends SmallContents {
     }
 
     protected ItemFluids deposit(ItemFluids stack) {
+        if (stack.isEmpty()) {
+            return stack;
+        }
         int maxToInsert = Math.min(stack.amount(), Math.max(0, capacity - getTotalFluidVolume()));
         ItemFluids toInsert = stack.ofAmount(maxToInsert);
         int transferred = 0;
@@ -201,30 +203,44 @@ public class LargeContents extends SmallContents {
 
     private boolean isValidIngredient(ItemStack stack) {
         return FluidCapacity.get(stack) == 0
-                && entity.getWorld().getRecipeManager().getFirstMatch(PSRecipes.REACTING_TYPE, new ReducingRecipe.Input(stack), entity.getWorld()).isPresent();
+                && entity.getWorld().getRecipeManager()
+                .listAllOfType(PSRecipes.REACTING_TYPE).stream().anyMatch(recipe -> !recipe.value().ingredient().isEmpty() && recipe.value().ingredient().test(stack));
     }
 
     @Override
     protected boolean shouldProduceEvaporate(ServerWorld world) {
-        return getTotalFluidVolume() >= capacity || ingredients.getCounts().object2IntEntrySet().stream().filter(ingredient -> {
-            var input = new ReducingRecipe.Input(ingredient.getKey().getDefaultStack());
-            return world.getRecipeManager().getFirstMatch(PSRecipes.REACTING_TYPE, input, world).filter(recipe -> {
-                if (++processingTime >= recipe.value().stewTime()) {
-                    ingredients.remove(ingredient.getKey(), 1);
-                    if (!recipe.value().remainder().isEmpty()) {
+        var input = new ReducingRecipe.Input(
+                getAuxiliaryTanks().stream().map(tank -> tank.getContents()).toList(),
+                new ItemMound(ingredients)
+        );
+
+        world.getRecipeManager().getFirstMatch(PSRecipes.REACTING_TYPE, input, world).ifPresent(recipe -> {
+            if (++processingTime >= recipe.value().stewTime()) {
+                processingTime = 0;
+                if (!recipe.value().ingredient().isEmpty()) {
+                    if (ingredients.removeWhere(recipe.value().ingredient(), 1) && !recipe.value().remainder().isEmpty()) {
                         ingredients.addStack(recipe.value().remainder());
                     }
-                    processingTime = 0;
                 }
 
-                int amount = ingredient.getIntValue();
-                int transferred = tryInsert(world, entity.getCachedState(), entity.getPos(), Direction.UP, recipe.value().result().ofAmount(recipe.value().result().amount() * amount));
-                if (transferred < amount) {
-                    onFluidWasted(world);
+                if (!recipe.value().fluids().isEmpty()) {
+                    var remainder = recipe.value().getRemainingFluids(input.fluids());
+                    if (remainder != input.fluids()) {
+                        getAuxiliaryTanks().clear();
+                        remainder.forEach(this::deposit);
+                    }
                 }
-                return true;
-            }).isPresent();
-        }).findAny().isEmpty();
+
+                if (!recipe.value().result().isEmpty()) {
+                    int transferred = tryInsert(world, entity.getCachedState(), entity.getPos(), Direction.UP, recipe.value().result());
+                    if (transferred < recipe.value().result().amount()) {
+                        onFluidWasted(world);
+                    }
+                }
+            }
+        });
+
+        return false;
     }
 
     @Override
