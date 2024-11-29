@@ -74,7 +74,7 @@ public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
     }
 
     public static boolean canConnectTo(BlockState state, Direction direction) {
-        return state.isIn(PSTags.BARRELS)
+        return state.isIn(PSTags.Blocks.BARRELS)
             || state.isOf(PSBlocks.MASH_TUB_EDGE)
             || state.isOf(PSBlocks.FLASK)
             || (state.isOf(PSBlocks.DISTILLERY) && state.get(FACING) != direction.getOpposite());

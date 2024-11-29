@@ -39,6 +39,11 @@ public interface PSBlocks {
     Block JUNGLE_BARREL = register("jungle_barrel", BlockConstructionUtils.barrel(MapColor.DIRT_BROWN));
     Block ACACIA_BARREL = register("acacia_barrel", BlockConstructionUtils.barrel(MapColor.ORANGE));
     Block DARK_OAK_BARREL = register("dark_oak_barrel", BlockConstructionUtils.barrel(MapColor.BROWN));
+    // TODO: MANGROVE_BARREL
+    // TODO: CHERRY_BARREL
+    // TODO: BAMBOO_BARREL
+    // TODO: WARPED_BARREL
+    // TODO: CRIMSON_BARREL
 
     Block FLASK = register("flask", new FlaskBlock(Settings.create().sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));
     Block DISTILLERY = register("distillery", new DistilleryBlock(Settings.create().sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));

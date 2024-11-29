@@ -30,6 +30,12 @@ loom {
     accessWidenerPath = file('src/main/resources/psychedelicraft.aw')
 }
 
+fabricApi {
+    configureDataGeneration {
+      modId = 'psychedelicraft'
+    }
+}
+
 reckon {
     scopeFromProp()
     stageFromProp('beta', 'rc', 'final')

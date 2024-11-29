@@ -12,22 +12,20 @@ import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
 
 public interface PSTags {
-    TagKey<Block> BARRELS = of("barrels");
-    TagKey<Block> DRYING_TABLES = of("drying_tables");
-
-    static TagKey<Block> of(String name) {
-        return TagKey.of(RegistryKeys.BLOCK, Psychedelicraft.id(name));
-    }
-
     interface Items {
-        TagKey<Item> BOTTLES = of("bottles");
+        TagKey<Item> BOTTLE_RACK_INSERTABLE = of("bottle_rack_insertable");
         TagKey<Item> BARRELS = of("barrels");
-        TagKey<Item> PLACEABLE = of("placeable");
-        TagKey<Item> DRINK_RECEPTICALS = of("drink_recepticals");
-        TagKey<Item> SUITABLE_HOT_DRINK_RECEPTICALS = of("suitable_hot_drink_recepticals");
-        TagKey<Item> SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS = of("suitable_alcoholic_drink_recepticals");
+        TagKey<Item> JUNIPER_LOGS = of("juniper_logs");
+        TagKey<Item> DRYING_TABLES = of("drying_tables");
+        TagKey<Item> PLACEABLE_RECEPTICALS = of("receptical/placeable");
+        TagKey<Item> DRINK_RECEPTICALS = of("receptical/drinks");
+        TagKey<Item> DRUG_RECEPTICALS = of("receptical/drugs");
+        TagKey<Item> SUITABLE_HOT_DRINK_RECEPTICALS = of("receptical/suitable_for_hot_drinks");
+        TagKey<Item> SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS = of("receptical/suitable_for_alcoholic_drinks");
         TagKey<Item> CAN_GO_INTO_PAPER_BAG = of("can_go_into_paper_bag");
         TagKey<Item> DRUG_CROP_SEEDS = of("drug_crop_seeds");
+
+        TagKey<Item> MORNING_GLORY_INGREDIENTS = of("ingredients/morning_glory");
 
         static TagKey<Item> of(String name) {
             return TagKey.of(RegistryKeys.ITEM, Psychedelicraft.id(name));
@@ -40,6 +38,19 @@ public interface PSTags {
 
         static TagKey<EntityType<?>> of(String name) {
             return TagKey.of(RegistryKeys.ENTITY_TYPE, Psychedelicraft.id(name));
+        }
+    }
+
+    interface Blocks {
+        TagKey<Block> BARRELS = of("barrels");
+        TagKey<Block> LATTICES = of("lattices");
+        TagKey<Block> DRYING_TABLES = of("drying_tables");
+
+        TagKey<Block> JUNIPER_LOGS = of("juniper_logs");
+        TagKey<Block> NIGHTSHADE = of("nightshade");
+
+        static TagKey<Block> of(String name) {
+            return TagKey.of(RegistryKeys.BLOCK, Psychedelicraft.id(name));
         }
     }
 

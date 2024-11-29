@@ -26,7 +26,7 @@ public class BottleRackBlockEntity extends BlockEntityWithInventory {
 
     @Override
     public boolean isValid(int slot, ItemStack stack) {
-        return stack.isIn(PSTags.Items.BOTTLES);
+        return stack.isIn(PSTags.Items.BOTTLE_RACK_INSERTABLE);
     }
 
     @Override

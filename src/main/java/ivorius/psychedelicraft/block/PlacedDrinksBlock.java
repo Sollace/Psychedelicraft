@@ -104,7 +104,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     public static boolean canPlace(ItemStack stack) {
-        return stack.isIn(PSTags.Items.PLACEABLE);
+        return stack.isIn(PSTags.Items.PLACEABLE_RECEPTICALS);
     }
 
     @Override
