@@ -11,7 +11,6 @@ import net.minecraft.registry.tag.PointOfInterestTypeTags;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class PSPointOfInterestTypeTagProvider extends FabricTagProvider<PointOfInterestType> {
-
     public PSPointOfInterestTypeTagProvider(FabricDataOutput output, CompletableFuture<WrapperLookup> completableFuture) {
         super(output, RegistryKeys.POINT_OF_INTEREST_TYPE, completableFuture);
     }

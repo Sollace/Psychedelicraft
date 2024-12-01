@@ -13,7 +13,6 @@ import net.minecraft.registry.tag.TagBuilder;
 import net.minecraft.registry.tag.TagKey;
 
 public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
-
     public PSBlockTagProvider(FabricDataOutput output, CompletableFuture<WrapperLookup> completableFuture) {
         super(output, completableFuture);
     }

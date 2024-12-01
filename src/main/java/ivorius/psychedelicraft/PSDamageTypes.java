@@ -2,14 +2,13 @@ package ivorius.psychedelicraft;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.jetbrains.annotations.Nullable;
 
-import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
+import ivorius.psychedelicraft.util.BootstrapUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
-import net.minecraft.registry.Registry;
+import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.World;
@@ -48,13 +47,11 @@ public interface PSDamageTypes {
         return key;
     }
 
+    static void bootstrap(Registerable<DamageType> register) {
+        REGISTRY.forEach(key -> register.register(key, new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0)));
+    }
+
     static void bootstrap() {
-        DynamicRegistrySetupCallback.EVENT.register(registries -> {
-            registries.getOptional(RegistryKeys.DAMAGE_TYPE).ifPresent(registry -> {
-                REGISTRY.forEach(key -> {
-                    Registry.register(registry, key.getValue(), new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0));
-                });
-            });
-        });
+        BootstrapUtil.bootstrapDynamically(RegistryKeys.DAMAGE_TYPE, PSDamageTypes::bootstrap);
     }
 }

@@ -7,6 +7,7 @@ package ivorius.psychedelicraft;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.Item;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
@@ -51,6 +52,15 @@ public interface PSTags {
 
         static TagKey<Block> of(String name) {
             return TagKey.of(RegistryKeys.BLOCK, Psychedelicraft.id(name));
+        }
+    }
+
+    interface DamageTypes {
+        TagKey<DamageType> IS_BIOLOGICAL = of("is_biological");
+        TagKey<DamageType> IS_INCENDIARY = of("is_incediary");
+
+        static TagKey<DamageType> of(String name) {
+            return TagKey.of(RegistryKeys.DAMAGE_TYPE, Psychedelicraft.id(name));
         }
     }
 

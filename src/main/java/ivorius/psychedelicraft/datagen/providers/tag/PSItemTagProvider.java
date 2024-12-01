@@ -22,7 +22,6 @@ import net.minecraft.registry.tag.TagBuilder;
 import net.minecraft.registry.tag.TagKey;
 
 public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
-
     private final PSBlockTagProvider blockTagProvider;
 
     public PSItemTagProvider(FabricDataOutput output, CompletableFuture<WrapperLookup> completableFuture, PSBlockTagProvider blockTagProvider) {
