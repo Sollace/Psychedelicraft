@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.PSComponents;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.fluid.Fluids;
@@ -53,12 +54,12 @@ public class RecepticalHandler {
         registerPair(empty, filled, new RecepticalHandler() {
             @Override
             public ItemStack toFilled(ItemStack item, ItemFluids contents) {
-                return changeStackType(item, filled);
+                return applyFluid(changeStackType(item, filled), contents);
             }
 
             @Override
             public ItemStack toEmpty(ItemStack item) {
-                return changeStackType(item, empty);
+                return applyFluid(changeStackType(item, empty), ItemFluids.EMPTY);
             }
         });
     }
@@ -67,12 +68,23 @@ public class RecepticalHandler {
         return item.getItem() == newType ? item : item.withItem(newType);
     }
 
+    public static ItemStack applyFluid(ItemStack stack, ItemFluids contents) {
+        if (contents.isEmpty()) {
+            if (stack.contains(PSComponents.FLUIDS)) {
+                stack.remove(PSComponents.FLUIDS);
+            }
+        } else {
+            stack.set(PSComponents.FLUIDS, contents);
+        }
+        return stack;
+    }
+
     public ItemStack toFilled(ItemStack item, ItemFluids contents) {
-        return item;
+        return applyFluid(item.copy(), contents);
     }
 
     public ItemStack toEmpty(ItemStack item) {
-        return item;
+        return applyFluid(item.copy(), ItemFluids.EMPTY);
     }
 
     static {
@@ -84,15 +96,15 @@ public class RecepticalHandler {
 
             @Override
             public ItemStack toFilled(ItemStack item, ItemFluids contents) {
-                if (contents.amount() < FluidVolumes.BUCKET) {
-                    return changeStackType(item, PSItems.FILLED_BUCKET);
-                }
-                return changeStackType(item, filledBuckets.apply(contents.fluid()).orElse(PSItems.FILLED_BUCKET));
+                Item newType = contents.amount() < FluidVolumes.BUCKET || !contents.isBaseForm()
+                        ? PSItems.FILLED_BUCKET
+                        : filledBuckets.apply(contents.fluid()).orElse(PSItems.FILLED_BUCKET);
+                return applyFluid(changeStackType(item, newType), newType == PSItems.FILLED_BUCKET ? contents : ItemFluids.EMPTY);
             }
 
             @Override
             public ItemStack toEmpty(ItemStack item) {
-                return changeStackType(item, Items.BUCKET);
+                return applyFluid(changeStackType(item, Items.BUCKET), ItemFluids.EMPTY);
             }
         });
         registerPair(Items.BOWL, PSItems.FILLED_BOWL);
@@ -106,17 +118,20 @@ public class RecepticalHandler {
             @Override
             public ItemStack toFilled(ItemStack item, ItemFluids contents) {
                 if (contents.amount() < FluidVolumes.BOTTLE) {
-                    return changeStackType(item, PSItems.FILLED_GLASS_BOTTLE);
+                    return applyFluid(changeStackType(item, PSItems.FILLED_GLASS_BOTTLE), contents);
                 }
                 if (contents.fluid() == SimpleFluid.forVanilla(Fluids.WATER)) {
                     return PotionContentsComponent.createStack(Items.POTION, Potions.WATER);
                 }
-                return changeStackType(item, filledBottles.apply(contents.fluid()).orElse(PSItems.FILLED_GLASS_BOTTLE));
+                Item newType = contents.amount() < FluidVolumes.BOTTLE || !contents.isBaseForm()
+                        ? PSItems.FILLED_GLASS_BOTTLE
+                        : filledBottles.apply(contents.fluid()).orElse(PSItems.FILLED_GLASS_BOTTLE);
+                return applyFluid(changeStackType(item, newType), newType == PSItems.FILLED_GLASS_BOTTLE ? contents : ItemFluids.EMPTY);
             }
 
             @Override
             public ItemStack toEmpty(ItemStack item) {
-                return changeStackType(item, Items.GLASS_BOTTLE);
+                return applyFluid(changeStackType(item, Items.GLASS_BOTTLE), ItemFluids.EMPTY);
             }
         });
     }

@@ -123,8 +123,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
             if (capacity < fluids.amount()) {
                 fluids = create(fluids.fluid(), capacity, fluids.attributes());
             }
-            stack = getItemForFluids(stack, fluids);
-            stack.set(PSComponents.FLUIDS, fluids);
+            return getItemForFluids(stack, fluids);
         }
         return stack;
     }
@@ -157,6 +156,10 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public boolean isEmpty() {
         return this == EMPTY;
+    }
+
+    public boolean isBaseForm() {
+        return isEmpty() || equals(fluid().getDefaultStack(amount()));
     }
 
     public boolean canCombine(ItemFluids fluids) {
@@ -204,7 +207,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public interface Transaction {
         static Transaction begin(ItemStack initialStack) {
-            if (initialStack.get(PSComponents.FLUIDS) == null) {
+            if (initialStack.get(PSComponents.FLUID_CAPACITY) == null) {
                 if (FluidTransferUtils.getCapacity(initialStack) == 0) {
                     ItemStack filledStack = RecepticalHandler.get(initialStack).toFilled(initialStack, ItemFluids.of(FluidVariant.of(Fluids.WATER), 1));
                     if (filledStack != initialStack && filledStack.getItem() != initialStack.getItem()) {
