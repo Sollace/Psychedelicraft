@@ -1,0 +1,21 @@
+{
+	"parent": "block/cube_all",
+	"textures": {
+		"lattice": "psychedelicraft:block/lattice",
+		"particle": "#lattice"
+	},
+	"elements": [
+    {
+      "from": [7, 0, 0],
+      "to": [9, 16, 8],
+      "faces": {
+        "north": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
+        "east": {"uv": [0, 0, 8, 16], "texture": "#lattice"},
+        "south": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
+        "west": {"uv": [8, 0, 16, 16], "texture": "#lattice"},
+        "up": {"uv": [7, 7, 9, 16], "texture": "#lattice"},
+        "down": {"uv": [7, 7, 9, 16], "texture": "#lattice"}
+      }
+    }
+	]
+}

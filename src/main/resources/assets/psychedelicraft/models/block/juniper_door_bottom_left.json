@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/door_bottom_left",
-  "textures": {
-    "bottom": "psychedelicraft:block/juniper_door_bottom",
-    "top": "psychedelicraft:block/juniper_door_top"
-  }
-}

@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cross",
-  "textures": {
-    "cross": "psychedelicraft:block/coffea_stage3"
-  }
-}

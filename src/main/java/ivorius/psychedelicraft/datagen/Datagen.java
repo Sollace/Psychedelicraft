@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ivorius.psychedelicraft.PSDamageTypes;
+import ivorius.psychedelicraft.datagen.providers.PSModelProvider;
 import ivorius.psychedelicraft.datagen.providers.tag.PSBlockTagProvider;
 import ivorius.psychedelicraft.datagen.providers.tag.PSDamageTypeTagProvider;
 import ivorius.psychedelicraft.datagen.providers.tag.PSEntityTypeTagProvider;
@@ -28,6 +29,8 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(PSPointOfInterestTypeTagProvider::new);
         pack.addProvider(PSEntityTypeTagProvider::new);
         pack.addProvider(PSDamageTypeTagProvider::new);
+
+        pack.addProvider(PSModelProvider::new);
     }
 
     @Override

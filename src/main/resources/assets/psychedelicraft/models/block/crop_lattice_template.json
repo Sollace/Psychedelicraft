@@ -1,0 +1,32 @@
+{
+	"parent": "minecraft:block/block",
+	"textures": {
+		"particle": "#lattice"
+	},
+	"elements": [
+		{
+			"from": [7, 0, 0],
+			"to": [9, 16, 8],
+			"faces": {
+				"north": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
+				"east": {"uv": [0, 0, 8, 16], "texture": "#lattice"},
+				"south": {"uv": [7, 0, 9, 16], "texture": "#lattice"},
+				"west": {"uv": [8, 0, 16, 16], "texture": "#lattice"},
+				"up": {"uv": [7, 7, 9, 16], "texture": "#lattice"},
+				"down": {"uv": [7, 7, 9, 16], "texture": "#lattice"}
+			}
+		},
+		{
+			"from": [5.9, -0.1, -0.1],
+			"to": [10, 16.1, 8.1],
+			"faces": {
+				"north": {"uv": [6, 0, 10, 16], "texture": "#crop"},
+				"east": {"uv": [0, 0, 8, 16], "texture": "#crop"},
+				"south": {"uv": [6, 0, 10, 16], "texture": "#crop"},
+				"west": {"uv": [8, 0, 16, 16], "texture": "#crop"},
+				"up": {"uv": [6, 6, 10, 16], "texture": "#crop"},
+				"down": {"uv": [6, 6, 10, 16], "texture": "#crop"}
+			}
+		}
+	]
+}

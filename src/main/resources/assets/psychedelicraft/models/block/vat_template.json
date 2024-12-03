@@ -1,0 +1,107 @@
+{
+  "parent": "psychedelicraft:block/complex_block",
+	"texture_size": [128, 64],
+  "display": {
+    "gui": {
+      "rotation": [ 30, 225, 0 ],
+      "translation": [ 0, -1, 0],
+      "scale":[ 0.3, 0.3, 0.3 ]
+    },
+    "ground": {
+      "rotation": [ 0, 0, 0 ],
+      "translation": [ 0, 3, 0],
+      "scale":[ 0.2, 0.2, 0.2 ]
+    },
+    "fixed": {
+      "rotation": [ 0, 0, 0 ],
+      "translation": [ 0, 0, 0],
+      "scale":[ 0.5, 0.5, 0.5 ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [ 45, 15, 0 ],
+      "translation": [ 0, 3, -4],
+      "scale": [ 0.3, 0.3, 0.3 ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [ 45, 15, 0 ],
+      "translation": [ 0, 3, -4],
+      "scale": [ 0.3, 0.3, 0.3 ]
+    },
+    "firstperson_righthand": {
+      "rotation": [ 0, 45, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.5, 0.5, 0.5 ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [ 0, 225, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.5, 0.5, 0.5 ]
+    }
+  },
+	"elements": [
+		{
+			"name": "outside",
+			"from": [-8, 0, -8],
+			"to": [24, 16, 24],
+			"faces": {
+				"north": {"uv": [4, 8, 8, 12], "texture": "#all"},
+				"east": {"uv": [4, 8, 8, 12], "texture": "#all"},
+				"south": {"uv": [4, 8, 8, 12], "texture": "#all"},
+				"west": {"uv": [4, 8, 8, 12], "texture": "#all"},
+				"up": {"uv": [8, 0, 12, 8], "texture": "#all"},
+				"down": {"uv": [4, 0, 8, 8], "texture": "#all"}
+			}
+		},
+		{
+			"name": "inside",
+			"to": [-7, 1, -7],
+			"from": [23, 16, 23],
+			"faces": {
+				"north": {"uv": [0, 8, 4, 12], "texture": "#all"},
+				"east": {"uv": [0, 8, 4, 12], "texture": "#all"},
+				"south": {"uv": [0, 8, 4, 12], "texture": "#all"},
+				"west": {"uv": [0, 8, 4, 12], "texture": "#all"},
+				"up": {"uv": [4, 0, 8, 8], "texture": "#all"}
+			}
+		},
+		{
+			"name": "ring",
+			"from": [-9, 12, -9],
+			"to": [25, 14, 25],
+			"faces": {
+				"north": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"east": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"south": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"west": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"up": {"uv": [8, 0, 12, 8], "texture": "#all"},
+				"down": {"uv": [8, 0, 12, 8], "texture": "#all"}
+			}
+		},
+		{
+			"name": "ring",
+			"from": [-9, 7, -9],
+			"to": [25, 9, 25],
+			"faces": {
+				"north": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"east": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"south": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"west": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"up": {"uv": [8, 0, 12, 8], "texture": "#all"},
+				"down": {"uv": [8, 0, 12, 8], "texture": "#all"}
+			}
+		},
+		{
+			"name": "ring",
+			"from": [-9, 2, -9],
+			"to": [25, 4, 25],
+			"faces": {
+				"north": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"east": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"south": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"west": {"uv": [4, 8.5, 8, 9], "texture": "#all"},
+				"up": {"uv": [8, 0, 12, 8], "texture": "#all"},
+				"down": {"uv": [8, 0, 12, 8], "texture": "#all"}
+			}
+		}
+	]
+}
