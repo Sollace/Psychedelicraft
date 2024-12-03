@@ -44,8 +44,9 @@ public class PouringRecipe extends SpecialCraftingRecipe {
         ItemFluids from = ItemFluids.of(recepticals.get(0));
 
         return to.canCombine(from)
-                && FluidCapacity.getPercentage(recepticals.get(0)) > 0
-                && FluidCapacity.getPercentage(recepticals.get(1)) < 1;
+            && Math.min(from.amount(), FluidCapacity.get(recepticals.get(1)) - to.amount()) > 0
+            && FluidCapacity.getPercentage(recepticals.get(0)) > 0
+            && FluidCapacity.getPercentage(recepticals.get(1)) < 1;
     }
 
     @Override
@@ -56,6 +57,9 @@ public class PouringRecipe extends SpecialCraftingRecipe {
         ItemFluids.Transaction from = ItemFluids.Transaction.begin(recepticals.get(0).copy());
 
         int maxMoved = Math.min(from.fluids().amount(), to.capacity() - to.fluids().amount());
+        if (maxMoved <= 0) {
+            return ItemStack.EMPTY;
+        }
         to.deposit(from.withdraw(maxMoved));
 
         return to.toItemStack();
