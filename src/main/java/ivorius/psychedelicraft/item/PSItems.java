@@ -156,6 +156,10 @@ public interface PSItems {
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)
     ));
+    Item CRACK_COCAINE = register("crack_cocaine", new CocainePowderItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.03, 0.65f)
+    ));
 
     DrinkableItem SYRINGE = register("syringe", new SyringeItem(new Settings()
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(DrinkableItem.FLUID_PER_INJECTION)
@@ -272,7 +276,19 @@ public interface PSItems {
     Item BUNSEN_BURNER = register("bunsen_burner", PSBlocks.BUNSEN_BURNER);
     Item GLASS_TUBE = register("glass_tube", PSBlocks.GLASS_TUBE);
 
+    Item CRYSTAL_METH = register("methamphetamine_powder", new Item(new Item.Settings()));
+    Item EXTACY = register("extacy", new EdibleItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+    ));
     Item PACIFIER = register("pacifier", new PacifierItem(new Item.Settings().maxDamage(50)));
+
+    Item HEROINE_POWDER = register("heroine_powder", new Item(new Item.Settings()));
+    Item MORPHINE_TABLET = register("morpine_tablet", new EdibleItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+    ));
+
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Settings()));
     }

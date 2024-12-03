@@ -86,8 +86,10 @@ public interface PSItemGroups {
 
                 entries.add(PSItems.MORNING_GLORY);
                 entries.add(PSItems.MORNING_GLORY_SEEDS);
+                entries.add(PSItems.CRYSTAL_METH);
                 entries.add(PSItems.LSA_SQUARE);
                 entries.add(PSItems.LSD_PILL);
+                entries.add(PSItems.EXTACY);
                 entries.add(PSItems.PACIFIER);
 
                 entries.add(PSItems.JIMSONWEED_SEEDS);
@@ -108,6 +110,10 @@ public interface PSItemGroups {
                 entries.add(PSItems.COCA_LEAVES);
                 entries.add(PSItems.DRIED_COCA_LEAVES);
                 entries.add(PSItems.COCAINE_POWDER);
+                entries.add(PSItems.CRACK_COCAINE);
+
+                entries.add(PSItems.HEROINE_POWDER);
+                entries.add(PSItems.MORPHINE_TABLET);
 
                 entries.add(PSItems.AGAVE_LEAF);
                 entries.add(PSItems.PEYOTE);
@@ -173,9 +179,9 @@ public interface PSItemGroups {
                 appendAllFluids(PSItems.WOODEN_MUG.getDefaultStack(), entries);
                 appendAllFluids(PSItems.GLASS_CHALICE.getDefaultStack(), entries);
                 appendAllFluids(PSItems.BOTTLE.getDefaultStack(), entries);
-                appendAllFluids(PSItems.FILLED_BUCKET.getDefaultStack(), entries);
-                appendAllFluids(PSItems.FILLED_BOWL.getDefaultStack(), entries);
-                appendAllFluids(PSItems.FILLED_GLASS_BOTTLE.getDefaultStack(), entries);
+                appendAllFluids(Items.BUCKET.getDefaultStack(), entries);
+                appendAllFluids(Items.BOWL.getDefaultStack(), entries);
+                appendAllFluids(Items.GLASS_BOTTLE.getDefaultStack(), entries);
             }));
     RegistryKey<ItemGroup> WEAPONS = register("weapons", FabricItemGroup.builder()
             .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
