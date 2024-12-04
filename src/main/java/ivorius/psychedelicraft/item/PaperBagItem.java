@@ -42,7 +42,8 @@ public class PaperBagItem extends Item {
                 BagContentsComponent.Builder builder = new BagContentsComponent.Builder(contents);
                 ItemStack dispensed = builder.split(1);
                 BagContentsComponent.set(stack, builder);
-                return super.dispenseSilently(pointer, dispensed);
+                super.dispenseSilently(pointer, dispensed);
+                return stack;
             }
         });
     }
