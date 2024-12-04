@@ -7,7 +7,6 @@ package ivorius.psychedelicraft.entity;
 
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.fluid.Combustable;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.BlockState;
@@ -17,11 +16,13 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.*;
 import net.minecraft.world.World.ExplosionSourceType;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
@@ -156,13 +157,19 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
             playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1, 1);
         }
 
-        if (stack.fluid() == SimpleFluid.forVanilla(Fluids.LAVA)) {
+        if (stack.isOf(Fluids.LAVA)) {
             BlockPos pos = BlockPos.ofFloored(hitResult.getPos());
-            if (getWorld().getBlockState(pos).getHardness(getWorld(), pos) >= 0) {
-                if (!getWorld().isAir(pos)) {
-                    getWorld().breakBlock(pos, true);
+            BlockState replacedState = getWorld().getBlockState(pos);
+            if (replacedState.getHardness(getWorld(), pos) >= 0) {
+                if (replacedState.isIn(BlockTags.CAULDRONS)) {
+                    getWorld().setBlockState(pos, Blocks.LAVA_CAULDRON.getDefaultState());
+                } else {
+                    if (!replacedState.isAir()) {
+                        getWorld().breakBlock(pos, true);
+                    }
+                    getWorld().setBlockState(BlockPos.ofFloored(hitResult.getPos()), Blocks.LAVA.getDefaultState());
                 }
-                getWorld().setBlockState(BlockPos.ofFloored(hitResult.getPos()), Blocks.LAVA.getDefaultState());
+                getWorld().emitGameEvent(this, GameEvent.FLUID_PLACE, pos);
             }
         }
 
