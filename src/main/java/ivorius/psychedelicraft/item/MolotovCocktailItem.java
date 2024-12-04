@@ -9,9 +9,11 @@ import ivorius.psychedelicraft.entity.MolotovCocktailEntity;
 import ivorius.psychedelicraft.fluid.Combustable;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -71,6 +73,9 @@ public class MolotovCocktailItem extends DrinkableItem {
     public Text getName(ItemStack stack) {
         if (ItemFluids.of(stack).isEmpty()) {
             return Text.translatable(getTranslationKey(stack) + ".empty");
+        }
+        if (ItemFluids.of(stack).fluid() == SimpleFluid.forVanilla(Fluids.LAVA)) {
+            return Text.translatable(getTranslationKey(stack) + ".lava");
         }
 
         return Text.translatable(getTranslationKey(stack) + ".quality." + getQuality(stack));
