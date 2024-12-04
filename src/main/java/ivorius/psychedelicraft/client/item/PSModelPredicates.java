@@ -37,7 +37,8 @@ public interface PSModelPredicates {
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled"), (stack, world, entity, seed) -> {
             if (stack.getItem() instanceof PaperBagItem) {
                 BagContentsComponent contents = BagContentsComponent.get(stack);
-                return contents.isEmpty() ? 0 : contents.count() > BagContentsComponent.FULL_COUNT ? 1 : 0.5F;
+                return contents.isEmpty() ? 0 : contents.count() > BagContentsComponent.FULL_COUNT
+                        ? (contents.count() > BagContentsComponent.FULL_COUNT * 2F ? 1 : 0.75F) : 0.5F;
             }
             if (stack.getItem() instanceof BongItem item) {
                 return item.hasUsableConsumable(entity) ? 1 : 0;

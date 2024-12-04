@@ -106,7 +106,8 @@ public interface ItemModels {
     static void registerPaperBag(ItemModelGenerator itemModelGenerator, Item item) {
         ModelOverrides.of(GENERATED)
             .addOverride(ModelIds.getItemSubModelId(item, "_filled"), "psychedelicraft:filled", 0.5F)
-            .addOverride(ModelIds.getItemSubModelId(item, "_overflowing"), "psychedelicraft:filled", 1F)
+            .addOverride(ModelIds.getItemSubModelId(item, "_overflowing"), "psychedelicraft:filled", 0.75F)
+            .addOverride(ModelIds.getItemSubModelId(item, "_bursting"), "psychedelicraft:filled", 1F)
             .upload(item, itemModelGenerator);
     }
 

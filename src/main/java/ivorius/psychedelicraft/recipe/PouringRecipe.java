@@ -82,7 +82,6 @@ public class PouringRecipe extends SpecialCraftingRecipe {
         return remainder;
     }
 
-
     @Override
     public boolean fits(int width, int height) {
         return (width * height) > 2;
