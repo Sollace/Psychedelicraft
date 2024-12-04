@@ -40,13 +40,21 @@ public interface ItemModels {
         }
     }
 
+    static void registerBong(ItemModelGenerator itemModelGenerator, Item item) {
+        var filledTextures = TextureMap.layer0(TextureMap.getSubId(item, "_filled"));
+        ModelOverrides.of(SMOKEABLE_TEMPLATE)
+            .addOverride(Map.of("psychedelicraft:using", 0F, "psychedelicraft:filled", 1F),
+                    g -> SMOKEABLE_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled"), filledTextures, g.writer))
+            .addOverride(Map.of("psychedelicraft:using", 1F, "psychedelicraft:filled", 1F),
+                    g -> SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled_using"), filledTextures, g.writer))
+            .upload(item, itemModelGenerator);
+    }
+
     static void registerSmokeable(ItemModelGenerator itemModelGenerator, Item item) {
         ModelOverrides.of(SMOKEABLE_TEMPLATE)
-            .addOverride("psychedelicraft:using", 1F, generator -> SMOKEABLE_USING_TEMPLATE.upload(
-                    ModelIds.getItemSubModelId(item, "_using"),
-                    TextureMap.layer0(TextureMap.getSubId(item, "_using")),
-                    itemModelGenerator.writer)
-            ).upload(item, itemModelGenerator);
+            .addOverride("psychedelicraft:using", 1F,
+                    g -> SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_using"), TextureMap.layer0(TextureMap.getSubId(item, "_using")), g.writer))
+            .upload(item, itemModelGenerator);
     }
 
     static void registerSniffable(ItemModelGenerator itemModelGenerator, Item item) {

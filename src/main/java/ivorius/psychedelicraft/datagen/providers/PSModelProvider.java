@@ -209,6 +209,7 @@ public class PSModelProvider extends FabricModelProvider {
         });
         ItemModels.registerPaperBag(generator, PSItems.PAPER_BAG);
         ItemModels.registerCigar(generator, PSItems.CIGAR);
+        ItemModels.registerBong(generator, PSItems.BONG);
         ItemModels.registerLayered(generator, PSItems.HARMONIUM, "_glowstone");
     }
 }
