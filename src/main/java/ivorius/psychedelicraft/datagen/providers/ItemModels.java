@@ -50,6 +50,19 @@ public interface ItemModels {
             .upload(item, itemModelGenerator);
     }
 
+    static void registerMolotov(ItemModelGenerator itemModelGenerator, Item item) {
+        var base = TextureMap.getId(item);
+        var overlay = TextureMap.getSubId(item, "_overlay");
+        ModelOverrides.of(Models.GENERATED_THREE_LAYERS)
+            .addOverride(Map.of("psychedelicraft:flying", 0F, "psychedelicraft:filled", 1F),
+                    g -> Models.GENERATED_THREE_LAYERS.upload(ModelIds.getItemSubModelId(item, "_filled"), TextureMap.layered(base, TextureMap.getSubId(item, "_liquid"), overlay), g.writer))
+            .addOverride(Map.of("psychedelicraft:flying", 0F, "psychedelicraft:filled_with_lava", 1F),
+                    g -> Models.GENERATED_THREE_LAYERS.upload(ModelIds.getItemSubModelId(item, "_filled_lava"), TextureMap.layered(base, TextureMap.getSubId(item, "_liquid_lava"), overlay), g.writer))
+            .addOverride(Map.of("psychedelicraft:flying", 1F),
+                    g -> Models.GENERATED.upload(ModelIds.getItemSubModelId(item, "_thrown"), TextureMap.layer0(TextureMap.getSubId(item, "_thrown")), g.writer))
+            .upload(ModelIds.getItemModelId(item), TextureMap.layered(base, overlay, overlay), itemModelGenerator);
+    }
+
     static void registerSmokeable(ItemModelGenerator itemModelGenerator, Item item) {
         ModelOverrides.of(SMOKEABLE_TEMPLATE)
             .addOverride("psychedelicraft:using", 1F,
