@@ -1,5 +1,7 @@
 package ivorius.psychedelicraft.item;
 
+import java.util.List;
+
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.item.component.BagContentsComponent;
 import ivorius.psychedelicraft.item.component.PSComponents;
@@ -13,6 +15,7 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -120,6 +123,14 @@ public class PaperBagItem extends Item {
         }
 
         return false;
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+        BagContentsComponent contents = stack.get(PSComponents.BAG_CONTENTS);
+        if (contents != null) {
+            contents.appendTooltip(context, tooltip::add, type);
+        }
     }
 
     @Override
