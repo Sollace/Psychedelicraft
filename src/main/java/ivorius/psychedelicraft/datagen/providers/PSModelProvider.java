@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.AgavePlantBlock;
 import ivorius.psychedelicraft.block.BurdenedLatticeBlock;
 import ivorius.psychedelicraft.block.NightshadeBlock;
 import ivorius.psychedelicraft.block.PSBlocks;
@@ -22,8 +24,12 @@ import net.minecraft.data.client.BlockStateVariant;
 import net.minecraft.data.client.BlockStateModelGenerator.TintType;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.ModelIds;
+import net.minecraft.data.client.Models;
+import net.minecraft.data.client.TextureMap;
+import net.minecraft.data.client.TexturedModel;
 import net.minecraft.data.client.VariantSettings;
 import net.minecraft.data.client.VariantsBlockStateSupplier;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -42,6 +48,8 @@ public class PSModelProvider extends FabricModelProvider {
                 PSBlocks.JUNIPER_SAPLING, PSBlocks.POTTED_JUNIPER_SAPLING
         );
 
+        generator.registerSingleton(PSBlocks.FRUITING_JUNIPER_LEAVES, TexturedModel.LEAVES);
+        generator.registerParentedItemModel(PSBlocks.FRUITING_JUNIPER_LEAVES, ModelIds.getBlockModelId(PSBlocks.FRUITING_JUNIPER_LEAVES));
         generator.registerSimpleCubeAll(PSBlocks.GLITCH);
 
         List.of(
@@ -53,20 +61,19 @@ public class PSModelProvider extends FabricModelProvider {
 
         List.of(
                 PSBlocks.FLASK,
-                PSBlocks.TRAY,
-                PSBlocks.BOTTLE_RACK,
-                PSBlocks.BUNSEN_BURNER,
-                PSBlocks.DRYING_TABLE,
-                PSBlocks.IRON_DRYING_TABLE
+                PSBlocks.BOTTLE_RACK
         ).forEach(block -> {
             generator.registerParentedItemModel(block, ModelIds.getBlockModelId(block));
         });
 
+        BlockModels.registerBunsenBurner(generator, PSBlocks.BUNSEN_BURNER);
+        BlockModels.registerTray(generator, PSBlocks.TRAY);
         BlockModels.registerDistillery(generator, PSBlocks.DISTILLERY);
 
         generator.registerBuiltin(PSBlocks.RIFT_JAR, Blocks.GLASS).includeWithoutItem(PSBlocks.RIFT_JAR);
 
-        generator.registerBuiltinWithParticle(PSBlocks.PEYOTE, PSItems.PEYOTE);
+        generator.registerBuiltinWithParticle(PSBlocks.PEYOTE, ModelIds.getBlockModelId(PSBlocks.PEYOTE));
+        generator.registerBuiltinWithParticle(PSBlocks.PLACED_DRINK, ModelIds.getBlockModelId(Blocks.STONE));
 
         Function<Integer, Identifier> models = BlockModels.createCropModelSupplier(generator, PSBlocks.JIMSONWEEED);
         Function<Integer, Identifier> tomatoModels = BlockModels.createCropModelSupplier(generator, PSBlocks.TOMATOES);
@@ -82,6 +89,7 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerCrossCrop(generator, PSBlocks.COFFEA, PSBlocks.COFFEA.getAgeProperty(), TobaccoPlantBlock.TOP, top -> top ? "_top" : "", top -> {
             return top ? new int[] { 0, 1, 2, 3, 3, 3, 3, 3 } : new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
         });
+        BlockModels.registerCrossCrop(generator, i -> ModelIds.getBlockSubModelId(PSBlocks.AGAVE_PLANT, "_stage" + i), PSBlocks.AGAVE_PLANT, AgavePlantBlock.AGE, 0, 1, 2, 3, 4, 5);
         BlockModels.registerVineCrop(generator, PSBlocks.MORNING_GLORY, VineStemBlock.AGE, 0, 1, 2, 3, 4);
         BlockModels.registerLattice(generator, PSBlocks.LATTICE);
         BlockModels.registerLatticeCrop(generator, PSBlocks.LATTICE, PSBlocks.WINE_GRAPE_LATTICE, BurdenedLatticeBlock.AGE, 0, 1, 2, 3);
@@ -95,6 +103,9 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerCropPot(generator, PSBlocks.TOBACCO, PSBlocks.POTTED_TOBACCO, TintType.NOT_TINTED, "_top_stage3");
 
         BlockModels.registerVat(generator, PSBlocks.MASH_TUB, PSBlocks.MASH_TUB_EDGE, Blocks.OAK_PLANKS);
+
+        BlockModels.registerDryingTable(generator, PSBlocks.DRYING_TABLE);
+        BlockModels.registerDryingTable(generator, PSBlocks.IRON_DRYING_TABLE);
 
         generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(PSBlocks.BOTTLE_RACK, BlockStateVariant.create()
                 .put(VariantSettings.MODEL, ModelIds.getBlockModelId(PSBlocks.BOTTLE_RACK)))
@@ -144,7 +155,6 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.CANNABIS_LEAF, PSItems.CANNABIS_BUDS, PSItems.DRIED_CANNABIS_LEAF, PSItems.DRIED_CANNABIS_BUDS,
                 PSItems.DRIED_COCA_LEAVES,
                 PSItems.DRIED_JIMSONWEED_LEAF,
-                PSItems.AGAVE_LEAF,
                 PSItems.HOP_CONES,
                 PSItems.MORNING_GLORY,
                 PSItems.JIMSONWEED_SEED_POD, PSItems.JIMSONWEED_LEAF,
@@ -182,6 +192,16 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.SYRINGE,
                 PSItems.WOODEN_MUG
         ).forEach(item -> ItemModels.registerDrinkHolder(generator, item));
+        ItemModels.registerDrinkHolderWithLabel(generator, PSItems.BOTTLE);
+        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_BUCKET, Items.BUCKET, ModelIds.getItemModelId(Items.LAVA_BUCKET));
+        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_BOWL, Items.BOWL, Models.GENERATED.upload(
+                Psychedelicraft.id("item/lava_bowl"),
+                TextureMap.layer0(Psychedelicraft.id("item/lava_bowl")),
+                generator.writer));
+        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_GLASS_BOTTLE, Items.GLASS_BOTTLE, Models.GENERATED.upload(
+                Psychedelicraft.id("item/lava_bottle"),
+                TextureMap.layer0(Psychedelicraft.id("item/lava_bottle")),
+                generator.writer));
 
         ItemModels.register(generator, ItemModels.HANDHELD, PSItems.GLASS_TUBE);
 

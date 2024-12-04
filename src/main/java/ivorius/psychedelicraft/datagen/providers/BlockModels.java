@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.BurnerBlock;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -45,6 +46,10 @@ public interface BlockModels {
     Model LATTICE_TEMPLATE = block("lattice_template", LATTICE);
     Model COMPLEX_BLOCK = block("complex_block");
     Model VAT_TEMPLATE = block("vat_template", TextureKey.ALL);
+    Model TRAY_TEMPLATE = block("tray_template", TextureKey.ALL);
+
+    Model DRYING_TABLE_TEMPLATE = block("drying_table_template", TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP);
+    Model BUNSEN_BURNER = block("bunsen_burner", TextureKey.BOTTOM);
 
     static Model block(String parent, TextureKey ... requiredTextureKeys) {
         return new Model(Optional.of(Psychedelicraft.id("block/" + parent)), Optional.empty(), requiredTextureKeys);
@@ -194,6 +199,26 @@ public interface BlockModels {
         generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(flowerPotBlock, identifier));
     }
 
+    static void registerBunsenBurner(BlockStateModelGenerator generator, Block block) {
+        Identifier modelId = ModelIds.getBlockModelId(block);
+        Identifier litModelId = BUNSEN_BURNER.upload(ModelIds.getBlockSubModelId(block, "_lit"), TextureMap.of(TextureKey.BOTTOM, TextureMap.getSubId(block, "_base_lit")), generator.modelCollector);
+        generator.registerParentedItemModel(block, modelId);
+        generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block)
+                .coordinate(BlockStateModelGenerator.createBooleanModelMap(BurnerBlock.LIT, litModelId, modelId)
+        ));
+    }
+
+    static void registerTray(BlockStateModelGenerator generator, Block tray) {
+        Identifier modelId = TRAY_TEMPLATE.upload(tray, TextureMap.all(tray), generator.modelCollector);
+        generator.registerParentedItemModel(tray, modelId);
+        generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(tray, BlockStateVariant.create()
+                .put(VariantSettings.MODEL, modelId))
+                .coordinate(BlockStateVariantMap.create(Properties.HORIZONTAL_AXIS)
+                        .register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.Y, Rotation.R90))
+                        .register(Direction.Axis.Z, BlockStateVariant.create()))
+        );
+    }
+
     static void registerDistillery(BlockStateModelGenerator generator, Block block) {
         Identifier modelId = ModelIds.getBlockModelId(block);
         Identifier condenserModelId = ModelIds.getBlockSubModelId(block, "_condenser");
@@ -219,5 +244,10 @@ public interface BlockModels {
     static void registerVat(BlockStateModelGenerator generator, Block core, Block edge, Block materialBase) {
         generator.registerBuiltinWithParticle(edge, ModelIds.getBlockModelId(materialBase));
         generator.registerSingleton(core, TextureMap.all(core), BlockModels.VAT_TEMPLATE);
+    }
+
+    static void registerDryingTable(BlockStateModelGenerator generator, Block block) {
+        generator.registerSingleton(block, TextureMap.sideTopBottom(block), BlockModels.DRYING_TABLE_TEMPLATE);
+        generator.registerParentedItemModel(block, ModelIds.getBlockModelId(block));
     }
 }

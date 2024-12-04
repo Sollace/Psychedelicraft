@@ -1,10 +1,7 @@
 {
 	"parent": "block/block",
 	"textures": {
-		"bottom": "psychedelicraft:block/drying_table_bottom",
-		"particle": "psychedelicraft:block/drying_table",
-		"side": "psychedelicraft:block/drying_table",
-		"top": "psychedelicraft:block/drying_table_top"
+    "particle": "#side"
 	},
 	"elements": [
 		{

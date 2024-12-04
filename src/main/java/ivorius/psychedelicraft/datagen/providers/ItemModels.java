@@ -12,6 +12,7 @@ import net.minecraft.data.client.Models;
 import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 public interface ItemModels {
@@ -111,9 +112,33 @@ public interface ItemModels {
 
     static void registerDrinkHolder(ItemModelGenerator itemModelGenerator, Item item) {
         ModelOverrides.of(GENERATED)
-            .addOverride(ModelIds.getItemSubModelId(item, "_filled"), Models.GENERATED_TWO_LAYERS, TextureMap.layered(TextureMap.getId(item), TextureMap.getSubId(item, "_liquid")), "psychedelicraft:filled", 1F)
-            .addOverride(ModelIds.getItemSubModelId(item, "_filled_with_lava"), Models.GENERATED_TWO_LAYERS, TextureMap.layered(TextureMap.getId(item), TextureMap.getSubId(item, "_liquid_lava")), "psychedelicraft:filled_with_lava", 1F)
+            .addOverride(ModelIds.getItemSubModelId(item, "_filled"), Models.GENERATED_TWO_LAYERS,
+                    TextureMap.layered(TextureMap.getId(item), TextureMap.getSubId(item, "_liquid")),
+                    "psychedelicraft:filled", 1F)
+            .addOverride(ModelIds.getItemSubModelId(item, "_filled_with_lava"), Models.GENERATED_TWO_LAYERS,
+                    TextureMap.layered(TextureMap.getId(item), TextureMap.getSubId(item, "_liquid_lava")),
+                    "psychedelicraft:filled_with_lava", 1F)
             .upload(item, itemModelGenerator);
     }
 
+    static void registerDrinkHolderWithLabel(ItemModelGenerator itemModelGenerator, Item item) {
+        var overlay = TextureMap.getSubId(item, "_overlay");
+        var base = TextureMap.getId(item);
+        ModelOverrides.of(Models.GENERATED_THREE_LAYERS)
+            .addOverride(ModelIds.getItemSubModelId(item, "_filled"), Models.GENERATED_THREE_LAYERS,
+                    TextureMap.layered(base, TextureMap.getSubId(item, "_liquid"), overlay),
+                    "psychedelicraft:filled", 1F)
+            .addOverride(ModelIds.getItemSubModelId(item, "_filled_with_lava"), Models.GENERATED_THREE_LAYERS,
+                    TextureMap.layered(base, TextureMap.getSubId(item, "_liquid_lava"), overlay),
+                    "psychedelicraft:filled_with_lava", 1F)
+            .upload(ModelIds.getItemModelId(item), TextureMap.layered(base, overlay, overlay), itemModelGenerator);
+    }
+
+    static void registerParentedDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, Item parent, Identifier withLava) {
+        var parentModel = new Model(Optional.of(ModelIds.getItemModelId(parent)), Optional.empty(), TextureKey.LAYER1);
+        var parentId = Psychedelicraft.id(Registries.ITEM.getId(parent).getPath());
+        ModelOverrides.of(parentModel)
+            .addOverride("psychedelicraft:filled_with_lava", 1F, o -> withLava)
+            .upload(ModelIds.getItemModelId(item), TextureMap.of(TextureKey.LAYER1, parentId.withPath(p -> "item/" + p + "_liquid")), itemModelGenerator);
+    }
 }

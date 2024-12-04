@@ -1,8 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "psychedelicraft:item/bottle",
-        "layer1": "psychedelicraft:item/bottle_liquid",
-        "layer2": "psychedelicraft:item/bottle_overlay"
-    }
-}
