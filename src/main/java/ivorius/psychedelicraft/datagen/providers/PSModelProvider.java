@@ -198,7 +198,7 @@ public class PSModelProvider extends FabricModelProvider {
                 Psychedelicraft.id("item/lava_bowl"),
                 TextureMap.layer0(Psychedelicraft.id("item/lava_bowl")),
                 generator.writer));
-        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_GLASS_BOTTLE, Items.GLASS_BOTTLE, Models.GENERATED.upload(
+        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_GLASS_BOTTLE, Items.POTION, Models.GENERATED.upload(
                 Psychedelicraft.id("item/lava_bottle"),
                 TextureMap.layer0(Psychedelicraft.id("item/lava_bottle")),
                 generator.writer));

@@ -12,6 +12,7 @@ import net.minecraft.data.client.Models;
 import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
@@ -136,10 +137,11 @@ public interface ItemModels {
     }
 
     static void registerParentedDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, Item parent, Identifier withLava) {
-        var parentModel = new Model(Optional.of(ModelIds.getItemModelId(parent)), Optional.empty(), TextureKey.LAYER1);
-        var parentId = Psychedelicraft.id(Registries.ITEM.getId(parent).getPath());
+        var overlayTextureKey = parent == Items.POTION ? TextureKey.LAYER0 : TextureKey.LAYER1;
+        var parentModel = new Model(Optional.of(ModelIds.getItemModelId(parent)), Optional.empty(), overlayTextureKey);
+        var parentId = Registries.ITEM.getId(parent);
         ModelOverrides.of(parentModel)
             .addOverride("psychedelicraft:filled_with_lava", 1F, o -> withLava)
-            .upload(ModelIds.getItemModelId(item), TextureMap.of(TextureKey.LAYER1, parentId.withPath(p -> "item/" + p + "_liquid")), itemModelGenerator);
+            .upload(ModelIds.getItemModelId(item), TextureMap.of(overlayTextureKey, parentId.withPath(p -> "item/" + p + (parent == Items.POTION ? "_overlay" : "_liquid"))), itemModelGenerator);
     }
 }
