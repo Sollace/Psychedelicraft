@@ -30,7 +30,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
@@ -160,12 +159,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
                 .map(tank -> (double)tank.getContents().amount() / tank.getCapacity())
                 .orElse(-1D);
 
-        return h < 0 ? -1 : MathHelper.clamp(h, 0, 1);
-    }
-
-    @Override
-    public Box getFluidCollisionBox(World world, BlockState state, BlockPos pos) {
-        return FluidFilled.super.getFluidCollisionBox(world, state, pos).expand(0.5, 0, 0.5);
+        return h < 0 ? -1 : MathHelper.clamp(0.3F + h, 0, 1);
     }
 
     @Override

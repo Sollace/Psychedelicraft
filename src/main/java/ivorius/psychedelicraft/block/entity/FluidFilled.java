@@ -15,9 +15,9 @@ public interface FluidFilled extends FluidFillable {
 
     default Box getFluidCollisionBox(World world, BlockState state, BlockPos pos) {
         double height = getFluidHeight(world, state, pos);
-        return new Box(
-                pos.getX(), pos.getY(), pos.getZ(),
-                pos.getX() + 1, pos.getY() + height, pos.getZ() + 1
-        ).expand(0.5, 0, 0.5);
+        Box box = state.getOutlineShape(world, pos).getBoundingBox();
+
+        return box.offset(pos).withMaxY(pos.getY() + height)
+                .expand(-0.01, 0, -0.01);
     }
 }

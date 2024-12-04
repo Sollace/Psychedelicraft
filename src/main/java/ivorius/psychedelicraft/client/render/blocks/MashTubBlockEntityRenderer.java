@@ -94,13 +94,19 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
 
         if (MinecraftClient.getInstance().getEntityRenderDispatcher().shouldRenderHitboxes() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
             if (entity.getWorld() != null && entity.getPos() != null && entity.getCachedState().getBlock() instanceof FluidFilled tub) {
-                Box box = new Box(0, 0, 0, 1, 1, 1).expand(0.001);
+
+
+                Box box = new Box(
+                        0, 0, 0,
+                        1, tub.getFluidHeight(entity.getWorld(), entity.getCachedState(), entity.getPos()), 1
+                ).expand(0.001);
 
                 matrices.push();
                 WorldRenderer.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 0, 1, 0, 0.2F);
 
                 box = tub.getFluidCollisionBox(entity.getWorld(), entity.getCachedState(), entity.getPos());
-                matrices.translate(-box.minX - 0.5, -box.minY, -box.minZ - 0.5);
+
+                matrices.translate(-box.minX - ((box.getLengthX() - 1) / 2), -box.minY, -box.minZ - ((box.getLengthZ() - 1) / 2));
                 WorldRenderer.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 1, 1, 1, 1);
                 matrices.pop();
             }
