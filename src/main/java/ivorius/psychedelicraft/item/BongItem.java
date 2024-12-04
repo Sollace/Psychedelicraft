@@ -5,8 +5,11 @@
 
 package ivorius.psychedelicraft.item;
 
+import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
+import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.RecipeUtils;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
@@ -70,6 +74,22 @@ public class BongItem extends Item {
         }
 
         return TypedActionResult.fail(stack);
+    }
+
+    @Override
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        if (world.random.nextInt(3) == 0) {
+            user.playSound(SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, 1, 1);
+        }
+
+        DrugProperties.of(user).ifPresent(drugProperties -> {
+            getUsedConsumable(drugProperties.asEntity()).ifPresent(consumable -> {
+                if (user.getRandom().nextInt(2) == 0) {
+                    float s = (float)user.getRandom().nextTriangular(0.5, 0.25);
+                    ParticleHelper.spawnParticleAtFace(user, new DrugDustParticleEffect(PSParticles.BUBBLE, consumable.getValue().smokeColor, s), 0.2F);
+                }
+            });
+        });
     }
 
     public Optional<Map.Entry<ItemStack, Consumable>> getUsedConsumable(LivingEntity entity) {

@@ -13,10 +13,11 @@ import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.sound.DrugMusicManager;
 import ivorius.psychedelicraft.fluid.PSFluids;
-import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.PacifierItem;
 import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgDrugProperties;
+import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
+import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
@@ -32,7 +33,6 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -202,10 +202,6 @@ public class DrugProperties implements NbtSerialisable {
             markDirty();
         }
 
-        if (entity.getActiveItem().isOf(PSItems.BONG) && entity.getWorld().random.nextInt(3) == 0) {
-            entity.playSound(SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, 1, 1);
-        }
-
         drugs.values().forEach(drug -> drug.update(this));
 
         stomach.onTick();
@@ -272,16 +268,12 @@ public class DrugProperties implements NbtSerialisable {
             timeBreathingSmoke--;
 
             if (timeBreathingSmoke > 10 && entity.getWorld().isClient) {
-                Vec3d look = entity.getRotationVec(1);
-
                 if (random.nextInt(2) == 0) {
-                    float s = random.nextFloat() * 0.05f + 0.1f;
-                    ParticleHelper.spawnColoredParticle(entity, breathSmokeColor, look, s, 1.0f);
+                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, breathSmokeColor, 1), random.nextFloat() * 0.05F + 0.1F);
                 }
 
                 if (random.nextInt(5) == 0) {
-                    float s = random.nextFloat() * 0.05f + 0.1f;
-                    ParticleHelper.spawnColoredParticle(entity, breathSmokeColor, look, s, 2.5f);
+                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, breathSmokeColor, 2.5F), random.nextFloat() * 0.05F + 0.1F);
                 }
             }
         }

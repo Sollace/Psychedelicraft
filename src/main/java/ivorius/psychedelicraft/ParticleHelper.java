@@ -15,13 +15,16 @@ import net.minecraft.world.World;
 
 public interface ParticleHelper {
 
-    static void spawnColoredParticle(Entity entity, Vector3f color, Vec3d direction, float speed, float size) {
-        Vec3d velocity = entity.getVelocity().add(direction.normalize().multiply(speed));
-        Vec3d pos = entity.getEyePos();
-        entity.getWorld().addParticle(new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, color, 1),
-                pos.x, pos.y - 0.1F, pos.z,
-                velocity.x, velocity.y + 0.03F, velocity.z);
+    static void spawnColoredParticle(Entity entity, Vector3f color, float speed, float size) {
+        spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, color, size), speed);
     }
+
+    static void spawnParticleAtFace(Entity entity, ParticleEffect effect, float speed) {
+        Vec3d velocity = entity.getVelocity().add(entity.getRotationVec(1).normalize().multiply(speed));
+        Vec3d pos = entity.getEyePos();
+        entity.getWorld().addParticle(effect, pos.x, pos.y - 0.1F, pos.z, velocity.x, velocity.y + 0.03F, velocity.z);
+    }
+
 
     static void spawnParticles(World world, ParticleEffect effect, Supplier<Vec3d> pos, Supplier<Vec3d> vel, int count) {
         for (int i = 0; i < count; i++) {
