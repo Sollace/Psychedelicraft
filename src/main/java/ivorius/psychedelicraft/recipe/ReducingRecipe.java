@@ -11,13 +11,9 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -36,35 +32,24 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
 public record ReducingRecipe (
         String group,
         CraftingRecipeCategory category,
-        ItemFluids result,
-        ItemStack remainder,
-        DefaultedList<FluidIngredient> fluids,
-        Ingredient ingredient,
-        int stewTime) implements Recipe<ReducingRecipe.Input> {
+        Result result,
+        Ingredients ingredients,
+        int stewTime) implements BunsenBurnerRecipe {
     public static final MapCodec<ReducingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(ReducingRecipe::group),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ReducingRecipe::category),
-            ItemFluids.CODEC.fieldOf("result").forGetter(ReducingRecipe::result),
-            ItemStack.VALIDATED_CODEC.optionalFieldOf("remainder", ItemStack.EMPTY).forGetter(ReducingRecipe::remainder),
-            CodecUtils.toDefaultedList(FluidIngredient.CODEC, FluidIngredient.EMPTY).fieldOf("fluids").forGetter(ReducingRecipe::fluids),
-            Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(ReducingRecipe::ingredient),
+            Result.CODEC.fieldOf("result").forGetter(ReducingRecipe::result),
+            Ingredients.CODEC.fieldOf("ingredients").forGetter(ReducingRecipe::ingredients),
             Codec.INT.optionalFieldOf("stew_time", 0).forGetter(ReducingRecipe::stewTime)
     ).apply(instance, ReducingRecipe::new));
-    public static final PacketCodec<RegistryByteBuf, ReducingRecipe> PACKET_CODEC = PacketCodecUtils.tuple(
+    public static final PacketCodec<RegistryByteBuf, ReducingRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, ReducingRecipe::group,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ReducingRecipe::category,
-            ItemFluids.PACKET_CODEC, ReducingRecipe::result,
-            ItemStack.PACKET_CODEC, ReducingRecipe::remainder,
-            FluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), ReducingRecipe::fluids,
-            Ingredient.PACKET_CODEC, ReducingRecipe::ingredient,
+            Result.PACKET_CODEC, ReducingRecipe::result,
+            Ingredients.PACKET_CODEC, ReducingRecipe::ingredients,
             PacketCodecs.INTEGER, ReducingRecipe::stewTime,
             ReducingRecipe::new
     );
-
-    @Override
-    public RecipeType<?> getType() {
-        return PSRecipes.REACTING_TYPE;
-    }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
@@ -78,70 +63,79 @@ public record ReducingRecipe (
 
     @Override
     public ItemStack createIcon() {
-        return PSItems.MASH_TUB.getDefaultStack();
+        return PSItems.BUNSEN_BURNER.getDefaultStack();
     }
 
     @Override
     public DefaultedList<Ingredient> getIngredients() {
-        return DefaultedList.copyOf(Ingredient.EMPTY, ingredient);
+        return ingredients.solids();
     }
 
     @Override
     public boolean matches(Input input, World world) {
-        if (input.input().countMatches(ingredient) == 0) {
-            return false;
-        }
-
-        List<ItemFluids> inputs = new ArrayList<>(input.fluids());
-        return fluids().stream().allMatch(ingredient -> {
-            return inputs.stream().filter(fluid -> ingredient.test(fluid)).findFirst().map(match -> {
-                inputs.remove(match);
-                return true;
-            }).isPresent();
-        });
-    }
-
-    public List<ItemFluids> getRemainingFluids(List<ItemFluids> fluids) {
-        if (!fluids().isEmpty() && !fluids.isEmpty()) {
-            List<ItemFluids> remainder = new ArrayList<>(fluids);
-            List<FluidIngredient> ingredients = new ArrayList<>(fluids());
-            for (int i = 0; i < fluids.size(); i++) {
-                ItemFluids fluid = fluids.get(i);
-                int index = i;
-                ingredients.stream().filter(ingredient -> ingredient.test(fluid)).findFirst().ifPresent(ingredient -> {
-                    ingredients.remove(ingredient);
-                    remainder.set(index, fluid.ofAmount(fluid.amount() - ingredient.level().orElse(fluid.amount())));
-                });
-            }
-            return remainder;
-        }
-        return fluids;
+        return ingredients.matchSolids(new ItemMound(input.input())) && ingredients.matchFluids(input.fluids());
     }
 
     @Override
     public ItemStack craft(Input input, WrapperLookup lookup) {
-        return remainder;
-    }
-
-    @Override
-    public boolean fits(int width, int height) {
-        return (width * height) > 0;
+        if (ingredients.matchSolids(input.input()) && ingredients.matchFluids(input.fluids())) {
+            if (!result.fluid().isEmpty()) {
+                input.consumer().accept(result.fluid());
+            }
+        }
+        return result.byProduct();
     }
 
     @Override
     public ItemStack getResult(WrapperLookup lookup) {
-        return remainder;
+        return result.byProduct();
     }
 
-    public record Input(List<ItemFluids> fluids, ItemMound input) implements RecipeInput {
-        @Override
-        public ItemStack getStackInSlot(int slot) {
-            return ItemStack.EMPTY;
+    record Result (
+            ItemFluids fluid,
+            ItemStack byProduct
+    ) {
+        public static final MapCodec<Result> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                ItemFluids.CODEC.fieldOf("fluid").forGetter(Result::fluid),
+                ItemStack.VALIDATED_CODEC.optionalFieldOf("by_product", ItemStack.EMPTY).forGetter(Result::byProduct)
+        ).apply(instance, Result::new));
+        public static final PacketCodec<RegistryByteBuf, Result> PACKET_CODEC = PacketCodec.tuple(
+                ItemFluids.PACKET_CODEC, Result::fluid,
+                ItemStack.PACKET_CODEC, Result::byProduct,
+                Result::new
+        );
+    }
+
+    record Ingredients(
+            /**
+             * Required input fluids (optional)
+             */
+            DefaultedList<FluidIngredient> fluids,
+            /**
+             * Required input item (optional)
+             */
+            DefaultedList<Ingredient> solids
+    ) {
+        public static final MapCodec<Ingredients> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                CodecUtils.toDefaultedList(FluidIngredient.CODEC, FluidIngredient.EMPTY).optionalFieldOf("fluids", DefaultedList.of()).forGetter(Ingredients::fluids),
+                CodecUtils.toDefaultedList(Ingredient.DISALLOW_EMPTY_CODEC, Ingredient.EMPTY).optionalFieldOf("solids", DefaultedList.of()).forGetter(Ingredients::solids)
+        ).apply(instance, Ingredients::new));
+        public static final PacketCodec<RegistryByteBuf, Ingredients> PACKET_CODEC = PacketCodec.tuple(
+                FluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), Ingredients::fluids,
+                Ingredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), Ingredients::solids,
+                Ingredients::new
+        );
+
+        public boolean matchSolids(ItemMound items) {
+            if (solids().isEmpty()) {
+                return items.isEmpty();
+            }
+
+            return solids().stream().allMatch(solid -> items.removeWhere(solid, 1));
         }
 
-        @Override
-        public int getSize() {
-            return 1;
+        public boolean matchFluids(FluidMound fluids) {
+            return fluids().isEmpty() || fluids().stream().allMatch(ingredient -> fluids.removeMatch(ingredient));
         }
     }
 }

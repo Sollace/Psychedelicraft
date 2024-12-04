@@ -1,7 +1,12 @@
 package ivorius.psychedelicraft.block.entity.contents;
 
 import java.util.List;
+import java.util.Optional;
+
+import com.mojang.datafixers.util.Either;
+
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.block.ShapeUtil;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
@@ -9,9 +14,10 @@ import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
+import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
+import ivorius.psychedelicraft.recipe.FluidMound;
 import ivorius.psychedelicraft.recipe.ItemMound;
 import ivorius.psychedelicraft.recipe.PSRecipes;
-import ivorius.psychedelicraft.recipe.ReducingRecipe;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -22,6 +28,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.Unit;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -35,7 +42,6 @@ public class LargeContents extends SmallContents {
     static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(5, 18, 5);
 
     private ItemMound ingredients = new ItemMound();
-    private int processingTime;
 
     public LargeContents(BurnerBlockEntity entity, int capacity, ItemStack stack) {
         super(entity, capacity, stack);
@@ -177,78 +183,61 @@ public class LargeContents extends SmallContents {
     }
 
     @Override
-    public int tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, ItemFluids fluids) {
+    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         if (direction != Direction.UP) {
-            return SPILL_STATUS;
+            return STATUS_VOIDED;
         }
 
-        for (Resovoir auxTank : getAuxiliaryTanks()) {
-            int transferred = auxTank.deposit(fluids);
-            if (transferred > 0) {
-                return transferred;
-            }
-        }
-        if (getAuxiliaryTanks().size() < 4) {
-            Resovoir auxTank = createTank();
-            int transferred = auxTank.deposit(fluids);
-            if (transferred > 0) {
-                getAuxiliaryTanks().add(auxTank);
-                entity.markDirty();
-                return transferred;
-            }
-        }
+        FluidMound mound = new FluidMound(fluids.fluids());
 
-        return 0;
-    }
-
-    private boolean isValidIngredient(ItemStack stack) {
-        return FluidCapacity.get(stack) == 0
-                && entity.getWorld().getRecipeManager()
-                .listAllOfType(PSRecipes.REACTING_TYPE).stream().anyMatch(recipe -> !recipe.value().ingredient().isEmpty() && recipe.value().ingredient().test(stack));
-    }
-
-    @Override
-    protected boolean shouldProduceEvaporate(ServerWorld world) {
-        var input = new ReducingRecipe.Input(
-                getAuxiliaryTanks().stream().map(tank -> tank.getContents()).toList(),
-                new ItemMound(ingredients)
-        );
-
-        world.getRecipeManager().getFirstMatch(PSRecipes.REACTING_TYPE, input, world).ifPresent(recipe -> {
-            if (++processingTime >= recipe.value().stewTime()) {
-                processingTime = 0;
-                if (!recipe.value().ingredient().isEmpty()) {
-                    if (ingredients.removeWhere(recipe.value().ingredient(), 1) && !recipe.value().remainder().isEmpty()) {
-                        ingredients.addStack(recipe.value().remainder());
-                    }
+        fluids.fluids().getFluids().forEach(fluid -> {
+            for (Resovoir auxTank : getAuxiliaryTanks()) {
+                int transferred = auxTank.deposit(fluid);
+                if (transferred > 0) {
+                    mound.remove(fluid.ofAmount(transferred));
+                    return;
                 }
-
-                if (!recipe.value().fluids().isEmpty()) {
-                    var remainder = recipe.value().getRemainingFluids(input.fluids());
-                    if (remainder != input.fluids()) {
-                        getAuxiliaryTanks().clear();
-                        remainder.forEach(this::deposit);
-                    }
-                }
-
-                if (!recipe.value().result().isEmpty()) {
-                    int transferred = tryInsert(world, entity.getCachedState(), entity.getPos(), Direction.UP, recipe.value().result());
-                    if (transferred < recipe.value().result().amount()) {
-                        onFluidWasted(world);
-                    }
+            }
+            if (getAuxiliaryTanks().size() < 4) {
+                Resovoir auxTank = createTank();
+                int transferred = auxTank.deposit(fluid);
+                if (transferred > 0) {
+                    getAuxiliaryTanks().add(auxTank);
+                    mound.remove(fluid.ofAmount(transferred));
+                    entity.markDirty();
                 }
             }
         });
 
-        return false;
+        return PipeInsertable.reject(new PipeFluids(mound, fluids.temperature()));
+    }
+
+    private boolean isValidIngredient(ItemStack stack) {
+        return FluidCapacity.get(stack) == 0 && entity.getWorld().getRecipeManager()
+                .listAllOfType(PSRecipes.BUNSEN_BURNER)
+                .stream()
+                .anyMatch(recipe -> recipe.value().getIngredients().stream().anyMatch(i -> i.test(stack)));
     }
 
     @Override
-    public Resovoir getTankOnSide(Direction direction) {
-        //if (direction == Direction.DOWN) {
-            return getPrimaryTank();
-        //}
-        //return ingredientTanks.computeIfAbsent(direction, d -> new Resovoir(FluidVolumes.BOTTLE, this));
+    protected ItemMound getCraftingIngredients() {
+        return new ItemMound(ingredients);
+    }
+
+    @Override
+    protected void onCraft(BunsenBurnerRecipe.Input input) {
+        ingredients = input.input();
+        getAuxiliaryTanks().clear();
+        input.fluids().getFluids().forEach(this::deposit);
+    }
+
+    @Override
+    protected void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
+        product.items().forEach(stack -> ingredients.addStack(stack));
+
+        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, new PipeFluids(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
+            onFluidWasted(world);
+        }
     }
 
     @Override
@@ -261,14 +250,12 @@ public class LargeContents extends SmallContents {
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {
         super.toNbt(compound, lookup);
         compound.put("ingredients", ingredients.toNbt(lookup));
-        compound.putInt("processingTime", processingTime);
     }
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         super.fromNbt(compound, lookup);
         ingredients = new ItemMound(compound.getCompound("ingredients"), lookup);
-        processingTime = compound.getInt("processingTime");
     }
 
     @Override

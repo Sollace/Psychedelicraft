@@ -25,7 +25,7 @@ public interface PSRecipes {
     RecipeType<MashingRecipe> MASHING_TYPE = type("mashing");
     RecipeSerializer<MashingRecipe> MASHING = serializer("mashing", new Serializer<>(MashingRecipe.CODEC, MashingRecipe.PACKET_CODEC));
 
-    RecipeType<ReducingRecipe> REACTING_TYPE = type("reacting");
+    RecipeType<BunsenBurnerRecipe> BUNSEN_BURNER = type("reacting");
     RecipeSerializer<ReducingRecipe> REDUCING = serializer("reducing", new Serializer<>(ReducingRecipe.CODEC, ReducingRecipe.PACKET_CODEC));
 
     RecipeType<DryingRecipe> DRYING_TYPE = type("drying");

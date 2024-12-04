@@ -7,14 +7,16 @@ package ivorius.psychedelicraft.block;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.contents.EmptyContents;
-import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -37,6 +39,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -70,6 +73,12 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     @Override
     protected MapCodec<? extends BurnerBlock> getCodec() {
         return CODEC;
+    }
+
+    @Override
+    @Deprecated
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 
     @Override
@@ -135,13 +144,13 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
-    public int tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, ItemFluids fluids) {
+    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         if (direction != Direction.DOWN) {
-            return SPILL_STATUS;
+            return PipeInsertable.reject(fluids);
         }
-        return world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).map(data -> {
-            return data.getContents().tryInsert(world, state, pos, direction, fluids);
-        }).orElse(SPILL_STATUS);
+        return world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER)
+                .map(data -> data.getContents().tryInsert(world, state, pos, direction, fluids))
+                .orElseGet(() -> PipeInsertable.reject(fluids));
     }
 
     @Override
@@ -155,12 +164,6 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
         if (state.get(LIT) && !entity.isSneaking() && entity.age % 10 == 0) {
             entity.damage(entity.getDamageSources().inFire(), 1);
         }
-    }
-
-    @Override
-    @Deprecated
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
     }
 
     @Override

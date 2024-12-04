@@ -1,22 +1,34 @@
 package ivorius.psychedelicraft.block;
 
-import ivorius.psychedelicraft.fluid.container.Resovoir;
-import ivorius.psychedelicraft.item.component.ItemFluids;
+import java.util.Optional;
+
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import ivorius.psychedelicraft.recipe.FluidMound;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldAccess;
 
 public interface PipeInsertable {
-    int SPILL_STATUS = -1;
+    Either<Optional<PipeFluids>, Unit> STATUS_VOIDED = Either.right(Unit.INSTANCE);
+    Either<Optional<PipeFluids>, Unit> STATUS_ACCEPT_ALL = Either.left(Optional.empty());
+
+    static Either<Optional<PipeFluids>, Unit> reject(PipeFluids fluids) {
+        return Either.left(Optional.of(fluids));
+    }
 
     default boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
         return false;
     }
 
-    default int tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, ItemFluids fluids) {
-        return SPILL_STATUS;
+    default Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+        return STATUS_VOIDED;
     }
 
     static boolean canConnectWith(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
@@ -24,23 +36,37 @@ public interface PipeInsertable {
                 && pipe.acceptsConnectionFrom(world, neighborState, neighborPos, state, pos, direction.getOpposite(), input);
     }
 
-    static int tryInsert(ServerWorld world, BlockPos pos, Direction direction, Resovoir tank) {
-        int amount = tryInsert(world, pos, direction, tank.getContents());
-        if (amount > 0) {
-            tank.drain(amount);
-        }
-        return amount;
-    }
-
     @SuppressWarnings("deprecation")
-    static int tryInsert(ServerWorld world, BlockPos pos, Direction direction, ItemFluids fluids) {
+    static Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockPos pos, Direction direction, PipeFluids fluids) {
         if (!world.isChunkLoaded(pos)) {
-            return 0;
+            return Either.left(Optional.of(fluids));
         }
         BlockState state = world.getBlockState(pos);
         if (state.getBlock() instanceof PipeInsertable insertable) {
             return insertable.tryInsert(world, state, pos, direction, fluids);
         }
-        return SPILL_STATUS;
+        return STATUS_VOIDED;
+    }
+
+    public record PipeFluids(FluidMound fluids, int temperature) {
+        public static final Codec<PipeFluids> CODEC = RecordCodecBuilder.create(i -> i.group(
+                FluidMound.CODEC.fieldOf("fluids").forGetter(PipeFluids::fluids),
+                Codec.INT.fieldOf("temperature").forGetter(PipeFluids::temperature)
+        ).apply(i, PipeFluids::new));
+        public PipeFluids {
+            temperature = MathHelper.clamp(temperature, 0, 15);
+        }
+
+        public boolean isEmpty() {
+            return fluids.isEmpty();
+        }
+
+        public PipeFluids combine(PipeFluids fluids) {
+            return new PipeFluids(new FluidMound(fluids()).addAll(fluids.fluids()), MathHelper.lerp(0.5F, temperature(), fluids.temperature()));
+        }
+
+        public FluidMound splitCondensate() {
+            return fluids.split(i -> i.fluid().getCondensationTemperature() > temperature);
+        }
     }
 }

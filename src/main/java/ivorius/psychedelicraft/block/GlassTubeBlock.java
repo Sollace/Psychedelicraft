@@ -17,13 +17,15 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
-import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.particle.FluidParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
+import ivorius.psychedelicraft.recipe.FluidMound;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -37,15 +39,21 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -184,14 +192,14 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
-    public int tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, ItemFluids fluids) {
+    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         if (state.get(IN).direction == direction.getOpposite()) {
             return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> {
-                return data.tank.deposit(fluids);
-            }).orElse(0);
+                return data.receiveContents(world, pos, state, fluids);
+            }).orElseGet(() -> PipeInsertable.reject(fluids));
         }
 
-        return SPILL_STATUS;
+        return PipeInsertable.reject(fluids);
     }
 
     public BlockState setDirection(BlockState state, IODirection in, IODirection out) {
@@ -239,24 +247,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     @Override
     protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).ifPresent(data -> {
-            if (data.tank.getContents().amount() > 0 && state.get(OUT)
-                    .getDirection()
-                    .map(direction -> PipeInsertable.tryInsert(world, pos.offset(direction), direction, data.tank)).orElse(SPILL_STATUS) == SPILL_STATUS) {
-                var fluid = data.tank.getContents().fluid();
-                Direction outDirection = state.get(OUT).direction;
-                Vector3f outVec = outDirection == null ? new Vector3f() : outDirection.getUnitVector();
-                world.spawnParticles(
-                        fluid.getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
-                            : fluid.getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
-                            : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid),
-                        pos.getX() + 0.5 + outVec.x * 0.5,
-                        pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
-                        pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
-                data.tank.drain(3);
-            }
-            if (data.tank.getContents().amount() > 0) {
-                world.scheduleBlockTick(pos, this, 3);
-            }
+            data.pushContentsForward(world, pos, state.get(OUT));
         });
     }
 
@@ -305,8 +296,31 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         }
     }
 
+    static int getTemperatureDropPerTransfer(ServerWorld world, BlockPos center) {
+        return 1 + BlockPos.streamOutwards(center, 1, 1, 1).mapToInt(pos -> {
+            return pos.equals(center) ? 0 : getTemperatureDropFor(world, pos);
+        }).sum();
+    }
+
+    static int getTemperatureDropFor(ServerWorld world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        if (state.isIn(BlockTags.ICE) || state.isIn(BlockTags.SNOW)) {
+            return 1;
+        }
+        if (state.isIn(BlockTags.FIRE) || (state.isIn(BlockTags.CAMPFIRES) && state.getOrEmpty(Properties.LIT).orElse(false))) {
+            return -1;
+        }
+        if (state.getFluidState().isIn(FluidTags.LAVA)) {
+            return -4;
+        }
+
+        return 0;
+    }
+
     public static class Data extends BlockEntity implements Resovoir.ChangeListener {
-        private final Resovoir tank = new Resovoir(30, this);
+        private Optional<PipeFluids> contents = Optional.empty();
+        private int temperatureUpdateCooldown;
+        private int temperatureDrop;
 
         public Data(BlockPos pos, BlockState state) {
             super(PSBlockEntities.GLASS_TUBE, pos, state);
@@ -320,14 +334,50 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
             markDirty();
         }
 
+        private int getTemperatureDrop(ServerWorld world, BlockPos pos) {
+            if (temperatureUpdateCooldown == 0) {
+                temperatureUpdateCooldown = 200;
+                temperatureDrop = getTemperatureDropPerTransfer(world, pos);
+            }
+            return temperatureDrop;
+        }
+
+        public Either<Optional<PipeFluids>, Unit> receiveContents(ServerWorld world, BlockPos pos, BlockState state, PipeFluids contents) {
+            pushContentsForward(world, pos, state.get(OUT));
+            Optional<PipeFluids> newContents = contents.isEmpty() ? Optional.empty() : Optional.of(new PipeFluids(new FluidMound(contents.fluids()), contents.temperature() - getTemperatureDrop(world, pos)));
+            this.contents = this.contents.map(old -> newContents.map(i -> old.combine(i)).orElse(old)).or(() -> newContents);
+            if (this.contents.isPresent()) {
+                world.scheduleBlockTick(pos, state.getBlock(), 3);
+            }
+            return STATUS_ACCEPT_ALL;
+        }
+
+        public void pushContentsForward(ServerWorld world, BlockPos pos, IODirection direction) {
+            this.contents = this.contents.flatMap(contents -> {
+                return direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, contents)).orElse(STATUS_VOIDED).ifRight(unit -> {
+                    contents.fluids().getFluids().forEach(fluid -> {
+                        Vector3f outVec = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
+                        world.spawnParticles(
+                                fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
+                                    : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
+                                    : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid.fluid()),
+                                pos.getX() + 0.5 + outVec.x * 0.5,
+                                pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
+                                pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
+                    });
+                }).left().flatMap(Function.identity());
+            });
+
+        }
+
         @Override
         protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
-            nbt.put("tank", tank.toNbt(lookup));
+            contents.flatMap(contents -> PipeFluids.CODEC.encodeStart(NbtOps.INSTANCE, contents).result()).ifPresent(el -> nbt.put("contents", el));
         }
 
         @Override
         protected void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            tank.fromNbt(nbt.getCompound("tank"), lookup);
+            contents = nbt.contains("contents", NbtElement.COMPOUND_TYPE) ? PipeFluids.CODEC.decode(NbtOps.INSTANCE, nbt.getCompound("contents")).result().map(Pair::getFirst) : Optional.empty();
         }
     }
 }

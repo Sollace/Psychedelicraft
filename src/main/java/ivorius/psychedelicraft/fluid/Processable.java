@@ -28,7 +28,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Direction;
 
 /**
- * A fluid that can processed in the correct container, e.g. distillery.
+ * A fluid that can processed in the correct container, e.g. distiller.
  */
 public interface Processable {
     /**
@@ -96,7 +96,7 @@ public interface Processable {
          */
         IDLE,
         /**
-         * When processed in a distillery, used to increase the purity (proof) of existing liquers.
+         * When processed in a distiller, used to increase the purity (proof) of existing liquors.
          */
         DISTILL,
         /**
@@ -114,9 +114,10 @@ public interface Processable {
         /**
          * When processed in the evaporator, used to chemically extract purified substances
          */
+        @Deprecated
         PURIFY,
         /**
-         * When fluids of differing types are mixed on a bunsen burner, used to change their properties when they combine.
+         * When fluids of differing types are mixed on a bunzene burner, used to change their properties when they combine.
          */
         @Deprecated
         REACT;

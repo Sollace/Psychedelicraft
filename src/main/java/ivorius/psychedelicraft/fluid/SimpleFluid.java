@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
@@ -160,6 +161,10 @@ public class SimpleFluid implements Combustable {
         return settings.viscocity;
     }
 
+    public int getCondensationTemperature() {
+        return settings.condensationPoint;
+    }
+
     protected String getTranslationKey() {
         return Util.createTranslationKey(isCustomFluid() ? "fluid" : "block", id);
     }
@@ -281,10 +286,17 @@ public class SimpleFluid implements Combustable {
         private int viscocity = 1;
         private float explosiveness;
         private float flammability;
+        private int condensationPoint = 15;
         final FluidStateManager stateManager = new FluidStateManager(new HashSet<>());
 
         private Optional<Identifier> flowTexture = Optional.empty();
         private Optional<Identifier> stillTexture = Optional.empty();
+
+        public <T extends Settings> T condensationPoint(int temperature) {
+            Preconditions.checkArgument(temperature >= 0 && temperature <= 15);
+            condensationPoint = temperature;
+            return (T)this;
+        }
 
         public <T extends Settings> T color(int color) {
             this.color = color;
