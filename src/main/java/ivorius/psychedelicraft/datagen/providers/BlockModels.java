@@ -10,6 +10,8 @@ import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.BurnerBlock;
+import ivorius.psychedelicraft.block.GlassTubeBlock;
+import ivorius.psychedelicraft.block.GlassTubeBlock.IODirection;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -31,6 +33,7 @@ import net.minecraft.data.client.When.PropertyCondition;
 import net.minecraft.data.client.BlockStateModelGenerator.TintType;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.registry.Registries;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -249,5 +252,29 @@ public interface BlockModels {
     static void registerDryingTable(BlockStateModelGenerator generator, Block block) {
         generator.registerSingleton(block, TextureMap.sideTopBottom(block), BlockModels.DRYING_TABLE_TEMPLATE);
         generator.registerParentedItemModel(block, ModelIds.getBlockModelId(block));
+    }
+
+    static void registerTubing(BlockStateModelGenerator generator, Block block) {
+        MultipartBlockStateSupplier states = MultipartBlockStateSupplier.create(block);
+        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(block, "_in"));
+        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(block, "_out"));
+        Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()), TextureMap.layer0(TextureMap.getId(block.asItem())), generator.modelCollector);
+        generator.blockStateCollector.accept(states);
+    }
+
+    static MultipartBlockStateSupplier addPipeConnectionStates(MultipartBlockStateSupplier states, EnumProperty<IODirection> property, Identifier model) {
+        return states.with(When.create().set(property, IODirection.UP), BlockStateVariant.create()
+            .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R180).put(VariantSettings.Y, Rotation.R0)
+        ).with(When.create().set(property, IODirection.DOWN), BlockStateVariant.create()
+            .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R0).put(VariantSettings.Y, Rotation.R0)
+        ).with(When.create().set(property, IODirection.EAST), BlockStateVariant.create()
+            .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R90).put(VariantSettings.Y, Rotation.R270)
+        ).with(When.create().set(property, IODirection.WEST), BlockStateVariant.create()
+            .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R90).put(VariantSettings.Y, Rotation.R90)
+        ).with(When.create().set(property, IODirection.NORTH), BlockStateVariant.create()
+            .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R90).put(VariantSettings.Y, Rotation.R180)
+        ).with(When.create().set(property, IODirection.SOUTH), BlockStateVariant.create()
+            .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R90).put(VariantSettings.Y, Rotation.R0)
+        );
     }
 }

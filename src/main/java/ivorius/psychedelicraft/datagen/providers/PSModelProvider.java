@@ -69,6 +69,7 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerBunsenBurner(generator, PSBlocks.BUNSEN_BURNER);
         BlockModels.registerTray(generator, PSBlocks.TRAY);
         BlockModels.registerDistillery(generator, PSBlocks.DISTILLERY);
+        BlockModels.registerTubing(generator, PSBlocks.GLASS_TUBE);
 
         generator.registerBuiltin(PSBlocks.RIFT_JAR, Blocks.GLASS).includeWithoutItem(PSBlocks.RIFT_JAR);
 
@@ -202,8 +203,6 @@ public class PSModelProvider extends FabricModelProvider {
                 Psychedelicraft.id("item/lava_bottle"),
                 TextureMap.layer0(Psychedelicraft.id("item/lava_bottle")),
                 generator.writer));
-
-        ItemModels.register(generator, ItemModels.HANDHELD, PSItems.GLASS_TUBE);
 
         List.of(PSItems.WINE_GRAPE_LATTICE, PSItems.MORNING_GLORY_LATTICE).forEach(item -> {
             ItemModels.registerPlantLattice(generator, PSBlocks.LATTICE, item);

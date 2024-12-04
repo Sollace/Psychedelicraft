@@ -270,7 +270,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return new Data(pos, state);
     }
 
-    enum IODirection implements StringIdentifiable {
+    public enum IODirection implements StringIdentifiable {
         NONE(null),
         UP(Direction.UP),
         DOWN(Direction.DOWN),
