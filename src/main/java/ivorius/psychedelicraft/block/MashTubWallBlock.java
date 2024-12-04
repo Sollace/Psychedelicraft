@@ -33,7 +33,7 @@ import net.minecraft.world.*;
 /**
  * Updated by Sollace on 7 Feb 2023
  */
-public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
+public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
     public static final MapCodec<MashTubWallBlock> CODEC = createCodec(MashTubWallBlock::new);
 
     public MashTubWallBlock(Settings settings) {
@@ -105,6 +105,22 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFillable {
     @Override
     protected boolean canBucketPlace(BlockState state, Fluid fluid) {
         return false;
+    }
+
+    @Override
+    public double getFluidHeight(World world, BlockState state, BlockPos pos) {
+        return getValidMasterPosition(world, pos).map(center -> {
+            BlockState masterState = world.getBlockState(center);
+            return masterState.getBlock() instanceof FluidFilled vat ? vat.getFluidHeight(world, masterState, center) : -1D;
+        }).orElse(-1D);
+    }
+
+    @Override
+    public Optional<FluidState> getContainedFluid(World world, BlockState state, BlockPos pos) {
+        return getValidMasterPosition(world, pos).flatMap(center -> {
+            BlockState masterState = world.getBlockState(center);
+            return masterState.getBlock() instanceof FluidFilled vat ? vat.getContainedFluid(world, masterState, center) : Optional.empty();
+        });
     }
 
     @Override

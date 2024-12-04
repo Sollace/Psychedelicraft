@@ -4,7 +4,6 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.entity.MolotovCocktailEntity;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.*;
 import ivorius.psychedelicraft.item.component.BagContentsComponent;
 import ivorius.psychedelicraft.item.component.ItemFluids;
@@ -45,9 +44,7 @@ public interface PSModelPredicates {
             }
             return ItemFluids.of(stack).isEmpty() ? 0 : 1;
         });
-        ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled_with_lava"), (stack, world, entity, seed) -> {
-           return ItemFluids.of(stack).fluid() == SimpleFluid.forVanilla(Fluids.LAVA) ? 1 : 0;
-        });
+        ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled_with_lava"), (stack, world, entity, seed) -> ItemFluids.of(stack).isOf(Fluids.LAVA) ? 1 : 0);
         ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : DyedColorComponent.getColor(stack, Colors.RED), PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
             if (layer == 0) {

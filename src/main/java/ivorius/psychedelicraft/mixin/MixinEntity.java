@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.mixin;
 
+import java.util.stream.DoubleStream;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -59,18 +60,27 @@ abstract class MixinEntity implements TouchingWaterAccessor {
     private void onUpdateMovementInFluid(TagKey<Fluid> tag, double speed, CallbackInfoReturnable<Boolean> info) {
         if (!info.getReturnValueZ()) {
             Entity self = (Entity)(Object)this;
-            BlockPos.stream(self.getBoundingBox().contract(0.001)).mapToInt(pos -> {
+            Box box = self.getBoundingBox().expand(0.001);
+            BlockPos.stream(self.getBoundingBox().contract(0.001)).flatMapToDouble(pos -> {
                 BlockState state = self.getWorld().getBlockState(pos);
-                if (state.getBlock() instanceof FluidFilled tub) {
-                    FluidState fluidState = tub.getContainedFluid(self.getWorld(), state, pos);
+                if (!(state.getBlock() instanceof FluidFilled tub)) {
+                    return DoubleStream.empty();
+                }
+
+                return tub.getContainedFluid(self.getWorld(), state, pos).stream()
+                        .filter(fluidState -> fluidState.isIn(tag))
+                        .mapToDouble(fluidState -> {
                     if (fluidState.isIn(tag)) {
                         if (tag == FluidTags.WATER) {
                             collidedFluid = fluidState;
                         }
-                        return tub.getFluidHeight(self.getWorld(), state, pos);
+                        Box fluidBox = tub.getFluidCollisionBox(self.getWorld(), state, pos);
+                        if (fluidBox.intersects(box)) {
+                            return fluidBox.getLengthY();
+                        }
                     }
-                }
-                return -1;
+                    return -1;
+                });
             }).filter(l -> l > 0).findFirst().ifPresent(level -> {
                 fluidHeight.put(tag, level);
                 info.setReturnValue(true);

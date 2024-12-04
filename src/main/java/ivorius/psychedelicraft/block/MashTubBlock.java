@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
@@ -28,6 +30,8 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -150,19 +154,25 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     }
 
     @Override
-    public int getFluidHeight(World world, BlockState state, BlockPos pos) {
-        return world.getBlockEntity(pos, getBlockEntityType())
+    public double getFluidHeight(World world, BlockState state, BlockPos pos) {
+        var h = world.getBlockEntity(pos, getBlockEntityType())
                 .map(be -> be.getPrimaryTank())
-                .map(tank -> (int)(((float)tank.getContents().amount() / tank.getCapacity()) * 8))
-                .orElse(-1);
+                .map(tank -> (double)tank.getContents().amount() / tank.getCapacity())
+                .orElse(-1D);
+
+        return h < 0 ? -1 : MathHelper.clamp(h, 0, 1);
     }
 
     @Override
-    public FluidState getContainedFluid(World world, BlockState state, BlockPos pos) {
+    public Box getFluidCollisionBox(World world, BlockState state, BlockPos pos) {
+        return FluidFilled.super.getFluidCollisionBox(world, state, pos).expand(0.5, 0, 0.5);
+    }
+
+    @Override
+    public Optional<FluidState> getContainedFluid(World world, BlockState state, BlockPos pos) {
         return world.getBlockEntity(pos, getBlockEntityType())
                 .map(be -> be.getPrimaryTank())
-                .map(tank -> tank.getContents().fluid().getFluidState(tank.getContents()))
-                .orElse(Fluids.EMPTY.getDefaultState());
+                .map(tank -> tank.getContents().fluid().getFluidState(tank.getContents()));
     }
 
     @Override

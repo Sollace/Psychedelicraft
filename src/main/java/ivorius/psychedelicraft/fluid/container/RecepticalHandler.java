@@ -120,7 +120,7 @@ public class RecepticalHandler {
                 if (contents.amount() < FluidVolumes.BOTTLE) {
                     return applyFluid(changeStackType(item, PSItems.FILLED_GLASS_BOTTLE), contents);
                 }
-                if (contents.fluid() == SimpleFluid.forVanilla(Fluids.WATER)) {
+                if (contents.isOf(Fluids.WATER)) {
                     return PotionContentsComponent.createStack(Items.POTION, Potions.WATER);
                 }
                 Item newType = contents.amount() < FluidVolumes.BOTTLE || !contents.isBaseForm()

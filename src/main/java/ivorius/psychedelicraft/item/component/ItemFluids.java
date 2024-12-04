@@ -19,6 +19,7 @@ import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -158,10 +159,6 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
         return this == EMPTY;
     }
 
-    public boolean isBaseForm() {
-        return isEmpty() || equals(fluid().getDefaultStack(amount()));
-    }
-
     public boolean canCombine(ItemFluids fluids) {
         return isEmpty() || fluids.isEmpty() || (fluid() == fluids.fluid() && attributes().equals(fluids.attributes()));
     }
@@ -172,6 +169,18 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public boolean isRoughlyEqual(ItemFluids fluids) {
         return fluid() == fluids.fluid() && getHash() == fluids.getHash();
+    }
+
+    public boolean isBaseForm() {
+        return isEmpty() || isRoughlyEqual(fluid().getDefaultStack(amount()));
+    }
+
+    public boolean isOf(SimpleFluid fluid) {
+        return fluid() == fluid;
+    }
+
+    public boolean isOf(Fluid fluid) {
+        return isOf(SimpleFluid.forVanilla(fluid));
     }
 
     public Text getName() {

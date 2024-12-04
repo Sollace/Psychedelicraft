@@ -8,13 +8,16 @@ package ivorius.psychedelicraft.client.render.blocks;
 import java.util.Random;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import ivorius.psychedelicraft.block.entity.FluidFilled;
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -88,5 +91,19 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
 
         matrices.pop();
 
+
+        if (MinecraftClient.getInstance().getEntityRenderDispatcher().shouldRenderHitboxes() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
+            if (entity.getWorld() != null && entity.getPos() != null && entity.getCachedState().getBlock() instanceof FluidFilled tub) {
+                Box box = new Box(0, 0, 0, 1, 1, 1).expand(0.001);
+
+                matrices.push();
+                WorldRenderer.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 0, 1, 0, 0.2F);
+
+                box = tub.getFluidCollisionBox(entity.getWorld(), entity.getCachedState(), entity.getPos());
+                matrices.translate(-box.minX - 0.5, -box.minY, -box.minZ - 0.5);
+                WorldRenderer.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 1, 1, 1, 1);
+                matrices.pop();
+            }
+        }
     }
 }

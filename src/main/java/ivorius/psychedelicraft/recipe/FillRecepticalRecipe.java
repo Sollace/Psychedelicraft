@@ -23,7 +23,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 
@@ -87,7 +86,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
                 .toList();
 
         return recepticals.size() == 1
-                && ItemFluids.of(recepticals.get(0)).fluid() == SimpleFluid.forVanilla(Fluids.WATER)
+                && ItemFluids.of(recepticals.get(0)).isOf(Fluids.WATER)
                 && FluidCapacity.getPercentage(recepticals.get(0)) >= 1
                 && inventory.getRecipeMatcher().match(this, null);
     }
