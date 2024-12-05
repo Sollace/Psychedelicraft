@@ -53,10 +53,14 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
         if (!isValidContainer(stack)) {
             return TypedActionResult.fail(this);
         }
-        entity.setContainer(ItemFluids.set(stack.splitUnlessCreative(1, player), ItemFluids.EMPTY));
-        entity.playSound(player, BlockSoundGroup.GLASS.getPlaceSound());
+
+        ItemStack container = stack.copyWithCount(1);
         int capacity = FluidCapacity.get(stack);
-        return TypedActionResult.success(stack.isOf(PSItems.BOTTLE) ? new LargeContents(entity, capacity, stack) : new SmallContents(entity, capacity, stack));
+        stack.decrementUnlessCreative(1, player);
+
+        entity.setContainer(ItemFluids.set(container.copy(), ItemFluids.EMPTY));
+        entity.playSound(player, BlockSoundGroup.GLASS.getPlaceSound());
+        return TypedActionResult.success(container.isOf(PSItems.BOTTLE) ? new LargeContents(entity, capacity, container) : new SmallContents(entity, capacity, container));
     }
 
     private boolean isValidContainer(ItemStack stack) {
