@@ -44,6 +44,7 @@ public class PouringRecipe extends SpecialCraftingRecipe {
         ItemFluids from = ItemFluids.of(recepticals.get(0));
 
         return to.canCombine(from)
+            && recepticals.get(0).getCount() == 1
             && Math.min(from.amount(), FluidCapacity.get(recepticals.get(1)) - to.amount()) > 0
             && FluidCapacity.getPercentage(recepticals.get(0)) > 0
             && FluidCapacity.getPercentage(recepticals.get(1)) < 1;
@@ -53,7 +54,7 @@ public class PouringRecipe extends SpecialCraftingRecipe {
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
         var recepticals = RecipeUtils.recepticals(inventory.getStacks().stream()).toList();
 
-        ItemFluids.Transaction to = ItemFluids.Transaction.begin(recepticals.get(1).copy());
+        ItemFluids.Transaction to = ItemFluids.Transaction.begin(recepticals.get(1).copyWithCount(1));
         ItemFluids.Transaction from = ItemFluids.Transaction.begin(recepticals.get(0).copy());
 
         int maxMoved = Math.min(from.fluids().amount(), to.capacity() - to.fluids().amount());
