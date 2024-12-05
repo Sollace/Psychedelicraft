@@ -117,13 +117,13 @@ public class RecepticalHandler {
 
             @Override
             public ItemStack toFilled(ItemStack item, ItemFluids contents) {
-                if (contents.amount() < FluidVolumes.BOTTLE) {
+                if (contents.amount() < FluidVolumes.GLASS_BOTTLE) {
                     return applyFluid(changeStackType(item, PSItems.FILLED_GLASS_BOTTLE), contents);
                 }
                 if (contents.isOf(Fluids.WATER)) {
                     return PotionContentsComponent.createStack(Items.POTION, Potions.WATER);
                 }
-                Item newType = contents.amount() < FluidVolumes.BOTTLE || !contents.isBaseForm()
+                Item newType = contents.amount() < FluidVolumes.GLASS_BOTTLE || !contents.isBaseForm()
                         ? PSItems.FILLED_GLASS_BOTTLE
                         : filledBottles.apply(contents.fluid()).orElse(PSItems.FILLED_GLASS_BOTTLE);
                 return applyFluid(changeStackType(item, newType), newType == PSItems.FILLED_GLASS_BOTTLE ? contents : ItemFluids.EMPTY);
