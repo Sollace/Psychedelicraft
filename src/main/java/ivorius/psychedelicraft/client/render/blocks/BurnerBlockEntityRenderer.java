@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.client.render.PlacedDrinksModelProvider;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -20,6 +21,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -61,6 +63,27 @@ public class BurnerBlockEntityRenderer implements BlockEntityRenderer<BurnerBloc
 
             matrices.pop();
         }
+
+
+        matrices.push();
+        matrices.translate(0.5, 0.1, 0.5);
+        matrices.multiply(MinecraftClient.getInstance().getEntityRenderDispatcher().getRotation());
+        matrices.translate(0, 0, 0.5);
+        float scale = 0.0125F;
+        matrices.scale(scale, -scale, scale);
+        var font = MinecraftClient.getInstance().textRenderer;
+
+        var position = matrices.peek().getPositionMatrix();
+
+        String text = entity.getTemperature() + "";
+        int width = font.getWidth(text);
+        font.draw(text, -width / 2F, 0, Colors.WHITE, true, position, vertices, TextLayerType.NORMAL, 0, light);
+        text = " o";
+        matrices.scale(0.9F, 0.9F, 0.9F);
+        font.draw(text, width / 4F, -font.fontHeight / 2F, Colors.WHITE, true, position, vertices, TextLayerType.NORMAL, 0, light);
+
+        matrices.pop();
+
     }
 
     private void renderFlaskMultiFluids(LargeContents contents, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {

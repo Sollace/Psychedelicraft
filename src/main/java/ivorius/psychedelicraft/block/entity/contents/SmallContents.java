@@ -12,8 +12,6 @@ import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.block.ShapeUtil;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
-import ivorius.psychedelicraft.fluid.Processable;
-import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
@@ -21,12 +19,9 @@ import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
 import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
 import ivorius.psychedelicraft.recipe.FluidMound;
 import ivorius.psychedelicraft.recipe.ItemMound;
-import ivorius.psychedelicraft.recipe.PSRecipes;
-import ivorius.psychedelicraft.recipe.ReducingRecipe;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -44,17 +39,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.WorldEvents;
 
-public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
+public class SmallContents implements BurnerBlockEntity.CraftableContents, BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
     public static final Identifier ID = Psychedelicraft.id("small");
     private final List<Resovoir> auxiliaryTanks = new ArrayList<>();
     private static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(1.5F, 8, 1.5F);
 
     protected int capacity;
     protected final BurnerBlockEntity entity;
-
-    private int processingTime;
 
     public SmallContents(BurnerBlockEntity entity, int capacity, ItemStack stack) {
         this.entity = entity;
@@ -124,7 +116,7 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
 
     @Override
     public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
-        if (direction != Direction.UP) {
+        if (direction != Direction.DOWN) {
             return PipeInsertable.reject(fluids);
         }
 
@@ -143,73 +135,16 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
 
     @Override
     public void tick(ServerWorld world) {
-        BlockPos pos = entity.getPos();
-        int temperature = entity.getTemperature();
-        if (entity.getTemperature() <= 50 || world.getTime() % 5 != world.random.nextInt(3)) {
-            return;
-        }
 
-        if (getTotalFluidVolume() == 0) {
-            world.playSound(null, pos, SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 1.25F, 0.02F);
-            world.spawnParticles(ParticleTypes.SMOKE,
-                    pos.getX() + world.getRandom().nextTriangular(0.5F, 0.1F),
-                    pos.getY() + 0.6F,
-                    pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.1F),
-                    2, 0, 0, 0, 0);
-
-            if (temperature > 180 && world.random.nextInt(3) == 0) {
-                world.playSound(null, pos, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, 1.25F, 0.02F);
-                world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(Blocks.GLASS_PANE.getDefaultState()));
-                entity.clear();
-            }
-        } else {
-            if (entity.getTemperature() > 100) {
-                temperature -= 2;
-                entity.setTemperature(temperature);
-            }
-            world.playSound(null, entity.getPos(), SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.25F, 0.02F);
-            processContents(world, entity.getPos().up());
-        }
     }
 
-    protected void processContents(ServerWorld world, BlockPos pipePos) {
-        var consumer = new BunsenBurnerRecipe.Product(new FluidMound(new ArrayList<>()), new ArrayList<>());
-        var input = new ReducingRecipe.Input(
-                new FluidMound(getAuxiliaryTanks().stream().map(tank -> tank.getContents()).toList()),
-                getCraftingIngredients(),
-                consumer
-        );
-        world.getRecipeManager().getFirstMatch(PSRecipes.BUNSEN_BURNER, input, world).ifPresentOrElse(recipe -> {
-            if (++processingTime >= recipe.value().stewTime()) {
-                processingTime = 0;
-                ItemStack byProduct = recipe.value().craft(input, world.getRegistryManager());
-                if (!byProduct.isEmpty()) {
-                    input.consumer().accept(byProduct);
-                }
-                onCraft(input);
-            }
-        }, () -> {
-            getAuxiliaryTanks().forEach(tank -> {
-                if (tank.getContents().fluid() instanceof Processable processable) {
-                    ProcessType type = processable.modifyProcess(tank, ProcessType.PURIFY);
-                    if (processable.getProcessingTime(tank, type) != Processable.UNCONVERTABLE) {
-                        processable.process(this, type, consumer);
-                        return;
-                    }
-                }
-
-                consumer.accept(tank.drain(1));
-            });
-        });
-
-        produceProducts(world, pipePos, consumer);
-    }
-
-    protected ItemMound getCraftingIngredients() {
+    @Override
+    public ItemMound getCraftingIngredients() {
         return new ItemMound();
     }
 
-    protected void onCraft(BunsenBurnerRecipe.Input input) {
+    @Override
+    public void onCraft(BunsenBurnerRecipe.Input input) {
         if (input.fluids().isEmpty()) {
             getPrimaryTank().setContents(ItemFluids.EMPTY);
         } else {
@@ -221,7 +156,8 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
         }
     }
 
-    protected void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
+    @Override
+    public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
         product.items().forEach(stack -> Block.dropStack(world, entity.getPos(), stack));
         product.fluids().getFluids().forEach(fluid -> {
             if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, new PipeFluids(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
@@ -275,14 +211,12 @@ public class SmallContents implements BurnerBlockEntity.Contents, BlockWithFluid
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {
         compound.putInt("capacity", capacity);
         compound.put("fluids", NbtSerialisable.fromList(auxiliaryTanks, lookup));
-        compound.putInt("processingTime", processingTime);
     }
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         capacity = compound.getInt("capacity");
         NbtSerialisable.toList(auxiliaryTanks, compound.getList("fluids", NbtElement.COMPOUND_TYPE), lookup, this::createTank);
-        processingTime = compound.getInt("processingTime");
     }
 
     @Override

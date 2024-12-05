@@ -184,8 +184,8 @@ public class LargeContents extends SmallContents {
 
     @Override
     public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
-        if (direction != Direction.UP) {
-            return STATUS_VOIDED;
+        if (direction != Direction.DOWN) {
+            return PipeInsertable.reject(fluids);
         }
 
         FluidMound mound = new FluidMound(fluids.fluids());
@@ -220,19 +220,19 @@ public class LargeContents extends SmallContents {
     }
 
     @Override
-    protected ItemMound getCraftingIngredients() {
+    public ItemMound getCraftingIngredients() {
         return new ItemMound(ingredients);
     }
 
     @Override
-    protected void onCraft(BunsenBurnerRecipe.Input input) {
+    public void onCraft(BunsenBurnerRecipe.Input input) {
         ingredients = input.input();
         getAuxiliaryTanks().clear();
         input.fluids().getFluids().forEach(this::deposit);
     }
 
     @Override
-    protected void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
+    public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
         product.items().forEach(stack -> ingredients.addStack(stack));
 
         if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, new PipeFluids(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {

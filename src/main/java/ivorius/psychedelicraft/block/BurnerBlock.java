@@ -40,7 +40,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Unit;
-import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -54,9 +53,7 @@ import net.minecraft.world.WorldAccess;
 public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     public static final MapCodec<BurnerBlock> CODEC = createCodec(BurnerBlock::new);
     public static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(5, 2, 5);
-    private static final Map<Identifier, VoxelShape> SHAPE_CACHE = Util.make(new HashMap<>(), shapes -> {
-        shapes.put(EmptyContents.ID, SHAPE);
-    });
+    private static final Map<Identifier, VoxelShape> SHAPE_CACHE = new HashMap<>(Map.of(EmptyContents.ID, SHAPE));
 
     public static final BooleanProperty LIT = Properties.LIT;
 
@@ -174,6 +171,8 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     @Override
     @Nullable
     public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
-        return world.isClient ? null : validateTicker(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.tick((ServerWorld)w));
+        return world.isClient
+                ? validateTicker(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.clientTick(w))
+                : validateTicker(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
 }

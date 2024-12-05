@@ -5,10 +5,12 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import com.mojang.datafixers.util.Pair;
 
@@ -20,20 +22,32 @@ import ivorius.psychedelicraft.block.entity.contents.EmptyContents;
 import ivorius.psychedelicraft.block.entity.contents.LargeContents;
 import ivorius.psychedelicraft.block.entity.contents.SmallContents;
 import ivorius.psychedelicraft.fluid.Processable;
+import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
+import ivorius.psychedelicraft.particle.PSParticles;
+import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
+import ivorius.psychedelicraft.recipe.FluidMound;
+import ivorius.psychedelicraft.recipe.ItemMound;
+import ivorius.psychedelicraft.recipe.PSRecipes;
+import ivorius.psychedelicraft.recipe.ReducingRecipe;
 import ivorius.psychedelicraft.util.NbtSerialisable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -42,6 +56,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 
 public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFluid.DirectionalFluidResovoir {
     static final int[] CONTAINER_SLOT_ID = {0};
@@ -51,12 +68,15 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
     private Contents contents = new EmptyContents(this);
 
+    private int processingTime;
+
     public BurnerBlockEntity(BlockPos pos, BlockState state) {
         super(PSBlockEntities.BUNSEN_BURNER, pos, state);
     }
 
     public void setContainer(ItemStack container) {
         this.container = container;
+        this.processingTime = 0;
         markDirty();
     }
 
@@ -102,6 +122,17 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         }
     }
 
+    public void clientTick(World world) {
+
+        if (getTemperature() > 60 && getTotalFluidVolume() > 0) {
+            BlockPos pos = getPos();
+            world.addParticle(new DrugDustParticleEffect(PSParticles.BUBBLE, new Vector3f(1, 1, 1), 0.6F),
+                    world.getRandom().nextTriangular(pos.getX() + 0.5, 0.2),
+                    world.getRandom().nextTriangular(pos.getY() + 1, 0.2),
+                    world.getRandom().nextTriangular(pos.getZ() + 0.5, 0.2), 0, 0, 0);
+        }
+    }
+
     @Override
     public void tick(ServerWorld world) {
         if (world.getTime() % 14 == 0) {
@@ -119,6 +150,73 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         }
 
         contents.tick(world);
+
+        if (contents instanceof CraftableContents c) {
+            int temperature = getTemperature();
+            if (getTemperature() <= 50 || world.getTime() % 5 != world.random.nextInt(3)) {
+                return;
+            }
+
+            if (getTotalFluidVolume() == 0) {
+                BlockPos pos = getPos();
+                world.playSound(null, pos, SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 1.25F, 0.02F);
+                world.spawnParticles(ParticleTypes.SMOKE,
+                        pos.getX() + world.getRandom().nextTriangular(0.5F, 0.1F),
+                        pos.getY() + 0.6F,
+                        pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.1F),
+                        2, 0, 0, 0, 0);
+
+                if (temperature > 180 && world.random.nextInt(3) == 0) {
+                    world.playSound(null, pos, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, 1.25F, 0.02F);
+                    world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(Blocks.GLASS_PANE.getDefaultState()));
+                    world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
+                    clear();
+                }
+            } else {
+                if (getTemperature() > 100) {
+                    temperature -= 2;
+                    setTemperature(temperature);
+                }
+                world.playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.25F, 0.02F);
+                world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, pos);
+                craft(world, c);
+            }
+        } else {
+            processingTime = 0;
+        }
+    }
+
+    private void craft(ServerWorld world, CraftableContents contents) {
+        var consumer = new BunsenBurnerRecipe.Product(new FluidMound(new ArrayList<>()), new ArrayList<>());
+        var input = new ReducingRecipe.Input(
+                new FluidMound(getAuxiliaryTanks().stream().map(tank -> tank.getContents()).toList()),
+                contents.getCraftingIngredients(),
+                consumer
+        );
+        world.getRecipeManager().getFirstMatch(PSRecipes.BUNSEN_BURNER, input, world).ifPresentOrElse(recipe -> {
+            if (++processingTime >= recipe.value().stewTime()) {
+                processingTime = 0;
+                ItemStack byProduct = recipe.value().craft(input, world.getRegistryManager());
+                if (!byProduct.isEmpty()) {
+                    input.consumer().accept(byProduct);
+                }
+                contents.onCraft(input);
+            }
+        }, () -> {
+            getAuxiliaryTanks().forEach(tank -> {
+                if (tank.getContents().fluid() instanceof Processable processable) {
+                    ProcessType type = processable.modifyProcess(tank, ProcessType.PURIFY);
+                    if (processable.getProcessingTime(tank, type) != Processable.UNCONVERTABLE) {
+                        processable.process(contents, type, consumer);
+                        return;
+                    }
+                }
+
+                consumer.accept(tank.drain(1));
+            });
+        });
+
+        contents.produceProducts(world, getPos().up(), consumer);
     }
 
     @Override
@@ -140,11 +238,14 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     public void clear() {
         contents = new EmptyContents(this);
         container = ItemStack.EMPTY;
+        processingTime = 0;
     }
 
     @Override
     public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
         super.writeNbt(compound, lookup);
+        compound.putInt("temperature", temperature);
+        compound.putInt("processingTime", processingTime);
         ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, container).result().ifPresent(container -> compound.put("container", container));
         compound.putString("contentsType", contents.getId().toString());
         compound.put("contents", contents.toNbt(lookup));
@@ -153,6 +254,8 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
+        temperature = compound.getInt("temperature");
+        processingTime = compound.getInt("processingTime");
         container = ItemStack.OPTIONAL_CODEC
                 .decode(NbtOps.INSTANCE, compound.get("container"))
                 .result()
@@ -269,5 +372,13 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         interface Factory {
             Contents create(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup);
         }
+    }
+
+    public interface CraftableContents extends Contents, Processable.Context {
+        ItemMound getCraftingIngredients();
+
+        void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product);
+
+        void onCraft(BunsenBurnerRecipe.Input input);
     }
 }
