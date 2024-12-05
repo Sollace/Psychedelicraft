@@ -50,6 +50,7 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(ItemTags.SIGNS).add(PSItems.JUNIPER_SIGN);
         getOrCreateTagBuilder(PSTags.Items.MORNING_GLORY_INGREDIENTS).add(PSItems.MORNING_GLORY, PSItems.MORNING_GLORY_SEEDS);
         getOrCreateTagBuilder(PSTags.Items.BOTTLE_RACK_INSERTABLE).add(PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL);
+        getOrCreateTagBuilder(PSTags.Items.BUNSEN_BURNER_INSERTABLE).add(Items.GLASS_BOTTLE, PSItems.FILLED_GLASS_BOTTLE, Items.POTION, PSItems.BOTTLE);
         getOrCreateTagBuilder(PSTags.Items.PLACEABLE_RECEPTICALS).add(PSItems.WOODEN_MUG, PSItems.STONE_CUP, PSItems.GLASS_CHALICE, PSItems.BOTTLE, PSItems.SHOT_GLASS);
 
         getOrCreateTagBuilder(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS).add(

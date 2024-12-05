@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.block.entity.contents;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.BurnerBlock;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
@@ -15,7 +16,6 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
@@ -64,10 +64,7 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
     }
 
     private boolean isValidContainer(ItemStack stack) {
-        return stack.isOf(Items.GLASS_BOTTLE)
-                || stack.isOf(PSItems.FILLED_GLASS_BOTTLE)
-                || stack.isOf(Items.POTION)
-                || stack.isOf(PSItems.BOTTLE);
+        return stack.isIn(PSTags.Items.BUNSEN_BURNER_INSERTABLE);
     }
 
     public Contents getForStack(World world, BlockPos pos, BlockState state, ItemStack stack) {

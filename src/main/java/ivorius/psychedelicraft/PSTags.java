@@ -15,6 +15,7 @@ import net.minecraft.registry.tag.TagKey;
 public interface PSTags {
     interface Items {
         TagKey<Item> BOTTLE_RACK_INSERTABLE = of("bottle_rack_insertable");
+        TagKey<Item> BUNSEN_BURNER_INSERTABLE = of("bunsen_burner_insertable");
         TagKey<Item> BARRELS = of("barrels");
         TagKey<Item> JUNIPER_LOGS = of("juniper_logs");
         TagKey<Item> DRYING_TABLES = of("drying_tables");
