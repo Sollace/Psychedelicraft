@@ -38,6 +38,9 @@ public interface PipeInsertable {
 
     @SuppressWarnings("deprecation")
     static Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockPos pos, Direction direction, PipeFluids fluids) {
+        if (fluids.isEmpty()) {
+            return STATUS_ACCEPT_ALL;
+        }
         if (!world.isChunkLoaded(pos)) {
             return Either.left(Optional.of(fluids));
         }
