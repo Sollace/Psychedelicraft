@@ -98,8 +98,9 @@ public class FluidBoxRenderer {
         return this;
     }
 
-    public void draw(float x, float y, float z, float width, float height, float length, Direction... directions) {
+    public FluidBoxRenderer draw(float x, float y, float z, float width, float height, float length, Direction... directions) {
         renderFluidFace(x, y, z, width, height, length, directions);
+        return this;
     }
 
     private void vertex(float x, float y, float z, float u, float v, Direction direction) {

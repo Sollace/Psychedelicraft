@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.PlacedDrinksModelProvider;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -21,7 +22,9 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -58,32 +61,66 @@ public class BurnerBlockEntityRenderer implements BlockEntityRenderer<BurnerBloc
                 renderIngredients(entity, largeContents, matrices, vertices, light, overlay);
             }
             if (contents instanceof SmallContents smallContents) {
-                // TODO
+                renderFlaskSingleFluid(smallContents, matrices, vertices, light, overlay);
             }
 
             matrices.pop();
         }
 
-
+        MinecraftClient client = MinecraftClient.getInstance();
         matrices.push();
-        matrices.translate(0.5, 0.1, 0.5);
-        matrices.multiply(MinecraftClient.getInstance().getEntityRenderDispatcher().getRotation());
+        matrices.translate(0.5, 0, 0.5);
+        matrices.multiply(client.getEntityRenderDispatcher().getRotation());
         matrices.translate(0, 0, 0.5);
-        float scale = 0.0125F;
-        matrices.scale(scale, -scale, scale);
-        var font = MinecraftClient.getInstance().textRenderer;
 
+        var font = client.textRenderer;
         var position = matrices.peek().getPositionMatrix();
+        int temperature = entity.getTemperature();
 
-        String text = entity.getTemperature() + "";
+        float scale = 0.005F;
+        if (temperature > 100) {
+            scale += client.getRenderTickCounter().getTickDelta(true) * 0.001F;
+        }
+        matrices.scale(scale, -scale, scale);
+
+        String text = temperature + "";
         int width = font.getWidth(text);
-        font.draw(text, -width / 2F, 0, Colors.WHITE, true, position, vertices, TextLayerType.NORMAL, 0, light);
+
+        int temperatureColorComponent = MathHelper.clamp((int)(255 * (1 - temperature/100F)), 0, 255);
+        int temperatureColor = ColorHelper.Argb.getArgb(255, 255, temperatureColorComponent, temperatureColorComponent);
+
+        font.draw(text, -width / 2F, 0, temperatureColor, true, position, vertices, TextLayerType.NORMAL, 0, light);
         text = " o";
         matrices.scale(0.9F, 0.9F, 0.9F);
-        font.draw(text, width / 4F, -font.fontHeight / 2F, Colors.WHITE, true, position, vertices, TextLayerType.NORMAL, 0, light);
+        font.draw(text, width / 4F, -font.fontHeight / 2F, temperatureColor, true, position, vertices, TextLayerType.NORMAL, 0, light);
+
+        int maxCapacity = FluidCapacity.get(entity.getContainer());
+        if (maxCapacity > 0) {
+            int percentage = (int)((entity.getTotalFluidVolume() / (float)maxCapacity) * 100);
+            text = switch (percentage) {
+                case 100 -> "Full";
+                case 0 -> "Empty";
+                default -> percentage + "%";
+            };
+            width = font.getWidth(text) - 5;
+            font.draw(text, -width / 2F, -font.fontHeight - 2, Colors.WHITE, true, position, vertices, TextLayerType.NORMAL, 0, light);
+        }
 
         matrices.pop();
 
+    }
+
+    private void renderFlaskSingleFluid(SmallContents contents, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        matrices.push();
+        matrices.scale(1/16F, 1/16F, 1/16F);
+        Resovoir tank = contents.getPrimaryTank();
+        float fluidHeight = 2.4F * ((float)tank.getContents().amount() / (float)tank.getCapacity());
+        FluidBoxRenderer.getInstance()
+            .light(light).overlay(overlay)
+            .position(matrices)
+            .texture(vertices, tank.getContents())
+            .draw(6.7F, 0.5F, 6.7F, 2.6F, fluidHeight, 2.6F, Direction.DOWN, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
+        matrices.pop();
     }
 
     private void renderFlaskMultiFluids(LargeContents contents, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
@@ -203,4 +240,17 @@ public class BurnerBlockEntityRenderer implements BlockEntityRenderer<BurnerBloc
 
         matrices.pop();
     }
+
+    static void renderBlockLabel(Text text, int x, int y, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        matrices.push();
+        matrices.translate(0.5, 0.1, 0.5);
+        matrices.multiply(client.getEntityRenderDispatcher().getRotation());
+        matrices.translate(0, 0, 0.5);
+        float scale = 0.0125F;
+        matrices.scale(scale, -scale, scale);
+        client.textRenderer.draw(text, x, y, Colors.WHITE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+        matrices.pop();
+    }
+
 }
