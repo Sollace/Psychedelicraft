@@ -24,6 +24,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -68,45 +69,51 @@ public class BurnerBlockEntityRenderer implements BlockEntityRenderer<BurnerBloc
         }
 
         MinecraftClient client = MinecraftClient.getInstance();
-        matrices.push();
-        matrices.translate(0.5, 0, 0.5);
-        matrices.multiply(client.getEntityRenderDispatcher().getRotation());
-        matrices.translate(0, 0, 0.5);
 
-        var font = client.textRenderer;
-        var position = matrices.peek().getPositionMatrix();
-        int temperature = entity.getTemperature();
+        if (client.getEntityRenderDispatcher().camera.getBlockPos().getSquaredDistance(entity.getPos()) < 4096) {
+            if (!(client.crosshairTarget instanceof BlockHitResult hit) || !hit.getBlockPos().equals(entity.getPos())) {
+                return;
+            }
+            matrices.push();
+            matrices.translate(0.5, 0, 0.5);
+            matrices.multiply(client.getEntityRenderDispatcher().getRotation());
+            matrices.translate(0, 0, 0.5);
 
-        float scale = 0.005F;
-        if (temperature > 100) {
-            scale += client.getRenderTickCounter().getTickDelta(true) * 0.001F;
+            var font = client.textRenderer;
+            var position = matrices.peek().getPositionMatrix();
+            int temperature = entity.getTemperature();
+
+            float scale = 0.005F;
+            if (temperature > 100) {
+                scale += client.getRenderTickCounter().getTickDelta(true) * 0.001F;
+            }
+            matrices.scale(scale, -scale, scale);
+
+            String text = temperature + "";
+            int width = font.getWidth(text);
+
+            int temperatureColorComponent = MathHelper.clamp((int)(255 * (1 - temperature/100F)), 0, 255);
+            int temperatureColor = ColorHelper.Argb.getArgb(255, 255, temperatureColorComponent, temperatureColorComponent);
+
+            font.draw(text, -width / 2F, 0, temperatureColor, true, position, vertices, TextLayerType.NORMAL, 0, light);
+            text = " o";
+            matrices.scale(0.9F, 0.9F, 0.9F);
+            font.draw(text, width / 4F, -font.fontHeight / 2F, temperatureColor, true, position, vertices, TextLayerType.NORMAL, 0, light);
+
+            int maxCapacity = FluidCapacity.get(entity.getContainer());
+            if (maxCapacity > 0) {
+                int percentage = (int)((entity.getTotalFluidVolume() / (float)maxCapacity) * 100);
+                text = switch (percentage) {
+                    case 100 -> "Full";
+                    case 0 -> "Empty";
+                    default -> percentage + "%";
+                };
+                width = font.getWidth(text) - 5;
+                font.draw(text, -width / 2F, -font.fontHeight - 2, Colors.WHITE, true, position, vertices, TextLayerType.NORMAL, 0, light);
+            }
+
+            matrices.pop();
         }
-        matrices.scale(scale, -scale, scale);
-
-        String text = temperature + "";
-        int width = font.getWidth(text);
-
-        int temperatureColorComponent = MathHelper.clamp((int)(255 * (1 - temperature/100F)), 0, 255);
-        int temperatureColor = ColorHelper.Argb.getArgb(255, 255, temperatureColorComponent, temperatureColorComponent);
-
-        font.draw(text, -width / 2F, 0, temperatureColor, true, position, vertices, TextLayerType.NORMAL, 0, light);
-        text = " o";
-        matrices.scale(0.9F, 0.9F, 0.9F);
-        font.draw(text, width / 4F, -font.fontHeight / 2F, temperatureColor, true, position, vertices, TextLayerType.NORMAL, 0, light);
-
-        int maxCapacity = FluidCapacity.get(entity.getContainer());
-        if (maxCapacity > 0) {
-            int percentage = (int)((entity.getTotalFluidVolume() / (float)maxCapacity) * 100);
-            text = switch (percentage) {
-                case 100 -> "Full";
-                case 0 -> "Empty";
-                default -> percentage + "%";
-            };
-            width = font.getWidth(text) - 5;
-            font.draw(text, -width / 2F, -font.fontHeight - 2, Colors.WHITE, true, position, vertices, TextLayerType.NORMAL, 0, light);
-        }
-
-        matrices.pop();
 
     }
 
