@@ -60,6 +60,12 @@ public class CannabisPlantBlock extends CropBlock {
         return SHAPE;
     }
 
+    @Override
+    @Deprecated
+    public final int getMaxAge() {
+        return getMaxAge(getDefaultState());
+    }
+
     public int getMaxAge(BlockState state) {
         return MAX_AGE;
     }

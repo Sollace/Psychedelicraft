@@ -94,12 +94,13 @@ class RiftJarBlock extends BlockWithEntity {
 
     @Override
     public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-        return Optional.ofNullable(builder.getOptional(LootContextParameters.BLOCK_ENTITY)).map(RiftJarBlockEntity.class::cast).map(be -> {
-            if (!be.jarBroken) {
-                return RiftFractionComponent.set(PSItems.RIFT_JAR.getDefaultStack(), be.currentRiftFraction);
-            }
-            return null;
-        }).stream().toList();
+        List<ItemStack> drops = super.getDroppedStacks(state, builder);
+        if (builder.getOptional(LootContextParameters.BLOCK_ENTITY) instanceof RiftJarBlockEntity jar && !jar.jarBroken) {
+            return drops.stream()
+                    .map(drop -> drop.isOf(PSItems.RIFT_JAR) ? RiftFractionComponent.set(drop, jar.currentRiftFraction) : drop)
+                    .toList();
+        }
+        return drops;
     }
 
     @Override

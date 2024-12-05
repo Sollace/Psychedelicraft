@@ -133,15 +133,16 @@ public class PlacedDrinksBlock extends BlockWithEntity {
 
     @Override
     protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-        List<ItemStack> stacks = new ArrayList<>(super.getDroppedStacks(state, builder));
         if (builder.getOptional(LootContextParameters.BLOCK_ENTITY) instanceof Data be) {
-            be.forEachDrink((y, entry) -> {
-                stacks.add(entry.stack());
-                return 0;
+            builder = builder.addDynamicDrop(BlockWithFluid.CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
+                be.forEachDrink((y, entry) -> {
+                    lootConsumer.accept(entry.stack());
+                    return 0;
+                });
+                be.entries.clear();
             });
-            be.entries.clear();
         }
-        return stacks;
+        return super.getDroppedStacks(state, builder);
     }
 
     @Override

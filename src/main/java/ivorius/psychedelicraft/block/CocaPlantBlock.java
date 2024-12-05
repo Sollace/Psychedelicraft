@@ -15,7 +15,8 @@ import net.minecraft.world.BlockView;
 
 public class CocaPlantBlock extends CannabisPlantBlock {
     public static final MapCodec<CocaPlantBlock> CODEC = createCodec(CocaPlantBlock::new);
-    private static final IntProperty AGE_12 = IntProperty.of("age", 0, 12);
+    public static final IntProperty AGE_12 = IntProperty.of("age", 0, 12);
+    public static final int AGE_12_MAX = 12;
 
     public CocaPlantBlock(Settings settings) {
         super(settings);
@@ -33,7 +34,7 @@ public class CocaPlantBlock extends CannabisPlantBlock {
 
     @Override
     public int getMaxAge(BlockState state) {
-        return 12;
+        return AGE_12_MAX;
     }
 
     @Override
