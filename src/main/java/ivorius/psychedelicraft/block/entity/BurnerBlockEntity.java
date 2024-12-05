@@ -212,7 +212,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
                     }
                 }
 
-                consumer.accept(tank.drain(1));
+                consumer.accept(tank.drain(Math.max(1, (int)tank.getAmount() / 10)));
             });
         });
 
