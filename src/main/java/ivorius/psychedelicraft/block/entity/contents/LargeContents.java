@@ -1,8 +1,8 @@
 package ivorius.psychedelicraft.block.entity.contents;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import com.mojang.datafixers.util.Either;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -71,17 +71,6 @@ public class LargeContents extends SmallContents {
     }
 
     @Override
-    public void onLevelChange(Resovoir resovoir, int change) {
-        super.onLevelChange(resovoir, change);
-        if (resovoir.getContents().isEmpty()) {
-            getAuxiliaryTanks().remove(resovoir);
-            if (getAuxiliaryTanks().isEmpty()) {
-                getAuxiliaryTanks().add(createTank());
-            }
-        }
-    }
-
-    @Override
     public TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         TypedActionResult<Contents> result = super.interact(stack, player, hand, side);
         if (result.getResult().isAccepted()) {
@@ -137,49 +126,53 @@ public class LargeContents extends SmallContents {
     }
 
     protected boolean deposit(ItemFluids.Transaction t) {
-        int maxToInsert = Math.max(0, capacity - getTotalFluidVolume());
-        int transferred = 0;
-        for (Resovoir auxTank : getAuxiliaryTanks()) {
-            transferred = auxTank.deposit(t, maxToInsert);
-            if (transferred > 0) {
-                return true;
+        synchronized (auxiliaryTanks) {
+            int maxToInsert = Math.max(0, capacity - getTotalFluidVolume());
+            int transferred = 0;
+            for (Resovoir auxTank : auxiliaryTanks) {
+                transferred = auxTank.deposit(t, maxToInsert);
+                if (transferred > 0) {
+                    return true;
+                }
             }
-        }
-        if (getAuxiliaryTanks().size() < 4) {
-            Resovoir auxTank = createTank();
-            transferred = auxTank.deposit(t, maxToInsert);
-            if (transferred > 0) {
-                getAuxiliaryTanks().add(auxTank);
-                entity.markDirty();
-                return true;
+            if (auxiliaryTanks.size() < 4) {
+                Resovoir auxTank = createTank();
+                transferred = auxTank.deposit(t, maxToInsert);
+                if (transferred > 0) {
+                    auxiliaryTanks.add(auxTank);
+                    entity.markDirty();
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
 
     protected ItemFluids deposit(ItemFluids stack) {
-        if (stack.isEmpty()) {
+        synchronized (auxiliaryTanks) {
+            if (stack.isEmpty()) {
+                return stack;
+            }
+            int maxToInsert = Math.min(stack.amount(), Math.max(0, capacity - getTotalFluidVolume()));
+            ItemFluids toInsert = stack.ofAmount(maxToInsert);
+            int transferred = 0;
+            for (Resovoir auxTank : auxiliaryTanks) {
+                transferred = auxTank.deposit(toInsert);
+                if (transferred > 0) {
+                    return stack.ofAmount(stack.amount() - transferred);
+                }
+            }
+            if (auxiliaryTanks.size() < 4) {
+                Resovoir auxTank = createTank();
+                transferred = auxTank.deposit(toInsert);
+                if (transferred > 0) {
+                    auxiliaryTanks.add(auxTank);
+                    entity.markDirty();
+                    return stack.ofAmount(stack.amount() - transferred);
+                }
+            }
             return stack;
         }
-        int maxToInsert = Math.min(stack.amount(), Math.max(0, capacity - getTotalFluidVolume()));
-        ItemFluids toInsert = stack.ofAmount(maxToInsert);
-        int transferred = 0;
-        for (Resovoir auxTank : getAuxiliaryTanks()) {
-            transferred = auxTank.deposit(toInsert);
-            if (transferred > 0) {
-                return stack.ofAmount(stack.amount() - transferred);
-            }
-        }
-        if (getAuxiliaryTanks().size() < 4) {
-            Resovoir auxTank = createTank();
-            transferred = auxTank.deposit(toInsert);
-            if (transferred > 0) {
-                getAuxiliaryTanks().add(auxTank);
-                entity.markDirty();
-                return stack.ofAmount(stack.amount() - transferred);
-            }
-        }
-        return stack;
     }
 
     @Override
@@ -190,24 +183,26 @@ public class LargeContents extends SmallContents {
 
         FluidMound mound = new FluidMound(fluids.fluids());
 
-        fluids.fluids().getFluids().forEach(fluid -> {
-            for (Resovoir auxTank : getAuxiliaryTanks()) {
-                int transferred = auxTank.deposit(fluid);
-                if (transferred > 0) {
-                    mound.remove(fluid.ofAmount(transferred));
-                    return;
+        synchronized (auxiliaryTanks) {
+            fluids.fluids().getFluids().forEach(fluid -> {
+                for (Resovoir auxTank : auxiliaryTanks) {
+                    int transferred = auxTank.deposit(fluid);
+                    if (transferred > 0) {
+                        mound.remove(fluid.ofAmount(transferred));
+                        return;
+                    }
                 }
-            }
-            if (getAuxiliaryTanks().size() < 4) {
-                Resovoir auxTank = createTank();
-                int transferred = auxTank.deposit(fluid);
-                if (transferred > 0) {
-                    getAuxiliaryTanks().add(auxTank);
-                    mound.remove(fluid.ofAmount(transferred));
-                    entity.markDirty();
+                if (auxiliaryTanks.size() < 4) {
+                    Resovoir auxTank = createTank();
+                    int transferred = auxTank.deposit(fluid);
+                    if (transferred > 0) {
+                        auxiliaryTanks.add(auxTank);
+                        mound.remove(fluid.ofAmount(transferred));
+                        entity.markDirty();
+                    }
                 }
-            }
-        });
+            });
+        }
 
         return PipeInsertable.reject(new PipeFluids(mound, fluids.temperature()));
     }
@@ -227,14 +222,18 @@ public class LargeContents extends SmallContents {
     @Override
     public void onCraft(BunsenBurnerRecipe.Input input) {
         ingredients = input.input();
-        getAuxiliaryTanks().clear();
-        input.fluids().getFluids().forEach(this::deposit);
+        auxiliaryTanks = new ArrayList<>();
+        input.fluids().getFluids().forEach(fluid -> {
+            fluid = deposit(fluid);
+            if (!fluid.isEmpty()) {
+                input.consumer().accept(fluid);
+            }
+        });
     }
 
     @Override
     public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
         product.items().forEach(stack -> ingredients.addStack(stack));
-
         if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, new PipeFluids(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
             onFluidWasted(world);
         }
@@ -265,12 +264,12 @@ public class LargeContents extends SmallContents {
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, Direction dir) {
-        return slot > 0 && slot < MAX_INGREDIENTS;
+        return slot >= 0 && slot < MAX_INGREDIENTS;
     }
 
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-        return slot >= 0 && slot <= MAX_INGREDIENTS;
+        return slot >= 0 && slot < MAX_INGREDIENTS;
     }
 
     @Override
@@ -285,7 +284,7 @@ public class LargeContents extends SmallContents {
 
     @Override
     public ItemStack getStack(int slot) {
-        if (slot > ingredients.size()) {
+        if (slot >= ingredients.size()) {
             return ItemStack.EMPTY;
         }
         return ingredients.getCounts().keySet().stream().toList().get(slot).getDefaultStack();
@@ -293,12 +292,12 @@ public class LargeContents extends SmallContents {
 
     @Override
     public ItemStack removeStack(int slot, int amount) {
-        return ingredients.removeStack(slot - 1, amount);
+        return ingredients.removeStack(slot, amount);
     }
 
     @Override
     public ItemStack removeStack(int slot) {
-        return ingredients.removeStack(slot - 1, Integer.MAX_VALUE);
+        return ingredients.removeStack(slot, Integer.MAX_VALUE);
     }
 
     @Override

@@ -187,9 +187,9 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     }
 
     private void craft(ServerWorld world, CraftableContents contents) {
-        var consumer = new BunsenBurnerRecipe.Product(new FluidMound(new ArrayList<>()), new ArrayList<>());
+        var consumer = new BunsenBurnerRecipe.Product(new FluidMound(), new ArrayList<>());
         var input = new ReducingRecipe.Input(
-                new FluidMound(getAuxiliaryTanks().stream().map(tank -> tank.getContents()).toList()),
+                new FluidMound(this),
                 contents.getCraftingIngredients(),
                 consumer
         );

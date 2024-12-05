@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import com.mojang.serialization.Codec;
 
+import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 
 public class FluidMound {
@@ -17,9 +18,15 @@ public class FluidMound {
         this(fluids.getFluids());
     }
 
+    public FluidMound(Processable.Context context) {
+        this(context.getAuxiliaryTanks().stream().map(tank -> tank.getContents()).toList());
+    }
+
     public FluidMound(List<ItemFluids> fluids) {
         fluids.forEach(this::add);
     }
+
+    public FluidMound() {}
 
     public List<ItemFluids> getFluids() {
         return fluids;

@@ -42,7 +42,7 @@ import net.minecraft.util.shape.VoxelShape;
 
 public class SmallContents implements BurnerBlockEntity.CraftableContents, BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
     public static final Identifier ID = Psychedelicraft.id("small");
-    private final List<Resovoir> auxiliaryTanks = new ArrayList<>();
+    protected List<Resovoir> auxiliaryTanks = new ArrayList<>();
     private static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(1.5F, 8, 1.5F);
 
     protected int capacity;
@@ -81,6 +81,14 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public void onLevelChange(Resovoir resovoir, int change) {
         markDirty();
+        if (resovoir.getContents().isEmpty()) {
+            synchronized (auxiliaryTanks) {
+                auxiliaryTanks.removeIf(r -> r.getContents().isEmpty());
+                if (auxiliaryTanks.isEmpty()) {
+                    auxiliaryTanks.add(createTank());
+                }
+            }
+        }
         if (change > 0) {
             entity.getWorld().playSound(null, entity.getPos(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS);
         }
@@ -149,7 +157,10 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
             getPrimaryTank().setContents(ItemFluids.EMPTY);
         } else {
             ItemFluids first = input.fluids().get(0);
-            getPrimaryTank().setContents(first);
+            getPrimaryTank().setContents(first.ofAmount(Math.min(capacity, first.amount())));
+            if (first.amount() > capacity) {
+                input.consumer().accept(first.ofAmount(first.amount() - capacity));
+            }
             for (int i = 1; i < input.fluids().size(); i++) {
                 input.consumer().accept(input.fluids().get(i));
             }
@@ -159,11 +170,9 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
         product.items().forEach(stack -> Block.dropStack(world, entity.getPos(), stack));
-        product.fluids().getFluids().forEach(fluid -> {
-            if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, new PipeFluids(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
-                onFluidWasted(world);
-            }
-        });
+        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, new PipeFluids(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
+            onFluidWasted(world);
+        }
     }
 
     @Override
@@ -181,14 +190,18 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
 
     @Override
     public Resovoir getPrimaryTank() {
-        if (auxiliaryTanks.isEmpty()) {
-            auxiliaryTanks.add(createTank());
+        synchronized (auxiliaryTanks) {
+            if (auxiliaryTanks.isEmpty()) {
+                auxiliaryTanks.add(createTank());
+            }
+            return auxiliaryTanks.get(0);
         }
-        return auxiliaryTanks.get(0);
     }
 
     public Resovoir getLastTank() {
-        return auxiliaryTanks.isEmpty() ? getPrimaryTank() : auxiliaryTanks.get(auxiliaryTanks.size() - 1);
+        synchronized (auxiliaryTanks) {
+            return auxiliaryTanks.isEmpty() ? getPrimaryTank() : auxiliaryTanks.get(auxiliaryTanks.size() - 1);
+        }
     }
 
     @Override
@@ -198,25 +211,29 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
 
     @Override
     public List<Resovoir> getAuxiliaryTanks() {
-        return auxiliaryTanks;
+        synchronized (auxiliaryTanks) {
+            return new ArrayList<>(auxiliaryTanks);
+        }
     }
 
     @Override
     public void clear() {
-        auxiliaryTanks.clear();
+        synchronized (auxiliaryTanks) {
+            auxiliaryTanks.clear();
+        }
         markDirty();
     }
 
     @Override
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {
         compound.putInt("capacity", capacity);
-        compound.put("fluids", NbtSerialisable.fromList(auxiliaryTanks, lookup));
+        compound.put("fluids", NbtSerialisable.fromList(getAuxiliaryTanks(), lookup));
     }
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         capacity = compound.getInt("capacity");
-        NbtSerialisable.toList(auxiliaryTanks, compound.getList("fluids", NbtElement.COMPOUND_TYPE), lookup, this::createTank);
+        auxiliaryTanks = NbtSerialisable.toList(new ArrayList<>(), compound.getList("fluids", NbtElement.COMPOUND_TYPE), lookup, this::createTank);
     }
 
     @Override
@@ -272,10 +289,12 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public List<ItemStack> getDroppedStacks(ItemStack container) {
         if (!isEmpty()) {
-            if (auxiliaryTanks.size() == 1) {
-                return List.of(ItemFluids.set(container.copy(), getPrimaryTank().getContents()));
+            synchronized (auxiliaryTanks) {
+                if (auxiliaryTanks.size() == 1) {
+                    return List.of(ItemFluids.set(container.copy(), getPrimaryTank().getContents()));
+                }
+                return List.of(ItemFluidsMixture.set(container.copy(), auxiliaryTanks.stream().map(Resovoir::getContents).toList()));
             }
-            return List.of(ItemFluidsMixture.set(container.copy(), auxiliaryTanks.stream().map(Resovoir::getContents).toList()));
         }
         return List.of(container);
     }
@@ -283,12 +302,15 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public ItemStack getFilled(ItemStack container, boolean dryRun, float drainPercentage) {
         if (!isEmpty()) {
-            if (auxiliaryTanks.size() == 1) {
-                return ItemFluids.set(container.copy(), copyOrWithdraw(getPrimaryTank(), dryRun, drainPercentage));
+            synchronized (auxiliaryTanks) {
+                if (auxiliaryTanks.size() == 1) {
+                    return ItemFluids.set(container.copy(), copyOrWithdraw(getPrimaryTank(), dryRun, drainPercentage));
+                }
+
+                return ItemFluidsMixture.set(container.copy(), auxiliaryTanks.stream()
+                        .map(tank -> copyOrWithdraw(tank, dryRun, drainPercentage))
+                        .toList());
             }
-            return ItemFluidsMixture.set(container.copy(), auxiliaryTanks.stream()
-                    .map(tank -> copyOrWithdraw(tank, dryRun, drainPercentage))
-                    .toList());
         }
         return container;
     }
