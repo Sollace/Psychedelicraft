@@ -55,8 +55,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     protected abstract ScreenHandlerType<FluidContraptionScreenHandler<T>> getScreenHandlerType();
 
     @Override
-    @Deprecated
-    public BlockRenderType getRenderType(BlockState state) {
+    protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
@@ -70,9 +69,8 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
         }
     }
 
-    @Deprecated
     @Override
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         appendDroppedStacks(asItem().getDefaultStack(), state, builder);
         return super.getDroppedStacks(state, builder);
     }
@@ -97,7 +95,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         return world.getBlockEntity(pos, getBlockEntityType()).map(be -> {
             ActionResult result = onInteract(be.getCachedState(), world, be.getPos(), player, be);
             if (result != ActionResult.PASS) {
@@ -124,7 +122,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, getBlockEntityType()).map(be -> {
             return onInteractWithItem(stack, be.getCachedState(), world, be.getPos(), player, hand, be);
         }).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);

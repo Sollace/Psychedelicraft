@@ -6,8 +6,6 @@
 package ivorius.psychedelicraft.block;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
@@ -59,18 +57,17 @@ class RiftJarBlock extends BlockWithEntity {
     }
 
     @Override
-    @Deprecated
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
     @Override
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState state, BlockMirror mirror) {
+    protected BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
@@ -80,7 +77,7 @@ class RiftJarBlock extends BlockWithEntity {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.RIFT_JAR).map(be -> {
             if (player.isSneaking()) {
                 be.toggleSuckingRifts();
@@ -93,7 +90,7 @@ class RiftJarBlock extends BlockWithEntity {
     }
 
     @Override
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         List<ItemStack> drops = super.getDroppedStacks(state, builder);
         if (builder.getOptional(LootContextParameters.BLOCK_ENTITY) instanceof RiftJarBlockEntity jar && !jar.jarBroken) {
             return drops.stream()

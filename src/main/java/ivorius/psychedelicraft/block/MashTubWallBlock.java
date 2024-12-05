@@ -23,6 +23,8 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -51,31 +53,29 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return getValidMasterPosition(world, pos)
                 .map(center -> MashTubBlock.COLLISSION_SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ()))
                 .orElseGet(VoxelShapes::empty);
     }
 
     @Override
-    @Deprecated
-    public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+    protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return MashTubBlock.RAYCAST_SHAPE;
     }
 
     @Override
-    @Deprecated
-    public BlockRenderType getRenderType(BlockState state) {
+    protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.INVISIBLE;
     }
 
     @Override
-    public boolean hasSidedTransparency(BlockState state) {
+    protected boolean hasSidedTransparency(BlockState state) {
         return true;
     }
 
     @Override
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+    protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return 1;
     }
 
@@ -96,7 +96,7 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         return getValidMasterPosition(world, pos).map(p -> {
             return world.getBlockState(p).onUse(world, player, new BlockHitResult(hit.getPos(), hit.getSide(), p, hit.isInsideBlock()));
         }).orElse(ActionResult.PASS);

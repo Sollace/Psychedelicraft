@@ -53,7 +53,7 @@ public class VineStemBlock extends FlowerBlock implements Fertilizable {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         grow(world, random, pos, state);
     }
 
@@ -69,7 +69,7 @@ public class VineStemBlock extends FlowerBlock implements Fertilizable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction.getAxis().isHorizontal()) {
             return state.with(ConnectingBlock.FACING_PROPERTIES.get(direction), canConnect(neighborState, direction.getOpposite()));
         }

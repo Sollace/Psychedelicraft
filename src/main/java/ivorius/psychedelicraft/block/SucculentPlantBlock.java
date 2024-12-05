@@ -36,13 +36,13 @@ public abstract class SucculentPlantBlock extends PlantBlock implements Fertiliz
     }
 
     @Override
-    public final VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected final VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         Vec3d offset = state.getModelOffset(world, pos);
         return getShapes()[state.get(getAgeProperty())].offset(offset.x, offset.y, offset.z);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
+    protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
@@ -52,7 +52,7 @@ public abstract class SucculentPlantBlock extends PlantBlock implements Fertiliz
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (isFertilizable(world, pos, state)) {
             if (world.random.nextInt(getGrowthRate(state)) == 0) {
                 applyGrowth(world, random, pos, state, false);
@@ -60,7 +60,7 @@ public abstract class SucculentPlantBlock extends PlantBlock implements Fertiliz
         }
     }
 
-    public void applyGrowth(World world, Random random, BlockPos pos, BlockState state, boolean bonemeal) {
+    protected void applyGrowth(World world, Random random, BlockPos pos, BlockState state, boolean bonemeal) {
         if (state.get(getAgeProperty()) < getMaxAge()) {
             world.setBlockState(pos, state.cycle(getAgeProperty()), Block.NOTIFY_ALL);
             return;

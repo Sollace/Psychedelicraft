@@ -71,29 +71,27 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     }
 
     @Override
-    @Deprecated
-    public BlockRenderType getRenderType(BlockState state) {
+    protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public boolean hasSidedTransparency(BlockState state) {
+    protected boolean hasSidedTransparency(BlockState state) {
         return true;
     }
 
     @Override
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+    protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return 0.2F;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return COLLISSION_SHAPE;
     }
 
     @Override
-    @Deprecated
-    public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+    protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return RAYCAST_SHAPE;
     }
 
@@ -143,7 +141,7 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         return MashTubItem.findPlacementPosition(world, pos).isPresent();
     }
 
@@ -187,9 +185,8 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
         }).isPresent();
     }
 
-    @Deprecated
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock()) && !world.isClient) {
             BlockPos.iterateOutwards(pos, 1, 0, 1).forEach(p -> {
                 if (!p.equals(pos)) {

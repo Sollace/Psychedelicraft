@@ -78,17 +78,17 @@ public class NightshadeBlock extends PlantBlock implements Fertilizable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPES[state.get(AGE)];
     }
 
     @Override
-    public boolean hasRandomTicks(BlockState state) {
+    protected boolean hasRandomTicks(BlockState state) {
         return state.get(AGE) < MAX_AGE;
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(AGE) < MAX_AGE && random.nextInt(5) == 0 && world.getBaseLightLevel(pos.up(), 0) >= 9) {
             state = state.cycle(AGE);
             world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
@@ -97,16 +97,15 @@ public class NightshadeBlock extends PlantBlock implements Fertilizable {
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity) || state.get(AGE) < 3 || entity.getType() == EntityType.FOX || entity.getType() == EntityType.BEE) {
             return;
         }
         entity.slowMovement(state, new Vec3d(0.8f, 0.75, 0.8f));
     }
 
-    @Deprecated
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         int age = state.get(AGE);
 
         if ((stack.isIn(ConventionalItemTags.SHEAR_TOOLS) && age >= 1) || (stack.isOf(Items.BONE_MEAL) && age == MAX_AGE)) {

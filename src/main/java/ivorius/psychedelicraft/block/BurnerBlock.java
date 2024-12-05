@@ -73,8 +73,7 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
-    @Deprecated
-    public BlockRenderType getRenderType(BlockState state) {
+    protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
@@ -85,7 +84,7 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         BurnerBlockEntity be = world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).orElse(null);
         return be == null || be.getContents().getId() == EmptyContents.ID
                 ? SHAPE

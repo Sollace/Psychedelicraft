@@ -43,17 +43,17 @@ public class DryingTableBlock extends BlockWithEntity {
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
+    protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
             player.openHandledScreen(new ExtendedScreenHandlerFactory<BlockPos>() {
                 @Override
@@ -86,27 +86,24 @@ public class DryingTableBlock extends BlockWithEntity {
     }
 
     @Override
-    @Deprecated
-    public boolean hasComparatorOutput(BlockState state) {
+    protected boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    @Deprecated
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
             return (int)(be.getHeatRatio() * 15);
         }).orElse(0);
     }
 
     @Override
-    public boolean emitsRedstonePower(BlockState state) {
+    protected boolean emitsRedstonePower(BlockState state) {
         return true;
     }
 
     @Override
-    @Deprecated
-    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
             return (int)(be.getDryingProgress() * 15);
         }).orElse(0);

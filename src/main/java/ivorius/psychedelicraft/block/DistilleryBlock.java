@@ -52,17 +52,17 @@ public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
     @Override
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState state, BlockMirror mirror) {
+    protected BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
@@ -82,7 +82,7 @@ public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
 
     @Deprecated
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(FACING).getAxis() == Axis.Y || state.get(FACING) == direction) {
             return state.with(FACING, Direction.Type.HORIZONTAL.stream().filter(d -> {
                 return canConnectTo(world.getBlockState(pos.offset(d)), d);

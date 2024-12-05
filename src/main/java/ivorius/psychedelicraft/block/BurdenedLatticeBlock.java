@@ -82,7 +82,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    public BlockSoundGroup getSoundGroup(BlockState state) {
+    protected BlockSoundGroup getSoundGroup(BlockState state) {
         if (state.get(AGE) > 0) {
             return BlockSoundGroup.GRASS;
         }
@@ -90,8 +90,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    @Deprecated
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         ItemStack tool = builder.getOptional(LootContextParameters.TOOL);
         if (tool != null && !tool.isEmpty() && EnchantmentHelper.getEnchantments(tool).getLevel(builder.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).entryOf(Enchantments.SILK_TOUCH)) > 0) {
             ItemStack drop = asItem().getDefaultStack();
@@ -102,7 +101,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (stack.isOf(Items.SHEARS)) {
 
             if (state.get(AGE) < MAX_AGE || state.get(PERSISTENT)) {
@@ -140,7 +139,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(PERSISTENT)) {
             return;
         }

@@ -42,7 +42,7 @@ public class TrayBlock extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return state.get(AXIS) == Axis.X ? X_SHAPE : Z_SHAPE;
     }
 

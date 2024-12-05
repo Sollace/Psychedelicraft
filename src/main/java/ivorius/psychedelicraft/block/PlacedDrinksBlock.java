@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.block;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
@@ -71,24 +70,22 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    @Deprecated
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
     @Override
-    @Deprecated
-    public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+    protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return SHAPE;
     }
 
     @Override
-    public boolean hasSidedTransparency(BlockState state) {
+    protected boolean hasSidedTransparency(BlockState state) {
         return true;
     }
 
     @Override
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+    protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return 1;
     }
 
@@ -108,7 +105,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.PLACED_DRINK).flatMap(be -> {
 
             if (heldStack.isEmpty()) {
@@ -146,7 +143,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!world.isClient && (entity.getY() > pos.getY() || entity.getY() >= pos.getY() && !entity.isSneaking()) && entity instanceof LivingEntity && Math.max(
                 Math.abs(entity.getX() - entity.lastRenderX),
                 Math.abs(entity.getZ() - entity.lastRenderZ)

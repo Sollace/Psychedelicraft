@@ -62,7 +62,7 @@ public class BottleRackBlock extends BlockWithEntity {
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
+    protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
@@ -79,22 +79,22 @@ public class BottleRackBlock extends BlockWithEntity {
 
     @Override
     @Deprecated
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPES.getOrDefault(state.get(FACING), VoxelShapes.fullCube());
     }
 
     @Override
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState state, BlockMirror mirror) {
+    protected BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).map(be -> {
             if (heldStack.isEmpty()) {
                 TypedActionResult<ItemStack> extracted = be.extractItem(hit, state.get(FACING));
@@ -108,9 +108,8 @@ public class BottleRackBlock extends BlockWithEntity {
         }).orElse(ItemActionResult.FAIL);
     }
 
-    @Deprecated
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock()) && !world.isClient) {
             world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).ifPresent(be -> {
                 ItemScatterer.spawn(world, pos, be);
