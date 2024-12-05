@@ -28,8 +28,9 @@ public class CocaTeaFluid extends DrugFluid implements Processable {
     @Override
     public void process(Context context, ProcessType type, ByProductConsumer output) {
         if (type == ProcessType.PURIFY) {
-            context.getPrimaryTank().drain(2);
-            output.accept(PSFluids.COCAINE.getDefaultStack(1));
+            int amount = Math.max(1, context.getPrimaryTank().getContents().amount() / 10);
+            context.getPrimaryTank().drain(amount * 2);
+            output.accept(PSFluids.COCAINE.getDefaultStack(amount));
         }
     }
 

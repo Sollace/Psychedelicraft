@@ -157,11 +157,13 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                 break;
             case PURIFY:
                 double alcohol = getAlcoholContent(tank.getContents()) / 10;
-                if (alcohol == 0) {
-                    output.accept(SimpleFluid.forVanilla(Fluids.WATER).getDefaultStack(1));
-                } else {
-                    output.accept(PSFluids.ETHANOL.getDefaultStack((int)Math.ceil(alcohol)));
-                }
+                int consumed = Math.max(1, tank.getContents().amount() / 10);
+                tank.drain(consumed * 2);
+                output.accept(
+                        alcohol == 0
+                        ? SimpleFluid.forVanilla(Fluids.WATER).getDefaultStack(consumed)
+                        : PSFluids.ETHANOL.getDefaultStack((int)Math.ceil(alcohol) * consumed)
+                );
                 break;
             default:
         }

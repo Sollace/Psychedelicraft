@@ -83,7 +83,14 @@ public class CoffeeFluid extends DrugFluid implements Processable {
 
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
-        return type == ProcessType.FERMENT && WARMTH.get(tank.getContents()) > 0 ? 300 : UNCONVERTABLE;
+        if (type == ProcessType.FERMENT) {
+            return WARMTH.get(tank.getContents()) > 0 ? 300 : UNCONVERTABLE;
+        }
+        if (type == ProcessType.PURIFY) {
+            return 1;
+        }
+
+        return UNCONVERTABLE;
     }
 
     @Override
@@ -93,8 +100,9 @@ public class CoffeeFluid extends DrugFluid implements Processable {
             tank.setContents(WARMTH.set(tank.getContents(), Math.max(0, WARMTH.get(tank.getContents()) - 1)));
         }
         if (type == ProcessType.PURIFY) {
-            tank.drain(2);
-            output.accept(PSFluids.CAFFEINE.getDefaultStack(1));
+            int amount = Math.max(1, context.getPrimaryTank().getContents().amount() / 10);
+            context.getPrimaryTank().drain(amount * 2);
+            output.accept(PSFluids.CAFFEINE.getDefaultStack(amount));
         }
     }
 

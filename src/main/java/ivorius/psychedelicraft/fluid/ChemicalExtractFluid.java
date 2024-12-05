@@ -49,11 +49,12 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     public void process(Context context, ProcessType type, ByProductConsumer output) {
         if (type == ProcessType.PURIFY) {
             Resovoir tank = context.getPrimaryTank();
-            if (DISTILLATION.get(tank.getContents()) < 2) {
-                output.accept(DISTILLATION.cycle(tank.drain(2)));
+            int amount = Math.max(1, tank.getContents().amount() / 10);
+            ItemFluids fluids = tank.drain(amount);
+            if (DISTILLATION.get(fluids) < 2) {
+                output.accept(DISTILLATION.cycle(fluids));
             } else {
-                tank.drain(2);
-                output.accept(purifiedForm.getDefaultStack(1));
+                output.accept(purifiedForm.getDefaultStack(1).ofAmount(amount));
             }
         }
     }
