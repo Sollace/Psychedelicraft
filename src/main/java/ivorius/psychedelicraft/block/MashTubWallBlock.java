@@ -103,6 +103,13 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
     }
 
     @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return getValidMasterPosition(world, pos).map(p -> {
+            return world.getBlockState(p).onUseWithItem(stack, world, player, hand, new BlockHitResult(hit.getPos(), hit.getSide(), p, hit.isInsideBlock()));
+        }).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+    }
+
+    @Override
     protected boolean canBucketPlace(BlockState state, Fluid fluid) {
         return false;
     }
