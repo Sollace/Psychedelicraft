@@ -61,7 +61,9 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
 
     @Override
     protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
-        return MashTubBlock.RAYCAST_SHAPE;
+        return getValidMasterPosition(world, pos)
+                .map(center -> MashTubBlock.getShape(center.getX() - pos.getX() + 1, center.getZ() - pos.getZ() + 1))
+                .orElseGet(VoxelShapes::empty);
     }
 
     @Override

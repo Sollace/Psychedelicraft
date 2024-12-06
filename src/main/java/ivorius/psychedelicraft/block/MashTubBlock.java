@@ -49,20 +49,36 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     public static final IntProperty LIGHT = Properties.LEVEL_15;
 
     static final VoxelShape COLLISSION_SHAPE = VoxelShapes.union(
-            createShape(-8, -0.5F, -8, 32, 16,  1),
-            createShape(-8, -0.5F, 23, 32, 16,  1),
-            createShape(23, -0.5F, -8,  1, 16, 32),
-            createShape(-8, -0.5F, -8,  1, 16, 32),
-            createShape(-8, -0.5F, -8, 32,  1, 32)
+            createShape(-8, 0, -8, 32, 16,  1),
+            createShape(-8, 0, 23, 32, 16,  1),
+            createShape(23, 0, -8,  1, 16, 32),
+            createShape(-8, 0, -8,  1, 16, 32),
+            createShape(-8, 0, -8, 32,  1, 32)
     );
-    static final VoxelShape RAYCAST_SHAPE = createShape(-8, -0.5F, -8, 32, 16, 32);
+    static final VoxelShape RAYCAST_SHAPE = createShape(-8, 0, -8, 32, 16, 32);
+
+    static final VoxelShape CORNER_RAYCAST_SHAPE = createCuboidShape(0, 0, 0, 8, 16, 8);
+    static final VoxelShape[] RAYCAST_SHAPES = {
+            CORNER_RAYCAST_SHAPE.offset(0.5F, 0, 0.5F), createCuboidShape(0, 0, 8, 16, 16, 16), CORNER_RAYCAST_SHAPE.offset(0, 0, 0.5F),
+            createCuboidShape(8, 0, 0, 16, 16, 16), VoxelShapes.fullCube(), createCuboidShape(0, 0, 0, 16, 16, 8),
+            CORNER_RAYCAST_SHAPE.offset(0.5F, 0, 0), VoxelShapes.fullCube(), CORNER_RAYCAST_SHAPE
+    };
+    static VoxelShape getShape(int x, int z) {
+        x = MathHelper.clamp(x, 0, 3);
+        z = MathHelper.clamp(z, 0, 3);
+        return new VoxelShape[] {
+            CORNER_RAYCAST_SHAPE.offset(0, 0, 0), createCuboidShape(0, 0, 0, 16, 16, 8), CORNER_RAYCAST_SHAPE.offset(0.5F, 0, 0),
+            createCuboidShape(0, 0, 0, 8, 16, 16), VoxelShapes.fullCube(), createCuboidShape(8, 0, 0, 16, 16, 16),
+            CORNER_RAYCAST_SHAPE.offset(0, 0, 0.5F), createCuboidShape(0, 0, 8, 16, 16, 16), CORNER_RAYCAST_SHAPE.offset(0.5F, 0, 0.5F)
+        }[x + z * 3];
+    }
 
     private static VoxelShape createShape(double x, double y, double z, double width, double height, double depth) {
         return Block.createCuboidShape(x, y, z, x + width, y + height, z + depth);
     }
 
     public MashTubBlock(Settings settings) {
-        super(settings.luminance(LightBlock.STATE_TO_LUMINANCE));
+        super(settings.luminance(LightBlock.STATE_TO_LUMINANCE).dynamicBounds());
     }
 
     @Override
