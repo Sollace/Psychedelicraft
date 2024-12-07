@@ -50,18 +50,6 @@ public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     protected boolean canProcess(ServerWorld world, int timeNeeded) {
-
-        if (world.random.nextInt(120) == 0) {
-            world.spawnParticles(ParticleTypes.CLOUD,
-                    pos.getX() + world.getRandom().nextTriangular(0.5F, 0.5F),
-                    pos.getY() + 0.6F,
-                    pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
-                    2, 0, 0, 0, 0);
-        }
-        if (world.getRandom().nextInt(50) == 0) {
-            world.playSound(null, getPos(), SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.25F, 0.02F);
-        }
-
         return super.canProcess(world, timeNeeded)
                 && getFacing().getAxis() != Axis.Y
                 && DistilleryBlock.canConnectTo(world.getBlockState(getOutputPos()), getFacing())
