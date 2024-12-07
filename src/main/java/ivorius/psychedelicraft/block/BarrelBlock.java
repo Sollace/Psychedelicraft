@@ -21,7 +21,10 @@ import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -34,6 +37,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     public static final MapCodec<BarrelBlock> CODEC = createCodec(BarrelBlock::new);
@@ -100,6 +104,14 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
 
     @Override
     protected ItemActionResult onInteractWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
+
+        if (stack.isOf(Items.STICK)) {
+            world.playSound(player, pos, SoundEvents.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS);
+            world.emitGameEvent(player, GameEvent.BLOCK_OPEN, pos);
+            world.setBlockState(pos, state.with(FACING, state.get(FACING).getAxis() == Axis.Y ? player.getHorizontalFacing().getOpposite() : Direction.DOWN));
+            return ItemActionResult.SUCCESS;
+        }
+
         int capacity = FluidCapacity.get(stack);
         if (!state.get(TAPPED) || state.get(FACING).getAxis() == Axis.Y || capacity == 0) {
             return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
