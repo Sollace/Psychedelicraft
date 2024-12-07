@@ -13,8 +13,8 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
  */
 public class RedShroomsDrug extends SimpleDrug {
     public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
-            .put(COLOR_HALLUCINATION_STRENGTH, 1.3F)
-            .put(MOVEMENT_HALLUCINATION_STRENGTH, 0.7F)
+            .put(COLOR_HALLUCINATION_STRENGTH, 0.3F)
+            .put(MOVEMENT_HALLUCINATION_STRENGTH, 0.6F)
             .put(CONTEXTUAL_HALLUCINATION_STRENGTH, 0.2F)
             .put(VIEW_WOBBLYNESS, 0.03F)
             .put(HUNGER_SUPPRESSION, 0.1F)

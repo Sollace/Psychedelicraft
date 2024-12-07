@@ -120,11 +120,11 @@ public interface PSItems {
 
     Item BROWN_MAGIC_MUSHROOMS = register("brown_magic_mushrooms", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.BROWN_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+            new DrugInfluence(DrugType.BROWN_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.25f)
     ));
     Item RED_MAGIC_MUSHROOMS = register("red_magic_mushrooms", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.RED_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+            new DrugInfluence(DrugType.RED_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.25f)
     ));
 
     Item JOLLY_RANCHER = register("jolly_rancher", new EdibleItem(

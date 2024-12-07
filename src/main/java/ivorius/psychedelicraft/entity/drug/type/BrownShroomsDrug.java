@@ -13,8 +13,8 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
  */
 public class BrownShroomsDrug extends SimpleDrug {
     public static final DrugAttributeFunctions FUNCTIONS = DrugAttributeFunctions.builder()
-            .put(COLOR_HALLUCINATION_STRENGTH, 0.8F)
-            .put(MOVEMENT_HALLUCINATION_STRENGTH, 1)
+            .put(COLOR_HALLUCINATION_STRENGTH, 0.6F)
+            .put(MOVEMENT_HALLUCINATION_STRENGTH, 0.8F)
             .put(CONTEXTUAL_HALLUCINATION_STRENGTH, 0.35F)
             .put(VIEW_WOBBLYNESS, 0.03F)
             .put(HUNGER_SUPPRESSION, 0.1F)
