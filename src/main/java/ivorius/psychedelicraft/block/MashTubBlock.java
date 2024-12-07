@@ -40,7 +40,7 @@ import net.minecraft.world.*;
  * Created by lukas on 27.10.14.
  * Updated by Sollace on 12 Jan 2023
  */
-public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements FluidFilled {
+public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implements FluidFilled {
     public static final MapCodec<MashTubBlock> CODEC = createCodec(MashTubBlock::new);
     public static final int SIZE = 15;
     public static final int BORDER_SIZE = 1;

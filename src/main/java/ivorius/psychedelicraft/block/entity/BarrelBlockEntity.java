@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.block.entity;
 
+import ivorius.psychedelicraft.block.BarrelBlock;
 import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
@@ -13,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.world.World;
 
 public class BarrelBlockEntity extends FluidProcessingBlockEntity {
@@ -54,11 +56,21 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     @Override
     public void tick(ServerWorld world) {
         super.tick(world);
-        if (getTapOpenTicks() > 0) {
-            setTapOpenTicks(getTapOpenTicks() - 1);
+        int tapOpenTicks = getTapOpenTicks();
+        if (tapOpenTicks > 0) {
+            setTapOpenTicks(tapOpenTicks - 1);
             markForUpdate();
         }
-        if (getTapOpenTicks() > 0 && getTapOpenTicks() % 5 == 0) {
+
+        if (tapOpenTicks == 1) {
+            Direction updateDirection = getCachedState().get(BarrelBlock.FACING).getOpposite();
+            if (updateDirection.getAxis() != Axis.Y) {
+                BlockPos pos = getPos().offset(updateDirection);
+                world.updateNeighborsExcept(pos, getCachedState().getBlock(), updateDirection.getOpposite());
+            }
+        }
+
+        if (tapOpenTicks > 0 && tapOpenTicks % 5 == 0) {
             world.playSound(null, getPos(), SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.025F, 0.5F);
         }
     }

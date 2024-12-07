@@ -39,7 +39,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
+public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
     public static final MapCodec<BarrelBlock> CODEC = createCodec(BarrelBlock::new);
     public static final int MAX_TAP_AMOUNT = FluidVolumes.BUCKET;
     public static final DirectionProperty FACING = Properties.HOPPER_FACING;
@@ -74,6 +74,16 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
         builder.add(FACING, TAPPED);
+    }
+
+    @Override
+    protected BlockEntityType<BarrelBlockEntity> getBlockEntityType() {
+        return PSBlockEntities.BARREL;
+    }
+
+    @Override
+    protected ScreenHandlerType<FluidContraptionScreenHandler<BarrelBlockEntity>> getScreenHandlerType() {
+        return PSScreenHandlers.BARREL;
     }
 
     @Override
@@ -135,6 +145,11 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
 
                     blockEntity.setTapOpenTicks(20);
                     blockEntity.markForUpdate();
+
+                    Direction updateDirection = state.get(BarrelBlock.FACING).getOpposite();
+                    if (updateDirection.getAxis() != Axis.Y) {
+                        world.updateNeighborsExcept(pos.offset(updateDirection), this, updateDirection.getOpposite());
+                    }
                 }
 
                 return ItemActionResult.SUCCESS;
@@ -145,12 +160,30 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     }
 
     @Override
-    protected BlockEntityType<BarrelBlockEntity> getBlockEntityType() {
-        return PSBlockEntities.BARREL;
+    protected boolean emitsRedstonePower(BlockState state) {
+        return state.get(FACING).getAxis() != Axis.Y;
     }
 
     @Override
-    protected ScreenHandlerType<FluidContraptionScreenHandler<BarrelBlockEntity>> getScreenHandlerType() {
-        return PSScreenHandlers.BARREL;
+    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        // only output at the back
+        if (direction != state.get(FACING)) {
+            return 0;
+        }
+        // signal 0-15 to indicate progress
+        return super.getWeakRedstonePower(state, world, pos, direction);
+    }
+
+    @Override
+    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        // only output at the back
+        if (direction != state.get(FACING)) {
+            return 0;
+        }
+        // signal 15 = Someone is using it
+        if (world.getBlockEntity(pos, getBlockEntityType()).map(BarrelBlockEntity::getTapOpenTicks).orElse(0) > 0) {
+            return 15;
+        }
+        return 0;
     }
 }

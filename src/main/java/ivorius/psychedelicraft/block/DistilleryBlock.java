@@ -29,7 +29,7 @@ import net.minecraft.world.*;
 /**
  * Created by lukas on 25.10.14.
  */
-public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
+public class DistilleryBlock extends FluidMachineBlock<DistilleryBlockEntity> {
     public static final MapCodec<DistilleryBlock> CODEC = createCodec(DistilleryBlock::new);
     private static final VoxelShape SHAPE = VoxelShapes.union(
         Block.createCuboidShape(5, 0, 5, 11, 6, 11),
@@ -49,6 +49,22 @@ public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
     @Override
     protected MapCodec<? extends DistilleryBlock> getCodec() {
         return CODEC;
+    }
+
+    @Override
+    protected BlockEntityType<DistilleryBlockEntity> getBlockEntityType() {
+        return PSBlockEntities.DISTILLERY;
+    }
+
+    @Override
+    protected ScreenHandlerType<FluidContraptionScreenHandler<DistilleryBlockEntity>> getScreenHandlerType() {
+        return PSScreenHandlers.DISTILLERY;
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(FACING);
     }
 
     @Override
@@ -92,20 +108,13 @@ public class DistilleryBlock extends BlockWithFluid<DistilleryBlockEntity> {
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
-
     @Override
-    protected BlockEntityType<DistilleryBlockEntity> getBlockEntityType() {
-        return PSBlockEntities.DISTILLERY;
-    }
-
-    @Override
-    protected ScreenHandlerType<FluidContraptionScreenHandler<DistilleryBlockEntity>> getScreenHandlerType() {
-        return PSScreenHandlers.DISTILLERY;
-    }
-
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
-        builder.add(FACING);
+    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        // only output at the back
+        if (direction != state.get(FACING)) {
+            return 0;
+        }
+        // signal 0-15 to indicate progress
+        return super.getWeakRedstonePower(state, world, pos, direction);
     }
 }

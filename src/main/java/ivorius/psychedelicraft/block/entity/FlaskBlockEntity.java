@@ -116,6 +116,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
             pendingSync = false;
             markDirty();
             world.getChunkManager().markForUpdate(getPos());
+            world.updateNeighbors(getPos(), getCachedState().getBlock());
         }
     }
 
@@ -238,7 +239,8 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
 
         @Override
         public boolean isValid(int slot, ItemStack stack) {
-            return slot < size() && FluidCapacity.get(stack) > 0 && (slot == 0 ? FluidCapacity.getPercentage(stack) > 0 : FluidCapacity.getPercentage(stack) < 1);
+            return slot < size() && FluidCapacity.get(stack) > 0
+                    && (slot == 0 ? FluidCapacity.getPercentage(stack) > 0 : FluidCapacity.getPercentage(stack) < 1);
         }
     }
 

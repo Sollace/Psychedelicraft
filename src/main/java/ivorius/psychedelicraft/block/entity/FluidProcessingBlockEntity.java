@@ -115,6 +115,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
                     onProcessCompleted(world, tank);
                 } else {
                     setTimeProcessed(getTimeProcessed() + 1);
+                    world.updateNeighbors(getPos(), getCachedState().getBlock());
                 }
             } else {
                 setTimeProcessed(0);

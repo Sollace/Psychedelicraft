@@ -27,6 +27,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -176,6 +177,30 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new MasterPosition(pos, state);
+    }
+
+    @Override
+    protected boolean emitsRedstonePower(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        return getValidMasterPosition(world, pos)
+                .map(p -> world.getBlockState(p).getWeakRedstonePower(world, p, direction))
+                .orElse(0);
+    }
+
+    @Override
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return getValidMasterPosition(world, pos)
+                .map(p -> world.getBlockState(p).getComparatorOutput(world, p))
+                .orElse(0);
     }
 
     public static class MasterPosition extends SyncedBlockEntity {

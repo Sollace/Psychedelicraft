@@ -37,6 +37,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 /**
@@ -147,6 +148,23 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return getBlockEntityType().instantiate(pos, state);
+    }
+
+    @Override
+    protected boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return toRedstoneSignal(world.getBlockEntity(pos, getBlockEntityType())
+                .map(FlaskBlockEntity::getPrimaryTank)
+                .map(tank -> MathHelper.clamp(tank.getAmount() / (float)tank.getCapacity(), 0, 1))
+                .orElse(0F), 15);
+    }
+
+    static int toRedstoneSignal(float percentage, int maxSignal) {
+        return percentage > 0 ? MathHelper.clamp((int)(percentage * maxSignal), 1, maxSignal) : 0;
     }
 
     public record InteractionData(BlockPos pos, Direction side) {
