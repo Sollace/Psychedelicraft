@@ -25,7 +25,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -253,19 +252,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public void appendTankTooltip(ItemFluids stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
-        int ticksProcessed = tank.getTimeProcessed();
-        int ticksNeeded = Math.abs(tank.getTimeNeeded());
-        String timeRemaining = StringHelper.formatTicks(ticksNeeded - ticksProcessed, world == null ? 20 : world.getTickManager().getTickRate());
-        ProcessType processType = tank.getActiveProcess();
-        tooltip.add(Text.translatable("fluid.status", processType.getStatus()));
+        super.appendTankTooltip(stack, world, tooltip, tank);
 
-        if (processType == ProcessType.FERMENT && FERMENTATION.get(stack) >= FERMENTATION_STEPS) {
-            processType = ProcessType.ACETIFY;
-        }
-        if (processType != ProcessType.IDLE) {
-            tooltip.add(Text.translatable(processType.getTimeLabelTranslationKey(), timeRemaining));
-        }
         if (tank.getProcessType() == ProcessType.DISTILL) {
+            tooltip.add(Text.literal("Requirements:"));
             if (FERMENTATION.get(stack) == 0) {
                 tooltip.add(Text.translatable("* Must be fermented").formatted(Formatting.RED, Formatting.ITALIC));
             } else {

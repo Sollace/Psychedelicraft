@@ -20,6 +20,7 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
+import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
 import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
@@ -42,8 +43,10 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.State;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -199,7 +202,15 @@ public class SimpleFluid implements Combustable {
     }
 
     public void appendTankTooltip(ItemFluids stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
+        int ticksProcessed = tank.getTimeProcessed();
+        int ticksNeeded = Math.abs(tank.getTimeNeeded());
+        String timeRemaining = StringHelper.formatTicks(ticksNeeded - ticksProcessed, world == null ? 20 : world.getTickManager().getTickRate());
+        ProcessType processType = tank.getActiveProcess();
+        tooltip.add(Text.translatable("fluid.status", processType.getStatus()).formatted(Formatting.GRAY));
 
+        if (processType != ProcessType.IDLE) {
+            tooltip.add(Text.translatable(processType.getTimeLabelTranslationKey(), timeRemaining).formatted(Formatting.GRAY));
+        }
     }
 
     public boolean isSuitableContainer(ItemStack container) {
