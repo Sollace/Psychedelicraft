@@ -80,7 +80,7 @@ public interface Processable {
         }
 
         default List<Resovoir> getAuxiliaryTanks() {
-            return List.of();
+            return List.of(getPrimaryTank());
         }
 
         default int getTotalFluidVolume() {
@@ -111,6 +111,10 @@ public interface Processable {
          * When processed past its full fermentation in a vat/mash tub, starts producing acids instead of alcohols
          */
         ACETIFY,
+        /**
+         * When a hot fluid is placed in a vat/mash tub it will slowly cool back to its base form
+         */
+        COOL,
         /**
          * When processed in the evaporator, used to chemically extract purified substances
          */

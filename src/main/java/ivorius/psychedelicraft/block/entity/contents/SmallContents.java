@@ -39,6 +39,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.World;
 
 public class SmallContents implements BurnerBlockEntity.CraftableContents, BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
     public static final Identifier ID = Psychedelicraft.id("small");
@@ -139,6 +140,11 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
         });
 
         return PipeInsertable.reject(new PipeFluids(mound, fluids.temperature()));
+    }
+
+    @Override
+    public void clientTick(World world) {
+
     }
 
     @Override

@@ -12,25 +12,29 @@ import ivorius.psychedelicraft.block.entity.FluidFilled;
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
+import ivorius.psychedelicraft.fluid.FluidVolumes;
+import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
+import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.*;
 
 /**
  * Renders fluid in the mash tub, or the solid contents
  */
-public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBlockEntity> {
+public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<MashTubBlockEntity> {
     public MashTubBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-
+        super(context);
     }
 
     @Override
@@ -91,11 +95,10 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
 
         matrices.pop();
 
+        super.render(entity, tickDelta, matrices, vertices, light, overlay);
 
         if (MinecraftClient.getInstance().getEntityRenderDispatcher().shouldRenderHitboxes() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
             if (entity.getWorld() != null && entity.getPos() != null && entity.getCachedState().getBlock() instanceof FluidFilled tub) {
-
-
                 Box box = new Box(
                         0, 0, 0,
                         1, tub.getFluidHeight(entity.getWorld(), entity.getCachedState(), entity.getPos()), 1
@@ -111,5 +114,24 @@ public class MashTubBlockEntityRenderer implements BlockEntityRenderer<MashTubBl
                 matrices.pop();
             }
         }
+    }
+
+    @Override
+    protected double getLabelDistanceFromCenter(MashTubBlockEntity entity) {
+        return 1.8;
+    }
+
+    @Override
+    protected void renderLabels(MashTubBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        ProcessType processType = entity.getActiveProcess();
+        Text process = entity.getActiveProcess().getStatus();
+        if (processType != ProcessType.IDLE) {
+            int progress = (int)(entity.getProgress(tickDelta) * 100);
+            process = process.copy().append("... " + progress + "%");
+        }
+        textRenderer.draw(process, -(textRenderer.getWidth(process) - 5) / 2F, 0, Colors.WHITE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+        matrices.scale(0.9F, 0.9F, 0.9F);
+        Text fill = getFillPercentage(entity, FluidVolumes.VAT);
+        textRenderer.draw(fill, -(textRenderer.getWidth(fill) - 5) / 2F, -textRenderer.fontHeight - 2, Colors.WHITE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
     }
 }

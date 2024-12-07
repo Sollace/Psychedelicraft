@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.block.entity;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +44,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 /**
  * Created by lukas on 27.10.14.
@@ -112,10 +114,13 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
         if (difference > 0) {
             setTimeProcessed(0);
+            setRepeatCount(0);
         }
     }
 
-    public void tickAnimations() {
+    @Override
+    public void clientTick(World world) {
+        super.clientTick(world);
         if (!suppliedIngredients.isEmpty() && world.getRandom().nextFloat() < 0.33F && world.getTime() % 3 == 0) {
             spawnBubbles(1 + (int)(suppliedIngredients.size() * 1.5), 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
         }
@@ -177,28 +182,18 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             return;
         }
 
-        var input = new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients);
-        var matchedRecipe = world.getRecipeManager().getAllMatches(PSRecipes.MASHING_TYPE, input, getWorld());
-
-        if (matchedRecipe.size() > 1) {
-            var exactMatch = matchedRecipe.stream().filter(recipe -> !recipe.value().hasUndesiredIngredients(input)).findFirst();
-            if (exactMatch.isPresent()) {
-                matchedRecipe = List.of(exactMatch.get());
-            }
-        }
-
-        if (matchedRecipe.isEmpty()) {
-            //onCraftingFailed();
-        } else if (matchedRecipe.size() == 1) {
-            currentStew = Optional.of(new Stew(matchedRecipe.get(0)));
-        }
+        currentStew = world.getRecipeManager().getFirstMatch(
+                PSRecipes.MASHING_TYPE,
+                new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients),
+                world
+        ).map(Stew::new);
     }
 
-    private void onCraftingFailed() {
-        suppliedIngredients.clear();
-        currentStew = Optional.empty();
-        getPrimaryTank().setContents(PSFluids.SLURRY.getDefaultStack(getPrimaryTank().getContents().amount()));
-        spawnBubbles(90, 0.5F, SoundEvents.BLOCK_MUD_BREAK);
+    public Stream<MashingRecipe> getPotentialMatches() {
+        var input = new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients);
+        return world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream().map(RecipeEntry::value).filter(recipe -> {
+            return recipe.matchesPartially(input, world);
+        });
     }
 
     private void spawnBubbles(int count, float spread, SoundEvent sound) {

@@ -17,8 +17,8 @@ public class BarrelScreen extends FluidProcessingContraptionScreen<BarrelBlockEn
     }
 
     @Override
-    protected void drawAdditionalInfo(DrawContext context, int baseX, int baseY) {
-        float progress = handler.getBlockEntity().getProgress();
+    protected void drawAdditionalInfo(DrawContext context, int baseX, int baseY, float tickDelta) {
+        float progress = handler.getBlockEntity().getProgress(tickDelta);
         if (progress > 0 && progress < 1) {
             context.drawTexture(background, baseX + 110, baseY + 20, 233, 22, 23, 22);
             int barHeight = (int)(22 * (1 - progress));

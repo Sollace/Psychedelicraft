@@ -19,6 +19,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
+import net.minecraft.world.World;
 
 public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implements Processable.ByProductConsumer {
     public FluidProcessingBlockEntity(
@@ -26,6 +27,9 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
             BlockPos pos, BlockState state, int capacity) {
         super(type, pos, state, capacity);
     }
+
+    private float prevProgress;
+    private int repeatCount;
 
     @Override
     protected int getTotalProperties() {
@@ -51,11 +55,24 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
         propertyDelegate.set(5, value);
     }
 
-    public float getProgress() {
+    public int getRepeatCount() {
+        return repeatCount;
+    }
+
+    public void setRepeatCount(int repeats) {
+        repeatCount = repeats;
+        markForUpdate();
+    }
+
+    private float getProgress() {
         if (isActive()) {
             return (float)getTimeProcessed() / getTimeNeeded();
         }
         return 0;
+    }
+
+    public float getProgress(float tickDelta) {
+        return MathHelper.lerp(tickDelta, prevProgress, getProgress());
     }
 
     public abstract Processable.ProcessType getProcessType();
@@ -75,6 +92,11 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
 
     protected int getTickRate(ServerWorld world) {
         return 1;
+    }
+
+    @Override
+    public void clientTick(World world) {
+        prevProgress = getProgress();
     }
 
     @Override
@@ -109,6 +131,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     protected void onProcessCompleted(ServerWorld world, Resovoir tank) {
         setTimeProcessed(0);
         setTimeNeeded(Processable.UNCONVERTABLE);
+        repeatCount++;
 
         markForUpdate();
     }
@@ -117,6 +140,8 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     public void onLevelChange(Resovoir resovoir, int difference) {
         if (resovoir.getContents().isEmpty()) {
             setTimeProcessed(0);
+            repeatCount = 0;
+            markForUpdate();
         }
         super.onLevelChange(resovoir, difference);
     }
@@ -126,6 +151,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
         super.writeNbt(compound, lookup);
         compound.putInt("timeProcessed", getTimeProcessed());
         compound.putInt("timeNeeded", getTimeNeeded());
+        compound.putInt("repeatCount", repeatCount);
     }
 
     @Override
@@ -133,6 +159,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
         super.readNbt(compound, lookup);
         setTimeProcessed(compound.getInt("timeProcessed"));
         setTimeNeeded(compound.getInt("timeNeeded"));
+        repeatCount = compound.getInt("repeatCount");
     }
 
     @Override

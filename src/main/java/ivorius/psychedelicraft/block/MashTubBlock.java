@@ -233,10 +233,4 @@ public class MashTubBlock extends BlockWithFluid<MashTubBlockEntity> implements 
     protected BlockPos getBlockEntityPosition(BlockView world, BlockPos pos) {
         return world.getBlockEntity(pos, PSBlockEntities.MASH_TUB_EDGE).map(p -> p.getMasterPos()).orElse(pos);
     }
-
-    @Override
-    @Nullable
-    public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
-        return world.isClient ? validateTicker(type, getBlockEntityType(), (w, p, s, entity) -> entity.tickAnimations()) : super.getTicker(world, state, type);
-    }
 }

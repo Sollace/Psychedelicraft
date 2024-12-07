@@ -138,8 +138,10 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
 
     @Override
     @Nullable
-    public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
-        return world.isClient ? null : validateTicker(type, getBlockEntityType(), (w, p, s, entity) -> entity.tick((ServerWorld)w));
+    public final <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
+        return world.isClient
+                ? validateTicker(type, getBlockEntityType(), (w, p, s, entity) -> entity.clientTick(w))
+                : validateTicker(type, getBlockEntityType(), (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
 
     @Override
@@ -160,6 +162,8 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
         List<ItemStack> getDroppedStacks(ItemStack container);
 
         void tick(ServerWorld world);
+
+        void clientTick(World world);
 
         @Override
         default Storage<FluidVariant> getFluidStorage(Direction side) {

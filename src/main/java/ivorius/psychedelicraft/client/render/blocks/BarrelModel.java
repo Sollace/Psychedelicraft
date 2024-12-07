@@ -68,8 +68,8 @@ public class BarrelModel extends Model {
         return TexturedModelData.of(modelData, 128, 64);
     }
 
-    public void setRotationAngles(BarrelBlockEntity entity) {
-        tapHandle.yaw = entity.tapRotation;
+    public void setRotationAngles(BarrelBlockEntity entity, float tickDelta) {
+        tapHandle.yaw = entity.getTapRotation(tickDelta);
         barrel.pitch = entity.getCachedState().get(BarrelBlock.FACING).getAxis() == Axis.Y ? MathHelper.HALF_PI : 0;
         barrel.pivotY = 9 - 2 * barrel.pitch;
         tap.roll = 0;//MinecraftClient.getInstance().player.age;

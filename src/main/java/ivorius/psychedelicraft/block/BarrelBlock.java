@@ -7,8 +7,6 @@ package ivorius.psychedelicraft.block;
 
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.mojang.serialization.MapCodec;
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
@@ -123,7 +121,7 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
                         }
                     }
 
-                    blockEntity.timeLeftTapOpen = 20;
+                    blockEntity.setTapOpenTicks(20);
                     blockEntity.markForUpdate();
                 }
 
@@ -142,11 +140,5 @@ public class BarrelBlock extends BlockWithFluid<BarrelBlockEntity> {
     @Override
     protected ScreenHandlerType<FluidContraptionScreenHandler<BarrelBlockEntity>> getScreenHandlerType() {
         return PSScreenHandlers.BARREL;
-    }
-
-    @Override
-    @Nullable
-    public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
-        return world.isClient ? validateTicker(type, getBlockEntityType(), (w, p, s, entity) -> entity.tickAnimations()) : super.getTicker(world, state, type);
     }
 }

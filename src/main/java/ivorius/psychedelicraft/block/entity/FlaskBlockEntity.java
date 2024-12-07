@@ -18,6 +18,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +74,11 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     @Override
     public Resovoir getPrimaryTank() {
         return tank;
+    }
+
+    @Override
+    public void clientTick(World world) {
+
     }
 
     @Override

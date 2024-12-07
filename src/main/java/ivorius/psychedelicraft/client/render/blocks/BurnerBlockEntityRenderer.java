@@ -13,33 +13,29 @@ import ivorius.psychedelicraft.client.render.PlacedDrinksModelProvider;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 
-public class BurnerBlockEntityRenderer implements BlockEntityRenderer<BurnerBlockEntity> {
+public class BurnerBlockEntityRenderer extends LabelledBlockEntityRenderer<BurnerBlockEntity> {
 
     private final ItemRenderer itemRenderer;
-    private final TextRenderer textRenderer;
 
     public BurnerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+        super(context);
         itemRenderer = context.getItemRenderer();
-        textRenderer = context.getTextRenderer();
     }
 
     @Override
@@ -71,35 +67,20 @@ public class BurnerBlockEntityRenderer implements BlockEntityRenderer<BurnerBloc
             matrices.pop();
         }
 
-        renderLabels(entity, tickDelta, matrices, vertices, light, overlay);
+        super.render(entity, tickDelta, matrices, vertices, light, overlay);
     }
 
-    static boolean shouldRenderLabel(BlockEntity entity) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        return entity.getPos() != null
-                && entity.getWorld() != null
-                && client.getEntityRenderDispatcher().camera.getBlockPos().getSquaredDistance(entity.getPos()) < 4096
-                && client.crosshairTarget instanceof BlockHitResult hit && hit.getBlockPos().equals(entity.getPos());
-    }
-
-    private void renderLabels(BurnerBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        if (!shouldRenderLabel(entity)) {
-            return;
+    @Override
+    protected float getLabelScale(BurnerBlockEntity entity, float tickDelta) {
+        if (entity.getTemperature() > 100) {
+            return super.getLabelScale(entity, tickDelta) + tickDelta * 0.001F;
         }
+        return super.getLabelScale(entity, tickDelta);
+    }
 
-        matrices.push();
-        matrices.translate(0.5, 0, 0.5);
-        matrices.multiply(MinecraftClient.getInstance().getEntityRenderDispatcher().getRotation());
-        matrices.translate(0, 0, 0.5);
-
-        var position = matrices.peek().getPositionMatrix();
+    @Override
+    protected void renderLabels(BurnerBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         int temperature = entity.getTemperature();
-
-        float scale = 0.005F;
-        if (temperature > 100) {
-            scale += tickDelta * 0.001F;
-        }
-        matrices.scale(scale, -scale, scale);
 
         String text = temperature + "";
         int width = textRenderer.getWidth(text);
@@ -107,22 +88,16 @@ public class BurnerBlockEntityRenderer implements BlockEntityRenderer<BurnerBloc
         int temperatureColorComponent = MathHelper.clamp((int)(255 * (1 - temperature/100F)), 0, 255);
         int temperatureColor = ColorHelper.Argb.getArgb(255, 255, temperatureColorComponent, temperatureColorComponent);
 
-        textRenderer.draw(text, -width / 2F, 0, temperatureColor, true, position, vertices, TextLayerType.NORMAL, 0, light);
+        textRenderer.draw(text, -width / 2F, 0, temperatureColor, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
         matrices.scale(0.9F, 0.9F, 0.9F);
-        textRenderer.draw(" o", width / 4F, -textRenderer.fontHeight / 2F, temperatureColor, true, position, vertices, TextLayerType.NORMAL, 0, light);
+        textRenderer.draw(" o", width / 4F, -textRenderer.fontHeight / 2F, temperatureColor, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
 
         int maxCapacity = FluidCapacity.get(entity.getContainer());
         if (maxCapacity > 0) {
-            int percentage = (int)((entity.getTotalFluidVolume() / (float)maxCapacity) * 100);
-            text = switch (percentage) {
-                case 100 -> "Full";
-                case 0 -> "Empty";
-                default -> percentage + "%";
-            };
-            textRenderer.draw(text, -(textRenderer.getWidth(text) - 5) / 2F, -textRenderer.fontHeight - 2, Colors.WHITE, true, position, vertices, TextLayerType.NORMAL, 0, light);
-        }
+            Text fillText = getFillPercentage(entity, maxCapacity);
 
-        matrices.pop();
+            textRenderer.draw(fillText, -(textRenderer.getWidth(fillText) - 5) / 2F, -textRenderer.fontHeight - 2, Colors.WHITE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+        }
     }
 
     static void renderFlaskSingleFluid(SmallContents contents, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {

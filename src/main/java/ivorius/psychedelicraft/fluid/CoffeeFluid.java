@@ -82,8 +82,16 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
+    public ProcessType modifyProcess(Resovoir tank, ProcessType type) {
+        if (WARMTH.get(tank.getContents()) > 0) {
+            return ProcessType.COOL;
+        }
+        return type;
+    }
+
+    @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
-        if (type == ProcessType.FERMENT) {
+        if (type == ProcessType.COOL) {
             return WARMTH.get(tank.getContents()) > 0 ? 300 : UNCONVERTABLE;
         }
         if (type == ProcessType.PURIFY) {
@@ -96,7 +104,7 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     @Override
     public void process(Context context, ProcessType type, ByProductConsumer output) {
         Resovoir tank = context.getPrimaryTank();
-        if (type == ProcessType.FERMENT) {
+        if (type == ProcessType.COOL) {
             tank.setContents(WARMTH.set(tank.getContents(), Math.max(0, WARMTH.get(tank.getContents()) - 1)));
         }
         if (type == ProcessType.PURIFY) {

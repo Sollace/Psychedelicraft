@@ -81,15 +81,19 @@ public record MashingRecipe (
         return ingredients.ingredients();
     }
 
-    public boolean hasUndesiredIngredients(Input input) {
-        return !getRemainder(input).isEmpty();
-    }
-
     @Override
     public boolean matches(Input input, World world) {
         return !input.tankFluid().isEmpty()
                 && baseFluid.canCombine(input.tankFluid())
-                && ingredients.hasMinimumRequirements(input);
+                && ingredients.matches(input)
+                && !getRemainder(input).isEmpty();
+    }
+
+    public boolean matchesPartially(Input input, World world) {
+        return !input.tankFluid().isEmpty()
+                && baseFluid.canCombine(input.tankFluid())
+                && ingredients.includes(input)
+                && !getRemainder(input).isEmpty();
     }
 
     @Override
@@ -139,9 +143,13 @@ public record MashingRecipe (
             this(counts, DefaultedList.copyOf(Ingredient.EMPTY, counts.stream().map(Entry::ingredient).toArray(Ingredient[]::new)));
         }
 
-
-        public boolean hasMinimumRequirements(Input input) {
+        public boolean matches(Input input) {
             return removeMatches(new ItemMound(input.inputs()));
+        }
+
+        public boolean includes(Input input) {
+            return !input.inputs().isEmpty()
+                && ingredients.stream().anyMatch(i -> input.inputs().countMatches(i) > 0);
         }
 
         /**

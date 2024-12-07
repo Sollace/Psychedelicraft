@@ -31,7 +31,7 @@ public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContra
     }
 
     @Override
-    protected void drawBackground(DrawContext context, float partialTicks, int mouseX, int mouseY) {
+    protected void drawBackground(DrawContext context, float tickDelta, int mouseX, int mouseY) {
         int baseX = (width - backgroundWidth) / 2;
         int baseY = (height - backgroundHeight) / 2;
         RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -41,7 +41,7 @@ public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContra
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         context.drawTexture(background, baseX, baseY, 0, 0, backgroundWidth, backgroundHeight);
-        drawAdditionalInfo(context, baseX, baseY);
+        drawAdditionalInfo(context, baseX, baseY, tickDelta);
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
@@ -58,7 +58,7 @@ public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContra
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
-    protected void drawAdditionalInfo(DrawContext context, int baseX, int baseY) {
+    protected void drawAdditionalInfo(DrawContext context, int baseX, int baseY, float tickDelta) {
 
     }
 

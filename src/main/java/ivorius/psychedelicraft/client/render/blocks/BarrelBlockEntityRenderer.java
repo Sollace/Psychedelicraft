@@ -35,7 +35,7 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
         matrices.translate(0.5F, 0, 0.5F);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - entity.getCachedState().get(BarrelBlock.FACING).asRotation()));
 
-        model.setRotationAngles(entity);
+        model.setRotationAngles(entity, tickDelta);
         model.render(matrices, vertices.getBuffer(model.getLayer(getBarrelTexture(entity))), light, overlay, Colors.WHITE);
 
         Resovoir tank = entity.getPrimaryTank();
