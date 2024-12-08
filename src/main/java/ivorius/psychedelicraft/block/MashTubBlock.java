@@ -220,7 +220,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     @Override
     public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
         return world.getBlockEntity(getBlockEntityPosition(world, pos), getBlockEntityType()).filter(be -> {
-            SimpleFluid f = SimpleFluid.forVanilla(fluidState.getFluid());
+            SimpleFluid f = SimpleFluid.of(fluidState.getFluid());
 
             if (be.getPrimaryTank().deposit(f.getStack(fluidState, FluidVolumes.BUCKET)) > 0) {
                 be.markForUpdate();

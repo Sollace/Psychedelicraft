@@ -90,7 +90,7 @@ abstract class MixinEntity implements TouchingWaterAccessor {
 
     @ModifyArg(method = "onSwimmingStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"))
     private ParticleEffect replaceSplashParticle(ParticleEffect parameters) {
-        SimpleFluid fluid = SimpleFluid.forVanilla(collidedFluid.getFluid());
+        SimpleFluid fluid = SimpleFluid.of(collidedFluid.getFluid());
         if (fluid.isCustomFluid()) {
             if (parameters == ParticleTypes.BUBBLE) {
                 return new FluidParticleEffect(PSParticles.FLUID_BUBBLE, fluid);

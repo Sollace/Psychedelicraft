@@ -24,6 +24,7 @@ public interface PSTags {
         TagKey<Item> DRUG_RECEPTICALS = of("receptical/drugs");
         TagKey<Item> SUITABLE_HOT_DRINK_RECEPTICALS = of("receptical/suitable_for_hot_drinks");
         TagKey<Item> SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS = of("receptical/suitable_for_alcoholic_drinks");
+        TagKey<Item> SUITABLE_SHOT_GLASS_RECEPTICALTS = of("receptical/suitable_for_shots");
         TagKey<Item> CAN_GO_INTO_PAPER_BAG = of("can_go_into_paper_bag");
         TagKey<Item> DRUG_CROP_SEEDS = of("drug_crop_seeds");
 

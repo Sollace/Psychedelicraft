@@ -5,12 +5,17 @@
 
 package ivorius.psychedelicraft.fluid;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.*;
 
 import java.util.List;
 import java.util.stream.Stream;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.PSItems;
 
 /**
  * Created by lukas on 22.10.14.
@@ -39,5 +44,15 @@ public class CocaTeaFluid extends DrugFluid implements Processable {
         return Stream.of(new Process(this, getId().withSuffixedPath("_purified"), List.of(
             new Transition(ProcessType.PURIFY, 0, 1, from -> from.ofAmount(2), to -> PSFluids.COCAINE.getDefaultStack(1))
         )));
+    }
+
+    @Override
+    public boolean isSuitableContainer(ItemStack container) {
+        return container.isOf(PSItems.STONE_CUP) || container.isIn(PSTags.Items.BOTTLE_RACK_INSERTABLE);
+    }
+
+    @Override
+    public TagKey<Item> getPreferredContainerTag() {
+        return PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS;
     }
 }

@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -22,7 +21,7 @@ public final class PhysicalFluid {
     @Nullable
     private final SimpleFluid type;
 
-    public PhysicalFluid(Fluid standing, Fluid flowing, FluidBlock block) {
+    public PhysicalFluid(Fluid standing, Fluid flowing, Block block) {
         this.standing = standing;
         this.flowing = flowing;
         this.block = block;

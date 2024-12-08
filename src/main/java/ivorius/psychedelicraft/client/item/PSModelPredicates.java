@@ -10,7 +10,7 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Colors;
 
 /**
@@ -44,7 +44,7 @@ public interface PSModelPredicates {
             }
             return ItemFluids.of(stack).isEmpty() ? 0 : 1;
         });
-        ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled_with_lava"), (stack, world, entity, seed) -> ItemFluids.of(stack).isOf(Fluids.LAVA) ? 1 : 0);
+        ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled_with_lava"), (stack, world, entity, seed) -> ItemFluids.of(stack).isIn(FluidTags.LAVA) ? 1 : 0);
         ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : DyedColorComponent.getColor(stack, Colors.RED), PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
             if (layer == 0) {

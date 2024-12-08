@@ -55,10 +55,10 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
         getOrCreateTagBuilder(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS).add(
                 PSItems.SHOT_GLASS, PSItems.GLASS_CHALICE, PSItems.WOODEN_MUG,
-                PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL, PSItems.FILLED_GLASS_BOTTLE
+                PSItems.FILLED_BOWL, Items.BOWL
         ).addTag(PSTags.Items.BOTTLE_RACK_INSERTABLE);
         getOrCreateTagBuilder(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS).add(PSItems.STONE_CUP);
-        getOrCreateTagBuilder(PSTags.Items.DRUG_RECEPTICALS).add(PSItems.SYRINGE);
+        getOrCreateTagBuilder(PSTags.Items.DRUG_RECEPTICALS).add(PSItems.SYRINGE, PSItems.FILLED_GLASS_BOTTLE, Items.GLASS_BOTTLE);
         getOrCreateTagBuilder(PSTags.Items.DRINK_RECEPTICALS)
             .addTag(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS)
             .addTag(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);

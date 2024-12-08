@@ -13,10 +13,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
@@ -157,7 +157,7 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
             playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1, 1);
         }
 
-        if (stack.isOf(Fluids.LAVA)) {
+        if (stack.isIn(FluidTags.LAVA)) {
             BlockPos pos = BlockPos.ofFloored(hitResult.getPos());
             BlockState replacedState = getWorld().getBlockState(pos);
             if (replacedState.getHardness(getWorld(), pos) >= 0) {

@@ -1,10 +1,15 @@
 package ivorius.psychedelicraft.fluid;
 
 import ivorius.psychedelicraft.PSDamageTypes;
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -43,5 +48,15 @@ public class EthanolFluid extends DrugFluid {
                 });
             }
         });
+    }
+
+    @Override
+    public boolean isSuitableContainer(ItemStack container) {
+        return container.isIn(ConventionalItemTags.BUCKETS);
+    }
+
+    @Override
+    public TagKey<Item> getPreferredContainerTag() {
+        return PSTags.Items.DRINK_RECEPTICALS;
     }
 }

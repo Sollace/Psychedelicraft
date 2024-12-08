@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.item;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.*;
@@ -14,6 +15,7 @@ import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -173,26 +175,27 @@ public interface PSItemGroups {
     RegistryKey<ItemGroup> DRINKS = register("drinks", FabricItemGroup.builder()
             .icon(PSItems.OAK_BARREL::getDefaultStack)
             .entries((context, entries) -> {
-                appendAllFluids(PSItems.STONE_CUP.getDefaultStack(), entries);
-                entries.add(PSItems.SHOT_GLASS);
-                PSFluids.AGAVE.getDefaultStacks(PSItems.SHOT_GLASS.getDefaultStack(), entries::add);
-                appendAllFluids(PSItems.WOODEN_MUG.getDefaultStack(), entries);
-                appendAllFluids(PSItems.GLASS_CHALICE.getDefaultStack(), entries);
-                appendAllFluids(PSItems.BOTTLE.getDefaultStack(), entries);
-                appendAllFluids(Items.BUCKET.getDefaultStack(), entries);
-                appendAllFluids(Items.BOWL.getDefaultStack(), entries);
-                appendAllFluids(Items.GLASS_BOTTLE.getDefaultStack(), entries);
+                streamContainers().map(Item::getDefaultStack).forEach(container -> {
+                    streamFluids().flatMap(fluid -> fluid.getDefaultStacks(container)).forEach(entries::add);
+                });
             }));
     RegistryKey<ItemGroup> WEAPONS = register("weapons", FabricItemGroup.builder()
             .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
             .entries((context, entries) -> {
                 if (!Psychedelicraft.getConfig().balancing.disableMolotovs) {
-                    appendAllFluids(PSItems.MOLOTOV_COCKTAIL.getDefaultStack(), entries);
+                    streamFluids().flatMap(fluid -> fluid.getDefaultStacks(PSItems.MOLOTOV_COCKTAIL.getDefaultStack())).forEach(entries::add);
                 }
             }));
 
-    private static void appendAllFluids(ItemStack item, ItemGroup.Entries entries) {
-        SimpleFluid.REGISTRY.forEach(fluid -> fluid.getDefaultStacks(item, entries::add));
+    private static Stream<Item> streamContainers() {
+        return Stream.of(PSItems.STONE_CUP, PSItems.WOODEN_MUG, PSItems.GLASS_CHALICE, PSItems.SHOT_GLASS, PSItems.BOTTLE, Items.BUCKET, Items.BOWL, Items.GLASS_BOTTLE);
+    }
+
+    private static Stream<SimpleFluid> streamFluids() {
+        return Stream.concat(Stream.of(PSFluids.EMPTY), Stream.concat(
+                Stream.of(Fluids.WATER, Fluids.LAVA).map(SimpleFluid::of),
+                SimpleFluid.REGISTRY.stream().filter(i -> !i.isEmpty())
+        ));
     }
 
     static RegistryKey<ItemGroup> register(String name, ItemGroup.Builder builder) {

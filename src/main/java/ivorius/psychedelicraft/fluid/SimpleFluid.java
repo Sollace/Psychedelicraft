@@ -6,13 +6,14 @@
 package ivorius.psychedelicraft.fluid;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
@@ -27,11 +28,11 @@ import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributeHandler;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -61,9 +62,25 @@ import net.minecraft.world.World;
 public class SimpleFluid implements Combustable {
     public static final Identifier EMPTY_KEY = Psychedelicraft.id("empty");
     public static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids")), EMPTY_KEY).buildAndRegister();
-    private static final Map<Identifier, SimpleFluid> VANILLA_FLUIDS = new HashMap<>();
     public static final Codec<SimpleFluid> CODEC = Identifier.CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
     public static final PacketCodec<ByteBuf, SimpleFluid> PACKET_CODEC = Identifier.PACKET_CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
+
+    public static SimpleFluid byId(@Nullable Identifier id) {
+        if (id == null) {
+            return PSFluids.EMPTY;
+        }
+        return REGISTRY.getOrEmpty(id).orElseGet(() -> Registries.FLUID.getOrEmpty(id).map(SimpleFluid::of).orElse(PSFluids.EMPTY));
+    }
+
+    public static SimpleFluid of(@Nullable Fluid fluid) {
+        if (fluid == null || fluid == Fluids.EMPTY) {
+            return PSFluids.EMPTY;
+        }
+        if (fluid instanceof PlacedFluid pf) {
+            return pf.getType();
+        }
+        return VanillaFluid.LOOKUP.apply(fluid);
+    }
 
     protected final Identifier id;
 
@@ -76,7 +93,7 @@ public class SimpleFluid implements Combustable {
 
     private final PhysicalFluid physical;
 
-    private final ItemFluids defaultStack;
+    private final Supplier<ItemFluids> defaultStack = Suppliers.memoize(() -> ItemFluids.create(this, 1, Map.of()));
 
     public SimpleFluid(Identifier id, Settings settings) {
         this(id, settings, false);
@@ -88,7 +105,6 @@ public class SimpleFluid implements Combustable {
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.custom = true;
         this.empty = empty;
-        this.defaultStack = ItemFluids.create(this, 1, Map.of());
         physical = new PhysicalFluid(id, this);
         Registry.register(REGISTRY, id, this);
         FluidVariantAttributes.register(physical.getStandingFluid(), new FluidVariantAttributeHandler() {
@@ -99,14 +115,13 @@ public class SimpleFluid implements Combustable {
         });
     }
 
-    private SimpleFluid(Identifier id, int color, PhysicalFluid physical) {
+    protected SimpleFluid(Identifier id, int color, PhysicalFluid physical, boolean empty) {
         this.id = id;
-        this.empty = false;
+        this.empty = empty;
         this.settings = new Settings().color(color);
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.custom = false;
         this.physical = physical;
-        this.defaultStack = ItemFluids.create(this, 1, Map.of());
     }
 
     @SuppressWarnings("unchecked")
@@ -173,24 +188,23 @@ public class SimpleFluid implements Combustable {
     }
 
     public final ItemFluids getDefaultStack() {
-        return defaultStack;
+        return defaultStack.get();
     }
 
     public final ItemFluids getDefaultStack(int amount) {
-        return amount == 1 ? getDefaultStack() : ItemFluids.create(this, amount, Map.of());
+        return getDefaultStack().ofAmount(amount);
     }
 
     public Stream<ItemFluids> getDefaultStacks(int capacity) {
         return Stream.of(getDefaultStack(capacity));
     }
 
-    public final void getDefaultStacks(ItemStack stack, Consumer<ItemStack> consumer) {
+    public final Stream<ItemStack> getDefaultStacks(ItemStack stack) {
         int capacity = FluidCapacity.get(stack);
         if (capacity > 0 && isSuitableContainer(stack)) {
-            getDefaultStacks(capacity).forEach(s -> {
-                consumer.accept(ItemFluids.set(stack.copy(), s));
-            });
+            return getDefaultStacks(capacity).map(s -> ItemFluids.set(stack.copy(), s));
         }
+        return Stream.of();
     }
 
     public Text getName(ItemFluids stack) {
@@ -214,7 +228,7 @@ public class SimpleFluid implements Combustable {
     }
 
     public boolean isSuitableContainer(ItemStack container) {
-        return !container.isIn(PSTags.Items.BARRELS);
+        return container.isIn(ConventionalItemTags.BUCKETS);
     }
 
     public TagKey<Item> getPreferredContainerTag() {
@@ -245,35 +259,6 @@ public class SimpleFluid implements Combustable {
 
     public int getHash(ItemFluids stack) {
         return hashCode();
-    }
-
-    public static SimpleFluid byId(@Nullable Identifier id) {
-        if (id == null) {
-            return PSFluids.EMPTY;
-        }
-        return REGISTRY.getOrEmpty(id).orElseGet(() -> Registries.FLUID.getOrEmpty(id).map(SimpleFluid::forVanilla).orElse(PSFluids.EMPTY));
-    }
-
-    public static SimpleFluid forVanilla(@Nullable Fluid fluid) {
-        if (fluid instanceof PlacedFluid pf) {
-            return pf.getType();
-        }
-        if (fluid == null || fluid == Fluids.EMPTY) {
-            return PSFluids.EMPTY;
-        }
-        Fluid still = toStill(fluid);
-        Identifier id = Registries.FLUID.getId(still);
-        return VANILLA_FLUIDS.computeIfAbsent(id, i -> new SimpleFluid(i, 0xFFFFFFFF,
-                new PhysicalFluid(still, toFlowing(still), (FluidBlock)still.getDefaultState().getBlockState().getBlock())
-        ));
-    }
-
-    private static Fluid toStill(Fluid fluid) {
-        return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid).getStill() : fluid;
-    }
-
-    private static Fluid toFlowing(Fluid fluid) {
-        return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid).getFlowing() : fluid;
     }
 
     @Override

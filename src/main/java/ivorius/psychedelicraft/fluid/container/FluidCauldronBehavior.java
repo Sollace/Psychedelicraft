@@ -45,8 +45,8 @@ public interface FluidCauldronBehavior {
 
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     };
-    CauldronBehavior WATER = createCauldronInteraction(SimpleFluid.forVanilla(Fluids.WATER));
-    CauldronBehavior LAVA = createCauldronInteraction(SimpleFluid.forVanilla(Fluids.LAVA));
+    CauldronBehavior WATER = createCauldronInteraction(SimpleFluid.of(Fluids.WATER));
+    CauldronBehavior LAVA = createCauldronInteraction(SimpleFluid.of(Fluids.LAVA));
 
     static void register(Item item) {
         CauldronBehavior.EMPTY_CAULDRON_BEHAVIOR.map().put(item, FluidCauldronBehavior.AIR);

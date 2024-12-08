@@ -31,6 +31,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.predicate.item.ComponentSubPredicate;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -101,8 +102,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
         Optional<? extends ItemFluids> fluidsOptional = variant.getComponents().get(PSComponents.FLUIDS);
         ItemFluids fluids = fluidsOptional == null ? null : fluidsOptional.orElse(null);
         if (fluids == null) {
-            SimpleFluid fluid = SimpleFluid.forVanilla(variant.getFluid());
-            return create(fluid, capacity, Map.of());
+            return create(SimpleFluid.of(variant.getFluid()), capacity, Map.of());
         }
         return fluids.ofAmount(capacity);
     }
@@ -155,6 +155,10 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
         return create(fluid(), amount, attributes());
     }
 
+    public ItemStack ofFilling(ItemStack container) {
+        return set(container, ofAmount(FluidCapacity.get(container)));
+    }
+
     public boolean isEmpty() {
         return this == EMPTY;
     }
@@ -180,7 +184,11 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     }
 
     public boolean isOf(Fluid fluid) {
-        return isOf(SimpleFluid.forVanilla(fluid));
+        return isOf(SimpleFluid.of(fluid));
+    }
+
+    public boolean isIn(TagKey<Fluid> tag) {
+        return fluid().getPhysical().isIn(tag);
     }
 
     public Text getName() {

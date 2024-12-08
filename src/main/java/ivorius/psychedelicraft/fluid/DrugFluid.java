@@ -8,12 +8,16 @@ package ivorius.psychedelicraft.fluid;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.alcohol.FluidAppearance;
@@ -134,7 +138,12 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid {
 
     @Override
     public boolean isSuitableContainer(ItemStack container) {
-        return !container.isOf(PSItems.WOODEN_MUG) && !settings.injectable;
+        return container.isOf(PSItems.SYRINGE) || container.isOf(Items.GLASS_BOTTLE) || container.isOf(PSItems.FILLED_GLASS_BOTTLE);
+    }
+
+    @Override
+    public TagKey<Item> getPreferredContainerTag() {
+        return PSTags.Items.DRUG_RECEPTICALS;
     }
 
     public static class Settings extends SimpleFluid.Settings {

@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
+import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -19,6 +20,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.IntProperty;
@@ -160,7 +162,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
                 tank.drain(consumed * 2);
                 output.accept(
                         alcohol == 0
-                        ? SimpleFluid.forVanilla(Fluids.WATER).getDefaultStack(consumed)
+                        ? SimpleFluid.of(Fluids.WATER).getDefaultStack(consumed)
                         : PSFluids.ETHANOL.getDefaultStack((int)Math.ceil(alcohol) * consumed)
                 );
                 break;
@@ -209,7 +211,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     private List<Transition> getChemTransitions(AlcoholicFluidState state) {
         return List.of(new Transition(ProcessType.PURIFY, 0, 1, state::apply, to -> {
             double alcohol = getAlcoholContent(state.apply(to)) / 10;
-            return alcohol == 0 ? SimpleFluid.forVanilla(Fluids.WATER).getDefaultStack(1) : PSFluids.ETHANOL.getDefaultStack((int)Math.ceil(alcohol));
+            return alcohol == 0 ? SimpleFluid.of(Fluids.WATER).getDefaultStack(1) : PSFluids.ETHANOL.getDefaultStack((int)Math.ceil(alcohol));
         }));
     }
 
@@ -300,7 +302,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public boolean isSuitableContainer(ItemStack container) {
-        return container.isIn(getPreferredContainerTag());
+        return (container.isIn(getPreferredContainerTag())
+                || container.isOf(Items.BUCKET)
+                || container.isOf(PSItems.FILLED_BUCKET))
+                && !(container.isOf(PSItems.SHOT_GLASS));
     }
 
     @Override

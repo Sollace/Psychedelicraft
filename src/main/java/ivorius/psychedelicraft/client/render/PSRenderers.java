@@ -72,6 +72,9 @@ public interface PSRenderers {
         BuiltinItemRendererRegistry.INSTANCE.register(PSItems.RIFT_JAR, RiftJarBlockEntityRenderer::renderStack);
 
         SimpleFluid.REGISTRY.forEach(fluid -> {
+            if (fluid.isEmpty()) {
+                return;
+            }
             BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(),
                     fluid.getPhysical().getStandingFluid(),
                     fluid.getPhysical().getFlowingFluid()

@@ -129,7 +129,7 @@ public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
 
         if (ItemFluids.of(stack).amount() < capacity) {
             Resovoir tank = blockEntity.getTankOnSide(Direction.DOWN);
-            if (tank.getContents().amount() > 0 && tank.getContents().fluid().isSuitableContainer(stack)) {
+            if (tank.getContents().amount() > 0 && stack.isIn(tank.getContents().fluid().getPreferredContainerTag())) {
                 if (!world.isClient) {
 
                     ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copyWithCount(1));

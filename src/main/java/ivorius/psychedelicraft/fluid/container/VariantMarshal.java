@@ -145,7 +145,7 @@ public final class VariantMarshal {
         public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
             ItemFluids inputFluids = resource.getComponents().get(PSComponents.FLUIDS).orElse(null);
             if (inputFluids == null) {
-                SimpleFluid fluid = SimpleFluid.forVanilla(resource.getFluid());
+                SimpleFluid fluid = SimpleFluid.of(resource.getFluid());
                 inputFluids = ItemFluids.create(fluid, (int)maxAmount, Map.of());
             } else {
                 inputFluids = inputFluids.ofAmount((int)maxAmount);
