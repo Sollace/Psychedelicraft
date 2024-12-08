@@ -83,6 +83,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                 PSBlocks.TRAY,
                 PSBlocks.BOTTLE_RACK
         ).forEach(this::addDrop);
+        addDrop(PSBlocks.WALL_BOTTLE_RACK, PSItems.BOTTLE_RACK);
 
         addDrop(PSBlocks.JUNIPER_LEAVES, block -> fruitLeavesDrop(block, PSBlocks.JUNIPER_SAPLING, PSItems.JUNIPER_BERRIES, SAPLING_DROP_CHANCE));
         addDrop(PSBlocks.FRUITING_JUNIPER_LEAVES, block -> matureFruitLeavesDrop(block, PSBlocks.JUNIPER_SAPLING, PSItems.JUNIPER_BERRIES, SAPLING_DROP_CHANCE));

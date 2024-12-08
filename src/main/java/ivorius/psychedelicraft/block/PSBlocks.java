@@ -47,7 +47,8 @@ public interface PSBlocks {
 
     Block FLASK = register("flask", new FlaskBlock(Settings.create().sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));
     Block DISTILLERY = register("distillery", new DistilleryBlock(Settings.create().sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));
-    Block BOTTLE_RACK = register("bottle_rack", new BottleRackBlock(Settings.create().mapColor(MapColor.OAK_TAN).sounds(BlockSoundGroup.WOOD).hardness(0.5F).burnable()));
+    Block BOTTLE_RACK = register("bottle_rack", new BottleRackBlock(0, Settings.create().mapColor(MapColor.OAK_TAN).sounds(BlockSoundGroup.WOOD).hardness(0.5F).burnable()));
+    Block WALL_BOTTLE_RACK = register("wall_bottle_rack", new BottleRackBlock(-3, Settings.create().mapColor(MapColor.OAK_TAN).sounds(BlockSoundGroup.WOOD).hardness(0.5F).burnable()));
 
     Block DRYING_TABLE = register("drying_table", new DryingTableBlock(Settings.create().mapColor(MapColor.OAK_TAN).solid().sounds(BlockSoundGroup.WOOD).hardness(2).burnable()));
     Block IRON_DRYING_TABLE = register("iron_drying_table", new DryingTableBlock(Settings.create().mapColor(MapColor.IRON_GRAY).sounds(BlockSoundGroup.METAL).hardness(5)));

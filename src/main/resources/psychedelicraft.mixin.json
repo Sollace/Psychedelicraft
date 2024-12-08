@@ -6,6 +6,7 @@
     "refmap": "psychedelicraft.mixin.refmap.json",
     "compatibilityLevel": "JAVA_16",
     "mixins": [
+      "MixinAbstractBlockSettings",
       "MixinAbstractFurnaceBlockEntity",
       "MixinEntity",
       "MixinLivingEntity",

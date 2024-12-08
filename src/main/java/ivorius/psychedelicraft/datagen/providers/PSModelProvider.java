@@ -108,9 +108,11 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerDryingTable(generator, PSBlocks.DRYING_TABLE);
         BlockModels.registerDryingTable(generator, PSBlocks.IRON_DRYING_TABLE);
 
-        generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(PSBlocks.BOTTLE_RACK, BlockStateVariant.create()
-                .put(VariantSettings.MODEL, ModelIds.getBlockModelId(PSBlocks.BOTTLE_RACK)))
-                .coordinate(BlockStateModelGenerator.createNorthDefaultHorizontalRotationStates()));
+        List.of(PSBlocks.BOTTLE_RACK, PSBlocks.WALL_BOTTLE_RACK).forEach(block -> {
+            generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create()
+                    .put(VariantSettings.MODEL, ModelIds.getBlockModelId(PSBlocks.BOTTLE_RACK)))
+                    .coordinate(BlockStateModelGenerator.createNorthDefaultHorizontalRotationStates()));
+        });
         generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(PSBlocks.FLASK, ModelIds.getBlockModelId(PSBlocks.FLASK)));
         generator.registerStateWithModelReference(PSBlocks.FLAMMABLE_GAS, Blocks.AIR);
 

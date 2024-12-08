@@ -43,6 +43,17 @@ public interface VoxelShapeUtil {
             .toArray(VoxelShape[]::new));
     }
 
+    static Vec3d rotate(Vec3d vector, Direction direction) {
+        if (direction.asRotation() == 0) {
+            return vector;
+        }
+        if (direction.getAxis() == Axis.X) {
+            direction = direction.getOpposite();
+        }
+        float angle = (direction.asRotation()) * MathHelper.RADIANS_PER_DEGREE;
+        return vector.rotateY(angle);
+    }
+
     static Vec3d rotate(double x, double z, float angle) {
         return new Vec3d(x, 0, z).subtract(CENTER).rotateY(angle).add(CENTER);
     }

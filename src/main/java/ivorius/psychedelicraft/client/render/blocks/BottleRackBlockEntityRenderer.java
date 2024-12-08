@@ -35,7 +35,10 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
         float facing = direction.asRotation() + 90;
 
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(facing));
-        matrices.translate(0.14F, -0.55F, -0.8F);
+
+        double offset = ((BottleRackBlock)entity.getCachedState().getBlock()).getZOffset() / 16D;
+
+        matrices.translate(0.14F - offset, -0.55F, -0.8F);
         matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-90));
 
         Random rng = RenderUtil.random(entity.getPos().asLong());

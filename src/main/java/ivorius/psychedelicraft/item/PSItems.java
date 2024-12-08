@@ -35,6 +35,7 @@ import net.minecraft.item.Item.Settings;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Colors;
+import net.minecraft.util.math.Direction;
 
 /**
  * Created by lukas on 25.04.14.
@@ -206,7 +207,7 @@ public interface PSItems {
     Item LATTICE = register("lattice", PSBlocks.LATTICE);
     Item WINE_GRAPE_LATTICE = register("wine_grape_lattice", PSBlocks.WINE_GRAPE_LATTICE);
     Item MORNING_GLORY_LATTICE = register("morning_glory_lattice", PSBlocks.MORNING_GLORY_LATTICE);
-    Item BOTTLE_RACK = register("bottle_rack", PSBlocks.BOTTLE_RACK);
+    Item BOTTLE_RACK = register("bottle_rack", new VerticallyAttachableBlockItem(PSBlocks.BOTTLE_RACK, PSBlocks.WALL_BOTTLE_RACK, new Settings(), Direction.DOWN));
     Item DRYING_TABLE = register("drying_table", PSBlocks.DRYING_TABLE);
     Item IRON_DRYING_TABLE = register("iron_drying_table", PSBlocks.IRON_DRYING_TABLE);
 
