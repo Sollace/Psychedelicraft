@@ -108,6 +108,12 @@ public class GeometryShader {
         register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
             uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.SHATTERING_WAVES) : 0F);
         }));
+        register.accept(new BoundUniform("PS_lsdBlendRatio", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
+            uniform.set(isWorld() && RenderPhase.current() != RenderPhase.CLOUDS
+                    ? ShaderContext.modifier(Drug.RAINBOW_WAVES)
+                    : RenderPhase.current() == RenderPhase.SKY ? ShaderContext.modifier(Drug.RAINBOW_WAVES) * 1.1F
+                            : 0F);
+        }));
     }
 
     public Map<String, Supplier<Integer>> getSamplers() {

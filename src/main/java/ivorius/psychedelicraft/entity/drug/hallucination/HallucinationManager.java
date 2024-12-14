@@ -89,6 +89,9 @@ public class HallucinationManager {
     }
 
     public Vector4f getPulseColor(float tickDelta, boolean sky) {
+        if (sky) {
+            return MathUtils.TEMP_VECTOR.set(pulseColor.getColor(tickDelta), ShaderContext.modifier(Drug.RAINBOW_WAVES));
+        }
         float alpha = MathHelper.clamp(visualisations.getMultiplier(HallucinationTypes.PULSES), 0, 1);
         if (alpha == 0) {
             return MathUtils.ZERO;

@@ -36,6 +36,7 @@ public class LsdDrug extends SimpleDrug {
                     + Math.abs(MathHelper.sin(ShaderContext.ticks() / 30F) * 0.02F * MathUtils.project(f, 0, 0.3F))
                     + Math.abs(MathHelper.cos((ShaderContext.ticks() + 15) / 30F) * 0.02F * MathUtils.project(f, 0, 0.3F))
             )
+            .put(RAINBOW_WAVES, 1)
             .build();
 
     public LsdDrug(DrugType<LsdDrug> type, double decSpeed, double decSpeedPlus) {

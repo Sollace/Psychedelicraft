@@ -1,9 +1,13 @@
 
 uniform float PS_WorldTicks;
 uniform vec4 PS_Pulses;
+uniform float PS_lsdBlendRatio;
 
 ps_in float vertexDistance;
 ps_in vec4 vertexColor;
+
+ps_in float psyColorMultiplier;
+ps_in float lsdBlendRatio;
 
 ps_out vec4 fragColor;
 
@@ -13,6 +17,7 @@ void main() {
   i_parent_shaders_main();
 
   float worldTicks = PS_WorldTicks;
+  float lsdBlendRatio = PS_lsdBlendRatio;
 
   float fogFragCoord = vertexDistance;
   float unusedbecausemacisgarbage = vertexColor.r;
@@ -28,5 +33,16 @@ void main() {
     }
 
     fragColor = vec4(outcolor, fragColor.a);
+  }
+
+  if (lsdBlendRatio > 0) {
+    lsdBlendRatio *= (vertexDistance <= 0 ? 1 : vertexDistance / 9) * (sin(worldTicks / 100) * 0.5);
+    fragColor = vec4(
+      vec3(
+        fragColor.r * (sin((psyColorMultiplier + 90) * 1.18)),
+        fragColor.g * (cos(psyColorMultiplier * 1.18)),
+        fragColor.b * (sin(psyColorMultiplier * 1.18))
+      ) * lsdBlendRatio + (fragColor.rgb * (1 - lsdBlendRatio))
+    , fragColor.a);
   }
 }

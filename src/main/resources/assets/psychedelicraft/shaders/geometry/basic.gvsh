@@ -16,6 +16,8 @@ ps_out vec4 vertexColor;
 
 ps_out float vertexDistance;
 
+ps_out float psyColorMultiplier;
+
 float PHI = 1.61803398874989484820459;
 float TAU = 6.283185307;
 
@@ -56,8 +58,8 @@ void main() {
   if (smallWaves > 0.0) {
     float w1 = 8.0;
 
-    gl_Position[1] += sin((vertexPosition.x + worldTicks / 5.0) / w1 * TAU) * sin((vertexPosition.z + worldTicks / 5.0) / w1 * TAU) * smallWaves * 1.5;
-    gl_Position[1] -= sin((playerPos.x + worldTicks / 5.0) / w1 * TAU) * sin((playerPos.z + worldTicks / 5.0) / w1 * TAU) * smallWaves * 1.5;
+    gl_Position.y += sin((vertexPosition.x + worldTicks / 5.0) / w1 * TAU) * sin((vertexPosition.z + worldTicks / 5.0) / w1 * TAU) * smallWaves * 1.5;
+    gl_Position.y -= sin((playerPos.x + worldTicks / 5.0) / w1 * TAU) * sin((playerPos.z + worldTicks / 5.0) / w1 * TAU) * smallWaves * 1.5;
 
     float w2 = 16.0;
 
@@ -133,4 +135,6 @@ void main() {
       gl_Position.w += sin(gl_Position.x * 0.124 * sin(worldTicks * 0.00184298) + worldTicks * 0.018394082) * 0.05 * inf6 * pMul;
     }
   }
+
+  psyColorMultiplier = (vertexPosition.x + vertexPosition.y + vertexPosition.z) + worldTicks * 0.1 + sin(gl_Position.x + worldTicks * 0.1);
 }
