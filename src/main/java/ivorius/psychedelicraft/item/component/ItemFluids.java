@@ -90,7 +90,8 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
                 return of(fabricContents.get().getRight(), fabricContents.get().getLeft().intValue());
             }
         }
-        return fluids == null ? EMPTY : fluids;
+
+        return fluids == null ? ItemFluidsMixture.of(stack).getFirstFluid() : fluids;
     }
 
     public static List<ItemFluids> allOf(ItemStack stack) {
@@ -164,7 +165,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     }
 
     public boolean canCombine(ItemFluids fluids) {
-        return isEmpty() || fluids.isEmpty() || (fluid() == fluids.fluid() && attributes().equals(fluids.attributes()));
+        return isEmpty() || fluids.isEmpty() || isRoughlyEqual(fluids);
     }
 
     public int getHash() {
@@ -198,7 +199,9 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     public void appendTooltip(List<Text> tooltip, TooltipType type) {
         fluid().appendTooltip(this, tooltip, type);
         if (type.isAdvanced()) {
-            tooltip.add(Text.literal("contents: " + fluid().getId().toString()).formatted(Formatting.DARK_GRAY));
+            tooltip.add(Text.literal("fluid: " + fluid().getId().toString()).formatted(Formatting.DARK_GRAY));
+            tooltip.add(Text.literal("amount: " + amount()).formatted(Formatting.DARK_GRAY));
+            tooltip.add(Text.literal("attributes: " + attributes()).formatted(Formatting.DARK_GRAY));
         }
     }
 

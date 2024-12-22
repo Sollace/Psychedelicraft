@@ -43,6 +43,7 @@ public record ItemFluidsMixture(List<ItemFluids> fluids) {
         if (capacity > 0) {
             ItemFluidsMixture mixture = of(fluids);
             if (mixture.fluids.size() < 2) {
+                stack.remove(PSComponents.FLUIDS_MIXTURE);
                 return ItemFluids.set(stack, mixture.getFirstFluid());
             }
             stack = ItemFluids.getItemForFluids(stack, mixture.getFirstFluid());

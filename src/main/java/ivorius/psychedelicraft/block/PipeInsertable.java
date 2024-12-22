@@ -1,9 +1,11 @@
 package ivorius.psychedelicraft.block;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.recipe.FluidMound;
@@ -52,10 +54,15 @@ public interface PipeInsertable {
     }
 
     public record PipeFluids(FluidMound fluids, int temperature) {
+        public static final PipeFluids EMPTY = new PipeFluids(new FluidMound(), 0);
         public static final Codec<PipeFluids> CODEC = RecordCodecBuilder.create(i -> i.group(
                 FluidMound.CODEC.fieldOf("fluids").forGetter(PipeFluids::fluids),
                 Codec.INT.fieldOf("temperature").forGetter(PipeFluids::temperature)
         ).apply(i, PipeFluids::new));
+        public static final Codec<List<PipeFluids>> LIST_CODEC = Codec.xor(CODEC.listOf(), CODEC).flatXmap(
+                either -> Either.unwrap(either.mapBoth(DataResult::success, single -> DataResult.success(List.of(single)))),
+                list -> DataResult.success(Either.left(list))
+        );
         public PipeFluids {
             temperature = MathHelper.clamp(temperature, 0, 15);
         }

@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.block;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -22,7 +23,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
-import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.block.entity.SyncedBlockEntity;
 import ivorius.psychedelicraft.particle.FluidParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.FluidMound;
@@ -39,7 +40,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -71,18 +71,23 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     public static final EnumProperty<IODirection> IN = EnumProperty.of("in", IODirection.class);
     public static final EnumProperty<IODirection> OUT = EnumProperty.of("out", IODirection.class);
 
-    private static final double RADIUS = 0.06;
+    public static final double RADIUS = 0.06;
     private static final VoxelShape DEFAULT_SHAPE = VoxelShapes.cuboid(0.4, 0.4, 0.4, 0.6, 0.6, 0.6);
-    private static final Function<Direction, VoxelShape> SHAPE_PART_CACHE = Util.memoize(direction -> {
-        return VoxelShapes.cuboid(
-                0.5 + Math.min(-RADIUS, direction.getOffsetX() * 0.5),
-                0.5 + Math.min(-RADIUS, direction.getOffsetY() * 0.5),
-                0.5 + Math.min(-RADIUS, direction.getOffsetZ() * 0.5),
-                0.5 + Math.max(RADIUS, direction.getOffsetX() * 0.5),
-                0.5 + Math.max(RADIUS, direction.getOffsetY() * 0.5),
-                0.5 + Math.max(RADIUS, direction.getOffsetZ() * 0.5)
-            );
-    });
+    private static final Function<Direction, VoxelShape> SHAPE_PART_CACHE = createShapePartCache(RADIUS, 0, 0.5);
+
+    public static Function<Direction, VoxelShape> createShapePartCache(double radius, double offset, double length) {
+        return Util.memoize(direction -> {
+            return VoxelShapes.cuboid(
+                    direction.getOffsetX() * offset + 0.5 + Math.min(-radius, direction.getOffsetX() * 0.5 * length),
+                    direction.getOffsetY() * offset + 0.5 + Math.min(-radius, direction.getOffsetY() * 0.5 * length),
+                    direction.getOffsetZ() * offset + 0.5 + Math.min(-radius, direction.getOffsetZ() * 0.5 * length),
+                    direction.getOffsetX() * offset + 0.5 + Math.max(radius, direction.getOffsetX() * 0.5 * length),
+                    direction.getOffsetY() * offset + 0.5 + Math.max(radius, direction.getOffsetY() * 0.5 * length),
+                    direction.getOffsetZ() * offset + 0.5 + Math.max(radius, direction.getOffsetZ() * 0.5 * length)
+                );
+        });
+    }
+
     private static final Function<BlockState, VoxelShape> SHAPE_CACHE = Util.memoize(state -> {
         return Stream.of(state.get(IN), state.get(OUT))
             .map(IODirection::getDirection).flatMap(Optional::stream)
@@ -317,8 +322,9 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return 0;
     }
 
-    public static class Data extends BlockEntity implements Resovoir.ChangeListener {
-        private Optional<PipeFluids> contents = Optional.empty();
+    public static class Data extends SyncedBlockEntity {
+        private final List<PipeFluids> contents = new LinkedList<>();
+
         private int temperatureUpdateCooldown;
         private int temperatureDrop;
 
@@ -327,11 +333,15 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         }
 
         @Override
-        public void onLevelChange(Resovoir tank, int change) {
-            if (tank.getAmount() > 0 && this.getWorld() instanceof ServerWorld sw) {
-                sw.scheduleBlockTick(getPos(), getCachedState().getBlock(), 10);
+        public void markDirty() {
+            super.markDirty();
+            if (getWorld() instanceof ServerWorld sw) {
+                sw.getChunkManager().markForUpdate(getPos());
             }
-            markDirty();
+        }
+
+        public List<PipeFluids> getContents() {
+            return contents;
         }
 
         private int getTemperatureDrop(ServerWorld world, BlockPos pos) {
@@ -345,17 +355,28 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         public Either<Optional<PipeFluids>, Unit> receiveContents(ServerWorld world, BlockPos pos, BlockState state, PipeFluids contents) {
             pushContentsForward(world, pos, state.get(OUT));
             Optional<PipeFluids> newContents = contents.isEmpty() ? Optional.empty() : Optional.of(new PipeFluids(new FluidMound(contents.fluids()), contents.temperature() - getTemperatureDrop(world, pos)));
-            this.contents = this.contents.map(old -> newContents.map(i -> old.combine(i)).orElse(old)).or(() -> newContents);
-            if (this.contents.isPresent()) {
+            if (newContents.isPresent()) {
+                if (this.contents.size() < 10) {
+                    this.contents.add(newContents.get());
+                } else {
+                    this.contents.set(this.contents.size() - 1, this.contents.getLast().combine(newContents.get()));
+                }
+            }
+
+            if (!this.contents.isEmpty()) {
                 world.scheduleBlockTick(pos, state.getBlock(), 3);
             }
+            markDirty();
             return STATUS_ACCEPT_ALL;
         }
 
         public void pushContentsForward(ServerWorld world, BlockPos pos, IODirection direction) {
-            this.contents = this.contents.flatMap(contents -> {
-                return direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, contents)).orElse(STATUS_VOIDED).ifRight(unit -> {
-                    contents.fluids().getFluids().forEach(fluid -> {
+            markDirty();
+
+            if (contents.size() >= 10) {
+                PipeFluids fluids = contents.getFirst();
+                Optional<PipeFluids> pushedBack = fluids.isEmpty() ? Optional.empty() : direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, fluids)).orElse(STATUS_VOIDED).ifRight(unit -> {
+                    fluids.fluids().getFluids().forEach(fluid -> {
                         Vector3f outVec = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
                         world.spawnParticles(
                                 fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
@@ -366,18 +387,31 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
                                 pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
                     });
                 }).left().flatMap(Function.identity());
-            });
+                if (pushedBack.isPresent() && !pushedBack.get().isEmpty()) {
+                    contents.set(0, pushedBack.get());
+                } else {
+                    contents.removeFirst();
+                    contents.add(PipeFluids.EMPTY);
+                }
+            }
 
+            if (!contents.isEmpty()) {
+                world.scheduleBlockTick(pos, getCachedState().getBlock(), 3);
+            }
         }
 
         @Override
         protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
-            contents.flatMap(contents -> PipeFluids.CODEC.encodeStart(NbtOps.INSTANCE, contents).result()).ifPresent(el -> nbt.put("contents", el));
+            super.writeNbt(nbt, lookup);
+            PipeFluids.LIST_CODEC.encodeStart(NbtOps.INSTANCE, contents).result()
+                .ifPresent(el -> nbt.put("contents", el));
         }
 
         @Override
         protected void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            contents = nbt.contains("contents", NbtElement.COMPOUND_TYPE) ? PipeFluids.CODEC.decode(NbtOps.INSTANCE, nbt.getCompound("contents")).result().map(Pair::getFirst) : Optional.empty();
+            super.readNbt(nbt, lookup);
+            contents.clear();
+            PipeFluids.LIST_CODEC.decode(NbtOps.INSTANCE, nbt.get("contents")).result().map(Pair::getFirst).ifPresent(contents::addAll);
         }
     }
 }

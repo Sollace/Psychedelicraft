@@ -17,8 +17,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 
@@ -31,6 +33,7 @@ import org.joml.Vector4f;
  * Updated by Sollace on 5 Jan 2023
  */
 public class FluidBoxRenderer {
+    public static final Direction[] ALL = Direction.values();
     private static final Vector4f POSITION_VECTOR = new Vector4f(0, 0, 0, 1);
     private static final FluidBoxRenderer INSTANCE = new FluidBoxRenderer();
 
@@ -96,6 +99,17 @@ public class FluidBoxRenderer {
         buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
         color = Colors.WHITE;
         return this;
+    }
+
+    public FluidBoxRenderer draw(VoxelShape shape) {
+        for (Box box : shape.getBoundingBoxes()) {
+            draw(box, ALL);
+        }
+        return this;
+    }
+
+    public FluidBoxRenderer draw(Box box, Direction... directions) {
+        return draw((float)box.minX, (float)box.minY, (float)box.minZ, (float)box.getLengthX(), (float)box.getLengthY(), (float)box.getLengthZ(), directions);
     }
 
     public FluidBoxRenderer draw(float x, float y, float z, float width, float height, float length, Direction... directions) {

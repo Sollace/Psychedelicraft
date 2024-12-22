@@ -12,7 +12,6 @@ import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
-import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -58,7 +57,7 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
         int capacity = FluidCapacity.get(stack);
         stack.decrementUnlessCreative(1, player);
 
-        entity.setContainer(ItemFluids.set(container.copy(), ItemFluids.EMPTY));
+        entity.setContainer(container);
         entity.playSound(player, BlockSoundGroup.GLASS.getPlaceSound());
         return TypedActionResult.success(container.isOf(PSItems.BOTTLE) ? new LargeContents(entity, capacity, container) : new SmallContents(entity, capacity, container));
     }

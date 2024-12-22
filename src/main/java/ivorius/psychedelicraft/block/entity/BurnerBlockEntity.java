@@ -25,6 +25,7 @@ import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
@@ -75,7 +76,10 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     }
 
     public void setContainer(ItemStack container) {
-        this.container = container;
+        this.container = container.copy();
+        this.container.remove(PSComponents.FLUIDS);
+        this.container.remove(PSComponents.FLUIDS_MIXTURE);
+        this.container.remove(PSComponents.RIFT_FRACTION);
         this.processingTime = 0;
         markDirty();
     }
@@ -237,9 +241,15 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
     @Override
     public void clear() {
+        if (contents instanceof CraftableContents c && getWorld() instanceof ServerWorld sw) {
+            for (ItemStack stack : c.getCraftingIngredients().convertToItemStacks()) {
+                Block.dropStack(sw, getPos(), stack);
+            }
+        }
         contents = new EmptyContents(this);
         container = ItemStack.EMPTY;
         processingTime = 0;
+        markDirty();
     }
 
     @Override

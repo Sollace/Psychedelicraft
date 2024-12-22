@@ -96,14 +96,18 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         if (stack.isEmpty()) {
-            player.setStackInHand(hand, ItemFluidsMixture.set(entity.getContainer(), getAuxiliaryTanks().stream().map(Resovoir::getContents).toList()));
-            entity.setContainer(ItemStack.EMPTY);
-            entity.playSound(player, SoundEvents.ENTITY_ITEM_PICKUP);
-            for (ItemStack ingredient : getCraftingIngredients().convertToItemStacks()) {
-                if (!player.giveItemStack(stack)) {
-                    Block.dropStack(player.getWorld(), entity.getPos(), ingredient);
+            if (!player.getWorld().isClient) {
+                player.setStackInHand(hand, ItemFluidsMixture.set(entity.getContainer(), getAuxiliaryTanks().stream().map(Resovoir::getContents).toList()));
+                entity.setContainer(ItemStack.EMPTY);
+                for (ItemStack ingredient : getCraftingIngredients().convertToItemStacks()) {
+                    if (!player.giveItemStack(stack)) {
+                        Block.dropStack(player.getWorld(), entity.getPos(), ingredient);
+                    }
                 }
+                clear();
             }
+            entity.playSound(player, SoundEvents.ENTITY_ITEM_PICKUP);
+
             return TypedActionResult.success(new EmptyContents(entity));
         }
 

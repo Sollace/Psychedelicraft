@@ -312,6 +312,8 @@
 
   "psychedelicraft.container.levels": "Amount: %1$s / %2$s",
   "psychedelicraft.container.amount": "Amount: %1$s",
+  "psychedelicraft.container.mixture": "Contains A Mixture",
+  "psychedelicraft.container.mixture.fluid": "%2$s (%1$s%%)",
 
   "psychedelicraft.alcohol.maturity.young": "young",
   "psychedelicraft.alcohol.maturity.aged": "aged",
