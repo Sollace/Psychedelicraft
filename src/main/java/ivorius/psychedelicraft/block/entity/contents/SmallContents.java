@@ -56,11 +56,6 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
         loadContents(stack);
     }
 
-    public SmallContents(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup) {
-        this.entity = entity;
-        fromNbt(compound, lookup);
-    }
-
     @Override
     public VoxelShape getOutlineShape() {
         return SHAPE;
@@ -82,6 +77,9 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public void onLevelChange(Resovoir resovoir, int change) {
         markDirty();
+        if (change > 0) {
+            entity.setTemperature(entity.getTemperature() / 2);
+        }
         if (resovoir.getContents().isEmpty()) {
             synchronized (auxiliaryTanks) {
                 auxiliaryTanks.removeIf(r -> r.getContents().isEmpty());
@@ -99,9 +97,13 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     public TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         if (stack.isEmpty()) {
             player.setStackInHand(hand, ItemFluidsMixture.set(entity.getContainer(), getAuxiliaryTanks().stream().map(Resovoir::getContents).toList()));
-            clear();
             entity.setContainer(ItemStack.EMPTY);
             entity.playSound(player, SoundEvents.ENTITY_ITEM_PICKUP);
+            for (ItemStack ingredient : getCraftingIngredients().convertToItemStacks()) {
+                if (!player.giveItemStack(stack)) {
+                    Block.dropStack(player.getWorld(), entity.getPos(), ingredient);
+                }
+            }
             return TypedActionResult.success(new EmptyContents(entity));
         }
 

@@ -47,10 +47,6 @@ public class LargeContents extends SmallContents {
         super(entity, capacity, stack);
     }
 
-    public LargeContents(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup) {
-        super(entity, compound, lookup);
-    }
-
     @Override
     public VoxelShape getOutlineShape() {
         return SHAPE;
@@ -77,11 +73,16 @@ public class LargeContents extends SmallContents {
             return result;
         }
 
-        if (ingredients.size() < MAX_INGREDIENTS && isValidIngredient(stack) && ingredients.getCounts().getInt(stack.getItem()) < 5) {
-            ingredients.addStack(stack.splitUnlessCreative(1, player));
-            player.setStackInHand(hand, stack);
-            entity.playSound(player, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value());
-            return TypedActionResult.success(this);
+        if (ingredients.size() < MAX_INGREDIENTS
+                && ingredients.getCounts().getInt(stack.getItem()) < 5) {
+            if (isValidIngredient(stack)) {
+                if (!player.getWorld().isClient) {
+                    ingredients.addStack(stack.splitUnlessCreative(1, player));
+                    player.setStackInHand(hand, stack);
+                    entity.playSound(null, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value());
+                }
+                return TypedActionResult.success(this);
+            }
         }
 
         return TypedActionResult.fail(this);

@@ -81,7 +81,7 @@ public class FluidMound {
         return fluids.isEmpty();
     }
 
-    public boolean removeMatch(FluidIngredient ingredient) {
+    public int removeMatch(FluidIngredient ingredient) {
         try {
             int amountRemoved = 0;
             for (int i = 0; i < fluids.size(); i++) {
@@ -92,12 +92,12 @@ public class FluidMound {
                     fluids.set(i, fluid.ofAmount(fluid.amount() - amountConsumed));
                     amountRemoved += amountConsumed;
                     if (amountRemoved >= amountToConsume) {
-                        return true;
+                        return amountRemoved;
                     }
                 }
             }
 
-            return false;
+            return 0;
         } finally {
             fluids.removeIf(ItemFluids::isEmpty);
         }

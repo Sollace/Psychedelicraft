@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
+import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.Processable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -35,7 +36,11 @@ public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> impleme
     }
 
     static Text getFillPercentage(Processable.Context entity, int volume) {
-        int percentage = (int)((entity.getTotalFluidVolume() / (float)volume) * 100);
+        int totalFluids = entity.getTotalFluidVolume();
+        int percentage = (int)((totalFluids / (float)volume) * 100);
+        if (percentage == 0 && totalFluids > 0) {
+            return Text.literal(FluidVolumes.format(totalFluids));
+        }
         return switch (percentage) {
             case 100 -> Text.literal("Full");
             case 0 -> Text.literal("Empty");

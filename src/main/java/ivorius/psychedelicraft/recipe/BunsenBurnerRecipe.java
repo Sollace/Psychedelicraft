@@ -35,6 +35,11 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
         public int getSize() {
             return 1;
         }
+
+        @Override
+        public boolean isEmpty() {
+            return fluids.isEmpty() && input.isEmpty();
+        }
     }
 
     public record Product(FluidMound fluids, List<ItemStack> items) implements ByProductConsumer {

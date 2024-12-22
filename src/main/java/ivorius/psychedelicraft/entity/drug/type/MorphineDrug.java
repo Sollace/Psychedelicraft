@@ -59,6 +59,10 @@ public class MorphineDrug extends SimpleDrug {
             properties.increaseTeethGrindingSideEffect();
         }
 
+        if (getTicksActive() < 10) {
+            entity.timeUntilRegen = 100;
+        }
+
         if (properties.getModifier(HEART_BEAT_SPEED) < 0.3F && properties.getModifier(HEART_BEAT_VOLUME) > 0.8F) {
             if (random.nextFloat() < 0.08F) {
                 entity.damage(properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);

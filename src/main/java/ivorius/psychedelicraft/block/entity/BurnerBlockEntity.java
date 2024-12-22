@@ -113,6 +113,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
         var action = contents.interact(stack, player, hand, side);
         contents = action.getValue();
+        markDirty();
         return action.getResult().isAccepted();
     }
 
@@ -122,8 +123,8 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         }
     }
 
+    @Override
     public void clientTick(World world) {
-
         if (getTemperature() > 60 && getTotalFluidVolume() > 0) {
             BlockPos pos = getPos();
             world.addParticle(new DrugDustParticleEffect(PSParticles.BUBBLE, new Vector3f(1, 1, 1), 0.6F),
@@ -261,9 +262,14 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
                 .result()
                 .map(Pair::getFirst)
                 .orElse(ItemStack.EMPTY);
-        contents = Contents.TYPES
-                .getOrDefault(Identifier.of(compound.getString("contentsType")), Contents.TYPES.get(EmptyContents.ID))
-                .create(this, compound.getCompound("contents"), lookup);
+        Identifier contentType = Identifier.of(compound.getString("contentsType"));
+        if (contentType.equals(contents.getId())) {
+            contents.fromNbt(compound.getCompound("contents"), lookup);
+        } else {
+            contents = Contents.TYPES
+                    .getOrDefault(contentType, Contents.TYPES.get(EmptyContents.ID))
+                    .create(this, compound.getCompound("contents"), lookup);
+        }
     }
 
     @Override
@@ -352,8 +358,16 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     public interface Contents extends NbtSerialisable, PipeInsertable {
         Map<Identifier, Factory> TYPES = Util.make(new HashMap<>(), map -> {
             map.put(EmptyContents.ID, (entity, nbt, lookup) -> new EmptyContents(entity));
-            map.put(SmallContents.ID, SmallContents::new);
-            map.put(LargeContents.ID, LargeContents::new);
+            map.put(SmallContents.ID, (entity, nbt, lookup) -> {
+                SmallContents contents = new SmallContents(entity, 0, ItemStack.EMPTY);
+                contents.fromNbt(nbt, lookup);
+                return contents;
+            });
+            map.put(LargeContents.ID, (entity, nbt, lookup) -> {
+                SmallContents contents = new LargeContents(entity, 0, ItemStack.EMPTY);
+                contents.fromNbt(nbt, lookup);
+                return contents;
+            });
         });
 
         Identifier getId();

@@ -78,9 +78,10 @@ public record ReducingRecipe (
 
     @Override
     public ItemStack craft(Input input, WrapperLookup lookup) {
-        if (ingredients.matchSolids(input.input()) && ingredients.matchFluids(input.fluids())) {
+        if (ingredients.matchSolids(input.input())) {
+            int level = ingredients.consumeMatchingFluids(input.fluids());
             if (!result.fluid().isEmpty()) {
-                input.consumer().accept(result.fluid());
+                input.consumer().accept(level == 0 ? result.fluid() : result.fluid().ofAmount(result.fluid().amount() * level));
             }
         }
         return result.byProduct();
@@ -135,7 +136,11 @@ public record ReducingRecipe (
         }
 
         public boolean matchFluids(FluidMound fluids) {
-            return fluids().isEmpty() || fluids().stream().allMatch(ingredient -> fluids.removeMatch(ingredient));
+            return fluids().isEmpty() || fluids().stream().allMatch(ingredient -> fluids.removeMatch(ingredient) > 0);
+        }
+
+        public int consumeMatchingFluids(FluidMound fluids) {
+            return fluids().isEmpty() ? 0 : Math.max(0, fluids().stream().mapToInt(ingredient -> fluids.removeMatch(ingredient)).min().orElse(0));
         }
     }
 }
