@@ -26,6 +26,7 @@ import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryKey;
@@ -334,6 +335,18 @@ public class DrugProperties implements NbtSerialisable {
 
         // TODO: (Sollace) Implement longer sleeping/comas
         return true;
+    }
+
+    public float onDamaged(DamageSource source, float initial) {
+        if (source.isOf(DamageTypes.OUT_OF_WORLD) || initial >= Integer.MAX_VALUE) {
+            return initial;
+        }
+        float painSuppression = getModifier(Drug.PAIN_SUPPRESSION);
+        initial *= (1 - painSuppression);
+        if (initial < 0.5F) {
+            return 0;
+        }
+        return initial;
     }
 
     public Optional<Text> trySleep(BlockPos pos) {

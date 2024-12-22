@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.MeteorlogicalUtil;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
+import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -106,7 +107,9 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
 
         float pulseStrength = properties.getMusicManager().getHeartbeatPulseStrength(tickDelta);
 
-        if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled && (entity.hurtTime > 0 || experiencedHealth < 5 || pulseStrength > 0)) {
+        if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled && (
+                (entity.hurtTime > 0 && properties.getModifier(Drug.PAIN_SUPPRESSION) <= 1F)
+                || experiencedHealth < 5 || pulseStrength > 0)) {
             RenderSystem.enableBlend();
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);

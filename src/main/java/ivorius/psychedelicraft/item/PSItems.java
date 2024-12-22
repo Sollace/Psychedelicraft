@@ -285,7 +285,7 @@ public interface PSItems {
     Item PACIFIER = register("pacifier", new PacifierItem(new Item.Settings().maxDamage(50)));
 
     Item HEROINE_POWDER = register("heroine_powder", new Item(new Item.Settings()));
-    Item MORPHINE_TABLET = register("morpine_tablet", new EdibleItem(
+    Item MORPHINE_TABLET = register("morphine_tablet", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
     ));
