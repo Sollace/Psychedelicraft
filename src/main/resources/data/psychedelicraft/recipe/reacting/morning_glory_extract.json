@@ -1,9 +1,15 @@
 {
   "type": "psychedelicraft:reducing",
-  "ingredient": { "tag": "psychedelicraft:morning_glories" },
-  "remainder": { "id": "minecraft:coal" },
+  "ingredients": {
+    "solids": [
+      { "tag": "psychedelicraft:ingredients/morning_glory" }
+    ]
+  },
   "result": {
-    "fluid": "psychedelicraft:morning_glory_extract",
-    "level": 50
+    "fluid": {
+      "fluid": "psychedelicraft:morning_glory_extract",
+      "level": 50
+    },
+    "by_product": { "id": "minecraft:coal" }
   }
 }

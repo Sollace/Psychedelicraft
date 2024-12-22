@@ -1,9 +1,15 @@
 {
   "type": "psychedelicraft:reducing",
-  "ingredient": { "item": "minecraft:poppy" },
-  "remainder": { "id": "minecraft:coal" },
+  "ingredients": {
+    "solids": [
+      { "item": "minecraft:poppy" }
+    ]
+  },
   "result": {
-    "fluid": "psychedelicraft:morphine",
-    "level": 50
+    "fluid": {
+      "fluid": "psychedelicraft:morphine",
+      "level": 50
+    },
+    "by_product": { "id": "minecraft:coal" }
   }
 }
