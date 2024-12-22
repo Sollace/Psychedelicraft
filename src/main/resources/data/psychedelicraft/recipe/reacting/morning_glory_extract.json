@@ -8,7 +8,7 @@
   "result": {
     "fluid": {
       "fluid": "psychedelicraft:morning_glory_extract",
-      "level": 50
+      "amount": 50
     },
     "by_product": { "id": "minecraft:coal" }
   }

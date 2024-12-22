@@ -6,8 +6,9 @@
       "tag": "psychedelicraft:drink_recepticals",
       "fluid": {
         "fluid": "psychedelicraft:morning_glory_extract",
-        "attributes": "{ \"distillation\": 2 }",
-        "level": 1
+        "attributes": {
+          "distillation": 2
+        }
       }
     }
   ],
