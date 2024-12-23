@@ -24,6 +24,7 @@ import ivorius.psychedelicraft.block.entity.contents.SmallContents;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
@@ -175,6 +176,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
                     world.playSound(null, pos, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, 1.25F, 0.02F);
                     world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(Blocks.GLASS_PANE.getDefaultState()));
                     world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
+                    Block.dropStack(world, pos, new ItemStack(PSItems.BROKEN_GLASS, world.random.nextBetween(1, 3)));
                     clear();
                 }
             } else {

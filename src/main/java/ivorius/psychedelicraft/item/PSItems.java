@@ -289,6 +289,7 @@ public interface PSItems {
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
     ));
+    Item BROKEN_GLASS = register("broken_glass", new Item(new Item.Settings()));
 
     static Item register(String name, Block block) {
         return register(name, new BlockItem(block, new Settings()));
