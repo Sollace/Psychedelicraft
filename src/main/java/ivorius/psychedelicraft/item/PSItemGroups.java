@@ -55,9 +55,6 @@ public interface PSItemGroups {
                     entries.add(RiftFractionComponent.set(PSItems.RIFT_JAR.getDefaultStack(), 0.9F));
                 }
 
-                entries.add(PSItems.TRAY);
-                entries.add(PSItems.BUNSEN_BURNER);
-
                 entries.add(PSItems.SMOKING_PIPE);
                 entries.add(PSItems.CIGARETTE);
                 entries.add(PSItems.CIGAR);
@@ -88,11 +85,6 @@ public interface PSItemGroups {
 
                 entries.add(PSItems.MORNING_GLORY);
                 entries.add(PSItems.MORNING_GLORY_SEEDS);
-                entries.add(PSItems.CRYSTAL_METH);
-                entries.add(PSItems.LSA_SQUARE);
-                entries.add(PSItems.LSD_PILL);
-                entries.add(PSItems.EXTACY);
-                entries.add(PSItems.PACIFIER);
 
                 entries.add(PSItems.JIMSONWEED_SEEDS);
                 entries.add(PSItems.JIMSONWEED_SEED_POD);
@@ -112,10 +104,6 @@ public interface PSItemGroups {
                 entries.add(PSItems.COCA_LEAVES);
                 entries.add(PSItems.DRIED_COCA_LEAVES);
                 entries.add(PSItems.COCAINE_POWDER);
-                entries.add(PSItems.CRACK_COCAINE);
-
-                entries.add(PSItems.HEROINE_POWDER);
-                entries.add(PSItems.MORPHINE_TABLET);
 
                 entries.add(PSItems.AGAVE_LEAF);
                 entries.add(PSItems.PEYOTE);
@@ -132,6 +120,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.DRIED_CANNABIS_BUDS);
 
                 entries.add(PSItems.HASH_MUFFIN);
+                entries.add(PSItems.JOLLY_RANCHER);
 
                 entries.add(PSItems.BROWN_MAGIC_MUSHROOMS);
                 entries.add(PSItems.RED_MAGIC_MUSHROOMS);
@@ -171,6 +160,22 @@ public interface PSItemGroups {
                         entries.add(harmonium);
                     }
                 }
+            }));
+    RegistryKey<ItemGroup> PHARMACEUTICALS = register("pharmaceuticals", FabricItemGroup.builder()
+            .icon(PSItems.MORPHINE_TABLET::getDefaultStack)
+            .entries((context, entries) -> {
+                entries.add(PSItems.BUNSEN_BURNER);
+                entries.add(PSItems.TRAY);
+                entries.add(PSItems.GLASS_TUBE);
+                entries.add(PSItems.MORPHINE_TABLET);
+                entries.add(PSItems.LSD_PILL);
+                entries.add(PSItems.EXTACY);
+                entries.add(PSItems.CRYSTAL_METH);
+                entries.add(PSItems.LSA_SQUARE);
+                entries.add(PSItems.PACIFIER);
+                entries.add(PSItems.BROKEN_GLASS);
+                entries.add(PSItems.CRACK_COCAINE);
+                entries.add(PSItems.HEROINE_POWDER);
             }));
     RegistryKey<ItemGroup> DRINKS = register("drinks", FabricItemGroup.builder()
             .icon(PSItems.OAK_BARREL::getDefaultStack)
