@@ -11,8 +11,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-
 import java.util.function.Function;
 
 import com.mojang.serialization.MapCodec;
@@ -68,7 +66,7 @@ public record DrugType<T extends Drug> (
     }
 
     static <T extends Drug> DrugType<T> register(String name, DrugAttributeFunctions functions, Function<DrugType<T>, MapCodec<T>> codec, Function<DrugType<T>, T> constructor) {
-        DrugType<T> type = new DrugType<>(Psychedelicraft.id(name), Util.memoize(constructor), codec, functions);
+        DrugType<T> type = new DrugType<>(Psychedelicraft.id(name), constructor, codec, functions);
         PSSounds.register("drug." + name);
         return Registry.register(REGISTRY, type.id(), type);
     }

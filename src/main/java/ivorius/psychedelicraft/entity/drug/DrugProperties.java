@@ -32,7 +32,6 @@ import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -128,14 +127,11 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public float getDrugValue(DrugType<?> type) {
-        if (!drugs.containsKey(type)) {
-            return 0F;
-        }
-        return (float) getDrug(type).getActiveValue();
+        return (float)getDrug(type).getActiveValue();
     }
 
     public boolean isDrugActive(DrugType<?> type) {
-        return drugs.containsKey(type) && getDrugValue(type) > MathHelper.EPSILON;
+        return getDrugValue(type) > MathHelper.EPSILON;
     }
 
     public boolean isTripping() {
@@ -293,7 +289,6 @@ public class DrugProperties implements NbtSerialisable {
     public void sendCapabilities() {
         if (!entity.getWorld().isClient) {
             Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this, entity.getRegistryManager()), entity);
-            Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this, entity.getRegistryManager()), (ServerPlayerEntity)entity);
         }
     }
 
@@ -324,14 +319,14 @@ public class DrugProperties implements NbtSerialisable {
             drugs.putAll(old.drugs);
             timeBreathingSmoke = old.timeBreathingSmoke;
             breathSmokeColor = old.breathSmokeColor;
-            dirty = true;
+            markDirty();
         }
     }
 
     public boolean onAwoken() {
         drugs.values().forEach(drug -> drug.onWakeUp(this));
         influences.clear();
-        dirty = true;
+        markDirty();
 
         // TODO: (Sollace) Implement longer sleeping/comas
         return true;
