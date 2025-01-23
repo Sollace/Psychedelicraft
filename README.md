@@ -9,7 +9,7 @@ Psychedelicraft
 
 The One And Only, accept no substitutes!
 
- [Wiki](http://minecraft-psychedelicraft.wikia.com) | [Forum](http://www.minecraftforum.net/topic/563257-172-ivorius-mods-drugs-statues-flags-boxes-of-doom-hamsters/) 
+ [Wiki](https://github.com/Sollace/Psychedelicraft/wiki) | [Forum](http://www.minecraftforum.net/topic/563257-172-ivorius-mods-drugs-statues-flags-boxes-of-doom-hamsters/) 
 
 ----------
 
