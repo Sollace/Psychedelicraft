@@ -32,21 +32,24 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
             Codec.STRING.optionalFieldOf("group", "").forGetter(FluidAwareShapelessRecipe::getGroup),
             CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FluidAwareShapelessRecipe::getCategory),
             ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
-            OptionalFluidIngredient.LIST_CODEC.fieldOf("ingredients").forGetter(recipe -> recipe.ingredients)
+            OptionalFluidIngredient.LIST_CODEC.fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
+            Ingredient.ALLOW_EMPTY_CODEC.optionalFieldOf("destroy", Ingredient.empty()).forGetter(recipe -> recipe.destructedIngredient)
     ).apply(instance, FluidAwareShapelessRecipe::new));
     public static final PacketCodec<RegistryByteBuf, FluidAwareShapelessRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, FluidAwareShapelessRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, FluidAwareShapelessRecipe::getCategory,
             ItemStack.PACKET_CODEC, recipe -> recipe.output,
             OptionalFluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), recipe -> recipe.ingredients,
+            Ingredient.PACKET_CODEC, recipe -> recipe.destructedIngredient,
             FluidAwareShapelessRecipe::new
     );
 
     private final ItemStack output;
     private final DefaultedList<OptionalFluidIngredient> ingredients;
     private final List<OptionalFluidIngredient> consumedFluids;
+    private final Ingredient destructedIngredient;
 
-    public FluidAwareShapelessRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<OptionalFluidIngredient> input) {
+    public FluidAwareShapelessRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<OptionalFluidIngredient> input, Ingredient destructedIngredient) {
         super(group, category, output,
                 // parent expects regular ingredients but we don't actually use them
                 input.stream()
@@ -56,6 +59,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         this.output = output;
         this.ingredients = input;
         this.consumedFluids = ingredients.stream().filter(i -> i.fluid().filter(f -> f.level().isPresent()).isPresent()).toList();
+        this.destructedIngredient = destructedIngredient;
     }
 
     public DefaultedList<OptionalFluidIngredient> getFluidAwareIngredients() {
@@ -85,6 +89,8 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput inventory) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
 
+        boolean destroyed = false;
+
         for (int i = 0; i < defaultedList.size(); ++i) {
             ItemStack stack = inventory.getStackInSlot(i);
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
@@ -100,7 +106,11 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
                 if (t.fluids().isEmpty()) {
                     ItemStack remainder = t.toItemStack().getRecipeRemainder();
                     if (!remainder.isEmpty()) {
-                        defaultedList.set(i, remainder);
+                        if (!destroyed && destructedIngredient.test(remainder)) {
+                            destroyed = true;
+                        } else {
+                            defaultedList.set(i, remainder);
+                        }
                     }
                 } else {
                     defaultedList.set(i, t.toItemStack());
@@ -108,7 +118,11 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
             } else {
                 ItemStack remainder = stack.getRecipeRemainder();
                 if (!remainder.isEmpty()) {
-                    defaultedList.set(i, remainder);
+                    if (!destroyed && destructedIngredient.test(remainder)) {
+                        destroyed = true;
+                    } else {
+                        defaultedList.set(i, remainder);
+                    }
                 }
             }
         }

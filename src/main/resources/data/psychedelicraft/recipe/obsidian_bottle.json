@@ -4,5 +4,6 @@
     { "item": "psychedelicraft:filled_glass_bottle", "fluid": "minecraft:lava" },
     { "item": "minecraft:water_bucket" }
   ],
-  "result": { "id": "psychedelicraft:obsidian_bottle" }
+  "result": { "id": "psychedelicraft:obsidian_bottle" },
+  "destroy": { "item": "minecraft:glass_bottle" }
 }
