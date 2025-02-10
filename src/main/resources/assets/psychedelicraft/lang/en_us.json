@@ -235,8 +235,9 @@
   "entity.psychedelicraft.molotov_cocktail": "Molotov Cocktail",
   "entity.psychedelicraft.reality_rift": "Zero Rift",
 
-  "itemGroup.psychedelicraft.general": "Psychedelicraft",
+  "itemGroup.psychedelicraft.general": "Psychedelicraft - General",
   "itemGroup.psychedelicraft.drinks": "Psychedelicraft - Drinks",
+  "itemGroup.psychedelicraft.pharmaceuticals": "Psychedelicraft - Pharmaceuticals",
   "itemGroup.psychedelicraft.weapons": "Psychedelicraft - Weapons",
 
   "entity.minecraft.villager.drug_dealer": "Drug Dealer",
