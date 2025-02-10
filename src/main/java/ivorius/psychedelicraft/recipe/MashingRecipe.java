@@ -72,7 +72,6 @@ public record MashingRecipe (
 
     @Override
     public ItemStack createIcon() {
-        this.isIgnoredInRecipeBook();
         return PSItems.MASH_TUB.getDefaultStack();
     }
 
@@ -132,6 +131,11 @@ public record MashingRecipe (
         @Override
         public int getSize() {
             return 1;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return solids.isEmpty() && tankFluid.isEmpty() && inputs.isEmpty();
         }
     }
 
