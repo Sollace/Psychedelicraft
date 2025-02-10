@@ -84,15 +84,13 @@ public record MashingRecipe (
     public boolean matches(Input input, World world) {
         return !input.tankFluid().isEmpty()
                 && baseFluid.canCombine(input.tankFluid())
-                && ingredients.matches(input)
-                && !getRemainder(input).isEmpty();
+                && ingredients.matches(input);
     }
 
     public boolean matchesPartially(Input input, World world) {
         return !input.tankFluid().isEmpty()
                 && baseFluid.canCombine(input.tankFluid())
-                && ingredients.includes(input)
-                && !getRemainder(input).isEmpty();
+                && ingredients.includes(input);
     }
 
     @Override

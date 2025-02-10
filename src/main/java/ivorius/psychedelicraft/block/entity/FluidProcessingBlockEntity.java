@@ -53,6 +53,7 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
 
     public void setTimeProcessed(int value) {
         propertyDelegate.set(5, value);
+        markForUpdate();
     }
 
     public int getRepeatCount() {
