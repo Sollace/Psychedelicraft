@@ -1,6 +1,6 @@
 {
   "type": "psychedelicraft:fill_receptical",
-  "receptical": { "tag": "psychedelicraft:drink_recepticals" },
+  "receptical": { "tag": "psychedelicraft:receptical/drinks" },
   "ingredients": [
     { "item": "psychedelicraft:dried_peyote" },
     { "item": "psychedelicraft:dried_peyote" }

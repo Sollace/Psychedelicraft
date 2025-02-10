@@ -1,6 +1,6 @@
 {
   "type": "psychedelicraft:fill_receptical",
-  "receptical": { "tag": "psychedelicraft:drug_recepticals" },
+  "receptical": { "tag": "psychedelicraft:receptical/drugs" },
   "ingredients": [
     { "item": "psychedelicraft:cocaine_powder" }
   ],

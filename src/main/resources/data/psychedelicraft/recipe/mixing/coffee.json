@@ -1,6 +1,6 @@
 {
   "type": "psychedelicraft:fill_receptical",
-  "receptical": { "tag": "psychedelicraft:suitable_hot_drink_recepticals" },
+  "receptical": { "tag": "psychedelicraft:receptical/suitable_for_hot_drinks" },
   "ingredients": [
     { "item": "psychedelicraft:coffee_beans" },
     { "item": "psychedelicraft:coffee_beans" }
