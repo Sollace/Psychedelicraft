@@ -1,6 +1,9 @@
 {
   "parent": "psychedelicraft:block/complex_block",
 	"texture_size": [128, 64],
+  "textures": {
+    "particle": "#all"
+  },
   "display": {
     "gui": {
       "rotation": [ 30, 225, 0 ],
