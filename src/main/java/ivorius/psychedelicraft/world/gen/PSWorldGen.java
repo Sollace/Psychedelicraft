@@ -80,7 +80,7 @@ public class PSWorldGen {
                             BiomeSelector.COLD
                             .or(BiomeSelectors.tag(BiomeTags.IS_HILL))
                             .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
-                            .or(ctx -> ctx.getBiomeKey() == BiomeKeys.PLAINS)
+                            .or(BiomeSelectors.includeByKey(BiomeKeys.PLAINS))
                     )),
                     GenerationStep.Feature.VEGETAL_DECORATION,
                     placement
