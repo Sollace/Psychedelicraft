@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.world.gen;
 import java.util.List;
 import java.util.function.Predicate;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.AgavePlantBlock;
 import ivorius.psychedelicraft.block.CannabisPlantBlock;
@@ -46,7 +47,8 @@ public class PSWorldGen {
     public static final TilledPatchFeature TILLED_PATCH_FEATURE = Registry.register(Registries.FEATURE, Psychedelicraft.id("tilled_patch"), new TilledPatchFeature());
 
     public static final RegistryKey<ConfiguredFeature<?, ?>> JUNIPER_TREE_CONFIG = createConfiguredFeature("juniper_tree");
-    public static final RegistryKey<PlacedFeature> JUNIPER_TREE_PLACEMENT = createPlacement("juniper_tree_checked");
+    public static final RegistryKey<PlacedFeature> SPARCE_JUNIPER_TREE_PLACEMENT = createPlacement("sparce_juniper_tree_checked");
+    public static final RegistryKey<PlacedFeature> DENSE_JUNIPER_TREE_PLACEMENT = createPlacement("dense_juniper_tree_checked");
 
     public static RegistryKey<ConfiguredFeature<?, ?>> createConfiguredFeature(String name) {
         return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, Psychedelicraft.id(name));
@@ -65,7 +67,7 @@ public class PSWorldGen {
         var placement = createPlacement(id + "_tilled_patch_checked");
         FeatureRegistry.registerPlacedFeature(placement, cannabisPatch, feature -> {
             return new PlacedFeature(feature, List.of(
-                    RarityFilterPlacementModifier.of(160),
+                    RarityFilterPlacementModifier.of(90),
                     SquarePlacementModifier.of(),
                     PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
                     BiomePlacementModifier.of()
@@ -137,7 +139,13 @@ public class PSWorldGen {
             .forceDirt()
             .build());
         });
-        FeatureRegistry.registerPlacedFeature(JUNIPER_TREE_PLACEMENT, JUNIPER_TREE_CONFIG, config -> {
+        FeatureRegistry.registerPlacedFeature(DENSE_JUNIPER_TREE_PLACEMENT, JUNIPER_TREE_CONFIG, config -> {
+            return new PlacedFeature(config, VegetationPlacedFeatures.treeModifiersWithWouldSurvive(
+                    PlacedFeatures.createCountExtraModifier(4, 0.05F, 2),
+                    PSBlocks.JUNIPER_SAPLING)
+            );
+        });
+        FeatureRegistry.registerPlacedFeature(SPARCE_JUNIPER_TREE_PLACEMENT, JUNIPER_TREE_CONFIG, config -> {
             return new PlacedFeature(config, VegetationPlacedFeatures.treeModifiersWithWouldSurvive(
                     PlacedFeatures.createCountExtraModifier(1, 0.05F, 2),
                     PSBlocks.JUNIPER_SAPLING)
@@ -146,14 +154,14 @@ public class PSWorldGen {
 
         genConf.juniper().ifEnabled(spawnableBiomes -> {
             BiomeModifications.addFeature(
-                    spawnableBiomes.createPredicate(
-                        BiomeSelectors.foundInOverworld().and(BiomeSelector.DRY).and(
-                                BiomeSelectors.tag(BiomeTags.IS_HILL)
-                            .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
-                        )
-                    ),
+                    spawnableBiomes.createPredicate(BiomeSelectors.tag(PSTags.Biomes.HAS_DENSE_JUNIPER_TREES)),
                     GenerationStep.Feature.VEGETAL_DECORATION,
-                    JUNIPER_TREE_PLACEMENT
+                    DENSE_JUNIPER_TREE_PLACEMENT
+            );
+            BiomeModifications.addFeature(
+                    spawnableBiomes.createPredicate(BiomeSelectors.tag(PSTags.Biomes.HAS_SPARCE_JUNIPER_TREES)),
+                    GenerationStep.Feature.VEGETAL_DECORATION,
+                    SPARCE_JUNIPER_TREE_PLACEMENT
             );
         });
 
@@ -162,25 +170,15 @@ public class PSWorldGen {
         registerTilledPatch("tobacco", PSBlocks.TOBACCO, false, genConf.tobacco());
         registerTilledPatch("coffea", PSBlocks.COFFEA, false, genConf.coffea());
         registerTilledPatch("coca", PSBlocks.COCA, true, genConf.coca());
-        registerUnTilledPatch("morning_glory", PSBlocks.MORNING_GLORY, VineStemBlock.AGE, UniformIntProvider.create(0, VineStemBlock.MAX_AGE), BiomeSelectors.includeByKey(
-                BiomeKeys.FLOWER_FOREST,
-                BiomeKeys.SUNFLOWER_PLAINS,
-                BiomeKeys.MEADOW,
-                BiomeKeys.LUSH_CAVES
-        ), genConf.morningGlories());
-        registerUnTilledPatch("belladonna", PSBlocks.BELLADONNA, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.DARK_FOREST), genConf.belladonna());
-        registerUnTilledPatch("jimsonweed", PSBlocks.JIMSONWEEED, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE), genConf.jimsonweed());
-        registerUnTilledPatch("tomato", PSBlocks.TOMATOES, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.includeByKey(BiomeKeys.FOREST), genConf.tomato());
+        registerUnTilledPatch("morning_glory", PSBlocks.MORNING_GLORY, VineStemBlock.AGE, UniformIntProvider.create(0, VineStemBlock.MAX_AGE), BiomeSelectors.tag(PSTags.Biomes.HAS_MORNING_GLORY), genConf.morningGlories());
+        registerUnTilledPatch("belladonna", PSBlocks.BELLADONNA, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.tag(PSTags.Biomes.HAS_BELLADONNA), genConf.belladonna());
+        registerUnTilledPatch("jimsonweed", PSBlocks.JIMSONWEEED, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.tag(PSTags.Biomes.HAS_JIMSONWEED), genConf.jimsonweed());
+        registerUnTilledPatch("tomato", PSBlocks.TOMATOES, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.tag(PSTags.Biomes.HAS_TOMATOES), genConf.tomato());
         registerUnTilledPatch("peyote", PSBlocks.PEYOTE, PeyoteBlock.AGE, UniformIntProvider.create(0, PeyoteBlock.MAX_AGE), BiomeSelectors.foundInOverworld().and(
-                    BiomeSelectors.tag(BiomeTags.IS_SAVANNA)
-                .or(BiomeSelectors.tag(BiomeTags.IS_BADLANDS))
-                .or(BiomeSelectors.tag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE))
-                .or(BiomeSelector.DRY)
+                    BiomeSelectors.tag(PSTags.Biomes.HAS_PEYOTE).or(BiomeSelector.DRY)
         ), genConf.peyote());
         registerUnTilledPatch("agave", PSBlocks.AGAVE_PLANT, AgavePlantBlock.AGE, UniformIntProvider.create(0, AgavePlantBlock.MAX_AGE), BiomeSelectors.foundInOverworld().and(
-            BiomeSelectors.tag(BiomeTags.IS_BADLANDS)
-            .or(BiomeSelectors.tag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE))
-            .or(BiomeSelector.DRY)
+                    BiomeSelectors.tag(PSTags.Biomes.HAS_PEYOTE).or(BiomeSelector.DRY)
         ), genConf.peyote());
 
         MutableStructurePool.bootstrap();

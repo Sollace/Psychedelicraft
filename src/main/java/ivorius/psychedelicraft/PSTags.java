@@ -11,6 +11,7 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.Item;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.world.biome.Biome;
 
 public interface PSTags {
     interface Items {
@@ -63,6 +64,20 @@ public interface PSTags {
 
         static TagKey<DamageType> of(String name) {
             return TagKey.of(RegistryKeys.DAMAGE_TYPE, Psychedelicraft.id(name));
+        }
+    }
+
+    interface Biomes {
+        TagKey<Biome> HAS_DENSE_JUNIPER_TREES = of("has_dense_juniper_trees");
+        TagKey<Biome> HAS_SPARCE_JUNIPER_TREES = of("has_sparce_juniper_trees");
+        TagKey<Biome> HAS_MORNING_GLORY = of("has_morning_glory");
+        TagKey<Biome> HAS_BELLADONNA = of("has_belladonna");
+        TagKey<Biome> HAS_JIMSONWEED = of("has_jimsonweed");
+        TagKey<Biome> HAS_TOMATOES = of("has_tomatoes");
+        TagKey<Biome> HAS_PEYOTE = of("has_peyote");
+
+        static TagKey<Biome> of(String name) {
+            return TagKey.of(RegistryKeys.BIOME, Psychedelicraft.id(name));
         }
     }
 
