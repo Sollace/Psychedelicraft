@@ -22,7 +22,7 @@ public class MorphineDrug extends SimpleDrug {
             .put(HEART_BEAT_SPEED, (f, t) -> -f * 0.8F)
             .put(HAND_TREMBLE_STRENGTH, 0.001F)
             .put(VIEW_TREMBLE_STRENGTH, 0.002F)
-            .put(PAIN_SUPPRESSION, f -> 1 + f * 0.6F)
+            .put(PAIN_SUPPRESSION, f -> 1 - f * 0.6F)
             .build();
 
     public static final DrugAttributeFunctions METH_FUNCTIONS = DrugAttributeFunctions.builder()
@@ -30,7 +30,7 @@ public class MorphineDrug extends SimpleDrug {
             .put(HEART_BEAT_SPEED, (f, t) -> -f * 0.1F - (t * 0.0001F))
             .put(HAND_TREMBLE_STRENGTH, 0.1F)
             .put(VIEW_TREMBLE_STRENGTH, 0.2F)
-            .put(PAIN_SUPPRESSION, f -> 1 + f * 0.9F)
+            .put(PAIN_SUPPRESSION, f -> 1 - f * 0.9F)
             .build();
 
     public MorphineDrug(DrugType<MorphineDrug> type, double decSpeed, double decSpeedPlus) {

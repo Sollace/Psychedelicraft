@@ -337,7 +337,7 @@ public class DrugProperties implements NbtSerialisable {
             return initial;
         }
         float painSuppression = getModifier(Drug.PAIN_SUPPRESSION);
-        initial *= (1 - painSuppression);
+        initial *= painSuppression;
         if (initial < 0.5F) {
             return 0;
         }
