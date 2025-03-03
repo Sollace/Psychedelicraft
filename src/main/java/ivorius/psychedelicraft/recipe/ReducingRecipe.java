@@ -30,20 +30,20 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
  * Used by the bunsen burner to produce the correct fluid type for ingredients dropped into it
  */
 public record ReducingRecipe (
-        String group,
+        String reducingGroup,
         CraftingRecipeCategory category,
         Result result,
         Ingredients ingredients,
         int stewTime) implements BunsenBurnerRecipe {
     public static final MapCodec<ReducingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("group", "").forGetter(ReducingRecipe::group),
+            Codec.STRING.optionalFieldOf("group", "").forGetter(ReducingRecipe::reducingGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ReducingRecipe::category),
             Result.CODEC.fieldOf("result").forGetter(ReducingRecipe::result),
             Ingredients.CODEC.fieldOf("ingredients").forGetter(ReducingRecipe::ingredients),
             Codec.INT.optionalFieldOf("stew_time", 0).forGetter(ReducingRecipe::stewTime)
     ).apply(instance, ReducingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, ReducingRecipe> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.STRING, ReducingRecipe::group,
+            PacketCodecs.STRING, ReducingRecipe::reducingGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ReducingRecipe::category,
             Result.PACKET_CODEC, ReducingRecipe::result,
             Ingredients.PACKET_CODEC, ReducingRecipe::ingredients,
@@ -58,7 +58,7 @@ public record ReducingRecipe (
 
     @Override
     public String getGroup() {
-        return group;
+        return reducingGroup;
     }
 
     @Override

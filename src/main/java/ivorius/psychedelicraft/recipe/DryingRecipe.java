@@ -19,7 +19,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public record DryingRecipe(
-        String group,
+        String dryingGroup,
         CookingRecipeCategory category,
         Ingredient input,
         ItemStack output,
@@ -27,7 +27,7 @@ public record DryingRecipe(
         float cookTime
     ) implements Recipe<DryingRecipe.Input> {
     public static final MapCodec<DryingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("group", "").forGetter(DryingRecipe::group),
+            Codec.STRING.optionalFieldOf("group", "").forGetter(DryingRecipe::dryingGroup),
             CookingRecipeCategory.CODEC.fieldOf("category").orElse(CookingRecipeCategory.MISC).forGetter(DryingRecipe::category),
             Ingredient.ALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(DryingRecipe::input),
             ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(DryingRecipe::output),
@@ -35,7 +35,7 @@ public record DryingRecipe(
             Codec.FLOAT.optionalFieldOf("cookingTime", 1F).forGetter(DryingRecipe::cookTime)
         ).apply(instance, DryingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, DryingRecipe> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.STRING, DryingRecipe::group,
+            PacketCodecs.STRING, DryingRecipe::dryingGroup,
             RecipeUtils.COOKING_RECIPE_CATEGORY_PACKET_CODEC, DryingRecipe::category,
             Ingredient.PACKET_CODEC, DryingRecipe::input,
             ItemStack.PACKET_CODEC, DryingRecipe::output,
@@ -56,7 +56,7 @@ public record DryingRecipe(
 
     @Override
     public String getGroup() {
-        return group;
+        return dryingGroup;
     }
 
     @Override

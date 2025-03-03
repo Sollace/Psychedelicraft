@@ -31,14 +31,14 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
  * Used by the mash table to produce a particular fluid from items dropped in.
  */
 public record MashingRecipe (
-        String group,
+        String mashingGroup,
         CraftingRecipeCategory category,
         ItemFluids baseFluid,
         ItemFluids result,
         Ingredients ingredients,
         int stewTime) implements Recipe<MashingRecipe.Input> {
     public static final MapCodec<MashingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::group),
+            Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::mashingGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(MashingRecipe::category),
             ItemFluids.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
             ItemFluids.CODEC.fieldOf("result").forGetter(MashingRecipe::result),
@@ -46,7 +46,7 @@ public record MashingRecipe (
             Codec.INT.optionalFieldOf("stew_time", 0).forGetter(MashingRecipe::stewTime)
     ).apply(instance, MashingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, MashingRecipe> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.STRING, MashingRecipe::group,
+            PacketCodecs.STRING, MashingRecipe::mashingGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::category,
             ItemFluids.PACKET_CODEC, MashingRecipe::baseFluid,
             ItemFluids.PACKET_CODEC, MashingRecipe::result,
@@ -67,7 +67,7 @@ public record MashingRecipe (
 
     @Override
     public String getGroup() {
-        return group;
+        return mashingGroup;
     }
 
     @Override
