@@ -1,6 +1,8 @@
 package ivorius.psychedelicraft.recipe;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -13,6 +15,8 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
@@ -119,6 +123,16 @@ public record DryingRecipe(
         return defaultedList;
     }
 
+    @Override
+    public IngredientPlacement getIngredientPlacement() {
+        return IngredientPlacement.forMultipleSlots(IntStream.range(0, 9).mapToObj(i -> Optional.of(input)).toList());
+    }
+
+    @Override
+    public RecipeBookCategory getRecipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
     public record Input(ItemStack result, List<ItemStack> ingredients) implements RecipeInput {
         @Override
         public ItemStack getStackInSlot(int slot) {
@@ -126,7 +140,7 @@ public record DryingRecipe(
         }
 
         @Override
-        public int getSize() {
+        public int size() {
             return ingredients.size();
         }
     }

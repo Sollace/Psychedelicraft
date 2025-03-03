@@ -15,7 +15,6 @@ import ivorius.psychedelicraft.block.BarrelBlock;
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.MathHelper;
 
@@ -23,18 +22,15 @@ import net.minecraft.util.math.MathHelper;
  * Updated by Sollace on 6 Jan 2023
  */
 public class BarrelModel extends Model {
-    private final ModelPart tree;
-
     private final ModelPart barrel;
     private final ModelPart legs;
     private final ModelPart tap;
     private final ModelPart tapHandle;
 
     public BarrelModel(ModelPart tree) {
-        super(RenderLayer::getEntityCutout);
-        this.tree = tree;
-        this.barrel = tree.getChild("barrel");
-        this.legs = tree.getChild("rack");
+        super(tree, RenderLayer::getEntityCutout);
+        this.barrel = root.getChild("barrel");
+        this.legs = root.getChild("rack");
         this.tap = barrel.getChild("tap");
         this.tapHandle = tap.getChild("handle");
     }
@@ -75,11 +71,6 @@ public class BarrelModel extends Model {
         tap.roll = 0;//MinecraftClient.getInstance().player.age;
         tap.visible = barrel.pitch == 0 && entity.getCachedState().get(BarrelBlock.TAPPED);
         legs.visible = barrel.pitch == 0;
-        tree.pivotY = legs.visible ? 0 : 2;
-    }
-
-    @Override
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-        tree.render(matrices, vertices, light, overlay);
+        root.pivotY = legs.visible ? 0 : 2;
     }
 }

@@ -35,7 +35,7 @@ public interface BootstrapUtil {
 
             @Override
             public <S> RegistryEntryLookup<S> getRegistryLookup(RegistryKey<? extends Registry<? extends S>> registryRef) {
-                return manager.get().getWrapperOrThrow(registryRef);
+                return manager.get().getOrThrow(registryRef);
             }
         };
     }

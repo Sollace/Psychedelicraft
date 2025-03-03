@@ -1,8 +1,6 @@
 package ivorius.psychedelicraft.particle;
 
 import java.util.concurrent.atomic.AtomicReference;
-import org.joml.Vector3f;
-
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
@@ -15,10 +13,10 @@ public class DrugDustParticleEffect extends DustParticleEffect {
     static ParticleType<DrugDustParticleEffect> createType() {
         AtomicReference<ParticleType<DrugDustParticleEffect>> type = new AtomicReference<>();
         type.set(FabricParticleTypes.complex(RecordCodecBuilder.mapCodec(instance -> instance.group(
-                Codecs.VECTOR_3F.fieldOf("color").forGetter(DustParticleEffect::getColor),
+                Codecs.RGB.fieldOf("color").forGetter(particle -> particle.color),
                 SCALE_CODEC.fieldOf("scale").forGetter(DustParticleEffect::getScale)
             ).apply(instance, (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale))), PacketCodec.tuple(
-                PacketCodecs.VECTOR3F, DustParticleEffect::getColor,
+                PacketCodecs.INTEGER, particle -> particle.color,
                 PacketCodecs.FLOAT, DustParticleEffect::getScale,
                 (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale)
             )));
@@ -27,8 +25,11 @@ public class DrugDustParticleEffect extends DustParticleEffect {
 
     private final ParticleType<DrugDustParticleEffect> type;
 
-    public DrugDustParticleEffect(ParticleType<DrugDustParticleEffect> type, Vector3f color, float scale) {
+    private int color;
+
+    public DrugDustParticleEffect(ParticleType<DrugDustParticleEffect> type, int color, float scale) {
         super(color, scale);
+        this.color = color;
         this.type = type;
     }
 

@@ -91,7 +91,7 @@ class DrugCommand {
         Identifier drugName = IdentifierArgumentType.getIdentifier(context, "drug");
         DrugProperties properties = DrugProperties.of(player);
 
-        DrugType.REGISTRY.getOrEmpty(drugName).ifPresentOrElse(drugType -> {
+        DrugType.REGISTRY.getOptionalValue(drugName).ifPresentOrElse(drugType -> {
             float value = properties.isDrugActive(drugType) ? properties.getDrugValue(drugType) : 0;
             source.sendFeedback(() -> Text.translatable("commands.drug.success.get." + (player == source.getEntity() ? "self" : "other"), player.getName(), drugName.getPath(), value), true);
         }, () -> {
@@ -155,7 +155,7 @@ class DrugCommand {
             });
             feedback.accept(player, UpdateType.ALL);
         } else {
-            DrugType.REGISTRY.getOrEmpty(drugName).ifPresentOrElse(type -> {
+            DrugType.REGISTRY.getOptionalValue(drugName).ifPresentOrElse(type -> {
                 change.accept(properties, type);
                 feedback.accept(player, UpdateType.ONE);
             }, () -> feedback.accept(player, UpdateType.NONE));

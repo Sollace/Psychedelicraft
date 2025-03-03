@@ -14,10 +14,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.*;
-import net.minecraft.client.gl.ShaderStage.Type;
+import net.minecraft.client.gl.CompiledShader.Type;
 
 @Mixin(ShaderProgram.class)
-abstract class MixinShaderProgram implements ShaderProgramSetupView, AutoCloseable {
+abstract class MixinShaderProgram implements AutoCloseable {
     @Shadow
     private @Final List<GlUniform> uniforms;
     @Shadow
@@ -32,15 +32,16 @@ abstract class MixinShaderProgram implements ShaderProgramSetupView, AutoCloseab
 
     @Inject(method = "loadReferences()V", at = @At("HEAD"))
     private void onLoadReferences(CallbackInfo info) {
+        ShaderProgram self = (ShaderProgram)(Object)this;
         RenderSystem.assertOnRenderThread();
         GeometryShader.INSTANCE.getSamplers().keySet().forEach(samplerName -> {
-            if (GlUniform.getUniformLocation(getGlRef(), samplerName) != -1) {
+            if (GlUniform.getUniformLocation(self.getGlRef(), samplerName) != -1) {
                 samplerNames.add(samplerName);
                 samplers.put(samplerName, null);
             }
         });
-        GeometryShader.INSTANCE.addUniforms(this, uniform -> {
-            if (GlUniform.getUniformLocation(getGlRef(), uniform.getName()) != -1) {
+        GeometryShader.INSTANCE.addUniforms(uniform -> {
+            if (GlUniform.getUniformLocation(self.getGlRef(), uniform.getName()) != -1) {
                 uniforms.add(uniform);
             }
         });
@@ -55,7 +56,7 @@ abstract class MixinGLImportProcessor {
     }
 }
 
-@Mixin(ShaderStage.class)
+@Mixin(CompiledShader.class)
 abstract class MixinShaderStage {
     @Inject(method = "load", at = @At("HEAD"))
     private static void onLoad(Type type, String name, InputStream stream, String domain, GlImportProcessor loader, CallbackInfoReturnable<Integer> info) throws IOException {

@@ -58,7 +58,7 @@ public record DrugType<T extends Drug> (
     }
 
     public SoundEvent soundEvent() {
-        return Registries.SOUND_EVENT.getOrEmpty(id.withPrefixedPath("drug.")).orElse(PSSounds.DRUG_GENERIC);
+        return Registries.SOUND_EVENT.getOptionalValue(id.withPrefixedPath("drug.")).orElse(PSSounds.DRUG_GENERIC);
     }
 
     static <T extends Drug> DrugType<T> register(String name, DrugAttributeFunctions functions, MapCodec<T> codec, Function<DrugType<T>, T> constructor) {

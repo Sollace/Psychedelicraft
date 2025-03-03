@@ -45,7 +45,7 @@ class MashingEmiRecipe implements PSRecipe {
 
     @Override
     public Identifier getId() {
-        return recipe.id();
+        return recipe.id().getValue();
     }
 
     @Override

@@ -27,7 +27,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -37,12 +37,13 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 
 public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
     public static final MapCodec<BarrelBlock> CODEC = createCodec(BarrelBlock::new);
     public static final int MAX_TAP_AMOUNT = FluidVolumes.BUCKET;
-    public static final DirectionProperty FACING = Properties.HOPPER_FACING;
+    public static final EnumProperty<Direction> FACING = Properties.HOPPER_FACING;
     public static final BooleanProperty TAPPED = BooleanProperty.of("tapped");
 
     private static final Map<Axis, VoxelShape> STANDING_SHAPES = Map.of(
@@ -88,7 +89,7 @@ public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
 
     @Override
     protected BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+        return BlockRenderType.INVISIBLE;
     }
 
     @Override
@@ -113,18 +114,18 @@ public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
     }
 
     @Override
-    protected ItemActionResult onInteractWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
+    protected ActionResult onInteractWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
 
         if (stack.isOf(Items.STICK)) {
             world.playSound(player, pos, SoundEvents.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS);
             world.emitGameEvent(player, GameEvent.BLOCK_OPEN, pos);
             world.setBlockState(pos, state.with(FACING, state.get(FACING).getAxis() == Axis.Y ? player.getHorizontalFacing().getOpposite() : Direction.DOWN));
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
         int capacity = FluidCapacity.get(stack);
         if (!state.get(TAPPED) || state.get(FACING).getAxis() == Axis.Y || capacity == 0) {
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
         }
 
         if (ItemFluids.of(stack).amount() < capacity) {
@@ -148,15 +149,15 @@ public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
 
                     Direction updateDirection = state.get(BarrelBlock.FACING).getOpposite();
                     if (updateDirection.getAxis() != Axis.Y) {
-                        world.updateNeighborsExcept(pos.offset(updateDirection), this, updateDirection.getOpposite());
+                        world.updateNeighborsExcept(pos.offset(updateDirection), this, updateDirection.getOpposite(), WireOrientation.random(world.random));
                     }
                 }
 
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
         }
 
-        return ItemActionResult.FAIL;
+        return ActionResult.FAIL;
     }
 
     @Override

@@ -17,6 +17,7 @@ import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.BlockPos;
@@ -33,11 +34,11 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     }
 
     public MolotovCocktailEntity(World world, LivingEntity owner) {
-        super(PSEntities.MOLOTOV_COCKTAIL, owner, world);
+        super(PSEntities.MOLOTOV_COCKTAIL, owner, world, PSItems.MOLOTOV_COCKTAIL.getDefaultStack());
     }
 
     public MolotovCocktailEntity(World world, double x, double y, double z) {
-        super(PSEntities.MOLOTOV_COCKTAIL, x, y, z, world);
+        super(PSEntities.MOLOTOV_COCKTAIL, x, y, z, world, PSItems.MOLOTOV_COCKTAIL.getDefaultStack());
     }
 
     @Override
@@ -100,7 +101,9 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
         Combustable combustable = Combustable.fromStack(stack);
         float explosionStrength = combustable.getExplosionStrength(stack);
         float fireStrength = combustable.getFireStrength(stack);
-        entity.damage(PSDamageTypes.create(getWorld(), getOwner(), this, PSDamageTypes.molotov(entity, getOwner())), percentageScale * Math.max(4, explosionStrength * 0.6F + fireStrength * 0.3F));
+        if (getWorld() instanceof ServerWorld sw) {
+            entity.damage(sw, PSDamageTypes.create(getWorld(), getOwner(), this, PSDamageTypes.molotov(entity, getOwner())), percentageScale * Math.max(4, explosionStrength * 0.6F + fireStrength * 0.3F));
+        }
         if (fireStrength > 0) {
             entity.isOnFire();
             entity.setFireTicks((int)Math.max(10, 3 * fireStrength));

@@ -17,7 +17,7 @@ import net.minecraft.entity.player.*;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
@@ -37,7 +37,7 @@ public class BottleRackBlock extends BlockWithEntity {
                     Codec.INT.fieldOf("z_offset").forGetter(BottleRackBlock::getZOffset),
                     createSettingsCodec()
             ).apply(instance, BottleRackBlock::new));
-    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
 
     private static final VoxelShape BASE_SHAPE = VoxelShapes.union(
             Block.createCuboidShape(0, 0, 3, 1, 16, 11),
@@ -118,18 +118,18 @@ public class BottleRackBlock extends BlockWithEntity {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).map(be -> {
             if (heldStack.isEmpty()) {
                 TypedActionResult<ItemStack> extracted = be.extractItem(hit, state.get(FACING));
                 if (extracted.getResult().isAccepted()) {
                     player.setStackInHand(hand, extracted.getValue());
                 }
-                return extracted.getResult() == ActionResult.SUCCESS ? ItemActionResult.SUCCESS : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                return extracted.getResult() == ActionResult.SUCCESS ? ActionResult.SUCCESS : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
 
             return be.insertItem(heldStack, hit, state.get(FACING));
-        }).orElse(ItemActionResult.FAIL);
+        }).orElse(ActionResult.FAIL);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
     public void render(BarrelBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         matrices.push();
         matrices.translate(0.5F, 0, 0.5F);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - entity.getCachedState().get(BarrelBlock.FACING).asRotation()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - entity.getCachedState().get(BarrelBlock.FACING).getHorizontalQuarterTurns()));
 
         model.setRotationAngles(entity, tickDelta);
         model.render(matrices, vertices.getBuffer(model.getLayer(getBarrelTexture(entity))), light, overlay, Colors.WHITE);

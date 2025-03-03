@@ -11,12 +11,14 @@ import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.RecipeUtils;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -53,7 +55,7 @@ public class BongItem extends Item {
         DrugProperties.of(entity).ifPresent(drugProperties -> {
             getUsedConsumable(drugProperties.asEntity()).ifPresent(consumable -> {
                 PlayerInventory inventory = drugProperties.asEntity().getInventory();
-                int slot = inventory.indexOf(consumable.getKey());
+                int slot = inventory.getSlotWithStack(consumable.getKey());
                 inventory.removeStack(slot, 1);
                 drugProperties.addAll(consumable.getValue().drugInfluences().apply(consumable.getKey()));
                 stack.damage(1, drugProperties.asEntity(), EquipmentSlot.MAINHAND);
@@ -65,15 +67,13 @@ public class BongItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        ItemStack stack = player.getStackInHand(hand);
-
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         if (!DrugProperties.of(player).isBreathingSmoke() && hasUsableConsumable(player)) {
             player.setCurrentHand(hand);
-            return TypedActionResult.consume(stack);
+            return ActionResult.CONSUME;
         }
 
-        return TypedActionResult.fail(stack);
+        return ActionResult.FAIL;
     }
 
     @Override
@@ -86,7 +86,8 @@ public class BongItem extends Item {
             getUsedConsumable(drugProperties.asEntity()).ifPresent(consumable -> {
                 if (user.getRandom().nextInt(2) == 0) {
                     float s = (float)user.getRandom().nextTriangular(0.5, 0.25);
-                    ParticleHelper.spawnParticleAtFace(user, new DrugDustParticleEffect(PSParticles.BUBBLE, consumable.getValue().smokeColor, s), 0.2F);
+                    ParticleHelper.spawnParticleAtFace(user, new DrugDustParticleEffect(PSParticles.BUBBLE,
+                            MathUtils.getArgb(consumable.getValue().smokeColor), s), 0.2F);
                 }
             });
         });

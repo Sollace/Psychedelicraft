@@ -41,7 +41,11 @@ public class LootExtensionEntry extends LeafEntry {
 
     @Override
     public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
-        context.getLookup().getOptionalEntry(RegistryKeys.LOOT_TABLE, value).map(RegistryEntry::value).orElse(LootTable.EMPTY).generateUnprocessedLoot(context, lootConsumer);
+        context.getLookup().getOptional(RegistryKeys.LOOT_TABLE)
+            .flatMap(lookup -> lookup.getOptional(value))
+            .map(RegistryEntry::value)
+            .orElse(LootTable.EMPTY)
+            .generateUnprocessedLoot(context, lootConsumer);
     }
 
     @Override

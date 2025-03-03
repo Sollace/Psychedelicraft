@@ -25,8 +25,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.screen.*;
@@ -71,13 +71,13 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     }
 
     @Override
-    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
         appendDroppedStacks(asItem().getDefaultStack(), state, builder);
         return super.getDroppedStacks(state, builder);
     }
 
     @Deprecated
-    public static void appendDroppedStacks(ItemStack defaultStack, BlockState state, LootContextParameterSet.Builder builder) {
+    public static void appendDroppedStacks(ItemStack defaultStack, BlockState state, LootWorldContext.Builder builder) {
         BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
         if (blockEntity instanceof DirectionalFluidResovoir container) {
             builder = builder.addDynamicDrop(CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
@@ -123,14 +123,14 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, getBlockEntityType()).map(be -> {
             return onInteractWithItem(stack, be.getCachedState(), world, be.getPos(), player, hand, be);
-        }).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+        }).orElse(ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
     }
 
-    protected ItemActionResult onInteractWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, T blockEntity) {
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    protected ActionResult onInteractWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, T blockEntity) {
+        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     }
 
     protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, T blockEntity) {

@@ -19,10 +19,10 @@ import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
-import net.minecraft.client.gl.ShaderStage.Type;
+import net.minecraft.client.gl.CompiledShader.Type;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.*;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -45,7 +45,8 @@ public class GeometryShader {
 
     private final Map<String, Supplier<Integer>> samplers = Util.make(new HashMap<>(), map -> {
         map.put("PS_DepthSampler", () -> MinecraftClient.getInstance().getFramebuffer().getDepthAttachment());
-        map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).getGlId());
+        // Deprecation: SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/blocks.png");
+        map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).getGlId());
     });
 
     public void setup(Type type, String domain, String name) {
@@ -69,18 +70,18 @@ public class GeometryShader {
     public BuiltGemoetryShader.Builder createShaderBuilder(int program, int lastUniformId, int lastSamplerId) {
         var builder = new BuiltGemoetryShader.Builder(program, lastUniformId, lastSamplerId);
         samplers.forEach(builder::addSampler);
-        addUniforms(builder, builder::addUniform);
+        addUniforms(builder::addUniform);
         return builder;
     }
 
-    public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
-        register.accept(new BoundUniform("PS_SurfaceFractalStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
+    public void addUniforms(Consumer<GlUniform> register) {
+        register.accept(new BoundUniform("PS_SurfaceFractalStrength", GlUniform.getTypeIndex("float"), 1, uniform -> {
             uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().get(Drug.FRACTALS), 0, 1) : 0);
         }));
-        register.accept(new BoundUniform("PS_Pulses", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
+        register.accept(new BoundUniform("PS_Pulses", GlUniform.getTypeIndex("float") + 3, 4, uniform -> {
             uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor(ShaderContext.tickDelta(), RenderPhase.current() == RenderPhase.SKY) : MathUtils.ZERO);
         }));
-        register.accept(new BoundUniform("PS_SurfaceFractalCoords", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
+        register.accept(new BoundUniform("PS_SurfaceFractalCoords", GlUniform.getTypeIndex("float") + 3, 4, uniform -> {
             if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) > 0) {
                 Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
                 uniform.set(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
@@ -88,9 +89,9 @@ public class GeometryShader {
                 uniform.set(MathUtils.ZERO);
             }
         }));
-        register.accept(new BoundUniform("PS_PlayerPosition", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> uniform.set(ShaderContext.position().toVector3f())));
-        register.accept(new BoundUniform("PS_WorldTicks", GlUniform.getTypeIndex("float"), 1, program, uniform -> uniform.set(ShaderContext.ticks())));
-        register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
+        register.accept(new BoundUniform("PS_PlayerPosition", GlUniform.getTypeIndex("float") + 2, 3, uniform -> uniform.set(ShaderContext.position().toVector3f())));
+        register.accept(new BoundUniform("PS_WorldTicks", GlUniform.getTypeIndex("float"), 1, uniform -> uniform.set(ShaderContext.ticks())));
+        register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 3, 4, uniform -> {
             if (isWorld() && RenderPhase.current() != RenderPhase.CLOUDS) {
                 uniform.set(
                     ShaderContext.hallucinations().get(Drug.SMALL_WAVES),
@@ -102,13 +103,13 @@ public class GeometryShader {
                 uniform.set(MathUtils.ZERO);
             }
         }));
-        register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
+        register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, uniform -> {
             uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.DISTANT_WAVES) : 0F);
         }));
-        register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
+        register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, uniform -> {
             uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.SHATTERING_WAVES) : 0F);
         }));
-        register.accept(new BoundUniform("PS_lsdBlendRatio", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
+        register.accept(new BoundUniform("PS_lsdBlendRatio", GlUniform.getTypeIndex("float"), 1, uniform -> {
             uniform.set(isWorld() && RenderPhase.current() != RenderPhase.CLOUDS
                     ? ShaderContext.modifier(Drug.RAINBOW_WAVES)
                     : RenderPhase.current() == RenderPhase.SKY ? ShaderContext.modifier(Drug.RAINBOW_WAVES) * 1.1F
@@ -207,8 +208,8 @@ public class GeometryShader {
     static class BoundUniform extends GlUniform {
         private final Consumer<GlUniform> valueGetter;
 
-        public BoundUniform(String name, int dataType, int count, ShaderProgramSetupView program, Consumer<GlUniform> valueGetter) {
-            super(name, dataType, count, program);
+        public BoundUniform(String name, int dataType, int count, Consumer<GlUniform> valueGetter) {
+            super(name, dataType, count);
             this.valueGetter = valueGetter;
         }
 

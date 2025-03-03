@@ -10,16 +10,19 @@ import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -56,6 +59,9 @@ public class FluidBoxRenderer {
     @Nullable
     private Matrix4f position;
 
+    private final ItemRenderState itemRenderState = new ItemRenderState();
+    private final Random random = Random.create();
+
     private FluidBoxRenderer() { }
 
     public FluidBoxRenderer scale(float scale) {
@@ -81,7 +87,7 @@ public class FluidBoxRenderer {
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemFluids fluids) {
         if (fluids.isEmpty()) {
             sprite = null;
-            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
+            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
             color = Colors.WHITE;
         } else {
             FluidAppearance appearance = FluidAppearance.of(fluids);
@@ -95,8 +101,9 @@ public class FluidBoxRenderer {
     }
 
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemStack stack) {
-        sprite = MinecraftClient.getInstance().getItemRenderer().getModels().getModel(stack).getParticleSprite();
-        buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE));
+        MinecraftClient.getInstance().getItemModelManager().update(itemRenderState, stack, ModelTransformationMode.FIRST_PERSON_LEFT_HAND, null, null, 0);
+        sprite = itemRenderState.getParticleSprite(random);
+        buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         color = Colors.WHITE;
         return this;
     }
@@ -122,7 +129,7 @@ public class FluidBoxRenderer {
         position.transform(POSITION_VECTOR);
         buffer.vertex(
                 POSITION_VECTOR.x * scale, POSITION_VECTOR.y * scale, POSITION_VECTOR.z * scale,
-                ColorHelper.Argb.fullAlpha(color),
+                ColorHelper.fullAlpha(color),
                 u, v,
                 overlay, light,
                 direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ()
@@ -195,11 +202,11 @@ public class FluidBoxRenderer {
                 FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(stack.fluid().getPhysical().getStandingFluid());
                 if (handler != null) {
                     FluidState state = stack.fluid().getPhysical().getStandingFluid().getDefaultState();
-                    return ColorHelper.Argb.fullAlpha(handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state));
+                    return ColorHelper.fullAlpha(handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state));
                 }
             }
 
-            return ColorHelper.Argb.fullAlpha(stack.fluid().getColor(stack));
+            return ColorHelper.fullAlpha(stack.fluid().getColor(stack));
         }
 
         public float[] rgba() {

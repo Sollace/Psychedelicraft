@@ -39,7 +39,7 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
                     stack.decrement(1);
                 }
                 if (!getWorld().isClient) {
-                    getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT, getSoundCategory(),
+                    getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT.value(), getSoundCategory(),
                             1 + random.nextFloat(),
                             random.nextFloat() * 0.7F + 0.3F
                     );
@@ -56,8 +56,8 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
 
     @Inject(method = "afterUsing", at = @At("RETURN"))
     private void onAfterUsing(TradeOffer offer, CallbackInfo info) {
-        if (getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION) {
-            damage(PSDamageTypes.create(getWorld(), PSDamageTypes.OVERDOSE), (offer.getUses() * offer.getSellItem().getCount()) + 1);
+        if (getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION && getWorld() instanceof ServerWorld sw) {
+            damage(sw, PSDamageTypes.create(sw, PSDamageTypes.OVERDOSE), (offer.getUses() * offer.getSellItem().getCount()) + 1);
         }
     }
 }

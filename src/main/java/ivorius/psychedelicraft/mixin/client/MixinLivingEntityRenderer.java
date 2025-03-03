@@ -3,7 +3,6 @@ package ivorius.psychedelicraft.mixin.client;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -16,14 +15,17 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.render.entity.state.VillagerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.village.VillagerDataContainer;
 
 @Mixin(LivingEntityRenderer.class)
-abstract class MixinLivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
-    MixinLivingEntityRenderer() { super(null); }
+abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>>
+        extends EntityRenderer<T, S>
+        implements FeatureRendererContext<S, M>  {
+    MixinLivingEntityRenderer() {super(null);}
 
     @Inject(method = "render",
             at = @At(
@@ -42,12 +44,12 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, M extends Entit
         }
     }
 
-    @ModifyVariable(method = "setupTransforms", at = @At("HEAD"), ordinal = 1, argsOnly = true)
-    private float changeBodyYaw(float bodyYaw, T entity) {
-        if (entity instanceof VillagerDataContainer v && v.getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION) {
-            bodyYaw += AddictTaskListProvider.getShakeAmount(entity);
+    @Inject(method = "updateRenderState", at = @At("RETURN"))
+    private void onUpdateRenderState(T entity, S state, float tickDelta, CallbackInfo info) {
+        if (state instanceof VillagerEntityRenderState v && v.getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION) {
+            float shakeAmount = AddictTaskListProvider.getShakeAmount(entity);
+            state.bodyYaw += shakeAmount;
+            v.hurt |= Math.abs(shakeAmount) > 5F;
         }
-
-        return bodyYaw;
     }
 }

@@ -167,7 +167,7 @@ public class DrugRenderer {
         head.yaw += DrugEffectInterpreter.getCameraShiftY(properties, tick);
         head.roll = DrugEffectInterpreter.getAlcohol(properties);
 
-        if (model instanceof PlayerEntityModel<?> pem) {
+        if (model instanceof PlayerEntityModel pem) {
             pem.hat.copyTransform(head);
             pem.leftSleeve.copyTransform(leftArm);
             pem.rightSleeve.copyTransform(rightArm);

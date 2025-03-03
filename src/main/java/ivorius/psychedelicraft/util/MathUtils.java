@@ -57,19 +57,19 @@ public interface MathUtils {
     }
 
     static float a(int c) {
-        return ColorHelper.Argb.getAlpha(c) / 255F;
+        return ColorHelper.getAlpha(c) / 255F;
     }
 
     static float r(int c) {
-        return ColorHelper.Argb.getRed(c) / 255F;
+        return ColorHelper.getRed(c) / 255F;
     }
 
     static float g(int c) {
-        return ColorHelper.Argb.getGreen(c) / 255F;
+        return ColorHelper.getGreen(c) / 255F;
     }
 
     static float b(int c) {
-        return ColorHelper.Argb.getBlue(c) / 255F;
+        return ColorHelper.getBlue(c) / 255F;
     }
 
     static int withAlpha(int color, float alpha) {
@@ -77,7 +77,7 @@ public interface MathUtils {
     }
 
     static int mixColors(int left, int right, float progress) {
-        return ColorHelper.Argb.fromFloats(
+        return ColorHelper.fromFloats(
                 MathHelper.lerp(a(left), a(right), progress),
                 MathHelper.lerp(r(left), r(right), progress),
                 MathHelper.lerp(g(left), g(right), progress),
@@ -87,7 +87,16 @@ public interface MathUtils {
 
     @Deprecated
     static int packArgb(float a, float r, float g, float b) {
-        return ColorHelper.Argb.fromFloats(a, r, g, b);
+        return ColorHelper.fromFloats(a, r, g, b);
+    }
+
+    @Deprecated
+    static int getArgb(Vector3f rgb) {
+        return ColorHelper.getArgb(
+                ColorHelper.channelFromFloat(rgb.x()),
+                ColorHelper.channelFromFloat(rgb.y()),
+                ColorHelper.channelFromFloat(rgb.z())
+        );
     }
 
     static Vector4fc mixColorsDynamic(Vector3fc color, Vector4f colorBase, float alpha) {

@@ -24,9 +24,9 @@ public interface PSLootTableEntryType {
         });
         LootTableEvents.ALL_LOADED.register((resourceManager, registry) -> {
             extentionTableIds.forEach((base, extra) -> {
-                registry.getOrEmpty(base).ifPresent(table -> {
-                    registry.getOrEmpty(extra).ifPresent(extraTable -> {
-                        table.pools = Stream.concat(table.pools.stream(), extraTable.pools.stream()).toList();
+                registry.getEntry(base).ifPresent(table -> {
+                    registry.getEntry(extra).ifPresent(extraTable -> {
+                        table.value().pools = Stream.concat(table.value().pools.stream(), extraTable.value().pools.stream()).toList();
                     });
                 });
             });

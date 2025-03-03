@@ -18,6 +18,7 @@ import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgDrugProperties;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
+import ivorius.psychedelicraft.util.MathUtils;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
@@ -32,6 +33,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -225,13 +227,13 @@ public class DrugProperties implements NbtSerialisable {
                     && teethGrindingRate > 0
                     && random.nextFloat() * (entity.isSleeping() ? 2 : 1) < teethGrindingRate / 100F) {
                 if (!PacifierItem.consumePacifier(entity)) {
-                    entity.damage(damageOf(PSDamageTypes.TEETH_GRINDING), 1);
+                    entity.damage((ServerWorld)entity.getWorld(), damageOf(PSDamageTypes.TEETH_GRINDING), 1);
                 } else {
                     pacifierSqueakDelay = 5 + entity.getRandom().nextInt(15);
                     entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,
                             entity.getSoundCategory(),
-                            (float)entity.getRandom().nextTriangular(1, 0.2F),
-                            (float)entity.getRandom().nextTriangular(1, 0.2F)
+                            entity.getRandom().nextTriangular(1, 0.2F),
+                            entity.getRandom().nextTriangular(1, 0.2F)
                     );
                     entity.getWorld().emitGameEvent(entity, GameEvent.BLOCK_PLACE, entity.getBlockPos());
                 }
@@ -242,8 +244,8 @@ public class DrugProperties implements NbtSerialisable {
             if (pacifierSqueakDelay > 0 && --pacifierSqueakDelay == 0) {
                 entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,
                         entity.getSoundCategory(),
-                        (float)entity.getRandom().nextTriangular(1, 0.2F),
-                        (float)entity.getRandom().nextTriangular(1, 0.2F)
+                        entity.getRandom().nextTriangular(1, 0.2F),
+                        entity.getRandom().nextTriangular(1, 0.2F)
                 );
                 entity.getWorld().emitGameEvent(entity, GameEvent.BLOCK_PLACE, entity.getBlockPos());
             }
@@ -266,19 +268,19 @@ public class DrugProperties implements NbtSerialisable {
 
             if (timeBreathingSmoke > 10 && entity.getWorld().isClient) {
                 if (random.nextInt(2) == 0) {
-                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, breathSmokeColor, 1), random.nextFloat() * 0.05F + 0.1F);
+                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, MathUtils.getArgb(breathSmokeColor), 1), random.nextFloat() * 0.05F + 0.1F);
                 }
 
                 if (random.nextInt(5) == 0) {
-                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, breathSmokeColor, 2.5F), random.nextFloat() * 0.05F + 0.1F);
+                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, MathUtils.getArgb(breathSmokeColor), 2.5F), random.nextFloat() * 0.05F + 0.1F);
                 }
             }
         }
 
         float speed = getModifier(Drug.SPEED);
 
-        changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_MOVEMENT_SPEED, speed);
-        changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_ATTACK_SPEED, speed);
+        changeDrugModifierMultiply(entity, EntityAttributes.MOVEMENT_SPEED, speed);
+        changeDrugModifierMultiply(entity, EntityAttributes.ATTACK_SPEED, speed);
 
         if (dirty) {
             dirty = false;

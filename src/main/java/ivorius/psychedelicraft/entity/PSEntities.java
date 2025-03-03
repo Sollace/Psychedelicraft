@@ -5,14 +5,13 @@
 
 package ivorius.psychedelicraft.entity;
 
-import com.terraformersmc.terraform.boat.api.TerraformBoatType;
-import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.entity.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 
 /**
  * Created by lukas on 25.04.14.
@@ -36,14 +35,11 @@ public interface PSEntities {
             .build());
 
     static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
-        EntityType<T> type = builder.build();
-        return Registry.register(Registries.ENTITY_TYPE, Psychedelicraft.id(name), type);
+        var key = RegistryKey.of(RegistryKeys.ENTITY_TYPE, Psychedelicraft.id(name));
+        return Registry.register(Registries.ENTITY_TYPE, key, builder.build(key));
     }
 
     static void bootstrap() {
         PSTradeOffers.bootstrap();
-
-
-
     }
 }

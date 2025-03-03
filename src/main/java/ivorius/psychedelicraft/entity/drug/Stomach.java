@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
@@ -95,9 +96,11 @@ public class Stomach implements NbtSerialisable {
                 entity.getInventory().offerOrDrop(PSItems.BAG_O_VOMIT.getDefaultStack());
             }
         } else {
-            vomitingTicks = entity.getWorld().random.nextBetween(10, 100);
-            if (++vomitCount > 16) {
-                entity.damage(properties.damageOf(PSDamageTypes.OVER_EATING), Integer.MAX_VALUE);
+            if (entity.getWorld() instanceof ServerWorld sw) {
+                vomitingTicks = sw.random.nextBetween(10, 100);
+                if (++vomitCount > 16) {
+                    entity.damage(sw, properties.damageOf(PSDamageTypes.OVER_EATING), Integer.MAX_VALUE);
+                }
             }
         }
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 1));

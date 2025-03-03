@@ -23,7 +23,7 @@ class FeatureRegistry {
             registries.getOptional(RegistryKeys.PLACED_FEATURE).ifPresent(registry -> {
                 var lookup = registries.getOptional(RegistryKeys.CONFIGURED_FEATURE).orElseThrow();
                 PLACED_FEATURES.forEach(entry -> {
-                    Registry.register(registry, entry.key(), entry.factory().apply(lookup.getEntry(entry.configuration()).orElseThrow()));
+                    Registry.register(registry, entry.key(), entry.factory().apply(lookup.getOptional(entry.configuration()).orElseThrow()));
                 });
             });
         });

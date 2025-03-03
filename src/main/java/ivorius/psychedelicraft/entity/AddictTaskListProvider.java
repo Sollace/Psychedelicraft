@@ -60,7 +60,6 @@ public class AddictTaskListProvider {
     public static float getShakeAmount(LivingEntity entity) {
         float healthScale = 1 - (entity.getHealth() / entity.getMaxHealth());
         float shakeAmount = (float)(Math.cos(entity.age * 3.25) * Math.PI * 0.4F * (1 + healthScale * 8));
-        entity.hurtTime = Math.abs(shakeAmount) > 5F ? 1 : 0;
         return shakeAmount;
     }
 
@@ -86,7 +85,7 @@ public class AddictTaskListProvider {
             if (entity.shouldRestock()) {
                 entity.playWorkSound();
                 entity.restock();
-                entity.damage(PSDamageTypes.create(world, PSDamageTypes.OVERDOSE), 1 + (world.getRandom().nextFloat() * 5));
+                entity.damage(world, PSDamageTypes.create(world, PSDamageTypes.OVERDOSE), 1 + (world.getRandom().nextFloat() * 5));
             }
         }
     }

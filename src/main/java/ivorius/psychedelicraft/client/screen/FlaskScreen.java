@@ -10,6 +10,7 @@ import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -35,12 +36,12 @@ public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContra
         int baseX = (width - backgroundWidth) / 2;
         int baseY = (height - backgroundHeight) / 2;
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        context.drawTexture(background, baseX + 30, baseY + 20, 0, backgroundHeight, 110, 50);
+        context.drawTexture(RenderLayer::getGuiTextured, background, baseX + 30, baseY + 20, 0, backgroundHeight, 110, 50, 256, 256);
 
         drawTanks(context, baseX, baseY);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        context.drawTexture(background, baseX, baseY, 0, 0, backgroundWidth, backgroundHeight);
+        context.drawTexture(RenderLayer::getGuiTextured, background, baseX, baseY, 0, 0, backgroundWidth, backgroundHeight, 256, 256);
         drawAdditionalInfo(context, baseX, baseY, tickDelta);
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -48,11 +49,11 @@ public class FlaskScreen<T extends FlaskBlockEntity> extends AbstractFluidContra
         float inputProgress = handler.getBlockEntity().inputSlot.getProgress();
         if (inputProgress > 0 && inputProgress < 1) {
             int width = (int)(45 * inputProgress);
-            context.drawTexture(background, baseX + 20 + width, baseY + 40, 176 + width, 0, 45 - width, 16);
+            context.drawTexture(RenderLayer::getGuiTextured, background, baseX + 20 + width, baseY + 40, 176 + width, 0, 45 - width, 16, 256, 256);
         }
         float outputProgress = handler.getBlockEntity().outputSlot.getProgress();
         if (outputProgress > 0 && outputProgress < 1) {
-            context.drawTexture(background, baseX + 68, baseY + 60, 176, 17, (int)(53 * outputProgress), 20);
+            context.drawTexture(RenderLayer::getGuiTextured, background, baseX + 68, baseY + 60, 176, 17, (int)(53 * outputProgress), 20, 256, 256);
         }
 
         RenderSystem.setShaderColor(1, 1, 1, 1);

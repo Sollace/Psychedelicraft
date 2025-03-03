@@ -12,7 +12,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.ShaderProgramSetupView;
-import net.minecraft.client.gl.ShaderStage;
+import net.minecraft.client.gl.CompiledShader;
 
 public class BuiltGemoetryShader {
     private final int program;
@@ -81,12 +81,12 @@ public class BuiltGemoetryShader {
         }
 
         @Override
-        public ShaderStage getVertexShader() {
+        public CompiledShader getVertexShader() {
             return null;
         }
 
         @Override
-        public ShaderStage getFragmentShader() {
+        public CompiledShader getFragmentShader() {
             return null;
         }
 

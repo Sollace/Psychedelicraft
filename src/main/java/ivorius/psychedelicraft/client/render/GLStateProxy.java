@@ -27,13 +27,13 @@ public class GLStateProxy {
     private static final float[] resolution = new float[2];
 
     public static boolean isColorSafeMode() {
-        RenderSystem.assertOnRenderThread();
+        RenderSystem.assertOnRenderThreadOrInit();
         return (GL11.glIsEnabled(GL_BLEND) && getBlendDFactor() != GL11.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     private static int getBlendDFactor() {
         // XXXX: (Sollace) accessor to GlStateManager.BLEND.dstFactorRGB;
-        RenderSystem.assertOnRenderThread();
+        RenderSystem.assertOnRenderThreadOrInit();
         return GL14.glGetInteger(GL14.GL_BLEND_DST_RGB);
     }
 
@@ -52,7 +52,7 @@ public class GLStateProxy {
     }
 
     public static float[] getResolution() {
-        RenderSystem.assertOnRenderThread();
+        RenderSystem.assertOnRenderThreadOrInit();
         if (!resolutionSet) {
             Window window = MinecraftClient.getInstance().getWindow();
             resolution[0] = 1F / window.getFramebufferWidth();
@@ -62,17 +62,17 @@ public class GLStateProxy {
     }
 
     public static void clearResolution() {
-        RenderSystem.assertOnRenderThread();
+        RenderSystem.assertOnRenderThreadOrInit();
         resolutionSet = false;
     }
 
     public static void enableTexCoords() {
-        RenderSystem.assertOnRenderThread();
+        RenderSystem.assertOnRenderThreadOrInit();
         usesScreenTexCoords = true;
     }
 
     public static void disableScreenTexCoords() {
-        RenderSystem.assertOnRenderThread();
+        RenderSystem.assertOnRenderThreadOrInit();
         usesScreenTexCoords = false;
     }
 
@@ -81,8 +81,7 @@ public class GLStateProxy {
     }
 
     public static int getTextureId(Identifier texture) {
-        RenderSystem.assertOnRenderThread();
-        TEXURE_MANAGER.bindTexture(texture); // Allocate texture. MOJANG!
+        RenderSystem.assertOnRenderThreadOrInit();
         return TEXURE_MANAGER.getTexture(texture).getGlId();
     }
 
