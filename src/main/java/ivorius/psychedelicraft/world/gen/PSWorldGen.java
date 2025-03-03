@@ -141,7 +141,7 @@ public class PSWorldGen {
         });
         FeatureRegistry.registerPlacedFeature(DENSE_JUNIPER_TREE_PLACEMENT, JUNIPER_TREE_CONFIG, config -> {
             return new PlacedFeature(config, VegetationPlacedFeatures.treeModifiersWithWouldSurvive(
-                    PlacedFeatures.createCountExtraModifier(4, 0.05F, 2),
+                    PlacedFeatures.createCountExtraModifier(3, 0.05F, 2),
                     PSBlocks.JUNIPER_SAPLING)
             );
         });
