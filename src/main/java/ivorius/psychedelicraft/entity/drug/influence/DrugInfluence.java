@@ -36,18 +36,18 @@ public class DrugInfluence {
     public static final Codec<DrugInfluence> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             DrugType.REGISTRY.getCodec().fieldOf("drugType").forGetter(DrugInfluence::getDrugType),
             Codec.INT.fieldOf("delay").forGetter(DrugInfluence::getDelay),
-            Codec.DOUBLE.fieldOf("influenceSpeed").forGetter(DrugInfluence::getInfluenceSpeed),
-            Codec.DOUBLE.fieldOf("influenceSpeedPlus").forGetter(DrugInfluence::getInfluenceSpeedPlus),
-            Codec.DOUBLE.fieldOf("maxInfluence").forGetter(DrugInfluence::getMaxInfluence),
+            Codec.DOUBLE.fieldOf("influenceSpeed").forGetter(DrugInfluence::getInfluenceDelta),
+            Codec.DOUBLE.fieldOf("influenceSpeedPlus").forGetter(DrugInfluence::getBaseIncrease),
+            Codec.DOUBLE.fieldOf("maxInfluence").forGetter(DrugInfluence::getTargetInfluence),
             COLOR_CODEC.optionalFieldOf("color").forGetter(DrugInfluence::getColor)
     ).apply(instance, DrugInfluence::new));
     public static final Codec<List<DrugInfluence>> LIST_CODEC = CODEC.listOf();
     public static final PacketCodec<RegistryByteBuf, DrugInfluence> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.registryValue(DrugType.REGISTRY.getKey()), DrugInfluence::getDrugType,
             PacketCodecs.INTEGER, DrugInfluence::getDelay,
-            PacketCodecs.DOUBLE, DrugInfluence::getInfluenceSpeed,
-            PacketCodecs.DOUBLE, DrugInfluence::getInfluenceSpeedPlus,
-            PacketCodecs.DOUBLE, DrugInfluence::getMaxInfluence,
+            PacketCodecs.DOUBLE, DrugInfluence::getInfluenceDelta,
+            PacketCodecs.DOUBLE, DrugInfluence::getBaseIncrease,
+            PacketCodecs.DOUBLE, DrugInfluence::getTargetInfluence,
             COLOR_PACKET_CODEC, DrugInfluence::getColor,
             DrugInfluence::new
     );
@@ -56,27 +56,27 @@ public class DrugInfluence {
 
     protected int delay;
 
-    protected double influenceSpeed;
-    protected double influenceSpeedPlus;
+    protected double influenceDelta;
+    protected double baseIncrease;
 
-    protected double maxInfluence;
+    protected double targetInfluence;
 
     private final Optional<Vector3f> color;
 
-    public DrugInfluence(DrugType<?> drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence) {
-        this(drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence, Optional.empty());
+    public DrugInfluence(DrugType<?> drugType, int delay, double factor, double base, double target) {
+        this(drugType, delay, factor, base, target, Optional.empty());
     }
 
-    public DrugInfluence(DrugType<?> drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, Vector3f color) {
-        this(drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence, Optional.of(color));
+    public DrugInfluence(DrugType<?> drugType, int delay, double factor, double base, double target, Vector3f color) {
+        this(drugType, delay, factor, base, target, Optional.of(color));
     }
 
-    private DrugInfluence(DrugType<?> drugType, int delay, double influenceSpeed, double influenceSpeedPlus, double maxInfluence, Optional<Vector3f> color) {
+    private DrugInfluence(DrugType<?> drugType, int delay, double factor, double base, double target, Optional<Vector3f> color) {
         this.drugType = drugType;
         this.delay = delay;
-        this.influenceSpeed = influenceSpeed;
-        this.influenceSpeedPlus = influenceSpeedPlus;
-        this.maxInfluence = maxInfluence;
+        this.influenceDelta = factor;
+        this.baseIncrease = base;
+        this.targetInfluence = target;
         this.color = color;
     }
 
@@ -92,20 +92,24 @@ public class DrugInfluence {
         return delay;
     }
 
-    public double getInfluenceSpeed() {
-        return influenceSpeed;
+    public double getInfluenceDelta() {
+        return influenceDelta;
     }
 
-    public double getInfluenceSpeedPlus() {
-        return influenceSpeedPlus;
+    public double getBaseIncrease() {
+        return baseIncrease;
     }
 
-    public double getMaxInfluence() {
-        return maxInfluence;
+    public double getTargetInfluence() {
+        return targetInfluence;
     }
 
     public Optional<Vector3f> getColor() {
         return color;
+    }
+
+    public double getCurrentStrength() {
+        return Math.min(targetInfluence, baseIncrease + targetInfluence * influenceDelta);
     }
 
     public boolean update(DrugProperties drugProperties) {
@@ -113,11 +117,10 @@ public class DrugInfluence {
             delay--;
         }
 
-        if (delay == 0 && maxInfluence > 0) {
-            double addition = Math.min(maxInfluence, influenceSpeedPlus + maxInfluence * influenceSpeed);
-
+        if (delay == 0 && targetInfluence > 0) {
+            double addition = getCurrentStrength();
             addToDrug(drugProperties, addition);
-            maxInfluence -= addition;
+            targetInfluence -= addition;
         }
 
         return isDone();
@@ -133,16 +136,16 @@ public class DrugInfluence {
     }
 
     public boolean isDone() {
-        return maxInfluence <= 0.0;
+        return targetInfluence <= 0.0;
     }
 
     public DrugInfluence copyWithMaximum(double maxInfluence) {
-        return new DrugInfluence(drugType, delay, influenceSpeed, influenceSpeedPlus, maxInfluence, color);
+        return new DrugInfluence(drugType, delay, influenceDelta, baseIncrease, maxInfluence, color);
     }
 
     @Override
     public final DrugInfluence clone() {
-        return copyWithMaximum(maxInfluence);
+        return copyWithMaximum(targetInfluence);
     }
 
     public interface DelayType {
