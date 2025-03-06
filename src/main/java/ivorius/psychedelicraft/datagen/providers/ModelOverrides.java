@@ -7,10 +7,10 @@ import java.util.function.Function;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.minecraft.data.client.ItemModelGenerator;
-import net.minecraft.data.client.Model;
-import net.minecraft.data.client.ModelIds;
-import net.minecraft.data.client.TextureMap;
+import net.minecraft.client.data.ItemModelGenerator;
+import net.minecraft.client.data.Model;
+import net.minecraft.client.data.ModelIds;
+import net.minecraft.client.data.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -60,11 +60,11 @@ public final class ModelOverrides {
     }
 
     public ModelOverrides addOverride(Identifier modelId, TextureMap textures, String key, float value) {
-        return addOverride(key, value, generator -> model.upload(modelId, textures, generator.writer));
+        return addOverride(key, value, generator -> model.upload(modelId, textures, generator.modelCollector));
     }
 
     public ModelOverrides addOverride(Identifier modelId, Model model, TextureMap textures, String key, float value) {
-        return addOverride(key, value, generator -> model.upload(modelId, textures, generator.writer));
+        return addOverride(key, value, generator -> model.upload(modelId, textures, generator.modelCollector));
     }
 
 
@@ -91,7 +91,7 @@ public final class ModelOverrides {
                 .toList();
 
         return model.upload(id, textures, (a, jsonSupplier) -> {
-            generator.writer.accept(a, () -> Util.make(jsonSupplier.get(), json -> {
+            generator.modelCollector.accept(a, () -> Util.make(jsonSupplier.get(), json -> {
                 json.getAsJsonObject().add("overrides", Util.make(new JsonArray(), array -> {
                     overrides.forEach(override -> {
                         array.add(writeOverride(override.getLeft(), override.getRight(), new JsonObject()));

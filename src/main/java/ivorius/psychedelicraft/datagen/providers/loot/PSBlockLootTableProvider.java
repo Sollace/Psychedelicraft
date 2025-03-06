@@ -50,8 +50,11 @@ import net.minecraft.util.Util;
 public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
     private ConditionalLootFunction.Builder<?> fortuneBonus;
 
+    private final CompletableFuture<WrapperLookup> registryLookup;
+
     public PSBlockLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<WrapperLookup> registryLookup) {
         super(dataOutput, registryLookup);
+        this.registryLookup = registryLookup;
     }
 
     @Override
@@ -136,14 +139,17 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
 
         // check for missing blocks
         Registries.BLOCK.forEach(block -> {
-            var key = block.getLootTableKey();
-            if (key.getValue().getNamespace().equalsIgnoreCase("psychedelicraft") && !lootTables.containsKey(key)) {
-                Psychedelicraft.LOGGER.warn("No loot table provided for " + key);
-            }
-            if (block instanceof BurdenedLatticeBlock b) {
-                if (!lootTables.containsKey(b.getFarmingLootTableKey())) {
+            block.getLootTableKey().ifPresent(key -> {
+                if (key.getValue().getNamespace().equalsIgnoreCase("psychedelicraft") && !lootTables.containsKey(key)) {
                     Psychedelicraft.LOGGER.warn("No loot table provided for " + key);
                 }
+            });
+            if (block instanceof BurdenedLatticeBlock b) {
+                b.getFarmingLootTableKey().ifPresent(key -> {
+                    if (!lootTables.containsKey(key)) {
+                        Psychedelicraft.LOGGER.warn("No loot table provided for " + key);
+                    }
+                });
             }
         });
     }
@@ -280,7 +286,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
     }
 
     public void addLatticeShearingDrops(Block block, Item product) {
-        this.lootTables.put(((BurdenedLatticeBlock)block).getFarmingLootTableKey(), LootTable.builder()
+        this.lootTables.put(((BurdenedLatticeBlock)block).getFarmingLootTableKey().orElseThrow(), LootTable.builder()
                 .pool(LootPool.builder()
                         .rolls(ConstantLootNumberProvider.create(1.0F))
                         .with(addSurvivesExplosionCondition(product, ItemEntry.builder(product))
@@ -293,7 +299,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
     }
 
     private RegistryEntry<Enchantment> getEnchantment(RegistryKey<Enchantment> key) {
-        return registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(key);
+        return registryLookup.getNow(null).getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(key);
     }
 
     @SuppressWarnings("deprecation")

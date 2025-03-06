@@ -15,22 +15,22 @@ import ivorius.psychedelicraft.block.GlassTubeBlock.IODirection;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.data.client.BlockStateModelGenerator;
-import net.minecraft.data.client.BlockStateVariant;
-import net.minecraft.data.client.BlockStateVariantMap;
-import net.minecraft.data.client.Model;
-import net.minecraft.data.client.ModelIds;
-import net.minecraft.data.client.Models;
-import net.minecraft.data.client.MultipartBlockStateSupplier;
-import net.minecraft.data.client.TextureKey;
-import net.minecraft.data.client.TextureMap;
-import net.minecraft.data.client.TexturedModel;
-import net.minecraft.data.client.VariantSettings;
-import net.minecraft.data.client.VariantSettings.Rotation;
-import net.minecraft.data.client.VariantsBlockStateSupplier;
-import net.minecraft.data.client.When;
-import net.minecraft.data.client.When.PropertyCondition;
-import net.minecraft.data.client.BlockStateModelGenerator.TintType;
+import net.minecraft.client.data.BlockStateModelGenerator;
+import net.minecraft.client.data.BlockStateModelGenerator.CrossType;
+import net.minecraft.client.data.BlockStateVariant;
+import net.minecraft.client.data.BlockStateVariantMap;
+import net.minecraft.client.data.Model;
+import net.minecraft.client.data.ModelIds;
+import net.minecraft.client.data.Models;
+import net.minecraft.client.data.MultipartBlockStateSupplier;
+import net.minecraft.client.data.TextureKey;
+import net.minecraft.client.data.TextureMap;
+import net.minecraft.client.data.TexturedModel;
+import net.minecraft.client.data.VariantSettings;
+import net.minecraft.client.data.VariantSettings.Rotation;
+import net.minecraft.client.data.VariantsBlockStateSupplier;
+import net.minecraft.client.data.When;
+import net.minecraft.client.data.When.PropertyCondition;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.property.EnumProperty;
@@ -54,6 +54,9 @@ public interface BlockModels {
     Model DRYING_TABLE_TEMPLATE = block("drying_table_template", TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP);
     Model BUNSEN_BURNER = block("bunsen_burner", TextureKey.BOTTOM);
 
+    TexturedModel.Factory VAT = TexturedModel.makeFactory(TextureMap::all, VAT_TEMPLATE);
+    TexturedModel.Factory DRYING_TABLE = TexturedModel.makeFactory(block -> TextureMap.sideTopBottom(block), BlockModels.DRYING_TABLE_TEMPLATE);
+
     static Model block(String parent, TextureKey ... requiredTextureKeys) {
         return new Model(Optional.of(Psychedelicraft.id("block/" + parent)), Optional.empty(), requiredTextureKeys);
     }
@@ -70,15 +73,14 @@ public interface BlockModels {
         generator.registerCubeAllModelTexturePool(family.getBaseBlock()).family(family);
         generator.registerHangingSign(strippedLog, hangingSign, wallHangingSign);
         generator.registerSingleton(leaves, TexturedModel.LEAVES);
-        generator.registerFlowerPotPlant(sapling, pottedSapling, TintType.NOT_TINTED);
+        generator.registerFlowerPotPlant(sapling, pottedSapling, CrossType.NOT_TINTED);
     }
 
     static void registerBarrel(BlockStateModelGenerator generator, Block block) {
         Identifier planksId = Registries.BLOCK.getId(block).withPath(p -> p.replace("_barrel", "_planks"));
-        generator.registerBuiltin(block, Registries.BLOCK.getOrEmpty(planksId).or(() -> {
-            return Registries.BLOCK.getOrEmpty(Identifier.ofVanilla(planksId.getPath()));
-        }).orElse(Blocks.OAK_PLANKS)).includeWithoutItem(block);
-        generator.registerItemModel(block.asItem());
+        generator.registerBuiltinWithParticle(block, Registries.BLOCK.getOptionalValue(planksId).or(() -> {
+            return Registries.BLOCK.getOptionalValue(Identifier.ofVanilla(planksId.getPath()));
+        }).orElse(Blocks.OAK_PLANKS));
     }
 
     static BiConsumer<SimpleFluid, String> createFluidCollector(BlockStateModelGenerator generator) {
@@ -196,7 +198,7 @@ public interface BlockModels {
         );
     }
 
-    static void registerCropPot(BlockStateModelGenerator generator, Block plantBlock, Block flowerPotBlock, BlockStateModelGenerator.TintType tintType, String suffix) {
+    static void registerCropPot(BlockStateModelGenerator generator, Block plantBlock, Block flowerPotBlock, CrossType tintType, String suffix) {
         TextureMap textureMap = TextureMap.plant(TextureMap.getSubId(plantBlock, suffix));
         Identifier identifier = tintType.getFlowerPotCrossModel().upload(flowerPotBlock, textureMap, generator.modelCollector);
         generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(flowerPotBlock, identifier));
@@ -246,11 +248,11 @@ public interface BlockModels {
 
     static void registerVat(BlockStateModelGenerator generator, Block core, Block edge, Block materialBase) {
         generator.registerBuiltinWithParticle(edge, ModelIds.getBlockModelId(materialBase));
-        generator.registerSingleton(core, TextureMap.all(core), BlockModels.VAT_TEMPLATE);
+        generator.registerSingleton(core, VAT);
     }
 
     static void registerDryingTable(BlockStateModelGenerator generator, Block block) {
-        generator.registerSingleton(block, TextureMap.sideTopBottom(block), BlockModels.DRYING_TABLE_TEMPLATE);
+        generator.registerSingleton(block, DRYING_TABLE);
         generator.registerParentedItemModel(block, ModelIds.getBlockModelId(block));
     }
 

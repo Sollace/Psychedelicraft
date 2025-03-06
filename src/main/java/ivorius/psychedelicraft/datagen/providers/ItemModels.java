@@ -5,12 +5,12 @@ import java.util.Map;
 import java.util.Optional;
 import ivorius.psychedelicraft.Psychedelicraft;
 import net.minecraft.block.Block;
-import net.minecraft.data.client.ItemModelGenerator;
-import net.minecraft.data.client.Model;
-import net.minecraft.data.client.ModelIds;
-import net.minecraft.data.client.Models;
-import net.minecraft.data.client.TextureKey;
-import net.minecraft.data.client.TextureMap;
+import net.minecraft.client.data.ItemModelGenerator;
+import net.minecraft.client.data.Model;
+import net.minecraft.client.data.ModelIds;
+import net.minecraft.client.data.Models;
+import net.minecraft.client.data.TextureKey;
+import net.minecraft.client.data.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -44,9 +44,9 @@ public interface ItemModels {
         var filledTextures = TextureMap.layer0(TextureMap.getSubId(item, "_filled"));
         ModelOverrides.of(SMOKEABLE_TEMPLATE)
             .addOverride(Map.of("psychedelicraft:using", 0F, "psychedelicraft:filled", 1F),
-                    g -> SMOKEABLE_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled"), filledTextures, g.writer))
+                    g -> SMOKEABLE_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled"), filledTextures, g.modelCollector))
             .addOverride(Map.of("psychedelicraft:using", 1F, "psychedelicraft:filled", 1F),
-                    g -> SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled_using"), filledTextures, g.writer))
+                    g -> SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled_using"), filledTextures, g.modelCollector))
             .upload(item, itemModelGenerator);
     }
 
@@ -55,18 +55,18 @@ public interface ItemModels {
         var overlay = TextureMap.getSubId(item, "_overlay");
         ModelOverrides.of(Models.GENERATED_THREE_LAYERS)
             .addOverride(Map.of("psychedelicraft:flying", 0F, "psychedelicraft:filled", 1F),
-                    g -> Models.GENERATED_THREE_LAYERS.upload(ModelIds.getItemSubModelId(item, "_filled"), TextureMap.layered(base, TextureMap.getSubId(item, "_liquid"), overlay), g.writer))
+                    g -> Models.GENERATED_THREE_LAYERS.upload(ModelIds.getItemSubModelId(item, "_filled"), TextureMap.layered(base, TextureMap.getSubId(item, "_liquid"), overlay), g.modelCollector))
             .addOverride(Map.of("psychedelicraft:flying", 0F, "psychedelicraft:filled_with_lava", 1F),
-                    g -> Models.GENERATED_THREE_LAYERS.upload(ModelIds.getItemSubModelId(item, "_filled_lava"), TextureMap.layered(base, TextureMap.getSubId(item, "_liquid_lava"), overlay), g.writer))
+                    g -> Models.GENERATED_THREE_LAYERS.upload(ModelIds.getItemSubModelId(item, "_filled_lava"), TextureMap.layered(base, TextureMap.getSubId(item, "_liquid_lava"), overlay), g.modelCollector))
             .addOverride(Map.of("psychedelicraft:flying", 1F),
-                    g -> Models.GENERATED.upload(ModelIds.getItemSubModelId(item, "_thrown"), TextureMap.layer0(TextureMap.getSubId(item, "_thrown")), g.writer))
+                    g -> Models.GENERATED.upload(ModelIds.getItemSubModelId(item, "_thrown"), TextureMap.layer0(TextureMap.getSubId(item, "_thrown")), g.modelCollector))
             .upload(ModelIds.getItemModelId(item), TextureMap.layered(base, overlay, overlay), itemModelGenerator);
     }
 
     static void registerSmokeable(ItemModelGenerator itemModelGenerator, Item item) {
         ModelOverrides.of(SMOKEABLE_TEMPLATE)
             .addOverride("psychedelicraft:using", 1F,
-                    g -> SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_using"), TextureMap.layer0(TextureMap.getSubId(item, "_using")), g.writer))
+                    g -> SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_using"), TextureMap.layer0(TextureMap.getSubId(item, "_using")), g.modelCollector))
             .upload(item, itemModelGenerator);
     }
 
@@ -75,7 +75,7 @@ public interface ItemModels {
             .addOverride("psychedelicraft:using", 1F, generator -> SMOKEABLE_USING_TEMPLATE.upload(
                     ModelIds.getItemSubModelId(item, "_using"),
                     TextureMap.layer0(TextureMap.getId(item)),
-                    itemModelGenerator.writer)
+                    itemModelGenerator.modelCollector)
             ).upload(item, itemModelGenerator);
     }
 
@@ -93,7 +93,7 @@ public interface ItemModels {
                 ), generator -> (using ? SMOKEABLE_USING_TEMPLATE : SMOKEABLE_TEMPLATE).upload(
                             ModelIds.getItemSubModelId(item, name),
                             TextureMap.layer0(TextureMap.getSubId(item, name)),
-                            itemModelGenerator.writer));
+                            itemModelGenerator.modelCollector));
             }
         }
 
@@ -106,7 +106,7 @@ public interface ItemModels {
             .addUniform("psychedelicraft:age", 0.1F, 0.3F, 0.1F, (index, value) -> {
                 return CROP_LATTICE_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_stage" + index), new TextureMap()
                         .put(LATTICE, TextureMap.getId(lattice))
-                        .put(TextureKey.CROP, TextureMap.getSubId(crop, "_stage" + index)), itemModelGenerator.writer);
+                        .put(TextureKey.CROP, TextureMap.getSubId(crop, "_stage" + index)), itemModelGenerator.modelCollector);
             })
             .upload(ModelIds.getItemModelId(item), new TextureMap()
                     .put(LATTICE, TextureMap.getId(lattice))
@@ -116,13 +116,13 @@ public interface ItemModels {
     static Identifier registerLayered(ItemModelGenerator itemModelGenerator, Item item, String overlay1) {
         return Models.GENERATED_TWO_LAYERS.upload(ModelIds.getItemModelId(item), TextureMap.layered(
                 TextureMap.getId(item), TextureMap.getSubId(item, overlay1)
-        ), itemModelGenerator.writer);
+        ), itemModelGenerator.modelCollector);
     }
 
     static Identifier registerLayered(ItemModelGenerator itemModelGenerator, Item item, String overlay1, String overlay2) {
         return Models.GENERATED_TWO_LAYERS.upload(ModelIds.getItemModelId(item), TextureMap.layered(
                 TextureMap.getId(item), TextureMap.getSubId(item, overlay1), TextureMap.getSubId(item, overlay2)
-        ), itemModelGenerator.writer);
+        ), itemModelGenerator.modelCollector);
     }
 
     static void registerPaperBag(ItemModelGenerator itemModelGenerator, Item item) {

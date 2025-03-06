@@ -16,19 +16,19 @@ import ivorius.psychedelicraft.block.VineStemBlock;
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
+import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.Blocks;
-import net.minecraft.data.client.BlockStateModelGenerator;
-import net.minecraft.data.client.BlockStateVariant;
-import net.minecraft.data.client.BlockStateModelGenerator.TintType;
-import net.minecraft.data.client.ItemModelGenerator;
-import net.minecraft.data.client.ModelIds;
-import net.minecraft.data.client.Models;
-import net.minecraft.data.client.TextureMap;
-import net.minecraft.data.client.TexturedModel;
-import net.minecraft.data.client.VariantSettings;
-import net.minecraft.data.client.VariantsBlockStateSupplier;
+import net.minecraft.client.data.BlockStateModelGenerator;
+import net.minecraft.client.data.BlockStateModelGenerator.CrossType;
+import net.minecraft.client.data.BlockStateVariant;
+import net.minecraft.client.data.ItemModelGenerator;
+import net.minecraft.client.data.ModelIds;
+import net.minecraft.client.data.Models;
+import net.minecraft.client.data.TextureMap;
+import net.minecraft.client.data.TexturedModel;
+import net.minecraft.client.data.VariantSettings;
+import net.minecraft.client.data.VariantsBlockStateSupplier;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -71,7 +71,7 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerDistillery(generator, PSBlocks.DISTILLERY);
         BlockModels.registerTubing(generator, PSBlocks.GLASS_TUBE);
 
-        generator.registerBuiltin(PSBlocks.RIFT_JAR, Blocks.GLASS).includeWithoutItem(PSBlocks.RIFT_JAR);
+        generator.registerBuiltinWithParticle(PSBlocks.RIFT_JAR, Blocks.GLASS);
 
         generator.registerBuiltinWithParticle(PSBlocks.PEYOTE, ModelIds.getBlockModelId(PSBlocks.PEYOTE));
         generator.registerBuiltinWithParticle(PSBlocks.PLACED_DRINK, ModelIds.getBlockModelId(Blocks.STONE));
@@ -96,12 +96,12 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerLatticeCrop(generator, PSBlocks.LATTICE, PSBlocks.WINE_GRAPE_LATTICE, BurdenedLatticeBlock.AGE, 0, 1, 2, 3);
         BlockModels.registerLatticeCrop(generator, PSBlocks.LATTICE, PSBlocks.MORNING_GLORY_LATTICE, BurdenedLatticeBlock.AGE, 0, 1, 2, 3);
 
-        BlockModels.registerCropPot(generator, PSBlocks.CANNABIS, PSBlocks.POTTED_CANNABIS, TintType.NOT_TINTED, "_stage3");
-        BlockModels.registerCropPot(generator, PSBlocks.COCA, PSBlocks.POTTED_COCA, TintType.NOT_TINTED, "_stage3");
-        BlockModels.registerCropPot(generator, PSBlocks.COFFEA, PSBlocks.POTTED_COFFEA, TintType.NOT_TINTED, "_top_stage3");
-        BlockModels.registerCropPot(generator, PSBlocks.HOP, PSBlocks.POTTED_HOP, TintType.NOT_TINTED, "_stage3");
-        BlockModels.registerCropPot(generator, PSBlocks.MORNING_GLORY, PSBlocks.POTTED_MORNING_GLORY, TintType.NOT_TINTED, "_stage3");
-        BlockModels.registerCropPot(generator, PSBlocks.TOBACCO, PSBlocks.POTTED_TOBACCO, TintType.NOT_TINTED, "_top_stage3");
+        BlockModels.registerCropPot(generator, PSBlocks.CANNABIS, PSBlocks.POTTED_CANNABIS, CrossType.NOT_TINTED, "_stage3");
+        BlockModels.registerCropPot(generator, PSBlocks.COCA, PSBlocks.POTTED_COCA, CrossType.NOT_TINTED, "_stage3");
+        BlockModels.registerCropPot(generator, PSBlocks.COFFEA, PSBlocks.POTTED_COFFEA, CrossType.NOT_TINTED, "_top_stage3");
+        BlockModels.registerCropPot(generator, PSBlocks.HOP, PSBlocks.POTTED_HOP, CrossType.NOT_TINTED, "_stage3");
+        BlockModels.registerCropPot(generator, PSBlocks.MORNING_GLORY, PSBlocks.POTTED_MORNING_GLORY, CrossType.NOT_TINTED, "_stage3");
+        BlockModels.registerCropPot(generator, PSBlocks.TOBACCO, PSBlocks.POTTED_TOBACCO, CrossType.NOT_TINTED, "_top_stage3");
 
         BlockModels.registerVat(generator, PSBlocks.MASH_TUB, PSBlocks.MASH_TUB_EDGE, Blocks.OAK_PLANKS);
 
@@ -200,11 +200,11 @@ public class PSModelProvider extends FabricModelProvider {
         ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_BOWL, Items.BOWL, Models.GENERATED.upload(
                 Psychedelicraft.id("item/lava_bowl"),
                 TextureMap.layer0(Psychedelicraft.id("item/lava_bowl")),
-                generator.writer));
+                generator.modelCollector));
         ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_GLASS_BOTTLE, Items.POTION, Models.GENERATED.upload(
                 Psychedelicraft.id("item/lava_bottle"),
                 TextureMap.layer0(Psychedelicraft.id("item/lava_bottle")),
-                generator.writer));
+                generator.modelCollector));
 
         List.of(PSItems.WINE_GRAPE_LATTICE, PSItems.MORNING_GLORY_LATTICE).forEach(item -> {
             ItemModels.registerPlantLattice(generator, PSBlocks.LATTICE, item);

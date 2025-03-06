@@ -25,8 +25,8 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.BoneMealTask;
 import net.minecraft.entity.ai.brain.task.FindInteractionTargetTask;
-import net.minecraft.entity.ai.brain.task.GoToIfNearbyTask;
-import net.minecraft.entity.ai.brain.task.GoToNearbyPositionTask;
+import net.minecraft.entity.ai.brain.task.GoAroundTask;
+import net.minecraft.entity.ai.brain.task.GoToPosTask;
 import net.minecraft.entity.ai.brain.task.GoToSecondaryPositionTask;
 import net.minecraft.entity.ai.brain.task.HoldTradeOffersTask;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
@@ -54,8 +54,8 @@ public class DealerTaskListProvider {
                 busyFollowTasks,
                 Pair.of(5, new RandomTask<>(ImmutableList.of(
                         Pair.of(new DealerWorkTask(), 7),
-                        Pair.of(GoToIfNearbyTask.create(MemoryModuleType.JOB_SITE, 0.4f, 4), 2),
-                        Pair.of(GoToNearbyPositionTask.create(MemoryModuleType.JOB_SITE, 0.4f, 1, 10), 5),
+                        Pair.of(GoAroundTask.create(MemoryModuleType.JOB_SITE, 0.4f, 4), 2),
+                        Pair.of(GoToPosTask.create(MemoryModuleType.JOB_SITE, 0.4f, 1, 10), 5),
                         Pair.of(GoToSecondaryPositionTask.create(MemoryModuleType.SECONDARY_JOB_SITE, speed, 1, 6, MemoryModuleType.JOB_SITE), 5),
                         Pair.of(new DealerVillagerTask(), 2),
                         Pair.of(new BoneMealTask(), 4))

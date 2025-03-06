@@ -11,8 +11,6 @@ import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.ShaderProgramSetupView;
-import net.minecraft.client.gl.CompiledShader;
 
 public class BuiltGemoetryShader {
     private final int program;
@@ -59,7 +57,7 @@ public class BuiltGemoetryShader {
         void attachUniformData(@Nullable BuiltGemoetryShader shader);
     }
 
-    public static class Builder implements ShaderProgramSetupView {
+    public static class Builder {
         private final List<GlUniform> uniforms = new ArrayList<>();
         private final List<Sampler> samplers = new ArrayList<>();
 
@@ -70,28 +68,6 @@ public class BuiltGemoetryShader {
             this.program = program;
             this.lastFragmentId = lastFragmentId;
         }
-
-        @Override
-        public int getGlRef() {
-            return program;
-        }
-
-        @Override
-        public void markUniformsDirty() {
-        }
-
-        @Override
-        public CompiledShader getVertexShader() {
-            return null;
-        }
-
-        @Override
-        public CompiledShader getFragmentShader() {
-            return null;
-        }
-
-        @Override
-        public void attachReferencedShaders() {}
 
         void addSampler(String name, Supplier<Integer> supplier) {
             samplers.add(new Sampler(++lastFragmentId, name, supplier));
