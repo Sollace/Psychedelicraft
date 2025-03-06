@@ -8,8 +8,9 @@ import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -29,25 +30,28 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
             Codec.STRING.optionalFieldOf("group", "").forGetter(ChangeRecepticalRecipe::getGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ChangeRecepticalRecipe::getCategory),
             ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
-            RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ChangeRecepticalRecipe::getIngredients)
+            Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(recipe -> recipe.ingredients)
     ).apply(instance, ChangeRecepticalRecipe::new));
     public static final PacketCodec<RegistryByteBuf, ChangeRecepticalRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, ChangeRecepticalRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ChangeRecepticalRecipe::getCategory,
             ItemStack.PACKET_CODEC, recipe -> recipe.output,
-            RecipeUtils.INGREDIENTS_PACKET_CODEC, ChangeRecepticalRecipe::getIngredients,
+            Ingredient.PACKET_CODEC.collect(PacketCodecs.toList()), recipe -> recipe.ingredients,
             ChangeRecepticalRecipe::new
     );
 
     private final ItemStack output;
+    private final List<Ingredient> ingredients;
 
-    public ChangeRecepticalRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
+    public ChangeRecepticalRecipe(String group, CraftingRecipeCategory category, ItemStack output, List<Ingredient> input) {
         super(group, category, output, input);
+        this.ingredients = input;
         this.output = output;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer getSerializer() {
         return PSRecipes.CHANGE_RECEPTICAL;
     }
 
@@ -57,7 +61,7 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        return RecipeUtils.copyInputFluidToResult(getResult(registries).copy(), inventory.getStacks());
+    public ItemStack craft(CraftingRecipeInput input, WrapperLookup registries) {
+        return RecipeUtils.copyInputFluidToResult(super.craft(input, registries), input.getStacks());
     }
 }

@@ -36,9 +36,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Unit;
 import net.minecraft.util.hit.BlockHitResult;
@@ -49,7 +49,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.block.WireOrientation;
 
 public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     public static final MapCodec<BurnerBlock> CODEC = createCodec(BurnerBlock::new);
@@ -104,7 +105,7 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (stack.isIn(ItemTags.CREEPER_IGNITERS) && state.get(LIT)) {
             SoundEvent sound = stack.isOf(Items.FIRE_CHARGE) ? SoundEvents.ITEM_FIRECHARGE_USE : SoundEvents.ITEM_FLINTANDSTEEL_USE;
             world.playSound(player, pos, sound, SoundCategory.BLOCKS, 1, world.random.nextFloat() * 0.4F + 0.8F);
@@ -116,18 +117,18 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
                 }
                 world.setBlockState(pos, state.cycle(LIT));
             }
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
         if (world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER).filter(data -> data.interact(stack, player, hand, hit.getSide())).isPresent()) {
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     }
 
     @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, WireOrientation orientation, boolean notify) {
         boolean powered = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
         if (powered != state.get(LIT)) {
             world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1, world.random.nextFloat() * 0.4F + 0.8F);
@@ -136,7 +137,7 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
-    public boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+    public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
         return input && direction == Direction.UP;
     }
 
@@ -158,8 +159,8 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
 
     @Override
     protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (state.get(LIT) && !entity.isSneaking() && entity.age % 10 == 0 && entity.isSupportedBy(pos)) {
-            entity.damage(entity.getDamageSources().inFire(), 1);
+        if (world instanceof ServerWorld sw && state.get(LIT) && !entity.isSneaking() && entity.age % 10 == 0 && entity.isSupportedBy(pos)) {
+            entity.damage(sw, entity.getDamageSources().inFire(), 1);
         }
     }
 

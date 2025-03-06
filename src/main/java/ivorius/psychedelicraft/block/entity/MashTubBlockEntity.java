@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
+import com.mojang.datafixers.util.Either;
 
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.block.MashTubBlock;
@@ -23,7 +24,6 @@ import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.ItemMound;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
-import ivorius.psychedelicraft.util.MathUtils;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
@@ -34,14 +34,17 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -83,9 +86,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             Box box = Box.of(center, 1.5, 0.5, 1.5);
             for (ItemEntity item : world.getEntitiesByClass(ItemEntity.class, box, EntityPredicates.VALID_ENTITY)) {
                 ItemStack stack = item.getStack();
-                if (isValidIngredient(stack)) {
+                if (isValidIngredient(world, stack)) {
                     suppliedIngredients.addStack(stack);
-                    beginStewing();
+                    beginStewing(world);
                     markForUpdate();
                     spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
                     getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
@@ -95,7 +98,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
             super.tick(world);
         }
-        currentStew = currentStew.filter(Stew::tick);
+        currentStew = currentStew.filter(stew -> stew.tick(world));
     }
 
     @Override
@@ -126,14 +129,14 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
     }
 
-    public TypedActionResult<ItemStack> interactWithItem(ItemStack stack) {
+    public Either<ItemStack, ActionResult> interactWithItem(ItemStack stack) {
 
         if (!currentStew.isEmpty()) {
-            return TypedActionResult.fail(stack);
+            return Either.right(ActionResult.FAIL);
         }
 
         if (getWorld().isClient) {
-            return TypedActionResult.success(stack);
+            return Either.right(ActionResult.SUCCESS);
         }
 
         if (FluidCapacity.get(stack) > 0) {
@@ -143,41 +146,39 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             if (!t.fluids().isEmpty()) {
                 if (tank.deposit(t, t.capacity()) > 0) {
                     getWorld().playSound(null, getPos(), FluidVariantAttributes.getEmptySound(variant), SoundCategory.BLOCKS, 1, 1);
-                    return TypedActionResult.success(t.toItemStack());
+                    return Either.left(t.toItemStack());
                 }
             } else {
                 if (tank.withdraw(t, t.capacity()) > 0) {
                     getWorld().playSound(null, getPos(), FluidVariantAttributes.getFillSound(variant), SoundCategory.BLOCKS, 1, 1);
-                    return TypedActionResult.success(t.toItemStack());
+                    return Either.left(t.toItemStack());
                 }
             }
 
-            return TypedActionResult.fail(stack);
+            return Either.right(ActionResult.FAIL);
         }
 
-        if (isValidIngredient(stack)) {
+        if (world instanceof ServerWorld sw && isValidIngredient(sw, stack)) {
             ItemStack consumed = stack.split(1);
             suppliedIngredients.add(consumed.getItem(), 1);
-            beginStewing();
+            beginStewing(sw);
             markForUpdate();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
             getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
-            return TypedActionResult.success(stack);
+            return Either.left(stack);
         }
 
-        return TypedActionResult.pass(stack);
+        return Either.right(ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
     }
 
-    public boolean isValidIngredient(ItemStack stack) {
+    public boolean isValidIngredient(ServerWorld world, ItemStack stack) {
         return FluidCapacity.get(stack) == 0
             && (world.getRecipeManager()
-                .listAllOfType(PSRecipes.MASHING_TYPE).stream()
-                .filter(recipe -> recipe.value().baseFluid().canCombine(getPrimaryTank().getContents()))
-                .flatMap(recipe -> recipe.value().getIngredients().stream())
-                .anyMatch(i -> i.test(stack)));
+                .getAllOfType(PSRecipes.MASHING_TYPE).stream()
+                .anyMatch(recipe -> recipe.value().isAcceptableIngredient(getPrimaryTank().getContents(), stack)));
     }
 
-    public void beginStewing() {
+    public void beginStewing(ServerWorld world) {
         if (suppliedIngredients.isEmpty() || getWorld().isClient()) {
             return;
         }
@@ -189,9 +190,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         ).map(Stew::new);
     }
 
-    public Stream<MashingRecipe> getPotentialMatches() {
+    public Stream<MashingRecipe> getPotentialMatches(ServerWorld world) {
         var input = new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients);
-        return world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream().map(RecipeEntry::value).filter(recipe -> {
+        return world.getRecipeManager().getAllOfType(PSRecipes.MASHING_TYPE).stream().map(RecipeEntry::value).filter(recipe -> {
             return recipe.matchesPartially(input, world);
         });
     }
@@ -202,7 +203,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         Resovoir tank = getPrimaryTank();
         ParticleHelper.spawnParticles(getWorld(),
-                new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgb(tank.getContents().fluid().getColor(tank.getContents())), 1F),
+                new DrugDustParticleEffect(PSParticles.BUBBLE, tank.getContents().fluid().getColor(tank.getContents()), 1F),
                 () -> ParticleHelper.apply(center, x -> random.nextTriangular(x, 0.5 + spread)).add(0, 0.5, 0),
                 Suppliers.ofInstance(new Vec3d(
                         random.nextTriangular(0, 0.125),
@@ -237,7 +238,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
         super.writeNbt(compound, lookup);
         if (!solidContents.isEmpty()) {
-            compound.put("solidContents", solidContents.encodeAllowEmpty(lookup));
+            compound.put("solidContents", solidContents.toNbtAllowEmpty(lookup));
         }
         compound.put("suppliedIngredients", suppliedIngredients.toNbt(lookup));
     }
@@ -253,7 +254,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     class Stew implements NbtSerialisable {
         @Nullable
-        private Identifier recipe;
+        private RegistryKey<Recipe<?>> recipe;
         private int stewTime;
 
         public Stew(RecipeEntry<MashingRecipe> recipe) {
@@ -261,7 +262,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             this.stewTime = (2 + world.getRandom().nextInt(4)) + recipe.value().stewTime();
         }
 
-        public boolean tick() {
+        public boolean tick(ServerWorld world) {
             if (recipe == null) {
                 markDirty();
                 return false;
@@ -297,7 +298,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         @Override
         public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
             stewTime = compound.getInt("stewTime");
-            recipe = Identifier.validate(compound.getString("recipe")).result().orElse(null);
+            recipe = Identifier.validate(compound.getString("recipe")).result().map(id -> RegistryKey.of(RegistryKeys.RECIPE, id)).orElse(null);
         }
     }
 }

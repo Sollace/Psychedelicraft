@@ -42,6 +42,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.State;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -69,7 +70,7 @@ public class SimpleFluid implements Combustable {
         if (id == null) {
             return PSFluids.EMPTY;
         }
-        return REGISTRY.getOrEmpty(id).orElseGet(() -> Registries.FLUID.getOrEmpty(id).map(SimpleFluid::of).orElse(PSFluids.EMPTY));
+        return REGISTRY.getOptionalValue(id).or(() -> Registries.FLUID.getOptionalValue(id).map(SimpleFluid::of)).orElse(PSFluids.EMPTY);
     }
 
     public static SimpleFluid of(@Nullable Fluid fluid) {
@@ -245,7 +246,7 @@ public class SimpleFluid implements Combustable {
         }
     }
 
-    public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    public void onRandomTick(ServerWorld world, BlockPos pos, FluidState state, Random random) {
         if (getFireStrength(getDefaultStack()) > 0) {
             for (Direction direction : Direction.values()) {
                 BlockPos side = pos.offset(direction);

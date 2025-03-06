@@ -17,9 +17,9 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.*;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -49,7 +49,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
     public static void renderStack(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         ITEM_ENTITY.currentRiftFraction = RiftFractionComponent.getRiftFraction(stack);
         ITEM_ENTITY.ticksAliveVisual = (int)((System.currentTimeMillis() % 500) / 100);
-        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(ITEM_ENTITY, matrices, vertices, light, overlay);
+        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().render(ITEM_ENTITY, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false), matrices, vertices);
     }
 
     public RiftJarBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
@@ -64,7 +64,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         matrices.translate(0.5F, 0.5f, 0.5F);
 
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - entity.getCachedState().get(HorizontalFacingBlock.FACING).asRotation()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - entity.getCachedState().get(HorizontalFacingBlock.FACING).getHorizontalQuarterTurns()));
 
         model.setAngles(entity, tickDelta);
         matrices.translate(0, 1.001F, 0);

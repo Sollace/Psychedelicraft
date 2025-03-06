@@ -16,6 +16,7 @@ import net.minecraft.fluid.WaterFluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -82,13 +83,13 @@ public abstract class PlacedFluid extends WaterFluid {
     }
 
     @Override
-    protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    protected void onRandomTick(ServerWorld world, BlockPos pos, FluidState state, Random random) {
         super.onRandomTick(world, pos, state, random);
         getType().onRandomTick(world, pos, state, random);
     }
 
     @Override
-    protected FluidState getUpdatedState(World world, BlockPos pos, BlockState state) {
+    protected FluidState getUpdatedState(ServerWorld world, BlockPos pos, BlockState state) {
         return getType().getStateManager().computeAverage(Stream.of(ALL_DIRECTIONS)
                 .map(direction -> world.getBlockState(pos.offset(direction)).getFluidState())
                 .filter(neighbourState -> neighbourState.getFluid().matchesType(this)),
@@ -97,7 +98,7 @@ public abstract class PlacedFluid extends WaterFluid {
     }
 
     @Override
-    protected boolean isInfinite(World world) {
+    protected boolean isInfinite(ServerWorld world) {
         return false;
     }
 

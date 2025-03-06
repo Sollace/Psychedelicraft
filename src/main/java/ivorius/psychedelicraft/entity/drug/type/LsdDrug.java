@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -44,19 +45,19 @@ public class LsdDrug extends SimpleDrug {
     }
 
     @Override
-    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+    protected boolean tickSideEffects(ServerWorld world,DrugProperties properties, Random random) {
         if (getActiveValue() >= 0.99F) {
             Drug caffiene = properties.getDrug(DrugType.CAFFEINE);
             if (caffiene.getActiveValue() > 0) {
                 caffiene.addToDesiredValue(-0.5);
                 effect /= 2;
             } else {
-                properties.asEntity().damage(properties.damageOf(PSDamageTypes.STROKE), 1);
+                properties.asEntity().damage(world, properties.damageOf(PSDamageTypes.STROKE), 1);
                 if (properties.asEntity().isDead()) {
                     return true;
                 }
             }
         }
-        return super.tickSideEffects(properties, random);
+        return super.tickSideEffects(world, properties, random);
     }
 }

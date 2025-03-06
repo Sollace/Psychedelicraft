@@ -50,8 +50,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
@@ -64,6 +64,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     public static final MapCodec<GlassTubeBlock> CODEC = createCodec(GlassTubeBlock::new);
@@ -128,17 +130,16 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (stack.isOf(Items.STICK)) {
             world.setBlockState(pos, state.with(IN, state.get(OUT)).with(OUT, state.get(IN)), Block.FORCE_STATE);
             world.playSound(player, pos, state.getSoundGroup().getPlaceSound(), SoundCategory.PLAYERS);
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     }
-
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
@@ -168,14 +169,14 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
         return setDirection(state,
                 getConnectionStateForNeighborUpdate(pos, state, direction, neighborPos, neighborState, world, IN),
                 getConnectionStateForNeighborUpdate(pos, state, direction, neighborPos, neighborState, world, OUT)
         );
     }
 
-    private IODirection getConnectionStateForNeighborUpdate(BlockPos pos, BlockState state, Direction direction, BlockPos neighborPos, BlockState neighbor, WorldAccess world, EnumProperty<IODirection> property) {
+    private IODirection getConnectionStateForNeighborUpdate(BlockPos pos, BlockState state, Direction direction, BlockPos neighborPos, BlockState neighbor, WorldView world, EnumProperty<IODirection> property) {
         IODirection current = state.get(property);
 
         if (PipeInsertable.canConnectWith(world, state, pos, neighbor, neighborPos, direction, property == IN)) {
@@ -192,7 +193,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
-    public boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+    public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
         return neighborState.isOf(this) && (state.get(input ? OUT : IN).direction == direction);
     }
 

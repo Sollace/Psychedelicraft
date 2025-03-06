@@ -30,7 +30,7 @@ class MashingEmiRecipe implements PSRecipe {
     public MashingEmiRecipe(RecipeEntry<MashingRecipe> recipe) {
         this.recipe = recipe;
         this.input = RecipeUtil.grouped(
-                recipe.value().getIngredients().stream().map(TlaIngredient::ofIngredient)
+                recipe.value().ingredients().ingredients().stream().map(TlaIngredient::ofIngredient)
         ).toList();
         this.outputFluid = recipe.value().result().ofAmount(FluidVolumes.VAT);
         this.output = RecipeUtil.toTlaStack(outputFluid);

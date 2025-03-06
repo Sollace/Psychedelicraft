@@ -13,13 +13,14 @@ import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.shape.VoxelShape;
 
@@ -50,7 +51,7 @@ public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrin
             BlockHitResult hit = (BlockHitResult)client.crosshairTarget;
             if (hit.getBlockPos().equals(entity.getPos())) {
                 PlacedDrinksBlock.Data.getHitPos(hit).ifPresent(pos -> {
-                    WorldRenderer.drawShapeOutline(matrices, vertices.getBuffer(RenderLayer.getLines()), entity.hasDrink(pos) ? FILLED_SLOT_RAY_TRACE_SHAPE : EMPTY_SLOT_RAY_TRACE_SHAPE, pos.getX() / 16F, 0, pos.getZ() / 16F, 0, 0, 0, 0.4F, false);
+                    VertexRendering.drawOutline(matrices, vertices.getBuffer(RenderLayer.getLines()), entity.hasDrink(pos) ? FILLED_SLOT_RAY_TRACE_SHAPE : EMPTY_SLOT_RAY_TRACE_SHAPE, pos.getX() / 16F, 0, pos.getZ() / 16F, ColorHelper.fromFloats(0.4F, 0, 0, 0));
                     RenderSystem.setShaderColor(0, 0, 0, 0.4F);
                     MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw(RenderLayer.getLines());
                     RenderSystem.setShaderColor(1, 1, 1, 1);

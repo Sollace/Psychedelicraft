@@ -4,23 +4,16 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
-
-import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.recipe.Ingredient;
 
 public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> level, Map<String, Integer> attributes) {
     public static final FluidIngredient EMPTY = new FluidIngredient(Optional.empty(), Optional.empty(), Map.of());
@@ -57,27 +50,6 @@ public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> le
 
     public ItemFluids getAsItemFluid(int capacity) {
         return ItemFluids.create(fluid.orElse(PSFluids.EMPTY), level.orElse(capacity), attributes);
-    }
-
-    public Ingredient toVanillaIngredient(Ingredient receptical) {
-        if (fluid.isEmpty()) {
-            return receptical;
-        }
-
-        List<ItemStack> stacks = Stream.of(receptical)
-                .map(Ingredient::getMatchingStacks)
-                .flatMap(Arrays::stream)
-                .toList();
-        if (stacks.isEmpty()) {
-            stacks = Stream.of(Ingredient.fromTag(PSTags.Items.DRINK_RECEPTICALS))
-                    .map(Ingredient::getMatchingStacks)
-                    .flatMap(Arrays::stream)
-                    .toList();
-        }
-
-        return Ingredient.ofStacks(stacks.stream()
-                .map(stack -> ItemFluids.set(stack, getAsItemFluid(FluidCapacity.get(stack))))
-                .toArray(ItemStack[]::new));
     }
 }
 

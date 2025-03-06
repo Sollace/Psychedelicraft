@@ -18,43 +18,40 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     public static final MapCodec<FluidAwareShapelessRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(FluidAwareShapelessRecipe::getGroup),
             CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FluidAwareShapelessRecipe::getCategory),
             ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
-            OptionalFluidIngredient.LIST_CODEC.fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
-            Ingredient.ALLOW_EMPTY_CODEC.optionalFieldOf("destroy", Ingredient.empty()).forGetter(recipe -> recipe.destructedIngredient)
+            OptionalFluidIngredient.CODEC.listOf().fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
+            Ingredient.CODEC.optionalFieldOf("destroy").forGetter(recipe -> recipe.destructedIngredient)
     ).apply(instance, FluidAwareShapelessRecipe::new));
     public static final PacketCodec<RegistryByteBuf, FluidAwareShapelessRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, FluidAwareShapelessRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, FluidAwareShapelessRecipe::getCategory,
             ItemStack.PACKET_CODEC, recipe -> recipe.output,
-            OptionalFluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), recipe -> recipe.ingredients,
-            Ingredient.PACKET_CODEC, recipe -> recipe.destructedIngredient,
+            OptionalFluidIngredient.PACKET_CODEC.collect(PacketCodecs.toList()), recipe -> recipe.ingredients,
+            PacketCodecs.optional(Ingredient.PACKET_CODEC), recipe -> recipe.destructedIngredient,
             FluidAwareShapelessRecipe::new
     );
 
     private final ItemStack output;
-    private final DefaultedList<OptionalFluidIngredient> ingredients;
+    private final List<OptionalFluidIngredient> ingredients;
     private final List<OptionalFluidIngredient> consumedFluids;
-    private final Ingredient destructedIngredient;
+    private final Optional<Ingredient> destructedIngredient;
 
-    public FluidAwareShapelessRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<OptionalFluidIngredient> input, Ingredient destructedIngredient) {
+    public FluidAwareShapelessRecipe(String group, CraftingRecipeCategory category, ItemStack output, List<OptionalFluidIngredient> input, Optional<Ingredient> destructedIngredient) {
         super(group, category, output,
                 // parent expects regular ingredients but we don't actually use them
                 input.stream()
-                .map(OptionalFluidIngredient::toVanillaIngredient)
-                .collect(Collectors.toCollection(DefaultedList::of))
+                .flatMap(i -> i.receptical().stream())
+                .toList()
         );
         this.output = output;
         this.ingredients = input;
@@ -62,12 +59,13 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         this.destructedIngredient = destructedIngredient;
     }
 
-    public DefaultedList<OptionalFluidIngredient> getFluidAwareIngredients() {
+    public List<OptionalFluidIngredient> getFluidAwareIngredients() {
         return ingredients;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer getSerializer() {
         return PSRecipes.SHAPELESS_FLUID;
     }
 
@@ -86,8 +84,8 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput inventory) {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
+    public DefaultedList<ItemStack> getRecipeRemainders(CraftingRecipeInput inventory) {
+        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
 
         boolean destroyed = false;
 
@@ -106,7 +104,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
                 if (t.fluids().isEmpty()) {
                     ItemStack remainder = t.toItemStack().getRecipeRemainder();
                     if (!remainder.isEmpty()) {
-                        if (!destroyed && destructedIngredient.test(remainder)) {
+                        if (!destroyed && destructedIngredient.isPresent() && destructedIngredient.get().test(remainder)) {
                             destroyed = true;
                         } else {
                             defaultedList.set(i, remainder);
@@ -118,7 +116,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
             } else {
                 ItemStack remainder = stack.getRecipeRemainder();
                 if (!remainder.isEmpty()) {
-                    if (!destroyed && destructedIngredient.test(remainder)) {
+                    if (!destroyed && destructedIngredient.isPresent() && destructedIngredient.get().test(remainder)) {
                         destroyed = true;
                     } else {
                         defaultedList.set(i, remainder);

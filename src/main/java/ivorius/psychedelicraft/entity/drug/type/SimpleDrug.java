@@ -17,6 +17,7 @@ import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -131,7 +132,7 @@ public class SimpleDrug implements Drug {
             }
 
             if (!properties.asEntity().getWorld().isClient) {
-                if (tickSideEffects(properties, properties.asEntity().getWorld().random)) {
+                if (tickSideEffects((ServerWorld)properties.asEntity().getWorld(), properties, properties.asEntity().getWorld().random)) {
                     reset(properties);
                     properties.markDirty();
                 }
@@ -151,9 +152,9 @@ public class SimpleDrug implements Drug {
         setActiveValue(MathUtils.nearValue(effectActive, effect, 0.05, 0.005));
     }
 
-    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+    protected boolean tickSideEffects(ServerWorld world, DrugProperties properties, Random random) {
         if (Drug.HEART_BEAT_SPEED.get(properties) > 3) {
-            properties.asEntity().damage(properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
+            properties.asEntity().damage(world, properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
             return true;
         }
         return false;
@@ -164,7 +165,7 @@ public class SimpleDrug implements Drug {
     }
 
     @Override
-    public void onWakeUp(DrugProperties drugProperties) {
+    public void onWakeUp(ServerWorld world, DrugProperties drugProperties) {
         reset(drugProperties);
     }
 

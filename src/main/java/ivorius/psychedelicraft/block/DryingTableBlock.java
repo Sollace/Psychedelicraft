@@ -70,7 +70,7 @@ public class DryingTableBlock extends BlockWithEntity {
                     return pos;
                 }
             });
-            return ActionResult.SUCCESS;
+            return (ActionResult)ActionResult.SUCCESS;
         }).orElse(ActionResult.FAIL);
     }
 

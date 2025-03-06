@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -46,12 +47,12 @@ public class CocaineDrug extends SimpleDrug {
     }
 
     @Override
-    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+    protected boolean tickSideEffects(ServerWorld world, DrugProperties properties, Random random) {
         PlayerEntity entity = properties.asEntity();
         double chance = (getActiveValue() - 0.8F) * 0.1F;
 
         if (entity.age % 20 == 0 && random.nextFloat() < chance) {
-            entity.damage(properties.damageOf(random.nextFloat() < 0.4F
+            entity.damage(world, properties.damageOf(random.nextFloat() < 0.4F
                     ? PSDamageTypes.STROKE
                     : random.nextFloat() < 0.5F
                     ? PSDamageTypes.HEART_FAILURE
@@ -61,7 +62,7 @@ public class CocaineDrug extends SimpleDrug {
             }
         }
 
-        return super.tickSideEffects(properties, random);
+        return super.tickSideEffects(world, properties, random);
     }
 
     @Override

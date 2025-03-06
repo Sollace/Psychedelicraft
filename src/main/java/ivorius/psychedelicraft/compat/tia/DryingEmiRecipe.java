@@ -10,6 +10,7 @@ import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
 import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 import ivorius.psychedelicraft.client.screen.DryingTableScreen;
 import ivorius.psychedelicraft.recipe.DryingRecipe;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.recipe.RecipeEntry;
@@ -30,7 +31,7 @@ class DryingEmiRecipe implements PSRecipe {
         this.recipe = recipe;
         TlaIngredient input = TlaIngredient.ofIngredient(recipe.value().input());
         this.input = Stream.generate(() -> input).limit(9).toList();
-        this.output = List.of(TlaStack.of(recipe.value().getResult(MinecraftClient.getInstance().world.getRegistryManager())));
+        this.output = List.of(TlaStack.of(ItemVariant.of(recipe.value().output()), 9));
     }
 
     @Override

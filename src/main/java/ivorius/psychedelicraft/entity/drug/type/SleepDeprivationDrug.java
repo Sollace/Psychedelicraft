@@ -16,6 +16,7 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.random.Random;
 
 /**
@@ -59,7 +60,7 @@ public class SleepDeprivationDrug extends SimpleDrug {
     }
 
     @Override
-    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+    protected boolean tickSideEffects(ServerWorld world,DrugProperties properties, Random random) {
         float caffiene = properties.getDrugValue(DrugType.CAFFEINE) + properties.getDrugValue(DrugType.COCAINE) * 3;
 
         storedEnergy = MathUtils.approach(storedEnergy, Math.min(1, caffiene * 10F), 0.02F);
@@ -67,17 +68,17 @@ public class SleepDeprivationDrug extends SimpleDrug {
         if (caffiene > 0.1F) {
             setDesiredValue(0);
         } else {
-            if (properties.asEntity().getWorld().getGameRules().getBoolean(PSGameRules.DO_SLEEP_DEPRIVATION)) {
+            if (world.getGameRules().getBoolean(PSGameRules.DO_SLEEP_DEPRIVATION)) {
                 setDesiredValue(getDesiredValue() + (INCREASE_PER_TICKS / 3));
             }
         }
 
-        return super.tickSideEffects(properties, random);
+        return super.tickSideEffects(world, properties, random);
     }
 
     @Override
-    public void onWakeUp(DrugProperties drugProperties) {
-        super.onWakeUp(drugProperties);
+    public void onWakeUp(ServerWorld world,DrugProperties drugProperties) {
+        super.onWakeUp(world, drugProperties);
         setActiveValue(0);
     }
 

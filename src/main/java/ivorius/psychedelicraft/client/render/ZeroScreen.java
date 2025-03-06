@@ -7,6 +7,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.shader.PSShaders;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TriState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
@@ -28,7 +29,7 @@ public class ZeroScreen extends RenderLayer {
             .lightmap(DISABLE_LIGHTMAP)
             .program(ZERO_MATTER_PROGRAM)
             .cull(DISABLE_CULLING)
-            .texture(new Texture(texture, false, false))
+            .texture(new Texture(texture, TriState.FALSE, false))
             .build(false)
     ));
 

@@ -15,6 +15,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
@@ -37,7 +40,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     private float dryingProgress;
 
     private long cookingTime;
-    private Optional<Identifier> currentRecipe = Optional.empty();
+    private Optional<RegistryKey<Recipe<?>>> currentRecipe = Optional.empty();
 
     public final PropertyDelegate propertyDelegate = new PropertyDelegate(){
         @Override
@@ -168,7 +171,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
         super.writeNbt(compound, lookup);
         currentRecipe.ifPresent(r -> {
-            compound.putString("currentRecipe", r.toString());
+            compound.putString("currentRecipe", r.getValue().toString());
         });
         compound.putFloat("heatRatio", heat);
         compound.putLong("cookingTime", cookingTime);
@@ -178,7 +181,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
-        currentRecipe = Identifier.validate(compound.getString("currentRecipe")).result();
+        currentRecipe = Identifier.validate(compound.getString("currentRecipe")).result().map(id -> RegistryKey.of(RegistryKeys.RECIPE, id));
         heat = compound.getFloat("heatRatio");
         cookingTime = compound.getLong("cookingTime");
         dryingProgress = compound.getFloat("dryingProgress");
@@ -186,8 +189,8 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
 
     @Override
     public void onInventoryChanged() {
-        if (!getWorld().isClient) {
-            getWorld()
+        if (getWorld() instanceof ServerWorld sw) {
+            sw
                     .getRecipeManager()
                     .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), getWorld())
                     .ifPresentOrElse(recipe -> {

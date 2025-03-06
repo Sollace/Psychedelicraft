@@ -27,8 +27,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -38,8 +38,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -52,7 +50,6 @@ import net.minecraft.world.WorldView;
 
 public class PlacedDrinksBlock extends BlockWithEntity {
     public static final MapCodec<PlacedDrinksBlock> CODEC = createCodec(PlacedDrinksBlock::new);
-    private static final Optional<TypedActionResult<ItemStack>> FAILURE = Optional.of(TypedActionResult.fail(ItemStack.EMPTY));
     private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 1, 16);
 
     protected PlacedDrinksBlock(Settings settings) {
@@ -90,14 +87,14 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return Psychedelicraft.getCrossHairTarget()
                 .filter(hit -> hit.getType() == HitResult.Type.BLOCK)
                 .map(hit -> (BlockHitResult)hit)
                 .filter(hit -> hit.getBlockPos().equals(pos))
                 .flatMap(Data::getHitPos)
                 .flatMap(hitPos -> world.getBlockEntity(pos, PSBlockEntities.PLACED_DRINK).flatMap(be -> be.getDrink(hitPos)))
-                .orElseGet(() -> super.getPickStack(world, pos, state));
+                .orElseGet(() -> super.getPickStack(world, pos, state, includeData));
     }
 
     public static boolean canPlace(ItemStack stack) {
@@ -105,31 +102,28 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        return world.getBlockEntity(pos, PSBlockEntities.PLACED_DRINK).flatMap(be -> {
+    protected ActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return world.getBlockEntity(pos, PSBlockEntities.PLACED_DRINK).map(be -> {
 
             if (heldStack.isEmpty()) {
-                return Data.getHitPos(hit).map(be::removeDrink).map(extracted -> {
-                    ItemStack stack = extracted.getValue();
-                    if (!stack.isEmpty()) {
-                        player.giveItemStack(stack);
-                    }
-                    return extracted;
-                });
+                return Data.getHitPos(hit).flatMap(be::removeDrink).map(stack -> {
+                    player.giveItemStack(stack);
+                    return (ActionResult)ActionResult.SUCCESS;
+                }).orElse(ActionResult.FAIL);
             }
 
             if (!canPlace(heldStack)) {
-                return FAILURE;
+                return ActionResult.FAIL;
             }
 
             return Data.getHitPos(hit).map(position -> {
                 return be.placeDrink(position, player.isCreative() ? heldStack.copyWithCount(1) : heldStack, player.getHeadYaw());
-            });
-        }).map(TypedActionResult::getResult).orElse(ActionResult.FAIL).isAccepted() ? ItemActionResult.SUCCESS : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            }).orElse(ActionResult.FAIL);
+        }).orElse(ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
     }
 
     @Override
-    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
         if (builder.getOptional(LootContextParameters.BLOCK_ENTITY) instanceof Data be) {
             builder = builder.addDynamicDrop(BlockWithFluid.CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
                 be.forEachDrink((y, entry) -> {
@@ -189,8 +183,8 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         BlockPos hitPos = Data.getHitPos(blockPos, context.getHitPos());
         context.getWorld().setBlockState(blockPos, PSBlocks.PLACED_DRINK.getDefaultState());
         return context.getWorld().getBlockEntity(blockPos, PSBlockEntities.PLACED_DRINK).map(be -> {
-            return be.placeDrink(hitPos, context.getStack().split(1), context.getPlayerYaw()).getResult().isAccepted() ? ItemActionResult.SUCCESS : ItemActionResult.FAIL;
-        }).orElse(ItemActionResult.FAIL).isAccepted() ? ActionResult.SUCCESS : ActionResult.FAIL;
+            return be.placeDrink(hitPos, context.getStack().split(1), context.getPlayerYaw());
+        }).orElse(ActionResult.FAIL);
     }
 
     public static class Data extends SyncedBlockEntity {
@@ -213,7 +207,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             });
         }
 
-        public TypedActionResult<ItemStack> removeDrink(BlockPos center) {
+        public Optional<ItemStack> removeDrink(BlockPos center) {
             return StreamSupport.stream(BlockPos.iterateInSquare(center, 2, Direction.EAST, Direction.NORTH).spliterator(), false).map(pos -> {
                 int index = getIndex(pos);
                 Stack<Entry> list = entries.get(index);
@@ -227,12 +221,12 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                             }
                         }
                         markDirty();
-                        return TypedActionResult.success(entry.stack());
+                        return entry.stack();
                     }
                 }
 
-                return TypedActionResult.fail(ItemStack.EMPTY);
-            }).filter(i -> i.getResult().isAccepted()).findFirst().orElseGet(() -> TypedActionResult.fail(ItemStack.EMPTY));
+                return ItemStack.EMPTY;
+            }).filter(stack -> !stack.isEmpty()).findFirst();
         }
 
         public boolean hasDrink(BlockPos center) {
@@ -250,7 +244,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                     .findFirst();
         }
 
-        public TypedActionResult<ItemStack> placeDrink(BlockPos position, ItemStack stack, float yaw) {
+        public ActionResult placeDrink(BlockPos position, ItemStack stack, float yaw) {
             int index = getIndex(position);
             Stack<Entry> list = entries.get(index);
             if (list == null) {
@@ -261,9 +255,9 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                 list.add(new Entry(position.getX() / 16F - 0.5F, position.getZ() / 16F - 0.5F, (-yaw) % 360, stack.split(1)));
                 getWorld().playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_PLACE, SoundCategory.BLOCKS);
                 markDirty();
-                return TypedActionResult.success(stack);
+                return ActionResult.SUCCESS;
             }
-            return TypedActionResult.fail(stack);
+            return ActionResult.FAIL;
         }
 
         @Override

@@ -10,7 +10,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.UseAction;
+import net.minecraft.item.consume.UseAction;
 
 /**
  * A fluid that is possible to be consumed.

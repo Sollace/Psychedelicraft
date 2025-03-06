@@ -66,7 +66,7 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
             Direction updateDirection = getCachedState().get(BarrelBlock.FACING).getOpposite();
             if (updateDirection.getAxis() != Axis.Y) {
                 BlockPos pos = getPos().offset(updateDirection);
-                world.updateNeighborsExcept(pos, getCachedState().getBlock(), updateDirection.getOpposite());
+                world.updateNeighborsExcept(pos, getCachedState().getBlock(), updateDirection.getOpposite(), null);
             }
         }
 

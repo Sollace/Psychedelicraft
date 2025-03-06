@@ -33,7 +33,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -94,7 +93,7 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     }
 
     @Override
-    public TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
+    public Optional<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         if (stack.isEmpty()) {
             if (!player.getWorld().isClient) {
                 player.setStackInHand(hand, ItemFluidsMixture.set(entity.getContainer(), getAuxiliaryTanks().stream().map(Resovoir::getContents).toList()));
@@ -108,25 +107,25 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
             }
             entity.playSound(player, SoundEvents.ENTITY_ITEM_PICKUP);
 
-            return TypedActionResult.success(new EmptyContents(entity));
+            return Optional.of(new EmptyContents(entity));
         }
 
         if (FluidCapacity.get(stack) > 0) {
             return interactWithFluidVessel(stack, player, hand, side);
         }
 
-        return TypedActionResult.fail(this);
+        return Optional.empty();
     }
 
-    protected TypedActionResult<Contents> interactWithFluidVessel(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
+    protected Optional<Contents> interactWithFluidVessel(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
         if (!t.fluids().isEmpty() && getPrimaryTank().deposit(t, t.fluids().amount()) > 0) {
             entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
             player.setStackInHand(hand, t.toItemStack());
-            return TypedActionResult.success(this);
+            return Optional.of(this);
         }
 
-        return TypedActionResult.fail(this);
+        return Optional.empty();
     }
 
     @Override

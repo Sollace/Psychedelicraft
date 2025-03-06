@@ -14,6 +14,7 @@ import com.mojang.serialization.Codec;
 
 import ivorius.psychedelicraft.entity.drug.Attribute.Combiner;
 import ivorius.psychedelicraft.util.NbtSerialisable;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -71,7 +72,7 @@ public interface Drug extends NbtSerialisable {
 
     void reset(DrugProperties properties);
 
-    void onWakeUp(DrugProperties properties);
+    void onWakeUp(ServerWorld world, DrugProperties properties);
 
     /**
      * A value from 0 to 1 indicating the strength of this particular effect.

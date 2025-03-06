@@ -14,14 +14,11 @@ package ivorius.psychedelicraft.client.render;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.*;
-import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.client.render.entity.state.PigEntityRenderState;
 
-public class RastaHeadModel extends SinglePartEntityModel<PigEntity> {
-    private final ModelPart root;
-
+public class RastaHeadModel extends EntityModel<PigEntityRenderState> {
     public RastaHeadModel() {
-        super(RenderLayer::getEntityTranslucent);
-        this.root = TexturedModelData.of(getModelData(Dilation.NONE), 128, 64).createModel();
+        super(TexturedModelData.of(getModelData(Dilation.NONE), 128, 64).createModel(), RenderLayer::getEntityTranslucent);
     }
 
     public static ModelData getModelData(Dilation dilation) {
@@ -40,15 +37,5 @@ public class RastaHeadModel extends SinglePartEntityModel<PigEntity> {
         root.addChild("joint", ModelPartBuilder.create()
                 .uv(0, 0).cuboid(-0.5F, -3.5F, -5F, 1, 1, 2, dilation).mirrored(), ModelTransform.rotation(0.4089647F, -0.2602503F, 0));
         return data;
-    }
-
-    @Override
-    public void setAngles(PigEntity var1, float var2, float var3, float var4, float var5, float var6) {
-
-    }
-
-    @Override
-    public ModelPart getPart() {
-        return root;
     }
 }

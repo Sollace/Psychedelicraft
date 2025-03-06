@@ -37,7 +37,7 @@ public abstract class SucculentPlantBlock extends PlantBlock implements Fertiliz
 
     @Override
     protected final VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        Vec3d offset = state.getModelOffset(world, pos);
+        Vec3d offset = state.getModelOffset(pos);
         return getShapes()[state.get(getAgeProperty())].offset(offset.x, offset.y, offset.z);
     }
 

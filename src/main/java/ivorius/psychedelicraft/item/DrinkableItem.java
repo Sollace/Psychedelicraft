@@ -16,6 +16,7 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
@@ -69,11 +70,11 @@ public class DrinkableItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         if (canUse(stack, world, player)) {
             player.setCurrentHand(hand);
-            return TypedActionResult.consume(stack);
+            return ActionResult.CONSUME;
         }
         return super.use(world, player, hand);
     }

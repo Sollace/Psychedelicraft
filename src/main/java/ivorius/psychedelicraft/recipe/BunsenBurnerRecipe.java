@@ -5,8 +5,11 @@ import java.util.List;
 import ivorius.psychedelicraft.fluid.Processable.ByProductConsumer;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.IngredientPlacement;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.input.RecipeInput;
 
 public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
@@ -15,14 +18,27 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
      */
     int stewTime();
 
+    boolean isAcceptableIngredient(ItemStack stack);
+
+
     @Override
-    default RecipeType<?> getType() {
-        return PSRecipes.BUNSEN_BURNER;
+    default IngredientPlacement getIngredientPlacement() {
+        return IngredientPlacement.NONE;
     }
 
     @Override
-    default boolean fits(int width, int height) {
-        return (width * height) > 0;
+    default RecipeBookCategory getRecipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
+    @Override
+    default boolean isIgnoredInRecipeBook() {
+        return true;
+    }
+
+    @Override
+    default RecipeType<BunsenBurnerRecipe> getType() {
+        return PSRecipes.BUNSEN_BURNER;
     }
 
     public record Input(FluidMound fluids, ItemMound input, ByProductConsumer consumer) implements RecipeInput {
@@ -32,7 +48,7 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
         }
 
         @Override
-        public int getSize() {
+        public int size() {
             return 1;
         }
 

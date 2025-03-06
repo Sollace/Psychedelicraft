@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -43,7 +44,7 @@ public class MolotovCocktailItem extends DrinkableItem {
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         float strength = user.getItemUseTimeLeft() / (float)getMaxUseTime(stack, user);
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
 
@@ -60,24 +61,25 @@ public class MolotovCocktailItem extends DrinkableItem {
             }
             player.incrementStat(Stats.USED.getOrCreateStat(this));
         }
+        return true;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         user.setCurrentHand(hand);
-        return TypedActionResult.success(user.getStackInHand(hand));
+        return ActionResult.SUCCESS;
     }
 
     @Override
     public Text getName(ItemStack stack) {
         if (ItemFluids.of(stack).isEmpty()) {
-            return Text.translatable(getTranslationKey(stack) + ".empty");
+            return Text.translatable(getTranslationKey() + ".empty");
         }
         if (ItemFluids.of(stack).isIn(FluidTags.LAVA)) {
-            return Text.translatable(getTranslationKey(stack) + ".lava");
+            return Text.translatable(getTranslationKey() + ".lava");
         }
 
-        return Text.translatable(getTranslationKey(stack) + ".quality." + getQuality(stack));
+        return Text.translatable(getTranslationKey() + ".quality." + getQuality(stack));
     }
 
     private int getQuality(ItemStack stack) {

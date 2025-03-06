@@ -16,6 +16,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
@@ -64,7 +65,7 @@ public class RenderUtil {
     }
 
     public static void drawQuad(DrawContext context, Identifier texture, float x0, float y0, float x1, float y1, float z) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.enableBlend();
         BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
@@ -81,7 +82,7 @@ public class RenderUtil {
             int width, int height,
             float u0, float v0,
             float u1, float v1, int offset) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.enableBlend();

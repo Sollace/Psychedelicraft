@@ -12,9 +12,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 
 import org.joml.*;
@@ -27,7 +29,7 @@ import java.lang.Math;
 /**
  * Created by lukas on 03.03.14.
  */
-public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity> {
+public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity, RealityRiftEntityRenderer.State> {
     public static final Identifier CENTER_TEXTURE = Psychedelicraft.id("textures/entity/reality_rift/zero_center.png");
     private static final Random RANDOM = new Random(432L);
 
@@ -36,23 +38,32 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
     }
 
     @Override
-    public Identifier getTexture(RealityRiftEntity entity) {
-        return CENTER_TEXTURE;
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    public void render(RealityRiftEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
-        matrices.push();
-        matrices.translate(0, entity.getHeight() * 0.5, 0);
-
-        float visualRiftSize = entity.visualRiftSize < 0.01f
+    public void updateRenderState(RealityRiftEntity entity, State state, float tickDelta) {
+        super.updateRenderState(entity, state, tickDelta);
+        state.visualRiftSize = entity.visualRiftSize < 0.01f
                 ? (entity.visualRiftSize * 10.0f)
                 : (0.1f + (entity.visualRiftSize - 0.01f) * 0.1f);
+        state.instability = state.age + tickDelta + (entity.getInstability() * entity.getInstability() * 3000);
+    }
 
-        matrices.scale(visualRiftSize, visualRiftSize, visualRiftSize);
+    @Override
+    protected Box getBoundingBox(RealityRiftEntity entity) {
+        return entity.getBoundingBox().expand(20);
+    }
 
-        float instability = entity.getInstability();
-        renderRift(matrices, vertices, tickDelta, entity.age + tickDelta + (instability * instability * 3000));
+    @Override
+    public void render(State state, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+        matrices.push();
+        matrices.translate(0, state.height * 0.5, 0);
+
+        matrices.scale(state.visualRiftSize, state.visualRiftSize, state.visualRiftSize);
+
+        renderRift(matrices, vertices, state.instability);
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -94,9 +105,9 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
         matrices.pop();
     }
 
-    public void renderRift(MatrixStack matrices, VertexConsumerProvider vertices, float partialTicks, float ticks) {
-        ZeroScreen.render(ticks, (layer, u, v) -> {
-            renderLightsScreen(matrices, vertices.getBuffer(layer), u, v, ticks, 1, 0xffffffff, 20);
+    public void renderRift(MatrixStack matrices, VertexConsumerProvider vertices, float age) {
+        ZeroScreen.render(age, (layer, u, v) -> {
+            renderLightsScreen(matrices, vertices.getBuffer(layer), u, v, age, 1, 0xffffffff, 20);
         });
     }
 
@@ -164,4 +175,12 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
         matrices.pop();
 
     }
+
+
+    static class State extends EntityRenderState {
+        public float visualRiftSize;
+        public float instability;
+    }
+
+
 }

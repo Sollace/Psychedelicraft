@@ -25,28 +25,13 @@ import java.util.stream.Stream;
 
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 public interface RecipeUtils {
-    Codec<DefaultedList<Ingredient>> SHAPELESS_RECIPE_INGREDIENTS_CODEC = Ingredient.DISALLOW_EMPTY_CODEC.listOf().flatXmap(ingredients -> {
-        Ingredient[] ingredients2 = ingredients.stream().filter(ingredient -> !ingredient.isEmpty()).toArray(Ingredient[]::new);
-        if (ingredients2.length == 0) {
-            return DataResult.error(() -> "No ingredients for shapeless recipe");
-        }
-        if (ingredients2.length > 9) {
-            return DataResult.error(() -> "Too many ingredients for shapeless recipe");
-        }
-        return DataResult.success(DefaultedList.copyOf(Ingredient.EMPTY, ingredients2));
-    }, DataResult::success);
-
     PacketCodec<RegistryByteBuf, CraftingRecipeCategory> CRAFTING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CraftingRecipeCategory.class);
     PacketCodec<RegistryByteBuf, CookingRecipeCategory> COOKING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CookingRecipeCategory.class);
-    PacketCodec<RegistryByteBuf, DefaultedList<Ingredient>> INGREDIENTS_PACKET_CODEC = Ingredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList());
 
     static ItemStack copyInputFluidToResult(ItemStack result, List<ItemStack> inputs) {
         return RecipeUtils.recepticals(inputs.stream()).findFirst().map(input -> {
@@ -70,7 +55,7 @@ public interface RecipeUtils {
     }
 
     static <T> Stream<Entry<T>> slots(RecipeInput input, Predicate<ItemStack> filter, Function<ItemStack, T> func) {
-        return IntStream.range(0, input.getSize())
+        return IntStream.range(0, input.size())
                 .filter(i -> filter.test(input.getStackInSlot(i)))
                 .mapToObj(i -> new Entry<>(func.apply(input.getStackInSlot(i)), i));
     }
@@ -82,7 +67,7 @@ public interface RecipeUtils {
     }
 
     static DefaultedList<Ingredient> union(DefaultedList<Ingredient> list, Ingredient...additional) {
-        return DefaultedList.copyOf(Ingredient.EMPTY, Stream.concat(list.stream(), Arrays.stream(additional)).toArray(Ingredient[]::new));
+        return DefaultedList.copyOf(null, Stream.concat(list.stream(), Arrays.stream(additional)).toArray(Ingredient[]::new));
     }
 
     static <T> DefaultedList<T> checkLength(DefaultedList<T> ingredients) {

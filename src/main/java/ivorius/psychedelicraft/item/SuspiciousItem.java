@@ -52,11 +52,6 @@ public class SuspiciousItem extends Item {
     }
 
     @Override
-    public Text getName() {
-        return getHallucinatedItem().map(Item::getName).orElseGet(super::getName);
-    }
-
-    @Override
     public Text getName(ItemStack stack) {
         return getHallucinatedItem().map(i -> i.getName(stack)).orElseGet(() -> super.getName(stack));
     }

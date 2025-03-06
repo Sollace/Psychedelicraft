@@ -24,7 +24,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -83,10 +82,10 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return getValidMasterPosition(world, pos).map(center -> {
             BlockState masterState = world.getBlockState(center);
-            return masterState.getBlock().getPickStack(world, center, masterState);
+            return masterState.getPickStack(world, center, includeData);
         }).orElse(ItemStack.EMPTY);
     }
 
@@ -106,10 +105,10 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return getValidMasterPosition(world, pos).map(p -> {
             return world.getBlockState(p).onUseWithItem(stack, world, player, hand, new BlockHitResult(hit.getPos(), hit.getSide(), p, hit.isInsideBlock()));
-        }).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+        }).orElse(ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
     }
 
     @Override

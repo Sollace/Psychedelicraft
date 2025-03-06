@@ -9,6 +9,7 @@ import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.random.Random;
 
 /**
@@ -32,8 +33,8 @@ public class CannabisDrug extends SimpleDrug {
     }
 
     @Override
-    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+    protected boolean tickSideEffects(ServerWorld world,DrugProperties properties, Random random) {
         properties.asEntity().addExhaustion(0.03F * (float) getActiveValue());
-        return super.tickSideEffects(properties, random);
+        return super.tickSideEffects(world, properties, random);
     }
 }

@@ -20,9 +20,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
@@ -105,12 +104,12 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
                 ).expand(0.001);
 
                 matrices.push();
-                WorldRenderer.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 0, 1, 0, 0.2F);
+                VertexRendering.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 0, 1, 0, 0.2F);
 
                 box = tub.getFluidCollisionBox(entity.getWorld(), entity.getCachedState(), entity.getPos());
 
                 matrices.translate(-box.minX - ((box.getLengthX() - 1) / 2), -box.minY, -box.minZ - ((box.getLengthZ() - 1) / 2));
-                WorldRenderer.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 1, 1, 1, 1);
+                VertexRendering.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 1, 1, 1, 1);
                 matrices.pop();
             }
         }

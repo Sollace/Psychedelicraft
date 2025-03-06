@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -36,17 +37,17 @@ public class KavaDrug extends SimpleDrug {
     }
 
     @Override
-    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+    protected boolean tickSideEffects(ServerWorld world,DrugProperties properties, Random random) {
         PlayerEntity entity = properties.asEntity();
 
         double activeValue = getActiveValue();
 
         if ((getTicksActive() % 20) == 0 && getTicksActive() > 100 && random.nextFloat() < (activeValue - 1.3F) * 2) {
-            entity.damage(properties.damageOf(PSDamageTypes.HEART_FAILURE), (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
+            entity.damage(world, properties.damageOf(PSDamageTypes.HEART_FAILURE), (int) ((activeValue - 0.9f) * 50.0f + 4.0f));
             return true;
         }
 
-        return super.tickSideEffects(properties, random);
+        return super.tickSideEffects(world, properties, random);
     }
 
     @Override

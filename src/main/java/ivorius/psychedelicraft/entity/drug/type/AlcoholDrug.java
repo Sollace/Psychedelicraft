@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -31,19 +32,19 @@ public class AlcoholDrug extends SimpleDrug {
     }
 
     @Override
-    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+    protected boolean tickSideEffects(ServerWorld world, DrugProperties properties, Random random) {
         PlayerEntity entity = properties.asEntity();
 
         double activeValue = getActiveValue();
 
         if ((getTicksActive() % 20) == 0 && random.nextFloat() < (activeValue - 0.9F) * 2) {
-            entity.damage(PSDamageTypes.create(entity.getWorld(), PSDamageTypes.ALCOHOL_POSIONING), (int) ((activeValue - 0.9F) * 50 + 4));
+            entity.damage(world, PSDamageTypes.create(entity.getWorld(), PSDamageTypes.ALCOHOL_POSIONING), (int) ((activeValue - 0.9F) * 50 + 4));
             if (entity.isDead()) {
                 return true;
             }
         }
 
-        return super.tickSideEffects(properties, random);
+        return super.tickSideEffects(world, properties, random);
     }
 
     @Override
@@ -59,9 +60,9 @@ public class AlcoholDrug extends SimpleDrug {
     }
 
     @Override
-    public void onWakeUp(DrugProperties drugProperties) {
+    public void onWakeUp(ServerWorld world,DrugProperties drugProperties) {
         double value = getActiveValue();
-        super.onWakeUp(drugProperties);
+        super.onWakeUp(world, drugProperties);
 
         if (value > 0) {
             PlayerEntity player = drugProperties.asEntity();

@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -21,6 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.*;
@@ -82,15 +84,13 @@ public class SmokeableItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        ItemStack stack = player.getStackInHand(hand);
-
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         if (!DrugProperties.of(player).isBreathingSmoke()) {
             player.setCurrentHand(hand);
-            return TypedActionResult.consume(stack);
+            return ActionResult.CONSUME;
         }
 
-        return TypedActionResult.fail(stack);
+        return ActionResult.FAIL;
     }
 
     public void onIncinerated(ItemStack stack, World world, BlockPos pos, AbstractFurnaceBlockEntity furnace) {
@@ -98,7 +98,7 @@ public class SmokeableItem extends Item {
             DrugProperties.of(player).addAll(drugEffects);
         });
 
-        var effect = new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, smokeColor, 1);
+        var effect = new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, MathUtils.getArgb(smokeColor), 1);
         for (int i = 0; i < 30; i++) {
             ((ServerWorld)world).spawnParticles(effect,
                     world.random.nextTriangular(pos.getX() + 0.5, 0.3),

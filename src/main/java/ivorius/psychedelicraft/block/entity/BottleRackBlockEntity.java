@@ -4,8 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.Direction.Axis;
@@ -34,23 +33,23 @@ public class BottleRackBlockEntity extends BlockEntityWithInventory {
         return direction.getAxis() == Axis.Y ? NO_SLOTS : SLOTS;
     }
 
-    public ItemActionResult insertItem(ItemStack stack, BlockHitResult hit, Direction facing) {
+    public Optional<ActionResult> insertItem(ItemStack stack, BlockHitResult hit, Direction facing) {
         return getHitPos(hit, facing).map(pos -> {
             int slot = getSlot(pos);
             if (slot >= 0 && slot < 9 && getStack(slot).isEmpty() && isValid(slot, stack)) {
                 setStack(slot, stack.split(1));
                 getWorld().playSound(null, getPos(), SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1, 1.5F);
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
-            return ItemActionResult.FAIL;
-        }).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+            return ActionResult.FAIL;
+        });
     }
 
-    public TypedActionResult<ItemStack> extractItem(BlockHitResult hit, Direction facing) {
+    public Optional<ItemStack> extractItem(BlockHitResult hit, Direction facing) {
         return getHitPos(hit, facing).map(pos -> {
             getWorld().playSound(null, getPos(), SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1, 1);
-            return TypedActionResult.success(removeStack(getSlot(pos)));
-        }).orElse(TypedActionResult.fail(ItemStack.EMPTY));
+            return removeStack(getSlot(pos));
+        }).filter(stack -> !stack.isEmpty());
     }
 
     private static int getSlot(Vec2f pos) {

@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.random.Random;
 
 /**
@@ -34,23 +35,23 @@ public class AtropineDrug extends SimpleDrug {
     }
 
     @Override
-    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+    protected boolean tickSideEffects(ServerWorld world, DrugProperties properties, Random random) {
         PlayerEntity entity = properties.asEntity();
 
         double chance = (getActiveValue() - 0.8F) * 0.051F;
 
         if (entity.age % 20 == 0 && random.nextFloat() < chance) {
             if (random.nextFloat() < 0.8F) {
-                entity.damage(properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
+                entity.damage(world, properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
                 return true;
             }
 
             if (random.nextFloat() < 0.5F) {
-                entity.damage(properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
+                entity.damage(world, properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
                 return true;
             }
         }
 
-        return super.tickSideEffects(properties, random);
+        return super.tickSideEffects(world, properties, random);
     }
 }

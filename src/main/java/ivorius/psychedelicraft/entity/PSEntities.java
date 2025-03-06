@@ -5,9 +5,14 @@
 
 package ivorius.psychedelicraft.entity;
 
+import java.util.function.Supplier;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.entity.*;
+import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.ChestBoatEntity;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -29,10 +34,27 @@ public interface PSEntities {
             .maxTrackingRange(5)
             .dimensions(2F, 2F));
 
-    TerraformBoatType JUNIPER_BOAT_TYPE = Registry.register(TerraformBoatTypeRegistry.INSTANCE, Psychedelicraft.id("juniper"), new TerraformBoatType.Builder()
-            .planks(PSItems.JUNIPER_PLANKS)
-            .item(PSItems.JUNIPER_BOAT)
-            .build());
+    EntityType<BoatEntity> JUNIPER_BOAT = register("juniper_boat",
+        EntityType.Builder.create(getBoatFactory(() -> PSItems.JUNIPER_BOAT), SpawnGroup.MISC)
+            .dropsNothing()
+            .dimensions(1.375F, 0.5625F)
+            .eyeHeight(0.5625F)
+            .maxTrackingRange(10));
+    EntityType<ChestBoatEntity> JUNIPER_CHEST_BOAT = register("juniper_chest_boat",
+        EntityType.Builder.create(getChestBoatFactory(() -> PSItems.JUNIPER_CHEST_BOAT), SpawnGroup.MISC)
+            .dropsNothing()
+            .dimensions(1.375F, 0.5625F)
+            .eyeHeight(0.5625F)
+            .maxTrackingRange(10)
+    );
+
+    private static EntityType.EntityFactory<BoatEntity> getBoatFactory(Supplier<Item> itemSupplier) {
+        return (type, world) -> new BoatEntity(type, world, itemSupplier);
+    }
+
+    private static EntityType.EntityFactory<ChestBoatEntity> getChestBoatFactory(Supplier<Item> itemSupplier) {
+        return (type, world) -> new ChestBoatEntity(type, world, itemSupplier);
+    }
 
     static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
         var key = RegistryKey.of(RegistryKeys.ENTITY_TYPE, Psychedelicraft.id(name));

@@ -19,8 +19,10 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class LatticeBlock extends HorizontalConnectingBlock implements Waterloggable {
     public static final MapCodec<LatticeBlock> CODEC = createCodec(LatticeBlock::new);
@@ -48,9 +50,9 @@ public class LatticeBlock extends HorizontalConnectingBlock implements Waterlogg
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
         if (state.get(WATERLOGGED).booleanValue()) {
-            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
 
         if (direction.getAxis().getType() == Direction.Type.HORIZONTAL) {
@@ -62,7 +64,7 @@ public class LatticeBlock extends HorizontalConnectingBlock implements Waterlogg
 
             return applyConnections(state, connections);
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
     }
 
     @Override
@@ -87,11 +89,11 @@ public class LatticeBlock extends HorizontalConnectingBlock implements Waterlogg
                 .with(WATERLOGGED, ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER);
     }
 
-    private Set<Direction> getPossibleConnections(WorldAccess world, BlockPos pos) {
+    private Set<Direction> getPossibleConnections(WorldView world, BlockPos pos) {
         return FACING_PROPERTIES.keySet().stream().filter(connection -> canConnect(world, pos, connection)).collect(Collectors.toSet());
     }
 
-    private boolean canConnect(WorldAccess world, BlockPos pos, Direction connectionDirection) {
+    private boolean canConnect(WorldView world, BlockPos pos, Direction connectionDirection) {
         Direction neighbourDirection = connectionDirection.getOpposite();
         BlockPos neighbourPos = pos.offset(connectionDirection);
         BlockState neighbourState = world.getBlockState(neighbourPos);
@@ -113,7 +115,7 @@ public class LatticeBlock extends HorizontalConnectingBlock implements Waterlogg
         return neighbour && opposite;
     }
 
-    protected boolean canConnectTo(WorldAccess world, BlockPos pos, BlockState state, Direction direction) {
+    protected boolean canConnectTo(WorldView world, BlockPos pos, BlockState state, Direction direction) {
         return isLattice(state)
                 || (!cannotConnect(state) && state.isSideSolidFullSquare(world, pos, direction))
                 || (state.getBlock() instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, direction));

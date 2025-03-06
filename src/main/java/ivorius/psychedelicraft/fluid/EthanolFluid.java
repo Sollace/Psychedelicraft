@@ -10,11 +10,11 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 
 public class EthanolFluid extends DrugFluid {
     public EthanolFluid(Identifier id, Settings settings) {
@@ -37,14 +37,14 @@ public class EthanolFluid extends DrugFluid {
     }
 
     @Override
-    public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    public void onRandomTick(ServerWorld world, BlockPos pos, FluidState state, Random random) {
         super.onRandomTick(world, pos, state, random);
         world.getOtherEntities(null, Box.of(pos.toCenterPos(), 5, 5, 5)).forEach(entity -> {
             if (random.nextInt(30) == 0) {
                 DrugProperties.of(entity).ifPresentOrElse(properties -> {
                     properties.addToDrug(DrugType.ALCOHOL, 0.1);
                 }, () -> {
-                    entity.damage(world.getDamageSources().create(PSDamageTypes.ALCOHOL_POSIONING), 1);
+                    entity.damage(world, world.getDamageSources().create(PSDamageTypes.ALCOHOL_POSIONING), 1);
                 });
             }
         });

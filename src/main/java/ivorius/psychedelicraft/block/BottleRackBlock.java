@@ -66,7 +66,7 @@ public class BottleRackBlock extends BlockWithEntity {
             Function<Direction, VoxelShape> shapes) {
         super(Util.make(settings, s -> {
             if (zOffset != 0) {
-                ((MixinAbstractBlockSettings)s).setOffsetter((state, world, pos) -> {
+                ((MixinAbstractBlockSettings)s).setOffsetter((state, pos) -> {
                     offsets.apply(state.get(FACING));
                     return VoxelShapeUtil.rotate(new Vec3d(0, 0, -3 / 16D), state.get(FACING));
                 });
@@ -119,17 +119,16 @@ public class BottleRackBlock extends BlockWithEntity {
 
     @Override
     protected ActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        return world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).map(be -> {
+        return world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).flatMap(be -> {
             if (heldStack.isEmpty()) {
-                TypedActionResult<ItemStack> extracted = be.extractItem(hit, state.get(FACING));
-                if (extracted.getResult().isAccepted()) {
-                    player.setStackInHand(hand, extracted.getValue());
-                }
-                return extracted.getResult() == ActionResult.SUCCESS ? ActionResult.SUCCESS : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                return be.extractItem(hit, state.get(FACING)).map(extracted -> {
+                    player.setStackInHand(hand, extracted);
+                    return ActionResult.SUCCESS;
+                });
             }
 
             return be.insertItem(heldStack, hit, state.get(FACING));
-        }).orElse(ActionResult.FAIL);
+        }).orElse(ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
     }
 
     @Override

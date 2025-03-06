@@ -27,7 +27,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.Unit;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -67,37 +66,35 @@ public class LargeContents extends SmallContents {
     }
 
     @Override
-    public TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
-        TypedActionResult<Contents> result = super.interact(stack, player, hand, side);
-        if (result.getResult().isAccepted()) {
+    public Optional<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
+        Optional<Contents> result = super.interact(stack, player, hand, side);
+        if (result.isPresent()) {
             return result;
         }
 
         if (ingredients.size() < MAX_INGREDIENTS
                 && ingredients.getCounts().getInt(stack.getItem()) < 5) {
-            if (isValidIngredient(stack)) {
-                if (!player.getWorld().isClient) {
-                    ingredients.addStack(stack.splitUnlessCreative(1, player));
-                    player.setStackInHand(hand, stack);
-                    entity.playSound(null, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value());
-                }
-                return TypedActionResult.success(this);
+            if (player.getWorld() instanceof ServerWorld sw && isValidIngredient(sw, stack)) {
+                ingredients.addStack(stack.splitUnlessCreative(1, player));
+                player.setStackInHand(hand, stack);
+                entity.playSound(null, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value());
+                return Optional.of(this);
             }
         }
 
-        return TypedActionResult.fail(this);
+        return Optional.empty();
     }
 
     @Override
-    protected TypedActionResult<Contents> interactWithFluidVessel(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
+    protected Optional<Contents> interactWithFluidVessel(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         if (!ItemFluids.of(stack).isEmpty()) {
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
             if (deposit(t)) {
                 entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
                 player.setStackInHand(hand, t.toItemStack());
-                return TypedActionResult.success(this);
+                return Optional.of(this);
             }
-            return TypedActionResult.fail(this);
+            return Optional.empty();
         }
 
         ItemFluidsMixture mixture = ItemFluidsMixture.of(stack);
@@ -105,7 +102,7 @@ public class LargeContents extends SmallContents {
             stack = ItemFluidsMixture.set(stack, mixture.fluids().stream().map(this::deposit).toList());
             entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
             player.setStackInHand(hand, stack);
-            return TypedActionResult.success(this);
+            return Optional.of(this);
         }
 
         Resovoir tank = player.isSneaking() ? getLastTank() : getPrimaryTank();
@@ -119,11 +116,11 @@ public class LargeContents extends SmallContents {
                     player.giveItemStack(t.toItemStack());
                 }
                 entity.playSound(player, SoundEvents.ITEM_BOTTLE_FILL);
-                return TypedActionResult.success(this);
+                return Optional.of(this);
             }
         }
 
-        return TypedActionResult.fail(this);
+        return Optional.empty();
     }
 
     protected boolean deposit(ItemFluids.Transaction t) {
@@ -208,11 +205,11 @@ public class LargeContents extends SmallContents {
         return PipeInsertable.reject(new PipeFluids(mound, fluids.temperature()));
     }
 
-    private boolean isValidIngredient(ItemStack stack) {
-        return FluidCapacity.get(stack) == 0 && entity.getWorld().getRecipeManager()
-                .listAllOfType(PSRecipes.BUNSEN_BURNER)
+    private boolean isValidIngredient(ServerWorld world, ItemStack stack) {
+        return FluidCapacity.get(stack) == 0 && world.getRecipeManager()
+                .getAllOfType(PSRecipes.BUNSEN_BURNER)
                 .stream()
-                .anyMatch(recipe -> recipe.value().getIngredients().stream().anyMatch(i -> i.test(stack)));
+                .anyMatch(recipe -> recipe.value().isAcceptableIngredient(stack));
     }
 
     @Override

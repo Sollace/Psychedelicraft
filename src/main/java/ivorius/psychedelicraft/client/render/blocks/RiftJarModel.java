@@ -22,7 +22,6 @@ import net.minecraft.util.math.MathHelper;
  * Updated by Sollace on 5 Jan 2023
  */
 public class RiftJarModel extends Model {
-    private final ModelPart tree;
 
     private final ModelPart cork;
     private final ModelPart knot;
@@ -30,11 +29,11 @@ public class RiftJarModel extends Model {
     private final ModelPart interior;
 
     public RiftJarModel(ModelPart tree) {
-        super(RenderLayer::getEntityTranslucent);
-        this.tree = tree;
+        super(tree, RenderLayer::getEntityTranslucent);
         this.cork = tree.getChild("cork");
         this.knot = tree.getChild("knot");
         this.interior = tree.getChild("interior");
+        interior.hidden = true;
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -63,14 +62,9 @@ public class RiftJarModel extends Model {
         knot.roll = 0.2602503F + (entity.fractionHandleUp * (1 + MathHelper.sin(entity.ticksAliveVisual * 0.1f) * 0.1f)) * 0.5f;
     }
 
-    @Override
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-        interior.hidden = true;
-        tree.render(matrices, vertices, light, overlay, color);
-        interior.hidden = false;
-    }
-
     public void renderInterior(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+        interior.hidden = false;
         interior.render(matrices, vertices, light, overlay, color);
+        interior.hidden = true;
     }
 }

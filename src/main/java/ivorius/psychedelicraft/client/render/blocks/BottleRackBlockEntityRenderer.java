@@ -32,7 +32,7 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
         if (direction.getAxis() == Axis.X) {
             direction = direction.getOpposite();
         }
-        float facing = direction.asRotation() + 90;
+        float facing = direction.getPositiveHorizontalDegrees() + 90;
 
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(facing));
 

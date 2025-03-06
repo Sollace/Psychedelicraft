@@ -23,7 +23,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
@@ -135,7 +134,7 @@ public class PaperBagItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack bag = user.getStackInHand(hand);
         ItemStack swithdrawn = BagContentsComponent.withdraw(bag, user.isSneaky() ? 1 : BagContentsComponent.get(bag).stack().getMaxCount());
 
@@ -143,9 +142,9 @@ public class PaperBagItem extends Item {
             user.dropItem(swithdrawn, false, false);
             user.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 1, 1);
             user.incrementStat(Stats.USED.getOrCreateStat(this));
-            return TypedActionResult.success(bag, world.isClient());
+            return ActionResult.SUCCESS.withNewHandStack(bag);
         }
-        return TypedActionResult.fail(bag);
+        return ActionResult.FAIL;
     }
 
     @Override
@@ -230,7 +229,7 @@ public class PaperBagItem extends Item {
     @Override
     public Text getName(ItemStack stack) {
         if (!BagContentsComponent.get(stack).isEmpty()) {
-            return Text.translatable(getTranslationKey(stack) + ".filled", BagContentsComponent.get(stack).stack().getName());
+            return Text.translatable(getTranslationKey() + ".filled", BagContentsComponent.get(stack).stack().getName());
         }
         return super.getName(stack);
     }

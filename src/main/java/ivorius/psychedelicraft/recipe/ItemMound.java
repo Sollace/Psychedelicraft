@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.Nullable;
+
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ivorius.psychedelicraft.util.NbtSerialisable;
@@ -61,8 +63,8 @@ public class ItemMound implements NbtSerialisable {
         }
     }
 
-    public boolean removeWhere(Predicate<ItemStack> predicate, int max) {
-        for (Item item : items.keySet().stream().filter(i -> predicate.test(i.getDefaultStack())).toList()) {
+    public boolean removeWhere(@Nullable Predicate<ItemStack> predicate, int max) {
+        for (Item item : items.keySet().stream().filter(i -> predicate == null || predicate.test(i.getDefaultStack())).toList()) {
             int available = Math.min(max, items.getInt(item));
             max -= available;
             remove(item, available);
@@ -73,9 +75,9 @@ public class ItemMound implements NbtSerialisable {
         return false;
     }
 
-    public int countMatches(Predicate<ItemStack> predicate) {
+    public int countMatches(@Nullable Predicate<ItemStack> predicate) {
         return items.object2IntEntrySet().stream()
-                .filter(i -> predicate.test(i.getKey().getDefaultStack()))
+                .filter(i -> predicate == null || predicate.test(i.getKey().getDefaultStack()))
                 .mapToInt(Object2IntMap.Entry::getIntValue)
                 .sum();
     }

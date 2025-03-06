@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -102,7 +103,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
 
     @Override
-    public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    public void onRandomTick(ServerWorld world, BlockPos pos, FluidState state, Random random) {
         if (getAlcoholContent(getStack(state, 1)) > 0.3) {
             world.getOtherEntities(null, Box.of(pos.toCenterPos(), 5, 5, 5)).forEach(entity -> {
                 if (random.nextInt(450) == 0) {

@@ -1,21 +1,13 @@
 package ivorius.psychedelicraft.item;
 
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 
-public class PacifierItem extends Item implements Equipment {
+public class PacifierItem extends Item {
     public PacifierItem(Settings settings) {
         super(settings);
-
-    }
-
-    @Override
-    public EquipmentSlot getSlotType() {
-        return EquipmentSlot.OFFHAND;
     }
 
     public static boolean consumePacifier(LivingEntity entity) {

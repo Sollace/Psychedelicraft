@@ -16,6 +16,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,7 +37,7 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
     private final float planeRotationZ;
 
     public RastaHeadHallucination(PlayerEntity playerEntity) {
-        super(playerEntity, EntityType.PIG.create(playerEntity.getWorld()));
+        super(playerEntity, EntityType.PIG.create(playerEntity.getWorld(), SpawnReason.EVENT));
 
         maxAge = (random.nextInt(59) + 120) * 20;
         scale = 1 + random.nextFloat() / 2F;

@@ -10,13 +10,12 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -50,7 +49,7 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+    public void onRandomTick(ServerWorld world, BlockPos pos, FluidState state, Random random) {
         int temperature = state.get(TEMPERATURE.property());
         if (temperature > 0 && world.getBlockState(pos).getBlock() instanceof FluidBlock) {
             world.setBlockState(pos, state.with(TEMPERATURE.property(), temperature - 1).getBlockState());

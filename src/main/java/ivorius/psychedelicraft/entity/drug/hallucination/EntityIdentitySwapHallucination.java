@@ -9,6 +9,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class EntityIdentitySwapHallucination extends Hallucination {
@@ -66,7 +67,7 @@ public class EntityIdentitySwapHallucination extends Hallucination {
 
     record Selection(Entity selection, Entity attachment) {
         Selection(Entity selection, EntityType<?> attachmentType) {
-            this(selection, attachmentType.create(selection.getWorld()));
+            this(selection, attachmentType.create(selection.getWorld(), SpawnReason.EVENT));
             attachment.setSilent(true);
             attachment.copyFrom(selection);
         }

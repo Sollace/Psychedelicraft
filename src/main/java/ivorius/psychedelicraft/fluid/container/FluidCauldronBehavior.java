@@ -16,7 +16,7 @@ import net.minecraft.item.ItemUsage;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -40,10 +40,10 @@ public interface FluidCauldronBehavior {
             world.setBlockState(pos, cauldron.getDefaultState().withIfExists(LeveledCauldronBlock.LEVEL, levels));
             world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1, 1);
             world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     };
     CauldronBehavior WATER = createCauldronInteraction(SimpleFluid.of(Fluids.WATER));
     CauldronBehavior LAVA = createCauldronInteraction(SimpleFluid.of(Fluids.LAVA));
@@ -66,7 +66,7 @@ public interface FluidCauldronBehavior {
                 ItemFluids fluid = fluidType.getDefaultStack(minimumFluidMoved);
 
                 if (!t.canAccept(fluid)) {
-                    return ItemActionResult.FAIL;
+                    return ActionResult.FAIL;
                 }
                 if (!world.isClient) {
                     t.deposit(fluid);
@@ -83,11 +83,11 @@ public interface FluidCauldronBehavior {
                     world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1, 1);
                     world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
                 }
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
 
             if (t.fluids().fluid() != fluidType || t.fluids().amount() < minimumFluidMoved || !tryIncrementFluidLevel(state, world, pos)) {
-                return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
             }
 
             player.incrementStat(Stats.USE_CAULDRON);
@@ -95,7 +95,7 @@ public interface FluidCauldronBehavior {
             t.withdraw(minimumFluidMoved);
             world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1, 1);
             player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         };
     }
 

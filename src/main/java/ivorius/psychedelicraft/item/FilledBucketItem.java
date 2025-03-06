@@ -36,8 +36,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPointer;
@@ -51,10 +51,10 @@ import net.minecraft.world.event.GameEvent;
 /**
  * Created by Sollace on Feb 6 2023
  */
-public class FilledBucketItem extends Item {
+public class FilledBucketItem extends BucketItem {
 
     public FilledBucketItem(Settings settings) {
-        super(settings.recipeRemainder(Items.BUCKET));
+        super(Fluids.EMPTY, settings.recipeRemainder(Items.BUCKET));
         registerDispenserBehaviour(this);
     }
 
@@ -76,7 +76,7 @@ public class FilledBucketItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         ItemFluids fluids = ItemFluids.of(stack);
         FluidState fluid = fluids.fluid().getFluidState(fluids);
@@ -86,7 +86,7 @@ public class FilledBucketItem extends Item {
                 : RaycastContext.FluidHandling.NONE);
 
         if (hit.getType() == HitResult.Type.MISS) {
-            return TypedActionResult.pass(stack);
+            return ActionResult.PASS;
         }
 
         if (hit.getType() == HitResult.Type.BLOCK) {
@@ -95,7 +95,7 @@ public class FilledBucketItem extends Item {
             Direction direction = hit.getSide();
             BlockPos blockPos2 = blockPos.offset(direction);
             if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(blockPos2, direction, stack)) {
-                return TypedActionResult.fail(stack);
+                return ActionResult.FAIL;
             }
 
             if (fluid.isEmpty()) {
@@ -109,9 +109,9 @@ public class FilledBucketItem extends Item {
                     if (!world.isClient) {
                         Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, itemStack2);
                     }
-                    return TypedActionResult.success(itemStack3, world.isClient());
+                    return ActionResult.SUCCESS.withNewHandStack(itemStack3);
                 }
-                return TypedActionResult.fail(stack);
+                return ActionResult.FAIL;
             }
             BlockState blockState = world.getBlockState(blockPos);
             blockPos3 = blockState.getBlock() instanceof FluidFillable && fluid.isOf(Fluids.WATER) ? blockPos : blockPos2;
@@ -120,12 +120,12 @@ public class FilledBucketItem extends Item {
                     Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, stack);
                 }
                 user.incrementStat(Stats.USED.getOrCreateStat(this));
-                return TypedActionResult.success(BucketItem.getEmptiedStack(stack, user), world.isClient());
+                return ActionResult.SUCCESS.withNewHandStack(BucketItem.getEmptiedStack(stack, user));
             }
 
-            return TypedActionResult.fail(stack);
+            return ActionResult.FAIL;
         }
-        return TypedActionResult.pass(stack);
+        return ActionResult.PASS;
     }
 
     public static void registerDispenserBehaviour(Item item) {
@@ -141,6 +141,15 @@ public class FilledBucketItem extends Item {
                 return super.dispenseSilently(pointer, stack);
             }
         });
+    }
+
+    @Override
+    public void onEmptied(@Nullable PlayerEntity player, World world, ItemStack stack, BlockPos pos) {
+    }
+
+    @Override
+    public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
+        return false;
     }
 
     @SuppressWarnings("deprecation")

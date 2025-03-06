@@ -20,19 +20,15 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.Context;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
-import net.minecraft.block.StainedGlassPaneBlock;
-import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -72,7 +68,7 @@ public class PlacedDrinksModelProvider
     }
 
     @Override
-    public void onInitializeModelLoader(Map<String, Map<Identifier, PlacedDrinksModelProvider.Entry>> data, Context context) {
+    public void initialize(Map<String, Map<Identifier, Entry>> data, Context context) {
         entries = data;
         data.forEach((type, entries) -> {
             entries.forEach((id, entry) -> {
@@ -106,12 +102,10 @@ public class PlacedDrinksModelProvider
     }
 
     public void renderDrinkModel(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, int color, Identifier modelId) {
-        ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
 
-        BakedModel model = renderer.getModels().getModelManager().getModel(modelId);
+        BakedModel model = MinecraftClient.getInstance().getBakedModelManager().getModel(modelId);
 
-        boolean solid = !(stack.getItem() instanceof BlockItem bi) || !(bi.getBlock() instanceof TransparentBlock) && !(bi.getBlock() instanceof StainedGlassPaneBlock);
-        RenderLayer renderLayer = RenderLayers.getItemLayer(stack, solid);
+        RenderLayer renderLayer = RenderLayers.getItemLayer(stack);
 
         renderBakedItemModel(model, matrices, vertices.getBuffer(renderLayer), light, overlay, color);
     }
@@ -157,4 +151,5 @@ public class PlacedDrinksModelProvider
         public static final Codec<Map<Identifier, Entry>> MAP_CODEC = Codec.unboundedMap(Identifier.CODEC, CODEC);
         public static final Entry DEFAULT = new Entry(0.5F, 0F, false);
     }
+
 }

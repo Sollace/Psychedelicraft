@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.advancement.PSCriteria;
@@ -130,18 +131,17 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     }
 
     @Override
-    protected ItemActionResult onInteractWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
+    protected ActionResult onInteractWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
         if (!heldStack.isEmpty()) {
-            TypedActionResult<ItemStack> result = blockEntity.interactWithItem(heldStack.copy());
-            if (result.getResult().isAccepted()) {
+            return Either.unwrap(blockEntity.interactWithItem(heldStack.copy()).mapLeft(stack -> {
                 if (!player.isCreative()) {
-                    player.setStackInHand(hand, result.getValue());
+                    player.setStackInHand(hand, stack);
                 }
-                return ItemActionResult.SUCCESS;
-            }
+                return ActionResult.SUCCESS;
+            }));
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     }
 
     @Override

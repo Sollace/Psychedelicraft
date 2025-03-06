@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.recipe;
 
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -12,17 +14,13 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.util.CodecUtils;
-import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 /**
  * Created by Sollace on 19 Jul 2024
@@ -52,7 +50,7 @@ public record ReducingRecipe (
     );
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<ReducingRecipe> getSerializer() {
         return PSRecipes.REDUCING;
     }
 
@@ -62,13 +60,8 @@ public record ReducingRecipe (
     }
 
     @Override
-    public ItemStack createIcon() {
-        return PSItems.BUNSEN_BURNER.getDefaultStack();
-    }
-
-    @Override
-    public DefaultedList<Ingredient> getIngredients() {
-        return ingredients.solids();
+    public boolean isAcceptableIngredient(ItemStack stack) {
+        return ingredients.solids().stream().anyMatch(i -> i.test(stack));
     }
 
     @Override
@@ -84,11 +77,6 @@ public record ReducingRecipe (
                 input.consumer().accept(level == 0 ? result.fluid() : result.fluid().ofAmount(result.fluid().amount() * level));
             }
         }
-        return result.byProduct();
-    }
-
-    @Override
-    public ItemStack getResult(WrapperLookup lookup) {
         return result.byProduct();
     }
 
@@ -111,19 +99,19 @@ public record ReducingRecipe (
             /**
              * Required input fluids (optional)
              */
-            DefaultedList<FluidIngredient> fluids,
+            List<FluidIngredient> fluids,
             /**
              * Required input item (optional)
              */
-            DefaultedList<Ingredient> solids
+            List<Ingredient> solids
     ) {
         public static final MapCodec<Ingredients> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                CodecUtils.toDefaultedList(FluidIngredient.CODEC, FluidIngredient.EMPTY).optionalFieldOf("fluids", DefaultedList.of()).forGetter(Ingredients::fluids),
-                CodecUtils.toDefaultedList(Ingredient.DISALLOW_EMPTY_CODEC, Ingredient.EMPTY).optionalFieldOf("solids", DefaultedList.of()).forGetter(Ingredients::solids)
+                FluidIngredient.CODEC.listOf().optionalFieldOf("fluids", List.of()).forGetter(Ingredients::fluids),
+                Ingredient.CODEC.listOf().optionalFieldOf("solids", List.of()).forGetter(Ingredients::solids)
         ).apply(instance, Ingredients::new));
         public static final PacketCodec<RegistryByteBuf, Ingredients> PACKET_CODEC = PacketCodec.tuple(
-                FluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), Ingredients::fluids,
-                Ingredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), Ingredients::solids,
+                FluidIngredient.PACKET_CODEC.collect(PacketCodecs.toList()), Ingredients::fluids,
+                Ingredient.PACKET_CODEC.collect(PacketCodecs.toList()), Ingredients::solids,
                 Ingredients::new
         );
 
@@ -143,4 +131,5 @@ public record ReducingRecipe (
             return fluids().isEmpty() ? 0 : Math.max(0, fluids().stream().mapToInt(ingredient -> fluids.removeMatch(ingredient)).min().orElse(0));
         }
     }
+
 }

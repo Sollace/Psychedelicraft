@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
+import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
 import com.mojang.datafixers.util.Pair;
 
 import ivorius.psychedelicraft.block.BlockWithFluid;
@@ -50,9 +50,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -116,10 +116,12 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
             return false;
         }
 
-        var action = contents.interact(stack, player, hand, side);
-        contents = action.getValue();
+        boolean accepted = contents.interact(stack, player, hand, side).filter(c -> {
+            contents = c;
+            return true;
+        }).isPresent();
         markDirty();
-        return action.getResult().isAccepted();
+        return accepted;
     }
 
     public void playSound(@Nullable PlayerEntity player, SoundEvent sound) {
@@ -132,7 +134,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     public void clientTick(World world) {
         if (getTemperature() > 60 && getTotalFluidVolume() > 0) {
             BlockPos pos = getPos();
-            world.addParticle(new DrugDustParticleEffect(PSParticles.BUBBLE, new Vector3f(1, 1, 1), 0.6F),
+            world.addParticle(new DrugDustParticleEffect(PSParticles.BUBBLE, Colors.WHITE, 0.6F),
                     world.getRandom().nextTriangular(pos.getX() + 0.5, 0.2),
                     world.getRandom().nextTriangular(pos.getY() + 1, 0.2),
                     world.getRandom().nextTriangular(pos.getZ() + 0.5, 0.2), 0, 0, 0);
@@ -390,8 +392,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
         ItemStack getFilled(ItemStack container, boolean dryRun, float drainPercentage);
 
-        @Nullable
-        TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side);
+        Optional<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side);
 
         VoxelShape getOutlineShape();
 

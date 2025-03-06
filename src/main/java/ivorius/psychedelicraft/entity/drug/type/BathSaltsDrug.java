@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -34,51 +35,51 @@ public class BathSaltsDrug extends SimpleDrug {
     }
 
     @Override
-    protected boolean tickSideEffects(DrugProperties properties, Random random) {
+    protected boolean tickSideEffects(ServerWorld world, DrugProperties properties, Random random) {
         PlayerEntity entity = properties.asEntity();
         double chance = (getActiveValue() - 0.8F) * 0.051F;
 
         if (entity.age % 20 == 0 && random.nextFloat() < chance) {
             if (random.nextFloat() < 0.4F) {
-                entity.damage(properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
+                entity.damage(world, properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
                 return true;
             }
 
             if (random.nextFloat() < 0.5F) {
-                entity.damage(properties.damageOf(PSDamageTypes.HEART_FAILURE), Integer.MAX_VALUE);
+                entity.damage(world, properties.damageOf(PSDamageTypes.HEART_FAILURE), Integer.MAX_VALUE);
                 return true;
             }
 
             if (random.nextFloat() < 0.5F) {
-                entity.damage(properties.damageOf(PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
+                entity.damage(world, properties.damageOf(PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
                 return true;
             }
 
             if (random.nextFloat() < 0.5F) {
-                entity.damage(properties.damageOf(PSDamageTypes.KIDNEY_FAILURE), Integer.MAX_VALUE);
+                entity.damage(world, properties.damageOf(PSDamageTypes.KIDNEY_FAILURE), Integer.MAX_VALUE);
                 return true;
             }
         }
 
-        return super.tickSideEffects(properties, random);
+        return super.tickSideEffects(world, properties, random);
     }
 
     @Override
-    public void onWakeUp(DrugProperties drugProperties) {
+    public void onWakeUp(ServerWorld world, DrugProperties drugProperties) {
         if (getActiveValue() > 0) {
             Random random = drugProperties.asEntity().getWorld().random;
 
             if (random.nextFloat() < 0.5) {
-                drugProperties.asEntity().damage(
+                drugProperties.asEntity().damage(world,
                         drugProperties.damageOf(random.nextFloat() < 0.002 ? PSDamageTypes.KIDNEY_FAILURE : PSDamageTypes.IN_SLEEP),
                         Integer.MAX_VALUE
                 );
             } else {
                 drugProperties.asEntity().addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0, false, false, false));
-                super.onWakeUp(drugProperties);
+                super.onWakeUp(world, drugProperties);
             }
         } else {
-            super.onWakeUp(drugProperties);
+            super.onWakeUp(world, drugProperties);
         }
     }
 }

@@ -124,8 +124,6 @@ public interface PSRenderers {
             });
         });
 
-        TerraformBoatClientHelper.registerModelLayers(Psychedelicraft.id("juniper"), false);
-
         PSParticleFactories.bootstrap();
         PSShaders.bootstrap();
     }

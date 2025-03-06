@@ -11,19 +11,21 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.util.CodecUtils;
-import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 /**
  * Created by Sollace on 7 Feb 2023
@@ -56,28 +58,18 @@ public record MashingRecipe (
     );
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<MashingRecipe> getType() {
         return PSRecipes.MASHING_TYPE;
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<MashingRecipe> getSerializer() {
         return PSRecipes.MASHING;
     }
 
     @Override
     public String getGroup() {
         return mashingGroup;
-    }
-
-    @Override
-    public ItemStack createIcon() {
-        return PSItems.MASH_TUB.getDefaultStack();
-    }
-
-    @Override
-    public DefaultedList<Ingredient> getIngredients() {
-        return ingredients.ingredients();
     }
 
     @Override
@@ -93,22 +85,16 @@ public record MashingRecipe (
                 && ingredients.includes(input);
     }
 
+    public boolean isAcceptableIngredient(ItemFluids vatFluids, ItemStack stack) {
+        return baseFluid().canCombine(vatFluids)
+            && ingredients.ingredients().stream().anyMatch(i -> i.test(stack));
+    }
+
     @Override
     public ItemStack craft(Input input, WrapperLookup lookup) {
         return ItemStack.EMPTY;
     }
 
-    @Override
-    public boolean fits(int width, int height) {
-        return (width * height) > 0;
-    }
-
-    @Override
-    public ItemStack getResult(WrapperLookup lookup) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
     public DefaultedList<ItemStack> getRemainder(Input input) {
         ItemMound unmatchedInputs = new ItemMound(input.inputs());
         ingredients.removeMatches(unmatchedInputs);
@@ -120,6 +106,16 @@ public record MashingRecipe (
         return true;
     }
 
+    @Override
+    public IngredientPlacement getIngredientPlacement() {
+        return IngredientPlacement.NONE;
+    }
+
+    @Override
+    public RecipeBookCategory getRecipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
     public record Input(ItemFluids tankFluid, ItemStack solids, ItemMound inputs) implements RecipeInput {
         @Override
         public ItemStack getStackInSlot(int slot) {
@@ -127,7 +123,7 @@ public record MashingRecipe (
         }
 
         @Override
-        public int getSize() {
+        public int size() {
             return 1;
         }
 
@@ -137,12 +133,12 @@ public record MashingRecipe (
         }
     }
 
-    public record Ingredients (DefaultedList<Entry> counts, DefaultedList<Ingredient> ingredients) {
-        public static final Codec<Ingredients> CODEC = CodecUtils.toDefaultedList(Entry.CODEC, Entry.EMPTY).xmap(Ingredients::new, Ingredients::counts);
-        public static final PacketCodec<RegistryByteBuf, Ingredients> PACKET_CODEC = Entry.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()).xmap(Ingredients::new, Ingredients::counts);
+    public record Ingredients (List<Entry> counts, List<Ingredient> ingredients) {
+        public static final Codec<Ingredients> CODEC = Entry.CODEC.listOf().xmap(Ingredients::new, Ingredients::counts);
+        public static final PacketCodec<RegistryByteBuf, Ingredients> PACKET_CODEC = Entry.PACKET_CODEC.collect(PacketCodecs.toList()).xmap(Ingredients::new, Ingredients::counts);
 
-        public Ingredients(DefaultedList<Entry> counts) {
-            this(counts, DefaultedList.copyOf(Ingredient.EMPTY, counts.stream().map(Entry::ingredient).toArray(Ingredient[]::new)));
+        public Ingredients(List<Entry> counts) {
+            this(counts, counts.stream().flatMap(i -> i.ingredient().stream()).toList());
         }
 
         public boolean matches(Input input) {
@@ -160,18 +156,18 @@ public record MashingRecipe (
          */
         public boolean removeMatches(ItemMound inputs) {
             return counts().stream().filter(ingredient -> {
-                return !inputs.removeWhere(ingredient.ingredient(), ingredient.minimum());
+                return !inputs.removeWhere(ingredient.ingredient().orElse(null), ingredient.minimum());
             }).count() == 0;
         }
 
-        public record Entry(Ingredient ingredient, int minimum) {
-            public static final Entry EMPTY = new Entry(Ingredient.EMPTY, 0);
+        public record Entry(Optional<Ingredient> ingredient, int minimum) {
+            public static final Entry EMPTY = new Entry(Optional.empty(), 0);
             public static final Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(
-                    Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(Entry::ingredient),
+                    Ingredient.CODEC.optionalFieldOf("ingredient").forGetter(Entry::ingredient),
                     Codec.INT.fieldOf("count").forGetter(Entry::minimum)
             ).apply(i, Entry::new));
             public static final PacketCodec<RegistryByteBuf, Entry> PACKET_CODEC = PacketCodec.tuple(
-                    Ingredient.PACKET_CODEC, Entry::ingredient,
+                    PacketCodecs.optional(Ingredient.PACKET_CODEC), Entry::ingredient,
                     PacketCodecs.INTEGER, Entry::minimum,
                     Entry::new
             );

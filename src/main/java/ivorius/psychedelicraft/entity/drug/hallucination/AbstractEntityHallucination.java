@@ -123,7 +123,7 @@ public abstract class AbstractEntityHallucination extends Hallucination {
     protected void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, double x, double y, double z, float pitch, float yaw, float tickDelta) {
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadows(false);
-        dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, vertices, dispatcher.getLight(entity, tickDelta));
+        dispatcher.render(entity, x, y, z, tickDelta, matrices, vertices, dispatcher.getLight(entity, tickDelta));
         dispatcher.setRenderShadows(true);
     }
 }

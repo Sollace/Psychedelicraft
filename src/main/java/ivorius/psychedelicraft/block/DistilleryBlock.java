@@ -22,9 +22,11 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
+import net.minecraft.world.tick.ScheduledTickView;
 
 /**
  * Created by lukas on 25.10.14.
@@ -39,7 +41,7 @@ public class DistilleryBlock extends FluidMachineBlock<DistilleryBlockEntity> {
         Block.createCuboidShape(5, 9, 6, 11, 13, 10),
         Block.createCuboidShape(6, 9, 5, 10, 13, 11)
     );
-    public static final DirectionProperty FACING = Properties.FACING;
+    public static final EnumProperty<Direction> FACING = Properties.FACING;
 
     public DistilleryBlock(Settings settings) {
         super(settings.nonOpaque());
@@ -98,14 +100,14 @@ public class DistilleryBlock extends FluidMachineBlock<DistilleryBlockEntity> {
 
     @Deprecated
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
         if (state.get(FACING).getAxis() == Axis.Y || state.get(FACING) == direction) {
             return state.with(FACING, Direction.Type.HORIZONTAL.stream().filter(d -> {
                 return canConnectTo(world.getBlockState(pos.offset(d)), d);
             }).findAny().orElse(Direction.UP));
         }
 
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
     }
 
     @Override

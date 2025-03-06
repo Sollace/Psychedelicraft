@@ -17,6 +17,9 @@ import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.book.RecipeBookCategories;
 import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
@@ -33,7 +36,7 @@ public record DryingRecipe(
     public static final MapCodec<DryingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(DryingRecipe::dryingGroup),
             CookingRecipeCategory.CODEC.fieldOf("category").orElse(CookingRecipeCategory.MISC).forGetter(DryingRecipe::category),
-            Ingredient.ALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(DryingRecipe::input),
+            Ingredient.CODEC.fieldOf("ingredient").forGetter(DryingRecipe::input),
             ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(DryingRecipe::output),
             Codec.FLOAT.optionalFieldOf("experience", 0F).forGetter(DryingRecipe::experience),
             Codec.FLOAT.optionalFieldOf("cookingTime", 1F).forGetter(DryingRecipe::cookTime)
@@ -49,28 +52,18 @@ public record DryingRecipe(
     );
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<DryingRecipe> getSerializer() {
         return PSRecipes.DRYING;
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<DryingRecipe> getType() {
         return PSRecipes.DRYING_TYPE;
     }
 
     @Override
     public String getGroup() {
         return dryingGroup;
-    }
-
-    @Override
-    public DefaultedList<Ingredient> getIngredients() {
-        return DefaultedList.copyOf(Ingredient.EMPTY, input);
-    }
-
-    @Override
-    public ItemStack createIcon() {
-        return PSItems.DRYING_TABLE.getDefaultStack();
     }
 
     @Override
@@ -90,22 +83,11 @@ public record DryingRecipe(
 
     @Override
     public ItemStack craft(Input input, WrapperLookup lookup) {
-        return getResult(lookup);
-    }
-
-    @Override
-    public boolean fits(int width, int height) {
-        return true;
-    }
-
-    @Override
-    public ItemStack getResult(WrapperLookup registriesLookup) {
         return output.copy();
     }
 
-    @Override
     public DefaultedList<ItemStack> getRemainder(DryingRecipe.Input input) {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.getSize(), ItemStack.EMPTY);
+        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
         int toConsume = 9;
 
         for (int i = 0; i < defaultedList.size(); i++) {
@@ -126,6 +108,19 @@ public record DryingRecipe(
     @Override
     public IngredientPlacement getIngredientPlacement() {
         return IngredientPlacement.forMultipleSlots(IntStream.range(0, 9).mapToObj(i -> Optional.of(input)).toList());
+    }
+
+    @Override
+    public List<RecipeDisplay> getDisplays() {
+        return List.of(
+            new ShapedCraftingRecipeDisplay(
+                3,
+                3,
+                IntStream.range(0, 9).mapToObj(i -> input.toDisplay()).toList(),
+                new SlotDisplay.StackSlotDisplay(output),
+                new SlotDisplay.ItemSlotDisplay(PSItems.DRYING_TABLE)
+            )
+        );
     }
 
     @Override

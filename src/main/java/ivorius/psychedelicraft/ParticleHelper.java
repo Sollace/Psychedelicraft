@@ -7,6 +7,7 @@ import org.joml.Vector3f;
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
+import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.*;
 import net.minecraft.server.world.ServerWorld;
@@ -16,7 +17,7 @@ import net.minecraft.world.World;
 public interface ParticleHelper {
 
     static void spawnColoredParticle(Entity entity, Vector3f color, float speed, float size) {
-        spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, color, size), speed);
+        spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, MathUtils.getArgb(color), size), speed);
     }
 
     static void spawnParticleAtFace(Entity entity, ParticleEffect effect, float speed) {

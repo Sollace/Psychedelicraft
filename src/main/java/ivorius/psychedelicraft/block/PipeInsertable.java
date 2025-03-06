@@ -15,7 +15,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 public interface PipeInsertable {
     Either<Optional<PipeFluids>, Unit> STATUS_VOIDED = Either.right(Unit.INSTANCE);
@@ -25,7 +25,7 @@ public interface PipeInsertable {
         return Either.left(Optional.of(fluids));
     }
 
-    default boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+    default boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
         return false;
     }
 
@@ -33,7 +33,7 @@ public interface PipeInsertable {
         return STATUS_VOIDED;
     }
 
-    static boolean canConnectWith(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+    static boolean canConnectWith(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
         return neighborState.getBlock() instanceof PipeInsertable pipe
                 && pipe.acceptsConnectionFrom(world, neighborState, neighborPos, state, pos, direction.getOpposite(), input);
     }

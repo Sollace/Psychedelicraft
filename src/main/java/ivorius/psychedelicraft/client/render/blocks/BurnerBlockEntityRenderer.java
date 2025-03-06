@@ -18,9 +18,9 @@ import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.ColorHelper;
@@ -86,7 +86,7 @@ public class BurnerBlockEntityRenderer extends LabelledBlockEntityRenderer<Burne
         int width = textRenderer.getWidth(text);
 
         int temperatureColorComponent = MathHelper.clamp((int)(255 * (1 - temperature/100F)), 0, 255);
-        int temperatureColor = ColorHelper.Argb.getArgb(255, 255, temperatureColorComponent, temperatureColorComponent);
+        int temperatureColor = ColorHelper.getArgb(255, 255, temperatureColorComponent, temperatureColorComponent);
 
         textRenderer.draw(text, -width / 2F, 0, temperatureColor, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
         matrices.scale(0.9F, 0.9F, 0.9F);

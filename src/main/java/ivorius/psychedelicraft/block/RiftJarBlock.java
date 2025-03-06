@@ -20,12 +20,12 @@ import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
@@ -44,7 +44,7 @@ class RiftJarBlock extends BlockWithEntity {
             Block.createCuboidShape(4, 7, 4, 12, 12, 12),
             Block.createCuboidShape(5, 12, 5, 11, 14, 11)
     );
-    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
 
     public RiftJarBlock(Settings settings) {
         super(settings);
@@ -85,12 +85,12 @@ class RiftJarBlock extends BlockWithEntity {
             } else {
                 world.playSound(null, pos, be.toggleRiftJarOpen() ? PSSounds.BLOCK_RIFT_JAR_OPEN : PSSounds.BLOCK_RIFT_JAR_CLOSE, SoundCategory.BLOCKS);
             }
-            return ActionResult.SUCCESS;
+            return (ActionResult)ActionResult.SUCCESS;
         }).orElse(ActionResult.FAIL);
     }
 
     @Override
-    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
         List<ItemStack> drops = super.getDroppedStacks(state, builder);
         if (builder.getOptional(LootContextParameters.BLOCK_ENTITY) instanceof RiftJarBlockEntity jar && !jar.jarBroken) {
             return drops.stream()

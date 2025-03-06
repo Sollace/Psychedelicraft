@@ -33,7 +33,7 @@ public class BottleRecipe extends ShapedRecipe {
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, BottleRecipe::getCategory,
             RawShapedRecipe.PACKET_CODEC, recipe -> recipe.raw,
             ItemStack.PACKET_CODEC, recipe -> recipe.result,
-            PacketCodecs.BOOL, BottleRecipe::showNotification,
+            PacketCodecs.BOOLEAN, BottleRecipe::showNotification,
             BottleRecipe::new
     );
 
@@ -46,15 +46,16 @@ public class BottleRecipe extends ShapedRecipe {
         this.result = result;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer getSerializer() {
         return PSRecipes.CRAFTING_SHAPED;
     }
 
     @Override
-    public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        ItemStack output = RecipeUtils.copyInputFluidToResult(getResult(registries).copy(), inventory.getStacks());
-        inventory.getStacks().stream().mapToInt(stack -> {
+    public ItemStack craft(CraftingRecipeInput input, WrapperLookup registries) {
+        ItemStack output = RecipeUtils.copyInputFluidToResult(super.craft(input, registries), input.getStacks());
+        input.getStacks().stream().mapToInt(stack -> {
                 if (stack.getItem() instanceof BlockItem i && i.getBlock() instanceof Stainable s) {
                     return s.getColor().getSignColor();
                 }

@@ -45,7 +45,7 @@ public class PeyoteBlockEntityRenderer implements BlockEntityRenderer<PeyoteBloc
 
         Random rng = RenderUtil.random(entity.getCachedState().getRenderingSeed(entity.getPos()));
 
-        Vec3d offset = entity.getCachedState().getModelOffset(entity.getWorld(), entity.getPos());
+        Vec3d offset = entity.getCachedState().getModelOffset(entity.getPos());
         matrices.translate(offset.x, offset.y, offset.z);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rng.nextInt(4) * 180));
 

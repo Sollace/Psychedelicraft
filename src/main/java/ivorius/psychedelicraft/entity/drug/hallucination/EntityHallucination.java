@@ -23,12 +23,13 @@ public class EntityHallucination extends AbstractEntityHallucination {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public EntityHallucination(PlayerEntity player, TagKey<EntityType<?>> entityTypes) {
-        super(player, player.getWorld().getRegistryManager().get(RegistryKeys.ENTITY_TYPE)
-                .getOrCreateEntryList(entityTypes)
+        super(player, player.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ENTITY_TYPE)
+                .getOptional(entityTypes)
+                .orElseThrow()
                 .getRandom(player.getWorld().random)
                 .map(RegistryEntry::value)
                 .orElse((EntityType)EntityType.PIG)
-                .create(player.getWorld()));
+                .create(player.getWorld(), SpawnReason.EVENT));
 
         entity.setPosition(
                 player.getX() + random.nextDouble() * 50D - 25D,

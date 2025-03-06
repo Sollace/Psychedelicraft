@@ -19,12 +19,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -89,14 +90,14 @@ public class AgavePlantBlock extends SucculentPlantBlock {
                     Math.abs(entity.getX() - entity.lastRenderX),
                     Math.abs(entity.getZ() - entity.lastRenderZ)
                 ) >= 0.003F) {
-                entity.damage(entity.getDamageSources().cactus(), 1);
+                entity.damage((ServerWorld)world, entity.getDamageSources().cactus(), 1);
             }
         }
     }
 
     @Deprecated
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         int age = state.get(getAgeProperty());
 
         if ((stack.isIn(ConventionalItemTags.SHEAR_TOOLS) && age >= 1)) {
@@ -108,18 +109,20 @@ public class AgavePlantBlock extends SucculentPlantBlock {
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
 
             if (stack.isOf(Items.BONE_MEAL)) {
-                return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
             }
 
             world.playSound(null, pos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS,
                     1,
                     0.8F + world.random.nextFloat() * 0.4F
             );
-            return ItemActionResult.success(world.isClient);
+            return ActionResult.SUCCESS;
         }
         if (stack.isEmpty()) {
-            player.damage(player.getDamageSources().cactus(), 1);
-            return ItemActionResult.SUCCESS;
+            if (world instanceof ServerWorld sw) {
+                player.damage(sw, player.getDamageSources().cactus(), 1);
+            }
+            return ActionResult.SUCCESS;
         }
 
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
@@ -128,7 +131,9 @@ public class AgavePlantBlock extends SucculentPlantBlock {
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (!isAppropriateTool(player.getStackInHand(Hand.MAIN_HAND))) {
-            player.damage(player.getDamageSources().cactus(), 1);
+            if (world instanceof ServerWorld sw) {
+                player.damage(sw, player.getDamageSources().cactus(), 1);
+            }
         }
         return super.onBreak(world, pos, state, player);
     }

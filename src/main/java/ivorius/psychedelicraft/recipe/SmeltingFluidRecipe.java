@@ -15,7 +15,6 @@ import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
-import java.lang.ref.WeakReference;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -51,7 +50,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             Codec.STRING.optionalFieldOf("group", "").forGetter(SmeltingFluidRecipe::getGroup),
             CookingRecipeCategory.CODEC.fieldOf("category").orElse(CookingRecipeCategory.MISC).forGetter(SmeltingFluidRecipe::getCategory),
             FluidIngredient.CODEC.fieldOf("input").forGetter(recipe -> recipe.fluid),
-            Ingredient.ALLOW_EMPTY_CODEC.optionalFieldOf("item", Ingredient.empty()).forGetter(recipe -> recipe.ingredient),
+            Ingredient.CODEC.fieldOf("ingredient").forGetter(SingleStackRecipe::ingredient),
             FluidModifyingResult.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
             Codec.FLOAT.fieldOf("experience").forGetter(SmeltingFluidRecipe::getExperience),
             Codec.INT.optionalFieldOf("cookingTIme", 200).forGetter(SmeltingFluidRecipe::getCookingTime)
@@ -60,7 +59,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             PacketCodecs.STRING, SmeltingFluidRecipe::getGroup,
             RecipeUtils.COOKING_RECIPE_CATEGORY_PACKET_CODEC, SmeltingFluidRecipe::getCategory,
             FluidIngredient.PACKET_CODEC, recipe -> recipe.fluid,
-            Ingredient.PACKET_CODEC, recipe -> recipe.ingredient,
+            Ingredient.PACKET_CODEC, SingleStackRecipe::ingredient,
             FluidModifyingResult.PACKET_CODEC, recipe -> recipe.result,
             PacketCodecs.FLOAT, SmeltingFluidRecipe::getExperience,
             PacketCodecs.INTEGER, SmeltingFluidRecipe::getCookingTime,
@@ -69,8 +68,6 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
 
     private final FluidIngredient fluid;
     private final FluidModifyingResult result;
-
-    private WeakReference<SingleStackRecipeInput> lastQueriedInventory = new WeakReference<>(null);
 
     public SmeltingFluidRecipe(
             String group, CookingRecipeCategory category,
@@ -90,29 +87,19 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
         return result;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer getSerializer() {
         return PSRecipes.SMELTING_RECEPTICAL;
     }
 
     @Override
     public boolean matches(SingleStackRecipeInput inventory, World world) {
-        lastQueriedInventory = new WeakReference<>(inventory);
-        return (ingredient.isEmpty() || ingredient.test(inventory.item())) && fluid.test(inventory.item());
-    }
-
-    @Override
-    public ItemStack getResult(WrapperLookup registries) {
-        SingleStackRecipeInput inventory = lastQueriedInventory.get();
-        if (inventory == null) {
-            return super.getResult(registries);
-        }
-        return craft(inventory, registries);
+        return (ingredient().isEmpty() || ingredient().test(inventory.item())) && fluid.test(inventory.item());
     }
 
     @Override
     public ItemStack craft(SingleStackRecipeInput inventory, WrapperLookup registries) {
-        lastQueriedInventory = new WeakReference<>(inventory);
         return result.applyTo(inventory.item());
     }
 }

@@ -34,11 +34,11 @@ public interface PSDamageTypes {
     }
 
     static DamageSource create(World world, RegistryKey<DamageType> type) {
-        return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(type));
+        return new DamageSource(world.getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getEntry(type.getValue()).orElseThrow());
     }
 
     static DamageSource create(World world, Entity source, @Nullable Entity attacker, RegistryKey<DamageType> type) {
-        return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(type), source, attacker);
+        return new DamageSource(world.getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getEntry(type.getValue()).orElseThrow(), source, attacker);
     }
 
     private static RegistryKey<DamageType> register(String name) {

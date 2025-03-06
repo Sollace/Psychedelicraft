@@ -326,7 +326,9 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public boolean onAwoken() {
-        drugs.values().forEach(drug -> drug.onWakeUp(this));
+        if (asEntity().getWorld() instanceof ServerWorld sw) {
+            drugs.values().forEach(drug -> drug.onWakeUp(sw, this));
+        }
         influences.clear();
         markDirty();
 

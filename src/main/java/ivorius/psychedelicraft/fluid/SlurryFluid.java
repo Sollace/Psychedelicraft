@@ -11,7 +11,6 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
-import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleUtil;
@@ -38,7 +37,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
 
     @Override
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
-        ParticleUtil.spawnParticle(world, pos, new DrugDustParticleEffect(PSParticles.BUBBLE, MathUtils.unpackRgb(getColor(getDefaultStack())), 1), ConstantIntProvider.create(5));
+        ParticleUtil.spawnParticle(world, pos, new DrugDustParticleEffect(PSParticles.BUBBLE, getColor(getDefaultStack()), 1), ConstantIntProvider.create(5));
 
         world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS,
                 0.5F + world.getRandom().nextFloat(),

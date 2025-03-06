@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block.entity.contents;
 
+import java.util.Optional;
+
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.BurnerBlock;
@@ -22,7 +24,6 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -48,9 +49,9 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
     }
 
     @Override
-    public TypedActionResult<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
+    public Optional<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         if (!isValidContainer(stack)) {
-            return TypedActionResult.fail(this);
+            return Optional.empty();
         }
 
         ItemStack container = stack.copyWithCount(1);
@@ -59,7 +60,7 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
 
         entity.setContainer(container);
         entity.playSound(player, BlockSoundGroup.GLASS.getPlaceSound());
-        return TypedActionResult.success(container.isOf(PSItems.BOTTLE) ? new LargeContents(entity, capacity, container) : new SmallContents(entity, capacity, container));
+        return Optional.of(container.isOf(PSItems.BOTTLE) ? new LargeContents(entity, capacity, container) : new SmallContents(entity, capacity, container));
     }
 
     private boolean isValidContainer(ItemStack stack) {

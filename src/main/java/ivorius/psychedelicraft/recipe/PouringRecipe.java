@@ -26,7 +26,7 @@ public class PouringRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<PouringRecipe> getSerializer() {
         return PSRecipes.POUR_DRINK;
     }
 
@@ -67,10 +67,10 @@ public class PouringRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput inventory) {
+    public DefaultedList<ItemStack> getRecipeRemainders(CraftingRecipeInput inventory) {
         var recepticals = RecipeUtils.recepticalSlots(inventory).toList();
         if (recepticals.size() < 2) {
-            return DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
+            return DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
         }
 
         ItemFluids.Transaction to = ItemFluids.Transaction.begin(recepticals.get(1).content());
@@ -78,13 +78,9 @@ public class PouringRecipe extends SpecialCraftingRecipe {
 
         from.withdraw(Math.min(from.fluids().amount(), to.capacity() - to.fluids().amount()));
 
-        DefaultedList<ItemStack> remainder = DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
+        DefaultedList<ItemStack> remainder = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
         remainder.set(recepticals.get(0).position(), from.toItemStack());
+        this.getIngredientPlacement();
         return remainder;
-    }
-
-    @Override
-    public boolean fits(int width, int height) {
-        return (width * height) > 2;
     }
 }

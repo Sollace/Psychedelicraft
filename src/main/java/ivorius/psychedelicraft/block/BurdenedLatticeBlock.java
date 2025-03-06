@@ -7,11 +7,14 @@ package ivorius.psychedelicraft.block;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -58,8 +61,9 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
     private final int shearedAge;
 
-    @Nullable
-    private RegistryKey<LootTable> farmingLootTableKey;
+    private final Supplier<Optional<RegistryKey<LootTable>>> farmingLootTableKey = Suppliers.memoize(() -> {
+        return getLootTableKey().map(key -> RegistryKey.of(RegistryKeys.LOOT_TABLE, key.getValue().withSuffixedPath("_farming")));
+    });
 
     public BurdenedLatticeBlock(boolean spreads, @Nullable Block stem, int shearedAge, Settings settings) {
         super(settings);
@@ -90,9 +94,12 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
         ItemStack tool = builder.getOptional(LootContextParameters.TOOL);
-        if (tool != null && !tool.isEmpty() && EnchantmentHelper.getEnchantments(tool).getLevel(builder.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).entryOf(Enchantments.SILK_TOUCH)) > 0) {
+        if (tool != null && !tool.isEmpty() && builder.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT)
+                    .getEntry(Enchantments.SILK_TOUCH.getValue())
+                    .filter(ench -> EnchantmentHelper.getEnchantments(tool).getLevel(ench) > 0)
+                    .isPresent()) {
             ItemStack drop = asItem().getDefaultStack();
             drop.setDamage(state.get(AGE));
             return List.of(drop);
@@ -101,42 +108,38 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (stack.isOf(Items.SHEARS)) {
 
             if (state.get(AGE) < MAX_AGE || state.get(PERSISTENT)) {
-                return ItemActionResult.FAIL;
+                return ActionResult.FAIL;
             }
 
             world.playSoundFromEntity(null, player, SoundEvents.ENTITY_SHEEP_SHEAR, player.getSoundCategory(), 1, 1);
 
             if (!world.isClient) {
-                world.getServer().getReloadableRegistries().getLootTable(getFarmingLootTableKey())
-                    .generateLoot(new LootContextParameterSet.Builder((ServerWorld)world)
-                        .add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
-                        .add(LootContextParameters.TOOL, player.getStackInHand(hand))
-                        .add(LootContextParameters.BLOCK_STATE, state)
-                        .addOptional(LootContextParameters.BLOCK_ENTITY, world.getBlockEntity(pos))
-                        .build(LootContextTypes.BLOCK)).forEach(s -> Block.dropStack(world, pos, s));
+                getFarmingLootTableKey()
+                    .map(world.getServer().getReloadableRegistries()::getLootTable)
+                    .ifPresent(table -> table.generateLoot(new LootWorldContext.Builder((ServerWorld)world)
+                            .add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+                            .add(LootContextParameters.TOOL, player.getStackInHand(hand))
+                            .add(LootContextParameters.BLOCK_STATE, state)
+                            .addOptional(LootContextParameters.BLOCK_ENTITY, world.getBlockEntity(pos))
+                            .build(LootContextTypes.BLOCK)).forEach(s -> Block.dropStack(world, pos, s)));
                 world.setBlockState(pos, state.with(AGE, shearedAge));
             }
             if (!player.isCreative()) {
                 player.getStackInHand(hand).damage(1, player, hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             }
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     }
 
-    public final RegistryKey<LootTable> getFarmingLootTableKey() {
-        if (farmingLootTableKey == null) {
-            farmingLootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, getLootTableKey().getValue().withSuffixedPath("_farming"));
-        }
-
-        return farmingLootTableKey;
+    public final Optional<RegistryKey<LootTable>> getFarmingLootTableKey() {
+        return farmingLootTableKey.get();
     }
-
 
     @Override
     protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
@@ -180,9 +183,11 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-        ItemStack stack = super.getPickStack(world, pos, state);
-        stack.setDamage(state.get(AGE));
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
+        ItemStack stack = super.getPickStack(world, pos, state, includeData);
+        if (includeData) {
+            stack.setDamage(state.get(AGE));
+        }
         return stack;
     }
 

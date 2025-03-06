@@ -3,7 +3,7 @@ package ivorius.psychedelicraft.item;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.UseAction;
+import net.minecraft.item.consume.UseAction;
 
 /**
  * Created by lukas on 14.11.14.

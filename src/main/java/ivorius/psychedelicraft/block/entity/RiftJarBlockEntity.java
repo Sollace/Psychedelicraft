@@ -15,6 +15,7 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -144,7 +145,7 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
             if (rifts.size() > 0) {
                 rifts.get(0).addToRift(currentRiftFraction);
             } else if (!world.isClient) {
-                RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(world);
+                RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(world, SpawnReason.EVENT);
                 rift.setPosition(getPos().toCenterPos().add(5, 3, 0.5));
                 rift.setRiftSize(currentRiftFraction);
                 world.spawnEntity(rift);
