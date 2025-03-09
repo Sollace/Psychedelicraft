@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -54,7 +55,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         float[] color = appearance.rgba();
 
-        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], color[3]);
+        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, ColorHelper.fromFloats(color[3], color[0], color[1], color[2]));
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     }
@@ -71,7 +72,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         float[] color = appearance.rgba();
 
-        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y + height - fluidHeightPixels, width, fluidHeightPixels, color[0], color[1], color[2], color[3]);
+        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y + height - fluidHeightPixels, width, fluidHeightPixels, ColorHelper.fromFloats(color[3], color[0], color[1], color[2]));
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     }

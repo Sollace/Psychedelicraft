@@ -136,7 +136,7 @@ public class MotionBlurScreenEffect implements ScreenEffect {
 
         public GlTexture(int sample, int width, int height) {
             this.sample = sample;
-            output = new SimpleFramebuffer(width, height, true, MinecraftClient.IS_SYSTEM_MAC);
+            output = new SimpleFramebuffer(width, height, true);
             output.viewportWidth = width;
             output.viewportHeight = height;
         }

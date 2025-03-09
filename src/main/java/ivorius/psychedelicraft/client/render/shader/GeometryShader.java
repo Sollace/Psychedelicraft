@@ -49,11 +49,6 @@ public class GeometryShader {
         map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).getGlId());
     });
 
-    public void setup(Type type, String domain, String name) {
-        this.name = Identifier.of(name);
-        this.type = type;
-    }
-
     public void setup(Type type, Identifier name) {
         this.name = name;
         this.type = type;

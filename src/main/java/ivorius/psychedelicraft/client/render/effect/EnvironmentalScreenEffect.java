@@ -69,7 +69,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
         wasInWater = entity.getWorld().getFluidState(BlockPos.ofFloored(entity.getEyePos())).isIn(FluidTags.WATER);
         wasInRain = entity.getWorld().getRainGradient(tickDelta) > 0
-                && entity.getWorld().getBiome(entity.getBlockPos()).value().getPrecipitation(entity.getBlockPos()) == Precipitation.RAIN
+                && entity.getWorld().getBiome(entity.getBlockPos()).value().getPrecipitation(entity.getBlockPos(), entity.getWorld().getSeaLevel()) == Precipitation.RAIN
                 && entity.getWorld().getTopPosition(Type.MOTION_BLOCKING, entity.getBlockPos()).getY() <= entity.getY();
 
         if (PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {

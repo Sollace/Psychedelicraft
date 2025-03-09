@@ -4,9 +4,7 @@ import java.time.Instant;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.authlib.GameProfile;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
@@ -25,34 +23,31 @@ import net.minecraft.text.Text;
 abstract class MixinChatScreen extends Screen {
     MixinChatScreen() { super(null); }
 
-    @Inject(method = "normalize(Ljava/lang/String;)Ljava/lang/String;",
-            at = @At("RETURN"),
-            cancellable = true)
-    public void onNormalize(String chatText, CallbackInfoReturnable<String> info) {
-        info.setReturnValue(MessageDistorter.INSTANCE.distortOutgoingMessage(client.player, info.getReturnValue()));
+    @ModifyReturnValue(method = "normalize(Ljava/lang/String;)Ljava/lang/String;", at = @At("RETURN"))
+    private String onNormalize(String message) {
+        return MessageDistorter.INSTANCE.distortOutgoingMessage(client.player, message);
     }
 }
 
 @Mixin(ChatMessages.class)
 abstract class MixinChatMessages {
-    @Inject(method = "getRenderedChatMessage(Ljava/lang/String;)Ljava/lang/String;",
-            at = @At("RETURN"),
-            cancellable = true)
-    private static void onGetRenderedChatMessage(String message, CallbackInfoReturnable<String> info) {
-        info.setReturnValue(MessageDistorter.INSTANCE.distortIncomingMessage(MinecraftClient.getInstance().player, info.getReturnValue()));
+    @ModifyReturnValue(method = "getRenderedChatMessage(Ljava/lang/String;)Ljava/lang/String;", at = @At("RETURN"))
+    private static String onGetRenderedChatMessage(String message) {
+        return MessageDistorter.INSTANCE.distortIncomingMessage(MinecraftClient.getInstance().player, message);
     }
 }
 
 @Mixin(MessageHandler.class)
 abstract class MixinMessageHandler {
-    @Inject(method = "processChatMessageInternal", at = @At("RETURN"))
-    private void onProcessChatMessageInternal(MessageType.Parameters params, SignedMessage message, Text decorated, GameProfile sender, boolean onlyShowSecureChat, Instant receptionTimestamp, CallbackInfoReturnable<Boolean> info) {
-        if (info.getReturnValueZ()) {
+    @ModifyReturnValue(method = "processChatMessageInternal(Lnet/minecraft/network/message/MessageType$Parameters;Lnet/minecraft/network/message/SignedMessage;Lnet/minecraft/text/Text;Lcom/mojang/authlib/GameProfile;ZLjava/time/Instant;)Z", at = @At("RETURN"))
+    private boolean onProcessChatMessageInternal(boolean success, MessageType.Parameters params, SignedMessage message, Text decorated, GameProfile sender, boolean onlyShowSecureChat, Instant receptionTimestamp) {
+        if (success) {
             DrugProperties.of((Entity)MinecraftClient.getInstance().player).ifPresent(properties -> {
                 properties.getHallucinations().getEntities().getChatBots().forEach(chatbot -> {
                     chatbot.onMessageReceived(sender.getName(), decorated);
                 });
             });
         }
+        return success;
     }
 }

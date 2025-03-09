@@ -99,9 +99,9 @@ public class LensFlareScreenEffect implements ScreenEffect {
         float yDist = normSunPos.y * screenHeight;
 
         int colorValue = world.getBiome(client.gameRenderer.getCamera().getBlockPos()).value().getFogColor();
-        int fogRed = ColorHelper.Abgr.getRed(colorValue);
-        int fogGreen = ColorHelper.Abgr.getGreen(colorValue);
-        int fogBlue = ColorHelper.Abgr.getBlue(colorValue);
+        int fogRed = ColorHelper.getRed(colorValue);
+        int fogGreen = ColorHelper.getGreen(colorValue);
+        int fogBlue = ColorHelper.getBlue(colorValue);
 
         float alpha = Math.min(1, sunPositionOnScreen.z);
         RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);

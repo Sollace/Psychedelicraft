@@ -8,15 +8,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.RenderPhase;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.Pool;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Mixin(GameRenderer.class)
 abstract class MixinGameRenderer {
     @Shadow
     private @Final Camera camera;
+
+    @Shadow
+    private @Final Pool pool;
 
     @Inject(method = "tiltViewWhenHurt", at = @At("HEAD"))
     private void onRenderWorld(MatrixStack matrices, float tickDelta, CallbackInfo info) {
@@ -33,8 +38,9 @@ abstract class MixinGameRenderer {
         RenderPhase.pop();
     }
 
-    @Inject(method = "onResized", at = @At("HEAD"))
-    private void onResized(int width, int height, CallbackInfo info) {
-        DrugRenderer.INSTANCE.getPostEffects().setupDimensions(width, height);
+    @Inject(method = "render(Lnet/minecraft/client/render/RenderTickCounter;Z)V",
+            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/hud/InGameHud.render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V"))
+    private void onRenderHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
+        DrugRenderer.INSTANCE.onRenderOverlay(pool, context, tickCounter);
     }
 }

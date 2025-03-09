@@ -24,11 +24,11 @@ interface MixinStructurePool extends MutableStructurePool {
     void setElements(ObjectArrayList<StructurePoolElement> elements);
 
     @Override
-    @Accessor
+    @Accessor("elementWeights")
     List<Pair<StructurePoolElement, Integer>> getElementCounts();
 
     @Override
-    @Accessor
+    @Accessor("elementWeights")
     @Mutable
     void setElementCounts(List<Pair<StructurePoolElement, Integer>> elementCounts);
 }

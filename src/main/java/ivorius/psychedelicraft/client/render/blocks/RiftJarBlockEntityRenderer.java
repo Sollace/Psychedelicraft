@@ -6,20 +6,14 @@
 package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.PSBlocks;
-import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
 import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.bezier.*;
-import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -44,53 +38,66 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
 
     private final RiftJarModel model = new RiftJarModel(RiftJarModel.getTexturedModelData().createModel());
 
-    private static final RiftJarBlockEntity ITEM_ENTITY = PSBlockEntities.RIFT_JAR.instantiate(BlockPos.ORIGIN, PSBlocks.RIFT_JAR.getDefaultState());
-
-    public static void renderStack(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        ITEM_ENTITY.currentRiftFraction = RiftFractionComponent.getRiftFraction(stack);
-        ITEM_ENTITY.ticksAliveVisual = (int)((System.currentTimeMillis() % 500) / 100);
-        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().render(ITEM_ENTITY, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false), matrices, vertices);
-    }
-
     public RiftJarBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 
     }
 
+    public RiftJarBlockEntityRenderer() {
+
+    }
+
+    public void renderAsItem(float fillAmount, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        int age = (int)((System.currentTimeMillis() % 500) / 100);
+        model.setAngles(0, 0, age, tickDelta);
+        renderJarBody(age, fillAmount, 0, Direction.NORTH, tickDelta, matrices, vertices, light, overlay);
+    }
+
     @Override
     public void render(RiftJarBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        float ticks = entity.ticksAliveVisual + tickDelta;
+        model.setAngles(entity, tickDelta);
+        float crackedVisibility = entity.jarBroken ? 1 : Math.min((entity.currentRiftFraction - 0.5F) * 2, 1);
+
+        renderJarBody(entity.ticksAliveVisual, entity.currentRiftFraction, crackedVisibility, entity.getCachedState().get(HorizontalFacingBlock.FACING), tickDelta, matrices, vertices, light, overlay);
+        renderConnections(entity, tickDelta, matrices, vertices, light, overlay);
+    }
+
+    public void renderJarBody(
+            int age, float currentRiftFraction, float crackedVisibility, Direction facing,
+            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        float ticks = age + tickDelta;
 
         matrices.push();
         matrices.translate(0.5F, 0.5f, 0.5F);
 
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - entity.getCachedState().get(HorizontalFacingBlock.FACING).getHorizontalQuarterTurns()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - facing.getHorizontalQuarterTurns()));
 
-        model.setAngles(entity, tickDelta);
         matrices.translate(0, 1.001F, 0);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
         model.render(matrices, vertices.getBuffer(RenderLayer.getEntityTranslucent(TEXTURE)), light, overlay, Colors.WHITE);
 
-        float crackedVisibility = entity.jarBroken ? 1 : Math.min((entity.currentRiftFraction - 0.5F) * 2, 1);
-
         if (crackedVisibility > 0) {
             model.render(matrices, vertices.getBuffer(model.getLayer(CRACKED_TEXTURE)), light, overlay, MathUtils.withAlpha(Colors.WHITE, crackedVisibility));
         }
 
-        if (entity.currentRiftFraction > 0) {
+        if (currentRiftFraction > 0) {
             matrices.push();
             matrices.translate(0, 1.5F, 0);
             matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(180));
             matrices.scale(0.9F, 1, 0.9F);
             ZeroScreen.render(ticks, (layer, u, v) -> {
-                model.renderInterior(matrices, vertices.getBuffer(layer), 0, 0, MathUtils.withAlpha(Colors.WHITE, Math.min(entity.currentRiftFraction * 2, 1)));
+                model.renderInterior(matrices, vertices.getBuffer(layer), 0, 0, MathUtils.withAlpha(Colors.WHITE, Math.min(currentRiftFraction * 2, 1)));
             });
             matrices.pop();
         }
 
         matrices.pop();
         matrices.pop();
+    }
+
+    public void renderConnections(RiftJarBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        float ticks = entity.ticksAliveVisual + tickDelta;
 
         matrices.push();
         matrices.translate(0.5F, 0.5f, 0.5F);
@@ -134,6 +141,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         RenderSystem.enableCull();
         matrices.pop();
     }
+
 
     public static String cheeseString(String string, float effect, Random rand) {
         if (effect <= 0) {

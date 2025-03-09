@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.PowerDrug;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
@@ -52,7 +53,7 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
         if (powerLightnings > 0) {
             int lightningW = height;
 
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
             RenderSystem.blendFuncSeparate(
                     GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE,
                     GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
@@ -86,7 +87,7 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
             int x = rand.nextInt(screenWidth + width) - width;
             int y = rand.nextInt(screenHeight + height) - height;
 
-            context.drawTexture(POWER_PARTICLE_TEXTURE, x, y, -90, 0, 0, width, height, 16, 16);
+            context.drawTexture(RenderLayer::getGuiTextured, POWER_PARTICLE_TEXTURE, x, y, -90, 0, 0, width, height, 16, 16);
         }
     }
 }

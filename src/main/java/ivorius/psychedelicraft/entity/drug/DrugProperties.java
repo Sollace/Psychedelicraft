@@ -22,6 +22,7 @@ import ivorius.psychedelicraft.util.MathUtils;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
@@ -83,6 +84,10 @@ public class DrugProperties implements NbtSerialisable {
 
     public static DrugProperties of(PlayerEntity player) {
         return ((DrugPropertiesContainer)player).getDrugProperties();
+    }
+
+    public static Optional<DrugProperties> of(LivingEntityRenderState state) {
+        return Optional.ofNullable(((DrugPropertiesContainer)state).getDrugProperties());
     }
 
     public static Stream<DrugProperties> stream(Entity entity) {

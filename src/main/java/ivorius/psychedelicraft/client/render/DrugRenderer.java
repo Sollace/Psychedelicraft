@@ -23,10 +23,11 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.minecraft.client.util.Pool;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -146,12 +147,15 @@ public class DrugRenderer {
         });
     }
 
-    public void poseModel(PlayerEntity player, BipedEntityModel<?> model) {
+    public void poseModel(PlayerEntityRenderState player, BipedEntityModel<?> model) {
         ModelPart head = model.getHead();
         ModelPart leftArm = model.leftArm;
         ModelPart rightArm = model.rightArm;
 
-        DrugProperties properties = DrugProperties.of(player);
+        DrugProperties properties = DrugProperties.of(player).orElse(null);
+        if (properties == null) {
+            return;
+        }
         float tick = ShaderContext.ticks();
         float shiftX = DrugEffectInterpreter.getHandShiftX(properties, tick) * 2;
 
@@ -174,13 +178,13 @@ public class DrugRenderer {
         }
     }
 
-    public void onRenderOverlay(DrawContext context, RenderTickCounter tickCounter) {
+    public void onRenderOverlay(Pool pool, DrawContext context, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
 
         RenderPhase.SCREEN.push();
         float tickDelta = tickCounter.getTickDelta(false);
 
-        postEffects.render(tickDelta);
+        postEffects.render(pool, tickDelta);
 
         getScreenEffects().render(context, client.getWindow(), tickDelta);
 

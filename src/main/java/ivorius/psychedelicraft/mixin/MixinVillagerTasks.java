@@ -34,7 +34,7 @@ abstract class MixinLoseJobOnSiteLossTask {
 @Mixin(VillagerTaskListProvider.class)
 abstract class MixinVillagerTaskListProvider {
     @Shadow
-    static Pair<Integer, Task<LivingEntity>> createBusyFollowTask() { return null; }
+    private static Pair<Integer, Task<LivingEntity>> createBusyFollowTask() { return null; }
 
     @Inject(method = "createWorkTasks(Lnet/minecraft/village/VillagerProfession;F)Lcom/google/common/collect/ImmutableList;", at = @At("HEAD"), cancellable = true)
     private static void onCreateWorkTasks(VillagerProfession profession, float speed,

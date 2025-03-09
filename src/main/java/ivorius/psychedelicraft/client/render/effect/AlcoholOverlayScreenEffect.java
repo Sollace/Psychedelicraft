@@ -5,8 +5,11 @@ import ivorius.psychedelicraft.entity.drug.type.AlcoholDrug;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.Window;
+import net.minecraft.util.Colors;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class AlcoholOverlayScreenEffect extends DrugOverlayScreenEffect<AlcoholDrug> {
@@ -23,6 +26,6 @@ public class AlcoholOverlayScreenEffect extends DrugOverlayScreenEffect<AlcoholD
 
         float overlayAlpha = Math.min(0.8F, (MathHelper.sin(tickDelta / 80F) * alcohol * 0.5F + alcohol));
         Sprite sprite = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
-        context.drawSprite(0, 0, -90, window.getScaledWidth(), window.getScaledHeight(), sprite, 1, 1, 1, overlayAlpha);
+        context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, 0, 0, window.getScaledWidth(), window.getScaledHeight(), ColorHelper.withAlpha(ColorHelper.channelFromFloat(overlayAlpha), Colors.WHITE));
     }
 }

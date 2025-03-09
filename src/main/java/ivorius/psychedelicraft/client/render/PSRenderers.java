@@ -5,9 +5,6 @@ import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
-
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.client.particle.PSParticleFactories;
@@ -15,7 +12,6 @@ import ivorius.psychedelicraft.client.render.blocks.*;
 import ivorius.psychedelicraft.client.render.shader.PSShaders;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
-import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
@@ -69,8 +65,6 @@ public interface PSRenderers {
                 PSBlocks.MASH_TUB, PSBlocks.JUNIPER_DOOR, PSBlocks.JUNIPER_TRAPDOOR,
                 PSBlocks.POTTED_CANNABIS, PSBlocks.POTTED_JUNIPER_SAPLING, PSBlocks.POTTED_MORNING_GLORY,
                 PSBlocks.POTTED_HOP, PSBlocks.POTTED_TOBACCO, PSBlocks.POTTED_COCA, PSBlocks.POTTED_COFFEA);
-
-        BuiltinItemRendererRegistry.INSTANCE.register(PSItems.RIFT_JAR, RiftJarBlockEntityRenderer::renderStack);
 
         SimpleFluid.REGISTRY.forEach(fluid -> {
             if (fluid.isEmpty()) {

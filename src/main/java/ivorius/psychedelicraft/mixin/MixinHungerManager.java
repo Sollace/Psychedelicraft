@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 
 import ivorius.psychedelicraft.entity.drug.GluttonyManager;
 import ivorius.psychedelicraft.entity.drug.LockableHungerManager;
@@ -31,25 +31,19 @@ abstract class MixinHungerManager implements LockableHungerManager, GluttonyMana
         }
     }
 
-    @Inject(method = "isNotFull()Z", at = @At("HEAD"), cancellable = true)
-    private void onIsNotFull(CallbackInfoReturnable<Boolean> info) {
-        if (lockedState != null) {
-            info.setReturnValue(!lockedState.full());
-        }
+    @ModifyReturnValue(method = "isNotFull()Z", at = @At("RETURN"))
+    private boolean onIsNotFull(boolean notFull) {
+        return lockedState != null ? !lockedState.full() : notFull;
     }
 
-    @Inject(method = "getFoodLevel()I", at = @At("HEAD"), cancellable = true)
-    private void onGetFoodLevel(CallbackInfoReturnable<Integer> info) {
-        if (lockedState != null) {
-            info.setReturnValue((int)lockedState.hunger().toFloat(foodLevel));
-        }
+    @ModifyReturnValue(method = "getFoodLevel()I", at = @At("RETURN"))
+    private int onGetFoodLevel(int foodLevel) {
+        return lockedState != null ? (int)lockedState.hunger().toFloat(foodLevel) : foodLevel;
     }
 
-    @Inject(method = "getSaturationLevel()F", at = @At("HEAD"), cancellable = true)
-    private void onGetSaturationLevel(CallbackInfoReturnable<Float> info) {
-        if (lockedState != null) {
-            info.setReturnValue(lockedState.saturation().toFloat(saturationLevel));
-        }
+    @ModifyReturnValue(method = "getSaturationLevel()F", at = @At("RETURN"))
+    private float onGetSaturationLevel(float saturation) {
+        return lockedState != null ? lockedState.saturation().toFloat(saturation) : saturation;
     }
 
     @Inject(method = { "setFoodLevel(I)V", "setSaturationLevel(F)V" }, at = @At("HEAD"), cancellable = true)

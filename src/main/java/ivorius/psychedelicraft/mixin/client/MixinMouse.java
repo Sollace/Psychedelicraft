@@ -17,12 +17,12 @@ abstract class MixinMouse {
     private double cursorDeltaY;
 
     @Inject(method = "updateMouse", at = @At("HEAD"))
-    private void beforeUpdateMouse(CallbackInfo info) {
+    private void beforeUpdateMouse(double timeDelta, CallbackInfo info) {
         SmoothCameraHelper.INSTANCE.setCursorDelta((float)cursorDeltaX, (float)cursorDeltaY);
     }
 
     @Inject(method = "updateMouse", at = @At("RETURN"))
-    private void onUpdateMouse(CallbackInfo info) {
+    private void onUpdateMouse(double timeDelta, CallbackInfo info) {
         SmoothCameraHelper.INSTANCE.applyCameraChange();
     }
 }

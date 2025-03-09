@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.google.common.base.Suppliers;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.datafixers.util.Either;
 
 import ivorius.psychedelicraft.entity.drug.*;
@@ -58,9 +59,9 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
         }
     }
 
-    @Inject(method = "getBlockBreakingSpeed", at = @At("RETURN"), cancellable = true)
-    private void onGetBlockBreakingSpeed(BlockState block, CallbackInfoReturnable<Float> info) {
-        info.setReturnValue(info.getReturnValue() * getDrugProperties().getModifier(Drug.DIG_SPEED));
+    @ModifyReturnValue(method = "getBlockBreakingSpeed", at = @At("RETURN"))
+    private float onGetBlockBreakingSpeed(float speed, BlockState block) {
+        return speed * getDrugProperties().getModifier(Drug.DIG_SPEED);
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))

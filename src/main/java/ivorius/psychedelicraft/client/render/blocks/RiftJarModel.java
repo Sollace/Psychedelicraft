@@ -62,6 +62,12 @@ public class RiftJarModel extends Model {
         knot.roll = 0.2602503F + (entity.fractionHandleUp * (1 + MathHelper.sin(entity.ticksAliveVisual * 0.1f) * 0.1f)) * 0.5f;
     }
 
+    public void setAngles(float fractionOpen, float fractionHandleUp, int age, float tickDelta) {
+        cork.pivotX = fractionOpen * 2;
+        cork.yaw = fractionOpen * 0.1F;
+        knot.roll = 0.2602503F + (fractionHandleUp * (1 + MathHelper.sin(age * 0.1f) * 0.1f)) * 0.5f;
+    }
+
     public void renderInterior(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
         interior.hidden = false;
         interior.render(matrices, vertices, light, overlay, color);

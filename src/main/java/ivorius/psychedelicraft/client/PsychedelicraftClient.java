@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.item.PSModelPredicates;
+import ivorius.psychedelicraft.client.item.PSItemProperties;
 import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.ShaderLoader;
 import ivorius.psychedelicraft.client.screen.PSScreens;
@@ -54,7 +54,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ShaderLoader.POST_EFFECTS);
 
         PSRenderers.bootstrap();
-        PSModelPredicates.bootstrap();
+        PSItemProperties.bootstrap();
         PSScreens.bootstrap();
     }
 }

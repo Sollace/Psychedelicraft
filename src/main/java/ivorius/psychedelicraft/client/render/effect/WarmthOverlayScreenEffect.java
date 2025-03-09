@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.client.render.effect;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.WarmthDrug;
 import net.minecraft.client.gui.DrawContext;
@@ -23,7 +24,7 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
     }
 
     private void renderWarmthOverlay(DrawContext context, float alpha, int width, int height, int ticks) {
-        var buffer = context.getVertexConsumers().getBuffer(RenderLayer.getEntityTranslucent(COFFEE_OVERLAY));
+        var buffer = RenderUtil.getBuffer(RenderLayer.getEntityTranslucent(COFFEE_OVERLAY));
         final int segWidth = width / 9;
         final int segHeight = height / 3;
 
@@ -46,7 +47,7 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
                 float mY = (float) y / (float) steps * height / 7 * 5 + segHeight;
 
                 if (init) {
-                    int color = ColorHelper.Argb.fromFloats(
+                    int color = ColorHelper.fromFloats(
                             Math.max(0, alpha - prog * 0.4F),
                             1,
                             0.5F + prog * 0.3F,

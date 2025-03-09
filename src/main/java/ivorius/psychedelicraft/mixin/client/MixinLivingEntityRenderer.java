@@ -16,6 +16,7 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.render.entity.state.VillagerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -30,16 +31,10 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extends Livin
     @Inject(method = "render",
             at = @At(
                 value = "INVOKE",
-                target = "Lnet/minecraft/client/render/entity/model/EntityModel;setAngles(Lnet/minecraft/entity/Entity;FFFFF)V",
+                target = "net/minecraft/client/render/entity/model/EntityModel.setAngles(Lnet/minecraft/client/render/entity/state/EntityRenderState;)V",
                 shift = Shift.AFTER))
-    private void onRender(
-            T entity,
-            float yaw, float tickDelta,
-            MatrixStack matrices,
-            VertexConsumerProvider vertices,
-            int light,
-            CallbackInfo into) {
-        if (entity instanceof PlayerEntity player) {
+    private void onRender(S state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, CallbackInfo info) {
+        if (state instanceof PlayerEntityRenderState player) {
             DrugRenderer.INSTANCE.poseModel(player, (BipedEntityModel<?>)getModel());
         }
     }

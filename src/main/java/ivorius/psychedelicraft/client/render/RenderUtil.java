@@ -15,6 +15,7 @@ import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
@@ -47,6 +48,10 @@ public class RenderUtil {
                 MathUtils.b(color),
                 hasAlpha ? MathUtils.a(color) : 1
         );
+    }
+
+    public static VertexConsumer getBuffer(RenderLayer layer) {
+        return MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().getBuffer(layer);
     }
 
     private static VertexConsumer fastVertex(VertexConsumer buffer, MatrixStack.Entry entry, float x, float y, float z) {
@@ -98,7 +103,7 @@ public class RenderUtil {
     }
 
     public static void drawBuffer(Framebuffer frame, float r, float g, float b, float a) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderSystem.setShaderTexture(0, frame.getColorAttachment());
         RenderSystem.setShaderColor(r, g, b, a);
         RenderSystem.enableBlend();
@@ -112,7 +117,7 @@ public class RenderUtil {
         RenderSystem.disableBlend();
     }
 
-    public static void drawRepeatingSprite(DrawContext context, Sprite sprite, int x, int y, int width, int height, float r, float g, float b, float a) {
+    public static void drawRepeatingSprite(DrawContext context, Sprite sprite, int x, int y, int width, int height, int color) {
         final int tileSize = 16;
 
         int tilesX = width / tileSize;
@@ -126,7 +131,7 @@ public class RenderUtil {
                 int w = tileX == tilesX ? remainedWidth : tileSize;
                 int h = tileY == tilesY ? remainedHeight : tileSize;
                 if (h > 0 && w > 0) {
-                    context.drawSprite(x + tileX * tileSize, y + tileY * tileSize, 0, w, h, sprite, r, g, b, a);
+                    context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, x + tileX * tileSize, y + tileY * tileSize, w, h, color);
                 }
             }
         }

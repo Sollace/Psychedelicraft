@@ -1,20 +1,19 @@
 package ivorius.psychedelicraft.mixin.client;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
+import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.gl.CompiledShader.Type;
+import net.minecraft.resource.Resource;
+import net.minecraft.util.Identifier;
 
 @Mixin(ShaderProgram.class)
 abstract class MixinShaderProgram implements AutoCloseable {
@@ -56,10 +55,10 @@ abstract class MixinGLImportProcessor {
     }
 }
 
-@Mixin(CompiledShader.class)
-abstract class MixinShaderStage {
-    @Inject(method = "load", at = @At("HEAD"))
-    private static void onLoad(Type type, String name, InputStream stream, String domain, GlImportProcessor loader, CallbackInfoReturnable<Integer> info) throws IOException {
-        GeometryShader.INSTANCE.setup(type, domain, name);
+@Mixin(ShaderLoader.class)
+abstract class MixinShaderLoader {
+    @Inject(method = "loadShaderSource(Lnet/minecraft/util/Identifier;Lnet/minecraft/resource/Resource;Lnet/minecraft/client/gl/CompiledShader$Type;Ljava/util/Map;Lcom/google/common/collect/ImmutableMap$Builder;)V", at = @At("HEAD"))
+    private static void onLoadShaderSource(Identifier id, Resource resource, Type type, Map<Identifier, Resource> allResources, @SuppressWarnings("rawtypes") Builder builder, CallbackInfo info) {
+        GeometryShader.INSTANCE.setup(type, type.createFinder().toResourceId(id));
     }
 }

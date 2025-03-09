@@ -19,8 +19,7 @@ abstract class MixinAbstractFurnaceBlockEntity {
             target = "net/minecraft/item/ItemStack.decrement(I)V"
         )
     )
-    private static void onTick(World world, BlockPos pos, BlockState state,
-            AbstractFurnaceBlockEntity blockEntity, CallbackInfo info) {
+    private static void onTick(World world, BlockPos pos, BlockState state, AbstractFurnaceBlockEntity blockEntity, CallbackInfo info) {
         ItemStack fuel = blockEntity.getStack(1);
         if (fuel.getItem() instanceof SmokeableItem smokeable) {
             smokeable.onIncinerated(fuel, world, pos, blockEntity);

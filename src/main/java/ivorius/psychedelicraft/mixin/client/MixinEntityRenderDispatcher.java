@@ -14,7 +14,7 @@ import net.minecraft.entity.Entity;
 
 @Mixin(EntityRenderDispatcher.class)
 abstract class MixinEntityRenderDispatcher {
-    @ModifyVariable(method = "render", at = @At("HEAD"), index = 1)
+    @ModifyVariable(method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At("HEAD"), index = 1)
     private Entity swapEntity(Entity entity) {
         return DrugProperties.of((Entity)MinecraftClient.getInstance().player)
             .stream()
