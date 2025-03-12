@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.joml.Vector3f;
 
-import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -26,7 +25,6 @@ import ivorius.psychedelicraft.item.component.ItemDrugs;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
@@ -159,6 +157,7 @@ public interface PSItems {
             .food(EdibleItem.NON_FILLING_EDIBLE)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)))
     ));
+    // TODO: Obtained by mixing cocaine and ethanol in the bunsen burner - needs the tray
     Item CRACK_COCAINE = register("crack_cocaine", new SnortableItem(new Settings()
             .food(EdibleItem.NON_FILLING_EDIBLE)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.03, 0.65f)))
