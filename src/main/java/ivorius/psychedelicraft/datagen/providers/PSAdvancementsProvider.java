@@ -43,6 +43,7 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
     @Override
     public void generateAdvancement(WrapperLookup registries, Consumer<AdvancementEntry> exporter) {
         PSAdvancementBuilder.create(Psychedelicraft.id("root"), PSItems.CANNABIS_LEAF)
+            .doNotAnnounce()
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
             .criterion("crafting_table", items(Items.CRAFTING_TABLE))
             .build(exporter)
@@ -58,11 +59,11 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                     .criteriaMerger(CriterionMerger.OR)
                     .criterion("has_the_thing", tag(PSTags.Items.DRYING_TABLES))
                     .build(exporter).children(makeDryingTable -> {
-                        makeDryingTable.child(Psychedelicraft.id("dry_brown_mushroom"), PSItems.BROWN_MAGIC_MUSHROOMS)
+                        makeDryingTable.child(Psychedelicraft.id("dry_brown_mushrooms"), PSItems.BROWN_MAGIC_MUSHROOMS)
                             .criteriaMerger(CriterionMerger.OR)
                             .criterion("has_the_thing", items(PSItems.BROWN_MAGIC_MUSHROOMS))
                             .build(exporter);
-                        makeDryingTable.child(Psychedelicraft.id("dry_red_mushroom"), PSItems.RED_MAGIC_MUSHROOMS)
+                        makeDryingTable.child(Psychedelicraft.id("dry_red_mushrooms"), PSItems.RED_MAGIC_MUSHROOMS)
                             .criteriaMerger(CriterionMerger.OR)
                             .criterion("has_the_thing", items(PSItems.RED_MAGIC_MUSHROOMS))
                             .build(exporter);

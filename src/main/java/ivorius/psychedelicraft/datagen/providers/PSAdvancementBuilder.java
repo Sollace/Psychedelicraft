@@ -31,9 +31,9 @@ public class PSAdvancementBuilder {
     @Nullable
     private Identifier background = BACKGROUND;
 
-    private boolean toast;
+    private boolean toast = true;
     private boolean hidden;
-    private boolean announce;
+    private boolean announce = true;
     private final ItemConvertible icon;
     private Consumer<ItemStack> iconCustomisation = stack -> {};
     private AdvancementFrame frame = AdvancementFrame.TASK;
