@@ -24,7 +24,6 @@ public class Datagen implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
         final var pack = fabricDataGenerator.createPack();
-
         final var blockTagProvider = pack.addProvider(PSBlockTagProvider::new);
         pack.addProvider((output, registries) -> new PSItemTagProvider(output, registries, blockTagProvider));
         pack.addProvider(PSFluidTagProvider::new);

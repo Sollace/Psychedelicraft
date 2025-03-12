@@ -251,7 +251,7 @@ public interface PSItems {
     Item BELLADONNA_LEAF = register("belladonna_leaf");
     Item DRIED_BELLADONNA_LEAF = register("dried_belladonna_leaf");
     Item BELLADONNA_BERRIES = register("belladonna_berries", s -> new EdibleItem(
-            new Settings().food(new FoodComponent.Builder().nutrition(1).saturationModifier(1.5F).build(), PSConsumableComponents.FAST_FOOD),
+            s.food(new FoodComponent.Builder().nutrition(1).saturationModifier(1.5F).build(), PSConsumableComponents.FAST_FOOD),
             new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
     ));
 
@@ -284,7 +284,7 @@ public interface PSItems {
 
     Item CRYSTAL_METH = register("methamphetamine_powder");
     Item EXTACY = register("extacy", s -> new EdibleItem(
-            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            s.food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
     ));
     Item PACIFIER = register("pacifier", s -> new PacifierItem(s.maxDamage(50).equippable(EquipmentSlot.OFFHAND)));

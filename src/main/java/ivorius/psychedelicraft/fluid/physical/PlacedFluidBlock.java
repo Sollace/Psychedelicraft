@@ -11,24 +11,30 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.state.StateManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 
 public abstract class PlacedFluidBlock extends FluidBlock {
     protected abstract PhysicalFluid getPysicalFluid();
 
-    static PlacedFluidBlock create(PhysicalFluid physical) {
-        return new PlacedFluidBlock((FlowableFluid)physical.getFlowingFluid()) {
+    static PlacedFluidBlock create(Identifier id, PhysicalFluid physical) {
+        var key = RegistryKey.of(RegistryKeys.BLOCK, id);
+        return Registry.register(Registries.BLOCK, key, new PlacedFluidBlock(key, (FlowableFluid)physical.getFlowingFluid()) {
             @Override
             protected PhysicalFluid getPysicalFluid() {
                 return physical;
             }
-        };
+        });
     }
 
-    PlacedFluidBlock(FlowableFluid fluid) {
-        super(fluid, Settings.copy(Blocks.WATER).ticksRandomly());
+    PlacedFluidBlock(RegistryKey<Block> key, FlowableFluid fluid) {
+        super(fluid, Settings.copy(Blocks.WATER).ticksRandomly().registryKey(key));
     }
 
     @Override

@@ -2,8 +2,7 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
-
+import java.util.function.IntSupplier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL30C;
@@ -11,6 +10,7 @@ import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gl.GlUniform;
+import net.minecraft.client.gl.ShaderProgramDefinition;
 
 public class BuiltGemoetryShader {
     private final int program;
@@ -37,16 +37,16 @@ public class BuiltGemoetryShader {
         private final int id;
         public int location;
         private final String name;
-        private final Supplier<Integer> valueGetter;
+        private final IntSupplier valueGetter;
 
-        public Sampler(int id, String name, Supplier<Integer> valueGetter) {
+        public Sampler(int id, String name, IntSupplier valueGetter) {
             this.id = id;
             this.name = name;
             this.valueGetter = valueGetter;
         }
 
         void bind(int program) {
-            int texId = valueGetter.get();
+            int texId = valueGetter.getAsInt();
             GL30C.glUniform1i(location, id);
             RenderSystem.activeTexture(GlConst.GL_TEXTURE0 + id);
             RenderSystem.bindTexture(texId);
@@ -69,8 +69,8 @@ public class BuiltGemoetryShader {
             this.lastFragmentId = lastFragmentId;
         }
 
-        void addSampler(String name, Supplier<Integer> supplier) {
-            samplers.add(new Sampler(++lastFragmentId, name, supplier));
+        void addSampler(ShaderProgramDefinition.Sampler sampler, IntSupplier supplier) {
+            samplers.add(new Sampler(++lastFragmentId, sampler.name(), supplier));
         }
 
         void addUniform(GlUniform uniform) {

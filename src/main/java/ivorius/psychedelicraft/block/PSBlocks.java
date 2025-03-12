@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.block;
 
+import java.util.function.Function;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.BlockEntityTypeSupportHelper;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
@@ -19,16 +21,18 @@ import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
 
 public interface PSBlocks {
-    Block MASH_TUB = register("mash_tub", new MashTubBlock(Settings.create()
+    Block MASH_TUB = register("mash_tub", s -> new MashTubBlock(s
             .sounds(BlockSoundGroup.WOOD)
             .hardness(2).nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never)
             .pistonBehavior(PistonBehavior.BLOCK)
     ));
-    Block MASH_TUB_EDGE = register("mash_tub_edge", new MashTubWallBlock(Settings.copy(MASH_TUB)));
-    Block PLACED_DRINK = register("placed_drink", new PlacedDrinksBlock(Settings.create()
+    Block MASH_TUB_EDGE = register("mash_tub_edge", Settings.copy(MASH_TUB), MashTubWallBlock::new);
+    Block PLACED_DRINK = register("placed_drink", s -> new PlacedDrinksBlock(s
             .breakInstantly().nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never)
             .pistonBehavior(PistonBehavior.DESTROY)
     ));
@@ -45,59 +49,59 @@ public interface PSBlocks {
     // TODO: WARPED_BARREL
     // TODO: CRIMSON_BARREL
 
-    Block FLASK = register("flask", new FlaskBlock(Settings.create().sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));
-    Block DISTILLERY = register("distillery", new DistilleryBlock(Settings.create().sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));
-    Block BOTTLE_RACK = register("bottle_rack", new BottleRackBlock(0, Settings.create().mapColor(MapColor.OAK_TAN).sounds(BlockSoundGroup.WOOD).hardness(0.5F).burnable()));
-    Block WALL_BOTTLE_RACK = register("wall_bottle_rack", new BottleRackBlock(-3, Settings.create().mapColor(MapColor.OAK_TAN).sounds(BlockSoundGroup.WOOD).hardness(0.5F).burnable()));
+    Block FLASK = register("flask", s -> new FlaskBlock(s.sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));
+    Block DISTILLERY = register("distillery", s -> new DistilleryBlock(s.sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));
+    Block BOTTLE_RACK = register("bottle_rack", s -> new BottleRackBlock(0, s.mapColor(MapColor.OAK_TAN).sounds(BlockSoundGroup.WOOD).hardness(0.5F).burnable()));
+    Block WALL_BOTTLE_RACK = register("wall_bottle_rack", s -> new BottleRackBlock(-3, s.mapColor(MapColor.OAK_TAN).sounds(BlockSoundGroup.WOOD).hardness(0.5F).burnable()));
 
-    Block DRYING_TABLE = register("drying_table", new DryingTableBlock(Settings.create().mapColor(MapColor.OAK_TAN).solid().sounds(BlockSoundGroup.WOOD).hardness(2).burnable()));
-    Block IRON_DRYING_TABLE = register("iron_drying_table", new DryingTableBlock(Settings.create().mapColor(MapColor.IRON_GRAY).sounds(BlockSoundGroup.METAL).hardness(5)));
+    Block DRYING_TABLE = register("drying_table", s -> new DryingTableBlock(s.mapColor(MapColor.OAK_TAN).solid().sounds(BlockSoundGroup.WOOD).hardness(2).burnable()));
+    Block IRON_DRYING_TABLE = register("iron_drying_table", s -> new DryingTableBlock(s.mapColor(MapColor.IRON_GRAY).sounds(BlockSoundGroup.METAL).hardness(5)));
 
-    JuniperLeavesBlock JUNIPER_LEAVES = register("juniper_leaves", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
-    JuniperLeavesBlock FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", new JuniperLeavesBlock(BlockConstructionUtils.leaves(BlockSoundGroup.GRASS)));
+    JuniperLeavesBlock JUNIPER_LEAVES = register("juniper_leaves", BlockConstructionUtils.leaves(BlockSoundGroup.GRASS), JuniperLeavesBlock::new);
+    JuniperLeavesBlock FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", BlockConstructionUtils.leaves(BlockSoundGroup.GRASS), JuniperLeavesBlock::new);
     Block JUNIPER_LOG = register("juniper_log", BlockConstructionUtils.log(MapColor.CYAN, MapColor.LIGHT_BLUE_GRAY));
     Block JUNIPER_WOOD = register("juniper_wood", BlockConstructionUtils.log(MapColor.CYAN, MapColor.LIGHT_BLUE_GRAY));
     Block STRIPPED_JUNIPER_LOG = register("stripped_juniper_log", BlockConstructionUtils.log(MapColor.CYAN, MapColor.LIGHT_BLUE_GRAY));
     Block STRIPPED_JUNIPER_WOOD = register("stripped_juniper_wood", BlockConstructionUtils.log(MapColor.CYAN, MapColor.LIGHT_BLUE_GRAY));
-    Block JUNIPER_SAPLING = register("juniper_sapling", new SaplingBlock(PSSaplingGenerators.JUNIPER, BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
+    Block JUNIPER_SAPLING = register("juniper_sapling", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), s -> new SaplingBlock(PSSaplingGenerators.JUNIPER, s));
 
-    Block JUNIPER_PLANKS = register("juniper_planks", new Block(Settings.create().mapColor(MapColor.LIGHT_BLUE_GRAY).instrument(NoteBlockInstrument.BASS).strength(2, 3).sounds(BlockSoundGroup.WOOD).burnable()));
-    Block JUNIPER_STAIRS = register("juniper_stairs", new StairsBlock(JUNIPER_PLANKS.getDefaultState(), Settings.copy(JUNIPER_PLANKS)));
-    Block JUNIPER_SIGN = register("juniper_sign", new SignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).burnable().sounds(BlockSoundGroup.WOOD)));
-    Block JUNIPER_DOOR = register("juniper_door", new DoorBlock(PSWoodTypes.JUNIPER.setType(), Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3.0f).nonOpaque().burnable().pistonBehavior(PistonBehavior.DESTROY)));
-    Block JUNIPER_WALL_SIGN = register("juniper_wall_sign", new WallSignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).lootTable(JUNIPER_SIGN.getLootTableKey()).overrideTranslationKey(JUNIPER_SIGN.getTranslationKey()).burnable()));
-    Block JUNIPER_HANGING_SIGN = register("juniper_hanging_sign", new HangingSignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).burnable()));
-    Block JUNIPER_WALL_HANGING_SIGN = register("juniper_wall_hanging_sign", new WallHangingSignBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0f).burnable().lootTable(JUNIPER_HANGING_SIGN.getLootTableKey()).overrideTranslationKey(JUNIPER_HANGING_SIGN.getTranslationKey())));
-    Block JUNIPER_PRESSURE_PLATE = register("juniper_pressure_plate", new PressurePlateBlock(PSWoodTypes.JUNIPER.setType(), Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(0.5F).burnable().pistonBehavior(PistonBehavior.DESTROY)));
-    Block JUNIPER_FENCE = register("juniper_fence", new FenceBlock(Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).strength(2, 3).sounds(BlockSoundGroup.WOOD).burnable()));
-    Block JUNIPER_TRAPDOOR = register("juniper_trapdoor", new TrapdoorBlock(PSWoodTypes.JUNIPER.setType(), Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3).nonOpaque().allowsSpawning(BlockConstructionUtils::never).burnable()));
-    Block JUNIPER_FENCE_GATE = register("juniper_fence_gate", new FenceGateBlock(PSWoodTypes.JUNIPER, Settings.create().mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).strength(2, 3).burnable()));
+    Block JUNIPER_PLANKS = register("juniper_planks", s -> new Block(s.mapColor(MapColor.LIGHT_BLUE_GRAY).instrument(NoteBlockInstrument.BASS).strength(2, 3).sounds(BlockSoundGroup.WOOD).burnable()));
+    Block JUNIPER_STAIRS = register("juniper_stairs", Settings.copy(JUNIPER_PLANKS), s -> new StairsBlock(JUNIPER_PLANKS.getDefaultState(), s));
+    Block JUNIPER_SIGN = register("juniper_sign", s -> new SignBlock(PSWoodTypes.JUNIPER, s.mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).burnable().sounds(BlockSoundGroup.WOOD)));
+    Block JUNIPER_DOOR = register("juniper_door", s -> new DoorBlock(PSWoodTypes.JUNIPER.setType(), s.mapColor(JUNIPER_PLANKS.getDefaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3.0f).nonOpaque().burnable().pistonBehavior(PistonBehavior.DESTROY)));
+    Block JUNIPER_WALL_SIGN = register("juniper_wall_sign", s -> new WallSignBlock(PSWoodTypes.JUNIPER, s.mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).lootTable(JUNIPER_SIGN.getLootTableKey()).overrideTranslationKey(JUNIPER_SIGN.getTranslationKey()).burnable()));
+    Block JUNIPER_HANGING_SIGN = register("juniper_hanging_sign", s -> new HangingSignBlock(PSWoodTypes.JUNIPER, s.mapColor(JUNIPER_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).burnable()));
+    Block JUNIPER_WALL_HANGING_SIGN = register("juniper_wall_hanging_sign", s -> new WallHangingSignBlock(PSWoodTypes.JUNIPER, s.mapColor(JUNIPER_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0f).burnable().lootTable(JUNIPER_HANGING_SIGN.getLootTableKey()).overrideTranslationKey(JUNIPER_HANGING_SIGN.getTranslationKey())));
+    Block JUNIPER_PRESSURE_PLATE = register("juniper_pressure_plate", s -> new PressurePlateBlock(PSWoodTypes.JUNIPER.setType(), s.mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(0.5F).burnable().pistonBehavior(PistonBehavior.DESTROY)));
+    Block JUNIPER_FENCE = register("juniper_fence", s -> new FenceBlock(s.mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).strength(2, 3).sounds(BlockSoundGroup.WOOD).burnable()));
+    Block JUNIPER_TRAPDOOR = register("juniper_trapdoor", s -> new TrapdoorBlock(PSWoodTypes.JUNIPER.setType(), s.mapColor(JUNIPER_PLANKS.getDefaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3).nonOpaque().allowsSpawning(BlockConstructionUtils::never).burnable()));
+    Block JUNIPER_FENCE_GATE = register("juniper_fence_gate", s -> new FenceGateBlock(PSWoodTypes.JUNIPER, s.mapColor(JUNIPER_PLANKS.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).strength(2, 3).burnable()));
     Block JUNIPER_BUTTON = register("juniper_button", BlockConstructionUtils.woodenButton(PSWoodTypes.JUNIPER.setType()));
-    Block JUNIPER_SLAB = register("juniper_slab", new SlabBlock(Settings.copy(JUNIPER_PLANKS)));
+    Block JUNIPER_SLAB = register("juniper_slab", Settings.copy(JUNIPER_PLANKS), SlabBlock::new);
 
-    CannabisPlantBlock CANNABIS = register("cannabis", new CannabisPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    HopPlantBlock HOP = register("hop", new HopPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    TobaccoPlantBlock TOBACCO = register("tobacco", new TobaccoPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    CocaPlantBlock COCA = register("coca", new CocaPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    CoffeaPlantBlock COFFEA = register("coffea", new CoffeaPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    PeyoteBlock PEYOTE = register("peyote", new PeyoteBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    AgavePlantBlock AGAVE_PLANT = register("agave_plant", new AgavePlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    NightshadeBlock JIMSONWEEED = register("jimsonweed", new NightshadeBlock(
+    CannabisPlantBlock CANNABIS = register("cannabis", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), CannabisPlantBlock::new);
+    HopPlantBlock HOP = register("hop", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), HopPlantBlock::new);
+    TobaccoPlantBlock TOBACCO = register("tobacco", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), TobaccoPlantBlock::new);
+    CocaPlantBlock COCA = register("coca", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), CocaPlantBlock::new);
+    CoffeaPlantBlock COFFEA = register("coffea", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), CoffeaPlantBlock::new);
+    PeyoteBlock PEYOTE = register("peyote", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), PeyoteBlock::new);
+    AgavePlantBlock AGAVE_PLANT = register("agave_plant", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), AgavePlantBlock::new);
+    NightshadeBlock JIMSONWEEED = register("jimsonweed", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), s -> new NightshadeBlock(
             () -> PSItems.JIMSONWEED_SEED_POD,
-            () -> PSItems.JIMSONWEED_LEAF, BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    NightshadeBlock BELLADONNA = register("belladonna", new NightshadeBlock(
+            () -> PSItems.JIMSONWEED_LEAF, s));
+    NightshadeBlock BELLADONNA = register("belladonna", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), s -> new NightshadeBlock(
             () -> PSItems.BELLADONNA_BERRIES,
-            () -> PSItems.BELLADONNA_LEAF, BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    NightshadeBlock TOMATOES = register("tomatoes", new NightshadeBlock(
+            () -> PSItems.BELLADONNA_LEAF, s));
+    NightshadeBlock TOMATOES = register("tomatoes", BlockConstructionUtils.plant(BlockSoundGroup.GRASS), s -> new NightshadeBlock(
             () -> PSItems.TOMATO,
-            () -> PSItems.TOMATO_LEAF, BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
+            () -> PSItems.TOMATO_LEAF, s));
 
-    Block LATTICE = register("lattice", new LatticeBlock(Settings.create().mapColor(MapColor.OAK_TAN)
+    Block LATTICE = register("lattice", s -> new LatticeBlock(s.mapColor(MapColor.OAK_TAN)
             .sounds(BlockSoundGroup.WOOD).hardness(0.3F).nonOpaque().burnable()));
-    Block WINE_GRAPE_LATTICE = register("wine_grape_lattice", new BurdenedLatticeBlock(true, null, 1, Settings.create().mapColor(MapColor.OAK_TAN)
+    Block WINE_GRAPE_LATTICE = register("wine_grape_lattice", s -> new BurdenedLatticeBlock(true, null, 1, s.mapColor(MapColor.OAK_TAN)
             .sounds(BlockSoundGroup.WOOD).hardness(0.3F).ticksRandomly().nonOpaque().burnable()
     ));
-    Block MORNING_GLORY = register("morning_glory", new VineStemBlock(() -> PSBlocks.MORNING_GLORY_LATTICE, Block.Settings.create()
+    Block MORNING_GLORY = register("morning_glory", s -> new VineStemBlock(() -> PSBlocks.MORNING_GLORY_LATTICE, s
             .mapColor(MapColor.DARK_GREEN)
             .noCollision()
             .breakInstantly()
@@ -106,7 +110,7 @@ public interface PSBlocks {
             .offset(AbstractBlock.OffsetType.XZ)
             .burnable()
     ));
-    Block MORNING_GLORY_LATTICE = register("morning_glory_lattice", new BurdenedLatticeBlock(true, MORNING_GLORY, 2, Block.Settings.create()
+    Block MORNING_GLORY_LATTICE = register("morning_glory_lattice", s -> new BurdenedLatticeBlock(true, MORNING_GLORY, 2, s
             .mapColor(MapColor.OAK_TAN)
             .sounds(BlockSoundGroup.WOOD)
             .hardness(0.3F)
@@ -123,24 +127,29 @@ public interface PSBlocks {
     Block POTTED_COCA = register("potted_coca", BlockConstructionUtils.pottedPlant(COCA));
     Block POTTED_COFFEA = register("potted_coffea", BlockConstructionUtils.pottedPlant(COFFEA));
 
-    Block RIFT_JAR = register("rift_jar", new RiftJarBlock(Settings.create().hardness(0.5F).sounds(BlockSoundGroup.GLASS).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
-    Block GLITCH = register("glitch", new GlitchedBlock(Settings.create().mapColor(MapColor.BLACK).breakInstantly().hardness(0)
+    Block RIFT_JAR = register("rift_jar", s -> new RiftJarBlock(s.hardness(0.5F).sounds(BlockSoundGroup.GLASS).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
+    Block GLITCH = register("glitch", s -> new GlitchedBlock(s.mapColor(MapColor.BLACK).breakInstantly().hardness(0)
             .emissiveLighting(BlockConstructionUtils::always)
             .air().nonOpaque().noBlockBreakParticles().dropsNothing()
     ));
 
-    Block FLAMMABLE_GAS = register("flammable_gas", new FlammableGasBlock(Settings.create().replaceable().noCollision().dropsNothing().air()));
+    Block FLAMMABLE_GAS = register("flammable_gas", s -> new FlammableGasBlock(s.replaceable().noCollision().dropsNothing().air()));
 
-    Block TRAY = register("tray", new TrayBlock(Settings.create().mapColor(MapColor.IRON_GRAY).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
-    Block BUNSEN_BURNER = register("bunsen_burner", new BurnerBlock(Settings.create().mapColor(MapColor.IRON_GRAY).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
-    Block GLASS_TUBE = register("glass_tube", new GlassTubeBlock(Settings.create().mapColor(MapColor.OFF_WHITE).strength(0.3F).sounds(BlockSoundGroup.GLASS).nonOpaque()
+    Block TRAY = register("tray", s -> new TrayBlock(s.mapColor(MapColor.IRON_GRAY).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
+    Block BUNSEN_BURNER = register("bunsen_burner", s -> new BurnerBlock(s.mapColor(MapColor.IRON_GRAY).hardness(0.7F).sounds(BlockSoundGroup.METAL).nonOpaque()));
+    Block GLASS_TUBE = register("glass_tube", s -> new GlassTubeBlock(s.mapColor(MapColor.OFF_WHITE).strength(0.3F).sounds(BlockSoundGroup.GLASS).nonOpaque()
             .allowsSpawning(Blocks::never)
             .solidBlock(Blocks::never)
             .suffocates(Blocks::never)
             .blockVision(Blocks::never)));
 
-    static <T extends Block> T register(String name, T block) {
-        return Registry.register(Registries.BLOCK, Psychedelicraft.id(name), block);
+    static <T extends Block> T register(String name, Function<AbstractBlock.Settings, T> blockFactory) {
+        return register(name, Settings.create(), blockFactory);
+    }
+
+    static <T extends Block> T register(String name, AbstractBlock.Settings settings, Function<AbstractBlock.Settings, T> blockFactory) {
+        var key = RegistryKey.of(RegistryKeys.BLOCK, Psychedelicraft.id(name));
+        return Registry.register(Registries.BLOCK, key, blockFactory.apply(settings.registryKey(key)));
     }
 
     static void bootstrap() {

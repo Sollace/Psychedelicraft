@@ -7,8 +7,9 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.blaze3d.systems.RenderSystem;
 
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.gl.CompiledShader.Type;
@@ -20,28 +21,33 @@ abstract class MixinShaderProgram implements AutoCloseable {
     @Shadow
     private @Final List<GlUniform> uniforms;
     @Shadow
-    private @Final Map<String, Object> samplers;
+    private @Final Map<String, GlUniform> uniformsByName;
     @Shadow
-    private @Final List<String> samplerNames;
+    private @Final Map<String, ShaderProgramDefinition.Uniform> uniformDefinitionsByName;
 
-    @Inject(method = "bind()V", at = @At("HEAD"))
-    private void onBind(CallbackInfo info) {
-        GeometryShader.INSTANCE.getSamplers().forEach((name, sampler) -> samplers.put(name, sampler.get()));
-    }
+    @Shadow
+    private @Final List<ShaderProgramDefinition.Sampler> samplers;
+    @Shadow
+    private @Final Object2IntMap<String> samplerTextures;
+    @Shadow
+    private @Final IntList samplerLocations;
 
-    @Inject(method = "loadReferences()V", at = @At("HEAD"))
-    private void onLoadReferences(CallbackInfo info) {
+    @Inject(method = "set", at = @At("RETURN"))
+    private void onLoadReferences(List<ShaderProgramDefinition.Uniform> uniforms, List<ShaderProgramDefinition.Sampler> samplers, CallbackInfo info) {
         ShaderProgram self = (ShaderProgram)(Object)this;
-        RenderSystem.assertOnRenderThread();
-        GeometryShader.INSTANCE.getSamplers().keySet().forEach(samplerName -> {
-            if (GlUniform.getUniformLocation(self.getGlRef(), samplerName) != -1) {
-                samplerNames.add(samplerName);
-                samplers.put(samplerName, null);
+        GeometryShader.INSTANCE.getSamplers().forEach((samplerName, sampler) -> {
+            int location = GlUniform.getUniformLocation(self.getGlRef(), samplerName.name());
+            if (location != -1) {
+                this.samplers.add(samplerName);
+                samplerLocations.add(location);
+                samplerTextures.put(samplerName.name(), sampler.getAsInt());
             }
         });
         GeometryShader.INSTANCE.addUniforms(uniform -> {
             if (GlUniform.getUniformLocation(self.getGlRef(), uniform.getName()) != -1) {
-                uniforms.add(uniform);
+                this.uniforms.add(uniform);
+                uniformsByName.put(uniform.getName(), uniform);
+                uniformDefinitionsByName.put(uniform.getName(), uniform.definition);
             }
         });
     }

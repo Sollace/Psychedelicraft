@@ -1,5 +1,7 @@
 package ivorius.psychedelicraft.block;
 
+import java.util.function.Function;
+
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.enums.NoteBlockInstrument;
@@ -27,8 +29,8 @@ interface BlockConstructionUtils {
                 .solidBlock(BlockConstructionUtils::never);
     }
 
-    static BarrelBlock barrel(MapColor mapColor) {
-        return new BarrelBlock(Settings.create()
+    static Function<AbstractBlock.Settings, BarrelBlock> barrel(MapColor mapColor) {
+        return s -> new BarrelBlock(s
                 .mapColor(mapColor)
                 .instrument(NoteBlockInstrument.BASS)
                 .sounds(BlockSoundGroup.WOOD)
@@ -37,8 +39,8 @@ interface BlockConstructionUtils {
                 .pistonBehavior(PistonBehavior.BLOCK));
     }
 
-    static PillarBlock log(MapColor topColor, MapColor sideColor) {
-        return new PillarBlock(AbstractBlock.Settings.create()
+    static Function<AbstractBlock.Settings, PillarBlock> log(MapColor topColor, MapColor sideColor) {
+        return s -> new PillarBlock(s
                 .mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topColor : sideColor)
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(2.0f)
@@ -57,26 +59,30 @@ interface BlockConstructionUtils {
                 .pistonBehavior(PistonBehavior.DESTROY);
     }
 
-    static FlowerPotBlock pottedPlant(Block flower, FeatureFlag ... requiredFeatures) {
-        AbstractBlock.Settings settings = AbstractBlock.Settings.create()
-                .breakInstantly()
-                .nonOpaque()
-                .pistonBehavior(PistonBehavior.DESTROY);
-        if (requiredFeatures.length > 0) {
-            settings = settings.requires(requiredFeatures);
-        }
-        return new FlowerPotBlock(flower, settings);
+    static Function<AbstractBlock.Settings, FlowerPotBlock> pottedPlant(Block flower, FeatureFlag ... requiredFeatures) {
+        return settings -> {
+            settings = settings
+                    .breakInstantly()
+                    .nonOpaque()
+                    .pistonBehavior(PistonBehavior.DESTROY);
+            if (requiredFeatures.length > 0) {
+                settings = settings.requires(requiredFeatures);
+            }
+            return new FlowerPotBlock(flower, settings);
+        };
     }
 
-    static ButtonBlock woodenButton(BlockSetType blockSetType, FeatureFlag ... requiredFeatures) {
-        AbstractBlock.Settings settings = Settings.create()
-                .noCollision()
-                .strength(0.5f)
-                .pistonBehavior(PistonBehavior.DESTROY);
-        if (requiredFeatures.length > 0) {
-            settings = settings.requires(requiredFeatures);
-        }
-        return new ButtonBlock(blockSetType, 30, settings);
+    static Function<AbstractBlock.Settings, ButtonBlock> woodenButton(BlockSetType blockSetType, FeatureFlag ... requiredFeatures) {
+        return settings -> {
+            settings = settings
+                    .noCollision()
+                    .strength(0.5f)
+                    .pistonBehavior(PistonBehavior.DESTROY);
+            if (requiredFeatures.length > 0) {
+                settings = settings.requires(requiredFeatures);
+            }
+            return new ButtonBlock(blockSetType, 30, settings);
+        };
     }
 
     static Boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {

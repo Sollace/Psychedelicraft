@@ -33,7 +33,7 @@ public final class PhysicalFluid {
         this.type = type;
         standing = Registry.register(Registries.FLUID, id, PlacedFluid.still(this));
         flowing = Registry.register(Registries.FLUID, id.withPath(p -> "flowing_" + p), PlacedFluid.flowing(this));
-        block = type.isEmpty() ? Blocks.AIR : Registry.register(Registries.BLOCK, id, PlacedFluidBlock.create(this));
+        block = type.isEmpty() ? Blocks.AIR : PlacedFluidBlock.create(id, this);
     }
 
     public Fluid getStandingFluid() {
