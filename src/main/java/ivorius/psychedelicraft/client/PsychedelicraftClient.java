@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.client;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -10,13 +11,20 @@ import ivorius.psychedelicraft.client.render.shader.ShaderLoader;
 import ivorius.psychedelicraft.client.screen.PSScreens;
 import ivorius.psychedelicraft.config.JsonConfig;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.fluid.Processable;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemDrugs;
+import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.text.Text;
 
 /**
  * @author Sollace
@@ -52,6 +60,17 @@ public class PsychedelicraftClient implements ClientModInitializer {
         });
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ShaderLoader.POST_EFFECTS);
+
+        ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
+            if (FluidCapacity.get(stack) > 0) {
+                Consumer<Text> consumer = lines::add;
+                FluidCapacity.appendTooltip(stack, context, consumer, type);
+                ItemFluids.of(stack).appendTooltip(context, consumer, type);
+                ItemFluidsMixture.of(stack).appendTooltip(context, consumer, type);
+            }
+            Processable.ProcessType.appendTooltip(stack, context, lines, type);
+            ItemDrugs.get(stack).appendTooltip(context, lines::add, type);
+        });
 
         PSRenderers.bootstrap();
         PSModelPredicates.bootstrap();

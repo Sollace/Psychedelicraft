@@ -316,6 +316,8 @@
   "psychedelicraft.container.amount": "Amount: %1$s",
   "psychedelicraft.container.mixture": "Contains A Mixture",
   "psychedelicraft.container.mixture.fluid": "%2$s (%1$s%%)",
+  "psychedelicraft.item.contained_drug_effects": "Contained Drug Effects",
+  "psychedelicraft.item.contained_drug_effects.entry": "  %s: %s (+%s/2)",
 
   "psychedelicraft.alcohol.maturity.young": "young",
   "psychedelicraft.alcohol.maturity.aged": "aged",

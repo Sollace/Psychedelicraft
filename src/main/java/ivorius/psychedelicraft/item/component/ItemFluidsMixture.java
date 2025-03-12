@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.item.component;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -9,6 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -17,7 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
-public record ItemFluidsMixture(List<ItemFluids> fluids) {
+public record ItemFluidsMixture(List<ItemFluids> fluids) implements TooltipAppender {
     private static final ItemFluidsMixture EMPTY = new ItemFluidsMixture(List.of());
     public static final Codec<ItemFluidsMixture> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ItemFluids.CODEC.listOf().fieldOf("fluids").forGetter(ItemFluidsMixture::fluids)
@@ -64,14 +66,15 @@ public record ItemFluidsMixture(List<ItemFluids> fluids) {
         return isEmpty() ? ItemFluids.EMPTY : fluids.get(0);
     }
 
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    @Override
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
         if (isEmpty()) {
             return;
         }
         int total = fluids().stream().mapToInt(ItemFluids::amount).sum();
-        tooltip.add(Text.translatable("psychedelicraft.container.mixture").formatted(Formatting.DARK_GRAY));
+        tooltip.accept(Text.translatable("psychedelicraft.container.mixture").formatted(Formatting.DARK_GRAY));
         fluids().forEach(fluid -> {
-            tooltip.add(Text.translatable("psychedelicraft.container.mixture.fluid", getPercentage(fluid.amount(), total), fluid.getName()));
+            tooltip.accept(Text.translatable("psychedelicraft.container.mixture.fluid", getPercentage(fluid.amount(), total), fluid.getName()));
         });
     }
 

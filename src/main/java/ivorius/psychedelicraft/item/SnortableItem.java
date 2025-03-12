@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.item;
 
-import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.UseAction;
@@ -9,12 +8,12 @@ import net.minecraft.util.UseAction;
  * Created by lukas on 14.11.14.
  */
 public class SnortableItem extends EdibleItem {
-    public SnortableItem(Settings settings, DrugInfluence influence) {
-        super(settings, influence);
+    public SnortableItem(Settings settings) {
+        super(settings);
     }
 
     @Override
-    public UseAction getUseAction(ItemStack par1ItemStack) {
+    public UseAction getUseAction(ItemStack stack) {
         return UseAction.TOOT_HORN;
     }
 

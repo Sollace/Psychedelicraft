@@ -230,25 +230,25 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     }
 
     @Override
-    public void appendTooltip(ItemFluids stack, List<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemFluids stack, Consumer<Text> tooltip, TooltipType type) {
 
         int distillation = DISTILLATION.get(stack);
         int maturation = MATURATION.get(stack);
         int fermentation = FERMENTATION.get(stack);
 
         if (distillation > 0) {
-            tooltip.add(Text.translatable("psychedelicraft.alcohol.distillations", distillation).formatted(Formatting.GRAY));
+            tooltip.accept(Text.translatable("psychedelicraft.alcohol.distillations", distillation).formatted(Formatting.GRAY));
         }
 
         if (fermentation > 0) {
-            tooltip.add(Text.translatable("psychedelicraft.alcohol.fermentations", fermentation).formatted(Formatting.GRAY));
+            tooltip.accept(Text.translatable("psychedelicraft.alcohol.fermentations", fermentation).formatted(Formatting.GRAY));
         }
 
         if (maturation > 0) {
-            tooltip.add(Text.translatable("psychedelicraft.alcohol.maturations", maturation, Maturity.getMaturity(maturation).getName()).formatted(Formatting.GRAY));
+            tooltip.accept(Text.translatable("psychedelicraft.alcohol.maturations", maturation, Maturity.getMaturity(maturation).getName()).formatted(Formatting.GRAY));
         }
 
-        tooltip.add(Text.translatable("psychedelicraft.alcohol.potency", AttributeModifiersComponent.DECIMAL_FORMAT.format(getAlcoholContent(stack))).formatted(Formatting.GRAY));
+        tooltip.accept(Text.translatable("psychedelicraft.alcohol.potency", AttributeModifiersComponent.DECIMAL_FORMAT.format(getAlcoholContent(stack))).formatted(Formatting.GRAY));
 
         /*if (distillation > 0 || maturation > 0 || fermentation > 0) {
             tooltip.add(Text.empty());

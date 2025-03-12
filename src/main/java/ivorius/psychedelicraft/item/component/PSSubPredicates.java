@@ -10,6 +10,7 @@ import net.minecraft.registry.Registry;
 
 public interface PSSubPredicates {
     ItemSubPredicate.Type<ItemFluids.Predicate> FLUIDS = register("fluids", ItemFluids.Predicate.CODEC);
+    ItemSubPredicate.Type<FluidCapacity.Predicate> FLUID_CAPACITY = register("fluid_capacity", FluidCapacity.Predicate.CODEC);
     ItemSubPredicate.Type<DrinkType.Predicate> DRINK_TYPE = register("drink_type", DrinkType.Predicate.CODEC);
 
     private static <T extends ItemSubPredicate> ItemSubPredicate.Type<T> register(String id, Codec<T> codec) {

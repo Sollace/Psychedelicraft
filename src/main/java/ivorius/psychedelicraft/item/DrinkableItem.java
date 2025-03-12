@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.item;
 
-import java.util.List;
-
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.PlacedDrinksBlock;
@@ -16,7 +14,6 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
@@ -97,12 +94,6 @@ public class DrinkableItem extends Item {
         }
 
         return super.getName(stack);
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        FluidCapacity.appendTooltip(stack, context, tooltip, type);
     }
 
     @Override
