@@ -36,24 +36,17 @@ import java.util.function.Function;
  * Created by lukas on 22.10.14.
  */
 public class DrugFluid extends SimpleFluid implements ConsumableFluid {
-    protected final List<DrugInfluence> drugInfluences;
-    protected final FoodComponent foodLevel;
-
-    protected final Settings settings;
 
     protected final Map<String, Identifier> flowTextures = new HashMap<>();
     protected final Map<String, Identifier> stillTextures = new HashMap<>();
 
     public DrugFluid(Identifier id, Settings settings) {
         super(id, settings);
-        this.settings = settings;
-        this.foodLevel = settings.foodLevel;
-        this.drugInfluences = settings.drugInfluences;
     }
 
     @Nullable
     public FoodComponent getFoodLevel(ItemStack fluidStack) {
-        return foodLevel;
+        return ((Settings)getSettings()).foodLevel;
     }
 
     public void getDrugInfluences(ItemFluids fluidStack, List<DrugInfluence> list) {
@@ -63,20 +56,20 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid {
     }
 
     protected void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
-        drugInfluences.forEach(consumer);
+        ((Settings)getSettings()).drugInfluences.forEach(consumer);
     }
 
     @Override
     public boolean canConsume(ItemStack fluidStack, LivingEntity entity, ConsumptionType type) {
         if (type == ConsumptionType.DRINK) {
-            return settings.drinkable && (
+            return ((Settings)getSettings()).drinkable && (
                     !(entity instanceof PlayerEntity)
                     || getFoodLevel(fluidStack) == null
                     || ((PlayerEntity) entity).getHungerManager().isNotFull()
                 );
         }
 
-        return settings.injectable;
+        return ((Settings)getSettings()).injectable;
     }
 
     @Override
@@ -88,8 +81,8 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid {
         });
 
         if (type == ConsumptionType.DRINK) {
-            if (foodLevel != null && entity instanceof PlayerEntity player) {
-                player.getHungerManager().add(foodLevel.nutrition(), foodLevel.saturation());
+            if (((Settings)getSettings()).foodLevel != null && entity instanceof PlayerEntity player) {
+                player.getHungerManager().add(((Settings)getSettings()).foodLevel.nutrition(), ((Settings)getSettings()).foodLevel.saturation());
             }
         }
     }
@@ -106,14 +99,14 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid {
 
     @Override
     public Optional<Identifier> getFlowTexture(ItemFluids stack) {
-        return Optional.ofNullable(settings.appearance.apply(stack))
+        return Optional.ofNullable(((Settings)getSettings()).appearance.apply(stack))
                 .map(FluidAppearance::flowing)
                 .map(name -> flowTextures.computeIfAbsent(name, this::getFlowTexture));
     }
 
     @Override
     public Optional<Identifier> getStandingTexture(ItemFluids stack) {
-        return Optional.ofNullable(settings.appearance.apply(stack))
+        return Optional.ofNullable(((Settings)getSettings()).appearance.apply(stack))
                 .map(FluidAppearance::still)
                 .map(name -> stillTextures.computeIfAbsent(name, this::getFlowTexture));
     }
