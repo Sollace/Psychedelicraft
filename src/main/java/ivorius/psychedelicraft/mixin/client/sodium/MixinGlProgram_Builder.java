@@ -3,10 +3,7 @@ package ivorius.psychedelicraft.mixin.client.sodium;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -16,16 +13,19 @@ import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 
 @Pseudo
 @Mixin(targets = {
-        //"net.caffeinemc.mods.sodium.client.gl.shader.GlProgram$Builder",
+        "net.caffeinemc.mods.sodium.client.gl.shader.GlProgram$Builder",
         "me.jellysquid.mods.sodium.client.gl.shader.GlProgram$Builder"
 }, remap = false)
 abstract class MixinGlProgram_Builder {
+    @Unique
     private int psychedelicraft_maxAttributes = -1;
+    @Unique
     private int psychedelicraft_maxFragments = -1;
 
     @Shadow
     private @Final int program;
 
+    @Unique
     private @Nullable BuiltGemoetryShader.Builder psychedelicraft_shader;
 
     @Inject(method = "bindAttribute", at = @At("HEAD"))
