@@ -6,7 +6,7 @@
 package ivorius.psychedelicraft.item;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
-import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.item.component.ItemDrugs;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.LivingEntity;
@@ -19,11 +19,8 @@ public class EdibleItem extends Item {
     public static final FoodComponent HASH_MUFFIN = new FoodComponent.Builder().nutrition(2).saturationModifier(0.1F).alwaysEdible().build();
     public static final FoodComponent TOMATO = new FoodComponent.Builder().nutrition(1).saturationModifier(1.9F).alwaysEdible().build();
 
-    private final DrugInfluence influence;
-
-    public EdibleItem(Settings settings, DrugInfluence influence) {
+    public EdibleItem(Settings settings) {
         super(settings);
-        this.influence = influence;
     }
 
     @Override
@@ -34,7 +31,7 @@ public class EdibleItem extends Item {
             remainder.decrement(1);
         }
 
-        DrugProperties.of(user).ifPresent(drugProperties -> drugProperties.addToDrug(influence));
+        DrugProperties.of(user).ifPresent(drugProperties -> ItemDrugs.get(stack).applyTo(drugProperties));
         return remainder;
     }
 }

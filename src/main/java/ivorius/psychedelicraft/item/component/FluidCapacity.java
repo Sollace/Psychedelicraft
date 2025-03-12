@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.item.component;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.common.collect.Interner;
 import com.google.common.collect.Interners;
@@ -12,12 +12,15 @@ import ivorius.psychedelicraft.fluid.container.FluidTransferUtils;
 import ivorius.psychedelicraft.fluid.container.RecepticalHandler;
 import net.minecraft.item.ItemStack;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.minecraft.component.ComponentType;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.predicate.NumberRange.IntRange;
+import net.minecraft.predicate.item.ComponentSubPredicate;
 import net.minecraft.text.Text;
 
 public record FluidCapacity(int capacity) {
@@ -57,14 +60,27 @@ public record FluidCapacity(int capacity) {
         return capacity == null ? 0 : capacity.capacity();
     }
 
-    public static void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("psychedelicraft.container.levels", FluidVolumes.format(ItemFluids.of(stack).amount()), FluidVolumes.format(FluidCapacity.get(stack))));
-        ItemFluids.of(stack).appendTooltip(tooltip, type);
-        ItemFluidsMixture.of(stack).appendTooltip(stack, context, tooltip, type);
+    public static void appendTooltip(ItemStack stack, TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+        tooltip.accept(Text.translatable("psychedelicraft.container.levels", FluidVolumes.format(ItemFluids.of(stack).amount()), FluidVolumes.format(FluidCapacity.get(stack))));
     }
 
     public static float getPercentage(ItemStack stack) {
         int capacity = get(stack);
         return capacity == 0 ? 0 : ItemFluids.of(stack).amount() / (float)capacity;
     }
+
+    public record Predicate(IntRange capacity) implements ComponentSubPredicate<FluidCapacity> {
+        public static final Codec<Predicate> CODEC = IntRange.CODEC.xmap(Predicate::new, Predicate::capacity);
+
+        @Override
+        public ComponentType<FluidCapacity> getComponentType() {
+            return PSComponents.FLUID_CAPACITY;
+        }
+
+        @Override
+        public boolean test(ItemStack stack, FluidCapacity capacity) {
+            return this.capacity.test(capacity.capacity());
+        }
+    }
+
 }

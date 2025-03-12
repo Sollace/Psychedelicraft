@@ -316,6 +316,8 @@
   "psychedelicraft.container.amount": "Amount: %1$s",
   "psychedelicraft.container.mixture": "Contains A Mixture",
   "psychedelicraft.container.mixture.fluid": "%2$s (%1$s%%)",
+  "psychedelicraft.item.contained_drug_effects": "Contained Drug Effects",
+  "psychedelicraft.item.contained_drug_effects.entry": "  %s: %s (+%s/2)",
 
   "psychedelicraft.alcohol.maturity.young": "young",
   "psychedelicraft.alcohol.maturity.aged": "aged",
@@ -453,7 +455,7 @@
   "advancements.psychedelicraft.dry_red_mushrooms.description": "Dry some red mushrooms",
   "advancements.psychedelicraft.dry_cannabis_buds.title": "Mary Jane",
   "advancements.psychedelicraft.dry_cannabis_buds.description": "Dry some cannabis buds",
-  "advancements.psychedelicraft.grapes.title": "Tasty",
+  "advancements.psychedelicraft.grapes.title": "Grape to Meet You",
   "advancements.psychedelicraft.grapes.description": "Find some grapes",
   "advancements.psychedelicraft.hash_a_muffin.title": "Through the Stomach",
   "advancements.psychedelicraft.hash_a_muffin.description": "Bake a hash muffin",

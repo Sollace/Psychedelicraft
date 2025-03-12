@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.fluid;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -212,7 +213,7 @@ public class SimpleFluid implements Combustable {
         return Text.translatable(getTranslationKey());
     }
 
-    public void appendTooltip(ItemFluids stack, List<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemFluids stack, Consumer<Text> tooltip, TooltipType type) {
 
     }
 

@@ -23,6 +23,7 @@ import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.container.FluidCauldronBehavior;
 import ivorius.psychedelicraft.item.component.BagContentsComponent;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemDrugs;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -115,26 +116,26 @@ public interface PSItems {
     Item DRIED_CANNABIS_LEAF = register("dried_cannabis_leaf");
     Item DRIED_CANNABIS_BUDS = register("dried_cannabis_buds");
 
-    Item HASH_MUFFIN = register("hash_muffin", s -> new EdibleItem(
-            s.food(EdibleItem.HASH_MUFFIN),
-            new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.METABOLISED, 0.004, 0.002, 0.7f)
+    Item HASH_MUFFIN = register("hash_muffin", s -> new EdibleItem(s
+            .food(EdibleItem.HASH_MUFFIN)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.METABOLISED, 0.004, 0.002, 0.7f)))
     ));
 
     Item HOP_CONES = register("hop_cones");
     Item HOP_SEEDS = register("hop_seeds", s -> new BlockItem(PSBlocks.HOP, s.translationKey(PSBlocks.HOP.getTranslationKey())));
 
-    Item BROWN_MAGIC_MUSHROOMS = register("brown_magic_mushrooms", s -> new EdibleItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.BROWN_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.25f)
+    Item BROWN_MAGIC_MUSHROOMS = register("brown_magic_mushrooms", s -> new EdibleItem(s
+            .food(EdibleItem.NON_FILLING_EDIBLE)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.BROWN_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.25f)))
     ));
-    Item RED_MAGIC_MUSHROOMS = register("red_magic_mushrooms", s -> new EdibleItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.RED_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.25f)
+    Item RED_MAGIC_MUSHROOMS = register("red_magic_mushrooms", s -> new EdibleItem(s
+            .food(EdibleItem.NON_FILLING_EDIBLE)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.RED_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.25f)))
     ));
 
-    Item JOLLY_RANCHER = register("jolly_rancher", s -> new EdibleItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.SUGAR, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.05f)
+    Item JOLLY_RANCHER = register("jolly_rancher", s -> new EdibleItem(s
+            .food(EdibleItem.NON_FILLING_EDIBLE)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.SUGAR, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.05f)))
     ));
 
     Item TOBACCO_LEAVES = register("tobacco");
@@ -157,13 +158,13 @@ public interface PSItems {
     Item COCA_SEEDS = register("coca_seeds", s -> new BlockItem(PSBlocks.COCA, s.translationKey(PSBlocks.COCA.getTranslationKey())));
     Item COCA_LEAVES = register("coca_leaves");
     Item DRIED_COCA_LEAVES = register("dried_coca_leaves");
-    Item COCAINE_POWDER = register("cocaine_powder", s -> new CocainePowderItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)
+    Item COCAINE_POWDER = register("cocaine_powder", s -> new SnortableItem(s
+            .food(EdibleItem.NON_FILLING_EDIBLE)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)))
     ));
-    Item CRACK_COCAINE = register("crack_cocaine", s -> new CocainePowderItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.03, 0.65f)
+    Item CRACK_COCAINE = register("crack_cocaine", s -> new SnortableItem(s
+            .food(EdibleItem.NON_FILLING_EDIBLE)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.03, 0.65f)))
     ));
 
     DrinkableItem SYRINGE = register("syringe", s -> new SyringeItem(s
@@ -198,9 +199,9 @@ public interface PSItems {
     Item COFFEE_BEANS = register("coffee_beans");
 
     Item PEYOTE = register("peyote", PSBlocks.PEYOTE);
-    Item DRIED_PEYOTE = register("dried_peyote", s -> new EdibleItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+    Item DRIED_PEYOTE = register("dried_peyote", s -> new EdibleItem(s
+            .food(EdibleItem.NON_FILLING_EDIBLE)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)))
     ));
     Item PEYOTE_JOINT = register("peyote_joint", s -> new SmokeableItem(
             s.maxCount(1).maxDamage(2), 2, new Vector3f(0.5F, 0.9F, 0.4F),
@@ -218,9 +219,9 @@ public interface PSItems {
     Item HARMONIUM = register("harmonium", s -> new Item(s.component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.RED, true))));
 
     Item OBSIDIAN_BOTTLE = register("obsidian_bottle", s -> new Item(s.maxCount(16)));
-    Item OBSIDIAN_DUST = register("obsidian_dust", s -> new CocainePowderItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE, PSConsumableComponents.DUST),
-            new DrugInfluence(DrugType.BATH_SALTS, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)
+    Item OBSIDIAN_DUST = register("obsidian_dust", s -> new SnortableItem(s
+            .food(EdibleItem.NON_FILLING_EDIBLE)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.BATH_SALTS, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)))
     ));
 
     // TODO: https://www.erowid.org/plants/kava/kava.shtml
@@ -229,13 +230,13 @@ public interface PSItems {
 
     Item MORNING_GLORY = register("morning_glory");
     Item MORNING_GLORY_SEEDS = register("morning_glory_seeds", s -> new BlockItem(PSBlocks.MORNING_GLORY, s.translationKey(PSBlocks.MORNING_GLORY.getTranslationKey())));
-    Item LSA_SQUARE = register("lsd_square", s -> new EdibleItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.CONTACT, 0.05, 0.003, 0.1F)
+    Item LSA_SQUARE = register("lsd_square", s -> new EdibleItem(s
+            .food(EdibleItem.NON_FILLING_EDIBLE)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.CONTACT, 0.05, 0.003, 0.1F)))
     ));
-    Item LSD_PILL = register("lsd_pill", s -> new EdibleItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.INGESTED, 0.05, 0.003, 0.6F)
+    Item LSD_PILL = register("lsd_pill", s -> new EdibleItem(s
+            .food(EdibleItem.NON_FILLING_EDIBLE)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.INGESTED, 0.05, 0.003, 0.6F)))
     ));
 
     Item JIMSONWEED_SEEDS = register("jimsonweed_seeds", s -> new BlockItem(PSBlocks.JIMSONWEEED, s.translationKey(PSBlocks.JIMSONWEEED.getTranslationKey())));
@@ -250,9 +251,9 @@ public interface PSItems {
     Item BELLADONNA_SEEDS = register("belladonna_seeds", s -> new BlockItem(PSBlocks.BELLADONNA, s.translationKey(PSBlocks.BELLADONNA.getTranslationKey())));
     Item BELLADONNA_LEAF = register("belladonna_leaf");
     Item DRIED_BELLADONNA_LEAF = register("dried_belladonna_leaf");
-    Item BELLADONNA_BERRIES = register("belladonna_berries", s -> new EdibleItem(
-            s.food(new FoodComponent.Builder().nutrition(1).saturationModifier(1.5F).build(), PSConsumableComponents.FAST_FOOD),
-            new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+    Item BELLADONNA_BERRIES = register("belladonna_berries", s -> new EdibleItem(s
+                .food(new FoodComponent.Builder().nutrition(1).saturationModifier(1.5F).alwaysEdible().build())
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)))
     ));
 
     Item AGAVE_LEAF = register("agave_leaf", s -> new BlockItem(PSBlocks.AGAVE_PLANT, s.translationKey(PSBlocks.AGAVE_PLANT.getTranslationKey())));
@@ -278,21 +279,29 @@ public interface PSItems {
                 SuspiciousItem.createForms(Items.COOKIE, Items.MUSHROOM_STEW, Items.GOLDEN_APPLE, Items.COOKED_BEEF, Items.COOKED_CHICKEN))
             );
 
+    // TODO: Implement functionality
     Item TRAY = register("tray", PSBlocks.TRAY);
     Item BUNSEN_BURNER = register("bunsen_burner", PSBlocks.BUNSEN_BURNER);
     Item GLASS_TUBE = register("glass_tube", PSBlocks.GLASS_TUBE);
 
-    Item CRYSTAL_METH = register("methamphetamine_powder");
-    Item EXTACY = register("extacy", s -> new EdibleItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+    Item CRYSTAL_METH = register("methamphetamine_powder", s -> new SnortableItem(s
+                .food(EdibleItem.NON_FILLING_EDIBLE)
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15f)))
+    ));
+    // TODO: Different variants of the pills (use dyes to control appearance)
+    Item EXTACY = register("extacy", s -> new EdibleItem(s
+                .food(EdibleItem.NON_FILLING_EDIBLE)
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.15f)))
     ));
     Item PACIFIER = register("pacifier", s -> new PacifierItem(s.maxDamage(50).equippable(EquipmentSlot.OFFHAND)));
 
-    Item HEROINE_POWDER = register("heroine_powder");
-    Item MORPHINE_TABLET = register("morphine_tablet", s -> new EdibleItem(
-            s.food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+    Item HEROINE_POWDER = register("heroine_powder", s -> new SnortableItem(s
+                .food(EdibleItem.NON_FILLING_EDIBLE)
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15f)))
+    ));
+    Item MORPHINE_TABLET = register("morphine_tablet", s -> new EdibleItem(s
+                .food(EdibleItem.NON_FILLING_EDIBLE)
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)))
     ));
     Item BROKEN_GLASS = register("broken_glass");
 

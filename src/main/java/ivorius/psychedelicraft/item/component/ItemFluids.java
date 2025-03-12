@@ -1,9 +1,11 @@
 package ivorius.psychedelicraft.item.component;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
 import com.mojang.serialization.Codec;
@@ -21,7 +23,9 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -36,7 +40,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> attributes) {
+public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> attributes) implements TooltipAppender {
     public static final ItemFluids EMPTY = new ItemFluids(PSFluids.EMPTY, 0, Map.of());
     public static final Codec<Map<String, Integer>> ATTRIBUTES_CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT);
     public static final Codec<ItemFluids> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -196,18 +200,19 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
         return fluid().getName(this);
     }
 
-    public void appendTooltip(List<Text> tooltip, TooltipType type) {
+    @Override
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
         fluid().appendTooltip(this, tooltip, type);
         if (type.isAdvanced()) {
-            tooltip.add(Text.literal("fluid: " + fluid().getId().toString()).formatted(Formatting.DARK_GRAY));
-            tooltip.add(Text.literal("amount: " + amount()).formatted(Formatting.DARK_GRAY));
-            tooltip.add(Text.literal("attributes: " + attributes()).formatted(Formatting.DARK_GRAY));
+            tooltip.accept(Text.literal("fluid: " + fluid().getId().toString()).formatted(Formatting.DARK_GRAY));
+            tooltip.accept(Text.literal("amount: " + amount()).formatted(Formatting.DARK_GRAY));
+            tooltip.accept(Text.literal("attributes: " + attributes()).formatted(Formatting.DARK_GRAY));
         }
     }
 
-    public record Predicate(Optional<SimpleFluid> fluid, IntRange amount, Map<String, IntRange> attributes) implements ComponentSubPredicate<ItemFluids> {
+    public record Predicate(Optional<List<SimpleFluid>> fluid, IntRange amount, Map<String, IntRange> attributes) implements ComponentSubPredicate<ItemFluids> {
         public static final Codec<Predicate> CODEC = RecordCodecBuilder.create(i -> i.group(
-                SimpleFluid.CODEC.optionalFieldOf("fluid").forGetter(Predicate::fluid),
+                SimpleFluid.CODEC.listOf().optionalFieldOf("fluid").forGetter(Predicate::fluid),
                 IntRange.CODEC.optionalFieldOf("amount", IntRange.ANY).forGetter(Predicate::amount),
                 Codec.unboundedMap(Codec.STRING, IntRange.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(Predicate::attributes)
         ).apply(i, Predicate::new));
@@ -219,9 +224,48 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
         @Override
         public boolean test(ItemStack stack, ItemFluids fluids) {
-            return (fluid.isEmpty() || fluid.get() == fluids.fluid())
+            return (fluid.isEmpty() || fluid.get().contains(fluids.fluid()))
                 && amount.test(fluids.amount())
                 && (attributes.isEmpty() || attributes.entrySet().stream().allMatch(entry -> fluids.attributes().containsKey(entry.getKey()) && entry.getValue().test(fluids.attributes().get(entry.getKey()))));
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private Optional<List<SimpleFluid>> fluid = Optional.empty();
+            private IntRange amount = IntRange.atLeast(1);
+            private final Map<String, IntRange> attributes = new HashMap<>();
+
+            public Builder fluid(SimpleFluid fluid) {
+                this.fluid = Optional.of(List.of(fluid));
+                return this;
+            }
+
+            public Builder fluid(SimpleFluid...fluid) {
+                this.fluid = Optional.of(List.of(fluid));
+                return this;
+            }
+
+            public Builder fluid(Collection<SimpleFluid> fluid) {
+                this.fluid = Optional.of(List.copyOf(fluid));
+                return this;
+            }
+
+            public Builder amount(IntRange amount) {
+                this.amount = amount;
+                return this;
+            }
+
+            public Builder attribute(String name, IntRange range) {
+                attributes.put(name, range);
+                return this;
+            }
+
+            public Predicate build() {
+                return new Predicate(fluid, amount, attributes);
+            }
         }
     }
 

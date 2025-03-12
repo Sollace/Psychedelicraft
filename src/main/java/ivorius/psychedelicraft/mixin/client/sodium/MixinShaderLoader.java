@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 
 @Pseudo
 @Mixin(targets = {
-        //"net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader",
+        "net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader",
         "me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader"
 })
 abstract class MixinShaderLoader {

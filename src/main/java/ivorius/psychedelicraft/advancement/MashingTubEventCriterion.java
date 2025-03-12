@@ -10,6 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,14 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
                 IntRange.CODEC.optionalFieldOf("maturation", IntRange.ANY).forGetter(Conditions::maturation),
                 IntRange.CODEC.optionalFieldOf("distillation", IntRange.ANY).forGetter(Conditions::distillation)
         ).apply(instance, Conditions::new));
+
+        public static AdvancementCriterion<Conditions> create(AlcoholicFluid fluid) {
+            return PSCriteria.SIMPLY_MASHING.create(new Conditions(Optional.empty(), fluid, IntRange.ANY, IntRange.ANY, IntRange.ANY));
+        }
+
+        public static AdvancementCriterion<Conditions> create(AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) {
+            return PSCriteria.SIMPLY_MASHING.create(new Conditions(Optional.empty(), fluid, fermentation, maturation, distillation));
+        }
 
         public boolean test(ServerPlayerEntity player, ItemStack stack) {
             return ItemFluids.of(stack).fluid() == fluid

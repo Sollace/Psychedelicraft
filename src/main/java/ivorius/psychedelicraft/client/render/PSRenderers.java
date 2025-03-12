@@ -113,7 +113,7 @@ public interface PSRenderers {
 
                 @Override
                 public void appendTooltip(FluidVariant fluidVariant, List<Text> tooltip, TooltipType type) {
-                    fluid.appendTooltip(ItemFluids.of(fluidVariant, 1), tooltip, type);
+                    fluid.appendTooltip(ItemFluids.of(fluidVariant, 1), tooltip::add, type);
                 }
             });
         });

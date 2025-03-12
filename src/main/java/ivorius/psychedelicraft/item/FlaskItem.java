@@ -5,14 +5,9 @@
 
 package ivorius.psychedelicraft.item;
 
-import java.util.List;
-
-import ivorius.psychedelicraft.fluid.Processable;
-import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.*;
 import net.minecraft.item.*;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 
 /**
@@ -20,7 +15,6 @@ import net.minecraft.text.Text;
  * Updated by Sollace on 1 Jan 2023
  */
 public class FlaskItem extends BlockItem {
-
     public FlaskItem(Block block, Settings settings) {
         super(block, settings);
     }
@@ -34,12 +28,5 @@ public class FlaskItem extends BlockItem {
         }
 
         return super.getName(stack);
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        FluidCapacity.appendTooltip(stack, context, tooltip, type);
-        Processable.ProcessType.appendTooltip(stack, context, tooltip, type);
     }
 }
