@@ -153,11 +153,11 @@ public interface PSItems {
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));
     Item COCA_LEAVES = register("coca_leaves");
     Item DRIED_COCA_LEAVES = register("dried_coca_leaves");
-    Item COCAINE_POWDER = register("cocaine_powder", new CocainePowderItem(
+    Item COCAINE_POWDER = register("cocaine_powder", new SnortableItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)
     ));
-    Item CRACK_COCAINE = register("crack_cocaine", new CocainePowderItem(
+    Item CRACK_COCAINE = register("crack_cocaine", new SnortableItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.03, 0.65f)
     ));
@@ -214,7 +214,7 @@ public interface PSItems {
     Item HARMONIUM = register("harmonium", new Item(new Settings().component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.RED, true))));
 
     Item OBSIDIAN_BOTTLE = register("obsidian_bottle", new Item(new Settings().maxCount(16)));
-    Item OBSIDIAN_DUST = register("obsidian_dust", new CocainePowderItem(
+    Item OBSIDIAN_DUST = register("obsidian_dust", new SnortableItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.BATH_SALTS, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)
     ));
@@ -273,18 +273,27 @@ public interface PSItems {
             .food(new FoodComponent.Builder().nutrition(8).saturationModifier(0.8f).snack().alwaysEdible().build()
     ), SuspiciousItem.createForms(Items.COOKIE, Items.MUSHROOM_STEW, Items.GOLDEN_APPLE, Items.COOKED_BEEF, Items.COOKED_CHICKEN)));
 
+    // TODO: Implement functionality
     Item TRAY = register("tray", PSBlocks.TRAY);
     Item BUNSEN_BURNER = register("bunsen_burner", PSBlocks.BUNSEN_BURNER);
     Item GLASS_TUBE = register("glass_tube", PSBlocks.GLASS_TUBE);
 
-    Item CRYSTAL_METH = register("methamphetamine_powder", new Item(new Item.Settings()));
+    // TODO: Craft into
+    Item CRYSTAL_METH = register("methamphetamine_powder", new SnortableItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15f)
+    ));
+    // TODO: Different variants of the pills (use dyes to control appearance)
     Item EXTACY = register("extacy", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
-            new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)
+            new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.15f)
     ));
     Item PACIFIER = register("pacifier", new PacifierItem(new Item.Settings().maxDamage(50)));
 
-    Item HEROINE_POWDER = register("heroine_powder", new Item(new Item.Settings()));
+    Item HEROINE_POWDER = register("heroine_powder", new SnortableItem(
+            new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
+            new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15f)
+    ));
     Item MORPHINE_TABLET = register("morphine_tablet", new EdibleItem(
             new Settings().food(EdibleItem.NON_FILLING_EDIBLE),
             new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)

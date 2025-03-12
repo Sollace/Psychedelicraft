@@ -8,8 +8,8 @@ import net.minecraft.util.UseAction;
 /**
  * Created by lukas on 14.11.14.
  */
-public class CocainePowderItem extends EdibleItem {
-    public CocainePowderItem(Settings settings, DrugInfluence influence) {
+public class SnortableItem extends EdibleItem {
+    public SnortableItem(Settings settings, DrugInfluence influence) {
         super(settings, influence);
     }
 
