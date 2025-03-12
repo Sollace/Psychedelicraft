@@ -111,8 +111,10 @@ public class PSAdvancementBuilder {
     public Parent build(Consumer<AdvancementEntry> exporter) {
         Identifier id = group == null ? this.id : this.id.withPrefixedPath(group + "/");
         String key = Util.createTranslationKey("advancements", this.id);
+        ItemStack icon = this.icon.asItem().getDefaultStack();
+        iconCustomisation.accept(icon);
         AdvancementEntry advancement = builder.display(
-                icon.asItem().getDefaultStack(),
+                icon,
                 Text.translatable(key + ".title"),
                 Text.translatable(key + ".description"), background, frame, toast, announce, hidden)
                 .build(id);
