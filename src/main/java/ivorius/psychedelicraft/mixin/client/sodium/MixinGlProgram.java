@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.mixin.client.sodium;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -11,10 +12,11 @@ import ivorius.psychedelicraft.client.render.shader.BuiltGemoetryShader;
 
 @Pseudo
 @Mixin(targets = {
-        //"net.caffeinemc.mods.sodium.client.gl.shader.GlProgram",
+        "net.caffeinemc.mods.sodium.client.gl.shader.GlProgram",
         "me.jellysquid.mods.sodium.client.gl.shader.GlProgram"
 }, remap = false)
 abstract class MixinGlProgram implements BuiltGemoetryShader.Holder {
+    @Unique
     private @Nullable BuiltGemoetryShader psychedelicraft_uniformData;
 
     @Inject(method = "bind()V", at = @At("RETURN"))
