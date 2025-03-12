@@ -217,12 +217,16 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
     @Override
     public int getHash(ItemFluids stack) {
-        return Objects.hash(this, settings.variants.find(stack));
+        return Objects.hash(this, getVariant(stack));
     }
 
     @Override
     public Text getName(ItemFluids stack) {
-        return settings.variants.find(stack).getName(Text.translatable(getTranslationKey()));
+        return getVariant(stack).getName(Text.translatable(getTranslationKey()));
+    }
+
+    public DrinkType getVariant(ItemFluids stack) {
+        return settings.variants.find(stack);
     }
 
     @Override

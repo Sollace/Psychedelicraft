@@ -1,8 +1,17 @@
 package ivorius.psychedelicraft.fluid.alcohol;
 
 import java.util.Optional;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.AlcoholicFluid;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.PSComponents;
+import net.minecraft.component.ComponentType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.item.ComponentSubPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -92,5 +101,32 @@ public record DrinkType(String drinkName, String symbolName, Optional<String> va
         String BLANCO = "blanco";
         String REPOSADO = "reposado";
         String WINE = "wine";
+    }
+
+    public record Predicate(Optional<ItemFluids.Predicate> fluids, DrinkType name) implements ComponentSubPredicate<ItemFluids> {
+        public static final Codec<Predicate> CODEC = RecordCodecBuilder.create(i -> i.group(
+                ItemFluids.Predicate.CODEC.optionalFieldOf("fluids").forGetter(Predicate::fluids),
+                Codec.STRING.xmap(DrinkType::of, DrinkType::drinkName).fieldOf("drink_name").forGetter(Predicate::name)
+        ).apply(i, Predicate::new));
+
+        public static Predicate create(DrinkType name) {
+            return new DrinkType.Predicate(Optional.empty(), name);
+        }
+
+        public static Predicate create(DrinkType name, SimpleFluid...fluid) {
+            return new DrinkType.Predicate(Optional.of(ItemFluids.Predicate.builder().fluid(fluid).build()), name);
+        }
+
+        @Override
+        public ComponentType<ItemFluids> getComponentType() {
+            return PSComponents.FLUIDS;
+        }
+
+        @Override
+        public boolean test(ItemStack stack, ItemFluids fluids) {
+            return (this.fluids.isEmpty() || this.fluids.get().test(stack, fluids))
+                    && fluids.fluid() instanceof AlcoholicFluid alco
+                    && alco.getVariant(fluids).isOf(name);
+        }
     }
 }

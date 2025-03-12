@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -36,6 +37,10 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
                 EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
                 Codec.STRING.fieldOf("event").forGetter(Conditions::event)
         ).apply(instance, Conditions::new));
+
+        public static AdvancementCriterion<Conditions> create(String event) {
+            return PSCriteria.CUSTOM.create(new Conditions(Optional.empty(), event));
+        }
 
         public boolean test(ServerPlayerEntity player, String event) {
             return this.event.contentEquals(event);

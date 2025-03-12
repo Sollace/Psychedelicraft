@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.advancement;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -10,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.predicate.NumberRange.DoubleRange;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -35,6 +37,10 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
                 DrugPredicate.CODEC.listOf().fieldOf("drugs").forGetter(Conditions::drugs)
         ).apply(instance, Conditions::new));
 
+        public static AdvancementCriterion<Conditions> create(Collection<DrugType<?>> types) {
+            return PSCriteria.DRUG_EFFECTS_CHANGED.create(new Conditions(Optional.empty(), types.stream().map(type -> new DrugPredicate(type, DoubleRange.atLeast(MathHelper.EPSILON))).toList()));
+        }
+
         public boolean test(ServerPlayerEntity player, DrugProperties properties) {
             return drugs.stream().allMatch(predicate -> predicate.test(properties));
         }
@@ -46,7 +52,7 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
                             DrugType.REGISTRY.getCodec().fieldOf("id").forGetter(DrugPredicate::type),
                             DoubleRange.CODEC.fieldOf("value").forGetter(DrugPredicate::range)
                     ).apply(instance, DrugPredicate::new))
-            ).xmap(pair -> pair.left().or(pair::right).get(), Either::right);
+            ).xmap(Either::unwrap, Either::right);
 
             @Override
             public boolean test(DrugProperties properties) {

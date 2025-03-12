@@ -1,10 +1,10 @@
 package ivorius.psychedelicraft.item.component;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -205,9 +205,9 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
         }
     }
 
-    public record Predicate(Optional<SimpleFluid> fluid, IntRange amount, Map<String, IntRange> attributes) implements ComponentSubPredicate<ItemFluids> {
+    public record Predicate(Optional<List<SimpleFluid>> fluid, IntRange amount, Map<String, IntRange> attributes) implements ComponentSubPredicate<ItemFluids> {
         public static final Codec<Predicate> CODEC = RecordCodecBuilder.create(i -> i.group(
-                SimpleFluid.CODEC.optionalFieldOf("fluid").forGetter(Predicate::fluid),
+                SimpleFluid.CODEC.listOf().optionalFieldOf("fluid").forGetter(Predicate::fluid),
                 IntRange.CODEC.optionalFieldOf("amount", IntRange.ANY).forGetter(Predicate::amount),
                 Codec.unboundedMap(Codec.STRING, IntRange.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(Predicate::attributes)
         ).apply(i, Predicate::new));
@@ -219,9 +219,48 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
         @Override
         public boolean test(ItemStack stack, ItemFluids fluids) {
-            return (fluid.isEmpty() || fluid.get() == fluids.fluid())
+            return (fluid.isEmpty() || fluid.get().contains(fluids.fluid()))
                 && amount.test(fluids.amount())
                 && (attributes.isEmpty() || attributes.entrySet().stream().allMatch(entry -> fluids.attributes().containsKey(entry.getKey()) && entry.getValue().test(fluids.attributes().get(entry.getKey()))));
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private Optional<List<SimpleFluid>> fluid = Optional.empty();
+            private IntRange amount = IntRange.atLeast(1);
+            private final Map<String, IntRange> attributes = new HashMap<>();
+
+            public Builder fluid(SimpleFluid fluid) {
+                this.fluid = Optional.of(List.of(fluid));
+                return this;
+            }
+
+            public Builder fluid(SimpleFluid...fluid) {
+                this.fluid = Optional.of(List.of(fluid));
+                return this;
+            }
+
+            public Builder fluid(Collection<SimpleFluid> fluid) {
+                this.fluid = Optional.of(List.copyOf(fluid));
+                return this;
+            }
+
+            public Builder amount(IntRange amount) {
+                this.amount = amount;
+                return this;
+            }
+
+            public Builder attribute(String name, IntRange range) {
+                attributes.put(name, range);
+                return this;
+            }
+
+            public Predicate build() {
+                return new Predicate(fluid, amount, attributes);
+            }
         }
     }
 
