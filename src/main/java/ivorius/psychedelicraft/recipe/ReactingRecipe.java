@@ -77,6 +77,11 @@ public record ReactingRecipe (
     }
 
     @Override
+    public boolean isIgnoredInRecipeBook() {
+        return true;
+    }
+
+    @Override
     public ItemStack craft(Input input, WrapperLookup lookup) {
         if (ingredients.matchSolids(input.input())) {
             int level = ingredients.consumeMatchingFluids(input.fluids());
@@ -102,7 +107,7 @@ public record ReactingRecipe (
         ).apply(instance, Result::new));
         public static final PacketCodec<RegistryByteBuf, Result> PACKET_CODEC = PacketCodec.tuple(
                 ItemFluids.PACKET_CODEC, Result::fluid,
-                ItemStack.PACKET_CODEC, Result::byProduct,
+                ItemStack.OPTIONAL_PACKET_CODEC, Result::byProduct,
                 Result::new
         );
     }

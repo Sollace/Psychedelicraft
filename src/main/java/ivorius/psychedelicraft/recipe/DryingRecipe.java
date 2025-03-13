@@ -34,7 +34,7 @@ public record DryingRecipe(
     public static final PacketCodec<RegistryByteBuf, DryingRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, DryingRecipe::dryingGroup,
             Ingredient.PACKET_CODEC, DryingRecipe::input,
-            ItemStack.PACKET_CODEC, DryingRecipe::output,
+            ItemStack.OPTIONAL_PACKET_CODEC, DryingRecipe::output,
             PacketCodecs.FLOAT, DryingRecipe::experience,
             PacketCodecs.FLOAT, DryingRecipe::cookTime,
             DryingRecipe::new

@@ -32,7 +32,7 @@ public class BottleRecipe extends ShapedRecipe {
             PacketCodecs.STRING, BottleRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, BottleRecipe::getCategory,
             RawShapedRecipe.PACKET_CODEC, recipe -> recipe.raw,
-            ItemStack.PACKET_CODEC, recipe -> recipe.result,
+            ItemStack.OPTIONAL_PACKET_CODEC, recipe -> recipe.result,
             PacketCodecs.BOOL, BottleRecipe::showNotification,
             BottleRecipe::new
     );

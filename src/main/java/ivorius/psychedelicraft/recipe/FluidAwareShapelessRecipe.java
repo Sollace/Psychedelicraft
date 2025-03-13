@@ -38,7 +38,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     public static final PacketCodec<RegistryByteBuf, FluidAwareShapelessRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, FluidAwareShapelessRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, FluidAwareShapelessRecipe::getCategory,
-            ItemStack.PACKET_CODEC, recipe -> recipe.output,
+            ItemStack.OPTIONAL_PACKET_CODEC, recipe -> recipe.output,
             OptionalFluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), recipe -> recipe.ingredients,
             Ingredient.PACKET_CODEC, recipe -> recipe.destructedIngredient,
             FluidAwareShapelessRecipe::new

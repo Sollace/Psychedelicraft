@@ -25,7 +25,7 @@ public record BagContentsComponent(ItemStack stack, int count) implements Toolti
             Codec.INT.fieldOf("count").forGetter(BagContentsComponent::count)
     ).apply(instance, BagContentsComponent::of));
     public static final PacketCodec<RegistryByteBuf, BagContentsComponent> PACKET_CODEC = PacketCodec.tuple(
-            ItemStack.PACKET_CODEC, BagContentsComponent::stack,
+            ItemStack.OPTIONAL_PACKET_CODEC, BagContentsComponent::stack,
             PacketCodecs.INTEGER, BagContentsComponent::count,
             BagContentsComponent::of
     );
