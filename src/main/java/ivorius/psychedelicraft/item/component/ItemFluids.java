@@ -205,9 +205,15 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
         fluid().appendTooltip(this, tooltip, type);
         if (type.isAdvanced()) {
-            tooltip.accept(Text.literal("fluid: " + fluid().getId().toString()).formatted(Formatting.DARK_GRAY));
-            tooltip.accept(Text.literal("amount: " + amount()).formatted(Formatting.DARK_GRAY));
-            tooltip.accept(Text.literal("attributes: " + attributes()).formatted(Formatting.DARK_GRAY));
+            tooltip.accept(Text.literal("Contents:").formatted(Formatting.DARK_GRAY));
+            if (isEmpty()) {
+                tooltip.accept(Text.literal(" <empty>").formatted(Formatting.DARK_GRAY));
+            } else {
+                tooltip.accept(Text.literal(" " + fluid().getId().toString() + " x" + amount()).formatted(Formatting.DARK_GRAY));
+                for (var attribute : attributes().entrySet()) {
+                    tooltip.accept(Text.literal("  " + attribute.getKey() + "=" + attribute.getValue()).formatted(Formatting.DARK_GRAY));
+                }
+            }
         }
     }
 

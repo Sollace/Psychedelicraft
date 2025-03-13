@@ -22,6 +22,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.predicate.item.ComponentSubPredicate;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public record FluidCapacity(int capacity) {
     private static final Interner<FluidCapacity> INTERNER = Interners.newStrongInterner();
@@ -61,7 +62,10 @@ public record FluidCapacity(int capacity) {
     }
 
     public static void appendTooltip(ItemStack stack, TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
-        tooltip.accept(Text.translatable("psychedelicraft.container.levels", FluidVolumes.format(ItemFluids.of(stack).amount()), FluidVolumes.format(FluidCapacity.get(stack))));
+        tooltip.accept(Text.translatable("psychedelicraft.container.levels",
+                FluidVolumes.format(ItemFluids.of(stack).amount()),
+                FluidVolumes.format(FluidCapacity.get(stack))
+        ).formatted(Formatting.DARK_PURPLE));
     }
 
     public static float getPercentage(ItemStack stack) {
