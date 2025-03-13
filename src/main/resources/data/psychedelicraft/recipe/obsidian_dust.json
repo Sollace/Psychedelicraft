@@ -1,7 +1,0 @@
-{
-  "type": "psychedelicraft:shapeless_fluid",
-  "ingredients": [
-    { "item": "psychedelicraft:obsidian_bottle" }
-  ],
-  "result": { "id": "psychedelicraft:obsidian_dust" }
-}

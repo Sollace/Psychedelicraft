@@ -12,7 +12,6 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
-import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
@@ -20,7 +19,6 @@ import net.minecraft.world.World;
 
 public record DryingRecipe(
         String dryingGroup,
-        CookingRecipeCategory category,
         Ingredient input,
         ItemStack output,
         float experience,
@@ -28,7 +26,6 @@ public record DryingRecipe(
     ) implements Recipe<DryingRecipe.Input> {
     public static final MapCodec<DryingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(DryingRecipe::dryingGroup),
-            CookingRecipeCategory.CODEC.fieldOf("category").orElse(CookingRecipeCategory.MISC).forGetter(DryingRecipe::category),
             Ingredient.ALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(DryingRecipe::input),
             ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(DryingRecipe::output),
             Codec.FLOAT.optionalFieldOf("experience", 0F).forGetter(DryingRecipe::experience),
@@ -36,7 +33,6 @@ public record DryingRecipe(
         ).apply(instance, DryingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, DryingRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, DryingRecipe::dryingGroup,
-            RecipeUtils.COOKING_RECIPE_CATEGORY_PACKET_CODEC, DryingRecipe::category,
             Ingredient.PACKET_CODEC, DryingRecipe::input,
             ItemStack.PACKET_CODEC, DryingRecipe::output,
             PacketCodecs.FLOAT, DryingRecipe::experience,

@@ -106,9 +106,9 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                 PSBlocks.MASH_TUB,
                 PSBlocks.FLASK,
                 PSBlocks.DISTILLERY,
-                PSBlocks.PLACED_DRINK,
-                PSBlocks.ACACIA_BARREL, PSBlocks.BIRCH_BARREL, PSBlocks.DARK_OAK_BARREL, PSBlocks.JUNGLE_BARREL, PSBlocks.OAK_BARREL, PSBlocks.SPRUCE_BARREL
+                PSBlocks.PLACED_DRINK
         ).forEach(block -> addDrop(block, this::dynamicContentDrops));
+        PSBlocks.ALL_BARRELS.forEach(block -> addDrop(block, this::dynamicContentDrops));
 
         addDrop(PSBlocks.HOP, block -> drugCropDrops(block, 11, Properties.AGE_15_MAX, PSItems.HOP_CONES, PSItems.HOP_SEEDS));
         addDrop(PSBlocks.COCA, block -> drugCropDrops(block, 5, CocaPlantBlock.AGE_12_MAX, PSItems.COCA_LEAVES, PSItems.COCA_SEEDS));

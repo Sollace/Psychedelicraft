@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
@@ -40,12 +41,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.BOTTLE_RACK);
                 entries.add(PSItems.MASH_TUB);
 
-                entries.add(PSItems.OAK_BARREL);
-                entries.add(PSItems.BIRCH_BARREL);
-                entries.add(PSItems.SPRUCE_BARREL);
-                entries.add(PSItems.ACACIA_BARREL);
-                entries.add(PSItems.JUNGLE_BARREL);
-                entries.add(PSItems.DARK_OAK_BARREL);
+                PSItems.ALL_BARRELS.forEach(entries::add);
 
                 if (Psychedelicraft.getConfig().balancing.enableRiftJars) {
                     entries.add(PSItems.RIFT_JAR.getDefaultStack());
@@ -178,7 +174,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.HEROINE_POWDER);
             }));
     RegistryKey<ItemGroup> DRINKS = register("drinks", FabricItemGroup.builder()
-            .icon(PSItems.OAK_BARREL::getDefaultStack)
+            .icon(() -> PSBlocks.OAK_BARREL.asItem().getDefaultStack())
             .entries((context, entries) -> {
                 streamContainers().map(Item::getDefaultStack).forEach(container -> {
                     streamFluids().flatMap(fluid -> fluid.getDefaultStacks(container)).forEach(entries::add);

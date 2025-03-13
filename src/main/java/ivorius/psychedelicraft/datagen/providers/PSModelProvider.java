@@ -52,12 +52,7 @@ public class PSModelProvider extends FabricModelProvider {
         generator.registerParentedItemModel(PSBlocks.FRUITING_JUNIPER_LEAVES, ModelIds.getBlockModelId(PSBlocks.FRUITING_JUNIPER_LEAVES));
         generator.registerSimpleCubeAll(PSBlocks.GLITCH);
 
-        List.of(
-                PSBlocks.OAK_BARREL, PSBlocks.SPRUCE_BARREL, PSBlocks.BIRCH_BARREL,
-                PSBlocks.JUNGLE_BARREL, PSBlocks.ACACIA_BARREL, PSBlocks.DARK_OAK_BARREL
-        ).forEach(block -> {
-            BlockModels.registerBarrel(generator, block);
-        });
+        PSBlocks.ALL_BARRELS.forEach(block -> BlockModels.registerBarrel(generator, block));
 
         List.of(
                 PSBlocks.FLASK,
