@@ -23,6 +23,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Direction;
@@ -149,7 +150,7 @@ public interface Processable {
         public static void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             Processable.ProcessType processType = stack.get(PSComponents.PROCESS_TYPE);
             if (processType != null) {
-                tooltip.add(Text.translatable("psychedelicraft.container.process_type." + processType.asString()));
+                tooltip.add(Text.translatable("psychedelicraft.container.process_type." + processType.asString()).formatted(Formatting.BLUE));
             }
         }
     }

@@ -100,7 +100,7 @@ public class SimpleFluid implements Combustable {
         this(id, settings, false);
     }
 
-    public SimpleFluid(Identifier id, Settings settings, boolean empty) {
+    protected SimpleFluid(Identifier id, Settings settings, boolean empty) {
         this.id = id;
         this.settings = settings;
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
