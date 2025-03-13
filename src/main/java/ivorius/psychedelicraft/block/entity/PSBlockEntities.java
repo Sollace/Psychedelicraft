@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.block.entity;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
+import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.BlockEntityType.Builder;
@@ -17,11 +18,7 @@ public interface PSBlockEntities {
     BlockEntityType<DistilleryBlockEntity> DISTILLERY = create("distillery", BlockEntityType.Builder.create(DistilleryBlockEntity::new, PSBlocks.DISTILLERY));
     BlockEntityType<BottleRackBlockEntity> BOTTLE_RACK = create("bottle_rack", BlockEntityType.Builder.create(BottleRackBlockEntity::new, PSBlocks.BOTTLE_RACK, PSBlocks.WALL_BOTTLE_RACK));
     BlockEntityType<FlaskBlockEntity> FLASK = create("flask", BlockEntityType.Builder.create(FlaskBlockEntity::new, PSBlocks.FLASK));
-    BlockEntityType<BarrelBlockEntity> BARREL = create("barrel", BlockEntityType.Builder.create(BarrelBlockEntity::new,
-            PSBlocks.OAK_BARREL, PSBlocks.SPRUCE_BARREL,
-            PSBlocks.BIRCH_BARREL, PSBlocks.JUNGLE_BARREL,
-            PSBlocks.ACACIA_BARREL, PSBlocks.DARK_OAK_BARREL
-    ));
+    BlockEntityType<BarrelBlockEntity> BARREL = create("barrel", BlockEntityType.Builder.create(BarrelBlockEntity::new, PSBlocks.ALL_BARRELS.toArray(Block[]::new)));
     BlockEntityType<BurnerBlockEntity> BUNSEN_BURNER = create("bunsen_burner", BlockEntityType.Builder.create(BurnerBlockEntity::new, PSBlocks.BUNSEN_BURNER));
     BlockEntityType<PlacedDrinksBlock.Data> PLACED_DRINK = create("placed_drink", BlockEntityType.Builder.create(PlacedDrinksBlock.Data::new, PSBlocks.PLACED_DRINK));
     BlockEntityType<GlassTubeBlock.Data> GLASS_TUBE = create("glass_tube", BlockEntityType.Builder.create(GlassTubeBlock.Data::new, PSBlocks.GLASS_TUBE));
