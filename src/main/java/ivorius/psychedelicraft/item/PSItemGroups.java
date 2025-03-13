@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
@@ -174,14 +173,14 @@ public interface PSItemGroups {
                 entries.add(PSItems.HEROINE_POWDER);
             }));
     RegistryKey<ItemGroup> DRINKS = register("drinks", FabricItemGroup.builder()
-            .icon(() -> PSBlocks.OAK_BARREL.asItem().getDefaultStack())
+            .icon(() -> ItemFluids.set(PSItems.BOTTLE.getDefaultStack(), SimpleFluid.of(Fluids.WATER).getDefaultStack(FluidVolumes.BOTTLE)))
             .entries((context, entries) -> {
                 streamContainers().map(Item::getDefaultStack).forEach(container -> {
                     streamFluids().flatMap(fluid -> fluid.getDefaultStacks(container)).forEach(entries::add);
                 });
             }));
     RegistryKey<ItemGroup> WEAPONS = register("weapons", FabricItemGroup.builder()
-            .icon(PSItems.MOLOTOV_COCKTAIL::getDefaultStack)
+            .icon(() -> ItemFluids.set(PSItems.MOLOTOV_COCKTAIL.getDefaultStack(), PSFluids.GASOLINE.getDefaultStack(FluidVolumes.BOTTLE)))
             .entries((context, entries) -> {
                 if (!Psychedelicraft.getConfig().balancing.disableMolotovs) {
                     streamFluids().flatMap(fluid -> fluid.getDefaultStacks(PSItems.MOLOTOV_COCKTAIL.getDefaultStack())).forEach(entries::add);
