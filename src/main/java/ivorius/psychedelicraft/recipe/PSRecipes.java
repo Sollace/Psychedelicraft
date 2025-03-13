@@ -15,18 +15,18 @@ import net.minecraft.util.Identifier;
  * @since 5 Jan 2023
  */
 public interface PSRecipes {
-    RecipeSerializer<FillRecepticalRecipe> FILL_RECEPTICAL = serializer("fill_receptical", new Serializer<>(FillRecepticalRecipe.CODEC, FillRecepticalRecipe.PACKET_CODEC));
+    RecipeSerializer<MixingRecipe> FILL_RECEPTICAL = serializer("fill_receptical", new Serializer<>(MixingRecipe.CODEC, MixingRecipe.PACKET_CODEC));
     RecipeSerializer<ChangeRecepticalRecipe> CHANGE_RECEPTICAL = serializer("change_receptical", new Serializer<>(ChangeRecepticalRecipe.CODEC, ChangeRecepticalRecipe.PACKET_CODEC));
-    RecipeSerializer<PouringRecipe> POUR_DRINK = serializer("pour_drink", new SpecialRecipeSerializer<>(PouringRecipe::new));
+    RecipeSerializer<PouringRecipe> CRAFTING_POURING = serializer("crafting_pouring", new SpecialRecipeSerializer<>(PouringRecipe::new));
     RecipeSerializer<SmeltingFluidRecipe> SMELTING_RECEPTICAL = serializer("smelting_receptical", new Serializer<>(SmeltingFluidRecipe.CODEC, SmeltingFluidRecipe.PACKET_CODEC));
     RecipeSerializer<BottleRecipe> CRAFTING_SHAPED = serializer("crafting_shaped", new Serializer<>(BottleRecipe.CODEC, BottleRecipe.PACKET_CODEC));
-    RecipeSerializer<FluidAwareShapelessRecipe> SHAPELESS_FLUID = serializer("shapeless_fluid", new Serializer<>(FluidAwareShapelessRecipe.CODEC, FluidAwareShapelessRecipe.PACKET_CODEC));
+    RecipeSerializer<FluidAwareShapelessRecipe> CRAFTING_SHAPELESS_FLUID = serializer("crafting_shapeless_fluid", new Serializer<>(FluidAwareShapelessRecipe.CODEC, FluidAwareShapelessRecipe.PACKET_CODEC));
 
     RecipeType<MashingRecipe> MASHING_TYPE = type("mashing");
     RecipeSerializer<MashingRecipe> MASHING = serializer("mashing", new Serializer<>(MashingRecipe.CODEC, MashingRecipe.PACKET_CODEC));
 
-    RecipeType<BunsenBurnerRecipe> BUNSEN_BURNER = type("reacting");
-    RecipeSerializer<ReducingRecipe> REDUCING = serializer("reducing", new Serializer<>(ReducingRecipe.CODEC, ReducingRecipe.PACKET_CODEC));
+    RecipeType<BunsenBurnerRecipe> CHEMISTRY = type("chemistry");
+    RecipeSerializer<ReactingRecipe> REACTING = serializer("reacting", new Serializer<>(ReactingRecipe.CODEC, ReactingRecipe.PACKET_CODEC));
 
     RecipeType<DryingRecipe> DRYING_TYPE = type("drying");
     RecipeSerializer<DryingRecipe> DRYING = serializer("drying", new Serializer<>(DryingRecipe.CODEC, DryingRecipe.PACKET_CODEC));

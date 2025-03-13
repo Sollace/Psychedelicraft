@@ -17,7 +17,7 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
 
     @Override
     default RecipeType<?> getType() {
-        return PSRecipes.BUNSEN_BURNER;
+        return PSRecipes.CHEMISTRY;
     }
 
     @Override

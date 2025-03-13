@@ -210,7 +210,7 @@ public class LargeContents extends SmallContents {
 
     private boolean isValidIngredient(ItemStack stack) {
         return FluidCapacity.get(stack) == 0 && entity.getWorld().getRecipeManager()
-                .listAllOfType(PSRecipes.BUNSEN_BURNER)
+                .listAllOfType(PSRecipes.CHEMISTRY)
                 .stream()
                 .anyMatch(recipe -> recipe.value().getIngredients().stream().anyMatch(i -> i.test(stack)));
     }

@@ -79,5 +79,34 @@ public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> le
                 .map(stack -> ItemFluids.set(stack, getAsItemFluid(FluidCapacity.get(stack))))
                 .toArray(ItemStack[]::new));
     }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private Optional<SimpleFluid> fluid = Optional.empty();
+        private Optional<Integer> level = Optional.empty();
+        private final Map<String, Integer> attributes = new HashMap<>();
+
+        public Builder fluid(SimpleFluid fluid) {
+            this.fluid = Optional.of(fluid);
+            return this;
+        }
+
+        public Builder level(int level) {
+            this.level = Optional.of(level);
+            return this;
+        }
+
+        public Builder attribute(String attribute, int value) {
+            this.attributes.put(attribute, value);
+            return this;
+        }
+
+        public FluidIngredient build() {
+            return new FluidIngredient(fluid, level, Map.copyOf(attributes));
+        }
+    }
 }
 

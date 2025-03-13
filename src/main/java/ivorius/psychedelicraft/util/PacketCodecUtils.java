@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.util;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.mojang.datafixers.util.Function7;
@@ -8,9 +9,20 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.util.collection.DefaultedList;
 
 public interface PacketCodecUtils {
+    PacketCodec<ByteBuf, Optional<Integer>> OPTIONAL_INT = PacketCodecs.optional(PacketCodecs.INTEGER);
+    PacketCodec<ByteBuf, Optional<Long>> OPTIONAL_VAR_LONG = PacketCodecs.optional(PacketCodecs.VAR_LONG);
+    PacketCodec<ByteBuf, IntRange> INT_RANGE = PacketCodec.tuple(
+            OPTIONAL_INT, IntRange::min,
+            OPTIONAL_INT, IntRange::max,
+            OPTIONAL_VAR_LONG, IntRange::minSquared,
+            OPTIONAL_VAR_LONG, IntRange::maxSquared,
+            IntRange::new
+    );
+
     static <T extends Enum<T>> PacketCodec<RegistryByteBuf, T> ofEnum(Class<T> type) {
         return PacketCodec.ofStatic(RegistryByteBuf::writeEnumConstant, b -> b.readEnumConstant(type));
     }

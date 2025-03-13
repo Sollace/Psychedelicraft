@@ -68,7 +68,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PSRecipes.SHAPELESS_FLUID;
+        return PSRecipes.CRAFTING_SHAPELESS_FLUID;
     }
 
     @Override

@@ -1,16 +1,21 @@
 package ivorius.psychedelicraft.compat.tia;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack.TlaItemStack;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.FluidIngredient;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.NumberRange.IntRange;
+import net.minecraft.registry.Registries;
 
 interface RecipeUtil {
     static TlaStack toTlaStack(ItemFluids fluids) {
@@ -35,6 +40,24 @@ interface RecipeUtil {
 
     static TlaIngredient toIngredient(ItemFluids fluids) {
         return toTlaStack(fluids).asIngredient();
+    }
+
+    static List<ItemFluids> getMatchingFluids(ItemFluids.Predicate predicate, int amount) {
+        List<SimpleFluid> fluids = predicate.fluid().filter(l -> !l.isEmpty()).orElseGet(() -> Registries.FLUID.stream().map(SimpleFluid::of).toList());
+        if (predicate.amount().max().isPresent()) {
+            amount = Math.min(amount, predicate.amount().max().get());
+        }
+        if (predicate.amount().min().isPresent()) {
+            amount = Math.max(amount, predicate.amount().min().get());
+        }
+        final int a = amount;
+        return fluids.stream().map(fluid -> fluid.getDefaultStack(a)).toList();
+    }
+
+    static IntStream stream(IntRange range) {
+        int from = range.min().orElse(0);
+        int to = range.max().orElse(16);
+        return IntStream.range(from, to + 1);
     }
 
     static Stream<TlaIngredient> grouped(Stream<TlaIngredient> ingredients) {

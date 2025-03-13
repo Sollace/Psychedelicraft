@@ -33,14 +33,14 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
 public record MashingRecipe (
         String mashingGroup,
         CraftingRecipeCategory category,
-        ItemFluids baseFluid,
+        ItemFluids.Predicate baseFluid,
         ItemFluids result,
         Ingredients ingredients,
         int stewTime) implements Recipe<MashingRecipe.Input> {
     public static final MapCodec<MashingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::mashingGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(MashingRecipe::category),
-            ItemFluids.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
+            ItemFluids.Predicate.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
             ItemFluids.CODEC.fieldOf("result").forGetter(MashingRecipe::result),
             Ingredients.CODEC.fieldOf("ingredients").forGetter(MashingRecipe::ingredients),
             Codec.INT.optionalFieldOf("stew_time", 0).forGetter(MashingRecipe::stewTime)
@@ -48,7 +48,7 @@ public record MashingRecipe (
     public static final PacketCodec<RegistryByteBuf, MashingRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, MashingRecipe::mashingGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::category,
-            ItemFluids.PACKET_CODEC, MashingRecipe::baseFluid,
+            ItemFluids.Predicate.PACKET_CODEC, MashingRecipe::baseFluid,
             ItemFluids.PACKET_CODEC, MashingRecipe::result,
             Ingredients.PACKET_CODEC, MashingRecipe::ingredients,
             PacketCodecs.INTEGER, MashingRecipe::stewTime,
@@ -83,13 +83,13 @@ public record MashingRecipe (
     @Override
     public boolean matches(Input input, World world) {
         return !input.tankFluid().isEmpty()
-                && baseFluid.canCombine(input.tankFluid())
+                && baseFluid.test(input.tankFluid())
                 && ingredients.matches(input);
     }
 
     public boolean matchesPartially(Input input, World world) {
         return !input.tankFluid().isEmpty()
-                && baseFluid.canCombine(input.tankFluid())
+                && baseFluid.test(input.tankFluid())
                 && ingredients.includes(input);
     }
 

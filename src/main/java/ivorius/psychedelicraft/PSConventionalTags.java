@@ -10,6 +10,7 @@ public interface PSConventionalTags {
     interface Items {
         TagKey<Item> APPLES = of("foods/apple");
         TagKey<Item> PINEAPPLES = of("foods/pineapple");
+        TagKey<Item> POTATO = of("foods/potato");
         TagKey<Item> BANANAS = of("foods/banana");
         TagKey<Item> CORN = of("foods/corn");
         TagKey<Item> RICE = of("foods/rice");

@@ -118,6 +118,7 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     private void exportConventionalTags() {
         getOrCreateTagBuilder(PSConventionalTags.Items.APPLES).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
+        getOrCreateTagBuilder(PSConventionalTags.Items.POTATO).add(Items.POTATO, Items.POISONOUS_POTATO);
         getOrCreateTagBuilder(PSConventionalTags.Items.BANANAS);
         getOrCreateTagBuilder(PSConventionalTags.Items.PINEAPPLES);
         getOrCreateTagBuilder(PSConventionalTags.Items.CORN);

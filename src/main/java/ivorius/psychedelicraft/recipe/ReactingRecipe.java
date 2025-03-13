@@ -29,31 +29,31 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
  *
  * Used by the bunsen burner to produce the correct fluid type for ingredients dropped into it
  */
-public record ReducingRecipe (
+public record ReactingRecipe (
         String reducingGroup,
         CraftingRecipeCategory category,
         Result result,
         Ingredients ingredients,
         int stewTime) implements BunsenBurnerRecipe {
-    public static final MapCodec<ReducingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("group", "").forGetter(ReducingRecipe::reducingGroup),
-            CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ReducingRecipe::category),
-            Result.CODEC.fieldOf("result").forGetter(ReducingRecipe::result),
-            Ingredients.CODEC.fieldOf("ingredients").forGetter(ReducingRecipe::ingredients),
-            Codec.INT.optionalFieldOf("stew_time", 0).forGetter(ReducingRecipe::stewTime)
-    ).apply(instance, ReducingRecipe::new));
-    public static final PacketCodec<RegistryByteBuf, ReducingRecipe> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.STRING, ReducingRecipe::reducingGroup,
-            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ReducingRecipe::category,
-            Result.PACKET_CODEC, ReducingRecipe::result,
-            Ingredients.PACKET_CODEC, ReducingRecipe::ingredients,
-            PacketCodecs.INTEGER, ReducingRecipe::stewTime,
-            ReducingRecipe::new
+    public static final MapCodec<ReactingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(ReactingRecipe::reducingGroup),
+            CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ReactingRecipe::category),
+            Result.CODEC.fieldOf("result").forGetter(ReactingRecipe::result),
+            Ingredients.CODEC.fieldOf("ingredients").forGetter(ReactingRecipe::ingredients),
+            Codec.INT.optionalFieldOf("stew_time", 0).forGetter(ReactingRecipe::stewTime)
+    ).apply(instance, ReactingRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, ReactingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.STRING, ReactingRecipe::reducingGroup,
+            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ReactingRecipe::category,
+            Result.PACKET_CODEC, ReactingRecipe::result,
+            Ingredients.PACKET_CODEC, ReactingRecipe::ingredients,
+            PacketCodecs.INTEGER, ReactingRecipe::stewTime,
+            ReactingRecipe::new
     );
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PSRecipes.REDUCING;
+        return PSRecipes.REACTING;
     }
 
     @Override
@@ -92,13 +92,13 @@ public record ReducingRecipe (
         return result.byProduct();
     }
 
-    record Result (
+    public record Result (
             ItemFluids fluid,
             ItemStack byProduct
     ) {
         public static final MapCodec<Result> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 ItemFluids.CODEC.fieldOf("fluid").forGetter(Result::fluid),
-                ItemStack.VALIDATED_CODEC.optionalFieldOf("by_product", ItemStack.EMPTY).forGetter(Result::byProduct)
+                ItemStack.OPTIONAL_CODEC.optionalFieldOf("by_product", ItemStack.EMPTY).forGetter(Result::byProduct)
         ).apply(instance, Result::new));
         public static final PacketCodec<RegistryByteBuf, Result> PACKET_CODEC = PacketCodec.tuple(
                 ItemFluids.PACKET_CODEC, Result::fluid,
@@ -107,7 +107,7 @@ public record ReducingRecipe (
         );
     }
 
-    record Ingredients(
+    public record Ingredients(
             /**
              * Required input fluids (optional)
              */

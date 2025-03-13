@@ -66,6 +66,7 @@ public class DryingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 
 	@Override
 	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
+	    recipeId = recipeId.withSuffixedPath("_from_drying");
 		validate(recipeId);
 		Advancement.Builder builder = exporter.getAdvancementBuilder()
 			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))

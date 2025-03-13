@@ -37,30 +37,30 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
  * Outputs:
  * - Original Container filled with assigned fluid and level
  */
-public class FillRecepticalRecipe extends ShapelessRecipe {
-    public static final MapCodec<FillRecepticalRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("group", "").forGetter(FillRecepticalRecipe::getGroup),
-            CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FillRecepticalRecipe::getCategory),
-            FluidIngredient.CODEC.fieldOf("result").forGetter(FillRecepticalRecipe::getOutputFluid),
+public class MixingRecipe extends ShapelessRecipe {
+    public static final MapCodec<MixingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(MixingRecipe::getGroup),
+            CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(MixingRecipe::getCategory),
+            ItemFluids.CODEC.fieldOf("result").forGetter(MixingRecipe::getOutputFluid),
             Ingredient.ALLOW_EMPTY_CODEC.fieldOf("receptical").forGetter(i -> i.receptical),
             RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(i -> i.input)
-    ).apply(instance, FillRecepticalRecipe::new));
-    public static final PacketCodec<RegistryByteBuf, FillRecepticalRecipe> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.STRING, FillRecepticalRecipe::getGroup,
-            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, FillRecepticalRecipe::getCategory,
-            FluidIngredient.PACKET_CODEC, FillRecepticalRecipe::getOutputFluid,
+    ).apply(instance, MixingRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, MixingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.STRING, MixingRecipe::getGroup,
+            RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MixingRecipe::getCategory,
+            ItemFluids.PACKET_CODEC, MixingRecipe::getOutputFluid,
             Ingredient.PACKET_CODEC, recipe -> recipe.receptical,
             RecipeUtils.INGREDIENTS_PACKET_CODEC, i -> i.input,
-            FillRecepticalRecipe::new
+            MixingRecipe::new
     );
     private final Ingredient receptical;
     private final DefaultedList<Ingredient> input;
-    private final FluidIngredient output;
+    private final ItemFluids output;
 
-    public FillRecepticalRecipe(
+    public MixingRecipe(
             String group,
             CraftingRecipeCategory category,
-            FluidIngredient output,
+            ItemFluids output,
             Ingredient receptical,
             DefaultedList<Ingredient> input) {
         super(group, category, ItemStack.EMPTY, RecipeUtils.checkLength(RecipeUtils.union(input, receptical)));
@@ -69,7 +69,7 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
         this.output = output;
     }
 
-    public FluidIngredient getOutputFluid() {
+    public ItemFluids getOutputFluid() {
         return output;
     }
 
@@ -93,13 +93,13 @@ public class FillRecepticalRecipe extends ShapelessRecipe {
 
     @Override
     public final ItemStack getResult(WrapperLookup registryManager) {
-        return output.toVanillaIngredient(receptical).getMatchingStacks()[0];
+        return receptical.getMatchingStacks()[0];
     }
 
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
         return RecipeUtils.recepticals(inventory.getStacks().stream()).findFirst().map(receptical -> {
-            return ItemFluids.set(receptical.copy(), output.getAsItemFluid(FluidCapacity.get(receptical)));
+            return ItemFluids.set(receptical.copy(), output.ofAmount(Math.min(output.amount(), FluidCapacity.get(receptical))));
         }).orElse(ItemStack.EMPTY);
     }
 }

@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.util.CodecUtils;
 import ivorius.psychedelicraft.PSTags;
 
 import net.minecraft.item.ItemStack;
@@ -22,10 +21,10 @@ public record OptionalFluidIngredient (
         Optional<Ingredient> receptical
 ) implements Predicate<ItemStack> {
     public static final OptionalFluidIngredient EMPTY = new OptionalFluidIngredient(Optional.empty(), Optional.empty());
-    public static final Codec<OptionalFluidIngredient> CODEC = CodecUtils.extend(Ingredient.ALLOW_EMPTY_CODEC, FluidIngredient.CODEC.fieldOf("fluid")).xmap(
-        pair -> new OptionalFluidIngredient(pair.getSecond(), pair.getFirst()),
-        ingredient -> new Pair<>(ingredient.receptical(), ingredient.fluid())
-    );
+    public static final Codec<OptionalFluidIngredient> CODEC = RecordCodecBuilder.create(i -> i.group(
+            FluidIngredient.CODEC.optionalFieldOf("fluid").forGetter(OptionalFluidIngredient::fluid),
+            Ingredient.DISALLOW_EMPTY_CODEC.optionalFieldOf("receptical").forGetter(OptionalFluidIngredient::receptical)
+    ).apply(i, OptionalFluidIngredient::new));
     public static final Codec<DefaultedList<OptionalFluidIngredient>> LIST_CODEC = CODEC.listOf().xmap(
             values -> DefaultedList.copyOf(EMPTY, values.toArray(OptionalFluidIngredient[]::new)),
             defaultedList -> new ArrayList<>(defaultedList)
@@ -35,6 +34,18 @@ public record OptionalFluidIngredient (
             PacketCodecs.optional(Ingredient.PACKET_CODEC), OptionalFluidIngredient::receptical,
             OptionalFluidIngredient::new
     );
+
+    public static OptionalFluidIngredient of(FluidIngredient fluid) {
+        return new OptionalFluidIngredient(Optional.of(fluid), Optional.empty());
+    }
+
+    public static OptionalFluidIngredient of(Ingredient receptical) {
+        return new OptionalFluidIngredient(Optional.empty(), Optional.of(receptical));
+    }
+
+    public static OptionalFluidIngredient of(FluidIngredient fluid, Ingredient receptical) {
+        return new OptionalFluidIngredient(Optional.of(fluid), Optional.of(receptical));
+    }
 
     public boolean isEmpty() {
         return fluid.isEmpty() && receptical.isEmpty();

@@ -172,7 +172,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         return FluidCapacity.get(stack) == 0
             && (world.getRecipeManager()
                 .listAllOfType(PSRecipes.MASHING_TYPE).stream()
-                .filter(recipe -> recipe.value().baseFluid().canCombine(getPrimaryTank().getContents()))
+                .filter(recipe -> recipe.value().baseFluid().test(getPrimaryTank().getContents()))
                 .flatMap(recipe -> recipe.value().getIngredients().stream())
                 .anyMatch(i -> i.test(stack)));
     }

@@ -20,7 +20,7 @@ import net.minecraft.util.StringIdentifiable;
 public record FluidModifyingResult(Map<String, Modification> attributes, ItemStack result) {
     public static final Codec<FluidModifyingResult> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.unboundedMap(Codec.STRING, Modification.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(FluidModifyingResult::attributes),
-            ItemStack.VALIDATED_CODEC.optionalFieldOf("result", ItemStack.EMPTY).forGetter(FluidModifyingResult::result)
+            ItemStack.OPTIONAL_CODEC.optionalFieldOf("result", ItemStack.EMPTY).forGetter(FluidModifyingResult::result)
         ).apply(instance, FluidModifyingResult::new));
     public static final PacketCodec<RegistryByteBuf, FluidModifyingResult> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.map(HashMap::new, PacketCodecs.STRING, Modification.PACKET_CODEC), FluidModifyingResult::attributes,
@@ -75,7 +75,7 @@ public record FluidModifyingResult(Map<String, Modification> attributes, ItemSta
     public record Modification(int value, Ops type) implements Int2IntFunction {
         public static final Codec<Modification> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.INT.fieldOf("value").forGetter(Modification::value),
-                Ops.CODEC.optionalFieldOf("type", Ops.ADD).forGetter(Modification::type)
+                Ops.CODEC.optionalFieldOf("type", Ops.SET).forGetter(Modification::type)
         ).apply(instance, Modification::new));
         public static final PacketCodec<RegistryByteBuf, Modification> PACKET_CODEC = PacketCodec.tuple(
                 PacketCodecs.INTEGER, Modification::value,

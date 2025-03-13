@@ -16,6 +16,7 @@ import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.fluid.container.FluidTransferUtils;
 import ivorius.psychedelicraft.fluid.container.RecepticalHandler;
 import ivorius.psychedelicraft.fluid.container.VariantMarshal;
+import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentType;
@@ -216,6 +217,12 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
                 IntRange.CODEC.optionalFieldOf("amount", IntRange.ANY).forGetter(Predicate::amount),
                 Codec.unboundedMap(Codec.STRING, IntRange.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(Predicate::attributes)
         ).apply(i, Predicate::new));
+        public static final PacketCodec<RegistryByteBuf, Predicate> PACKET_CODEC = PacketCodec.tuple(
+                PacketCodecs.optional(SimpleFluid.PACKET_CODEC.collect(PacketCodecs.toList())), Predicate::fluid,
+                PacketCodecUtils.INT_RANGE, Predicate::amount,
+                PacketCodecs.map(HashMap::new, PacketCodecs.STRING, PacketCodecUtils.INT_RANGE), Predicate::attributes,
+                Predicate::new
+        );
 
         @Override
         public ComponentType<ItemFluids> getComponentType() {
@@ -224,6 +231,10 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
         @Override
         public boolean test(ItemStack stack, ItemFluids fluids) {
+            return test(fluids);
+        }
+
+        public boolean test(ItemFluids fluids) {
             return (fluid.isEmpty() || fluid.get().contains(fluids.fluid()))
                 && amount.test(fluids.amount())
                 && (attributes.isEmpty() || attributes.entrySet().stream().allMatch(entry -> fluids.attributes().containsKey(entry.getKey()) && entry.getValue().test(fluids.attributes().get(entry.getKey()))));
