@@ -31,6 +31,9 @@ public interface PSRecipes {
     RecipeType<DryingRecipe> DRYING_TYPE = type("drying");
     RecipeSerializer<DryingRecipe> DRYING = serializer("drying", new Serializer<>(DryingRecipe.CODEC, DryingRecipe.PACKET_CODEC));
 
+    RecipeType<HardeningRecipe> TRAY = type("tray");
+    RecipeSerializer<HardeningRecipe> HARDENING = serializer("hardening", new Serializer<>(HardeningRecipe.CODEC, HardeningRecipe.PACKET_CODEC));
+
     static <T extends Recipe<?>> RecipeType<T> type(String name) {
         Identifier id = Psychedelicraft.id(name);
         return Registry.register(Registries.RECIPE_TYPE, id, new RecipeType<T>() {

@@ -20,6 +20,7 @@ public interface PSBlockEntities {
     BlockEntityType<FlaskBlockEntity> FLASK = create("flask", BlockEntityType.Builder.create(FlaskBlockEntity::new, PSBlocks.FLASK));
     BlockEntityType<BarrelBlockEntity> BARREL = create("barrel", BlockEntityType.Builder.create(BarrelBlockEntity::new, PSBlocks.ALL_BARRELS.toArray(Block[]::new)));
     BlockEntityType<BurnerBlockEntity> BUNSEN_BURNER = create("bunsen_burner", BlockEntityType.Builder.create(BurnerBlockEntity::new, PSBlocks.BUNSEN_BURNER));
+    BlockEntityType<TrayBlockEntity> TRAY = create("tray", BlockEntityType.Builder.create(TrayBlockEntity::new, PSBlocks.TRAY));
     BlockEntityType<PlacedDrinksBlock.Data> PLACED_DRINK = create("placed_drink", BlockEntityType.Builder.create(PlacedDrinksBlock.Data::new, PSBlocks.PLACED_DRINK));
     BlockEntityType<GlassTubeBlock.Data> GLASS_TUBE = create("glass_tube", BlockEntityType.Builder.create(GlassTubeBlock.Data::new, PSBlocks.GLASS_TUBE));
 

@@ -73,7 +73,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
 
     public static final double RADIUS = 0.06;
     private static final VoxelShape DEFAULT_SHAPE = VoxelShapes.cuboid(0.4, 0.4, 0.4, 0.6, 0.6, 0.6);
-    private static final Function<Direction, VoxelShape> SHAPE_PART_CACHE = createShapePartCache(RADIUS, 0, 0.5);
+    private static final Function<Direction, VoxelShape> SHAPE_PART_CACHE = createShapePartCache(RADIUS, 0, 1);
 
     public static Function<Direction, VoxelShape> createShapePartCache(double radius, double offset, double length) {
         return Util.memoize(direction -> {
@@ -330,14 +330,6 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
 
         public Data(BlockPos pos, BlockState state) {
             super(PSBlockEntities.GLASS_TUBE, pos, state);
-        }
-
-        @Override
-        public void markDirty() {
-            super.markDirty();
-            if (getWorld() instanceof ServerWorld sw) {
-                sw.getChunkManager().markForUpdate(getPos());
-            }
         }
 
         public List<PipeFluids> getContents() {

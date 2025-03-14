@@ -59,6 +59,10 @@ public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> le
         return ItemFluids.create(fluid.orElse(PSFluids.EMPTY), level.orElse(capacity), attributes);
     }
 
+    public boolean isEmpty() {
+        return fluid.isEmpty() && level.isEmpty() && attributes.isEmpty();
+    }
+
     public Ingredient toVanillaIngredient(Ingredient receptical) {
         if (fluid.isEmpty()) {
             return receptical;

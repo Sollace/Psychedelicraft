@@ -43,6 +43,7 @@
   "tla.category.psychedelicraft.distillery": "Distillery Interaction",
   "tla.category.psychedelicraft.flask": "Flask Interaction",
   "tla.category.psychedelicraft.fluid_preparation": "Fluid Preparation",
+  "tla.category.psychedelicraft.tray": "Baking",
   
   "psychedelicraft.recipe.experience": "%d XP",
   "psychedelicraft.recipe.drying_time": "%d minutes at full sunlight",

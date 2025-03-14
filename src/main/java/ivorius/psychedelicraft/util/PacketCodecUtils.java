@@ -6,11 +6,13 @@ import java.util.function.Function;
 import com.mojang.datafixers.util.Function7;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.intprovider.IntProvider;
 
 public interface PacketCodecUtils {
     PacketCodec<ByteBuf, Optional<Integer>> OPTIONAL_INT = PacketCodecs.optional(PacketCodecs.INTEGER);
@@ -22,6 +24,9 @@ public interface PacketCodecUtils {
             OPTIONAL_VAR_LONG, IntRange::maxSquared,
             IntRange::new
     );
+    PacketCodec<ByteBuf, IntProvider> INT_PROVIDER_VALUE_CODEC = PacketCodecs.optional(PacketCodecs.NBT_ELEMENT).xmap(
+            nbt -> nbt.flatMap(i -> IntProvider.VALUE_CODEC.decode(NbtOps.INSTANCE, i).result().map(pair -> pair.getFirst())).orElseThrow(),
+            input -> IntProvider.VALUE_CODEC.encodeStart(NbtOps.INSTANCE, input).result());
 
     static <T extends Enum<T>> PacketCodec<RegistryByteBuf, T> ofEnum(Class<T> type) {
         return PacketCodec.ofStatic(RegistryByteBuf::writeEnumConstant, b -> b.readEnumConstant(type));

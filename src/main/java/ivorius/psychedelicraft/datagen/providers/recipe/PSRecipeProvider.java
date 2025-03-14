@@ -294,6 +294,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
 
         offerReactingRecipes(exporter);
+        offerTrayRecipes(exporter);
     }
 
     private void offerReactingRecipes(RecipeExporter exporter) {
@@ -308,6 +309,22 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, PSFluids.PETROLIUM.getDefaultStack(45))
             .input(Items.COAL_BLOCK).criterion(hasItem(Items.COAL_BLOCK), conditionsFromItem(Items.COAL_BLOCK))
             .offerTo(exporter, Psychedelicraft.id("petroleum_from_coal_block"));
+    }
+
+    private void offerTrayRecipes(RecipeExporter exporter) {
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRACK_COCAINE)
+            .base(FluidIngredient.builder().fluid(PSFluids.ETHANOL))
+            .impurity(FluidIngredient.builder().fluid(PSFluids.COCAINE))
+            .criterion(hasItem(PSItems.COCAINE_POWDER), conditionsFromItem(PSItems.COCAINE_POWDER))
+            .offerTo(exporter);
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRYSTAL_METH)
+            .base(FluidIngredient.builder().fluid(PSFluids.MORNING_GLORY_EXTRACT))
+            .criterion("has_morning_glory", conditionsFromTag(PSTags.Items.MORNING_GLORY_INGREDIENTS))
+            .offerTo(exporter);
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.HEROINE_POWDER)
+            .base(FluidIngredient.builder().fluid(PSFluids.MORPHINE))
+            .criterion(hasItem(Items.POPPY), conditionsFromItem(Items.POPPY))
+            .offerTo(exporter);
     }
 
     private void offerDryingRecipes(RecipeExporter exporter) {

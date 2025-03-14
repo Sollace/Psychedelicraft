@@ -56,6 +56,7 @@ public interface PSRenderers {
         BlockEntityRendererFactories.register(PSBlockEntities.PEYOTE, PeyoteBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(PSBlockEntities.PLACED_DRINK, DrinksBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(PSBlockEntities.BUNSEN_BURNER, BurnerBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(PSBlockEntities.TRAY, TrayBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(PSBlockEntities.GLASS_TUBE, GlassTubeBlockEntityRenderer::new);
 
         PreparableModelLoadingPlugin.register(PlacedDrinksModelProvider.INSTANCE, PlacedDrinksModelProvider.INSTANCE);

@@ -102,14 +102,6 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         return contents;
     }
 
-    @Override
-    public void markDirty() {
-        super.markDirty();
-        if (getWorld() instanceof ServerWorld sw) {
-            sw.getChunkManager().markForUpdate(getPos());
-        }
-    }
-
     public boolean interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
 
         if (hand != Hand.MAIN_HAND) {

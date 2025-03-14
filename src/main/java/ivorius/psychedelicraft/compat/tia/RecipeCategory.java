@@ -28,6 +28,7 @@ record RecipeCategory(Identifier id, CategoryIcon icon, TlaIngredient stations, 
     public static final RecipeCategory BARREL = RecipeCategory.register("barrel", PSBlocks.OAK_BARREL, TlaIngredient.ofItemTag(PSTags.Items.BARRELS), 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.BARREL));
     public static final RecipeCategory DISTILLERY = RecipeCategory.register("distillery", PSBlocks.DISTILLERY, 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.FLASK));
     public static final RecipeCategory FLASK = RecipeCategory.register("flask", PSBlocks.FLASK, 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.FLASK));
+    public static final RecipeCategory TRAY = RecipeCategory.register("tray", PSBlocks.TRAY, 70, 70, (category, registry) -> registry.addRecipeGenerator(PSRecipes.TRAY, TrayEmiRecipe::new));
 
     public static final RecipeCategory PREPARATION = register("fluid_preparation", PSItems.BOTTLE, TlaIngredient.join(
             TlaIngredient.ofItemTag(PSTags.Items.BARRELS),
@@ -79,7 +80,7 @@ record RecipeCategory(Identifier id, CategoryIcon icon, TlaIngredient stations, 
 
     @Override
     public int getDisplayWidth() {
-        return width;
+        return 200;//width;
     }
 
     @Override

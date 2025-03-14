@@ -58,7 +58,6 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
 
     public static final BooleanProperty LIT = Properties.LIT;
 
-
     public BurnerBlock(Settings settings) {
         super(settings
                 .nonOpaque()

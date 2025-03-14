@@ -80,9 +80,19 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                 PSBlocks.LATTICE,
                 PSBlocks.GLASS_TUBE,
                 PSBlocks.BUNSEN_BURNER,
-                PSBlocks.TRAY,
                 PSBlocks.BOTTLE_RACK
         ).forEach(this::addDrop);
+        addDrop(PSBlocks.TRAY, block -> LootTable.builder().pool(
+            LootPool.builder()
+                .rolls(ConstantLootNumberProvider.create(1.0F))
+                .with(DynamicEntry.builder(BlockWithFluid.CONTENTS_DYNAMIC_DROP_ID))
+                .conditionally(SurvivesExplosionLootCondition.builder())
+        ).pool(
+            LootPool.builder()
+                .rolls(ConstantLootNumberProvider.create(1.0F))
+                .with(ItemEntry.builder(PSBlocks.TRAY))
+                .conditionally(SurvivesExplosionLootCondition.builder())
+        ));
         addDrop(PSBlocks.WALL_BOTTLE_RACK, PSItems.BOTTLE_RACK);
 
         addDrop(PSBlocks.JUNIPER_LEAVES, block -> fruitLeavesDrop(block, PSBlocks.JUNIPER_SAPLING, PSItems.JUNIPER_BERRIES, SAPLING_DROP_CHANCE));
