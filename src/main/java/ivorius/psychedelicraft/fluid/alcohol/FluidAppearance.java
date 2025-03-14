@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.fluid.alcohol;
 
 public record FluidAppearance (
+        String name,
         String still,
         String flowing
     ) {
@@ -19,6 +20,6 @@ public record FluidAppearance (
     public static final FluidAppearance RUM_MATURE = of("rum_mature");
 
     public static FluidAppearance of(String name) {
-        return new FluidAppearance(name + "_still", name + "_flow");
+        return new FluidAppearance(name, name + "_still", name + "_flow");
     }
 }

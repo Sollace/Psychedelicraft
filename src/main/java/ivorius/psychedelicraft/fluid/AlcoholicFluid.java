@@ -174,7 +174,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     public Stream<Process> getProcesses() {
         return settings.variants.variants().stream().flatMap(variant -> {
             AlcoholicFluidState state = variant.predicate().state();
-            String key = variant.value().getUniqueKey();
+            String key = "_" + variant.value().getUniqueKey();
             return Stream.of(
                     new Process(this, getId().withSuffixedPath(key + "_alco"), getAlcoTransitions(state)),
                     new Process(this, getId().withSuffixedPath(key + "_chem"), getChemTransitions(state))
