@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
@@ -40,7 +41,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.BOTTLE_RACK);
                 entries.add(PSItems.MASH_TUB);
 
-                PSItems.ALL_BARRELS.forEach(entries::add);
+                PSItems.ALL_BARRELS.stream().filter(i -> i.getBlock() != PSBlocks.PALE_OAK_BARREL).forEach(entries::add);
 
                 if (Psychedelicraft.getConfig().balancing.enableRiftJars) {
                     entries.add(PSItems.RIFT_JAR.getDefaultStack());

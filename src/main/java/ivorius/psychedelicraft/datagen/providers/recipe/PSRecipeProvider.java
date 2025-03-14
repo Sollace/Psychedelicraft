@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.datagen.providers.recipe;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import ivorius.psychedelicraft.PSConventionalTags;
@@ -38,6 +39,7 @@ import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -58,7 +60,9 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         var items = registries.getNow(null).getWrapperOrThrow(RegistryKeys.ITEM);
 
         PSBlocks.ALL_BARRELS.stream().forEach(block -> {
-            offerBarrel(exporter, block, lookupItem(items, Registries.BLOCK.getId(block).withPath(p -> p.replace("barrel", "planks"))));
+            lookupItem(items, Registries.BLOCK.getId(block).withPath(p -> p.replace("barrel", "planks"))).ifPresent(planks -> {
+                offerBarrel(exporter, block, planks);
+            });
         });
 
         offerJuniperWoodset(exporter);
@@ -490,11 +494,11 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
     }
 
-    private static Item lookupItem(RegistryEntryLookup<Item> lookup, Identifier id) {
+    private static Optional<Item> lookupItem(RegistryEntryLookup<Item> lookup, Identifier id) {
         return lookup
             .getOptional(RegistryKey.of(RegistryKeys.ITEM, id))
-            .orElseGet(() -> lookup.getOrThrow(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla(id.getPath()))))
-            .value();
+            .or(() -> lookup.getOptional(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla(id.getPath()))))
+            .map(RegistryEntry::value);
     }
 
 }

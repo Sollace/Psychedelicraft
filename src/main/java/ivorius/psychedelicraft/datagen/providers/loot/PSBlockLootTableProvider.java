@@ -116,7 +116,9 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                 PSBlocks.MASH_TUB,
                 PSBlocks.FLASK,
                 PSBlocks.DISTILLERY,
-                PSBlocks.PLACED_DRINK
+                PSBlocks.PLACED_DRINK,
+                PSBlocks.RIFT_JAR,
+                PSBlocks.PALE_OAK_BARREL
         ).forEach(block -> addDrop(block, this::dynamicContentDrops));
         PSBlocks.ALL_BARRELS.forEach(block -> addDrop(block, this::dynamicContentDrops));
 

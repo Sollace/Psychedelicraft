@@ -54,7 +54,7 @@ public interface PSBlocks {
 
     List<Block> ALL_BARRELS = List.of(
             OAK_BARREL, SPRUCE_BARREL, BIRCH_BARREL, JUNGLE_BARREL, ACACIA_BARREL, DARK_OAK_BARREL,
-            MANGROVE_BARREL, CHERRY_BARREL, BAMBOO_BARREL, WARPED_BARREL, CRIMSON_BARREL, JUNIPER_BARREL
+            MANGROVE_BARREL, CHERRY_BARREL, BAMBOO_BARREL, WARPED_BARREL, CRIMSON_BARREL, JUNIPER_BARREL, PALE_OAK_BARREL
     );
 
     Block FLASK = register("flask", new FlaskBlock(Settings.create().sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));
