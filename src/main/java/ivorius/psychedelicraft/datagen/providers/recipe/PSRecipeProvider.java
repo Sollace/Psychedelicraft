@@ -192,14 +192,6 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
 
         offerSingleOutputShapelessRecipe(exporter, PSItems.COCAINE_POWDER, PSItems.DRIED_COCA_LEAVES, "drugs");
-        offer2x2CompactingRecipe(exporter, RecipeCategory.MISC, PSItems.MORPHINE_TABLET, PSItems.HEROINE_POWDER);
-        // TODO: Different pill designs using dyes
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.EXTACY, 2)
-            .input('#', PSItems.CRYSTAL_METH)
-            .pattern("##")
-            .pattern("##")
-            .criterion(hasItem(PSItems.CRYSTAL_METH), conditionsFromItem(PSItems.CRYSTAL_METH))
-            .offerTo(exporter);
 
         FluidAwareShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.OBSIDIAN_BOTTLE)
             .input(FluidIngredient.builder().fluid(SimpleFluid.of(Fluids.WATER)).level(FluidVolumes.BUCKET).build(), PSItems.FILLED_BUCKET)
@@ -292,6 +284,15 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .pattern("---")
             .offerTo(exporter);
 
+        offer2x2CompactingRecipe(exporter, RecipeCategory.MISC, PSItems.MORPHINE_TABLET, PSItems.HEROINE_POWDER);
+        // TODO: Different pill designs using dyes
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.EXTACY, 2)
+            .input('#', PSItems.CRYSTAL_METH)
+            .pattern("##")
+            .pattern("##")
+            .criterion(hasItem(PSItems.CRYSTAL_METH), conditionsFromItem(PSItems.CRYSTAL_METH))
+            .offerTo(exporter);
+
         FluidAwareShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.LSA_SQUARE)
             .input(Items.PAPER).criterion(hasItem(Items.PAPER), conditionsFromItem(Items.PAPER))
             .input(FluidIngredient.builder().fluid(PSFluids.MORNING_GLORY_EXTRACT).attribute("distillation", 2).build())
@@ -328,6 +329,10 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.HEROINE_POWDER)
             .base(FluidIngredient.builder().fluid(PSFluids.MORPHINE))
             .criterion(hasItem(Items.POPPY), conditionsFromItem(Items.POPPY))
+            .offerTo(exporter);
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.LSD_PILL)
+            .base(FluidIngredient.builder().fluid(PSFluids.ACID))
+            .criterion("has_morning_glory", conditionsFromTag(PSTags.Items.MORNING_GLORY_INGREDIENTS))
             .offerTo(exporter);
     }
 
