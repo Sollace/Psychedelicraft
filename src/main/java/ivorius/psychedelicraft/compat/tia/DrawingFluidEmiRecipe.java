@@ -3,8 +3,6 @@ package ivorius.psychedelicraft.compat.tia;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import org.jetbrains.annotations.Nullable;
-
 import io.github.mattidragon.tlaapi.api.gui.GuiBuilder;
 import io.github.mattidragon.tlaapi.api.gui.TextureConfig;
 import io.github.mattidragon.tlaapi.api.plugin.PluginContext;
@@ -21,6 +19,8 @@ class DrawingFluidEmiRecipe implements PSRecipe {
     private final RecipeUtil.Contents contents;
     private final Identifier background;
 
+    private final Identifier id;
+
     private final int capacity;
 
     public static BiConsumer<RecipeCategory, PluginContext> generate(int capacity) {
@@ -35,6 +35,7 @@ class DrawingFluidEmiRecipe implements PSRecipe {
         this.category = category;
         this.background = category.getId().withPath(p -> "textures/gui/" + p + ".png");
         this.contents = contents;
+        this.id = category.id().withSuffixedPath("/" + contents.type().fluid().getId().toUnderscoreSeparatedString() + contents.type().fluid().getUniqueKey(contents.type()));
         this.capacity = capacity;
     }
 
@@ -44,8 +45,8 @@ class DrawingFluidEmiRecipe implements PSRecipe {
     }
 
     @Override
-    public @Nullable Identifier getId() {
-        return null;
+    public Identifier getId() {
+        return id;
     }
 
     @Override

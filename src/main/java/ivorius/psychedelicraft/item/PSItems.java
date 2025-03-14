@@ -136,7 +136,6 @@ public interface PSItems {
             .food(EdibleItem.NON_FILLING_EDIBLE)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.35f)))
     ));
-    // TODO: Obtained by mixing cocaine and ethanol in the bunsen burner - needs the tray
     Item CRACK_COCAINE = register("crack_cocaine", new SnortableItem(new Settings()
             .food(EdibleItem.NON_FILLING_EDIBLE)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.03, 0.65f)))

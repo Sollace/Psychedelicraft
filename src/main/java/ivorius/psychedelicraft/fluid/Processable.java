@@ -117,15 +117,9 @@ public interface Processable {
          */
         COOL,
         /**
-         * When processed in the evaporator, used to chemically extract purified substances
+         * When processed in the benzene burner, used to chemically extract purified substances
          */
-        @Deprecated
-        PURIFY,
-        /**
-         * When fluids of differing types are mixed on a bunzene burner, used to change their properties when they combine.
-         */
-        @Deprecated
-        REACT;
+        PURIFY;
 
         private final String name = name().toLowerCase(Locale.ROOT);
         private final Text status = Text.translatable("fluid.status." + name);

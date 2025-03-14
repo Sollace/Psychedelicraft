@@ -200,6 +200,10 @@ public class SimpleFluid implements Combustable {
         return Stream.of(getDefaultStack(capacity));
     }
 
+    public String getUniqueKey(ItemFluids fluids) {
+        return "";
+    }
+
     public final Stream<ItemStack> getDefaultStacks(ItemStack stack) {
         int capacity = FluidCapacity.get(stack);
         if (capacity > 0 && isSuitableContainer(stack)) {

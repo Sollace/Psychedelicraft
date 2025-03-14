@@ -72,6 +72,15 @@ public class CoffeeFluid extends DrugFluid implements Processable {
     }
 
     @Override
+    public String getUniqueKey(ItemFluids fluids) {
+        return switch (WARMTH.get(fluids)) {
+            case 1 -> "_warm";
+            case 2 -> "_hot";
+            default -> "_cold";
+        };
+    }
+
+    @Override
     public boolean isSuitableContainer(ItemStack container) {
         return container.isIn(getPreferredContainerTag());
     }
@@ -83,22 +92,16 @@ public class CoffeeFluid extends DrugFluid implements Processable {
 
     @Override
     public ProcessType modifyProcess(Resovoir tank, ProcessType type) {
-        if (WARMTH.get(tank.getContents()) > 0) {
-            return ProcessType.COOL;
-        }
-        return type;
+        return WARMTH.get(tank.getContents()) > 0 ? ProcessType.COOL : type;
     }
 
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
-        if (type == ProcessType.COOL) {
-            return WARMTH.get(tank.getContents()) > 0 ? 300 : UNCONVERTABLE;
-        }
-        if (type == ProcessType.PURIFY) {
-            return 1;
-        }
-
-        return UNCONVERTABLE;
+        return switch (type) {
+            case COOL -> WARMTH.get(tank.getContents()) > 0 ? 300 : UNCONVERTABLE;
+            case PURIFY -> 1;
+            default -> UNCONVERTABLE;
+        };
     }
 
     @Override
@@ -120,7 +123,7 @@ public class CoffeeFluid extends DrugFluid implements Processable {
             .flatMapToInt(step -> IntStream.of(step.getLeft(), step.getRight()))
             .distinct()
             .mapToObj(warmth -> {
-                return new Process(this, getId().withSuffixedPath("_purifying"), List.of(
+                return new Process(this, getId().withSuffixedPath("_purifying_" + warmth), List.of(
                         new Transition(ProcessType.PURIFY, 0, 1, from -> WARMTH.set(from, warmth).ofAmount(2), to -> PSFluids.CAFFEINE.getDefaultStack(1))
                 ));
             }), Stream.of(

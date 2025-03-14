@@ -225,6 +225,11 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         return getVariant(stack).getName(Text.translatable(getTranslationKey()));
     }
 
+    @Override
+    public String getUniqueKey(ItemFluids stack) {
+        return "_" + getVariant(stack).getUniqueKey();
+    }
+
     public DrinkType getVariant(ItemFluids stack) {
         return settings.variants.find(stack);
     }
