@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.sound.DrugMusicManager;
+import ivorius.psychedelicraft.entity.effect.PSEffects;
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.item.PacifierItem;
 import ivorius.psychedelicraft.network.Channel;
@@ -27,6 +28,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryKey;
@@ -221,9 +223,10 @@ public class DrugProperties implements NbtSerialisable {
                 entity.addExhaustion(0.05F);
             }
 
-            if (getDrugValue(DrugType.METHAMPHETAMINE) <= 0.001F
+            if (!entity.hasStatusEffect(PSEffects.TEETH_GRINDING) && ((getDrugValue(DrugType.METHAMPHETAMINE) <= 0.001F
                     && teethGrindingRate > 0
-                    && random.nextFloat() * (entity.isSleeping() ? 2 : 1) < teethGrindingRate / 100F) {
+                    && random.nextFloat() * (entity.isSleeping() ? 2 : 1) < teethGrindingRate / 100F))) {
+                entity.addStatusEffect(new StatusEffectInstance(PSEffects.TEETH_GRINDING, 1000));
                 if (!PacifierItem.consumePacifier(entity)) {
                     entity.damage(damageOf(PSDamageTypes.TEETH_GRINDING), 1);
                 } else {
