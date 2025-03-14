@@ -68,7 +68,7 @@ public class PSModelProvider extends FabricModelProvider {
 
         generator.registerBuiltin(PSBlocks.RIFT_JAR, Blocks.GLASS).includeWithoutItem(PSBlocks.RIFT_JAR);
 
-        generator.registerBuiltinWithParticle(PSBlocks.PEYOTE, ModelIds.getBlockModelId(PSBlocks.PEYOTE));
+        generator.registerBuiltinWithParticle(PSBlocks.PEYOTE, ModelIds.getItemModelId(PSItems.PEYOTE));
         generator.registerBuiltinWithParticle(PSBlocks.PLACED_DRINK, ModelIds.getBlockModelId(Blocks.STONE));
 
         Function<Integer, Identifier> models = BlockModels.createCropModelSupplier(generator, PSBlocks.JIMSONWEEED);
