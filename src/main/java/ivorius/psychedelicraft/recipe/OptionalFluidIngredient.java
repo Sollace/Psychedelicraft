@@ -52,7 +52,10 @@ public record OptionalFluidIngredient (
     }
 
     public Ingredient toVanillaIngredient() {
-        return fluid.map(f -> f.toVanillaIngredient(receptical().orElse(Ingredient.fromTag(PSTags.Items.DRINK_RECEPTICALS)))).orElse(Ingredient.EMPTY);
+        return fluid
+                .map(f -> f.toVanillaIngredient(receptical().orElse(Ingredient.fromTag(PSTags.Items.ALL_RECEPTICALS))))
+                .or(() -> receptical)
+                .orElse(Ingredient.EMPTY);
     }
 
     @Override

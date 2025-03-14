@@ -62,6 +62,9 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(PSTags.Items.DRINK_RECEPTICALS)
             .addTag(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS)
             .addTag(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);
+        getOrCreateTagBuilder(PSTags.Items.ALL_RECEPTICALS)
+            .addTag(PSTags.Items.DRINK_RECEPTICALS)
+            .addTag(PSTags.Items.DRUG_RECEPTICALS);
         getOrCreateTagBuilder(PSTags.Items.DRUG_CROP_SEEDS).add(PSItems.CANNABIS_SEEDS, PSItems.HOP_SEEDS, PSItems.TOBACCO_SEEDS, PSItems.COCA_SEEDS, PSItems.COFFEA_CHERRIES, PSItems.MORNING_GLORY_SEEDS);
         getOrCreateTagBuilder(PSTags.Items.CAN_GO_INTO_PAPER_BAG).add(
                 Items.NETHER_WART, Items.SWEET_BERRIES, Items.BROWN_MUSHROOM, Items.RED_MUSHROOM,
@@ -76,15 +79,15 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 PSItems.AGAVE_LEAF,
                 PSItems.SYRINGE,
                 PSItems.JOINT, PSItems.CIGARETTE, PSItems.CIGAR, PSItems.MORNING_GLORY
-        ).forceAddTag(ConventionalItemTags.COOKIES_FOODS)
-            .forceAddTag(ConventionalItemTags.BERRIES_FOODS)
-            .forceAddTag(ConventionalItemTags.CANDIES_FOODS)
+        ).forceAddTag(ConventionalItemTags.COOKIE_FOODS)
+            .forceAddTag(ConventionalItemTags.BERRY_FOODS)
+            .forceAddTag(ConventionalItemTags.CANDY_FOODS)
             .forceAddTag(ConventionalItemTags.MUSIC_DISCS)
             .forceAddTag(ConventionalItemTags.GEMS)
             .forceAddTag(ConventionalItemTags.DUSTS)
             .forceAddTag(ConventionalItemTags.DYES)
-            .forceAddTag(ConventionalItemTags.COOKED_FISHES_FOODS)
-            .forceAddTag(ConventionalItemTags.RAW_FISHES_FOODS)
+            .forceAddTag(ConventionalItemTags.COOKED_FISH_FOODS)
+            .forceAddTag(ConventionalItemTags.RAW_FISH_FOODS)
             .forceAddTag(ItemTags.VILLAGER_PLANTABLE_SEEDS)
             .forceAddTag(ItemTags.BUTTONS)
             .forceAddTag(ItemTags.SMALL_FLOWERS)
@@ -126,7 +129,7 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(PSConventionalTags.Items.GRAPES).add(PSItems.WINE_GRAPES);
         getOrCreateTagBuilder(PSConventionalTags.Items.HONEY).add(Items.HONEYCOMB, Items.HONEY_BOTTLE);
         getOrCreateTagBuilder(PSConventionalTags.Items.TOMATOES).add(PSItems.TOMATO);
-        getOrCreateTagBuilder(ConventionalItemTags.BERRIES_FOODS).add(PSItems.BELLADONNA_BERRIES, PSItems.JUNIPER_BERRIES);
+        getOrCreateTagBuilder(ConventionalItemTags.BERRY_FOODS).add(PSItems.BELLADONNA_BERRIES, PSItems.JUNIPER_BERRIES);
         getOrCreateTagBuilder(ConventionalItemTags.DUSTS).add(
                 PSItems.OBSIDIAN_DUST,
                 PSItems.COCAINE_POWDER, PSItems.HEROINE_POWDER
