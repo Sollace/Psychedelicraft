@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.item;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
@@ -66,9 +67,25 @@ public class FilledBucketItem extends Item {
     }
 
     @Override
+    public boolean isItemBarVisible(ItemStack stack) {
+        return !ItemFluids.of(stack).isEmpty() && FluidCapacity.getPercentage(stack) < 1;
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        return (int)(ITEM_BAR_STEPS * FluidCapacity.getPercentage(stack));
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        return 0xAAAAFF;
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         ItemFluids fluids = ItemFluids.of(stack);
+
         FluidState fluid = fluids.fluid().getFluidState(fluids);
 
         BlockHitResult hit = BucketItem.raycast(world, user, fluid.isEmpty()

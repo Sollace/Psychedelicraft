@@ -191,15 +191,17 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.WOODEN_MUG
         ).forEach(item -> ItemModels.registerDrinkHolder(generator, item));
         ItemModels.registerDrinkHolderWithLabel(generator, PSItems.BOTTLE);
-        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_BUCKET, Items.BUCKET, ModelIds.getItemModelId(Items.LAVA_BUCKET));
-        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_BOWL, Items.BOWL, Models.GENERATED.upload(
-                Psychedelicraft.id("item/lava_bowl"),
-                TextureMap.layer0(Psychedelicraft.id("item/lava_bowl")),
-                generator.writer));
-        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_GLASS_BOTTLE, Items.POTION, Models.GENERATED.upload(
-                Psychedelicraft.id("item/lava_bottle"),
-                TextureMap.layer0(Psychedelicraft.id("item/lava_bottle")),
-                generator.writer));
+        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_BUCKET, Items.BUCKET,
+                ModelIds.getItemModelId(Items.LAVA_BUCKET),
+                ModelIds.getItemModelId(Items.WATER_BUCKET)
+        );
+        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_BOWL, Items.BOWL,
+                Models.GENERATED.upload(Psychedelicraft.id("item/lava_bowl"), TextureMap.layer0(Psychedelicraft.id("item/lava_bowl")), generator.writer)
+        );
+        ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_GLASS_BOTTLE, Items.POTION,
+                Models.GENERATED.upload(Psychedelicraft.id("item/lava_bottle"), TextureMap.layer0(Psychedelicraft.id("item/lava_bottle")), generator.writer),
+                ModelIds.getItemModelId(Items.POTION)
+        );
 
         List.of(PSItems.WINE_GRAPE_LATTICE, PSItems.MORNING_GLORY_LATTICE).forEach(item -> {
             ItemModels.registerPlantLattice(generator, PSBlocks.LATTICE, item);
