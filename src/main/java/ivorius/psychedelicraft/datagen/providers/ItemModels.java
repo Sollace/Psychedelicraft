@@ -157,6 +157,16 @@ public interface ItemModels {
             .upload(ModelIds.getItemModelId(item), TextureMap.layered(base, overlay, overlay), itemModelGenerator);
     }
 
+    static void registerParentedDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, Item parent, Identifier withLava, Identifier withWater) {
+        var overlayTextureKey = parent == Items.POTION ? TextureKey.LAYER0 : TextureKey.LAYER1;
+        var parentModel = new Model(Optional.of(ModelIds.getItemModelId(parent)), Optional.empty(), overlayTextureKey);
+        var parentId = Registries.ITEM.getId(parent);
+        ModelOverrides.of(parentModel)
+            .addOverride("psychedelicraft:filled_with_lava", 1F, o -> withLava)
+            .addOverride("psychedelicraft:filled_with_water", 1F, o -> withWater)
+            .upload(ModelIds.getItemModelId(item), TextureMap.of(overlayTextureKey, parentId.withPath(p -> "item/" + p + (parent == Items.POTION ? "_overlay" : "_liquid"))), itemModelGenerator);
+    }
+
     static void registerParentedDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, Item parent, Identifier withLava) {
         var overlayTextureKey = parent == Items.POTION ? TextureKey.LAYER0 : TextureKey.LAYER1;
         var parentModel = new Model(Optional.of(ModelIds.getItemModelId(parent)), Optional.empty(), overlayTextureKey);

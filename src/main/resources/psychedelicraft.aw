@@ -16,4 +16,6 @@ accessible          field    net/minecraft/item/ItemGroups                      
 mutable             field    net/minecraft/loot/LootTable                                     pools          Ljava/util/List;
 accessible          field    net/minecraft/loot/LootTable                                     pools          Ljava/util/List;
 
+accessible          class    net/minecraft/datafixer/fix/ItemStackComponentizationFix$StackData
+
 extendable          method   net/minecraft/block/CropBlock                                    isMature    (Lnet/minecraft/block/BlockState;)Z

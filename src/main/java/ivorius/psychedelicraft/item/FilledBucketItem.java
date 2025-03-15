@@ -5,8 +5,10 @@
 
 package ivorius.psychedelicraft.item;
 
+import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
@@ -31,6 +33,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -66,9 +69,25 @@ public class FilledBucketItem extends BucketItem {
     }
 
     @Override
+    public boolean isItemBarVisible(ItemStack stack) {
+        return !ItemFluids.of(stack).isEmpty() && FluidCapacity.getPercentage(stack) < 1;
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        return (int)(ITEM_BAR_STEPS * FluidCapacity.getPercentage(stack));
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        return 0xAAAAFF;
+    }
+
+    @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         ItemFluids fluids = ItemFluids.of(stack);
+
         FluidState fluid = fluids.fluid().getFluidState(fluids);
 
         BlockHitResult hit = BucketItem.raycast(world, user, fluid.isEmpty()
@@ -105,7 +124,7 @@ public class FilledBucketItem extends BucketItem {
             }
             BlockState blockState = world.getBlockState(blockPos);
             blockPos3 = blockState.getBlock() instanceof FluidFillable && fluid.isOf(Fluids.WATER) ? blockPos : blockPos2;
-            if (placeFluid(fluid, user, world, blockPos3, hit)) {
+            if (placeFluid(stack, fluids, fluid, user, world, blockPos3, hit)) {
                 if (user instanceof ServerPlayerEntity) {
                     Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, stack);
                 }
@@ -125,7 +144,7 @@ public class FilledBucketItem extends BucketItem {
                 BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
                 ServerWorld world = pointer.world();
                 ItemFluids fluids = ItemFluids.of(stack);
-                if (placeFluid(fluids.fluid().getFluidState(fluids), null, world, blockPos, null)) {
+                if (placeFluid(stack, fluids, fluids.fluid().getFluidState(fluids), null, world, blockPos, null)) {
                     return Items.BUCKET.getDefaultStack();
                 }
                 return super.dispenseSilently(pointer, stack);
@@ -143,20 +162,20 @@ public class FilledBucketItem extends BucketItem {
     }
 
     @SuppressWarnings("deprecation")
-    private static boolean placeFluid(FluidState fluid, @Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hit) {
-        if (!(fluid.getFluid() instanceof FlowableFluid)) {
+    private static boolean placeFluid(ItemStack stack, ItemFluids fluids, FluidState fluidState, @Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hit) {
+        if (!(fluidState.getFluid() instanceof FlowableFluid)) {
             return false;
         }
 
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        boolean canPlace = state.canBucketPlace(fluid.getFluid());
+        boolean canPlace = state.canBucketPlace(fluidState.getFluid());
 
-        if (!(state.isAir() || canPlace || block instanceof FluidFillable f && f.canFillWithFluid(player, world, pos, state, fluid.getFluid()))) {
-            return hit != null && placeFluid(fluid, player, world, hit.getBlockPos().offset(hit.getSide()), null);
+        if (!(state.isAir() || canPlace || block instanceof FluidFillable f && f.canFillWithFluid(player, world, pos, state, fluidState.getFluid()))) {
+            return hit != null && placeFluid(stack, fluids, fluidState, player, world, hit.getBlockPos().offset(hit.getSide()), null);
         }
 
-        if (world.getDimension().ultrawarm() && !fluid.isIn(FluidTags.LAVA)) {
+        if (world.getDimension().ultrawarm() && !fluidState.isIn(FluidTags.LAVA)) {
             int i = pos.getX();
             int j = pos.getY();
             int k = pos.getZ();
@@ -167,8 +186,8 @@ public class FilledBucketItem extends BucketItem {
             return true;
         }
 
-        if (block instanceof FluidFillable f && f.tryFillWithFluid(world, pos, state, fluid)) {
-            playEmptyingSound(fluid.getFluid(), player, world, pos);
+        if (block instanceof FluidFillable f && fluids.amount() >= FluidCapacity.get(stack) && f.tryFillWithFluid(world, pos, state, fluidState)) {
+            playEmptyingSound(fluidState.getFluid(), player, world, pos);
             return true;
         }
 
@@ -176,12 +195,29 @@ public class FilledBucketItem extends BucketItem {
             world.breakBlock(pos, true);
         }
 
-        //if (world.getBlockState(pos).isOf(fluid.getBlockState().getBlock())) {
-            if (world.setBlockState(pos, fluid.getBlockState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD) || state.getFluidState().isStill()) {
-               playEmptyingSound(fluid.getFluid(), player, world, pos);
-                return true;
+
+        BlockState placedBlockState = fluidState.getBlockState();
+        boolean placeFalling = false;
+        boolean placeInto = world.getBlockState(pos).isOf(placedBlockState.getBlock());
+        if (fluids.amount() < FluidCapacity.get(stack) && world.isAir(pos)) {
+            placedBlockState = placedBlockState.with(Properties.LEVEL_15, 8);
+            placeFalling = true;
+        }
+
+        if (placeFalling || placeInto) {
+            if (placeFalling && !placeInto) {
+                for (var dir : List.of(Direction.DOWN, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP)) {
+                    if (world.isAir(pos.offset(dir))) {
+                        world.setBlockState(pos.offset(dir), placedBlockState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+                        break;
+                    }
+                }
             }
-        //}
+            if (world.setBlockState(pos, placedBlockState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD) || state.getFluidState().isStill()) {
+               playEmptyingSound(fluidState.getFluid(), player, world, pos);
+               return true;
+            }
+        }
         return false;
     }
 

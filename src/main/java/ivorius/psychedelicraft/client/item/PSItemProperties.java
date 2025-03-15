@@ -53,13 +53,14 @@ public interface PSItemProperties {
         flag("flying", FlyingProperty.CODEC);
         flag("using", UsingProperty.CODEC);
         option("filled", FilledProperty.TYPE);
-        flag("filled_with_lava", FilledWithLavaProperty.CODEC);
+        flag("contained_fluid", ContainedFluidProperty.CODEC);
         range("age", AgeProperty.CODEC);
 
         tint("fluid", FluidTintSource.CODEC);
 
         model("hallucination", HallucinatedItemModel.Unbaked.CODEC);
         specialModel("rift_jar", RiftJarItemModelRenderer.Unbaked.CODEC);
+        specialModel("vat", VatItemModelRenderer.Unbaked.CODEC);
 
         // layer 1,2,3,etc -> minecraft:dye
         // ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : DyedColorComponent.getColor(stack, Colors.RED), PSItems.HARMONIUM);

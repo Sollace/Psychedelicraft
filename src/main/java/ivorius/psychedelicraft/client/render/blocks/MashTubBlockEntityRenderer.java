@@ -8,8 +8,10 @@ package ivorius.psychedelicraft.client.render.blocks;
 import java.util.Random;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.FluidFilled;
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
@@ -32,8 +34,38 @@ import net.minecraft.util.math.*;
  * Renders fluid in the mash tub, or the solid contents
  */
 public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<MashTubBlockEntity> {
+    private static final MashTubBlockEntity ITEM_ENTITY = PSBlockEntities.MASH_TUB.instantiate(BlockPos.ORIGIN, PSBlocks.MASH_TUB.getDefaultState());
+
     public MashTubBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        super(context);
+        super(context.getTextRenderer());
+    }
+
+    public MashTubBlockEntityRenderer() {
+        super(MinecraftClient.getInstance().textRenderer);
+    }
+
+    public void renderAsItem(ItemFluids fluids, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        ITEM_ENTITY.getPrimaryTank().setContents(fluids);
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlock(
+                ITEM_ENTITY.getCachedState(),
+                ITEM_ENTITY.getPos(),
+                MinecraftClient.getInstance().world,
+                matrices,
+                vertices.getBuffer(RenderLayer.getCutout()), false,
+                MinecraftClient.getInstance().world.random);
+
+        if (!fluids.isEmpty()) {
+            float fillPercentage = MathHelper.clamp((float)fluids.amount() / FluidVolumes.VAT, 0, 2);
+
+            float fluidHeight = 0.1F;
+            fluidHeight = 0.3F + fillPercentage * 0.6F;
+
+            FluidBoxRenderer.getInstance()
+                .scale(1).light(light).overlay(overlay)
+                .position(matrices)
+                .texture(vertices, fluids)
+                .draw(-0.5F, 0, -0.5F, 2, fluidHeight, 2, Direction.UP);
+        }
     }
 
     @Override

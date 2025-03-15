@@ -20,17 +20,12 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -39,7 +34,6 @@ import net.minecraft.predicate.item.ComponentSubPredicate;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
 public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> attributes) implements TooltipAppender {
     public static final ItemFluids EMPTY = new ItemFluids(PSFluids.EMPTY, 0, Map.of());
@@ -56,34 +50,9 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
             ItemFluids::create
     );
 
-    @Deprecated
-    public static ItemFluids fromCustom(ItemStack stack) {
-        NbtComponent tag = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (tag != null) {
-            NbtCompound nbt = tag.getNbt();
-            if (nbt.contains("fluid", NbtElement.COMPOUND_TYPE)) {
-                NbtCompound fluidTag = nbt.getCompound("fluid");
-                nbt.remove("fluid");
-                if (nbt.isEmpty()) {
-                    stack.remove(DataComponentTypes.CUSTOM_DATA);
-                }
-
-                ItemFluids fluids = create(
-                        SimpleFluid.byId(Identifier.validate(fluidTag.getString("id")).result().orElse(SimpleFluid.EMPTY_KEY)),
-                        fluidTag.getInt("level"),
-                        ATTRIBUTES_CODEC.decode(NbtOps.INSTANCE, fluidTag.getCompound("attributes")).result().map(pair -> pair.getFirst()).orElse(Map.of())
-                );
-                stack.set(PSComponents.FLUIDS, fluids);
-                return fluids;
-            }
-        }
-        return ItemFluids.EMPTY;
-    }
-
     @NotNull
     public static ItemFluids direct(ItemStack stack) {
-        ItemFluids fluids = stack.get(PSComponents.FLUIDS);
-        return fluids == null ? fromCustom(stack) : fluids;
+        return stack.getOrDefault(PSComponents.FLUIDS, EMPTY);
     }
 
     @NotNull

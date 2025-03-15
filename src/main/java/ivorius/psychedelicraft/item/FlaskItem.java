@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.item;
 
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.*;
 import net.minecraft.item.*;
@@ -28,5 +29,20 @@ public class FlaskItem extends BlockItem {
         }
 
         return super.getName(stack);
+    }
+
+    @Override
+    public boolean isItemBarVisible(ItemStack stack) {
+        return !ItemFluids.of(stack).isEmpty();
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        return (int)(ITEM_BAR_STEPS * FluidCapacity.getPercentage(stack));
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        return 0xAAAAFF;
     }
 }

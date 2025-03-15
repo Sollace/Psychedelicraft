@@ -32,7 +32,11 @@ public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> impleme
     }
 
     public LabelledBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        textRenderer = context.getTextRenderer();
+        this(context.getTextRenderer());
+    }
+
+    public LabelledBlockEntityRenderer(TextRenderer textRenderer) {
+        this.textRenderer = textRenderer;
     }
 
     static Text getFillPercentage(Processable.Context entity, int volume) {
