@@ -2,7 +2,9 @@ package ivorius.psychedelicraft.block.entity;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
+
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 
@@ -18,12 +20,9 @@ public interface PSBlockEntities {
     BlockEntityType<DistilleryBlockEntity> DISTILLERY = create("distillery", FabricBlockEntityTypeBuilder.create(DistilleryBlockEntity::new, PSBlocks.DISTILLERY));
     BlockEntityType<BottleRackBlockEntity> BOTTLE_RACK = create("bottle_rack", FabricBlockEntityTypeBuilder.create(BottleRackBlockEntity::new, PSBlocks.BOTTLE_RACK, PSBlocks.WALL_BOTTLE_RACK));
     BlockEntityType<FlaskBlockEntity> FLASK = create("flask", FabricBlockEntityTypeBuilder.create(FlaskBlockEntity::new, PSBlocks.FLASK));
-    BlockEntityType<BarrelBlockEntity> BARREL = create("barrel", FabricBlockEntityTypeBuilder.create(BarrelBlockEntity::new,
-            PSBlocks.OAK_BARREL, PSBlocks.SPRUCE_BARREL,
-            PSBlocks.BIRCH_BARREL, PSBlocks.JUNGLE_BARREL,
-            PSBlocks.ACACIA_BARREL, PSBlocks.DARK_OAK_BARREL
-    ));
+    BlockEntityType<BarrelBlockEntity> BARREL = create("barrel", FabricBlockEntityTypeBuilder.create(BarrelBlockEntity::new, PSBlocks.ALL_BARRELS.toArray(Block[]::new)));
     BlockEntityType<BurnerBlockEntity> BUNSEN_BURNER = create("bunsen_burner", FabricBlockEntityTypeBuilder.create(BurnerBlockEntity::new, PSBlocks.BUNSEN_BURNER));
+    BlockEntityType<TrayBlockEntity> TRAY = create("tray", FabricBlockEntityTypeBuilder.create(TrayBlockEntity::new, PSBlocks.TRAY));
     BlockEntityType<PlacedDrinksBlock.Data> PLACED_DRINK = create("placed_drink", FabricBlockEntityTypeBuilder.create(PlacedDrinksBlock.Data::new, PSBlocks.PLACED_DRINK));
     BlockEntityType<GlassTubeBlock.Data> GLASS_TUBE = create("glass_tube", FabricBlockEntityTypeBuilder.create(GlassTubeBlock.Data::new, PSBlocks.GLASS_TUBE));
 

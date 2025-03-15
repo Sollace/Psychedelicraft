@@ -1,9 +1,0 @@
-{
-  "type": "psychedelicraft:shapeless_fluid",
-  "ingredients": [
-    { "item": "psychedelicraft:filled_glass_bottle", "fluid": "minecraft:lava" },
-    { "item": "psychedelicraft:filled_bucket", "fluid": "minecraft:water" }
-  ],
-  "result": { "id": "psychedelicraft:obsidian_bottle" },
-  "destroy": { "item": "minecraft:glass_bottle" }
-}

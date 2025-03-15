@@ -134,8 +134,8 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     protected ActionResult onInteractWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
         if (!heldStack.isEmpty()) {
             return Either.unwrap(blockEntity.interactWithItem(heldStack.copy()).mapLeft(stack -> {
-                if (!player.isCreative()) {
-                    player.setStackInHand(hand, stack);
+                if (!world.isClient) {
+                    player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, stack));
                 }
                 return ActionResult.SUCCESS;
             }));

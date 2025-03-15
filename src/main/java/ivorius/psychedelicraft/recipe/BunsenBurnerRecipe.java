@@ -38,7 +38,7 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
 
     @Override
     default RecipeType<BunsenBurnerRecipe> getType() {
-        return PSRecipes.BUNSEN_BURNER;
+        return PSRecipes.CHEMISTRY;
     }
 
     public record Input(FluidMound fluids, ItemMound input, ByProductConsumer consumer) implements RecipeInput {

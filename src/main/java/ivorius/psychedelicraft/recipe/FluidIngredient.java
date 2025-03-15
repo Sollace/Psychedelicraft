@@ -51,5 +51,38 @@ public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> le
     public ItemFluids getAsItemFluid(int capacity) {
         return ItemFluids.create(fluid.orElse(PSFluids.EMPTY), level.orElse(capacity), attributes);
     }
+
+    public boolean isEmpty() {
+        return fluid.isEmpty() && level.isEmpty() && attributes.isEmpty();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private Optional<SimpleFluid> fluid = Optional.empty();
+        private Optional<Integer> level = Optional.empty();
+        private final Map<String, Integer> attributes = new HashMap<>();
+
+        public Builder fluid(SimpleFluid fluid) {
+            this.fluid = Optional.of(fluid);
+            return this;
+        }
+
+        public Builder level(int level) {
+            this.level = Optional.of(level);
+            return this;
+        }
+
+        public Builder attribute(String attribute, int value) {
+            this.attributes.put(attribute, value);
+            return this;
+        }
+
+        public FluidIngredient build() {
+            return new FluidIngredient(fluid, level, Map.copyOf(attributes));
+        }
+    }
 }
 

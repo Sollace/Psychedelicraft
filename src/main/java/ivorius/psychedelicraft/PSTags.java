@@ -20,6 +20,7 @@ public interface PSTags {
         TagKey<Item> BARRELS = of("barrels");
         TagKey<Item> JUNIPER_LOGS = of("juniper_logs");
         TagKey<Item> DRYING_TABLES = of("drying_tables");
+        TagKey<Item> ALL_RECEPTICALS = of("receptical/all");
         TagKey<Item> PLACEABLE_RECEPTICALS = of("receptical/placeable");
         TagKey<Item> DRINK_RECEPTICALS = of("receptical/drinks");
         TagKey<Item> DRUG_RECEPTICALS = of("receptical/drugs");

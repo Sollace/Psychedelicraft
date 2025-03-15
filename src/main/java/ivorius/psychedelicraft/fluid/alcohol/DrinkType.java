@@ -1,6 +1,9 @@
 package ivorius.psychedelicraft.fluid.alcohol;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -68,7 +71,7 @@ public record DrinkType(String drinkName, String symbolName, Optional<String> va
     }
 
     public String getUniqueKey() {
-        return variant.map(v -> v + drinkName).orElse(drinkName);
+        return Stream.concat(Stream.of(appearance.name(), drinkName), variant.stream()).collect(Collectors.joining("_"));
     }
 
     public boolean isOf(DrinkType type) {

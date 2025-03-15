@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.client.render.PlacedDrinksModelProvider;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -54,7 +55,7 @@ public class BurnerBlockEntityRenderer extends LabelledBlockEntityRenderer<Burne
             }
             matrices.translate(0, 0.12, 0);
 
-            PlacedDrinksModelProvider.INSTANCE.renderDrink("burner", entity.getContainer(), matrices, vertices, light, overlay);
+            PlacedDrinksModelProvider.INSTANCE.renderDrink("burner", ItemFluids.getItemForFluids(entity.getContainer(), ItemFluids.EMPTY), matrices, vertices, light, overlay);
 
             if (contents instanceof LargeContents largeContents) {
                 renderFlaskMultiFluids(largeContents, matrices, vertices, light, overlay);

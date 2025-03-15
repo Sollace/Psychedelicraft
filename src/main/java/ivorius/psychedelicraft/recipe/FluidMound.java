@@ -41,6 +41,16 @@ public class FluidMound {
         return this;
     }
 
+    public int getAmount(ItemFluids fluids) {
+        for (int i = 0; i < size(); i++) {
+            ItemFluids into = get(i);
+            if (into.canCombine(fluids)) {
+                return into.amount();
+            }
+        }
+        return 0;
+    }
+
     public void add(ItemFluids fluids) {
         for (int i = 0; i < size(); i++) {
             ItemFluids into = get(i);

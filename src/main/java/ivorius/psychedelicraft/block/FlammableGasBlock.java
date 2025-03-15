@@ -7,11 +7,16 @@ import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TorchBlock;
+import net.minecraft.particle.EntityEffectParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 public class FlammableGasBlock extends AirBlock {
     public static final MapCodec<FlammableGasBlock> CODEC = createCodec(FlammableGasBlock::new);
@@ -25,6 +30,20 @@ public class FlammableGasBlock extends AirBlock {
     @Override
     public MapCodec<AirBlock> getCodec() {
         return (MapCodec)CODEC;
+    }
+
+    @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        Vec3d center = pos.toCenterPos();
+        var effect = EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, Colors.GREEN);
+        for (int i = 0; i < 10; i++) {
+            world.addParticle(effect,
+                    random.nextTriangular(center.x, 0.5F),
+                    random.nextTriangular(center.y, 0.5F),
+                    random.nextTriangular(center.z, 0.5F),
+                    0, 0, 0
+            );
+        }
     }
 
     @Override

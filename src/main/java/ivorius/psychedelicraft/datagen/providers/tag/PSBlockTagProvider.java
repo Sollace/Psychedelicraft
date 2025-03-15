@@ -26,9 +26,7 @@ public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     protected void configure(WrapperLookup wrapperLookup) {
         addJuniperWoodset();
 
-        getOrCreateTagBuilder(PSTags.Blocks.BARRELS).add(
-                PSBlocks.OAK_BARREL, PSBlocks.SPRUCE_BARREL, PSBlocks.BIRCH_BARREL, PSBlocks.JUNGLE_BARREL, PSBlocks.ACACIA_BARREL, PSBlocks.DARK_OAK_BARREL
-        );
+        getOrCreateTagBuilder(PSTags.Blocks.BARRELS).add(PSBlocks.ALL_BARRELS.toArray(Block[]::new));
         getOrCreateTagBuilder(PSTags.Blocks.DRYING_TABLES).add(
                 PSBlocks.DRYING_TABLE, PSBlocks.IRON_DRYING_TABLE
         );

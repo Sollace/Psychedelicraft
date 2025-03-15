@@ -8,6 +8,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class SyncedBlockEntity extends BlockEntity {
@@ -26,5 +27,13 @@ public abstract class SyncedBlockEntity extends BlockEntity {
         NbtCompound compound = super.toInitialChunkDataNbt(lookup);
         writeNbt(compound, lookup);
         return compound;
+    }
+
+    @Override
+    public void markDirty() {
+        super.markDirty();
+        if (world instanceof ServerWorld sw) {
+            sw.getChunkManager().markForUpdate(getPos());
+        }
     }
 }

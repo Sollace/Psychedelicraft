@@ -16,6 +16,7 @@ public interface PSComponents {
     ComponentType<FluidCapacity> FLUID_CAPACITY = register("fluid_capacity", builder -> builder.codec(FluidCapacity.CODEC).packetCodec(FluidCapacity.PACKET_CODEC));
     ComponentType<Processable.ProcessType> PROCESS_TYPE = register("process_type", builder -> builder.codec(Processable.ProcessType.CODEC).packetCodec(Processable.ProcessType.PACKET_CODEC));
     ComponentType<ItemDrugs> DRUGS = register("drugs", builder -> builder.codec(ItemDrugs.CODEC).packetCodec(ItemDrugs.PACKET_CODEC));
+    ComponentType<Impurities> IMPURITIES = register("impurities", builder -> builder.codec(Impurities.CODEC).packetCodec(Impurities.PACKET_CODEC));
 
     private static <T> ComponentType<T> register(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Psychedelicraft.id(id), builderOperator.apply(ComponentType.builder()).build());

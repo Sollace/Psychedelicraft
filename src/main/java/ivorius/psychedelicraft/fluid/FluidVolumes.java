@@ -33,12 +33,12 @@ public interface FluidVolumes {
 
     static String format(long amount) {
         if (amount == 0) {
-            return "0 L";
+            return "0L";
         }
         if (amount > BUCKET) {
-            return AttributeModifiersComponent.DECIMAL_FORMAT.format((double)amount / (double)BUCKET) + " L";
+            return AttributeModifiersComponent.DECIMAL_FORMAT.format((double)amount / (double)BUCKET) + "L";
         }
         amount = (long)((amount / (float)FluidVolumes.BUCKET) * 1000F);
-        return amount + " ML";
+        return amount + "ML";
     }
 }

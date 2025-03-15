@@ -14,7 +14,6 @@ import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 
@@ -99,9 +98,6 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
         markDirty();
         if (world != null) {
             world.updateNeighbors(pos, getCachedState().getBlock());
-            if (world instanceof ServerWorld sw) {
-                sw.getChunkManager().markForUpdate(getPos());
-            }
         }
     }
 

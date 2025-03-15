@@ -12,6 +12,7 @@ import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.recipe.PSRecipes;
@@ -22,11 +23,12 @@ import net.minecraft.util.Identifier;
 record RecipeCategory(Identifier id, CategoryIcon icon, TlaIngredient stations, int width, int height) implements TlaCategory {
     static final Map<RecipeCategory, @Nullable BiConsumer<RecipeCategory, PluginContext>> REGISTRY = new HashMap<>();
 
-    public static final RecipeCategory DRYING_TABLE = register("drying_table", PSItems.DRYING_TABLE, 118, 74, (category, registry) -> registry.addRecipeGenerator(PSRecipes.DRYING_TYPE, DryingEmiRecipe::new));
-    public static final RecipeCategory VAT = register("wooden_vat", PSItems.MASH_TUB, 130, 84, (category, registry) -> registry.addRecipeGenerator(PSRecipes.MASHING_TYPE, MashingEmiRecipe::new));
-    public static final RecipeCategory BARREL = RecipeCategory.register("barrel", PSItems.OAK_BARREL, TlaIngredient.ofItemTag(PSTags.Items.BARRELS), 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.BARREL));
-    public static final RecipeCategory DISTILLERY = RecipeCategory.register("distillery", PSItems.DISTILLERY, 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.FLASK));
-    public static final RecipeCategory FLASK = RecipeCategory.register("flask", PSItems.FLASK, 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.FLASK));
+    public static final RecipeCategory DRYING_TABLE = register("drying_table", PSBlocks.DRYING_TABLE, 118, 74, (category, registry) -> registry.addRecipeGenerator(PSRecipes.DRYING_TYPE, DryingEmiRecipe::new));
+    public static final RecipeCategory VAT = register("wooden_vat", PSBlocks.MASH_TUB, 130, 84, (category, registry) -> registry.addRecipeGenerator(PSRecipes.MASHING_TYPE, MashingEmiRecipe::new));
+    public static final RecipeCategory BARREL = RecipeCategory.register("barrel", PSBlocks.OAK_BARREL, TlaIngredient.ofItemTag(PSTags.Items.BARRELS), 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.BARREL));
+    public static final RecipeCategory DISTILLERY = RecipeCategory.register("distillery", PSBlocks.DISTILLERY, 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.FLASK));
+    public static final RecipeCategory FLASK = RecipeCategory.register("flask", PSBlocks.FLASK, 130, 70, DrawingFluidEmiRecipe.generate(FluidVolumes.FLASK));
+    public static final RecipeCategory TRAY = RecipeCategory.register("tray", PSBlocks.TRAY, 200, 70, (category, registry) -> registry.addRecipeGenerator(PSRecipes.TRAY, TrayEmiRecipe::new));
 
     public static final RecipeCategory PREPARATION = register("fluid_preparation", PSItems.BOTTLE, TlaIngredient.join(
             TlaIngredient.ofItemTag(PSTags.Items.BARRELS),

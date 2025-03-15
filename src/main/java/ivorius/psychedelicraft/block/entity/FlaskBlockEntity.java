@@ -115,7 +115,6 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
         if (pendingSync) {
             pendingSync = false;
             markDirty();
-            world.getChunkManager().markForUpdate(getPos());
             world.updateNeighbors(getPos(), getCachedState().getBlock());
         }
     }

@@ -7,6 +7,8 @@ import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.datagen.providers.PSAdvancementsProvider;
 import ivorius.psychedelicraft.datagen.providers.PSModelProvider;
 import ivorius.psychedelicraft.datagen.providers.loot.PSBlockLootTableProvider;
+import ivorius.psychedelicraft.datagen.providers.loot.PSChestAdditionsLootTableProvider;
+import ivorius.psychedelicraft.datagen.providers.recipe.PSRecipeProvider;
 import ivorius.psychedelicraft.datagen.providers.tag.PSBiomeTagProvider;
 import ivorius.psychedelicraft.datagen.providers.tag.PSBlockTagProvider;
 import ivorius.psychedelicraft.datagen.providers.tag.PSDamageTypeTagProvider;
@@ -32,11 +34,13 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(PSEntityTypeTagProvider::new);
         pack.addProvider(PSDamageTypeTagProvider::new);
         pack.addProvider(PSBiomeTagProvider::new);
+        pack.addProvider(PSRecipeProvider::new);
 
         pack.addProvider(PSModelProvider::new);
 
         pack.addProvider(PSAdvancementsProvider::new);
         pack.addProvider(PSBlockLootTableProvider::new);
+        pack.addProvider(PSChestAdditionsLootTableProvider::new);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package ivorius.psychedelicraft.client;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -62,14 +64,25 @@ public class PsychedelicraftClient implements ClientModInitializer {
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ShaderLoader.POST_EFFECTS);
 
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
+
+            List<Text> tooltip = new ArrayList<>();
+
+            Processable.ProcessType.appendTooltip(stack, context, tooltip, type);
+
             if (FluidCapacity.get(stack) > 0) {
-                Consumer<Text> consumer = lines::add;
+                Consumer<Text> consumer = tooltip::add;
                 FluidCapacity.appendTooltip(stack, context, consumer, type);
                 ItemFluids.of(stack).appendTooltip(context, consumer, type);
                 ItemFluidsMixture.of(stack).appendTooltip(context, consumer, type);
             }
-            Processable.ProcessType.appendTooltip(stack, context, lines, type);
-            ItemDrugs.get(stack).appendTooltip(context, lines::add, type);
+
+            ItemDrugs.get(stack).appendTooltip(context, tooltip::add, type);
+
+            if (!lines.isEmpty()) {
+                lines.addAll(1, tooltip);
+            } else {
+                lines.addAll(tooltip);
+            }
         });
 
         PSRenderers.bootstrap();

@@ -104,10 +104,12 @@ public class PlacedDrinksModelProvider
     public void renderDrinkModel(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, int color, Identifier modelId) {
 
         BakedModel model = MinecraftClient.getInstance().getBakedModelManager().getModel(modelId);
+        if (model == null) {
+            Psychedelicraft.LOGGER.error("Model does not exist: " + modelId);
+            return;
+        }
 
-        RenderLayer renderLayer = RenderLayers.getItemLayer(stack);
-
-        renderBakedItemModel(model, matrices, vertices.getBuffer(renderLayer), light, overlay, color);
+        renderBakedItemModel(model, matrices, vertices.getBuffer(RenderLayers.getItemLayer(stack)), light, overlay, color);
     }
 
     private void renderBakedItemModel(BakedModel model, MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {

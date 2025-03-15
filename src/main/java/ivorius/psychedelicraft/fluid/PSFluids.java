@@ -42,7 +42,7 @@ public interface PSFluids {
                     .vinegar(DrinkType.VINEGAR.withName("beer_vinegar"))
                     .firstFerment(DrinkType.HALF_WASH)
                     .secondFerment(DrinkType.WASH)
-                    .matured(DrinkType.WASH)
+                    .matured(DrinkType.BRANDY)
                     .distilled(DrinkType.VODKA)
                     .add(DrinkType.WHISKEY.withName("wheat_whiskey").withVariation(Variation.WELL_AGED), StatePredicate.builder().minFerments(1).minMaturity(8).minDistills(1))
                     .matureDistilled(DrinkType.WHISKEY.withName("wheat_whiskey"))
@@ -74,7 +74,7 @@ public interface PSFluids {
                     .secondFerment(DrinkType.BEER)
                     .add(DrinkType.WHISKEY.withAppearance(FluidAppearance.RUM_SEMI_MATURE), StatePredicate.builder().minFerments(1).minMaturity(6).minDistills(2))
                     .add(DrinkType.MEAD, StatePredicate.builder().minFerments(1).minMaturity(5).distills(1))
-                    .matured(DrinkType.BEER)
+                    .matured(DrinkType.BEER.withVariation(DrinkType.Variation.AGED))
                     .distilled(DrinkType.VODKA)
             )
             .color(0xaaffaa08)
@@ -87,7 +87,7 @@ public interface PSFluids {
             .matureColor(0xee3f0822)
             .variants(DrinkTypes.builder(DrinkType.JUICE.withAppearance(FluidAppearance.WINE))
                     .vinegar(DrinkType.VINEGAR)
-                    .add(DrinkType.VINEGAR, StatePredicate.builder().minMaturity(16))
+                    .add(DrinkType.VINEGAR.withVariation(DrinkType.Variation.BITTER), StatePredicate.builder().minMaturity(16))
                     .firstFerment(DrinkType.HALF_WASH.withVariation(Variation.WINE).withAppearance(FluidAppearance.WINE))
                     .secondFerment(DrinkType.WASH.withVariation(Variation.WINE).withAppearance(FluidAppearance.WINE))
                     .add(DrinkType.WINE.withVariation(Variation.WELL_AGED), StatePredicate.builder().ferments(1).minMaturity(14))
@@ -201,7 +201,7 @@ public interface PSFluids {
                     .vinegar(DrinkType.VINEGAR)
                     .firstFerment(DrinkType.HALF_WASH.withAppearance(FluidAppearance.MEAD))
                     .secondFerment(DrinkType.BEER.withAppearance(FluidAppearance.MEAD))
-                    .matured(DrinkType.BEER.withAppearance(FluidAppearance.MEAD))
+                    .matured(DrinkType.BEER.withVariation(DrinkType.Variation.AGED).withAppearance(FluidAppearance.MEAD))
                     .distilled(DrinkType.BRANDY.withAppearance(FluidAppearance.MEAD))
             )
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoBanana())
@@ -216,7 +216,7 @@ public interface PSFluids {
                     .vinegar(DrinkType.VINEGAR.withAppearance(FluidAppearance.RICE_WINE))
                     .firstFerment(DrinkType.HALF_WASH.withAppearance(FluidAppearance.RICE_WINE))
                     .secondFerment(DrinkType.BLAAND.withAppearance(FluidAppearance.RICE_WINE))
-                    .matured(DrinkType.BLAAND.withAppearance(FluidAppearance.RICE_WINE))
+                    .matured(DrinkType.BLAAND.withVariation(DrinkType.Variation.AGED).withAppearance(FluidAppearance.RICE_WINE))
                     .distilled(DrinkType.ARKHI.withAppearance(FluidAppearance.RICE_WINE))
             )
             .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoMilk())
@@ -271,11 +271,11 @@ public interface PSFluids {
     );
 
     DrugFluid ETHANOL = new EthanolFluid(Psychedelicraft.id("ethanol"), chemicalSolution(DrugType.ALCOHOL));
-    SimpleFluid PETROLIUM = new SimpleFluid(Psychedelicraft.id("petrolium"), new Settings()
+    SimpleFluid PETROLIUM = new PetroliumFluid(Psychedelicraft.id("petrolium"), new Settings()
             .color(Colors.BLACK).flammability(2.3F, 2)
             .viscocity(2)
-            .sprites(Psychedelicraft.id("block/fluid/petrolium_flow"), Psychedelicraft.id("block/fluid/petrolium_still")), false);
-    SimpleFluid GASOLINE = new SimpleFluid(Psychedelicraft.id("gasoline"), new Settings().color(Colors.LIGHT_YELLOW).flammability(1.3F, 5), false);
+            .sprites(Psychedelicraft.id("block/fluid/petrolium_flow"), Psychedelicraft.id("block/fluid/petrolium_still")));
+    SimpleFluid GASOLINE = new SimpleFluid(Psychedelicraft.id("gasoline"), new Settings().color(Colors.LIGHT_YELLOW).flammability(1.3F, 5));
     DrugFluid ACID = new DrugFluid(Psychedelicraft.id("acid"), chemicalSolution(DrugType.LSD));
     DrugFluid ATROPINE = new DrugFluid(Psychedelicraft.id("atropine"), chemicalSolution(DrugType.ATROPINE));
     DrugFluid COCAINE = new DrugFluid(Psychedelicraft.id("cocaine"), chemicalSolution(DrugType.COCAINE));

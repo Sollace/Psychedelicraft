@@ -33,7 +33,7 @@ import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
 import ivorius.psychedelicraft.recipe.FluidMound;
 import ivorius.psychedelicraft.recipe.ItemMound;
 import ivorius.psychedelicraft.recipe.PSRecipes;
-import ivorius.psychedelicraft.recipe.ReducingRecipe;
+import ivorius.psychedelicraft.recipe.ReactingRecipe;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -100,14 +100,6 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
     public Contents getContents() {
         return contents;
-    }
-
-    @Override
-    public void markDirty() {
-        super.markDirty();
-        if (getWorld() instanceof ServerWorld sw) {
-            sw.getChunkManager().markForUpdate(getPos());
-        }
     }
 
     public boolean interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
@@ -197,12 +189,12 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
     private void craft(ServerWorld world, CraftableContents contents) {
         var consumer = new BunsenBurnerRecipe.Product(new FluidMound(), new ArrayList<>());
-        var input = new ReducingRecipe.Input(
+        var input = new ReactingRecipe.Input(
                 new FluidMound(this),
                 contents.getCraftingIngredients(),
                 consumer
         );
-        world.getRecipeManager().getFirstMatch(PSRecipes.BUNSEN_BURNER, input, world).ifPresentOrElse(recipe -> {
+        world.getRecipeManager().getFirstMatch(PSRecipes.CHEMISTRY, input, world).ifPresentOrElse(recipe -> {
             if (++processingTime >= recipe.value().stewTime()) {
                 processingTime = 0;
                 ItemStack byProduct = recipe.value().craft(input, world.getRegistryManager());
@@ -337,7 +329,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     @Override
     public ItemStack removeStack(int slot) {
         if (slot == 0) {
-            return contents.getFilled(container.split(container.getCount()), false, 1);
+            return contents.getFilled(container.copyAndEmpty(), false, 1);
         }
         return contents instanceof Inventory l ? l.removeStack(slot - 1) : ItemStack.EMPTY;
     }
@@ -364,7 +356,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
             return l.getDroppedStacks(getContainer());
         }
         if (!getContainer().isEmpty()) {
-            return List.of(getContainer());
+            return List.of(removeStack(0));
         }
         return List.of();
     }

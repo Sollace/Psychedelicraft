@@ -63,30 +63,7 @@ public interface PSItems {
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BOTTLE))
             .maxCount(16)));
 
-    FlaskItem OAK_BARREL = register("oak_barrel", s -> new FlaskItem(PSBlocks.OAK_BARREL, s.maxCount(16)
-            .maxCount(16)
-            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
-    FlaskItem SPRUCE_BARREL = register("spruce_barrel", s -> new FlaskItem(PSBlocks.SPRUCE_BARREL, s
-            .maxCount(16)
-            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
-    FlaskItem BIRCH_BARREL = register("birch_barrel", s -> new FlaskItem(PSBlocks.BIRCH_BARREL, s
-            .maxCount(16)
-            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
-    FlaskItem JUNGLE_BARREL = register("jungle_barrel", s -> new FlaskItem(PSBlocks.JUNGLE_BARREL, s
-            .maxCount(16)
-            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
-    FlaskItem ACACIA_BARREL = register("acacia_barrel", s -> new FlaskItem(PSBlocks.ACACIA_BARREL, s
-            .maxCount(16)
-            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
-    FlaskItem DARK_OAK_BARREL = register("dark_oak_barrel", s -> new FlaskItem(PSBlocks.DARK_OAK_BARREL, s
-            .maxCount(16)
-            .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL))));
+    List<FlaskItem> ALL_BARRELS = PSBlocks.ALL_BARRELS.stream().map(block -> register(Registries.BLOCK.getId(block).getPath(), barrel(block))).toList();
 
     FlaskItem MASH_TUB = register("mash_tub", s -> new MashTubItem(PSBlocks.MASH_TUB, s
             .maxCount(16)
@@ -311,6 +288,13 @@ public interface PSItems {
 
     static Item register(String name) {
         return register(name, Item::new);
+    }
+
+    static Function<Item.Settings, FlaskItem> barrel(Block block) {
+        return s -> new FlaskItem(block, s.maxCount(16)
+                .maxCount(16)
+                .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
+                .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL)));
     }
 
     static <T extends Item> T register(String name, Function<Item.Settings, T> factory) {

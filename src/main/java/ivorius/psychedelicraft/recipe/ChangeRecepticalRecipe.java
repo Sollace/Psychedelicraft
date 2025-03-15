@@ -35,7 +35,7 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
     public static final PacketCodec<RegistryByteBuf, ChangeRecepticalRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, ChangeRecepticalRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ChangeRecepticalRecipe::getCategory,
-            ItemStack.PACKET_CODEC, recipe -> recipe.output,
+            ItemStack.OPTIONAL_PACKET_CODEC, recipe -> recipe.output,
             Ingredient.PACKET_CODEC.collect(PacketCodecs.toList()), recipe -> recipe.ingredients,
             ChangeRecepticalRecipe::new
     );

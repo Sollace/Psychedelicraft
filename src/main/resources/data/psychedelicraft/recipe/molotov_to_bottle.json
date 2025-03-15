@@ -1,9 +1,0 @@
-{
-  "type": "psychedelicraft:change_receptical",
-  "ingredients": [
-    { "item": "psychedelicraft:molotov_cocktail" }
-  ],
-  "result": {
-    "id": "psychedelicraft:bottle"
-  }
-}

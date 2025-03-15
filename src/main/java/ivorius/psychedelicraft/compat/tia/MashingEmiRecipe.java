@@ -24,7 +24,7 @@ class MashingEmiRecipe implements PSRecipe {
     private final ItemFluids outputFluid;
     private final TlaStack output;
 
-    private final ItemFluids baseFluids;
+    private final List<ItemFluids> baseFluids;
     private final TlaIngredient fluidIngredient;
 
     public MashingEmiRecipe(RecipeEntry<MashingRecipe> recipe) {
@@ -34,8 +34,8 @@ class MashingEmiRecipe implements PSRecipe {
         ).toList();
         this.outputFluid = recipe.value().result().ofAmount(FluidVolumes.VAT);
         this.output = RecipeUtil.toTlaStack(outputFluid);
-        this.baseFluids = recipe.value().baseFluid().ofAmount(FluidVolumes.VAT);
-        this.fluidIngredient = RecipeUtil.toIngredient(baseFluids);
+        this.baseFluids = RecipeUtil.getMatchingFluids(recipe.value().baseFluid(), FluidVolumes.VAT);
+        this.fluidIngredient = TlaIngredient.join(baseFluids.stream().map(RecipeUtil::toIngredient).toList());
     }
 
     @Override

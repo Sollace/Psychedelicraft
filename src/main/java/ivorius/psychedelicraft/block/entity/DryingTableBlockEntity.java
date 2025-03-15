@@ -148,7 +148,6 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         if (getWorld() instanceof ServerWorld sw) {
             sw.updateComparators(pos, getCachedState().getBlock());
             sw.updateNeighbors(pos, getCachedState().getBlock());
-            sw.getChunkManager().markForUpdate(getPos());
         }
     }
 

@@ -101,7 +101,7 @@ public class SimpleFluid implements Combustable {
         this(id, settings, false);
     }
 
-    public SimpleFluid(Identifier id, Settings settings, boolean empty) {
+    protected SimpleFluid(Identifier id, Settings settings, boolean empty) {
         this.id = id;
         this.settings = settings;
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
@@ -199,6 +199,10 @@ public class SimpleFluid implements Combustable {
 
     public Stream<ItemFluids> getDefaultStacks(int capacity) {
         return Stream.of(getDefaultStack(capacity));
+    }
+
+    public String getUniqueKey(ItemFluids fluids) {
+        return "";
     }
 
     public final Stream<ItemStack> getDefaultStacks(ItemStack stack) {

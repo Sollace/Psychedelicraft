@@ -6,6 +6,9 @@
 package ivorius.psychedelicraft.block;
 
 import java.util.function.Function;
+import java.util.List;
+
+import org.jetbrains.annotations.ApiStatus.Experimental;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.BlockEntityTypeSupportHelper;
@@ -38,16 +41,24 @@ public interface PSBlocks {
     ));
 
     Block OAK_BARREL = register("oak_barrel", BlockConstructionUtils.barrel(MapColor.OAK_TAN));
+    @Experimental
+    Block PALE_OAK_BARREL = register("pale_oak_barrel", BlockConstructionUtils.barrel(MapColor.GRAY));
     Block SPRUCE_BARREL = register("spruce_barrel", BlockConstructionUtils.barrel(MapColor.SPRUCE_BROWN));
     Block BIRCH_BARREL = register("birch_barrel", BlockConstructionUtils.barrel(MapColor.PALE_YELLOW));
     Block JUNGLE_BARREL = register("jungle_barrel", BlockConstructionUtils.barrel(MapColor.DIRT_BROWN));
     Block ACACIA_BARREL = register("acacia_barrel", BlockConstructionUtils.barrel(MapColor.ORANGE));
     Block DARK_OAK_BARREL = register("dark_oak_barrel", BlockConstructionUtils.barrel(MapColor.BROWN));
-    // TODO: MANGROVE_BARREL
-    // TODO: CHERRY_BARREL
-    // TODO: BAMBOO_BARREL
-    // TODO: WARPED_BARREL
-    // TODO: CRIMSON_BARREL
+    Block MANGROVE_BARREL = register("mangrove_barrel", BlockConstructionUtils.barrel(MapColor.DARK_GREEN));
+    Block CHERRY_BARREL = register("cherry_barrel", BlockConstructionUtils.barrel(MapColor.DULL_PINK));
+    Block BAMBOO_BARREL = register("bamboo_barrel", BlockConstructionUtils.barrel(MapColor.YELLOW));
+    Block WARPED_BARREL = register("warped_barrel", BlockConstructionUtils.barrel(MapColor.BRIGHT_TEAL));
+    Block CRIMSON_BARREL = register("crimson_barrel", BlockConstructionUtils.barrel(MapColor.BRIGHT_RED));
+    Block JUNIPER_BARREL = register("juniper_barrel", BlockConstructionUtils.barrel(MapColor.LIGHT_BLUE_GRAY));
+
+    List<Block> ALL_BARRELS = List.of(
+            OAK_BARREL, SPRUCE_BARREL, BIRCH_BARREL, JUNGLE_BARREL, ACACIA_BARREL, DARK_OAK_BARREL,
+            MANGROVE_BARREL, CHERRY_BARREL, BAMBOO_BARREL, WARPED_BARREL, CRIMSON_BARREL, JUNIPER_BARREL, PALE_OAK_BARREL
+    );
 
     Block FLASK = register("flask", s -> new FlaskBlock(s.sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));
     Block DISTILLERY = register("distillery", s -> new DistilleryBlock(s.sounds(BlockSoundGroup.COPPER).hardness(1).pistonBehavior(PistonBehavior.BLOCK)));

@@ -23,6 +23,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Direction;
@@ -116,15 +117,9 @@ public interface Processable {
          */
         COOL,
         /**
-         * When processed in the evaporator, used to chemically extract purified substances
+         * When processed in the benzene burner, used to chemically extract purified substances
          */
-        @Deprecated
-        PURIFY,
-        /**
-         * When fluids of differing types are mixed on a bunzene burner, used to change their properties when they combine.
-         */
-        @Deprecated
-        REACT;
+        PURIFY;
 
         private final String name = name().toLowerCase(Locale.ROOT);
         private final Text status = Text.translatable("fluid.status." + name);
@@ -149,7 +144,7 @@ public interface Processable {
         public static void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             Processable.ProcessType processType = stack.get(PSComponents.PROCESS_TYPE);
             if (processType != null) {
-                tooltip.add(Text.translatable("psychedelicraft.container.process_type." + processType.asString()));
+                tooltip.add(Text.translatable("psychedelicraft.container.process_type." + processType.asString()).formatted(Formatting.BLUE));
             }
         }
     }

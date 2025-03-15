@@ -120,7 +120,6 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
             isOpening = !isOpening;
 
             markDirty();
-            ((ServerWorld)world).getChunkManager().markForUpdate(getPos());
         }
         return isOpening;
     }
@@ -130,7 +129,6 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
             suckingRifts = !suckingRifts;
 
             markDirty();
-            ((ServerWorld)world).getChunkManager().markForUpdate(getPos());
         }
     }
 

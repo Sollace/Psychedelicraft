@@ -21,6 +21,7 @@ import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
@@ -91,7 +92,9 @@ public class LargeContents extends SmallContents {
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
             if (deposit(t)) {
                 entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
-                player.setStackInHand(hand, t.toItemStack());
+                if (!player.getWorld().isClient) {
+                    player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+                }
                 return Optional.of(this);
             }
             return Optional.empty();
@@ -99,9 +102,10 @@ public class LargeContents extends SmallContents {
 
         ItemFluidsMixture mixture = ItemFluidsMixture.of(stack);
         if (!mixture.isEmpty()) {
-            stack = ItemFluidsMixture.set(stack, mixture.fluids().stream().map(this::deposit).toList());
+            if (!player.getWorld().isClient) {
+                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, ItemFluidsMixture.set(stack.copyWithCount(1), mixture.fluids().stream().map(this::deposit).toList())));
+            }
             entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
-            player.setStackInHand(hand, stack);
             return Optional.of(this);
         }
 
@@ -109,11 +113,8 @@ public class LargeContents extends SmallContents {
         if (!tank.getContents().isEmpty()) {
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copyWithCount(1));
             if (tank.withdraw(t, FluidCapacity.get(stack)) > 0) {
-                if (stack.getCount() > 1) {
-                    player.setStackInHand(hand, t.toItemStack());
-                } else {
-                    stack.decrementUnlessCreative(1, player);
-                    player.giveItemStack(t.toItemStack());
+                if (!player.getWorld().isClient) {
+                    player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
                 }
                 entity.playSound(player, SoundEvents.ITEM_BOTTLE_FILL);
                 return Optional.of(this);
@@ -207,7 +208,7 @@ public class LargeContents extends SmallContents {
 
     private boolean isValidIngredient(ServerWorld world, ItemStack stack) {
         return FluidCapacity.get(stack) == 0 && world.getRecipeManager()
-                .getAllOfType(PSRecipes.BUNSEN_BURNER)
+                .getAllOfType(PSRecipes.CHEMISTRY)
                 .stream()
                 .anyMatch(recipe -> recipe.value().isAcceptableIngredient(stack));
     }
@@ -277,7 +278,7 @@ public class LargeContents extends SmallContents {
 
     @Override
     public boolean isEmpty() {
-        return ingredients.isEmpty();
+        return ingredients.isEmpty() && super.isEmpty();
     }
 
     @Override

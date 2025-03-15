@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.config.JsonConfig;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.PSEntities;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import ivorius.psychedelicraft.entity.effect.PSEffects;
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.container.VariantMarshal;
 import ivorius.psychedelicraft.item.PSItemGroups;
@@ -82,6 +83,7 @@ public class Psychedelicraft implements ModInitializer {
         PSFluids.bootstrap();
         PSRecipes.bootstrap();
         PSEntities.bootstrap();
+        PSEffects.bootstrap();
         PSWorldGen.bootstrap();
         PSGameRules.bootstrap();
         PSCommands.bootstrap();

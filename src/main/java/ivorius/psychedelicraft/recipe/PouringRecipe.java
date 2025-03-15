@@ -27,7 +27,7 @@ public class PouringRecipe extends SpecialCraftingRecipe {
 
     @Override
     public RecipeSerializer<PouringRecipe> getSerializer() {
-        return PSRecipes.POUR_DRINK;
+        return PSRecipes.CRAFTING_POURING;
     }
 
     @Override
