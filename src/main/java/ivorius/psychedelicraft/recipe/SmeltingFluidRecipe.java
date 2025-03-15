@@ -94,7 +94,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     @Override
     public boolean matches(SingleStackRecipeInput inventory, World world) {
         lastQueriedInventory = new WeakReference<>(inventory);
-        return (ingredient.isEmpty() || ingredient.test(inventory.item())) && input.test(inventory.item());
+        return input.test(inventory.item());
     }
 
     @Override
