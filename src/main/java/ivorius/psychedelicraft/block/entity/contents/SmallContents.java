@@ -24,6 +24,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
@@ -122,7 +123,9 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
         ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
         if (!t.fluids().isEmpty() && getPrimaryTank().deposit(t, t.fluids().amount()) > 0) {
             entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
-            player.setStackInHand(hand, t.toItemStack());
+            if (!player.getWorld().isClient) {
+                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+            }
             return TypedActionResult.success(this);
         }
 
