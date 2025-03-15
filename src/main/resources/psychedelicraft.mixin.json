@@ -17,7 +17,8 @@
       "MixinVillagerTaskListProvider",
       "MixinVoxelShape",
       "MixinHungerManager",
-      "MixinBlockEntityType"
+      "MixinBlockEntityType",
+      "datafix.MixinItemStackComponentizationFix"
     ],
     "client": [
       "client.MixinCamera",

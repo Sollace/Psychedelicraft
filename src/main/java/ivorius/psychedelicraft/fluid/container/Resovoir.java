@@ -159,12 +159,10 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
         compound.put("fluid", ItemFluids.CODEC.encodeStart(NbtOps.INSTANCE, fluids).getOrThrow());
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("stack", NbtElement.COMPOUND_TYPE)) {
-            ItemStack stack = ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("stack"));
-            fluids = ItemFluids.fromCustom(stack);
+            fluids = ItemFluids.of(ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("stack")));
         } else {
             fluids = ItemFluids.CODEC.decode(NbtOps.INSTANCE, compound.get("fluid")).result().map(pair -> pair.getFirst()).orElse(ItemFluids.EMPTY);
         }
