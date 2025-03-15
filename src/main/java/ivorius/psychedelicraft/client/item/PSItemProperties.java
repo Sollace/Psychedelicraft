@@ -61,34 +61,6 @@ public interface PSItemProperties {
         model("hallucination", HallucinatedItemModel.Unbaked.CODEC);
         specialModel("rift_jar", RiftJarItemModelRenderer.Unbaked.CODEC);
         specialModel("vat", VatItemModelRenderer.Unbaked.CODEC);
-
-        // layer 1,2,3,etc -> minecraft:dye
-        // ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : DyedColorComponent.getColor(stack, Colors.RED), PSItems.HARMONIUM);
-
-        // layer0 -> minecraft:dye (default is white)
-        // layer1 -> psychedelicraft:fluid (default is white)
-        /*ColorProviderRegistry.ITEM.register((stack, layer) -> {
-            if (layer == 0) {
-                return DyedColorComponent.getColor(stack, Colors.WHITE);
-            }
-            if (layer == 1) {
-                ItemFluids fluids = ItemFluids.of(stack);
-                if (!fluids.isEmpty()) {
-                    return FluidBoxRenderer.FluidAppearance.getItemColor(fluids);
-                }
-            }
-            return Colors.WHITE;
-        }, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.GLASS_CHALICE, PSItems.STONE_CUP, PSItems.WOODEN_MUG, PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL, PSItems.SYRINGE);*/
-        // layer0 -> psychedelicraft:fluid (default is white)
-        /*ColorProviderRegistry.ITEM.register((stack, layer) -> {
-            if (layer == 0) {
-                ItemFluids fluids = ItemFluids.of(stack);
-                if (!fluids.isEmpty()) {
-                    return FluidBoxRenderer.FluidAppearance.getItemColor(fluids);
-                }
-            }
-            return Colors.WHITE;
-        }, PSItems.FILLED_GLASS_BOTTLE);*/
     }
 
     interface ValueSupplier<T> {

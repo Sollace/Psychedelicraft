@@ -29,7 +29,9 @@ import net.minecraft.client.data.TextureMap;
 import net.minecraft.client.data.TexturedModel;
 import net.minecraft.client.data.VariantSettings;
 import net.minecraft.client.data.VariantsBlockStateSupplier;
+import net.minecraft.client.render.item.tint.DyeTintSource;
 import net.minecraft.item.Items;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -190,7 +192,7 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.SYRINGE,
                 PSItems.WOODEN_MUG
         ).forEach(item -> ItemModels.registerDrinkHolder(generator, item));
-        ItemModels.registerDrinkHolderWithLabel(generator, PSItems.BOTTLE);
+        ItemModels.registerDyeableDrinkHolder(generator, PSItems.BOTTLE);
         ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_BUCKET, Items.BUCKET,
                 ModelIds.getItemModelId(Items.LAVA_BUCKET),
                 ModelIds.getItemModelId(Items.WATER_BUCKET)
@@ -210,6 +212,6 @@ public class PSModelProvider extends FabricModelProvider {
         ItemModels.registerCigar(generator, PSItems.CIGAR);
         ItemModels.registerBong(generator, PSItems.BONG);
         ItemModels.registerMolotov(generator, PSItems.MOLOTOV_COCKTAIL);
-        ItemModels.registerLayered(generator, PSItems.HARMONIUM, "_glowstone");
+        ItemModels.registerLayered(generator, PSItems.HARMONIUM, "_glowstone", new DyeTintSource(Colors.RED));
     }
 }

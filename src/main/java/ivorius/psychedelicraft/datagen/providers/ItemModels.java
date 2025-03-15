@@ -1,9 +1,13 @@
 package ivorius.psychedelicraft.datagen.providers;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.item.ContainedFluidProperty;
+import ivorius.psychedelicraft.client.item.FilledProperty;
+import ivorius.psychedelicraft.client.item.FluidTintSource;
+import ivorius.psychedelicraft.client.item.FlyingProperty;
+import ivorius.psychedelicraft.client.item.UsingProperty;
 import net.minecraft.block.Block;
 import net.minecraft.client.data.ItemModelGenerator;
 import net.minecraft.client.data.Model;
@@ -11,12 +15,20 @@ import net.minecraft.client.data.ModelIds;
 import net.minecraft.client.data.Models;
 import net.minecraft.client.data.TextureKey;
 import net.minecraft.client.data.TextureMap;
+import net.minecraft.client.render.item.property.numeric.DamageProperty;
+import net.minecraft.client.render.item.tint.DyeTintSource;
+import net.minecraft.client.render.item.tint.TintSource;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
+import static net.minecraft.client.data.ItemModels.*;
+
 public interface ItemModels {
+    TintSource UNTINTED = constantTintSource(Colors.WHITE);
     Model GENERATED = Models.GENERATED;
     Model HANDHELD = Models.HANDHELD;
     Model SMOKEABLE_TEMPLATE = item("smokeable_template", TextureKey.LAYER0);
@@ -42,137 +54,202 @@ public interface ItemModels {
 
     static void registerBong(ItemModelGenerator itemModelGenerator, Item item) {
         var filledTextures = TextureMap.layer0(TextureMap.getSubId(item, "_filled"));
-        ModelOverrides.of(SMOKEABLE_TEMPLATE)
-            .addOverride(Map.of("psychedelicraft:using", 0F, "psychedelicraft:filled", 1F),
-                    g -> SMOKEABLE_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled"), filledTextures, g.modelCollector))
-            .addOverride(Map.of("psychedelicraft:using", 1F, "psychedelicraft:filled", 1F),
-                    g -> SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled_using"), filledTextures, g.modelCollector))
-            .upload(item, itemModelGenerator);
+
+        var basic = basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE));
+        var filled = basic(SMOKEABLE_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled"), filledTextures, itemModelGenerator.modelCollector));
+        var usingFilled = basic(SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_filled_using"), filledTextures, itemModelGenerator.modelCollector));
+
+        itemModelGenerator.output.accept(item, condition(new UsingProperty(), usingFilled, select(new FilledProperty(), basic, List.of(
+                switchCase(FilledProperty.FillPercentage.FULL, filled)
+            )
+        )));
     }
 
     static void registerMolotov(ItemModelGenerator itemModelGenerator, Item item) {
         var base = TextureMap.getId(item);
         var overlay = TextureMap.getSubId(item, "_overlay");
-        ModelOverrides.of(Models.GENERATED_THREE_LAYERS)
-            .addOverride(Map.of("psychedelicraft:flying", 0F, "psychedelicraft:filled", 1F),
-                    g -> Models.GENERATED_THREE_LAYERS.upload(ModelIds.getItemSubModelId(item, "_filled"), TextureMap.layered(base, TextureMap.getSubId(item, "_liquid"), overlay), g.modelCollector))
-            .addOverride(Map.of("psychedelicraft:flying", 0F, "psychedelicraft:filled_with_lava", 1F),
-                    g -> Models.GENERATED_THREE_LAYERS.upload(ModelIds.getItemSubModelId(item, "_filled_lava"), TextureMap.layered(base, TextureMap.getSubId(item, "_liquid_lava"), overlay), g.modelCollector))
-            .addOverride(Map.of("psychedelicraft:flying", 1F),
-                    g -> Models.GENERATED.upload(ModelIds.getItemSubModelId(item, "_thrown"), TextureMap.layer0(TextureMap.getSubId(item, "_thrown")), g.modelCollector))
-            .upload(ModelIds.getItemModelId(item), TextureMap.layered(base, overlay, overlay), itemModelGenerator);
+        var dyeTint = new DyeTintSource(Colors.WHITE);
+
+        var basic = tinted(itemModelGenerator.uploadTwoLayers(item, base, overlay), dyeTint);
+        var filled = tinted(Models.GENERATED_THREE_LAYERS.upload(
+                ModelIds.getItemSubModelId(item, "_filled"),
+                TextureMap.layered(base, TextureMap.getSubId(item, "_liquid"), overlay),
+                itemModelGenerator.modelCollector
+        ), dyeTint, new FluidTintSource(Colors.WHITE), UNTINTED);
+        var filledLava = tinted(
+                Models.GENERATED_THREE_LAYERS.upload(ModelIds.getItemSubModelId(item, "_filled_lava"),
+                TextureMap.layered(base, TextureMap.getSubId(item, "_liquid_lava"), overlay),
+                itemModelGenerator.modelCollector
+        ), dyeTint);
+        var flying = basic(Models.GENERATED.upload(
+                ModelIds.getItemSubModelId(item, "_thrown"),
+                TextureMap.layer0(TextureMap.getSubId(item, "_thrown")),
+                itemModelGenerator.modelCollector)
+        );
+
+        itemModelGenerator.output.accept(item, condition(new FlyingProperty(),
+                flying,
+                condition(new ContainedFluidProperty(FluidTags.LAVA), filledLava,
+                        select(new FilledProperty(), basic, List.of(
+                            switchCase(FilledProperty.FillPercentage.FULL, filled)
+                        ))
+                ))
+        );
     }
 
     static void registerSmokeable(ItemModelGenerator itemModelGenerator, Item item) {
-        ModelOverrides.of(SMOKEABLE_TEMPLATE)
-            .addOverride("psychedelicraft:using", 1F,
-                    g -> SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_using"), TextureMap.layer0(TextureMap.getSubId(item, "_using")), g.modelCollector))
-            .upload(item, itemModelGenerator);
+        itemModelGenerator.output.accept(item, condition(new UsingProperty(),
+                basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE)),
+                basic(itemModelGenerator.registerSubModel(item, "_using", SMOKEABLE_USING_TEMPLATE))
+        ));
     }
 
     static void registerSniffable(ItemModelGenerator itemModelGenerator, Item item) {
-        ModelOverrides.of(SMOKEABLE_TEMPLATE)
-            .addOverride("psychedelicraft:using", 1F, generator -> SMOKEABLE_USING_TEMPLATE.upload(
-                    ModelIds.getItemSubModelId(item, "_using"),
-                    TextureMap.layer0(TextureMap.getId(item)),
-                    itemModelGenerator.modelCollector)
-            ).upload(item, itemModelGenerator);
+        itemModelGenerator.output.accept(item, condition(new UsingProperty(),
+                basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE)),
+                basic(itemModelGenerator.registerSubModel(item, "_using", SMOKEABLE_USING_TEMPLATE))
+        ));
     }
 
     static void registerCigar(ItemModelGenerator itemModelGenerator, Item item) {
-        ModelOverrides builder = ModelOverrides.of(SMOKEABLE_TEMPLATE);
-        var damages = List.of(0F, 0.33F, 0.66F, 1F);
-
-        for (int i = 0; i < damages.size(); i++) {
-            for (int u = i == 0 ? 1 : 0; u < 2; u++) {
-                final boolean using = u == 1;
-                String name = (u == 1 ? "_using" : "") + (i == 0 ? "" : "_" + i);
-                builder.addOverride(Map.of(
-                        "psychedelicraft:using", (float)u,
-                        "damage", damages.get(i)
-                ), generator -> (using ? SMOKEABLE_USING_TEMPLATE : SMOKEABLE_TEMPLATE).upload(
-                            ModelIds.getItemSubModelId(item, name),
-                            TextureMap.layer0(TextureMap.getSubId(item, name)),
-                            itemModelGenerator.modelCollector));
-            }
-        }
-
-        builder.upload(item, itemModelGenerator);
+        itemModelGenerator.output.accept(item, condition(new UsingProperty(),
+                rangeDispatch(new DamageProperty(true), 3, List.of(
+                        rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_using", SMOKEABLE_USING_TEMPLATE)), 0),
+                        rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_using_1", SMOKEABLE_USING_TEMPLATE)), 1),
+                        rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_using_2", SMOKEABLE_USING_TEMPLATE)), 2),
+                        rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_using_3", SMOKEABLE_USING_TEMPLATE)), 3)
+                )),
+                rangeDispatch(new DamageProperty(true), 3, List.of(
+                        rangeDispatchEntry(basic(itemModelGenerator.upload(item, SMOKEABLE_USING_TEMPLATE)), 0),
+                        rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_1", SMOKEABLE_TEMPLATE)), 1),
+                        rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_2", SMOKEABLE_TEMPLATE)), 2),
+                        rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_3", SMOKEABLE_TEMPLATE)), 3)
+                ))
+        ));
     }
 
     static void registerPlantLattice(ItemModelGenerator itemModelGenerator, Block lattice, Item item) {
         Block crop = Block.getBlockFromItem(item);
-        ModelOverrides.of(CROP_LATTICE_TEMPLATE)
-            .addUniform("psychedelicraft:age", 0.1F, 0.3F, 0.1F, (index, value) -> {
-                return CROP_LATTICE_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_stage" + index), new TextureMap()
-                        .put(LATTICE, TextureMap.getId(lattice))
-                        .put(TextureKey.CROP, TextureMap.getSubId(crop, "_stage" + index)), itemModelGenerator.modelCollector);
-            })
-            .upload(ModelIds.getItemModelId(item), new TextureMap()
-                    .put(LATTICE, TextureMap.getId(lattice))
-                    .put(TextureKey.CROP, TextureMap.getSubId(crop, "_stage0")), itemModelGenerator);
+        itemModelGenerator.output.accept(item, rangeDispatch(new DamageProperty(false), 3, List.of(
+                rangeDispatchEntry(basic(uploadLatticeModel(itemModelGenerator, lattice, crop, item, 0)), 0),
+                rangeDispatchEntry(basic(uploadLatticeModel(itemModelGenerator, lattice, crop, item, 1)), 1),
+                rangeDispatchEntry(basic(uploadLatticeModel(itemModelGenerator, lattice, crop, item, 2)), 2),
+                rangeDispatchEntry(basic(uploadLatticeModel(itemModelGenerator, lattice, crop, item, 3)), 3)
+        )));
     }
 
-    static Identifier registerLayered(ItemModelGenerator itemModelGenerator, Item item, String overlay1) {
-        return Models.GENERATED_TWO_LAYERS.upload(ModelIds.getItemModelId(item), TextureMap.layered(
+    static Identifier uploadLatticeModel(ItemModelGenerator itemModelGenerator, Block lattice, Block crop, Item item, int index) {
+        return CROP_LATTICE_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_stage" + index), new TextureMap()
+                .put(LATTICE, TextureMap.getId(lattice))
+                .put(TextureKey.CROP, TextureMap.getSubId(crop, "_stage" + index)), itemModelGenerator.modelCollector);
+    }
+
+    static void registerLayered(ItemModelGenerator itemModelGenerator, Item item, String overlay1, TintSource...tint) {
+        itemModelGenerator.output.accept(item, tinted(Models.GENERATED_TWO_LAYERS.upload(ModelIds.getItemModelId(item), TextureMap.layered(
                 TextureMap.getId(item), TextureMap.getSubId(item, overlay1)
-        ), itemModelGenerator.modelCollector);
-    }
-
-    static Identifier registerLayered(ItemModelGenerator itemModelGenerator, Item item, String overlay1, String overlay2) {
-        return Models.GENERATED_TWO_LAYERS.upload(ModelIds.getItemModelId(item), TextureMap.layered(
-                TextureMap.getId(item), TextureMap.getSubId(item, overlay1), TextureMap.getSubId(item, overlay2)
-        ), itemModelGenerator.modelCollector);
+        ), itemModelGenerator.modelCollector), tint));
     }
 
     static void registerPaperBag(ItemModelGenerator itemModelGenerator, Item item) {
-        ModelOverrides.of(GENERATED)
-            .addOverride(ModelIds.getItemSubModelId(item, "_filled"), "psychedelicraft:filled", 0.5F)
-            .addOverride(ModelIds.getItemSubModelId(item, "_overflowing"), "psychedelicraft:filled", 0.75F)
-            .addOverride(ModelIds.getItemSubModelId(item, "_bursting"), "psychedelicraft:filled", 1F)
-            .upload(item, itemModelGenerator);
+        var empty = basic(itemModelGenerator.upload(item, GENERATED));
+        var filled = basic(itemModelGenerator.registerSubModel(item, "_filled", GENERATED));
+        var overflowing = basic(itemModelGenerator.registerSubModel(item, "_overflowing", GENERATED));
+        var bursting = basic(itemModelGenerator.registerSubModel(item, "_bursting", GENERATED));
+
+        itemModelGenerator.output.accept(item, select(new FilledProperty(), empty,
+                List.of(
+                        switchCase(FilledProperty.FillPercentage.ONE_QUARTER, filled),
+                        switchCase(FilledProperty.FillPercentage.HALF, filled),
+                        switchCase(FilledProperty.FillPercentage.THREE_QUARTER, overflowing),
+                        switchCase(FilledProperty.FillPercentage.FULL, bursting)
+                )
+        ));
     }
 
     static void registerDrinkHolder(ItemModelGenerator itemModelGenerator, Item item) {
-        ModelOverrides.of(GENERATED)
-            .addOverride(ModelIds.getItemSubModelId(item, "_filled"), Models.GENERATED_TWO_LAYERS,
-                    TextureMap.layered(TextureMap.getId(item), TextureMap.getSubId(item, "_liquid")),
-                    "psychedelicraft:filled", 1F)
-            .addOverride(ModelIds.getItemSubModelId(item, "_filled_with_lava"), Models.GENERATED_TWO_LAYERS,
-                    TextureMap.layered(TextureMap.getId(item), TextureMap.getSubId(item, "_liquid_lava")),
-                    "psychedelicraft:filled_with_lava", 1F)
-            .upload(item, itemModelGenerator);
+        var empty = basic(itemModelGenerator.upload(item, GENERATED));
+        var lavaFilled = basic(Models.GENERATED_TWO_LAYERS.upload(
+                ModelIds.getItemSubModelId(item, "_filled_with_lava"),
+                TextureMap.layered(TextureMap.getId(item), TextureMap.getSubId(item, "_liquid_lava")),
+                itemModelGenerator.modelCollector
+        ));
+        var filled = tinted(Models.GENERATED_TWO_LAYERS.upload(
+                ModelIds.getItemSubModelId(item, "_filled"),
+                TextureMap.layered(TextureMap.getId(item), TextureMap.getSubId(item, "_liquid")),
+                itemModelGenerator.modelCollector
+        ), UNTINTED, new FluidTintSource(Colors.WHITE));
+
+        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(FluidTags.LAVA),
+                lavaFilled,
+                select(new FilledProperty(), empty, List.of(
+                        switchCase(FilledProperty.FillPercentage.FULL, filled)
+                    )
+                )
+        ));
     }
 
-    static void registerDrinkHolderWithLabel(ItemModelGenerator itemModelGenerator, Item item) {
+    static void registerDyeableDrinkHolder(ItemModelGenerator itemModelGenerator, Item item) {
         var overlay = TextureMap.getSubId(item, "_overlay");
         var base = TextureMap.getId(item);
-        ModelOverrides.of(Models.GENERATED_THREE_LAYERS)
-            .addOverride(ModelIds.getItemSubModelId(item, "_filled"), Models.GENERATED_THREE_LAYERS,
-                    TextureMap.layered(base, TextureMap.getSubId(item, "_liquid"), overlay),
-                    "psychedelicraft:filled", 1F)
-            .addOverride(ModelIds.getItemSubModelId(item, "_filled_with_lava"), Models.GENERATED_THREE_LAYERS,
-                    TextureMap.layered(base, TextureMap.getSubId(item, "_liquid_lava"), overlay),
-                    "psychedelicraft:filled_with_lava", 1F)
-            .upload(ModelIds.getItemModelId(item), TextureMap.layered(base, overlay, overlay), itemModelGenerator);
+
+        var dyeTint = new DyeTintSource(Colors.WHITE);
+
+        var empty = tinted(itemModelGenerator.uploadTwoLayers(item, base, overlay), dyeTint);
+        var lavaFilled = tinted(Models.GENERATED_THREE_LAYERS.upload(
+                ModelIds.getItemSubModelId(item, "_filled_with_lava"),
+                TextureMap.layered(base, TextureMap.getSubId(item, "_liquid_lava"), overlay),
+                itemModelGenerator.modelCollector
+        ), dyeTint);
+        var filled = tinted(Models.GENERATED_THREE_LAYERS.upload(
+                ModelIds.getItemSubModelId(item, "_filled"),
+                TextureMap.layered(base, TextureMap.getSubId(item, "_liquid"), overlay),
+                itemModelGenerator.modelCollector
+        ), dyeTint, new FluidTintSource(Colors.WHITE));
+
+        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(FluidTags.LAVA),
+                lavaFilled,
+                select(new FilledProperty(), empty, List.of(
+                        switchCase(FilledProperty.FillPercentage.FULL, filled)
+                    )
+                )
+        ));
     }
 
     static void registerParentedDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, Item parent, Identifier withLava, Identifier withWater) {
         var overlayTextureKey = parent == Items.POTION ? TextureKey.LAYER0 : TextureKey.LAYER1;
         var parentModel = new Model(Optional.of(ModelIds.getItemModelId(parent)), Optional.empty(), overlayTextureKey);
         var parentId = Registries.ITEM.getId(parent);
-        ModelOverrides.of(parentModel)
-            .addOverride("psychedelicraft:filled_with_lava", 1F, o -> withLava)
-            .addOverride("psychedelicraft:filled_with_water", 1F, o -> withWater)
-            .upload(ModelIds.getItemModelId(item), TextureMap.of(overlayTextureKey, parentId.withPath(p -> "item/" + p + (parent == Items.POTION ? "_overlay" : "_liquid"))), itemModelGenerator);
+
+        var empty = tinted(parentModel.upload(item, TextureMap.of(
+                overlayTextureKey,
+                parentId.withPath(p -> "item/" + p + (parent == Items.POTION ? "_overlay" : "_liquid"))
+        ), itemModelGenerator.modelCollector),
+                parent == Items.POTION ? new FluidTintSource(Colors.WHITE) : UNTINTED,
+                parent == Items.POTION ? UNTINTED : new FluidTintSource(Colors.WHITE)
+        );
+        var lavaFilled = basic(withLava);
+        var waterFilled = basic(withWater);
+
+        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(FluidTags.LAVA),
+                lavaFilled,
+                condition(new ContainedFluidProperty(FluidTags.WATER), waterFilled, empty)
+        ));
     }
 
     static void registerParentedDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, Item parent, Identifier withLava) {
         var overlayTextureKey = parent == Items.POTION ? TextureKey.LAYER0 : TextureKey.LAYER1;
         var parentModel = new Model(Optional.of(ModelIds.getItemModelId(parent)), Optional.empty(), overlayTextureKey);
         var parentId = Registries.ITEM.getId(parent);
-        ModelOverrides.of(parentModel)
-            .addOverride("psychedelicraft:filled_with_lava", 1F, o -> withLava)
-            .upload(ModelIds.getItemModelId(item), TextureMap.of(overlayTextureKey, parentId.withPath(p -> "item/" + p + (parent == Items.POTION ? "_overlay" : "_liquid"))), itemModelGenerator);
+
+        var empty = tinted(parentModel.upload(item, TextureMap.of(
+                overlayTextureKey,
+                parentId.withPath(p -> "item/" + p + (parent == Items.POTION ? "_overlay" : "_liquid"))
+        ), itemModelGenerator.modelCollector),
+                parent == Items.POTION ? new FluidTintSource(Colors.WHITE) : UNTINTED,
+                parent == Items.POTION ? UNTINTED : new FluidTintSource(Colors.WHITE)
+        );
+        var lavaFilled = basic(withLava);
+
+        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(FluidTags.LAVA), lavaFilled, empty));
     }
 }
