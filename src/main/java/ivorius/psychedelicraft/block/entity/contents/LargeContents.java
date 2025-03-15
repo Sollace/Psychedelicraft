@@ -281,7 +281,7 @@ public class LargeContents extends SmallContents {
 
     @Override
     public boolean isEmpty() {
-        return ingredients.isEmpty();
+        return ingredients.isEmpty() && super.isEmpty();
     }
 
     @Override

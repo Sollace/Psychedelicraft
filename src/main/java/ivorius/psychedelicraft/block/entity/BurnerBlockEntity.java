@@ -327,7 +327,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     @Override
     public ItemStack removeStack(int slot) {
         if (slot == 0) {
-            return contents.getFilled(container.split(container.getCount()), false, 1);
+            return contents.getFilled(container.copyAndEmpty(), false, 1);
         }
         return contents instanceof Inventory l ? l.removeStack(slot - 1) : ItemStack.EMPTY;
     }
@@ -354,7 +354,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
             return l.getDroppedStacks(getContainer());
         }
         if (!getContainer().isEmpty()) {
-            return List.of(getContainer());
+            return List.of(removeStack(0));
         }
         return List.of();
     }

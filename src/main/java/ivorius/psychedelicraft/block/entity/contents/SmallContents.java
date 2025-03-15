@@ -273,7 +273,7 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
 
     @Override
     public boolean isEmpty() {
-        return getPrimaryTank().getContents().isEmpty();
+        return getTotalFluidVolume() == 0;
     }
 
     @Override
