@@ -72,6 +72,7 @@ public interface PSRenderers {
                 PSBlocks.POTTED_HOP, PSBlocks.POTTED_TOBACCO, PSBlocks.POTTED_COCA, PSBlocks.POTTED_COFFEA);
 
         BuiltinItemRendererRegistry.INSTANCE.register(PSItems.RIFT_JAR, RiftJarBlockEntityRenderer::renderStack);
+        BuiltinItemRendererRegistry.INSTANCE.register(PSItems.MASH_TUB, MashTubBlockEntityRenderer::renderStack);
 
         SimpleFluid.REGISTRY.forEach(fluid -> {
             if (fluid.isEmpty()) {

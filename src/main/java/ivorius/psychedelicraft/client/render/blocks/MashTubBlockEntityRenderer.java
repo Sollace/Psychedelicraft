@@ -8,8 +8,10 @@ package ivorius.psychedelicraft.client.render.blocks;
 import java.util.Random;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.FluidFilled;
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
@@ -33,8 +35,22 @@ import net.minecraft.util.math.*;
  * Renders fluid in the mash tub, or the solid contents
  */
 public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<MashTubBlockEntity> {
+    private static final MashTubBlockEntity ITEM_ENTITY = PSBlockEntities.MASH_TUB.instantiate(BlockPos.ORIGIN, PSBlocks.MASH_TUB.getDefaultState());
+
     public MashTubBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
         super(context);
+    }
+
+    public static void renderStack(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        ITEM_ENTITY.getPrimaryTank().setContents(ItemFluids.of(stack));
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlock(
+                ITEM_ENTITY.getCachedState(),
+                ITEM_ENTITY.getPos(),
+                MinecraftClient.getInstance().world,
+                matrices,
+                vertices.getBuffer(RenderLayer.getCutout()), false,
+                MinecraftClient.getInstance().world.random);
+        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(ITEM_ENTITY, matrices, vertices, light, overlay);
     }
 
     @Override

@@ -247,6 +247,7 @@ public interface BlockModels {
     static void registerVat(BlockStateModelGenerator generator, Block core, Block edge, Block materialBase) {
         generator.registerBuiltinWithParticle(edge, ModelIds.getBlockModelId(materialBase));
         generator.registerSingleton(core, TextureMap.all(core), BlockModels.VAT_TEMPLATE);
+        generator.excludeFromSimpleItemModelGeneration(core);
     }
 
     static void registerDryingTable(BlockStateModelGenerator generator, Block block) {
