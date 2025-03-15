@@ -110,6 +110,11 @@ public class PlacedDrinksModelProvider
 
         BakedModel model = renderer.getModels().getModelManager().getModel(modelId);
 
+        if (model == null) {
+            Psychedelicraft.LOGGER.error("Model does not exist: " + modelId);
+            return;
+        }
+
         boolean solid = !(stack.getItem() instanceof BlockItem bi) || !(bi.getBlock() instanceof TransparentBlock) && !(bi.getBlock() instanceof StainedGlassPaneBlock);
         RenderLayer renderLayer = RenderLayers.getItemLayer(stack, solid);
 
