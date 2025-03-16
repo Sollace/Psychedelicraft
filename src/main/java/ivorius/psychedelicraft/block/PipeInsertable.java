@@ -75,6 +75,10 @@ public interface PipeInsertable {
             return new PipeFluids(new FluidMound(fluids()).addAll(fluids.fluids()), MathHelper.lerp(0.5F, temperature(), fluids.temperature()));
         }
 
+        public PipeFluids withTemperature(int temperature) {
+            return new PipeFluids(new FluidMound(fluids()), temperature);
+        }
+
         public FluidMound splitCondensate() {
             return fluids.split(i -> i.fluid().getCondensationTemperature() > temperature);
         }

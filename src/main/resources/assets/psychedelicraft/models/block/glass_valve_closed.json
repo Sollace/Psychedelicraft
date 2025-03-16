@@ -1,0 +1,137 @@
+{
+	"texture_size": [32, 32],
+	"textures": {
+    "particle": "#valve",
+    "valve": "psychedelicraft:block/glass_tube_valve"
+	},
+	"elements": [
+		{
+			"name": "up",
+			"from": [5.925, 10.325, 1.325],
+			"to": [6.925, 11.2, 4.925],
+			"rotation": {"angle": -45, "axis": "y", "origin": [3.1, 8.4, 2.9]},
+			"faces": {
+				"east": {"uv": [8, 0, 12, 1], "texture": "#valve"},
+				"west": {"uv": [8, 0, 12, 1], "texture": "#valve"},
+				"up": {"uv": [14, 1, 13, 5], "rotation": 180, "texture": "#valve"},
+				"down": {"uv": [13, 0, 14, 6], "texture": "#valve"}
+			}
+		},
+		{
+			"name": "north",
+			"from": [5.925, 6, 0.525],
+			"to": [6.925, 11.2, 1.325],
+			"rotation": {"angle": -45, "axis": "y", "origin": [3.1, 8.4, 2.9]},
+			"faces": {
+				"north": {"uv": [13, 0, 14, 6], "rotation": 180, "texture": "#valve"},
+				"east": {"uv": [12, 0, 13, 6], "texture": "#valve"},
+				"south": {"uv": [14, 6, 13, 0], "texture": "#valve"},
+				"west": {"uv": [7, 0, 8, 6], "texture": "#valve"},
+				"up": {"uv": [14, 5, 13, 6], "rotation": 180, "texture": "#valve"},
+				"down": {"uv": [13, 5, 14, 6], "texture": "#valve"}
+			}
+		},
+		{
+			"name": "south",
+			"from": [5.925, 6, 4.925],
+			"to": [6.925, 11.2, 5.725],
+			"rotation": {"angle": -45, "axis": "y", "origin": [3.1, 8.4, 2.9]},
+			"faces": {
+				"north": {"uv": [14, 0, 13, 6], "rotation": 180, "texture": "#valve"},
+				"east": {"uv": [7, 0, 8, 6], "texture": "#valve"},
+				"south": {"uv": [13, 6, 14, 0], "texture": "#valve"},
+				"west": {"uv": [12, 0, 13, 6], "texture": "#valve"},
+				"up": {"uv": [14, 0, 13, 1], "rotation": 180, "texture": "#valve"},
+				"down": {"uv": [13, 0, 14, 1], "texture": "#valve"}
+			}
+		},
+		{
+			"name": "down",
+			"from": [5.925, 6, 1.325],
+			"to": [6.925, 6.875, 4.925],
+			"rotation": {"angle": -45, "axis": "y", "origin": [3.1, 8.4, 2.9]},
+			"faces": {
+				"east": {"uv": [8, 5, 12, 6], "texture": "#valve"},
+				"south": {"uv": [14, 5.5, 13, 1.5], "texture": "#valve"},
+				"west": {"uv": [8, 5, 12, 6], "texture": "#valve"},
+				"up": {"uv": [13, 1, 14, 5], "rotation": 180, "texture": "#valve"},
+				"down": {"uv": [13, 1, 14, 5], "texture": "#valve"}
+			}
+		},
+		{
+			"name": "up",
+			"from": [4.95, 8.9, 5.05],
+			"to": [5.55, 10.4, 5.65],
+			"rotation": {"angle": 45, "axis": "y", "origin": [5.25, 4.4, 5.35]},
+			"faces": {
+				"north": {"uv": [4, 0, 6, 4], "rotation": 180, "texture": "#valve"},
+				"east": {"uv": [4, 0, 6, 4], "rotation": 180, "texture": "#valve"},
+				"south": {"uv": [4, 0, 6, 4], "rotation": 180, "texture": "#valve"},
+				"west": {"uv": [4, 0, 6, 4], "rotation": 180, "texture": "#valve"}
+			}
+		},
+		{
+			"name": "north",
+			"from": [5.125, 8.1, 3.575],
+			"to": [5.725, 8.7, 4.875],
+			"rotation": {"angle": -45, "axis": "y", "origin": [5.35, 8.4, 5.15]},
+			"faces": {
+				"east": {"uv": [4, 0, 6, 4], "rotation": 270, "texture": "#valve"},
+				"west": {"uv": [4, 0, 6, 4], "rotation": 90, "texture": "#valve"},
+				"up": {"uv": [4, 0, 6, 4], "rotation": 180, "texture": "#valve"},
+				"down": {"uv": [4, 0, 6, 4], "texture": "#valve"}
+			}
+		},
+		{
+			"name": "down",
+			"from": [4.15, 6.4, 5.8],
+			"to": [4.75, 7.9, 6.4],
+			"rotation": {"angle": 45, "axis": "y", "origin": [3.95, 1, 4.75]},
+			"faces": {
+				"north": {"uv": [4, 0, 6, 4], "texture": "#valve"},
+				"east": {"uv": [4, 0, 6, 4], "texture": "#valve"},
+				"south": {"uv": [4, 0, 6, 4], "texture": "#valve"},
+				"west": {"uv": [4, 0, 6, 4], "texture": "#valve"}
+			}
+		},
+		{
+			"name": "south",
+			"from": [4.95, 8.1, 5.85],
+			"to": [5.55, 8.7, 7.15],
+			"rotation": {"angle": -45, "axis": "y", "origin": [5.25, 8.4, 5.35]},
+			"faces": {
+				"east": {"uv": [4, 0, 6, 4], "rotation": 90, "texture": "#valve"},
+				"west": {"uv": [4, 0, 6, 4], "rotation": 270, "texture": "#valve"},
+				"up": {"uv": [4, 0, 6, 4], "texture": "#valve"},
+				"down": {"uv": [4, 0, 6, 4], "rotation": 180, "texture": "#valve"}
+			}
+		},
+		{
+			"name": "shaft",
+			"from": [3.5, 7.9, 7.6],
+			"to": [8, 8.9, 8.6],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 8.4, 8.1]},
+			"faces": {
+				"north": {"uv": [2, 0, 4, 16], "rotation": 270, "texture": "#valve"},
+				"south": {"uv": [2, 0, 4, 16], "rotation": 90, "texture": "#valve"},
+				"west": {"uv": [6, 4, 4, 6], "rotation": 180, "texture": "#valve"},
+				"up": {"uv": [0, 0, 2, 16], "rotation": 90, "texture": "#valve"},
+				"down": {"uv": [0, 0, 2, 16], "rotation": 90, "texture": "#valve"}
+			}
+		},
+		{
+			"name": "knot",
+			"from": [7, 7.4, 7.1],
+			"to": [9, 9.4, 9.1],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8.4, 8.1]},
+			"faces": {
+				"north": {"uv": [4, 4, 6, 6], "rotation": 270, "texture": "#valve"},
+				"east": {"uv": [4, 4, 6, 6], "texture": "#valve"},
+				"south": {"uv": [4, 4, 6, 6], "rotation": 90, "texture": "#valve"},
+				"west": {"uv": [6, 4, 4, 6], "rotation": 180, "texture": "#valve"},
+				"up": {"uv": [4, 4, 6, 6], "rotation": 90, "texture": "#valve"},
+				"down": {"uv": [4, 4, 6, 6], "rotation": 90, "texture": "#valve"}
+			}
+		}
+	]
+}

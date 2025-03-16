@@ -256,6 +256,7 @@ public interface PSItems {
     Item TRAY = register("tray", PSBlocks.TRAY);
     Item BUNSEN_BURNER = register("bunsen_burner", PSBlocks.BUNSEN_BURNER);
     Item GLASS_TUBE = register("glass_tube", PSBlocks.GLASS_TUBE);
+    Item GLASS_VALVE = register("glass_valve", PSBlocks.GLASS_VALVE);
 
     Item CRYSTAL_METH = register("methamphetamine_powder", new SnortableItem(new Settings()
                 .food(EdibleItem.NON_FILLING_EDIBLE)
