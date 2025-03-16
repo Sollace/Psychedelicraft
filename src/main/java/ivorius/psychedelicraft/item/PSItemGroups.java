@@ -163,6 +163,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.BUNSEN_BURNER);
                 entries.add(PSItems.TRAY);
                 entries.add(PSItems.GLASS_TUBE);
+                entries.add(PSItems.GLASS_VALVE);
                 entries.add(PSItems.MORPHINE_TABLET);
                 entries.add(PSItems.LSD_PILL);
                 entries.add(PSItems.EXTACY);

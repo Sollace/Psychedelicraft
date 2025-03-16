@@ -8,6 +8,7 @@ import ivorius.psychedelicraft.client.item.FilledProperty;
 import ivorius.psychedelicraft.client.item.FluidTintSource;
 import ivorius.psychedelicraft.client.item.FlyingProperty;
 import ivorius.psychedelicraft.client.item.UsingProperty;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
 import net.minecraft.client.data.ItemModelGenerator;
 import net.minecraft.client.data.Model;
@@ -18,10 +19,10 @@ import net.minecraft.client.data.TextureMap;
 import net.minecraft.client.render.item.property.numeric.DamageProperty;
 import net.minecraft.client.render.item.tint.DyeTintSource;
 import net.minecraft.client.render.item.tint.TintSource;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
@@ -89,7 +90,7 @@ public interface ItemModels {
 
         itemModelGenerator.output.accept(item, condition(new FlyingProperty(),
                 flying,
-                condition(new ContainedFluidProperty(FluidTags.LAVA), filledLava,
+                condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)), filledLava,
                         select(new FilledProperty(), basic, List.of(
                             switchCase(FilledProperty.FillPercentage.FULL, filled)
                         ))
@@ -179,7 +180,7 @@ public interface ItemModels {
                 itemModelGenerator.modelCollector
         ), UNTINTED, new FluidTintSource(Colors.WHITE));
 
-        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(FluidTags.LAVA),
+        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)),
                 lavaFilled,
                 select(new FilledProperty(), empty, List.of(
                         switchCase(FilledProperty.FillPercentage.FULL, filled)
@@ -206,7 +207,7 @@ public interface ItemModels {
                 itemModelGenerator.modelCollector
         ), dyeTint, new FluidTintSource(Colors.WHITE));
 
-        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(FluidTags.LAVA),
+        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)),
                 lavaFilled,
                 select(new FilledProperty(), empty, List.of(
                         switchCase(FilledProperty.FillPercentage.FULL, filled)
@@ -230,9 +231,9 @@ public interface ItemModels {
         var lavaFilled = basic(withLava);
         var waterFilled = basic(withWater);
 
-        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(FluidTags.LAVA),
+        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)),
                 lavaFilled,
-                condition(new ContainedFluidProperty(FluidTags.WATER), waterFilled, empty)
+                condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.WATER)), waterFilled, empty)
         ));
     }
 
@@ -250,6 +251,6 @@ public interface ItemModels {
         );
         var lavaFilled = basic(withLava);
 
-        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(FluidTags.LAVA), lavaFilled, empty));
+        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)), lavaFilled, empty));
     }
 }

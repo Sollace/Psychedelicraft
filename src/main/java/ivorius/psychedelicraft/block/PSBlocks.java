@@ -153,6 +153,11 @@ public interface PSBlocks {
             .solidBlock(Blocks::never)
             .suffocates(Blocks::never)
             .blockVision(Blocks::never)));
+    Block GLASS_VALVE = register("glass_valve", s -> new ValveBlock(s.mapColor(MapColor.OFF_WHITE).strength(0.3F).sounds(BlockSoundGroup.GLASS).nonOpaque()
+            .allowsSpawning(Blocks::never)
+            .solidBlock(Blocks::never)
+            .suffocates(Blocks::never)
+            .blockVision(Blocks::never)));
 
     static <T extends Block> T register(String name, Function<AbstractBlock.Settings, T> blockFactory) {
         return register(name, Settings.create(), blockFactory);

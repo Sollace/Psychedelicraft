@@ -26,7 +26,6 @@ import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.SyncedBlockEntity;
 import ivorius.psychedelicraft.particle.FluidParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
-import ivorius.psychedelicraft.recipe.FluidMound;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -194,7 +193,11 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
 
     @Override
     public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
-        return neighborState.isOf(this) && (state.get(input ? OUT : IN).direction == direction);
+        return neighborState.getBlock() instanceof GlassTubeBlock && (state.get(input ? OUT : IN).direction == direction);
+    }
+
+    protected boolean isBlocked(BlockState state) {
+        return false;
     }
 
     @Override
@@ -347,23 +350,32 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
 
         public Either<Optional<PipeFluids>, Unit> receiveContents(ServerWorld world, BlockPos pos, BlockState state, PipeFluids contents) {
             pushContentsForward(world, pos, state.get(OUT));
-            Optional<PipeFluids> newContents = contents.isEmpty() ? Optional.empty() : Optional.of(new PipeFluids(new FluidMound(contents.fluids()), contents.temperature() - getTemperatureDrop(world, pos)));
-            if (newContents.isPresent()) {
+            var status = Optional.of(contents).filter(i -> !i.isEmpty()).map(i -> i.withTemperature(i.temperature() - getTemperatureDrop(world, pos))).map(newContents -> {
                 if (this.contents.size() < 10) {
-                    this.contents.add(newContents.get());
+                    this.contents.add(newContents);
                 } else {
-                    this.contents.set(this.contents.size() - 1, this.contents.getLast().combine(newContents.get()));
+                    Optional<PipeFluids> available = this.contents.stream().filter(i -> i.fluids().totalSize() < 100).findFirst();
+                    if (available.isEmpty()) {
+                        return PipeInsertable.reject(contents);
+                    }
+                    this.contents.set(this.contents.indexOf(available.get()), available.get().combine(newContents));
                 }
-            }
+                markDirty();
+
+                return STATUS_ACCEPT_ALL;
+            }).orElse(STATUS_ACCEPT_ALL);
 
             if (!this.contents.isEmpty()) {
                 world.scheduleBlockTick(pos, state.getBlock(), 3);
             }
-            markDirty();
-            return STATUS_ACCEPT_ALL;
+            return status;
         }
 
         public void pushContentsForward(ServerWorld world, BlockPos pos, IODirection direction) {
+            if (((GlassTubeBlock)getCachedState().getBlock()).isBlocked(getCachedState())) {
+                return;
+            }
+
             markDirty();
 
             if (contents.size() >= 10) {

@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.BurnerBlock;
 import ivorius.psychedelicraft.block.GlassTubeBlock;
 import ivorius.psychedelicraft.block.GlassTubeBlock.IODirection;
+import ivorius.psychedelicraft.block.ValveBlock;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -260,6 +261,17 @@ public interface BlockModels {
         MultipartBlockStateSupplier states = MultipartBlockStateSupplier.create(block);
         addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(block, "_in"));
         addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(block, "_out"));
+        Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()), TextureMap.layer0(TextureMap.getId(block.asItem())), generator.modelCollector);
+        generator.blockStateCollector.accept(states);
+    }
+
+    static void registerTubingWithTap(BlockStateModelGenerator generator, Block tube, Block block) {
+        MultipartBlockStateSupplier states = MultipartBlockStateSupplier.create(block);
+        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(tube, "_in"));
+        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(tube, "_out"));
+        states
+            .with(When.create().set(ValveBlock.OPEN, true), BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_open")))
+            .with(When.create().set(ValveBlock.OPEN, false), BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_closed")));
         Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()), TextureMap.layer0(TextureMap.getId(block.asItem())), generator.modelCollector);
         generator.blockStateCollector.accept(states);
     }

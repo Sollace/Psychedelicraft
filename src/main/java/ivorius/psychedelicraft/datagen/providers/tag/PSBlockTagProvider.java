@@ -57,7 +57,8 @@ public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 PSBlocks.IRON_DRYING_TABLE,
                 PSBlocks.BUNSEN_BURNER,
                 PSBlocks.TRAY,
-                PSBlocks.GLASS_TUBE
+                PSBlocks.GLASS_TUBE,
+                PSBlocks.GLASS_VALVE
         );
     }
 

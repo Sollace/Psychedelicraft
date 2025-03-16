@@ -67,6 +67,7 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerTray(generator, PSBlocks.TRAY);
         BlockModels.registerDistillery(generator, PSBlocks.DISTILLERY);
         BlockModels.registerTubing(generator, PSBlocks.GLASS_TUBE);
+        BlockModels.registerTubingWithTap(generator, PSBlocks.GLASS_TUBE, PSBlocks.GLASS_VALVE);
 
         generator.registerBuiltinWithParticle(PSBlocks.RIFT_JAR, Blocks.GLASS);
 

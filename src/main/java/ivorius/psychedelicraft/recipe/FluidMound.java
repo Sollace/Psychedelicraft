@@ -87,6 +87,10 @@ public class FluidMound {
         return fluids.size();
     }
 
+    public int totalSize() {
+        return fluids.stream().mapToInt(ItemFluids::amount).sum();
+    }
+
     public boolean isEmpty() {
         return fluids.isEmpty();
     }
