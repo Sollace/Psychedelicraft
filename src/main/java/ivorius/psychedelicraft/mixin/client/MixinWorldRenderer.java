@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import net.minecraft.client.render.WorldRenderer;
 
@@ -26,5 +27,10 @@ abstract class MixinWorldRenderer {
     @Inject(method = { CLOUDS, SKY }, at = @At("RETURN"))
     private void afterRenderClouds(CallbackInfo info) {
         RenderPhase.pop();
+    }
+
+    @Inject(method = "drawEntityOutlinesFramebuffer()V", at = @At("RETURN"))
+    public void onDrawEntityOutlinesFramebuffer(CallbackInfo info) {
+        DrugRenderer.INSTANCE.onAfterRenderWorld();
     }
 }

@@ -178,17 +178,24 @@ public class DrugRenderer {
         }
     }
 
+    public void onAfterRenderWorld() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        RenderPhase.SCREEN.push();
+        try {
+            postEffects.render(client.getRenderTickCounter().getTickDelta(false));
+        } finally {
+            RenderPhase.pop();
+        }
+    }
+
     public void onRenderOverlay(DrawContext context, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
-
         RenderPhase.SCREEN.push();
-        float tickDelta = tickCounter.getTickDelta(false);
-
-        postEffects.render(tickDelta);
-
-        getScreenEffects().render(context, client.getWindow(), tickDelta);
-
-        RenderPhase.pop();
+        try {
+            getScreenEffects().render(context, client.getWindow(), tickCounter.getTickDelta(false));
+        } finally {
+            RenderPhase.pop();
+        }
     }
 
     public void renderAllHallucinations(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, DrugProperties drugProperties) {
