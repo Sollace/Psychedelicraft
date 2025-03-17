@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.datagen.providers.PSAdvancementsProvider;
+import ivorius.psychedelicraft.datagen.providers.PSDynamicRegistriesProvider;
 import ivorius.psychedelicraft.datagen.providers.PSModelProvider;
 import ivorius.psychedelicraft.datagen.providers.loot.PSBlockLootTableProvider;
 import ivorius.psychedelicraft.datagen.providers.loot.PSChestAdditionsLootTableProvider;
@@ -18,6 +19,7 @@ import ivorius.psychedelicraft.datagen.providers.tag.PSItemTagProvider;
 import ivorius.psychedelicraft.datagen.providers.tag.PSPointOfInterestTypeTagProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.RegistryBuilder;
 import net.minecraft.registry.RegistryKeys;
 
@@ -38,6 +40,7 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(PSRecipeProvider::new);
 
         pack.addProvider(PSModelProvider::new);
+        pack.addProvider(PSDynamicRegistriesProvider::new);
 
         pack.addProvider(PSAdvancementsProvider::new);
         pack.addProvider(PSBlockLootTableProvider::new);
@@ -46,6 +49,11 @@ public class Datagen implements DataGeneratorEntrypoint {
 
     @Override
     public void buildRegistry(RegistryBuilder builder) {
-        builder.addRegistry(RegistryKeys.DAMAGE_TYPE, PSDamageTypes::bootstrap);
+        builder.addRegistry(RegistryKeys.DAMAGE_TYPE, registerable -> {
+            PSDamageTypes.REGISTRY.forEach(key -> registerable.register(key, new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0)));
+        });
+        builder.addRegistry(RegistryKeys.TEMPLATE_POOL, CustomStructurePools::bootstrap);
+        builder.addRegistry(RegistryKeys.CONFIGURED_FEATURE, registerable -> PSWorldGenFeatures.bootstrapConfiguredFeatures(registerable));
+        builder.addRegistry(RegistryKeys.PLACED_FEATURE, PSWorldGenFeatures::bootstrapPlacedFeatures);
     }
 }

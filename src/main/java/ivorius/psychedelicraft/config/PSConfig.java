@@ -1,110 +1,46 @@
 package ivorius.psychedelicraft.config;
 
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.nio.file.Path;
 
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
+import com.google.gson.GsonBuilder;
+import com.minelittlepony.common.util.settings.Config;
+import com.minelittlepony.common.util.settings.HeirarchicalJsonConfigAdapter;
+import com.minelittlepony.common.util.settings.Setting;
 
-public class PSConfig {
+import ivorius.psychedelicraft.fluid.alcohol.TickRate;
+import ivorius.psychedelicraft.util.CodecTypeAdapter;
+import net.minecraft.item.ItemGroups;
+
+public class PSConfig extends Config {
     public static final int MINUTE = 20 * 60;
 
-    public Balancing balancing = new Balancing();
+    public final Setting<Integer> randomTicksUntilRiftSpawn = value("balancing", "randomTicksUntilRiftSpawn", MINUTE * 180);
+    public final Setting<Integer> dryingTableTickDuration = value("balancing", "dryingTableTickDuration", MINUTE * 16);
+    public final Setting<Integer> ironDryingTableTickDuration = value("balancing", "ironDryingTableTickDuration", MINUTE * 12);
+    public final Setting<Integer> slurryHardeningTime = value("balancing", "slurryHardeningTime", MINUTE * 30);
+    public final Setting<Boolean> enableHarmonium = value("balancing", "enableHarmonium", true);
+    public final Setting<Boolean> enableRiftJars = value("balancing", "enableRiftJars", true);
+    public final Setting<Boolean> disableMolotovs = value("balancing", "disableMolotovs", false);
 
-    public static final class Balancing {
-        public int randomTicksUntilRiftSpawn = MINUTE * 180;
-        public int dryingTableTickDuration = MINUTE * 16;
-        public int ironDryingTableTickDuration = MINUTE * 12;
-        public int slurryHardeningTime = MINUTE * 30;
-        public boolean enableHarmonium;
-        public boolean enableRiftJars;
-        public boolean disableMolotovs;
-        public Generation worldGeneration = new Generation(
-                Generation.FeatureConfig.DEFAULT, Generation.FeatureConfig.DEFAULT,
-                Generation.FeatureConfig.DEFAULT, Generation.FeatureConfig.DEFAULT,
-                Generation.FeatureConfig.DEFAULT, Generation.FeatureConfig.DEFAULT,
-                Generation.FeatureConfig.DEFAULT, Generation.FeatureConfig.DEFAULT,
-                Generation.FeatureConfig.DEFAULT, Generation.FeatureConfig.DEFAULT,
-                Generation.FeatureConfig.DEFAULT,
-                true, true, true
-        );
-        public FluidProperties fluidAttributes = new Balancing.FluidProperties(
-                new FluidProperties.TickInfo(30 * MINUTE, 60 * MINUTE, 100 * MINUTE, 30 * MINUTE),
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                new FluidProperties.TickInfo(30 * MINUTE, 80 * MINUTE, 40 * MINUTE, 90 * MINUTE),
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                FluidProperties.TickInfo.DEFAULT,
-                new FluidProperties.TickInfo(40 * MINUTE, 1 * MINUTE, 30 * MINUTE, 30 * MINUTE)
-        );
-        public MessageDistortion messageDistortion = new MessageDistortion();
+    public final Setting<Generation> worldGeneration = value("balancing", "worldGeneration", new Generation(
+            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
+            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
+            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
+            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
+            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
+            FeatureCustomConfig.DEFAULT,
+            true, true, true
+    ));
+    public final Setting<TickRates> fluidAttributes = value("balancing", "fluidAttributes", new TickRates(TickRate.getDefaults()));
+    public final Setting<MessageDistortion> messageDistortion = value("balancing", "messageDistortion", MessageDistortion.BOTH);
 
-        public static final class MessageDistortion {
-            public boolean incoming = true;
-            public boolean outgoing = true;
-        }
-        public record FluidProperties (
-                TickInfo alcInfoWheatHop,
-                TickInfo alcInfoKava,
-                TickInfo alcInfoWheat,
-                TickInfo alcInfoCorn,
-                TickInfo alcInfoPotato,
-                TickInfo alcInfoTomato,
-                TickInfo alcInfoAgave,
-                TickInfo alcInfoRedGrapes,
-                TickInfo alcInfoRice,
-                TickInfo alcInfoJuniper,
-                TickInfo alcInfoSugarCane,
-                TickInfo alcInfoHoney,
-                TickInfo alcInfoApple,
-                TickInfo alcInfoPineapple,
-                TickInfo alcInfoBanana,
-                TickInfo alcInfoMilk,
-                TickInfo alcInfoFlowerExtract) {
-            public record TickInfo (int ticksPerFermentation, int ticksPerDistillation, int ticksPerMaturation, int ticksUntilAcetification) {
-                static final TickInfo DEFAULT = new TickInfo(40 * MINUTE, 40 * MINUTE, 30 * MINUTE, 30 * MINUTE);
-            }
-        }
-
-        public record Generation (
-                FeatureConfig juniper,
-                FeatureConfig cannabis,
-                FeatureConfig hop,
-                FeatureConfig tobacco,
-                FeatureConfig morningGlories,
-                FeatureConfig belladonna,
-                FeatureConfig jimsonweed,
-                FeatureConfig tomato,
-                FeatureConfig coffea,
-                FeatureConfig coca,
-                FeatureConfig peyote,
-
-                boolean farmerDrugDeals,
-                boolean dungeonChests,
-                boolean villageChests) {
-            public record FeatureConfig(boolean enabled, InclusionFilter spawnableBiomes) {
-                static final FeatureConfig DEFAULT = new FeatureConfig(true, new InclusionFilter(new String[0], new String[0]));
-                public void ifEnabled(Consumer<InclusionFilter> register) {
-                    if (enabled) {
-                        register.accept(spawnableBiomes);
-                    }
-                }
-
-                public record InclusionFilter (String[] included, String[] excluded) {
-                    public Predicate<BiomeSelectionContext> createPredicate(Predicate<BiomeSelectionContext> inherentPredicate) {
-                        return BiomeSelector.compile(included, excluded, inherentPredicate);
-                    }
-                }
-            }
-        }
+    public PSConfig(Path path) {
+        super(new HeirarchicalJsonConfigAdapter(new GsonBuilder()
+                .registerTypeAdapter(FeatureCustomConfig.InclusionFilter.class, new CodecTypeAdapter<>(FeatureCustomConfig.InclusionFilter.CODEC))
+                .registerTypeAdapter(TickRates.class, new CodecTypeAdapter<>(TickRates.CODEC))
+        ), path);
+        enableHarmonium.onChanged(v -> ItemGroups.displayContext = null);
+        enableRiftJars.onChanged(v -> ItemGroups.displayContext = null);
+        disableMolotovs.onChanged(v -> ItemGroups.displayContext = null);
     }
 }

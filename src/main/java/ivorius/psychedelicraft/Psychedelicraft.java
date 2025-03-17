@@ -8,7 +8,6 @@ package ivorius.psychedelicraft;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.command.*;
-import ivorius.psychedelicraft.config.JsonConfig;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.PSEntities;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
@@ -26,6 +25,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 
@@ -35,11 +35,16 @@ import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.base.Suppliers;
+
 public class Psychedelicraft implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
-    private static final String DEFAULT_NAMESPACE = "psychedelicraft";
+    public static final String DEFAULT_NAMESPACE = "psychedelicraft";
+    public static final String VANILLA_EXTENSIONS_NAMESPACE = DEFAULT_NAMESPACE + "mc";
 
-    private static final Supplier<JsonConfig.Loader<PSConfig>> CONFIG_LOADER = JsonConfig.create(DEFAULT_NAMESPACE + ".json", PSConfig::new);
+    private static final Supplier<PSConfig> CONFIG = Suppliers.memoize(() -> {
+        return new PSConfig(FabricLoader.getInstance().getConfigDir().resolve(DEFAULT_NAMESPACE + ".json"));
+    });
 
     public static Supplier<Optional<DrugProperties>> globalDrugProperties = Optional::empty;
     public static Supplier<Optional<HitResult>> crossHairTarget = Optional::empty;
@@ -52,12 +57,8 @@ public class Psychedelicraft implements ModInitializer {
         return crossHairTarget.get();
     }
 
-    public static JsonConfig.Loader<PSConfig> getConfigLoader() {
-        return CONFIG_LOADER.get();
-    }
-
     public static PSConfig getConfig() {
-        return getConfigLoader().getData();
+        return CONFIG.get();
     }
 
     public static Identifier id(String name) {
@@ -66,6 +67,9 @@ public class Psychedelicraft implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        try {
+            getConfig().load();
+        } catch (Throwable t) {}
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
             DrugProperties.of(player).sendCapabilities();
         });

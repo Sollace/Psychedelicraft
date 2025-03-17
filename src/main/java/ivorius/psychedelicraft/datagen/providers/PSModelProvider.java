@@ -72,14 +72,14 @@ public class PSModelProvider extends FabricModelProvider {
         generator.registerBuiltinWithParticle(PSBlocks.PEYOTE, ModelIds.getItemModelId(PSItems.PEYOTE));
         generator.registerBuiltinWithParticle(PSBlocks.PLACED_DRINK, ModelIds.getBlockModelId(Blocks.STONE));
 
-        Function<Integer, Identifier> models = BlockModels.createCropModelSupplier(generator, PSBlocks.JIMSONWEEED);
+        Function<Integer, Identifier> models = BlockModels.createCropModelSupplier(generator, PSBlocks.JIMSONWEED);
         Function<Integer, Identifier> tomatoModels = BlockModels.createCropModelSupplier(generator, PSBlocks.TOMATOES);
         Function<Integer, Identifier> belladonnaModels = BlockModels.createCropModelSupplier(generator, PSBlocks.BELLADONNA);
 
         BlockModels.registerCrossCrop(generator, PSBlocks.HOP, PSBlocks.HOP.getAgeProperty(), 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3);
         BlockModels.registerCrossCrop(generator, PSBlocks.CANNABIS, PSBlocks.CANNABIS.getAgeProperty(), 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3);
         BlockModels.registerCrossCrop(generator, PSBlocks.COCA, PSBlocks.COCA.getAgeProperty(), 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3);
-        BlockModels.registerCrossCrop(generator, models, PSBlocks.JIMSONWEEED, NightshadeBlock.AGE, 0, 1, 2, 3, 4, 5, 6, 7);
+        BlockModels.registerCrossCrop(generator, models, PSBlocks.JIMSONWEED, NightshadeBlock.AGE, 0, 1, 2, 3, 4, 5, 6, 7);
         BlockModels.registerCrossCrop(generator, age -> (age < 5 ? models : tomatoModels).apply(age), PSBlocks.TOMATOES, NightshadeBlock.AGE, 0, 1, 2, 3, 4, 5, 6, 7);
         BlockModels.registerCrossCrop(generator, age -> (age < 7 ? models : belladonnaModels).apply(age), PSBlocks.BELLADONNA, NightshadeBlock.AGE, 0, 1, 2, 3, 4, 5, 6, 7);
         BlockModels.registerCrossCrop(generator, PSBlocks.TOBACCO, PSBlocks.TOBACCO.getAgeProperty(), TobaccoPlantBlock.TOP, top -> top ? "_top" : "", 0, 0, 1, 1, 2, 2, 3, 3);

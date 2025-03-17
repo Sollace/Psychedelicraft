@@ -108,20 +108,20 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                             return;
                         }
 
-                        var config = PsychedelicraftClient.getConfig().visual;
+                        var config = PsychedelicraftClient.getConfig();
 
-                        if ((config.dofFocalBlurFar <= 0 && config.dofFocalBlurNear <= 0)
-                         || (config.dofFocalPointNear <= 0 && config.dofFocalPointFar >= ShaderContext.viewDistace())) {
+                        if ((config.dofFocalBlurFar.get() <= 0 && config.dofFocalBlurNear.get() <= 0)
+                         || (config.dofFocalPointNear.get() <= 0 && config.dofFocalPointFar.get() >= ShaderContext.viewDistace())) {
                             return;
                         }
 
                         float zNear = 0.05f;
                         float zFar = ShaderContext.viewDistace();
 
-                        float focalPointNear = config.dofFocalPointNear / zFar;
-                        float focalPointFar = config.dofFocalPointFar / zFar;
-                        float focalBlurFar = config.dofFocalBlurFar;
-                        float focalBlurNear = config.dofFocalBlurNear;
+                        float focalPointNear = config.dofFocalPointNear.get() / zFar;
+                        float focalPointFar = config.dofFocalPointFar.get() / zFar;
+                        float focalBlurFar = config.dofFocalBlurFar.get();
+                        float focalBlurNear = config.dofFocalBlurNear.get();
 
                         setter.set("pixelSize", 1.0f / screenWidth, 1.0f / screenHeight);
                         setter.set("focalPointNear", focalPointNear);
@@ -221,7 +221,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                             return;
                         }
 
-                        float[] maxDownscale = PsychedelicraftClient.getConfig().visual.getDigitalEffectPixelResize();
+                        float[] maxDownscale = PsychedelicraftClient.getConfig().getDigitalEffectPixelResize();
                         float downscale = MathUtils.mixEaseInOut(0, 0.95F, Math.min(digital * 3, 1));
                         downscale += digital * 0.05f; //Bigger pixels!
 

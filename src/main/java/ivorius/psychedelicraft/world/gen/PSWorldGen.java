@@ -5,184 +5,65 @@
 
 package ivorius.psychedelicraft.world.gen;
 
-import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.AgavePlantBlock;
-import ivorius.psychedelicraft.block.CannabisPlantBlock;
-import ivorius.psychedelicraft.block.NightshadeBlock;
-import ivorius.psychedelicraft.block.PSBlocks;
-import ivorius.psychedelicraft.block.PeyoteBlock;
-import ivorius.psychedelicraft.block.VineStemBlock;
 import ivorius.psychedelicraft.config.BiomeSelector;
-import ivorius.psychedelicraft.config.PSConfig;
+import ivorius.psychedelicraft.config.FeatureCustomConfig;
+import ivorius.psychedelicraft.config.Generation;
 import ivorius.psychedelicraft.world.gen.loot.PSLootTableEntryType;
 import ivorius.psychedelicraft.world.gen.structure.MutableStructurePool;
 import net.fabricmc.fabric.api.biome.v1.*;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
-import net.minecraft.state.property.IntProperty;
-import net.minecraft.util.math.intprovider.ConstantIntProvider;
-import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.*;
-import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
-import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
-import net.minecraft.world.gen.placementmodifier.*;
-import net.minecraft.world.gen.stateprovider.BlockStateProvider;
-import net.minecraft.world.gen.stateprovider.RandomizedIntBlockStateProvider;
-import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
 
 /**
  * Created by lukas on 25.04.14.
  * Updated by Sollace on 16 Jan 2023
  */
-public class PSWorldGen {
-    public static final TilledPatchFeature TILLED_PATCH_FEATURE = Registry.register(Registries.FEATURE, Psychedelicraft.id("tilled_patch"), new TilledPatchFeature());
+public interface PSWorldGen {
+    TilledPatchFeature TILLED_PATCH = Registry.register(Registries.FEATURE, PSFeatures.TILLED_PATCH, new TilledPatchFeature());
 
-    public static final RegistryKey<ConfiguredFeature<?, ?>> JUNIPER_TREE_CONFIG = createConfiguredFeature("juniper_tree");
-    public static final RegistryKey<PlacedFeature> SPARCE_JUNIPER_TREE_PLACEMENT = createPlacement("sparce_juniper_tree_checked");
-    public static final RegistryKey<PlacedFeature> DENSE_JUNIPER_TREE_PLACEMENT = createPlacement("dense_juniper_tree_checked");
-
-    public static RegistryKey<ConfiguredFeature<?, ?>> createConfiguredFeature(String name) {
-        return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, Psychedelicraft.id(name));
-    }
-
-    public static RegistryKey<PlacedFeature> createPlacement(String id) {
-        return RegistryKey.of(RegistryKeys.PLACED_FEATURE, Psychedelicraft.id(id));
-    }
-
-    private static void registerTilledPatch(String id, CannabisPlantBlock crop, boolean requireWater, PSConfig.Balancing.Generation.FeatureConfig config) {
-        var cannabisPatch = createConfiguredFeature(id + "_tilled_patch");
-        FeatureRegistry.registerConfiguredFeature(cannabisPatch, () -> {
-            return new ConfiguredFeature<>(TILLED_PATCH_FEATURE, new TilledPatchFeature.Config(requireWater, crop));
-        });
-
-        var placement = createPlacement(id + "_tilled_patch_checked");
-        FeatureRegistry.registerPlacedFeature(placement, cannabisPatch, feature -> {
-            return new PlacedFeature(feature, List.of(
-                    RarityFilterPlacementModifier.of(90),
-                    SquarePlacementModifier.of(),
-                    PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
-                    BiomePlacementModifier.of()
-            ));
-        });
-
-        config.ifEnabled(spawnableBiomes -> {
-            BiomeModifications.addFeature(
-                    spawnableBiomes.createPredicate(BiomeSelectors.foundInOverworld().and(
-                            BiomeSelector.COLD
-                            .or(BiomeSelectors.tag(BiomeTags.IS_HILL))
-                            .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
-                            .or(BiomeSelectors.includeByKey(BiomeKeys.PLAINS))
-                    )),
-                    GenerationStep.Feature.VEGETAL_DECORATION,
-                    placement
-            );
-        });
-    }
-
-    private static void registerUnTilledPatch(String id, Block plant, IntProperty ageProperty, IntProvider ageRange, Predicate<BiomeSelectionContext> builtinBiomePredicate, PSConfig.Balancing.Generation.FeatureConfig config) {
-        var patch = createConfiguredFeature(id + "_patch");
-
-        FeatureRegistry.registerConfiguredFeature(patch, () -> {
-            return new ConfiguredFeature<>(Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(
-                    5,
-                    PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK,
-                    new SimpleBlockFeatureConfig(new RandomizedIntBlockStateProvider(BlockStateProvider.of(plant), ageProperty, ageRange)))
-            ));
-        });
-
-        var placement = createPlacement(id + "_patch_checked");
-
-        FeatureRegistry.registerPlacedFeature(placement, patch, feature -> {
-            return new PlacedFeature(feature, List.of(
-                    RarityFilterPlacementModifier.of(20),
-                    SquarePlacementModifier.of(),
-                    PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
-                    BiomePlacementModifier.of()));
-        });
-
-        FeatureRegistry.registerPlacedFeature(createPlacement(id + "_patch_unchecked"), patch, feature -> {
-            return new PlacedFeature(feature, List.of());
-        });
-
-        config.ifEnabled(spawnableBiomes -> {
-            BiomeModifications.addFeature(
-                    spawnableBiomes.createPredicate(builtinBiomePredicate),
-                    GenerationStep.Feature.VEGETAL_DECORATION,
-                    placement
-            );
-        });
-    }
-    public static void bootstrap() {
-        var genConf = Psychedelicraft.getConfig().balancing.worldGeneration;
-
-        FeatureRegistry.registerConfiguredFeature(JUNIPER_TREE_CONFIG, () -> {
-            return new ConfiguredFeature<>(Feature.TREE, new TreeFeatureConfig.Builder(
-                    BlockStateProvider.of(PSBlocks.JUNIPER_LOG),
-                    new ForkingTrunkPlacer(5, 2, 2),
-                    BlockStateProvider.of(PSBlocks.JUNIPER_LEAVES),
-                    new BlobFoliagePlacer(
-                            ConstantIntProvider.create(2),
-                            ConstantIntProvider.ZERO,
-                            3
-                    ),
-                    new TwoLayersFeatureSize(1, 0, 2))
-            .dirtProvider(BlockStateProvider.of(Blocks.ROOTED_DIRT))
-            .forceDirt()
-            .build());
-        });
-        FeatureRegistry.registerPlacedFeature(DENSE_JUNIPER_TREE_PLACEMENT, JUNIPER_TREE_CONFIG, config -> {
-            return new PlacedFeature(config, VegetationPlacedFeatures.treeModifiersWithWouldSurvive(
-                    PlacedFeatures.createCountExtraModifier(3, 0.05F, 2),
-                    PSBlocks.JUNIPER_SAPLING)
-            );
-        });
-        FeatureRegistry.registerPlacedFeature(SPARCE_JUNIPER_TREE_PLACEMENT, JUNIPER_TREE_CONFIG, config -> {
-            return new PlacedFeature(config, VegetationPlacedFeatures.treeModifiersWithWouldSurvive(
-                    PlacedFeatures.createCountExtraModifier(1, 0.05F, 2),
-                    PSBlocks.JUNIPER_SAPLING)
-            );
-        });
-
-        genConf.juniper().ifEnabled(spawnableBiomes -> {
-            BiomeModifications.addFeature(
-                    spawnableBiomes.createPredicate(BiomeSelectors.tag(PSTags.Biomes.HAS_DENSE_JUNIPER_TREES)),
-                    GenerationStep.Feature.VEGETAL_DECORATION,
-                    DENSE_JUNIPER_TREE_PLACEMENT
-            );
-            BiomeModifications.addFeature(
-                    spawnableBiomes.createPredicate(BiomeSelectors.tag(PSTags.Biomes.HAS_SPARCE_JUNIPER_TREES)),
-                    GenerationStep.Feature.VEGETAL_DECORATION,
-                    SPARCE_JUNIPER_TREE_PLACEMENT
-            );
-        });
-
-        registerTilledPatch("cannabis", PSBlocks.CANNABIS, false, genConf.cannabis());
-        registerTilledPatch("hop", PSBlocks.HOP, false, genConf.hop());
-        registerTilledPatch("tobacco", PSBlocks.TOBACCO, false, genConf.tobacco());
-        registerTilledPatch("coffea", PSBlocks.COFFEA, false, genConf.coffea());
-        registerTilledPatch("coca", PSBlocks.COCA, true, genConf.coca());
-        registerUnTilledPatch("morning_glory", PSBlocks.MORNING_GLORY, VineStemBlock.AGE, UniformIntProvider.create(0, VineStemBlock.MAX_AGE), BiomeSelectors.tag(PSTags.Biomes.HAS_MORNING_GLORY), genConf.morningGlories());
-        registerUnTilledPatch("belladonna", PSBlocks.BELLADONNA, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.tag(PSTags.Biomes.HAS_BELLADONNA), genConf.belladonna());
-        registerUnTilledPatch("jimsonweed", PSBlocks.JIMSONWEEED, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.tag(PSTags.Biomes.HAS_JIMSONWEED), genConf.jimsonweed());
-        registerUnTilledPatch("tomato", PSBlocks.TOMATOES, NightshadeBlock.AGE, UniformIntProvider.create(0, NightshadeBlock.MAX_AGE), BiomeSelectors.tag(PSTags.Biomes.HAS_TOMATOES), genConf.tomato());
-        registerUnTilledPatch("peyote", PSBlocks.PEYOTE, PeyoteBlock.AGE, UniformIntProvider.create(0, PeyoteBlock.MAX_AGE), BiomeSelectors.foundInOverworld().and(
-                    BiomeSelectors.tag(PSTags.Biomes.HAS_PEYOTE).or(BiomeSelector.DRY)
-        ), genConf.peyote());
-        registerUnTilledPatch("agave", PSBlocks.AGAVE_PLANT, AgavePlantBlock.AGE, UniformIntProvider.create(0, AgavePlantBlock.MAX_AGE), BiomeSelectors.foundInOverworld().and(
-                    BiomeSelectors.tag(PSTags.Biomes.HAS_PEYOTE).or(BiomeSelector.DRY)
-        ), genConf.peyote());
+    static void bootstrap() {
+        Predicate<BiomeSelectionContext> patchSpawnValid = BiomeSelectors.foundInOverworld().and(
+                BiomeSelector.COLD
+                .or(BiomeSelectors.tag(BiomeTags.IS_HILL))
+                .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
+                .or(BiomeSelectors.includeByKey(BiomeKeys.PLAINS))
+        );
+        plant(PSPlacedFeatures.DENSE_JUNIPER_TREE, PSTags.Biomes.HAS_DENSE_JUNIPER_TREES, Generation::juniper);
+        plant(PSPlacedFeatures.SPARCE_JUNIPER_TREE, PSTags.Biomes.HAS_SPARCE_JUNIPER_TREES, Generation::juniper);
+        plant(PSPlacedFeatures.MORNING_GLORY_PATCH_CHECKED, PSTags.Biomes.HAS_MORNING_GLORY, Generation::morningGlories);
+        plant(PSPlacedFeatures.BELLADONNA_PATCH_CHECKED, PSTags.Biomes.HAS_BELLADONNA, Generation::belladonna);
+        plant(PSPlacedFeatures.JIMSONWEED_PATCH_CHECKED, PSTags.Biomes.HAS_JIMSONWEED, Generation::jimsonweed);
+        plant(PSPlacedFeatures.TOMATO_PATCH_CHECKED, PSTags.Biomes.HAS_TOMATOES, Generation::tomato);
+        plant(PSPlacedFeatures.PEYOTE_PATCH_CHECKED, PSTags.Biomes.HAS_PEYOTE, Generation::peyote);
+        plant(PSPlacedFeatures.AGAVE_PATCH_CHECKED, PSTags.Biomes.HAS_PEYOTE, Generation::peyote);
+        plant(PSPlacedFeatures.CANNABIS_TILLED_PATCH, patchSpawnValid, Generation::cannabis);
+        plant(PSPlacedFeatures.HOP_TILLED_PATCH, patchSpawnValid, Generation::hop);
+        plant(PSPlacedFeatures.TOBACCO_TILLED_PATCH, patchSpawnValid, Generation::tobacco);
+        plant(PSPlacedFeatures.COFFEA_TILLED_PATCH, patchSpawnValid, Generation::coffea);
+        plant(PSPlacedFeatures.COCA_TILLED_PATCH, patchSpawnValid, Generation::coca);
 
         MutableStructurePool.bootstrap();
         PSLootTableEntryType.bootstrap();
     }
 
+    private static void plant(RegistryKey<PlacedFeature> key, TagKey<Biome> biomes, Function<Generation, FeatureCustomConfig> configKey) {
+        plant(key, BiomeSelectors.tag(biomes), configKey);
+    }
+
+    private static void plant(RegistryKey<PlacedFeature> key, Predicate<BiomeSelectionContext> predicate, Function<Generation, FeatureCustomConfig> configKey) {
+        BiomeModifications.addFeature(context -> {
+            var config = configKey.apply(Psychedelicraft.getConfig().worldGeneration.get());
+            return config.enabled() && config.spawnableBiomes().createPredicate(predicate).test(context);
+        }, GenerationStep.Feature.VEGETAL_DECORATION, key);
+    }
 }

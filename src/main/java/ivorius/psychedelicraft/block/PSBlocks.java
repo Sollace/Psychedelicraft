@@ -94,7 +94,7 @@ public interface PSBlocks {
     CoffeaPlantBlock COFFEA = register("coffea", new CoffeaPlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     PeyoteBlock PEYOTE = register("peyote", new PeyoteBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     AgavePlantBlock AGAVE_PLANT = register("agave_plant", new AgavePlantBlock(BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
-    NightshadeBlock JIMSONWEEED = register("jimsonweed", new NightshadeBlock(
+    NightshadeBlock JIMSONWEED = register("jimsonweed", new NightshadeBlock(
             () -> PSItems.JIMSONWEED_SEED_POD,
             () -> PSItems.JIMSONWEED_LEAF, BlockConstructionUtils.plant(BlockSoundGroup.GRASS)));
     NightshadeBlock BELLADONNA = register("belladonna", new NightshadeBlock(

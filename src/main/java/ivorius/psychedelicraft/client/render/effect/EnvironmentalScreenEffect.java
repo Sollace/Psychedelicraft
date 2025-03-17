@@ -45,7 +45,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
     private float currentHeat;
 
     public float getHeatDistortion() {
-        if (!PsychedelicraftClient.getConfig().visual.doHeatDistortion) {
+        if (!PsychedelicraftClient.getConfig().doHeatDistortion.get()) {
             return 0;
         }
         return wasInWater ? 0 : MathHelper.clamp(((currentHeat - 1) * 0.0015f), 0, 0.01F);
@@ -53,12 +53,12 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
 
     public float getWaterDistortion() {
         float peyote = ShaderContext.drug(DrugType.PEYOTE);
-        float wetness = PsychedelicraftClient.getConfig().visual.doWaterDistortion && wasInWater ? 0.005125F : 0;
+        float wetness = PsychedelicraftClient.getConfig().doWaterDistortion.get() && wasInWater ? 0.005125F : 0;
         return Math.max(peyote * 0.01073F, wetness);
     }
 
     public float getWaterScreenDistortion() {
-        return PsychedelicraftClient.getConfig().visual.waterOverlayEnabled && timeScreenWet > 0 && !wasInWater ? Math.min(1, timeScreenWet / 80F) : 0;
+        return PsychedelicraftClient.getConfig().waterOverlayEnabled.get() && timeScreenWet > 0 && !wasInWater ? Math.min(1, timeScreenWet / 80F) : 0;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
                 && entity.getWorld().getBiome(entity.getBlockPos()).value().getPrecipitation(entity.getBlockPos()) == Precipitation.RAIN
                 && entity.getWorld().getTopPosition(Type.MOTION_BLOCKING, entity.getBlockPos()).getY() <= entity.getY();
 
-        if (PsychedelicraftClient.getConfig().visual.waterOverlayEnabled) {
+        if (PsychedelicraftClient.getConfig().waterOverlayEnabled.get()) {
             timeScreenWet--;
 
             if (wasInWater) {
@@ -107,7 +107,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
 
         float pulseStrength = properties.getMusicManager().getHeartbeatPulseStrength(tickDelta);
 
-        if (PsychedelicraftClient.getConfig().visual.hurtOverlayEnabled && (
+        if (PsychedelicraftClient.getConfig().hurtOverlayEnabled.get() && (
                 (entity.hurtTime > 0 && properties.getModifier(Drug.PAIN_SUPPRESSION) <= 1F)
                 || experiencedHealth < 5 || pulseStrength > 0)) {
             RenderSystem.enableBlend();

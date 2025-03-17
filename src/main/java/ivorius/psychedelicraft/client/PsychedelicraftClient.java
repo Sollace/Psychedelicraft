@@ -6,12 +6,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.google.common.base.Suppliers;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.item.PSModelPredicates;
 import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.ShaderLoader;
 import ivorius.psychedelicraft.client.screen.PSScreens;
-import ivorius.psychedelicraft.config.JsonConfig;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
@@ -23,6 +24,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.resource.ResourceType;
@@ -33,18 +35,19 @@ import net.minecraft.text.Text;
  * @since 1 Jan 2023
  */
 public class PsychedelicraftClient implements ClientModInitializer {
-    private static final Supplier<JsonConfig.Loader<PSClientConfig>> CONFIG_LOADER = JsonConfig.create("psychedelicraft_client.json", PSClientConfig::new);
-
-    public static JsonConfig.Loader<PSClientConfig> getConfigLoader() {
-        return CONFIG_LOADER.get();
-    }
+    private static final Supplier<PSClientConfig> CONFIG = Suppliers.memoize(() -> {
+        return new PSClientConfig(FabricLoader.getInstance().getConfigDir().resolve("psychedelicraft_client.json"));
+    });
 
     public static PSClientConfig getConfig() {
-        return getConfigLoader().getData();
+        return CONFIG.get();
     }
 
     @Override
     public void onInitializeClient() {
+        try {
+            getConfig().load();
+        } catch (Throwable t) {}
         Psychedelicraft.globalDrugProperties = () -> DrugProperties.of((Entity)MinecraftClient.getInstance().player);
         Psychedelicraft.crossHairTarget = () -> Optional.ofNullable(MinecraftClient.getInstance().crosshairTarget);
         ClientTickEvents.START_CLIENT_TICK.register(client -> {

@@ -68,6 +68,10 @@ public class DrugRenderer {
         return environmentalEffects;
     }
 
+    public ClientDrugMusicManager getMusicManager() {
+        return musicManager;
+    }
+
     public void update(DrugProperties drugProperties, LivingEntity entity) {
         getScreenEffects().update(ShaderContext.tickDelta());
         musicManager.update(drugProperties);

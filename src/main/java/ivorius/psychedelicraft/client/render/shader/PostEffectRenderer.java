@@ -12,7 +12,7 @@ public class PostEffectRenderer {
     private List<LoadedShader> shaders = new ArrayList<>();
 
     public void render(float tickDelta) {
-        if (PsychedelicraftClient.getConfig().visual.shader2DEnabled) {
+        if (PsychedelicraftClient.getConfig().shader2DEnabled.get()) {
             RenderSystem.disableBlend();
             RenderSystem.disableDepthTest();
             RenderSystem.resetTextureMatrix();

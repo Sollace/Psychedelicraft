@@ -258,8 +258,8 @@ public class DrugProperties implements NbtSerialisable {
                 }
             }
 
-            if (Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn > 0
-                    && random.nextInt(Psychedelicraft.getConfig().balancing.randomTicksUntilRiftSpawn) == 0) {
+            if (Psychedelicraft.getConfig().randomTicksUntilRiftSpawn.get() > 0
+                    && random.nextInt(Psychedelicraft.getConfig().randomTicksUntilRiftSpawn.get()) == 0) {
                 RealityRiftEntity.spawn(entity);
             }
         }

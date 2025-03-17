@@ -1,76 +1,71 @@
 package ivorius.psychedelicraft.client;
 
-import java.util.Arrays;
+import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.joml.Vector2f;
 
+import com.google.gson.GsonBuilder;
+import com.minelittlepony.common.util.registry.RegistryTypeAdapter;
+import com.minelittlepony.common.util.settings.Config;
+import com.minelittlepony.common.util.settings.HeirarchicalJsonConfigAdapter;
+import com.minelittlepony.common.util.settings.Setting;
 import ivorius.psychedelicraft.entity.drug.DrugType;
-import net.minecraft.util.Identifier;
 
-public class PSClientConfig {
-    public PSClientConfig.Audio audio = new Audio();
-    public PSClientConfig.Visual visual = new Visual();
+public class PSClientConfig extends Config {
+    public final Setting<Float> dofFocalPointNear = value("visual", "dofFocalPointNear", 0.2F);
+    public final Setting<Float> dofFocalBlurNear = value("visual", "dofFocalBlurNear", 0F);
+    public final Setting<Float> dofFocalPointFar = value("visual", "dofFocalPointFar", 128F);
+    public final Setting<Float> dofFocalBlurFar = value("visual", "dofFocalBlurFar", 0F);
 
-    public static class Audio {
-        public String[] drugsWithBackgroundMusic = DrugType.REGISTRY.getIds().stream().map(Identifier::toString).toArray(String[]::new);
-        private transient Set<String> drugsWithBackgroundMusicSet;
+    public final Setting<Boolean> shader2DEnabled = value("visual", "shader2DEnabled", true);
+    public final Setting<Boolean> shader3DEnabled = value("visual", "shader3DEnabled", true);
 
-        private Set<String> loadMusicSet() {
-            if (drugsWithBackgroundMusicSet == null) {
-                drugsWithBackgroundMusicSet = Arrays.stream(drugsWithBackgroundMusic == null ? new String[0] : drugsWithBackgroundMusic)
-                        .distinct()
-                        .collect(Collectors.toSet());
-            }
-            return drugsWithBackgroundMusicSet;
-        }
+    public final Setting<Boolean> doHeatDistortion = value("visual", "doHeatDistortion", true);
+    public final Setting<Boolean> doWaterDistortion = value("visual", "doWaterDistortion", true);
+    public final Setting<Boolean> doMotionBlur = value("visual", "doMotionBlur", true);
 
-        public boolean hasBackgroundMusic(DrugType<?> drugType) {
-            return loadMusicSet().contains(drugType.id().toString());
-        }
+    public final Setting<Float> sunFlareIntensity = value("visual", "sunFlareIntensity", 0.25F);
+    //public final Setting<Integer> shadowPixelsPerChunk = value("visual", "shadowPixelsPerChunk", 256);
 
-        public boolean setHasBackgroundMusic(DrugType<?> drugType, boolean value) {
-            Set<String> musicSet = loadMusicSet();
-            if (value) {
-                musicSet.add(drugType.id().toString());
-            } else {
-                musicSet.remove(drugType.id().toString());
-            }
-            drugsWithBackgroundMusic = musicSet.toArray(String[]::new);
-            return value;
-        }
+    public final Setting<Boolean> waterOverlayEnabled = value("visual", "waterOverlayEnabled", true);
+    public final Setting<Boolean> hurtOverlayEnabled = value("visual", "hurtOverlayEnabled", true);
+
+    public final Setting<Vector2f> digitalEffectPixelRescale = value("visual", "digitalEffectPixelRescale", new Vector2f(0.05F, 0.05F));
+    private transient float[] digitalEffectPixelRescaleF;
+
+    public final Setting<Set<DrugType<?>>> drugsWithBackgroundMusic = value("audio", "drugsWithBackgroundMusic", DrugType.REGISTRY.stream().collect(Collectors.toUnmodifiableSet()));
+
+    // (Sollace) made transient because this config was disabled before
+    //public transient boolean doShadows = false;
+
+    public PSClientConfig(Path path) {
+        super(new HeirarchicalJsonConfigAdapter(new GsonBuilder().registerTypeAdapter(DrugType.class, RegistryTypeAdapter.of(DrugType.REGISTRY))), path);
+        digitalEffectPixelRescale.onChanged(i -> digitalEffectPixelRescaleF = null);
     }
 
-    public static class Visual {
-        public float dofFocalPointNear = 0.2F;
-        public float dofFocalBlurNear = 0;
-        public float dofFocalPointFar = 128;
-        public float dofFocalBlurFar = 0;
-
-        public boolean shader2DEnabled = true;
-        public boolean shader3DEnabled = true;
-        // (Sollace) made transient because this config was disabled before
-        public transient boolean doShadows = false;
-
-        public boolean doHeatDistortion = true;
-        public boolean doWaterDistortion = true;
-        public boolean doMotionBlur = true;
-
-        public float sunFlareIntensity = 0.25F;
-        public int shadowPixelsPerChunk = 256;
-
-        public boolean waterOverlayEnabled = true;
-        public boolean hurtOverlayEnabled = true;
-        public Vector2f digitalEffectPixelRescale = new Vector2f(0.05F, 0.05F);
-
-        private transient float[] digitalEffectPixelRescaleF;
-
-        public float[] getDigitalEffectPixelResize() {
-            if (digitalEffectPixelRescaleF == null) {
-                digitalEffectPixelRescaleF = new float[] { digitalEffectPixelRescale.x, digitalEffectPixelRescale.y };
-            }
-            return digitalEffectPixelRescaleF;
+    public float[] getDigitalEffectPixelResize() {
+        if (digitalEffectPixelRescaleF == null) {
+            digitalEffectPixelRescaleF = new float[] { digitalEffectPixelRescale.get().x, digitalEffectPixelRescale.get().y };
         }
+        return digitalEffectPixelRescaleF;
+    }
+
+    public boolean hasBackgroundMusic(DrugType<?> drugType) {
+        return drugsWithBackgroundMusic.get().contains(drugType);
+    }
+
+    public boolean setHasBackgroundMusic(DrugType<?> drugType, boolean value) {
+        var values = new HashSet<>(drugsWithBackgroundMusic.get());
+        if (value) {
+            values.add(drugType);
+        } else {
+            values.remove(drugType);
+        }
+        drugsWithBackgroundMusic.set(values);
+
+        return value;
     }
 }

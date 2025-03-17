@@ -43,7 +43,7 @@ public interface PSItemGroups {
 
                 PSItems.ALL_BARRELS.stream().filter(i -> i.getBlock() != PSBlocks.PALE_OAK_BARREL).forEach(entries::add);
 
-                if (Psychedelicraft.getConfig().balancing.enableRiftJars) {
+                if (Psychedelicraft.getConfig().enableRiftJars.get()) {
                     entries.add(PSItems.RIFT_JAR.getDefaultStack());
                     entries.add(RiftFractionComponent.set(PSItems.RIFT_JAR.getDefaultStack(), 0.25F));
                     entries.add(RiftFractionComponent.set(PSItems.RIFT_JAR.getDefaultStack(), 0.55F));
@@ -149,7 +149,7 @@ public interface PSItemGroups {
 
                 entries.add(PSItems.PAPER_BAG);
 
-                if (Psychedelicraft.getConfig().balancing.enableHarmonium) {
+                if (Psychedelicraft.getConfig().enableHarmonium.get()) {
                     for (DyeColor dye : DyeColor.values()) {
                         ItemStack harmonium = PSItems.HARMONIUM.getDefaultStack();
                         harmonium.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(dye.getSignColor(), true));
@@ -184,7 +184,7 @@ public interface PSItemGroups {
     RegistryKey<ItemGroup> WEAPONS = register("weapons", FabricItemGroup.builder()
             .icon(() -> ItemFluids.set(PSItems.MOLOTOV_COCKTAIL.getDefaultStack(), PSFluids.GASOLINE.getDefaultStack(FluidVolumes.BOTTLE)))
             .entries((context, entries) -> {
-                if (!Psychedelicraft.getConfig().balancing.disableMolotovs) {
+                if (!Psychedelicraft.getConfig().disableMolotovs.get()) {
                     streamFluids().flatMap(fluid -> fluid.getDefaultStacks(PSItems.MOLOTOV_COCKTAIL.getDefaultStack())).forEach(entries::add);
                 }
             }));

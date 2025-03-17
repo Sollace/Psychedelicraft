@@ -29,8 +29,8 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
 
     public static long getCookingTime(float recipeDifficulty, boolean ironTable) {
         return (long)(recipeDifficulty * (ironTable
-                ? Psychedelicraft.getConfig().balancing.ironDryingTableTickDuration
-                : Psychedelicraft.getConfig().balancing.dryingTableTickDuration));
+                ? Psychedelicraft.getConfig().ironDryingTableTickDuration.get()
+                : Psychedelicraft.getConfig().dryingTableTickDuration.get()));
     }
 
     private float heat;

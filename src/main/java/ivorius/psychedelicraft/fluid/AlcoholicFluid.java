@@ -2,7 +2,6 @@ package ivorius.psychedelicraft.fluid;
 
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
-import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
@@ -10,6 +9,7 @@ import ivorius.psychedelicraft.fluid.alcohol.AlcoholicFluidState;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkType;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.Maturity;
+import ivorius.psychedelicraft.fluid.alcohol.TickRate;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.item.PSItems;
@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Created by lukas on 25.11.14.
  */
-public class AlcoholicFluid extends DrugFluid implements Processable {
+public class AlcoholicFluid extends DrugFluid implements Processable, TickRate.Tickable {
     public static final Attribute<Integer> DISTILLATION = Attribute.ofInt("distillation", 0, 16);
     public static final Attribute<Integer> MATURATION = Attribute.ofInt("maturation", 0, 16);
 
@@ -125,10 +124,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
         return switch (type) {
-            case FERMENT -> settings.tickInfo.get().ticksPerFermentation();
-            case DISTILL -> FERMENTATION.get(tank.getContents()) == 0 || MATURATION.get(tank.getContents()) != 0 ? UNCONVERTABLE : settings.tickInfo.get().ticksPerDistillation();
-            case MATURE -> FERMENTATION.get(tank.getContents()) == 0 ? UNCONVERTABLE : settings.tickInfo.get().ticksPerMaturation();
-            case ACETIFY -> VINEGAR.get(tank.getContents()) ? UNCONVERTABLE : settings.tickInfo.get().ticksUntilAcetification();
+            case FERMENT -> getTickRate().ticksPerFermentation();
+            case DISTILL -> FERMENTATION.get(tank.getContents()) == 0 || MATURATION.get(tank.getContents()) != 0 ? UNCONVERTABLE : getTickRate().ticksPerDistillation();
+            case MATURE -> FERMENTATION.get(tank.getContents()) == 0 ? UNCONVERTABLE : getTickRate().ticksPerMaturation();
+            case ACETIFY -> VINEGAR.get(tank.getContents()) ? UNCONVERTABLE : getTickRate().ticksUntilAcetification();
             case PURIFY -> 1;
             default -> UNCONVERTABLE;
         };
@@ -194,18 +193,23 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
         List<Transition> result = new ArrayList<>();
 
         if (fermentations > 0) {
-            result.add(new Transition(ProcessType.FERMENT, settings.tickInfo.get().ticksPerFermentation(), fermentations, Function.identity(), withFerment));
+            result.add(new Transition(ProcessType.FERMENT, getTickRate().ticksPerFermentation(), fermentations, Function.identity(), withFerment));
         }
         if (state.vinegar()) {
-            result.add(new Transition(ProcessType.ACETIFY, settings.tickInfo.get().ticksPerFermentation(), FERMENTATION_STEPS + 1, withMature, state::apply));
+            result.add(new Transition(ProcessType.ACETIFY, getTickRate().ticksPerFermentation(), FERMENTATION_STEPS + 1, withMature, state::apply));
         }
         if (distillations > 0) {
-            result.add(new Transition(ProcessType.DISTILL, settings.tickInfo.get().ticksPerDistillation(), distillations, withFerment, withDistil));
+            result.add(new Transition(ProcessType.DISTILL, getTickRate().ticksPerDistillation(), distillations, withFerment, withDistil));
         }
         if (maturations > 0) {
-            result.add(new Transition(ProcessType.MATURE, settings.tickInfo.get().ticksPerMaturation(), maturations, withDistil, withMature));
+            result.add(new Transition(ProcessType.MATURE, getTickRate().ticksPerMaturation(), maturations, withDistil, withMature));
         }
         return result;
+    }
+
+    @Override
+    public TickRate getDefaultTickRate() {
+        return settings.defaultTickInfo;
     }
 
     private List<Transition> getChemTransitions(AlcoholicFluidState state) {
@@ -334,7 +338,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
 
         DrugType<?> drugType = DrugType.ALCOHOL;
 
-        public Supplier<PSConfig.Balancing.FluidProperties.TickInfo> tickInfo;
+        private TickRate defaultTickInfo = TickRate.DEFAULT;
 
         public Settings() {
             this.appearance = stack -> variants.find(stack).appearance();
@@ -367,8 +371,8 @@ public class AlcoholicFluid extends DrugFluid implements Processable {
             return this;
         }
 
-        public Settings tickRate(Supplier<PSConfig.Balancing.FluidProperties.TickInfo> tickInfo) {
-            this.tickInfo = tickInfo;
+        public Settings tickRate(TickRate defaultTickInfo) {
+            this.defaultTickInfo = defaultTickInfo;
             return this;
         }
     }
