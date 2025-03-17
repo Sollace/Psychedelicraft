@@ -141,7 +141,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
         addLatticeShearingDrops(PSBlocks.WINE_GRAPE_LATTICE, PSItems.WINE_GRAPES);
 
         addDrop(PSBlocks.TOMATOES, PSItems.TOMATO_SEEDS);
-        addDrop(PSBlocks.JIMSONWEEED, PSItems.JIMSONWEED_SEEDS);
+        addDrop(PSBlocks.JIMSONWEED, PSItems.JIMSONWEED_SEEDS);
         addDrop(PSBlocks.BELLADONNA, PSItems.BELLADONNA_SEEDS);
 
         // Empty drops

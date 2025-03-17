@@ -39,8 +39,14 @@ abstract class MixinGameRenderer {
     }
 
     @Inject(method = "render(Lnet/minecraft/client/render/RenderTickCounter;Z)V",
+            at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V"))
+    private void onAfterWorldRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
+        DrugRenderer.INSTANCE.onAfterRenderWorld(pool);
+    }
+
+    @Inject(method = "render(Lnet/minecraft/client/render/RenderTickCounter;Z)V",
             at = @At(value = "INVOKE", target = "net/minecraft/client/gui/hud/InGameHud.render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V"))
     private void onRenderHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
-        DrugRenderer.INSTANCE.onRenderOverlay(pool, context, tickCounter);
+        DrugRenderer.INSTANCE.onRenderOverlay(context, tickCounter);
     }
 }

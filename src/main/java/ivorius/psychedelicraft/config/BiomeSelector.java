@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.config;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -17,21 +17,21 @@ public interface BiomeSelector {
     Predicate<BiomeSelectionContext> COLD = ctx -> ctx.getBiome().getTemperature() < 0.15F;
     Predicate<BiomeSelectionContext> DRY = ctx -> !ctx.getBiome().hasPrecipitation();
 
-    static Predicate<BiomeSelectionContext> compile(String[] included, String[] excluded, Predicate<BiomeSelectionContext> dynamicInclusion) {
+    static Predicate<BiomeSelectionContext> compile(List<String> included, List<String> excluded, Predicate<BiomeSelectionContext> dynamicInclusion) {
         var include = compile(included, NONE, Stream::allMatch).or(dynamicInclusion);
         var exclude = compile(excluded, ALL, Stream::noneMatch);
 
         return include.and(exclude);
     }
 
-    static Predicate<BiomeSelectionContext> compile(String[] predicates, Predicate<BiomeSelectionContext> fallback,
+    static Predicate<BiomeSelectionContext> compile(List<String> predicates, Predicate<BiomeSelectionContext> fallback,
             BiPredicate<Stream<Predicate<BiomeSelectionContext>>, Predicate<Predicate<BiomeSelectionContext>>> combiner) {
 
-        if (predicates == null || predicates.length == 0) {
+        if (predicates == null || predicates.isEmpty()) {
             return fallback;
         }
 
-        var selectors = Arrays.stream(predicates).map(BiomeSelector::compile).toList();
+        var selectors = predicates.stream().map(BiomeSelector::compile).toList();
 
         if (selectors.size() == 1) {
             return selectors.get(0);

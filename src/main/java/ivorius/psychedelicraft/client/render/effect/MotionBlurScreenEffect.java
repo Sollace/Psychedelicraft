@@ -38,7 +38,7 @@ public class MotionBlurScreenEffect implements ScreenEffect {
 
     @Override
     public void update(float tickDelta) {
-        motionBlur = PsychedelicraftClient.getConfig().visual.doMotionBlur && MinecraftClient.getInstance().player != null
+        motionBlur = PsychedelicraftClient.getConfig().doMotionBlur.get() && MinecraftClient.getInstance().player != null
                 ? DrugProperties.of(MinecraftClient.getInstance().player).getModifier(Drug.MOTION_BLUR)
                 : 0;
     }

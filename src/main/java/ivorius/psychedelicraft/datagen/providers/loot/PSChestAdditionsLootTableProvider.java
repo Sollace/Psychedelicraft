@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.datagen.providers.loot;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.item.PSItems;
@@ -37,7 +38,7 @@ public class PSChestAdditionsLootTableProvider extends SimpleFabricLootTableProv
 
     @Override
     public void accept(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> exporter) {
-        acceptAdditions((id, builder) -> exporter.accept(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of("psychedelicraftmc", id.getValue().getPath())), builder));
+        acceptAdditions((id, builder) -> exporter.accept(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(Psychedelicraft.VANILLA_EXTENSIONS_NAMESPACE, id.getValue().getPath())), builder));
     }
 
     public void acceptAdditions(BiConsumer<RegistryKey<LootTable>, Builder> exporter) {

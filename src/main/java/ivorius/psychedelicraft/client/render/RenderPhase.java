@@ -22,6 +22,8 @@ public enum RenderPhase {
     }
 
     public static void pop() {
-        STACK.pollLast();
+        if (STACK.pollLast() == SCREEN) {
+            STACK.clear();
+        }
     }
 }

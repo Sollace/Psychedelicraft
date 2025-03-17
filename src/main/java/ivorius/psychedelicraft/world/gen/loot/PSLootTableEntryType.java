@@ -5,19 +5,19 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
+import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.minecraft.util.Identifier;
 
 public interface PSLootTableEntryType {
     static void bootstrap() {
         Map<Identifier, Identifier> extentionTableIds = new HashMap<>();
-        LootTableEvents.MODIFY.register((key, supplier, source) -> {
+        LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
             Identifier id = key.getValue();
 
             final boolean isVillagerChest = id.getPath().contains("village");
-            if ((isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.villageChests())
-            || (!isVillagerChest || Psychedelicraft.getConfig().balancing.worldGeneration.dungeonChests())) {
-                if ("psychedelicraftmc".equalsIgnoreCase(id.getNamespace())) {
+            if ((isVillagerChest || Psychedelicraft.getConfig().worldGeneration.get().villageChests())
+            || (!isVillagerChest || Psychedelicraft.getConfig().worldGeneration.get().dungeonChests())) {
+                if (Psychedelicraft.VANILLA_EXTENSIONS_NAMESPACE.equalsIgnoreCase(id.getNamespace())) {
                     extentionTableIds.put(Identifier.ofVanilla(id.getPath()), id);
                 }
             }

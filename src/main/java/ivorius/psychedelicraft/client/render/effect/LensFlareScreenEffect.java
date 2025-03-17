@@ -64,7 +64,7 @@ public class LensFlareScreenEffect implements ScreenEffect {
     }
 
     protected float getIntensity() {
-        return PsychedelicraftClient.getConfig().visual.sunFlareIntensity;
+        return PsychedelicraftClient.getConfig().sunFlareIntensity.get();
     }
 
     @Override

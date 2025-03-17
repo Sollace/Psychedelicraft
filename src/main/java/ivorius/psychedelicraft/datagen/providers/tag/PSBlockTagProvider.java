@@ -42,7 +42,7 @@ public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         );
 
         getOrCreateTagBuilder(PSTags.Blocks.NIGHTSHADE).add(
-                PSBlocks.BELLADONNA, PSBlocks.JIMSONWEEED, PSBlocks.TOMATOES
+                PSBlocks.BELLADONNA, PSBlocks.JIMSONWEED, PSBlocks.TOMATOES
         );
 
         getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).add(

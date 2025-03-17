@@ -24,7 +24,7 @@ public class ClientDrugMusicManager {
         Comparator<DrugType<?>> comparator = Comparator.comparing(type -> properties.getDrugValue(type));
         DrugType.REGISTRY
             .stream()
-            .filter(PsychedelicraftClient.getConfig().audio::hasBackgroundMusic)
+            .filter(PsychedelicraftClient.getConfig()::hasBackgroundMusic)
             .filter(type -> properties.getDrugValue(type) >= PLAY_THRESHOLD)
             .sorted(comparator.reversed())
             .findFirst()

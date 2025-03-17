@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.fluid.alcohol.DrinkType;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkType.Variation;
 import ivorius.psychedelicraft.fluid.alcohol.StatePredicate;
+import ivorius.psychedelicraft.fluid.alcohol.TickRate;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Colors;
@@ -25,7 +26,7 @@ public interface PSFluids {
     SimpleFluid EMPTY = Registry.register(SimpleFluid.REGISTRY, SimpleFluid.EMPTY_KEY, new VanillaFluid(SimpleFluid.EMPTY_KEY, Fluids.EMPTY, true));
     AlcoholicFluid WHEAT_HOP = new AlcoholicFluid(Psychedelicraft.id("wheat_hop"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoWheatHop())
+            .tickRate(TickRate.ofMinutes(30, 60, 100, 30))
             .variants(DrinkTypes.builder(Variation.BITTER)
                     .vinegar(DrinkType.VINEGAR.withName("beer_vinegar").withVariation(Variation.BITTER))
                     .firstFerment(DrinkType.HALF_WASH.withVariation(Variation.BITTER))
@@ -37,7 +38,6 @@ public interface PSFluids {
     );
     AlcoholicFluid WHEAT = new AlcoholicFluid(Psychedelicraft.id("wheat"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoWheat())
             .variants(DrinkTypes.builder(DrinkType.WORT)
                     .vinegar(DrinkType.VINEGAR.withName("beer_vinegar"))
                     .firstFerment(DrinkType.HALF_WASH)
@@ -51,7 +51,6 @@ public interface PSFluids {
     );
     AlcoholicFluid POTATO = new AlcoholicFluid(Psychedelicraft.id("potato"), new AlcoholicFluid.Settings()
             .alcohol(0.45, 1.9, 0.15)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoPotato())
             .variants(DrinkTypes.builder(DrinkType.WORT)
                     .vinegar(DrinkType.VINEGAR)
                     .firstFerment(DrinkType.HALF_WASH)
@@ -67,7 +66,6 @@ public interface PSFluids {
             .alcohol(0.15, 0.9, 0.05)
             .distilledColor(0xaaff0000)
             .matureColor(0xaaff3300)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoTomato())
             .variants(DrinkTypes.builder(DrinkType.JUICE.withAppearance(FluidAppearance.TOMATO_JUICE))
                     .vinegar(DrinkType.KETCHUP.withExtraDrug(new DrugInfluence(DrugType.SUGAR, 20, 0.003, 0.002, 0.3)))
                     .firstFerment(DrinkType.HALF_WASH)
@@ -82,7 +80,6 @@ public interface PSFluids {
     );
     AlcoholicFluid RED_GRAPES = new AlcoholicFluid(Psychedelicraft.id("red_grapes"), new AlcoholicFluid.Settings()
             .alcohol(0.55, 1.7, 0.2)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoRedGrapes())
             .distilledColor(0x993f0822)
             .matureColor(0xee3f0822)
             .variants(DrinkTypes.builder(DrinkType.JUICE.withAppearance(FluidAppearance.WINE))
@@ -100,7 +97,6 @@ public interface PSFluids {
     );
     AlcoholicFluid RICE = new AlcoholicFluid(Psychedelicraft.id("rice"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoRice())
             .matureColor(0x88D6BC90)
             .variants(DrinkTypes.builder(FluidAppearance.RICE_WINE)
                     .vinegar(DrinkType.VINEGAR)
@@ -113,7 +109,6 @@ public interface PSFluids {
     );
     AlcoholicFluid JUNIPER = new AlcoholicFluid(Psychedelicraft.id("juniper"), new AlcoholicFluid.Settings()
             .alcohol(0.4, 1.7, 0.1)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoJuniper())
             .variants(DrinkTypes.builder(FluidAppearance.SLURRY)
                     .vinegar(DrinkType.VINEGAR)
                     .firstFerment(DrinkType.HALF_WASH)
@@ -127,7 +122,6 @@ public interface PSFluids {
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x99e9ae3b)
             .matureColor(0xaaD1984D)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoHoney())
             .variants(DrinkTypes.builder(FluidAppearance.MEAD)
                     .vinegar(DrinkType.VINEGAR.withAppearance(FluidAppearance.MEAD))
                     .firstFerment(DrinkType.HALF_WASH.withAppearance(FluidAppearance.MEAD))
@@ -148,12 +142,10 @@ public interface PSFluids {
                     .distilled(DrinkType.RUM.withVariation(Variation.YOUNG))
                     .matureDistilled(DrinkType.RUM)
                 )
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoSugarCane())
             .color(0xaafeaa08)
     );
     AlcoholicFluid CORN = new AlcoholicFluid(Psychedelicraft.id("corn"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoCorn())
             .variants(DrinkTypes.builder(FluidAppearance.BEER)
                     .vinegar(DrinkType.VINEGAR)
                     .firstFerment(DrinkType.HALF_WASH)
@@ -175,7 +167,6 @@ public interface PSFluids {
                     .matured(DrinkType.CIDER)
                     .distilled(DrinkType.BRANDY.withAppearance(FluidAppearance.CIDER))
             )
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoApple())
             .color(0x99EDC13B)
     );
     AlcoholicFluid PINEAPPLE = new AlcoholicFluid(Psychedelicraft.id("pineapple"), new AlcoholicFluid.Settings()
@@ -189,7 +180,6 @@ public interface PSFluids {
                     .matured(DrinkType.WINE.withAppearance(FluidAppearance.CIDER))
                     .distilled(DrinkType.BRANDY.withAppearance(FluidAppearance.CIDER))
             )
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoPineapple())
             .color(0x99EDC13B)
             .viscocity(2)
     );
@@ -204,7 +194,6 @@ public interface PSFluids {
                     .matured(DrinkType.BEER.withVariation(DrinkType.Variation.AGED).withAppearance(FluidAppearance.MEAD))
                     .distilled(DrinkType.BRANDY.withAppearance(FluidAppearance.MEAD))
             )
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoBanana())
             .color(0xbbe9ae3b)
             .viscocity(3)
     );
@@ -219,7 +208,6 @@ public interface PSFluids {
                     .matured(DrinkType.BLAAND.withVariation(DrinkType.Variation.AGED).withAppearance(FluidAppearance.RICE_WINE))
                     .distilled(DrinkType.ARKHI.withAppearance(FluidAppearance.RICE_WINE))
             )
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoMilk())
             .color(0x88ffffff)
             .viscocity(2)
     );
@@ -227,7 +215,7 @@ public interface PSFluids {
             .alcohol(0.15, 1.5, 0.05)
             .distilledColor(0x779beb62)
             .matureColor(0x779beb62)
-            .tickRate(() -> Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoAgave())
+            .tickRate(TickRate.ofMinutes(30, 80, 40, 90))
             .variants(DrinkTypes.builder(DrinkType.JUICE)
                     .vinegar(DrinkType.VINEGAR)
                     .firstFerment(DrinkType.HALF_WASH)

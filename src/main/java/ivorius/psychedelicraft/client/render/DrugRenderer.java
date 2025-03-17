@@ -69,6 +69,10 @@ public class DrugRenderer {
         return environmentalEffects;
     }
 
+    public ClientDrugMusicManager getMusicManager() {
+        return musicManager;
+    }
+
     public void update(DrugProperties drugProperties, LivingEntity entity) {
         getScreenEffects().update(ShaderContext.tickDelta());
         musicManager.update(drugProperties);
@@ -178,17 +182,24 @@ public class DrugRenderer {
         }
     }
 
-    public void onRenderOverlay(Pool pool, DrawContext context, RenderTickCounter tickCounter) {
+    public void onAfterRenderWorld(Pool pool) {
         MinecraftClient client = MinecraftClient.getInstance();
-
         RenderPhase.SCREEN.push();
-        float tickDelta = tickCounter.getTickDelta(false);
+        try {
+            postEffects.render(pool, client.getRenderTickCounter().getTickDelta(false));
+        } finally {
+            RenderPhase.pop();
+        }
+    }
 
-        postEffects.render(pool, tickDelta);
-
-        getScreenEffects().render(context, client.getWindow(), tickDelta);
-
-        RenderPhase.pop();
+    public void onRenderOverlay(DrawContext context, RenderTickCounter tickCounter) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        RenderPhase.SCREEN.push();
+        try {
+            getScreenEffects().render(context, client.getWindow(), tickCounter.getTickDelta(false));
+        } finally {
+            RenderPhase.pop();
+        }
     }
 
     public void renderAllHallucinations(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, DrugProperties drugProperties) {

@@ -19,14 +19,14 @@ public class MessageDistorter {
     public static final MessageDistorter INSTANCE = new MessageDistorter();
 
     public String distortIncomingMessage(PlayerEntity player, String message) {
-        if (player == null || !Psychedelicraft.getConfig().balancing.messageDistortion.incoming) {
+        if (player == null || !Psychedelicraft.getConfig().messageDistortion.get().incoming()) {
             return message;
         }
         return distortMessage(DrugProperties.of(player), message);
     }
 
     public String distortOutgoingMessage(PlayerEntity player, String message) {
-        if (player == null || !Psychedelicraft.getConfig().balancing.messageDistortion.outgoing) {
+        if (player == null || !Psychedelicraft.getConfig().messageDistortion.get().outgoing()) {
             return message;
         }
 

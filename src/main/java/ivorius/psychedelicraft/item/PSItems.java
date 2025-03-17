@@ -216,7 +216,7 @@ public interface PSItems {
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.INGESTED, 0.05, 0.003, 0.6F)))
     ));
 
-    Item JIMSONWEED_SEEDS = register("jimsonweed_seeds", s -> new BlockItem(PSBlocks.JIMSONWEEED, s.translationKey(PSBlocks.JIMSONWEEED.getTranslationKey())));
+    Item JIMSONWEED_SEEDS = register("jimsonweed_seeds", s -> new BlockItem(PSBlocks.JIMSONWEED, s.translationKey(PSBlocks.JIMSONWEED.getTranslationKey())));
     Item JIMSONWEED_SEED_POD = register("jimsonweed_seed_pod");
     Item JIMSONWEED_LEAF = register("jimsonweed_leaf");
     Item DRIED_JIMSONWEED_LEAF = register("dried_jimsonweed_leaf");

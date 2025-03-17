@@ -93,7 +93,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     .program("ps_blur", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float[] blur = ShaderContext.hallucinations().getBlur();
 
-                        if (blur[0] > 0 || blur[0] > 0) {
+                        if (blur[0] > 0 || blur[1] > 0) {
                             setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
                             setter.set("hBlur", blur[0]);
                             setter.set("vBlur", blur[1]);
@@ -103,29 +103,20 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                     }))
             .addShader("depth_of_field", UniformBinding.start()
                     .program("depth_of_field", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                        var config = PsychedelicraftClient.getConfig();
 
-                        if (MinecraftClient.getInstance().currentScreen != null) {
-                            return;
-                        }
-
-                        var config = PsychedelicraftClient.getConfig().visual;
-
-                        if ((config.dofFocalBlurFar <= 0 && config.dofFocalBlurNear <= 0)
-                         || (config.dofFocalPointNear <= 0 && config.dofFocalPointFar >= ShaderContext.viewDistace())) {
-                            return;
-                        }
-
-                        float zNear = 0.05f;
+                        float zNear = 0.05F;
                         float zFar = ShaderContext.viewDistace();
 
-                        float focalPointNear = config.dofFocalPointNear / zFar;
-                        float focalPointFar = config.dofFocalPointFar / zFar;
-                        float focalBlurFar = config.dofFocalBlurFar;
-                        float focalBlurNear = config.dofFocalBlurNear;
+                        float focalPointNear = config.dofFocalPointNear.get() / zFar;
+                        float focalPointFar = config.dofFocalPointFar.get() / zFar;
+                        float focalBlurFar = config.dofFocalBlurFar.get();
+                        float focalBlurNear = config.dofFocalBlurNear.get();
 
-                        setter.set("pixelSize", 1.0f / screenWidth, 1.0f / screenHeight);
-                        setter.set("focalPointNear", focalPointNear);
-                        setter.set("focalPointFar", focalPointFar);
+                        setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
+                        setter.set("focalPointNear", Math.min(focalPointNear, focalPointFar));
+                        setter.set("focalPointFar", Math.max(focalPointNear, focalPointFar) * 0.9F);
+                        setter.set("depthRange", zNear, zFar);
 
                         float maxDof = Math.max(focalBlurFar, focalBlurNear);
 
@@ -143,8 +134,6 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                                 }
                             }
                         }
-
-                        setter.set("depthRange", zNear, zFar);
                     }))
             .addShader("ps_bloom", UniformBinding.start()
                     .program("ps_bloom", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
@@ -221,7 +210,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                             return;
                         }
 
-                        float[] maxDownscale = PsychedelicraftClient.getConfig().visual.getDigitalEffectPixelResize();
+                        float[] maxDownscale = PsychedelicraftClient.getConfig().getDigitalEffectPixelResize();
                         float downscale = MathUtils.mixEaseInOut(0, 0.95F, Math.min(digital * 3, 1));
                         downscale += digital * 0.05f; //Bigger pixels!
 

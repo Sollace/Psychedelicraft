@@ -36,5 +36,5 @@ void main() {
 		}
 	}
 
-  fragColor = vec4(mix(texel.rgb, newColor, totalAlpha), texel.a);
+  fragColor = vec4(mix(texel.rgb, newColor, totalAlpha), 1);
 }

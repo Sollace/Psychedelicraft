@@ -47,7 +47,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
         if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
-            return tank.getContents().amount() >= FLUID_PER_DIRT ? Psychedelicraft.getConfig().balancing.slurryHardeningTime : UNCONVERTABLE;
+            return tank.getContents().amount() >= FLUID_PER_DIRT ? Psychedelicraft.getConfig().slurryHardeningTime.get() : UNCONVERTABLE;
         }
         return UNCONVERTABLE;
     }

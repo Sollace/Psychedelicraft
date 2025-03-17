@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.datafixers.util.Pair;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import ivorius.psychedelicraft.Psychedelicraft;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.structure.pool.StructurePool;
@@ -21,8 +22,8 @@ public interface MutableStructurePool {
         DynamicRegistrySetupCallback.EVENT.register(registries -> {
             Map<Identifier, PoolPair> registeredPools = new HashMap<>();
             registries.registerEntryAdded(RegistryKeys.TEMPLATE_POOL, (rawId, id, pool) -> {
-                boolean isInjectedPool = id.getNamespace().equals("psychedelicraftmc");
-                if (isInjectedPool || id.getNamespace().equals("minecraft")) {
+                boolean isInjectedPool = id.getNamespace().equals(Psychedelicraft.VANILLA_EXTENSIONS_NAMESPACE);
+                if (isInjectedPool || id.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
                     Identifier targetId = isInjectedPool ? Identifier.of(id.getPath()) : id;
 
                     if (registeredPools.computeIfAbsent(targetId, PoolPair::new).offer(isInjectedPool, pool)) {

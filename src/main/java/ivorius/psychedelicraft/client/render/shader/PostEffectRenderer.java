@@ -12,10 +12,8 @@ public class PostEffectRenderer {
     private List<LoadedShader> shaders = new ArrayList<>();
 
     public void render(Pool pool, float tickDelta) {
-        if (PsychedelicraftClient.getConfig().visual.shader2DEnabled) {
-            RenderSystem.disableBlend();
-            RenderSystem.disableDepthTest();
-            RenderSystem.resetTextureMatrix();
+        if (PsychedelicraftClient.getConfig().shader2DEnabled.get()) {
+            RenderSystem.enableDepthTest();
 
             if (shaders.size() == 1) {
                 shaders.get(0).render(pool, tickDelta);
@@ -24,6 +22,7 @@ public class PostEffectRenderer {
             }
 
             MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
+            RenderSystem.disableDepthTest();
         }
     }
 

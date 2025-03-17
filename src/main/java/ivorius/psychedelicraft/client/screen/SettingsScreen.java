@@ -1,8 +1,8 @@
 package ivorius.psychedelicraft.client.screen;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.ItemGroups;
 import net.minecraft.text.*;
 
 import com.minelittlepony.common.client.gui.GameGui;
@@ -10,14 +10,15 @@ import com.minelittlepony.common.client.gui.IField.IChangeCallback;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.AbstractSlider;
 import com.minelittlepony.common.client.gui.element.Button;
+import com.minelittlepony.common.client.gui.element.EnumSlider;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.element.Slider;
 import com.minelittlepony.common.client.gui.element.Toggle;
+import com.minelittlepony.common.util.settings.Setting;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PSClientConfig;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
-import ivorius.psychedelicraft.config.JsonConfig;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 
@@ -28,17 +29,18 @@ import org.jetbrains.annotations.Nullable;
  *
  */
 public class SettingsScreen extends GameGui {
-    private final JsonConfig.Loader<PSClientConfig> config;
-    private final JsonConfig.Loader<PSConfig> serverConfig;
-    private final PSClientConfig defaultConfigValues = new PSClientConfig();
+    private final PSClientConfig config;
+    @Nullable
+    private final PSConfig serverConfig;
 
     private final ScrollContainer content = new ScrollContainer();
 
     public SettingsScreen(@Nullable Screen parent) {
         super(Text.translatable("gui.psychedelicraft.options.title"), parent);
 
-        config = PsychedelicraftClient.getConfigLoader();
-        serverConfig = Psychedelicraft.getConfigLoader();
+        client = MinecraftClient.getInstance();
+        config = PsychedelicraftClient.getConfig();
+        serverConfig = client.world == null || client.isIntegratedServerRunning() ? Psychedelicraft.getConfig() : null;
 
         content.margin.top = 30;
         content.margin.bottom = 30;
@@ -75,39 +77,37 @@ public class SettingsScreen extends GameGui {
             .getStyle()
                 .setText("gui.done");
 
-        PSClientConfig.Visual visual = config.getData().visual;
-
         content.addButton(new Label(LEFT - 5, row)).getStyle().setText("gui.psychedelicraft.options.visuals");
 
         content.addButton(new Label(LEFT, row += 25)).getStyle().setText("gui.psychedelicraft.options.shaders");
-        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.shaders_2d", visual.shader2DEnabled, z -> visual.shader2DEnabled = z);
-        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.shaders_3d", visual.shader3DEnabled, z -> visual.shader3DEnabled = z);
-        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.heat_distortion", visual.doHeatDistortion, z -> visual.doHeatDistortion = z);
-        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.water_distortion", visual.doWaterDistortion, z -> visual.doWaterDistortion = z);
-        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.motion_blur", visual.doMotionBlur, z -> visual.doMotionBlur = z);
+        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.shaders_2d", config.shader2DEnabled);
+        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.shaders_3d", config.shader3DEnabled);
+        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.heat_distortion", config.doHeatDistortion);
+        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.water_distortion", config.doWaterDistortion);
+        createToggle(LEFT, row += 20, "gui.psychedelicraft.option.motion_blur", config.doMotionBlur);
         row += 10;
         content.addButton(new Label(LEFT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.overlays");
-        createToggle(LEFT, row += 25, "gui.psychedelicraft.option.water_overlay", visual.waterOverlayEnabled, z -> visual.waterOverlayEnabled = z);
-        createToggle(LEFT, row += 25, "gui.psychedelicraft.option.hurt_overlay", visual.hurtOverlayEnabled, z -> visual.hurtOverlayEnabled = z);
-        createFormattedSlider(LEFT, row += 25, "gui.psychedelicraft.option.sun_glare_intensity", config.getData().visual.sunFlareIntensity, f -> visual.sunFlareIntensity = f);
+        createToggle(LEFT, row += 25, "gui.psychedelicraft.option.water_overlay", config.waterOverlayEnabled);
+        createToggle(LEFT, row += 25, "gui.psychedelicraft.option.hurt_overlay", config.hurtOverlayEnabled);
+        createFormattedSlider(LEFT, row += 25, "gui.psychedelicraft.option.sun_glare_intensity", config.sunFlareIntensity);
 
         content.addButton(new Label(LEFT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.dof");
         content.addButton(new Label(LEFT, row += 25)).getStyle().setText("gui.psychedelicraft.option.focal_point.near");
-        var nearDistance = createFormattedSlider(LEFT, row += 25, 0, 99, "gui.psychedelicraft.option.focal_point.distance", config.getData().visual.dofFocalPointNear, f -> visual.dofFocalPointNear = f);
-        var nearBlur = createFormattedSlider(LEFT, row += 25, 0, 8, "gui.psychedelicraft.option.focal_point.blur", config.getData().visual.dofFocalBlurNear, f -> visual.dofFocalBlurNear = f);
+        var nearDistance = createFormattedSlider(LEFT, row += 25, 0, 99, "gui.psychedelicraft.option.focal_point.distance", config.dofFocalPointNear);
+        var nearBlur = createFormattedSlider(LEFT, row += 25, 0, 8, "gui.psychedelicraft.option.focal_point.blur", config.dofFocalBlurNear);
         content.addButton(new Button(LEFT, row += 25, 150, 20))
             .onClick(sender -> {
-                nearDistance.setValue(defaultConfigValues.visual.dofFocalPointNear);
-                nearBlur.setValue(defaultConfigValues.visual.dofFocalBlurNear);
+                nearDistance.setValue(config.dofFocalPointNear.getDefault());
+                nearBlur.setValue(config.dofFocalBlurNear.getDefault());
             })
             .getStyle().setText(Text.translatable("button.reset"));
         content.addButton(new Label(LEFT, row += 25)).getStyle().setText("gui.psychedelicraft.option.focal_point.far");
-        var farDistance = createFormattedSlider(LEFT, row += 25, 100, 400, "gui.psychedelicraft.option.focal_point.distance", config.getData().visual.dofFocalPointFar, f -> visual.dofFocalPointFar = f);
-        var farBlur = createFormattedSlider(LEFT, row += 25, 0, 8, "gui.psychedelicraft.option.focal_point.blur", config.getData().visual.dofFocalBlurFar, f -> visual.dofFocalBlurFar = f);
+        var farDistance = createFormattedSlider(LEFT, row += 25, 100, 400, "gui.psychedelicraft.option.focal_point.distance", config.dofFocalPointFar);
+        var farBlur = createFormattedSlider(LEFT, row += 25, 0, 8, "gui.psychedelicraft.option.focal_point.blur", config.dofFocalBlurFar);
         content.addButton(new Button(LEFT, row += 25, 150, 20))
             .onClick(sender -> {
-                farDistance.setValue(defaultConfigValues.visual.dofFocalPointFar);
-                farBlur.setValue(defaultConfigValues.visual.dofFocalBlurFar);
+                farDistance.setValue(config.dofFocalPointFar.getDefault());
+                farBlur.setValue(config.dofFocalBlurFar.getDefault());
             })
             .getStyle().setText(Text.translatable("button.reset"));
 
@@ -119,25 +119,19 @@ public class SettingsScreen extends GameGui {
             row += 25;
         }
 
-        PSClientConfig.Audio audio = config.getData().audio;
-
         content.addButton(new Label(RIGHT - 5, row)).getStyle().setText("gui.psychedelicraft.options.sounds");
         content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.themes");
         for (DrugType<?> type : DrugType.REGISTRY) {
-            createToggle(RIGHT, row += 20, type.id().getPath(), audio.hasBackgroundMusic(type), value -> audio.setHasBackgroundMusic(type, value));
+            createToggle(RIGHT, row += 20, type.id().getPath(), config.hasBackgroundMusic(type), value -> config.setHasBackgroundMusic(type, value));
         }
 
-        if (client.world == null || client.isIntegratedServerRunning()) {
+        if (serverConfig != null) {
             row = Math.max(row, clear);
             columnBeginning += row;
             content.addButton(new Label(LEFT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.gameplay");
 
-            var gameplay = serverConfig.getData().balancing;
-
             content.addButton(new Label(LEFT, row += 25)).getStyle().setText("gui.psychedelicraft.options.message_distortion");
-
-            createToggle(LEFT, row += 25, "gui.psychedelicraft.option.gameplay.distort_incoming_messages", gameplay.messageDistortion.incoming, z -> gameplay.messageDistortion.incoming = z);
-            createToggle(LEFT, row += 25, "gui.psychedelicraft.option.gameplay.distort_outgoing_messages", gameplay.messageDistortion.outgoing, z -> gameplay.messageDistortion.outgoing = z);
+            content.addButton(new EnumSlider<>(LEFT, row += 25, serverConfig.messageDistortion.get()));
 
             if (RIGHT != LEFT) {
                 clear = row;
@@ -147,38 +141,33 @@ public class SettingsScreen extends GameGui {
             }
 
             content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.features");
-            createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.harmonium", gameplay.enableHarmonium, z -> {
-                gameplay.enableHarmonium = z;
-                ItemGroups.displayContext = null;
-                return z;
-            });
-            createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.rift_jars", gameplay.enableRiftJars, z -> {
-                gameplay.enableRiftJars = z;
-                ItemGroups.displayContext = null;
-                return z;
-            });
-            createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.molotovs", !gameplay.disableMolotovs, z -> {
-                gameplay.disableMolotovs = !z;
-                ItemGroups.displayContext = null;
-                return z;
+            createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.harmonium", serverConfig.enableHarmonium);
+            createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.rift_jars", serverConfig.enableRiftJars);
+            createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.molotovs", !serverConfig.disableMolotovs.get(), z -> {
+                return !serverConfig.disableMolotovs.set(!z);
             });
 
             content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.balancing");
-            createFormattedSlider(RIGHT, row += 25, 0, 1800, "gui.psychedelicraft.option.gameplay.rift_spawnrate", gameplay.randomTicksUntilRiftSpawn / PSConfig.MINUTE, z -> {
-                gameplay.randomTicksUntilRiftSpawn = (int)(z * PSConfig.MINUTE);
-                return (float)(gameplay.randomTicksUntilRiftSpawn / PSConfig.MINUTE);
+            createFormattedSlider(RIGHT, row += 25, 0, 1800, "gui.psychedelicraft.option.gameplay.rift_spawnrate", serverConfig.randomTicksUntilRiftSpawn.get() / PSConfig.MINUTE, z -> {
+                return (serverConfig.randomTicksUntilRiftSpawn.set((int)(z * PSConfig.MINUTE)) / (float)PSConfig.MINUTE);
             });
         }
     }
 
-    private Toggle createToggle(int x, int y, String key, boolean value, IChangeCallback<Boolean> valueSetter) {
-        Toggle toggle = content.addButton(new Toggle(x, y, value)).onChange(valueSetter);
-        toggle.getStyle().setText(key);
-        return toggle;
+    private void createToggle(int x, int y, String key, Setting<Boolean> valueSetter) {
+        content.addButton(new Toggle(x, y, valueSetter.get())).onChange(valueSetter).styled(s -> s.setText(key));
     }
 
-    private AbstractSlider<Float> createFormattedSlider(int x, int y, String key, float value, IChangeCallback<Float> valueSetter) {
-        return createFormattedSlider(x, y, 0, 1, key, value, valueSetter);
+    private void createToggle(int x, int y, String key, boolean value, IChangeCallback<Boolean> valueSetter) {
+        content.addButton(new Toggle(x, y, value)).onChange(valueSetter).styled(s -> s.setText(key));
+    }
+
+    private AbstractSlider<Float> createFormattedSlider(int x, int y, String key, Setting<Float> valueSetter) {
+        return createFormattedSlider(x, y, 0, 1, key, valueSetter);
+    }
+
+    private AbstractSlider<Float> createFormattedSlider(int x, int y, float min, float max, String key, Setting<Float> valueSetter) {
+        return createFormattedSlider(x, y, min, max, key, valueSetter.get(), valueSetter);
     }
 
     private AbstractSlider<Float> createFormattedSlider(int x, int y, float min, float max, String key, float value, IChangeCallback<Float> valueSetter) {
@@ -186,8 +175,6 @@ public class SettingsScreen extends GameGui {
         AbstractSlider<Float> slider = content.addButton(new Slider(x, y, min, max, value))
             .onChange(valueSetter)
             .setTextFormat(sender -> formatSliderValue(label, sender));
-
-        slider.getStyle().setText(formatSliderValue(label, slider));
         slider.setWidth(150);
         return slider;
     }
@@ -202,7 +189,7 @@ public class SettingsScreen extends GameGui {
     @Override
     public void removed() {
         config.save();
-        if (client.world == null || client.isIntegratedServerRunning()) {
+        if (serverConfig != null) {
             serverConfig.save();
         }
     }

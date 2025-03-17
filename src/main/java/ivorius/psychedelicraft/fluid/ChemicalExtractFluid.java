@@ -4,22 +4,23 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.fluid.alcohol.TickRate;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class ChemicalExtractFluid extends DrugFluid implements Processable {
+public class ChemicalExtractFluid extends DrugFluid implements Processable, TickRate.Tickable {
     public static final Attribute<Integer> DISTILLATION = Attribute.ofInt("distillation", 0, 2);
 
     final Settings settings;
     private final DrugType<?> drug;
 
     private final DrugFluid purifiedForm;
+    private static final TickRate DEFAULT_TICK_RATE = TickRate.ofMinutes(40, 1, 30, 30);
 
     public ChemicalExtractFluid(Identifier id, Settings settings, DrugType<?> drug, DrugFluid purifiedForm) {
         super(id, settings.drinkable());
@@ -39,10 +40,15 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
     public int getProcessingTime(Resovoir tank, ProcessType type) {
         if (type == ProcessType.PURIFY) {
             int distillation = DISTILLATION.get(tank.getContents());
-            return Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation() * (1 + distillation);
+            return getTickRate().ticksPerDistillation() * (1 + distillation);
         }
 
         return UNCONVERTABLE;
+    }
+
+    @Override
+    public TickRate getDefaultTickRate() {
+        return DEFAULT_TICK_RATE;
     }
 
     @Override
@@ -61,7 +67,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable {
 
     @Override
     public Stream<Process> getProcesses() {
-        int distillRate = Psychedelicraft.getConfig().balancing.fluidAttributes.alcInfoFlowerExtract().ticksPerDistillation();
+        int distillRate = getTickRate().ticksPerDistillation();
 
         return Stream.of(
                 new Process(this, getId().withSuffixedPath("_reducing"), DISTILLATION.steps().map(step -> {
