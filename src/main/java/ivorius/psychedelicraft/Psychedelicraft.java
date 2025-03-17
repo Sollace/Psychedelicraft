@@ -42,16 +42,18 @@ public class Psychedelicraft implements ModInitializer {
     public static final String DEFAULT_NAMESPACE = "psychedelicraft";
     public static final String VANILLA_EXTENSIONS_NAMESPACE = DEFAULT_NAMESPACE + "mc";
 
+    public static Supplier<Optional<DrugProperties>> globalDrugProperties = Optional::empty;
+    public static Supplier<Optional<HitResult>> crossHairTarget = Optional::empty;
+    public static Runnable configChangeCallback = () -> {};
+
     private static final Supplier<PSConfig> CONFIG = Suppliers.memoize(() -> {
         var config = new PSConfig(FabricLoader.getInstance().getConfigDir().resolve(DEFAULT_NAMESPACE + ".json"));
         try {
             config.load();
+            config.onChangedExternally(cf -> configChangeCallback.run());
         } catch (Throwable t) {}
         return config;
     });
-
-    public static Supplier<Optional<DrugProperties>> globalDrugProperties = Optional::empty;
-    public static Supplier<Optional<HitResult>> crossHairTarget = Optional::empty;
 
     public static Optional<DrugProperties> getGlobalDrugProperties() {
         return globalDrugProperties.get();

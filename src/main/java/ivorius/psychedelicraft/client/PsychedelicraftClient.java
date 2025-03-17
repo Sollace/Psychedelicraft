@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.client.item.PSItemProperties;
 import ivorius.psychedelicraft.client.render.*;
 import ivorius.psychedelicraft.client.render.shader.ShaderLoader;
 import ivorius.psychedelicraft.client.screen.PSScreens;
+import ivorius.psychedelicraft.client.screen.SettingsScreen;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
@@ -43,11 +44,20 @@ public class PsychedelicraftClient implements ClientModInitializer {
         return CONFIG.get();
     }
 
+    private void reInitScreen() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.currentScreen instanceof SettingsScreen screen) {
+            screen.init(client, client.getWindow().getScaledWidth(), client.getWindow().getScaledWidth());
+        }
+    }
+
     @Override
     public void onInitializeClient() {
         try {
             getConfig().load();
+            getConfig().onChangedExternally(cf -> reInitScreen());
         } catch (Throwable t) {}
+        Psychedelicraft.configChangeCallback = this::reInitScreen;
         Psychedelicraft.globalDrugProperties = () -> DrugProperties.of((Entity)MinecraftClient.getInstance().player);
         Psychedelicraft.crossHairTarget = () -> Optional.ofNullable(MinecraftClient.getInstance().crosshairTarget);
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
