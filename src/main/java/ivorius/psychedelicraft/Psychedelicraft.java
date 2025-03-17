@@ -43,7 +43,11 @@ public class Psychedelicraft implements ModInitializer {
     public static final String VANILLA_EXTENSIONS_NAMESPACE = DEFAULT_NAMESPACE + "mc";
 
     private static final Supplier<PSConfig> CONFIG = Suppliers.memoize(() -> {
-        return new PSConfig(FabricLoader.getInstance().getConfigDir().resolve(DEFAULT_NAMESPACE + ".json"));
+        var config = new PSConfig(FabricLoader.getInstance().getConfigDir().resolve(DEFAULT_NAMESPACE + ".json"));
+        try {
+            config.load();
+        } catch (Throwable t) {}
+        return config;
     });
 
     public static Supplier<Optional<DrugProperties>> globalDrugProperties = Optional::empty;
@@ -67,9 +71,7 @@ public class Psychedelicraft implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        try {
-            getConfig().load();
-        } catch (Throwable t) {}
+
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
             DrugProperties.of(player).sendCapabilities();
         });
