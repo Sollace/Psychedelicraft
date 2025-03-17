@@ -48,6 +48,6 @@ void main() {
     }
   }
 
-  fragColor = vec4(outcolor, texel.a);
+  fragColor = vec4(outcolor, 1);
 }
 

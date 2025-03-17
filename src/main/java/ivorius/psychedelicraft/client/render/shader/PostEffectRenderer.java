@@ -13,9 +13,7 @@ public class PostEffectRenderer {
 
     public void render(float tickDelta) {
         if (PsychedelicraftClient.getConfig().shader2DEnabled.get()) {
-            RenderSystem.disableBlend();
-            RenderSystem.disableDepthTest();
-            RenderSystem.resetTextureMatrix();
+            RenderSystem.enableDepthTest();
 
             if (shaders.size() == 1) {
                 shaders.get(0).render(tickDelta);
@@ -24,6 +22,7 @@ public class PostEffectRenderer {
             }
 
             MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
+            RenderSystem.disableDepthTest();
         }
     }
 
