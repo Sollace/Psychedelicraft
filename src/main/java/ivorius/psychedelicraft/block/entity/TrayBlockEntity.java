@@ -7,7 +7,6 @@ import com.mojang.datafixers.util.Pair;
 
 import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.block.PipeInsertable;
-import ivorius.psychedelicraft.block.PipeInsertable.PipeFluids;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.FluidMound;
@@ -27,8 +26,9 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.WorldAccess;
 
-public class TrayBlockEntity extends SyncedBlockEntity {
+public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable {
     static final int MAX_CAPACITY = 50;
 
     private final Resovoir fluid = new Resovoir(MAX_CAPACITY, (tank, level) -> {});
@@ -94,7 +94,16 @@ public class TrayBlockEntity extends SyncedBlockEntity {
         }
     }
 
+    @Override
+    public boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+        return input && direction == Direction.UP;
+    }
+
+    @Override
     public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+        if (direction != Direction.DOWN) {
+            return PipeInsertable.reject(fluids);
+        }
         if (isHardened() || timeToHarden > 0) {
             return PipeInsertable.reject(fluids);
         }

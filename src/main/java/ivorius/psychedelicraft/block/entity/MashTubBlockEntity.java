@@ -11,9 +11,11 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
+import com.mojang.datafixers.util.Either;
 
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.block.MashTubBlock;
+import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
@@ -42,6 +44,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -227,10 +230,23 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     @Deprecated
     @Override
     public List<ItemStack> getDroppedStacks(ItemStack container) {
-        if (!solidContents.isEmpty()) {
-            return List.of(solidContents);
+        return solidContents.isEmpty() ? List.of() : List.of(solidContents);
+    }
+
+    @Override
+    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+        if (!currentStew.isEmpty()) {
+            return PipeInsertable.reject(fluids);
         }
-        return List.of();
+        return super.tryInsert(world, state, pos, direction, fluids);
+    }
+
+    @Override
+    public Optional<PipeFluids> tryExtract(ServerWorld world, BlockState state, BlockPos pos, Direction direction) {
+        if (!currentStew.isEmpty()) {
+            return Optional.empty();
+        }
+        return super.tryExtract(world, state, pos, direction);
     }
 
     @Override

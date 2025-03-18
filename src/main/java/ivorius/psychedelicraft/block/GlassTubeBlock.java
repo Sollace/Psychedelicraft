@@ -64,7 +64,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
-public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
+public class GlassTubeBlock extends BlockWithEntity {
     public static final MapCodec<GlassTubeBlock> CODEC = createCodec(GlassTubeBlock::new);
 
     public static final EnumProperty<IODirection> IN = EnumProperty.of("in", IODirection.class);
@@ -138,7 +138,6 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         IODirection placedDir = IODirection.LOOKUP.get(ctx.getSide());
@@ -190,24 +189,8 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return current;
     }
 
-    @Override
-    public boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
-        return neighborState.getBlock() instanceof GlassTubeBlock && (state.get(input ? OUT : IN).direction == direction);
-    }
-
     protected boolean isBlocked(BlockState state) {
         return false;
-    }
-
-    @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
-        if (state.get(IN).direction == direction.getOpposite()) {
-            return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> {
-                return data.receiveContents(world, pos, state, fluids);
-            }).orElseGet(() -> PipeInsertable.reject(fluids));
-        }
-
-        return PipeInsertable.reject(fluids);
     }
 
     public BlockState setDirection(BlockState state, IODirection in, IODirection out) {
@@ -260,8 +243,24 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+        if (world instanceof ServerWorld sw) {
+            world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).ifPresent(data -> {
+                data.pushContentsForward(sw, pos, state.get(OUT));
+                data.pullContentsForward(sw, pos);
+            });
+        }
+    }
+
+    @Override
     protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
+    }
+
+    @Override
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> (int)((data.contents.size() / 10F) * 15)).orElse(0);
     }
 
     @Override
@@ -325,7 +324,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return 0;
     }
 
-    public static class Data extends SyncedBlockEntity {
+    public static class Data extends SyncedBlockEntity implements PipeInsertable {
         private final List<PipeFluids> contents = new LinkedList<>();
 
         private int temperatureUpdateCooldown;
@@ -402,6 +401,36 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
             if (!contents.isEmpty()) {
                 world.scheduleBlockTick(pos, getCachedState().getBlock(), 3);
             }
+        }
+
+        public void pullContentsForward(ServerWorld world, BlockPos pos) {
+            if (((GlassTubeBlock)getCachedState().getBlock()).isBlocked(getCachedState())) {
+                return;
+            }
+
+            markDirty();
+
+            if (world.getReceivedStrongRedstonePower(pos) == 15) {
+                getCachedState().get(IN).getDirection().flatMap(d -> PipeInsertable.tryExtract(world, pos.offset(d), d)).ifPresent(contents::add);
+            }
+
+            if (!contents.isEmpty()) {
+                world.scheduleBlockTick(pos, getCachedState().getBlock(), 3);
+            }
+        }
+
+        @Override
+        public boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+            return neighborState.getBlock() instanceof GlassTubeBlock && (state.get(input ? OUT : IN).direction == direction);
+        }
+
+        @Override
+        public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+            if (state.get(IN).direction == direction.getOpposite()) {
+                return receiveContents(world, pos, state, fluids);
+            }
+
+            return PipeInsertable.reject(fluids);
         }
 
         @Override

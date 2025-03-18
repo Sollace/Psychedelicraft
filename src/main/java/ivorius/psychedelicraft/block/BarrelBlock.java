@@ -6,8 +6,8 @@
 package ivorius.psychedelicraft.block;
 
 import java.util.Map;
-
 import com.mojang.serialization.MapCodec;
+
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.fluid.*;

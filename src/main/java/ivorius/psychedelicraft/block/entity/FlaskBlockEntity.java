@@ -16,25 +16,32 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import com.mojang.datafixers.util.Either;
 
 import ivorius.psychedelicraft.block.BlockWithFluid;
+import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.recipe.FluidMound;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 
 /**
  * Created by lukas on 25.10.14.
  * Updated by Sollace on 2 Jan 2023
  */
-public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener {
+public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFluid.DirectionalFluidResovoir, Resovoir.ChangeListener, PipeInsertable {
     private static final int[] INPUT_SLOT_ID = {0};
     private static final int[] OUTPUT_SLOT_ID = {1};
     private static final int[] BOTH_SLOT_ID = {0, 1};
@@ -117,6 +124,30 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
             markDirty();
             world.updateNeighbors(getPos(), getCachedState().getBlock());
         }
+    }
+
+    @Override
+    public boolean acceptsConnectionFrom(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+        return true;
+    }
+
+    @Override
+    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+        Resovoir tank = getTankOnSide(direction);
+        fluids.fluids().getFluids().stream().filter(i -> tank.getContents().canCombine(i)).findFirst().ifPresent(f -> {
+            int amountMoved = tank.deposit(f);
+            if (amountMoved > 0) {
+                fluids.fluids().remove(f.ofAmount(amountMoved));
+            }
+        });
+        return PipeInsertable.reject(fluids);
+    }
+
+    @Override
+    public Optional<PipeFluids> tryExtract(ServerWorld world, BlockState state, BlockPos pos, Direction direction) {
+        Resovoir tank = getTankOnSide(direction);
+        ItemFluids fluids = tank.drain((int)tank.getCapacity() / 10);
+        return fluids.isEmpty() ? Optional.empty() : Optional.of(new PipeFluids(new FluidMound(List.of(fluids)), 0));
     }
 
     @Deprecated
