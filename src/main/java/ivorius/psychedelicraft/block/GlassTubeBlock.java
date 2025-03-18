@@ -46,6 +46,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -350,22 +351,26 @@ public class GlassTubeBlock extends BlockWithEntity {
             pushContentsForward(world, pos, state.get(OUT));
             var status = Optional.of(contents).filter(i -> !i.isEmpty()).map(i -> i.withTemperature(i.temperature() - getTemperatureDrop(world, pos))).map(newContents -> {
                 if (this.contents.size() < 10) {
-                    this.contents.add(newContents);
+                    this.contents.addFirst(newContents);
                 } else {
-                    Optional<PipeFluids> available = this.contents.stream().filter(i -> i.fluids().totalSize() < 100).findFirst();
-                    if (available.isEmpty()) {
-                        return PipeInsertable.reject(contents);
+                    PipeFluids first = this.contents.getFirst();
+                    if (first.isEmpty()) {
+                        this.contents.removeFirst();
+                        this.contents.addFirst(contents);
+                    } else {
+                        Optional<PipeFluids> available = this.contents.stream().filter(i -> i.fluids().totalSize() < 100).findFirst();
+                        if (available.isEmpty()) {
+                            return PipeInsertable.reject(contents);
+                        }
+                        this.contents.set(this.contents.indexOf(available.get()), available.get().combine(newContents));
                     }
-                    this.contents.set(this.contents.indexOf(available.get()), available.get().combine(newContents));
                 }
                 markDirty();
 
                 return STATUS_ACCEPT_ALL;
             }).orElse(STATUS_ACCEPT_ALL);
 
-            if (!this.contents.isEmpty()) {
-                world.scheduleBlockTick(pos, state.getBlock(), 3);
-            }
+            scheduleNextTick(world);
             return status;
         }
 
@@ -377,29 +382,38 @@ public class GlassTubeBlock extends BlockWithEntity {
             markDirty();
 
             if (contents.size() >= 10) {
-                PipeFluids fluids = contents.getFirst();
-                Optional<PipeFluids> pushedBack = fluids.isEmpty() ? Optional.empty() : direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, fluids)).orElse(STATUS_VOIDED).ifRight(unit -> {
-                    fluids.fluids().getFluids().forEach(fluid -> {
-                        Vector3f outVec = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
-                        world.spawnParticles(
-                                fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
-                                    : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
-                                    : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid.fluid()),
-                                pos.getX() + 0.5 + outVec.x * 0.5,
-                                pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
-                                pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
-                    });
-                }).left().flatMap(Function.identity());
-                if (pushedBack.isPresent() && !pushedBack.get().isEmpty()) {
-                    contents.set(0, pushedBack.get());
-                } else {
-                    contents.removeFirst();
-                    contents.add(PipeFluids.EMPTY);
+                PipeFluids fluids = contents.removeLast();
+                if (!fluids.isEmpty()) {
+                    world.playSound(null, pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS, 0.1F, 0.001F);
+                    Optional<PipeFluids> pushedBack = fluids.isEmpty() ? Optional.empty() : direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, fluids)).orElse(STATUS_VOIDED).ifRight(unit -> {
+                        fluids.fluids().getFluids().forEach(fluid -> {
+                            Vector3f outVec = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
+                            world.spawnParticles(
+                                    fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
+                                        : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
+                                        : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid.fluid()),
+                                    pos.getX() + 0.5 + outVec.x * 0.5,
+                                    pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
+                                    pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
+                        });
+                    }).left().flatMap(Function.identity());
+                    if (pushedBack.isPresent() && !pushedBack.get().isEmpty()) {
+                        contents.addFirst(pushedBack.get());
+                    }
                 }
+            } else {
+                contents.addFirst(PipeFluids.EMPTY);
             }
 
-            if (!contents.isEmpty()) {
-                world.scheduleBlockTick(pos, getCachedState().getBlock(), 3);
+            scheduleNextTick(world);
+        }
+
+        private void scheduleNextTick(ServerWorld world) {
+            for (var i : contents) {
+                if (!i.isEmpty()) {
+                    world.scheduleBlockTick(pos, getCachedState().getBlock(), 3);
+                    return;
+                }
             }
         }
 
@@ -411,12 +425,10 @@ public class GlassTubeBlock extends BlockWithEntity {
             markDirty();
 
             if (world.getReceivedStrongRedstonePower(pos) == 15) {
-                getCachedState().get(IN).getDirection().flatMap(d -> PipeInsertable.tryExtract(world, pos.offset(d), d)).ifPresent(contents::add);
+                getCachedState().get(IN).getDirection().flatMap(d -> PipeInsertable.tryExtract(world, pos.offset(d), d)).ifPresent(contents::addFirst);
             }
 
-            if (!contents.isEmpty()) {
-                world.scheduleBlockTick(pos, getCachedState().getBlock(), 3);
-            }
+            scheduleNextTick(world);
         }
 
         @Override
