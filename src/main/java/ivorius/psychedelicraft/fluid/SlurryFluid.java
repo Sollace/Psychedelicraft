@@ -5,18 +5,26 @@
 
 package ivorius.psychedelicraft.fluid;
 
+import java.util.List;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.block.entity.FluidProcessingBlockEntity;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleUtil;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
@@ -46,8 +54,13 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     }
 
     @Override
+    public ProcessType modifyProcess(Resovoir tank, ProcessType type) {
+        return type == ProcessType.FERMENT || type == ProcessType.MATURE ? ProcessType.SEPARATE : type;
+    }
+
+    @Override
     public int getProcessingTime(Resovoir tank, ProcessType type) {
-        if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
+        if (type == ProcessType.SEPARATE) {
             return tank.getContents().amount() >= FLUID_PER_DIRT ? Psychedelicraft.getConfig().slurryHardeningTime.get() : UNCONVERTABLE;
         }
         return UNCONVERTABLE;
@@ -55,11 +68,12 @@ public class SlurryFluid extends SimpleFluid implements Processable {
 
     @Override
     public void process(Context context, ProcessType type, ByProductConsumer output) {
-        if (type == ProcessType.FERMENT || type == ProcessType.MATURE) {
+        if (type == ProcessType.SEPARATE) {
             Resovoir tank = context.getPrimaryTank();
             if (tank.getContents().amount() >= FLUID_PER_DIRT) {
                 tank.drain(FLUID_PER_DIRT);
-                output.accept(Items.DIRT.getDefaultStack());
+                output.accept(Items.MUD.getDefaultStack());
+                output.accept(SimpleFluid.of(Fluids.WATER).getDefaultStack(FluidVolumes.BUCKET * 3));
             }
         }
     }
@@ -67,5 +81,15 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     @Override
     public Stream<Process> getProcesses() {
         return Stream.empty();
+    }
+
+    @Override
+    public void appendTankTooltip(ItemFluids stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
+        super.appendTankTooltip(stack, world, tooltip, tank);
+
+        if (tank.getProcessType() == ProcessType.DISTILL) {
+            tooltip.add(Text.literal("Requirements:"));
+            tooltip.add(Text.translatable("* Must have at least 4 buckets of slurry").formatted(Formatting.RED, Formatting.ITALIC));
+        }
     }
 }

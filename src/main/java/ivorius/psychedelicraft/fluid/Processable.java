@@ -119,7 +119,11 @@ public interface Processable {
         /**
          * When processed in the benzene burner, used to chemically extract purified substances
          */
-        PURIFY;
+        PURIFY,
+        /**
+         * When slurry is left to sit for a long time it will separate into water and solids
+         */
+        SEPARATE;
 
         private final String name = name().toLowerCase(Locale.ROOT);
         private final Text status = Text.translatable("fluid.status." + name);

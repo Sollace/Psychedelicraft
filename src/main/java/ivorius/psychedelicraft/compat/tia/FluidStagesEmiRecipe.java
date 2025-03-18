@@ -92,7 +92,7 @@ class FluidStagesEmiRecipe implements PSRecipe {
 
         private static TlaIngredient getStackForProcess(Processable.ProcessType type) {
             return switch (type) {
-                case FERMENT, ACETIFY, COOL -> TlaStack.of(PSItems.MASH_TUB).asIngredient();
+                case SEPARATE, FERMENT, ACETIFY, COOL -> TlaStack.of(PSItems.MASH_TUB).asIngredient();
                 case PURIFY -> TlaStack.of(PSItems.BUNSEN_BURNER).asIngredient();
                 case MATURE -> TlaIngredient.ofItemTag(PSTags.Items.BARRELS);
                 case DISTILL -> TlaStack.of(PSItems.DISTILLERY).asIngredient();

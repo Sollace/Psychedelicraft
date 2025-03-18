@@ -322,6 +322,7 @@
   "fluid.status.distill": "Distilling",
   "fluid.status.purify": "Purifiying",
   "fluid.status.acetify": "Acetify",
+  "fluid.status.separate": "Separating",
   
   "psychedelicraft.container.process_type.mature": "Used for maturation",
   "psychedelicraft.container.process_type.distill": "Used for distillation",
@@ -333,6 +334,7 @@
   "time.until.ferment": "Time Until Fermented: %s",
   "time.until.distill": "Time Until Distilled: %s",
   "time.until.purify": "Time Until Purified: %s",
+  "time.until.separate": "Time Until Contaminants Settle: %s",
 
   "psychedelicraft.container.levels": "Amount: %1$s / %2$s",
   "psychedelicraft.container.amount": "Amount: %1$s",

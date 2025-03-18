@@ -54,6 +54,7 @@ import net.minecraft.world.World;
  */
 public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     public ItemStack solidContents = ItemStack.EMPTY;
+    private ItemFluids auxiliaryFluids = ItemFluids.EMPTY;
 
     private Optional<Stew> currentStew = Optional.empty();
 
@@ -67,10 +68,49 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         return suppliedIngredients;
     }
 
+    public ItemFluids getAuxiliaryFluids() {
+        return auxiliaryFluids;
+    }
+
     @Override
     public void accept(ItemStack stack) {
-        getPrimaryTank().clear();
+        if (!solidContents.isEmpty()) {
+            if (ItemStack.areItemsAndComponentsEqual(solidContents, stack)) {
+                int maxToMove = Math.min(stack.getCount(), solidContents.getMaxCount() - solidContents.getCount());
+                if (maxToMove > 0) {
+                    stack.decrement(maxToMove);
+                    solidContents.increment(maxToMove);
+                    world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS);
+                    return;
+                }
+            }
+
+            Block.dropStack(world, pos, solidContents);
+            world.playSound(null, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS);
+        }
         solidContents = stack;
+        world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS);
+    }
+
+    @Override
+    protected void onFluidRejected(ServerWorld world, ItemFluids fluids) {
+        if (auxiliaryFluids.isEmpty()) {
+            auxiliaryFluids = fluids;
+        } else {
+            if (auxiliaryFluids.canCombine(fluids)) {
+                int spaceInTank = (int)(getPrimaryTank().getCapacity() - getPrimaryTank().getAmount());
+                int maxInserted = Math.min(fluids.amount(), spaceInTank - auxiliaryFluids.amount());
+                if (maxInserted > 0) {
+                    auxiliaryFluids = auxiliaryFluids.ofAmount(auxiliaryFluids.amount() + maxInserted);
+                    if (maxInserted >= fluids.amount()) {
+                        return;
+                    }
+                    fluids = fluids.ofAmount(fluids.amount() - maxInserted);
+                }
+            }
+
+            super.onFluidRejected(world, fluids);
+        }
     }
 
     @Override
@@ -86,14 +126,12 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             Box box = Box.of(center, 1.5, 0.5, 1.5);
             for (ItemEntity item : world.getEntitiesByClass(ItemEntity.class, box, EntityPredicates.VALID_ENTITY)) {
                 ItemStack stack = item.getStack();
-                if (isValidIngredient(stack)) {
-                    suppliedIngredients.addStack(stack);
-                    beginStewing();
-                    markForUpdate();
-                    spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
-                    getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
-                    item.discard();
-                }
+                suppliedIngredients.addStack(stack);
+                beginStewing();
+                markForUpdate();
+                spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
+                getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
+                item.discard();
             }
 
             super.tick(world);
@@ -103,6 +141,10 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     public void onLevelChange(Resovoir resovoir, int difference) {
+        if (resovoir.getContents().isEmpty() && !auxiliaryFluids.isEmpty()) {
+            resovoir.setContents(auxiliaryFluids, false);
+            auxiliaryFluids = ItemFluids.EMPTY;
+        }
         super.onLevelChange(resovoir, difference);
         int luminance = resovoir.getContents().fluid().getPhysical().getDefaultState().getBlockState().getLuminance();
 
@@ -111,10 +153,6 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             world.setBlockState(getPos(), getCachedState().with(MashTubBlock.LIGHT, luminance));
         }
 
-        if (!solidContents.isEmpty()) {
-            super.accept(solidContents);
-            solidContents = ItemStack.EMPTY;
-        }
         if (difference > 0) {
             setTimeProcessed(0);
             setRepeatCount(0);
@@ -190,6 +228,12 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
                 new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients),
                 world
         ).map(Stew::new);
+
+        if (currentStew.isEmpty() && suppliedIngredients.countMatches(stack -> !isValidIngredient(stack)) >= 8) {
+            suppliedIngredients.clear();
+            getPrimaryTank().setContents(PSFluids.SLURRY.getDefaultStack(getPrimaryTank().getContents().amount()));
+            markDirty();
+        }
     }
 
     public Stream<MashingRecipe> getPotentialMatches() {
@@ -256,6 +300,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             compound.put("solidContents", solidContents.encodeAllowEmpty(lookup));
         }
         compound.put("suppliedIngredients", suppliedIngredients.toNbt(lookup));
+        compound.put("auxiliaryFluids", auxiliaryFluids.encode());
     }
 
     @Override
@@ -264,6 +309,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         solidContents = compound.contains("solidContents", NbtElement.COMPOUND_TYPE)
                 ? ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("solidContents"))
                 : ItemStack.EMPTY;
+        auxiliaryFluids = compound.contains("auxiliaryFluids", NbtElement.COMPOUND_TYPE)
+                ? ItemFluids.decode(compound.get("auxiliaryFluids"))
+                : ItemFluids.EMPTY;
         suppliedIngredients.fromNbt(compound.getCompound("suppliedIngredients"), lookup);
     }
 

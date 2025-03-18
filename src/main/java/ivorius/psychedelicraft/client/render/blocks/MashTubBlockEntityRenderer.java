@@ -60,22 +60,37 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
         Resovoir tank = entity.getPrimaryTank();
         ItemFluids stack = tank.getContents();
 
-        float fluidHeight = 0.1F;
+        float fluidHeight = 0.3F;
 
         FluidBoxRenderer.getInstance().scale(1).light(light).overlay(overlay).position(matrices);
 
         if (!stack.isEmpty()) {
             float fillPercentage = MathHelper.clamp((float)stack.amount() / tank.getCapacity(), 0, 2);
 
-            fluidHeight = 0.3F + fillPercentage * 0.6F;
+            fluidHeight += fillPercentage * 0.6F;
 
             FluidBoxRenderer.getInstance()
                 .texture(vertices, stack)
                 .draw(-0.5F, 0, -0.5F, 2, fluidHeight, 2, Direction.UP);
-        } else if (!entity.solidContents.isEmpty() && entity.solidContents.getItem() instanceof BlockItem) {
+        }
+
+        stack = entity.getAuxiliaryFluids();
+
+        if (!stack.isEmpty()) {
+            float fillPercentage = MathHelper.clamp((float)stack.amount() / tank.getCapacity(), 0, 2);
+
+            fluidHeight += fillPercentage * 0.6F;
+
+            FluidBoxRenderer.getInstance()
+                .texture(vertices, stack)
+                .draw(-0.5F, 0, -0.5F, 2, fluidHeight, 2, Direction.UP);
+        }
+
+        if (!entity.solidContents.isEmpty() && entity.solidContents.getItem() instanceof BlockItem) {
             FluidBoxRenderer.getInstance()
                 .texture(vertices, entity.solidContents)
-                .draw(-0.5F, 0, -0.5F, 2, 0.5F, 2, Direction.UP);
+                .draw(-0.3F, 0, -0.3F, 1.6F, 0.2F, 1.6F, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST)
+                .draw(-0.2F, 0, -0.2F, 1.4F, 0.3F, 1.4F, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
         }
 
         matrices.push();
