@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
-import java.util.Random;
-
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.FluidFilled;
@@ -18,18 +16,22 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Renders fluid in the mash tub, or the solid contents
@@ -43,13 +45,13 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
 
     public static void renderStack(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         ITEM_ENTITY.getPrimaryTank().setContents(ItemFluids.of(stack));
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlock(
-                ITEM_ENTITY.getCachedState(),
-                ITEM_ENTITY.getPos(),
-                MinecraftClient.getInstance().world,
-                matrices,
-                vertices.getBuffer(RenderLayer.getCutout()), false,
-                MinecraftClient.getInstance().world.random);
+
+        BlockState state = ITEM_ENTITY.getCachedState();
+        BakedModel model = MinecraftClient.getInstance().getBlockRenderManager().getModel(state);
+        MinecraftClient.getInstance().getBlockRenderManager()
+            .getModelRenderer().render(matrices.peek(), vertices.getBuffer(RenderLayers.getBlockLayer(state)), state, model, 1, 1, 1, light, overlay);
+        MinecraftClient.getInstance().getBlockRenderManager()
+            .getModelRenderer().render(matrices.peek(), vertices.getBuffer(RenderLayers.getEntityBlockLayer(state, false)), state, model, 1, 1, 1, light, overlay);
         MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(ITEM_ENTITY, matrices, vertices, light, overlay);
     }
 
@@ -82,7 +84,8 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
         Object2IntMap<Item> ingredients = entity.getSuppliedIngredients().getCounts();
 
         long seed = entity.getPos().asLong() + 1;
-        Random random = new Random(seed);
+        Random random = Random.create();
+        random.setSeed(seed);
 
         for (Item item : ingredients.keySet()) {
             for (int c = 0; c < ingredients.getInt(item); c++) {
