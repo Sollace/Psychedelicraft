@@ -96,7 +96,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
 
     @Override
     public boolean isEmpty() {
-        return coreFluid.isEmpty() || impurities.isEmpty();
+        return coreFluid.isEmpty() && impurities.isEmpty();
     }
 
     public record Input(ItemFluids coreFluid, FluidMound impurities) implements RecipeInput {
@@ -108,6 +108,11 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
         @Override
         public int getSize() {
             return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return coreFluid.isEmpty() && impurities.isEmpty();
         }
     }
 
