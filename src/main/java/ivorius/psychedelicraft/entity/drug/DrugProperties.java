@@ -224,10 +224,12 @@ public class DrugProperties implements NbtSerialisable {
             }
 
             if (!entity.hasStatusEffect(PSEffects.TEETH_GRINDING) && ((getDrugValue(DrugType.METHAMPHETAMINE) <= 0.001F
-                    && teethGrindingRate > 0
+                    && teethGrindingRate > 1
+                    && entity.age % 200 == 0
                     && random.nextFloat() * (entity.isSleeping() ? 2 : 1) < teethGrindingRate / 100F))) {
                 entity.addStatusEffect(new StatusEffectInstance(PSEffects.TEETH_GRINDING, 1000));
                 if (!PacifierItem.consumePacifier(entity)) {
+                    teethGrindingRate = Math.max(0, teethGrindingRate - 0.00001F);
                     entity.damage(damageOf(PSDamageTypes.TEETH_GRINDING), 1);
                 } else {
                     pacifierSqueakDelay = 5 + entity.getRandom().nextInt(15);
