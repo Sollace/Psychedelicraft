@@ -7,23 +7,22 @@ package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.TrayBlockEntity;
+import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlockEntity> {
     private static final Identifier FLUID_TEXTURE = Psychedelicraft.id("textures/entity/tray/fluid.png");
 
-    private final ItemRenderer itemRenderer;
-
     private TrayContentsModel contentsModel = new TrayContentsModel(TrayContentsModel.getTexturedModelData().createModel());
 
     public TrayBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
         super(context);
-        itemRenderer = context.getItemRenderer();
     }
 
     @Override
@@ -44,6 +43,20 @@ public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlo
 
     @Override
     protected void renderLabels(TrayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        int percentage = (int)(100 * entity.getLevel() / 50F);
+        if (percentage > 0) {
 
+            Text text = Text.literal("Hardened: " + entity.isHardened());
+
+            textRenderer.draw(text, -(textRenderer.getWidth(text) - 5) / 2F, 0, Colors.BLUE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+
+            Text fillText = switch (percentage) {
+                case 100 -> Text.literal("Full");
+                case 0 -> Text.literal("Empty");
+                default -> Text.literal(percentage + "%");
+            };
+
+            textRenderer.draw(fillText, -(textRenderer.getWidth(fillText) - 5) / 2F, -textRenderer.fontHeight - 2, Colors.WHITE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+        }
     }
 }
