@@ -17,6 +17,7 @@ import org.joml.Vector3f;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 
+import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.BlockWithFluid.DirectionalFluidResovoir;
 import ivorius.psychedelicraft.block.BurnerBlock;
@@ -162,7 +163,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
             if (getTotalFluidVolume() == 0) {
                 BlockPos pos = getPos();
-                world.playSound(null, pos, SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 1.25F, 0.02F);
+                world.playSound(null, pos, PSSounds.BLOCK_BUNSEN_BURNER_OVERHEAT, SoundCategory.BLOCKS, 1.25F, 0.02F);
                 world.spawnParticles(ParticleTypes.SMOKE,
                         pos.getX() + world.getRandom().nextTriangular(0.5F, 0.1F),
                         pos.getY() + 0.6F,
@@ -181,7 +182,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
                     temperature -= 2;
                     setTemperature(temperature);
                 }
-                world.playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.25F, 0.02F);
+                world.playSound(null, getPos(), PSSounds.BLOCK_BUNSEN_BURNER_WORK, SoundCategory.BLOCKS, 1.25F, 0.02F);
                 world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, pos);
                 craft(world, c);
             }

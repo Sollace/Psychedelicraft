@@ -7,12 +7,12 @@ package ivorius.psychedelicraft.block;
 
 import com.mojang.serialization.MapCodec;
 
+import ivorius.psychedelicraft.PSSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -50,7 +50,7 @@ public class ValveBlock extends GlassTubeBlock {
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         world.setBlockState(pos, state.cycle(OPEN));
-        world.playSoundAtBlockCenter(pos, SoundEvents.ENTITY_PARROT_AMBIENT, SoundCategory.BLOCKS, 1.5F, state.get(OPEN) ? 1 : 5, true);
+        world.playSoundAtBlockCenter(pos, state.get(OPEN) ? PSSounds.BLOCK_VALVE_CLOSE : PSSounds.BLOCK_VALVE_OPEN, SoundCategory.BLOCKS, 1.5F, state.get(OPEN) ? 1 : 5, true);
         return ActionResult.SUCCESS_NO_ITEM_USED;
     }
 }

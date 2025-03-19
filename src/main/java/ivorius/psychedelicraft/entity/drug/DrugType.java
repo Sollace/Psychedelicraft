@@ -10,6 +10,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import java.util.function.Function;
 
@@ -58,7 +59,7 @@ public record DrugType<T extends Drug> (
     }
 
     public SoundEvent soundEvent() {
-        return Registries.SOUND_EVENT.getOrEmpty(id.withPrefixedPath("drug.")).orElse(PSSounds.DRUG_GENERIC);
+        return Registries.SOUND_EVENT.getOrEmpty(id.withPrefixedPath("drug.")).orElse(SoundEvents.INTENTIONALLY_EMPTY);
     }
 
     static <T extends Drug> DrugType<T> register(String name, DrugAttributeFunctions functions, MapCodec<T> codec, Function<DrugType<T>, T> constructor) {

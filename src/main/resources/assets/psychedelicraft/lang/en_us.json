@@ -527,7 +527,17 @@
   "distortion.psychedelicraft.hics.3": "*h-cup*",
   "distortion.psychedelicraft.hics.4": "*hup*",
 
+  "subtitles.psychedelicraft.entity.player.heartbeat": "Heart Beats",
+  "subtitles.psychedelicraft.entity.player.breath": "Heavy Breathing",
+  "subtitles.psychedelicraft.entity.player.pacify": "Pacifier Squeaks",
   "subtitle.psychedelicraft.rift_jar_open": "Rift Jar Opens",
   "subtitle.psychedelicraft.rift_jar_close": "Rift Jar Closes",
-  "subtitle.psychedelicraft.rift_jar_toggles": "Rift Jar Toggles"
+  "subtitle.psychedelicraft.rift_jar_toggles": "Rift Jar Toggles",
+  "subtitle.psychedelicraft.item_syringe_inject": "Syring Injects",
+  "subtitles.psychedelicraft.block.tray.harden": "Tray Contents Crystalises",
+  "subtitles.psychedelicraft.block.valve.open": "Valve Opens",
+  "subtitles.psychedelicraft.block.valve.close": "Valve Closes",
+  "subtitles.psychedelicraft.block.bunsen_burner.work": "Water Boils",
+  "subtitles.psychedelicraft.block.bunsen_burner.overheat": "Bunsen Burner Overheats",
+  "subtitles.psychedelicraft.block.bunsen_burner.fill": "Bunsen Burner Fills"
 }
