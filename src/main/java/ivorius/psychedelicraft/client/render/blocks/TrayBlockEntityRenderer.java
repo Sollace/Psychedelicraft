@@ -43,12 +43,8 @@ public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlo
 
     @Override
     protected void renderLabels(TrayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        int percentage = (int)(100 * entity.getLevel() / 50F);
-        if (percentage > 0) {
-
-            Text text = Text.literal("Hardened: " + entity.isHardened());
-
-            textRenderer.draw(text, -(textRenderer.getWidth(text) - 5) / 2F, 0, Colors.BLUE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+        if (entity.getLevel() > 0) {
+            int percentage = (int)(100 * entity.getLevel() / 50F);
 
             Text fillText = switch (percentage) {
                 case 100 -> Text.literal("Full");
@@ -57,6 +53,14 @@ public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlo
             };
 
             textRenderer.draw(fillText, -(textRenderer.getWidth(fillText) - 5) / 2F, -textRenderer.fontHeight - 2, Colors.WHITE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+        }
+
+        if (entity.getCraftingResult().isPresent()) {
+
+            Text text = entity.getCraftingResult().get().getName();
+
+            textRenderer.draw(text, -(textRenderer.getWidth(text) - 5) / 2F, 0, Colors.BLUE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+
         }
     }
 }
