@@ -118,7 +118,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
             float p1 = Math.max((float)entity.hurtTime / entity.maxHurtTime, pulseStrength);
             float p2 = (5 - (experiencedHealth * (1 - pulseStrength))) / 6F;
 
-            float p = p1 > 0 ? p1 : p2 > 0 ? p2 : 0;
+            float p = MathHelper.clamp(p1 > 0 ? p1 : p2 > 0 ? p2 : 0, 0, 1);
             RenderUtil.drawOverlay(context, HURT_OVERLAY, p, window.getScaledWidth(), window.getScaledHeight(), 0, 0, 1, 1, (int) ((1 - p) * 40));
 
             RenderSystem.enableDepthTest();
