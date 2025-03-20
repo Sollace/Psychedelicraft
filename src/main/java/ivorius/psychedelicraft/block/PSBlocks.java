@@ -158,6 +158,8 @@ public interface PSBlocks {
             .solidBlock(Blocks::never)
             .suffocates(Blocks::never)
             .blockVision(Blocks::never)));
+    Block PUMP = register("pump", s -> new PumpBlock(s.mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(3.5F)));
+    Block PUMP_HEAD = register("pump_head", Settings.copy(PUMP), s -> new PumpHeadBlock(s.nonOpaque().dropsNothing().pistonBehavior(PistonBehavior.BLOCK)));
 
     static <T extends Block> T register(String name, Function<AbstractBlock.Settings, T> blockFactory) {
         return register(name, Settings.create(), blockFactory);

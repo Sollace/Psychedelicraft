@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
@@ -162,7 +161,7 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
 
     @Override
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("fluid", ItemFluids.CODEC.encodeStart(NbtOps.INSTANCE, fluids).getOrThrow());
+        compound.put("fluid", fluids.encode());
     }
 
     @Override

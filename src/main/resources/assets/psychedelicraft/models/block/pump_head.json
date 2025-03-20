@@ -1,0 +1,33 @@
+{
+	"textures": {
+		"particle": "psychedelicraft:block/pump_top",
+		"top": "psychedelicraft:block/pump_top",
+		"bellow": "psychedelicraft:block/pump_bellow"
+	},
+	"elements": [
+		{
+			"from": [2, 2, 2],
+			"to": [14, 14, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 2, 2]},
+			"faces": {
+				"north": {"uv": [2, 2, 14, 14], "rotation": 180, "texture": "#top"},
+				"east": {"uv": [2, 2, 14, 4], "rotation": 90, "texture": "#top"},
+				"south": {"uv": [2, 2, 14, 14], "texture": "#top"},
+				"west": {"uv": [2, 2, 14, 4], "rotation": 270, "texture": "#top"},
+				"up": {"uv": [2, 2, 14, 4], "texture": "#top"},
+				"down": {"uv": [2, 2, 14, 4], "rotation": 180, "texture": "#top"}
+			}
+		},
+		{
+			"from": [3, 3, 4],
+			"to": [13, 13, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3, 3, 16]},
+			"faces": {
+				"east": {"uv": [1, 1, 15, 15], "rotation": 90, "texture": "#bellow"},
+				"west": {"uv": [1, 1, 15, 15], "rotation": 270, "texture": "#bellow"},
+				"up": {"uv": [1, 1, 15, 15], "texture": "#bellow"},
+				"down": {"uv": [1, 1, 15, 15], "rotation": 180, "texture": "#bellow"}
+			}
+		}
+	]
+}

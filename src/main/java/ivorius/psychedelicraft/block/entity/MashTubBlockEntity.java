@@ -122,20 +122,23 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     public void tick(ServerWorld world) {
-        if (currentStew.isEmpty()) {
-
+        if (isAcceptingIngredients()) {
             Vec3d center = getPos().toCenterPos();
             Box box = Box.of(center, 1.5, 0.5, 1.5);
             for (ItemEntity item : world.getEntitiesByClass(ItemEntity.class, box, EntityPredicates.VALID_ENTITY)) {
                 ItemStack stack = item.getStack();
-                suppliedIngredients.addStack(stack);
-                beginStewing(world);
-                markForUpdate();
-                spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
-                getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
-                item.discard();
+                if (isValidIngredient(world, stack)) {
+                    suppliedIngredients.addStack(stack);
+                    beginStewing(world);
+                    markForUpdate();
+                    spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
+                    getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
+                    item.discard();
+                }
             }
+        }
 
+        if (currentStew.isEmpty()) {
             super.tick(world);
         }
         currentStew = currentStew.filter(stew -> stew.tick(world));
@@ -143,11 +146,15 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     public void onLevelChange(Resovoir resovoir, int difference) {
+        if (world == null) {
+            return;
+        }
         if (resovoir.getContents().isEmpty() && !auxiliaryFluids.isEmpty()) {
             resovoir.setContents(auxiliaryFluids, false);
             auxiliaryFluids = ItemFluids.EMPTY;
         }
         super.onLevelChange(resovoir, difference);
+
         int luminance = resovoir.getContents().fluid().getPhysical().getDefaultState().getBlockState().getLuminance();
 
         int currentLuminance = getCachedState().get(MashTubBlock.LIGHT);
@@ -158,6 +165,14 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         if (difference > 0) {
             setTimeProcessed(0);
             setRepeatCount(0);
+        }
+
+        if (resovoir.getContents().isEmpty() && !suppliedIngredients.isEmpty()) {
+            for (ItemStack stack : suppliedIngredients.convertToItemStacks()) {
+                Block.dropStack(getWorld(), getPos(), stack);
+            }
+            world.playSound(null, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS);
+            suppliedIngredients.clear();
         }
     }
 
@@ -198,7 +213,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             return Either.right(ActionResult.FAIL);
         }
 
-        if (world instanceof ServerWorld sw && isValidIngredient(sw, stack)) {
+        if (world instanceof ServerWorld sw && isAcceptingIngredients() && acceptsItem(stack)) {
             ItemStack consumed = stack.split(1);
             suppliedIngredients.add(consumed.getItem(), 1);
             beginStewing(sw);
@@ -211,8 +226,16 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         return Either.right(ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
     }
 
+    public boolean acceptsItem(ItemStack stack) {
+        return FluidCapacity.get(stack) == 0;
+    }
+
+    public boolean isAcceptingIngredients() {
+        return currentStew.isEmpty() && !getPrimaryTank().getContents().isEmpty();
+    }
+
     public boolean isValidIngredient(ServerWorld world, ItemStack stack) {
-        return FluidCapacity.get(stack) == 0
+        return acceptsItem(stack)
             && (world.getRecipeManager()
                 .getAllOfType(PSRecipes.MASHING_TYPE).stream()
                 .anyMatch(recipe -> recipe.value().isAcceptableIngredient(getPrimaryTank().getContents(), stack)));
@@ -274,7 +297,11 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     @Deprecated
     @Override
     public List<ItemStack> getDroppedStacks(ItemStack container) {
-        return solidContents.isEmpty() ? List.of() : List.of(solidContents);
+        List<ItemStack> ingredients = new ArrayList<>(this.suppliedIngredients.convertToItemStacks());
+        if (!solidContents.isEmpty()) {
+            ingredients.add(solidContents);
+        }
+        return ingredients;
     }
 
     @Override

@@ -40,6 +40,7 @@ import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
@@ -47,6 +48,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -58,8 +60,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
@@ -175,6 +179,11 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
                     world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(Blocks.GLASS_PANE.getDefaultState()));
                     world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
                     Block.dropStack(world, pos, new ItemStack(PSItems.BROKEN_GLASS, world.random.nextBetween(1, 3)));
+                    Vec3d center = pos.toCenterPos();
+                    for (LivingEntity entity : world.getEntitiesByClass(LivingEntity.class, Box.of(center, 2, 2, 2), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
+                        entity.damage(world, world.getDamageSources().explosion(null, null), 3);
+                        entity.takeKnockback(0.1, center.x - entity.getX(), center.z - entity.getZ());
+                    }
                     clear();
                 }
             } else {
