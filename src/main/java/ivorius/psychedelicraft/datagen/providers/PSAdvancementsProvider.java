@@ -93,11 +93,11 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                                     .criteriaMerger(CriterionMerger.OR)
                                     .criterion("has_crystal_meth", items(PSItems.CRYSTAL_METH))
                                     .build(exporter)
-                                    .child(Psychedelicraft.id("thats_no_good"), PSItems.CRYSTAL_METH)
+                                    .child(Psychedelicraft.id("thats_no_good"), PSItems.VOMIT)
                                         .criteriaMerger(CriterionMerger.OR)
                                         .criterion("has_side_effect", CustomEventCriterion.Conditions.create("side_effect"))
                                         .build(exporter)
-                                        .child(Psychedelicraft.id("goo_goo"), PSItems.CRYSTAL_METH)
+                                        .child(Psychedelicraft.id("goo_goo"), PSItems.PACIFIER)
                                             .criteriaMerger(CriterionMerger.OR)
                                             .criterion("has_blocked_side_effect", CustomEventCriterion.Conditions.create("suck_pacifier"))
                                             .build(exporter);
