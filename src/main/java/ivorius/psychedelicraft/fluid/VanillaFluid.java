@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
-    static final Function<Fluid, SimpleFluid> LOOKUP = Util.memoize(fluid -> new VanillaFluid(toStill(fluid)));
+    static final Function<Fluid, SimpleFluid> LOOKUP = ((Function<Fluid, Fluid>)(VanillaFluid::toStill)).andThen(Util.memoize(VanillaFluid::new));
 
     @SuppressWarnings("deprecation")
     private VanillaFluid(Fluid still) {
