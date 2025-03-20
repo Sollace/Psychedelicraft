@@ -275,6 +275,25 @@ public interface BlockModels {
         generator.blockStateCollector.accept(states);
     }
 
+    static void registerPump(BlockStateModelGenerator generator, Block block) {
+        Identifier normal = ModelIds.getBlockModelId(block);
+        Identifier powered = ModelIds.getBlockSubModelId(block, "_extended");
+        generator.blockStateCollector.accept(
+            VariantsBlockStateSupplier.create(block)
+                .coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.POWERED, powered, normal))
+                .coordinate(BlockStateModelGenerator.createNorthDefaultRotationStates())
+        );
+        generator.registerParentedItemModel(block, normal);
+    }
+
+    static void registerPumpHead(BlockStateModelGenerator generator, Block block) {
+        Identifier normal = ModelIds.getBlockModelId(block);
+        generator.blockStateCollector.accept(
+            VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, normal))
+                .coordinate(BlockStateModelGenerator.createNorthDefaultRotationStates())
+        );
+    }
+
     static MultipartBlockStateSupplier addPipeConnectionStates(MultipartBlockStateSupplier states, EnumProperty<IODirection> property, Identifier model) {
         return states.with(When.create().set(property, IODirection.UP), BlockStateVariant.create()
             .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R180).put(VariantSettings.Y, Rotation.R0)

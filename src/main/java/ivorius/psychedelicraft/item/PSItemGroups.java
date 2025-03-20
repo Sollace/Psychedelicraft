@@ -40,6 +40,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.DISTILLERY);
                 entries.add(PSItems.BOTTLE_RACK);
                 entries.add(PSItems.MASH_TUB);
+                entries.add(PSItems.PUMP);
 
                 PSItems.ALL_BARRELS.stream().filter(i -> i.getBlock() != PSBlocks.PALE_OAK_BARREL).forEach(entries::add);
 

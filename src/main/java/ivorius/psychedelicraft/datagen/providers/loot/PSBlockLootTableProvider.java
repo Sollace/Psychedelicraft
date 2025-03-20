@@ -81,7 +81,8 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                 PSBlocks.GLASS_TUBE,
                 PSBlocks.GLASS_VALVE,
                 PSBlocks.BUNSEN_BURNER,
-                PSBlocks.BOTTLE_RACK
+                PSBlocks.BOTTLE_RACK,
+                PSBlocks.PUMP
         ).forEach(this::addDrop);
         addDrop(PSBlocks.TRAY, block -> LootTable.builder().pool(
             LootPool.builder()

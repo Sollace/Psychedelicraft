@@ -289,6 +289,14 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .pattern("*")
             .pattern("-")
             .offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.PUMP)
+            .input('#', ItemTags.STONE_CRAFTING_MATERIALS)
+            .input('-', PSItems.GLASS_TUBE).criterion(hasItem(PSItems.GLASS_VALVE), conditionsFromItem(PSItems.GLASS_VALVE))
+            .input('*', Items.REDSTONE)
+            .pattern("###")
+            .pattern("#-#")
+            .pattern("#*#")
+            .offerTo(exporter);
 
         offer2x2CompactingRecipe(exporter, RecipeCategory.MISC, PSItems.MORPHINE_TABLET, PSItems.HEROINE_POWDER);
         // TODO: Different pill designs using dyes
