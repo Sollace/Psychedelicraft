@@ -87,9 +87,13 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     public void appendTankTooltip(ItemFluids stack, @Nullable World world, List<Text> tooltip, FluidProcessingBlockEntity tank) {
         super.appendTankTooltip(stack, world, tooltip, tank);
 
-        if (tank.getProcessType() == ProcessType.DISTILL) {
+        if (tank.getProcessType() == ProcessType.DISTILL || tank.getProcessType() == ProcessType.FERMENT) {
             tooltip.add(Text.literal("Requirements:"));
-            tooltip.add(Text.translatable("* Must have at least 4 buckets of slurry").formatted(Formatting.RED, Formatting.ITALIC));
+            if (tank.getPrimaryTank().getAmount() < FLUID_PER_DIRT) {
+                tooltip.add(Text.translatable("* Requires 4 buckets of slurry to process").formatted(Formatting.RED, Formatting.ITALIC));
+            } else {
+                tooltip.add(Text.translatable("* Has 4 buckets of slurry").formatted(Formatting.GRAY));
+            }
         }
     }
 }
