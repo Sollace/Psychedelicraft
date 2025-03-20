@@ -3,6 +3,8 @@ package ivorius.psychedelicraft;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -10,10 +12,20 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class PsychedelicraftMixinPlugin implements IMixinConfigPlugin {
+    private static final Logger LOGGER = LogManager.getLogger("Psychedelicraft");
     private static final String MIXIN_PACKAGE = "ivorius.psychedelicraft.mixin";
 
+    private String sodiumPackage = "";
+    private boolean hasSodium;
+
     @Override
-    public void onLoad(String mixinPackage) { }
+    public void onLoad(String mixinPackage) {
+        hasSodium = FabricLoader.getInstance().isModLoaded("sodium");
+        if (hasSodium) {
+            sodiumPackage = isTargetAvailable("caffeinemc") ? "caffeinemc" : "jellysquid";
+            LOGGER.info("Detected sodium package: " + sodiumPackage);
+        }
+    }
 
     @Override
     public String getRefMapperConfig() {
@@ -22,12 +34,18 @@ public class PsychedelicraftMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.startsWith(MIXIN_PACKAGE)) {
-            if (mixinClassName.indexOf("sodium") != -1) {
-                return FabricLoader.getInstance().isModLoaded("sodium");
-            }
+        if (mixinClassName.startsWith(MIXIN_PACKAGE) && mixinClassName.indexOf("sodium") != -1) {
+            return hasSodium && targetClassName.indexOf(sodiumPackage) != -1;
         }
         return true;
+    }
+
+    private boolean isTargetAvailable(String target) {
+        try {
+            return Class.forName("net." + target + ".mods.sodium.client.SodiumClientMod") != null;
+        } catch (ClassNotFoundException e) {
+        }
+        return false;
     }
 
     @Override

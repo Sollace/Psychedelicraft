@@ -174,14 +174,18 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
         if (getWorld() instanceof ServerWorld world) {
             int transferred = getPrimaryTank().deposit(stack);
             if (transferred < stack.amount()) {
-                // TODO: Droplets item?
-                world.playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 0.25F, 0.02F);
-                world.spawnParticles(ParticleTypes.SPLASH,
-                        pos.getX() + world.getRandom().nextTriangular(0.5F, 0.5F),
-                        pos.getY() + 0.6F,
-                        pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
-                        2, 0, 0, 0, 0);
+                onFluidRejected(world, stack.ofAmount(stack.amount() - transferred));
             }
         }
+    }
+
+    protected void onFluidRejected(ServerWorld world, ItemFluids fluids) {
+        // TODO: Droplets item?
+        world.playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 0.25F, 0.02F);
+        world.spawnParticles(ParticleTypes.SPLASH,
+                pos.getX() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                pos.getY() + 0.6F,
+                pos.getZ() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                2, 0, 0, 0, 0);
     }
 }

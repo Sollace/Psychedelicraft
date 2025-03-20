@@ -115,6 +115,11 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
         public int size() {
             return 0;
         }
+
+        @Override
+        public boolean isEmpty() {
+            return coreFluid.isEmpty() && impurities.isEmpty();
+        }
     }
 
 }

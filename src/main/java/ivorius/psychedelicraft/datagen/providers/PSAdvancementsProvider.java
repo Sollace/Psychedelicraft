@@ -85,6 +85,36 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                                     .criterion("has_peyote_joint", items(PSItems.PEYOTE_JOINT))
                                     .build(exporter);
                     });
+                root.child(Psychedelicraft.id("time_to_cook"), PSItems.TRAY)
+                    .criteriaMerger(CriterionMerger.OR)
+                    .criterion("has_the_thing", items(PSItems.TRAY))
+                    .build(exporter).children(makeTray -> {
+                        makeTray.child(Psychedelicraft.id("first_batch"), PSItems.CRYSTAL_METH)
+                            .criteriaMerger(CriterionMerger.OR)
+                            .criterion("done_the_thing", CustomEventCriterion.Conditions.create("tray_harden"))
+                            .build(exporter).children(firstBatch -> {
+                                firstBatch.child(Psychedelicraft.id("the_good_stuff"), PSItems.CRYSTAL_METH)
+                                    .criteriaMerger(CriterionMerger.OR)
+                                    .criterion("has_crystal_meth", items(PSItems.CRYSTAL_METH))
+                                    .build(exporter)
+                                    .child(Psychedelicraft.id("thats_no_good"), PSItems.CRYSTAL_METH)
+                                        .criteriaMerger(CriterionMerger.OR)
+                                        .criterion("has_side_effect", CustomEventCriterion.Conditions.create("side_effect"))
+                                        .build(exporter)
+                                        .child(Psychedelicraft.id("goo_goo"), PSItems.CRYSTAL_METH)
+                                            .criteriaMerger(CriterionMerger.OR)
+                                            .criterion("has_blocked_side_effect", CustomEventCriterion.Conditions.create("suck_pacifier"))
+                                            .build(exporter);
+                                firstBatch.child(Psychedelicraft.id("hows_it_cracking"), PSItems.CRACK_COCAINE)
+                                    .criteriaMerger(CriterionMerger.OR)
+                                    .criterion("has_heroine_powder", items(PSItems.HEROINE_POWDER))
+                                    .criterion("has_crack_cocain", items(PSItems.CRACK_COCAINE))
+                                    .build(exporter);
+                            });
+
+                        // eye_protection - wear goggles
+                        // breaking_bad - wear entire suit
+                    });
                 root.child(Psychedelicraft.id("make_mash_tub"), PSItems.MASH_TUB)
                     .criteriaMerger(CriterionMerger.OR)
                     .criterion("has_the_thing", items(PSItems.MASH_TUB))

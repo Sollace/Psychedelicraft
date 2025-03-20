@@ -6,8 +6,8 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 
 import ivorius.psychedelicraft.PSSounds;
+import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.PipeInsertable;
-import ivorius.psychedelicraft.block.PipeInsertable.PipeFluids;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.FluidMound;
@@ -21,14 +21,17 @@ import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.WorldView;
 
-public class TrayBlockEntity extends SyncedBlockEntity {
+public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable {
     static final int MAX_CAPACITY = 50;
 
     private final Resovoir fluid = new Resovoir(MAX_CAPACITY, (tank, level) -> {});
@@ -67,20 +70,26 @@ public class TrayBlockEntity extends SyncedBlockEntity {
                         .getFirstMatch(PSRecipes.TRAY, new HardeningRecipe.Input(fluid.getContents(), impurities), world)
                         .map(RecipeEntry::value);
             }
+
             matchingRecipe.ifPresent(recipe -> {
                 if (timeToHarden < 0) {
                     timeToHarden = recipe.hardeningTime();
                 }
                 if (--timeToHarden <= 0) {
-                    world.playSoundAtBlockCenter(this.getPos(), PSSounds.BLOCK_TRAY_HARDEN, SoundCategory.BLOCKS, 1, 1, true);
+                    world.playSound(null, getPos(), PSSounds.BLOCK_TRAY_HARDEN, SoundCategory.BLOCKS, 1, 1);
                     craftingResult = Optional.of(recipe.craft(
                             new HardeningRecipe.Input(fluid.getContents(), impurities),
                             world.getRegistryManager()).copyWithCount(recipe.amount().get(world.random)));
                     impurities = new FluidMound();
+
                     fluid.clear();
                     matchingRecipe = Optional.empty();
+
+                    for (ServerPlayerEntity player : world.getNonSpectatingEntities(ServerPlayerEntity.class, Box.of(getPos().toCenterPos(), 17, 17, 17))) {
+                        PSCriteria.TRAY_HARDEN.trigger(player);
+                    }
                 } else {
-                    world.playSoundAtBlockCenter(this.getPos(), PSSounds.BLOCK_TRAY_HARDEN, SoundCategory.BLOCKS, 0.2F, 1, true);
+                    world.playSound(null, getPos(), PSSounds.BLOCK_TRAY_HARDEN, SoundCategory.BLOCKS, 0.2F, 1);
                 }
 
                 dirty = true;
@@ -94,7 +103,16 @@ public class TrayBlockEntity extends SyncedBlockEntity {
         }
     }
 
+    @Override
+    public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+        return input && direction == Direction.UP;
+    }
+
+    @Override
     public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+        if (direction != Direction.DOWN) {
+            return PipeInsertable.reject(fluids);
+        }
         if (isHardened() || timeToHarden > 0) {
             return PipeInsertable.reject(fluids);
         }

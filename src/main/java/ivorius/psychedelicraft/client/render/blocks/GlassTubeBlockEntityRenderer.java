@@ -40,18 +40,17 @@ public class GlassTubeBlockEntityRenderer implements BlockEntityRenderer<GlassTu
             for (int i = 0; i < 5 && i < contents.size(); i++) {
                 FluidMound mound = contents.get(i).fluids();
                 if (!mound.isEmpty()) {
-                    FluidBoxRenderer.getInstance().texture(vertices, mound.get(0)).draw(SHAPE_PART_CACHE.apply(i).apply(in.get()));
+                    FluidBoxRenderer.getInstance().texture(vertices, mound.get(0)).draw(SHAPE_PART_CACHE.apply(-i + 5).apply(in.get()));
                 }
             }
         }
 
         var out = state.get(GlassTubeBlock.OUT).getDirection();
         if (out.isPresent()) {
-            for (int i = Math.min(10, contents.size() - 1); i >= 5 && i < contents.size(); i--) {
+            for (int i = 5; i < contents.size(); i++) {
                 FluidMound mound = contents.get(i).fluids();
                 if (!mound.isEmpty()) {
-
-                    FluidBoxRenderer.getInstance().texture(vertices, mound.get(0)).draw(SHAPE_PART_CACHE.apply(-i + 5 + 5).apply(out.get()));
+                    FluidBoxRenderer.getInstance().texture(vertices, mound.get(0)).draw(SHAPE_PART_CACHE.apply(i - 5).apply(out.get()));
                 }
             }
         }

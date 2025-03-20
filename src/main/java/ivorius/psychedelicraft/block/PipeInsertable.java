@@ -3,6 +3,8 @@ package ivorius.psychedelicraft.block;
 import java.util.List;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -22,7 +24,7 @@ public interface PipeInsertable {
     Either<Optional<PipeFluids>, Unit> STATUS_ACCEPT_ALL = Either.left(Optional.empty());
 
     static Either<Optional<PipeFluids>, Unit> reject(PipeFluids fluids) {
-        return Either.left(Optional.of(fluids));
+        return fluids.isEmpty() ? STATUS_ACCEPT_ALL : Either.left(Optional.of(fluids));
     }
 
     default boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
@@ -33,9 +35,18 @@ public interface PipeInsertable {
         return STATUS_VOIDED;
     }
 
+    default Optional<PipeFluids> tryExtract(ServerWorld world, BlockState state, BlockPos pos, Direction direction) {
+        return Optional.empty();
+    }
+
     static boolean canConnectWith(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
-        return neighborState.getBlock() instanceof PipeInsertable pipe
-                && pipe.acceptsConnectionFrom(world, neighborState, neighborPos, state, pos, direction.getOpposite(), input);
+        var pipe = getPipeInterableAt(world, neighborState, neighborPos);
+        return pipe != null && pipe.acceptsConnectionFrom(world, neighborState, neighborPos, state, pos, direction.getOpposite(), input);
+    }
+
+    @Nullable
+    static PipeInsertable getPipeInterableAt(WorldView world, BlockState state, BlockPos pos) {
+        return state.getBlock() instanceof PipeInsertable a ? a : world.getBlockEntity(pos) instanceof PipeInsertable b ? b : null;
     }
 
     @SuppressWarnings("deprecation")
@@ -44,13 +55,21 @@ public interface PipeInsertable {
             return STATUS_ACCEPT_ALL;
         }
         if (!world.isChunkLoaded(pos)) {
-            return Either.left(Optional.of(fluids));
+            return reject(fluids);
         }
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() instanceof PipeInsertable insertable) {
-            return insertable.tryInsert(world, state, pos, direction, fluids);
+        var pipe = getPipeInterableAt(world, state, pos);
+        return pipe == null ? STATUS_VOIDED : pipe.tryInsert(world, state, pos, direction, fluids);
+    }
+
+    @SuppressWarnings("deprecation")
+    static Optional<PipeFluids> tryExtract(ServerWorld world, BlockPos pos, Direction direction) {
+        if (!world.isChunkLoaded(pos)) {
+            return Optional.empty();
         }
-        return STATUS_VOIDED;
+        BlockState state = world.getBlockState(pos);
+        var pipe = getPipeInterableAt(world, state, pos);
+        return pipe == null ? Optional.empty() : pipe.tryExtract(world, state, pos, direction);
     }
 
     public record PipeFluids(FluidMound fluids, int temperature) {

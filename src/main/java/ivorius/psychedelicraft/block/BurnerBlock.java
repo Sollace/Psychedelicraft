@@ -7,11 +7,8 @@ package ivorius.psychedelicraft.block;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
@@ -40,10 +37,8 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.Unit;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -52,7 +47,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.block.WireOrientation;
 
-public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
+public class BurnerBlock extends BlockWithEntity {
     public static final MapCodec<BurnerBlock> CODEC = createCodec(BurnerBlock::new);
     public static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(5, 2, 5);
     private static final Map<Identifier, VoxelShape> SHAPE_CACHE = new HashMap<>(Map.of(EmptyContents.ID, SHAPE));
@@ -133,21 +128,6 @@ public class BurnerBlock extends BlockWithEntity implements PipeInsertable {
             world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1, world.random.nextFloat() * 0.4F + 0.8F);
             world.setBlockState(pos, state.cycle(LIT));
         }
-    }
-
-    @Override
-    public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
-        return input && direction == Direction.UP;
-    }
-
-    @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
-        if (direction != Direction.DOWN) {
-            return PipeInsertable.reject(fluids);
-        }
-        return world.getBlockEntity(pos, PSBlockEntities.BUNSEN_BURNER)
-                .map(data -> data.getContents().tryInsert(world, state, pos, direction, fluids))
-                .orElseGet(() -> PipeInsertable.reject(fluids));
     }
 
     @Override

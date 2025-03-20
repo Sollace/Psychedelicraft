@@ -43,9 +43,15 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
     }
 
     public void setContents(ItemFluids fluids) {
+        setContents(fluids, true);
+    }
+
+    public void setContents(ItemFluids fluids, boolean notify) {
         int amount = this.fluids.amount();
         this.fluids = fluids.ofAmount(Math.min(fluids.amount(), capacity));
-        changeCallback.onLevelChange(this, this.fluids.amount() - amount);
+        if (notify) {
+            changeCallback.onLevelChange(this, this.fluids.amount() - amount);
+        }
     }
 
     @Override
@@ -164,7 +170,7 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
         if (compound.contains("stack", NbtElement.COMPOUND_TYPE)) {
             fluids = ItemFluids.of(ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("stack")));
         } else {
-            fluids = ItemFluids.CODEC.decode(NbtOps.INSTANCE, compound.get("fluid")).result().map(pair -> pair.getFirst()).orElse(ItemFluids.EMPTY);
+            fluids = ItemFluids.decode(compound.get("fluid"));
         }
     }
 

@@ -322,6 +322,7 @@
   "fluid.status.distill": "Distilling",
   "fluid.status.purify": "Purifiying",
   "fluid.status.acetify": "Acetify",
+  "fluid.status.separate": "Separating",
   
   "psychedelicraft.container.process_type.mature": "Used for maturation",
   "psychedelicraft.container.process_type.distill": "Used for distillation",
@@ -333,6 +334,7 @@
   "time.until.ferment": "Time Until Fermented: %s",
   "time.until.distill": "Time Until Distilled: %s",
   "time.until.purify": "Time Until Purified: %s",
+  "time.until.separate": "Time Until Contaminants Settle: %s",
 
   "psychedelicraft.container.levels": "Amount: %1$s / %2$s",
   "psychedelicraft.container.amount": "Amount: %1$s",
@@ -504,6 +506,18 @@
   "advancements.psychedelicraft.wash_sugar_cane.description": "Mash up sugarcane wash",
   "advancements.psychedelicraft.splitting_headache.title": "What is that Splitting Headache?",
   "advancements.psychedelicraft.splitting_headache.description": "Experience the other side of alcoholism",
+  "advancements.psychedelicraft.time_to_cook.title": "Time To Cook",
+  "advancements.psychedelicraft.time_to_cook.description": "Craft a metal tray",
+  "advancements.psychedelicraft.first_batch.title": "First Batch",
+  "advancements.psychedelicraft.first_batch.description": "Create your first powdered drugs",
+  "advancements.psychedelicraft.the_good_stuff.title": "The Good Stuff",
+  "advancements.psychedelicraft.the_good_stuff.description": "Craft Crystal Meth",
+  "advancements.psychedelicraft.hows_it_cracking.title": "How's it Cracking?",
+  "advancements.psychedelicraft.hows_it_cracking.description": "Craft Crack Coccaine",
+  "advancements.psychedelicraft.thats_no_good.title": "That's No Good",
+  "advancements.psychedelicraft.thats_no_good.description": "Experience Side-effects",
+  "advancements.psychedelicraft.goo_goo.title": "Goo Goo",
+  "advancements.psychedelicraft.goo_goo.description": "Use a pacifier to prevent damaging to your teeth and yourself",
   "advancements.psychedelicraft.all_drugs.title": "High As A Kite",
   "advancements.psychedelicraft.all_drugs.description": "Have every drug effect active at the same time",
 
@@ -525,7 +539,17 @@
   "distortion.psychedelicraft.hics.3": "*h-cup*",
   "distortion.psychedelicraft.hics.4": "*hup*",
 
+  "subtitles.psychedelicraft.entity.player.heartbeat": "Heart Beats",
+  "subtitles.psychedelicraft.entity.player.breath": "Heavy Breathing",
+  "subtitles.psychedelicraft.entity.player.pacify": "Pacifier Squeaks",
   "subtitle.psychedelicraft.rift_jar_open": "Rift Jar Opens",
   "subtitle.psychedelicraft.rift_jar_close": "Rift Jar Closes",
-  "subtitle.psychedelicraft.rift_jar_toggles": "Rift Jar Toggles"
+  "subtitle.psychedelicraft.rift_jar_toggles": "Rift Jar Toggles",
+  "subtitle.psychedelicraft.item_syringe_inject": "Syring Injects",
+  "subtitles.psychedelicraft.block.tray.harden": "Tray Contents Crystalises",
+  "subtitles.psychedelicraft.block.valve.open": "Valve Opens",
+  "subtitles.psychedelicraft.block.valve.close": "Valve Closes",
+  "subtitles.psychedelicraft.block.bunsen_burner.work": "Water Boils",
+  "subtitles.psychedelicraft.block.bunsen_burner.overheat": "Bunsen Burner Overheats",
+  "subtitles.psychedelicraft.block.bunsen_burner.fill": "Bunsen Burner Fills"
 }

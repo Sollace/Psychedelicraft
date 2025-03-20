@@ -26,6 +26,8 @@ import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -184,6 +186,14 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
                 }
             }
         }
+    }
+
+    public NbtElement encode() {
+        return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
+    }
+
+    public static ItemFluids decode(NbtElement nbt) {
+        return ItemFluids.CODEC.decode(NbtOps.INSTANCE, nbt).result().map(pair -> pair.getFirst()).orElse(ItemFluids.EMPTY);
     }
 
     public record Predicate(Optional<List<SimpleFluid>> fluid, IntRange amount, Map<String, IntRange> attributes) implements ComponentSubPredicate<ItemFluids> {

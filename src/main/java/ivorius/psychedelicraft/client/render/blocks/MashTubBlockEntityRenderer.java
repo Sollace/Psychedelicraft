@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
-import java.util.Random;
-
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.FluidFilled;
@@ -18,17 +16,21 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.Processable.ProcessType;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Renders fluid in the mash tub, or the solid contents
@@ -46,13 +48,12 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
 
     public void renderAsItem(ItemFluids fluids, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         ITEM_ENTITY.getPrimaryTank().setContents(fluids);
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlock(
-                ITEM_ENTITY.getCachedState(),
-                ITEM_ENTITY.getPos(),
-                MinecraftClient.getInstance().world,
-                matrices,
-                vertices.getBuffer(RenderLayer.getCutout()), false,
-                MinecraftClient.getInstance().world.random);
+        BlockState state = ITEM_ENTITY.getCachedState();
+        BakedModel model = MinecraftClient.getInstance().getBlockRenderManager().getModel(state);
+        MinecraftClient.getInstance().getBlockRenderManager()
+            .getModelRenderer().render(matrices.peek(), vertices.getBuffer(RenderLayers.getBlockLayer(state)), state, model, 1, 1, 1, light, overlay);
+        MinecraftClient.getInstance().getBlockRenderManager()
+            .getModelRenderer().render(matrices.peek(), vertices.getBuffer(RenderLayers.getEntityBlockLayer(state)), state, model, 1, 1, 1, light, overlay);
 
         if (!fluids.isEmpty()) {
             float fillPercentage = MathHelper.clamp((float)fluids.amount() / FluidVolumes.VAT, 0, 2);
@@ -73,22 +74,37 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
         Resovoir tank = entity.getPrimaryTank();
         ItemFluids stack = tank.getContents();
 
-        float fluidHeight = 0.1F;
+        float fluidHeight = 0.3F;
 
         FluidBoxRenderer.getInstance().scale(1).light(light).overlay(overlay).position(matrices);
 
         if (!stack.isEmpty()) {
             float fillPercentage = MathHelper.clamp((float)stack.amount() / tank.getCapacity(), 0, 2);
 
-            fluidHeight = 0.3F + fillPercentage * 0.6F;
+            fluidHeight += fillPercentage * 0.6F;
 
             FluidBoxRenderer.getInstance()
                 .texture(vertices, stack)
                 .draw(-0.5F, 0, -0.5F, 2, fluidHeight, 2, Direction.UP);
-        } else if (!entity.solidContents.isEmpty() && entity.solidContents.getItem() instanceof BlockItem) {
+        }
+
+        stack = entity.getAuxiliaryFluids();
+
+        if (!stack.isEmpty()) {
+            float fillPercentage = MathHelper.clamp((float)stack.amount() / tank.getCapacity(), 0, 2);
+
+            fluidHeight += fillPercentage * 0.6F;
+
+            FluidBoxRenderer.getInstance()
+                .texture(vertices, stack)
+                .draw(-0.5F, 0, -0.5F, 2, fluidHeight, 2, Direction.UP);
+        }
+
+        if (!entity.solidContents.isEmpty() && entity.solidContents.getItem() instanceof BlockItem) {
             FluidBoxRenderer.getInstance()
                 .texture(vertices, entity.solidContents)
-                .draw(-0.5F, 0, -0.5F, 2, 0.5F, 2, Direction.UP);
+                .draw(-0.3F, 0, -0.3F, 1.6F, 0.2F, 1.6F, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST)
+                .draw(-0.2F, 0, -0.2F, 1.4F, 0.3F, 1.4F, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
         }
 
         matrices.push();
@@ -97,7 +113,8 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
         Object2IntMap<Item> ingredients = entity.getSuppliedIngredients().getCounts();
 
         long seed = entity.getPos().asLong() + 1;
-        Random random = new Random(seed);
+        Random random = Random.create();
+        random.setSeed(seed);
 
         for (Item item : ingredients.keySet()) {
             for (int c = 0; c < ingredients.getInt(item); c++) {

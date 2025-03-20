@@ -57,7 +57,9 @@ public class MorphineDrug extends SimpleDrug {
                 }
             }
 
-            properties.increaseTeethGrindingSideEffect();
+            if (getTicksActive() > 90) {
+                properties.increaseTeethGrindingSideEffect();
+            }
         }
 
         if (getTicksActive() < 10) {

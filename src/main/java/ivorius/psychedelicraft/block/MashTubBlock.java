@@ -26,6 +26,8 @@ import net.minecraft.entity.player.*;
 import net.minecraft.fluid.*;
 import net.minecraft.item.*;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -149,6 +151,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
         if (!blockEntity.solidContents.isEmpty()) {
             PSCriteria.SIMPLY_MASHING.trigger(player, blockEntity.solidContents);
             Block.dropStack(world, pos, blockEntity.solidContents);
+            world.playSound(null, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1, 1);
             blockEntity.solidContents = ItemStack.EMPTY;
             blockEntity.markForUpdate();
             return ActionResult.SUCCESS;

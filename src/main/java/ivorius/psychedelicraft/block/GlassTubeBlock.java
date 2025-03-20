@@ -46,6 +46,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -64,9 +65,10 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.tick.ScheduledTickView;
 
-public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
+public class GlassTubeBlock extends BlockWithEntity {
     public static final MapCodec<GlassTubeBlock> CODEC = createCodec(GlassTubeBlock::new);
 
     public static final EnumProperty<IODirection> IN = EnumProperty.of("in", IODirection.class);
@@ -191,24 +193,8 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return current;
     }
 
-    @Override
-    public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
-        return neighborState.getBlock() instanceof GlassTubeBlock && (state.get(input ? OUT : IN).direction == direction);
-    }
-
     protected boolean isBlocked(BlockState state) {
         return false;
-    }
-
-    @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
-        if (state.get(IN).direction == direction.getOpposite()) {
-            return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> {
-                return data.receiveContents(world, pos, state, fluids);
-            }).orElseGet(() -> PipeInsertable.reject(fluids));
-        }
-
-        return PipeInsertable.reject(fluids);
     }
 
     public BlockState setDirection(BlockState state, IODirection in, IODirection out) {
@@ -261,8 +247,24 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
     }
 
     @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, wireOrientation, notify);
+        if (world instanceof ServerWorld sw) {
+            world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).ifPresent(data -> {
+                data.pushContentsForward(sw, pos, state.get(OUT));
+                data.pullContentsForward(sw, pos);
+            });
+        }
+    }
+
+    @Override
     protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
+    }
+
+    @Override
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> (int)((data.contents.size() / 10F) * 15)).orElse(0);
     }
 
     @Override
@@ -326,7 +328,7 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
         return 0;
     }
 
-    public static class Data extends SyncedBlockEntity {
+    public static class Data extends SyncedBlockEntity implements PipeInsertable {
         private final List<PipeFluids> contents = new LinkedList<>();
 
         private int temperatureUpdateCooldown;
@@ -352,22 +354,26 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
             pushContentsForward(world, pos, state.get(OUT));
             var status = Optional.of(contents).filter(i -> !i.isEmpty()).map(i -> i.withTemperature(i.temperature() - getTemperatureDrop(world, pos))).map(newContents -> {
                 if (this.contents.size() < 10) {
-                    this.contents.add(newContents);
+                    this.contents.addFirst(newContents);
                 } else {
-                    Optional<PipeFluids> available = this.contents.stream().filter(i -> i.fluids().totalSize() < 100).findFirst();
-                    if (available.isEmpty()) {
-                        return PipeInsertable.reject(contents);
+                    PipeFluids first = this.contents.getFirst();
+                    if (first.isEmpty()) {
+                        this.contents.removeFirst();
+                        this.contents.addFirst(contents);
+                    } else {
+                        Optional<PipeFluids> available = this.contents.stream().filter(i -> i.fluids().totalSize() < 100).findFirst();
+                        if (available.isEmpty()) {
+                            return PipeInsertable.reject(contents);
+                        }
+                        this.contents.set(this.contents.indexOf(available.get()), available.get().combine(newContents));
                     }
-                    this.contents.set(this.contents.indexOf(available.get()), available.get().combine(newContents));
                 }
                 markDirty();
 
                 return STATUS_ACCEPT_ALL;
             }).orElse(STATUS_ACCEPT_ALL);
 
-            if (!this.contents.isEmpty()) {
-                world.scheduleBlockTick(pos, state.getBlock(), 3);
-            }
+            scheduleNextTick(world);
             return status;
         }
 
@@ -379,30 +385,67 @@ public class GlassTubeBlock extends BlockWithEntity implements PipeInsertable {
             markDirty();
 
             if (contents.size() >= 10) {
-                PipeFluids fluids = contents.getFirst();
-                Optional<PipeFluids> pushedBack = fluids.isEmpty() ? Optional.empty() : direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, fluids)).orElse(STATUS_VOIDED).ifRight(unit -> {
-                    fluids.fluids().getFluids().forEach(fluid -> {
-                        Vector3f outVec = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
-                        world.spawnParticles(
-                                fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
-                                    : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
-                                    : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid.fluid()),
-                                pos.getX() + 0.5 + outVec.x * 0.5,
-                                pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
-                                pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
-                    });
-                }).left().flatMap(Function.identity());
-                if (pushedBack.isPresent() && !pushedBack.get().isEmpty()) {
-                    contents.set(0, pushedBack.get());
-                } else {
-                    contents.removeFirst();
-                    contents.add(PipeFluids.EMPTY);
+                PipeFluids fluids = contents.removeLast();
+                if (!fluids.isEmpty()) {
+                    world.playSound(null, pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS, 0.1F, 0.001F);
+                    Optional<PipeFluids> pushedBack = fluids.isEmpty() ? Optional.empty() : direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, fluids)).orElse(STATUS_VOIDED).ifRight(unit -> {
+                        fluids.fluids().getFluids().forEach(fluid -> {
+                            Vector3f outVec = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
+                            world.spawnParticles(
+                                    fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
+                                        : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
+                                        : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid.fluid()),
+                                    pos.getX() + 0.5 + outVec.x * 0.5,
+                                    pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
+                                    pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
+                        });
+                    }).left().flatMap(Function.identity());
+                    if (pushedBack.isPresent() && !pushedBack.get().isEmpty()) {
+                        contents.addFirst(pushedBack.get());
+                    }
                 }
+            } else {
+                contents.addFirst(PipeFluids.EMPTY);
             }
 
-            if (!contents.isEmpty()) {
-                world.scheduleBlockTick(pos, getCachedState().getBlock(), 3);
+            scheduleNextTick(world);
+        }
+
+        private void scheduleNextTick(ServerWorld world) {
+            for (var i : contents) {
+                if (!i.isEmpty()) {
+                    world.scheduleBlockTick(pos, getCachedState().getBlock(), 3);
+                    return;
+                }
             }
+        }
+
+        public void pullContentsForward(ServerWorld world, BlockPos pos) {
+            if (((GlassTubeBlock)getCachedState().getBlock()).isBlocked(getCachedState())) {
+                return;
+            }
+
+            markDirty();
+
+            if (world.getReceivedStrongRedstonePower(pos) == 15) {
+                getCachedState().get(IN).getDirection().flatMap(d -> PipeInsertable.tryExtract(world, pos.offset(d), d)).ifPresent(contents::addFirst);
+            }
+
+            scheduleNextTick(world);
+        }
+
+        @Override
+        public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+            return neighborState.getBlock() instanceof GlassTubeBlock && (state.get(input ? OUT : IN).direction == direction);
+        }
+
+        @Override
+        public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+            if (state.get(IN).direction == direction.getOpposite()) {
+                return receiveContents(world, pos, state, fluids);
+            }
+
+            return PipeInsertable.reject(fluids);
         }
 
         @Override

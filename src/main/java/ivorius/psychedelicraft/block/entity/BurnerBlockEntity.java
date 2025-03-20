@@ -12,8 +12,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 
+import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.BlockWithFluid.DirectionalFluidResovoir;
 import ivorius.psychedelicraft.block.BurnerBlock;
@@ -53,6 +55,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -60,9 +63,10 @@ import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
-public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFluid.DirectionalFluidResovoir {
+public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFluid.DirectionalFluidResovoir, PipeInsertable {
     static final int[] CONTAINER_SLOT_ID = {0};
 
     private int temperature;
@@ -159,7 +163,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
             if (getTotalFluidVolume() == 0) {
                 BlockPos pos = getPos();
-                world.playSound(null, pos, SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 1.25F, 0.02F);
+                world.playSound(null, pos, PSSounds.BLOCK_BUNSEN_BURNER_OVERHEAT, SoundCategory.BLOCKS, 1.25F, 0.02F);
                 world.spawnParticles(ParticleTypes.SMOKE,
                         pos.getX() + world.getRandom().nextTriangular(0.5F, 0.1F),
                         pos.getY() + 0.6F,
@@ -178,7 +182,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
                     temperature -= 2;
                     setTemperature(temperature);
                 }
-                world.playSound(null, getPos(), SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.25F, 0.02F);
+                world.playSound(null, getPos(), PSSounds.BLOCK_BUNSEN_BURNER_WORK, SoundCategory.BLOCKS, 1.25F, 0.02F);
                 world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, pos);
                 craft(world, c);
             }
@@ -246,6 +250,19 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         container = ItemStack.EMPTY;
         processingTime = 0;
         markDirty();
+    }
+
+    @Override
+    public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+        return input && direction == Direction.UP;
+    }
+
+    @Override
+    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+        if (direction != Direction.DOWN) {
+            return PipeInsertable.reject(fluids);
+        }
+        return getContents().tryInsert(world, state, pos, direction, fluids);
     }
 
     @Override

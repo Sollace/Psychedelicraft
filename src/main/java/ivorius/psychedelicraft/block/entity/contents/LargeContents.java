@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import com.mojang.datafixers.util.Either;
 
+import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.block.ShapeUtil;
@@ -78,7 +79,7 @@ public class LargeContents extends SmallContents {
             if (player.getWorld() instanceof ServerWorld sw && isValidIngredient(sw, stack)) {
                 ingredients.addStack(stack.splitUnlessCreative(1, player));
                 player.setStackInHand(hand, stack);
-                entity.playSound(null, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value());
+                entity.playSound(null, PSSounds.BLOCK_BUNSEN_BURNER_FILL);
                 return Optional.of(this);
             }
         }

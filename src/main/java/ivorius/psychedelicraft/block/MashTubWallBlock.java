@@ -9,6 +9,7 @@ import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.*;
@@ -24,6 +25,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Unit;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -35,7 +37,7 @@ import net.minecraft.world.*;
 /**
  * Updated by Sollace on 7 Feb 2023
  */
-public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
+public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, PipeInsertable {
     public static final MapCodec<MashTubWallBlock> CODEC = createCodec(MashTubWallBlock::new);
 
     public MashTubWallBlock(Settings settings) {
@@ -149,6 +151,21 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled {
             BlockState masterState = world.getBlockState(center);
             return masterState.getBlock() instanceof FluidFillable fillable && fillable.tryFillWithFluid(world, center, masterState, fluidState);
         }).isPresent();
+    }
+
+    @Override
+    public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
+        return true;
+    }
+
+    @Override
+    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+        return getValidMasterPosition(world, pos).map(center -> PipeInsertable.tryInsert(world, center, direction, fluids)).orElse(PipeInsertable.reject(fluids));
+    }
+
+    @Override
+    public Optional<PipeFluids> tryExtract(ServerWorld world, BlockState state, BlockPos pos, Direction direction) {
+        return getValidMasterPosition(world, pos).flatMap(center -> PipeInsertable.tryExtract(world, center, direction));
     }
 
     @Deprecated

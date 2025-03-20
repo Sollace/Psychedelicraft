@@ -6,11 +6,8 @@
 package ivorius.psychedelicraft.block;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
@@ -27,16 +24,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
-public class TrayBlock extends BlockWithEntity implements PipeInsertable {
+public class TrayBlock extends BlockWithEntity {
     public static final MapCodec<TrayBlock> CODEC = createCodec(TrayBlock::new);
 
     private static final VoxelShape X_SHAPE = ShapeUtil.createCenteredShape(9, 2, 6);
@@ -72,21 +67,6 @@ public class TrayBlock extends BlockWithEntity implements PipeInsertable {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return getDefaultState().with(AXIS, ctx.getHorizontalPlayerFacing().rotateYClockwise().getAxis());
-    }
-
-    @Override
-    public boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
-        return input && direction == Direction.UP;
-    }
-
-    @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
-        if (direction != Direction.DOWN) {
-            return PipeInsertable.reject(fluids);
-        }
-        return world.getBlockEntity(pos, PSBlockEntities.TRAY)
-                .map(data -> data.tryInsert(world, state, pos, direction, fluids))
-                .orElseGet(() -> PipeInsertable.reject(fluids));
     }
 
     @Override
