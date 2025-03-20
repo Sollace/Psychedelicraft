@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
+import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.contents.EmptyContents;
 import net.minecraft.block.*;
@@ -121,7 +122,7 @@ public class BurnerBlock extends BlockWithEntity {
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        boolean powered = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
+        boolean powered = isReceivingPower(world, pos);
         if (powered != state.get(LIT)) {
             world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1, world.random.nextFloat() * 0.4F + 0.8F);
             world.setBlockState(pos, state.cycle(LIT));
@@ -134,6 +135,11 @@ public class BurnerBlock extends BlockWithEntity {
         super.onStateReplaced(state, world, pos, newState, moved);
     }
 
+    private boolean isReceivingPower(World world, BlockPos pos) {
+        return world.isReceivingRedstonePower(pos)
+            || DistilleryBlockEntity.getBlockHeat(world.getBlockState(pos.down())) > 0;
+    }
+
     @Override
     protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (state.get(LIT) && !entity.isSneaking() && entity.age % 10 == 0 && entity.isSupportedBy(pos)) {
@@ -143,7 +149,7 @@ public class BurnerBlock extends BlockWithEntity {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return super.getPlacementState(ctx).with(LIT, ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos()));
+        return super.getPlacementState(ctx).with(LIT, isReceivingPower(ctx.getWorld(), ctx.getBlockPos()));
     }
 
     @Override

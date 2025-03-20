@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
@@ -18,6 +19,7 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.Direction.Axis;
 
@@ -38,14 +40,20 @@ public class DistilleryBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     protected int getTickRate(ServerWorld world) {
-        if (world.getFluidState(getPos().down()).isIn(FluidTags.LAVA)) {
+        return Math.max(1, getBlockHeat(world.getBlockState(getPos().down())));
+    }
+
+    public static int getBlockHeat(BlockState state) {
+        if (state.getFluidState().isIn(FluidTags.LAVA)) {
             return 7;
         }
-        BlockState below = world.getBlockState(getPos().down());
-        if (below.isIn(BlockTags.FIRE) || below.isIn(BlockTags.CAMPFIRES)) {
+        if (state.isIn(BlockTags.FIRE) || (state.isIn(BlockTags.CAMPFIRES) && state.getOrEmpty(Properties.LIT).orElse(true))) {
             return 3;
         }
-        return 1;
+        if (state.isOf(Blocks.MAGMA_BLOCK)) {
+            return 2;
+        }
+        return 0;
     }
 
     @Override
