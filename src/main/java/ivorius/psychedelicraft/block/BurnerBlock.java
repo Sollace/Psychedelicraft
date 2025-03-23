@@ -20,6 +20,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -45,7 +46,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.block.WireOrientation;
 
 public class BurnerBlock extends BlockWithEntity {
@@ -91,7 +91,7 @@ public class BurnerBlock extends BlockWithEntity {
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (state.get(LIT)) {
-            world.addParticle(ParticleTypes.SMOKE,
+            world.addParticleClient(ParticleTypes.SMOKE,
                     world.random.nextTriangular(pos.getX() + 0.5, 0.2),
                     world.random.nextTriangular(pos.getY() + 0.2, 0.2),
                     world.random.nextTriangular(pos.getZ() + 0.5, 0.2),
@@ -132,9 +132,9 @@ public class BurnerBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        ItemScatterer.onStateReplaced(state, newState, world, pos);
-        super.onStateReplaced(state, world, pos, newState, moved);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        ItemScatterer.onStateReplaced(state, world, pos);
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     private boolean isReceivingPower(World world, BlockPos pos) {
@@ -143,7 +143,7 @@ public class BurnerBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
         if (world instanceof ServerWorld sw && state.get(LIT) && !entity.isSneaking() && entity.age % 10 == 0 && entity.isSupportedBy(pos)) {
             entity.damage(sw, entity.getDamageSources().inFire(), 1);
         }

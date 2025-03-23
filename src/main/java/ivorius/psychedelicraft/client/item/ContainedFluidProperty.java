@@ -10,8 +10,8 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.client.render.item.property.bool.BooleanProperty;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 
 public record ContainedFluidProperty(SimpleFluid fluid) implements BooleanProperty {
 	public static final MapCodec<ContainedFluidProperty> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -19,7 +19,7 @@ public record ContainedFluidProperty(SimpleFluid fluid) implements BooleanProper
     ).apply(i, ContainedFluidProperty::new));
 
 	@Override
-	public boolean getValue(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ModelTransformationMode modelTransformationMode) {
+	public boolean test(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ItemDisplayContext displayContext) {
         return ItemFluids.of(stack).isOf(fluid);
 	}
 

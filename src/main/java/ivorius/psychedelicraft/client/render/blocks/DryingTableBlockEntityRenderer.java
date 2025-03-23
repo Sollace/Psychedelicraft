@@ -10,10 +10,10 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.math.RotationAxis;
-
+import net.minecraft.util.math.Vec3d;
 import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 
 import java.util.Random;
@@ -29,7 +29,7 @@ public class DryingTableBlockEntityRenderer implements BlockEntityRenderer<Dryin
     }
 
     @Override
-    public void render(DryingTableBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(DryingTableBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         matrices.push();
         matrices.translate(0, 0.75f, 0);
 
@@ -59,7 +59,7 @@ public class DryingTableBlockEntityRenderer implements BlockEntityRenderer<Dryin
             matrices.translate(0, 0, -0.2F);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
             matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-50));
-            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
+            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
 
             matrices.pop();
         }

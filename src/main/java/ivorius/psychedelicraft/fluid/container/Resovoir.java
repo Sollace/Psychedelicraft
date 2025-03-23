@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
@@ -166,11 +165,9 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        if (compound.contains("stack", NbtElement.COMPOUND_TYPE)) {
-            fluids = ItemFluids.of(ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("stack")));
-        } else {
-            fluids = ItemFluids.decode(compound.get("fluid"));
-        }
+        fluids = compound.get("fluid", ItemFluids.CODEC)
+                .or(() -> compound.get("stack", ItemStack.OPTIONAL_CODEC).map(ItemFluids::of))
+                .orElse(ItemFluids.EMPTY);
     }
 
     public interface ChangeListener {

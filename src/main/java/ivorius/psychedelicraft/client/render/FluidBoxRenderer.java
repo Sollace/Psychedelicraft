@@ -15,8 +15,8 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
@@ -101,7 +101,7 @@ public class FluidBoxRenderer {
     }
 
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemStack stack) {
-        MinecraftClient.getInstance().getItemModelManager().update(itemRenderState, stack, ModelTransformationMode.FIRST_PERSON_LEFT_HAND, null, null, 0);
+        MinecraftClient.getInstance().getItemModelManager().update(itemRenderState, stack, ItemDisplayContext.FIRST_PERSON_LEFT_HAND, null, null, 0);
         sprite = itemRenderState.getParticleSprite(random);
         buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         color = Colors.WHITE;
@@ -185,7 +185,7 @@ public class FluidBoxRenderer {
     public record FluidAppearance(Identifier texture, Sprite sprite, int color) {
         public static FluidAppearance of(ItemFluids stack) {
             int color = stack.fluid().getColor(stack);
-            Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
+            Sprite sprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).particleSprite();
 
             FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(stack.fluid().getPhysical().getStandingFluid());
             if (handler != null) {

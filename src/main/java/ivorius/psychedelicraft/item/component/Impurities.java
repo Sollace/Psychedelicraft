@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipAppender;
@@ -50,7 +51,7 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type, ComponentsAccess components) {
 
         if (!impurities.isEmpty()) {
             impurities.stream().map(i -> i.getName())

@@ -42,9 +42,9 @@ public class HarmoniumDrug extends SimpleDrug {
     public void fromNbt(NbtCompound tagCompound, WrapperLookup lookup) {
         super.fromNbt(tagCompound, lookup);
         currentColor.set(
-                tagCompound.getFloat("currentColor[0]"),
-                tagCompound.getFloat("currentColor[1]"),
-                tagCompound.getFloat("currentColor[2]")
+                tagCompound.getFloat("currentColor[0]", 0),
+                tagCompound.getFloat("currentColor[1]", 0),
+                tagCompound.getFloat("currentColor[2]", 0)
         );
     }
 }

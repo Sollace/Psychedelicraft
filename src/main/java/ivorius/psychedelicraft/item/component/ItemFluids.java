@@ -20,6 +20,7 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item.TooltipContext;
@@ -32,7 +33,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.NumberRange.IntRange;
-import net.minecraft.predicate.item.ComponentSubPredicate;
+import net.minecraft.predicate.component.ComponentSubPredicate;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -173,7 +174,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type, ComponentsAccess components) {
         fluid().appendTooltip(this, tooltip, type);
         if (type.isAdvanced()) {
             tooltip.accept(Text.literal("Contents:").formatted(Formatting.DARK_GRAY));
@@ -215,10 +216,6 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
         }
 
         @Override
-        public boolean test(ItemStack stack, ItemFluids fluids) {
-            return test(fluids);
-        }
-
         public boolean test(ItemFluids fluids) {
             return (fluid.isEmpty() || fluid.get().contains(fluids.fluid()))
                 && amount.test(fluids.amount())

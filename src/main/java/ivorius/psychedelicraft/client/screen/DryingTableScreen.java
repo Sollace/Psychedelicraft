@@ -7,7 +7,6 @@ package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.screen.DryingTableScreenHandler;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.RenderLayer;
@@ -55,7 +54,6 @@ public class DryingTableScreen extends HandledScreen<DryingTableScreenHandler> {
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         int centerX = (width - backgroundWidth) / 2;

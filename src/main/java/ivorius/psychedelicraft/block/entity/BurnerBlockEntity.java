@@ -134,7 +134,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     public void clientTick(World world) {
         if (getTemperature() > 60 && getTotalFluidVolume() > 0) {
             BlockPos pos = getPos();
-            world.addParticle(new DrugDustParticleEffect(PSParticles.BUBBLE, Colors.WHITE, 0.6F),
+            world.addParticleClient(new DrugDustParticleEffect(PSParticles.BUBBLE, Colors.WHITE, 0.6F),
                     world.getRandom().nextTriangular(pos.getX() + 0.5, 0.2),
                     world.getRandom().nextTriangular(pos.getY() + 1, 0.2),
                     world.getRandom().nextTriangular(pos.getZ() + 0.5, 0.2), 0, 0, 0);
@@ -287,20 +287,20 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
-        temperature = compound.getInt("temperature");
-        processingTime = compound.getInt("processingTime");
+        temperature = compound.getInt("temperature", 0);
+        processingTime = compound.getInt("processingTime", 0);
         container = ItemStack.OPTIONAL_CODEC
                 .decode(NbtOps.INSTANCE, compound.get("container"))
                 .result()
                 .map(Pair::getFirst)
                 .orElse(ItemStack.EMPTY);
-        Identifier contentType = Identifier.of(compound.getString("contentsType"));
+        Identifier contentType = compound.getString("contentsType").map(Identifier::of).orElse(EmptyContents.ID);
         if (contentType.equals(contents.getId())) {
-            contents.fromNbt(compound.getCompound("contents"), lookup);
+            contents.fromNbt(compound.getCompoundOrEmpty("contents"), lookup);
         } else {
             contents = Contents.TYPES
                     .getOrDefault(contentType, Contents.TYPES.get(EmptyContents.ID))
-                    .create(this, compound.getCompound("contents"), lookup);
+                    .create(this, compound.getCompoundOrEmpty("contents"), lookup);
         }
     }
 

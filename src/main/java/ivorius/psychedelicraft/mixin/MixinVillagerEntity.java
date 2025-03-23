@@ -14,6 +14,8 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -33,8 +35,8 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
     private void onInteractMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> info) {
         ItemStack stack = player.getStackInHand(hand);
         if (stack.isOf(PSItems.HASH_MUFFIN) && !isBaby()) {
-            VillagerProfession profession = getVillagerData().getProfession();
-            if (profession == VillagerProfession.NITWIT || profession == VillagerProfession.NONE) {
+            RegistryEntry<VillagerProfession> profession = getVillagerData().profession();
+            if (profession.matchesKey(VillagerProfession.NITWIT) || profession.matchesKey(VillagerProfession.NONE)) {
                 if (!player.getAbilities().creativeMode) {
                     stack.decrement(1);
                 }
@@ -43,9 +45,11 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
                             1 + random.nextFloat(),
                             random.nextFloat() * 0.7F + 0.3F
                     );
-                    setVillagerData(getVillagerData().withProfession(PSTradeOffers.DRUG_ADDICT_PROFESSION));
-                    ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)getWorld());
-                    PSCriteria.FEED_VILLAGER.trigger(player);
+                    player.getWorld().getRegistryManager().getOrThrow(RegistryKeys.VILLAGER_PROFESSION).getEntry(PSTradeOffers.DRUG_ADDICT_PROFESSION.getValue()).ifPresent(e -> {
+                        setVillagerData(getVillagerData().withProfession(e));
+                        ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)getWorld());
+                        PSCriteria.FEED_VILLAGER.trigger(player);
+                    });
                 }
                 info.setReturnValue(ActionResult.SUCCESS);
             } else {
@@ -56,7 +60,7 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
 
     @Inject(method = "afterUsing", at = @At("RETURN"))
     private void onAfterUsing(TradeOffer offer, CallbackInfo info) {
-        if (getVillagerData().getProfession() == PSTradeOffers.DRUG_ADDICT_PROFESSION && getWorld() instanceof ServerWorld sw) {
+        if (getVillagerData().profession().matchesKey(PSTradeOffers.DRUG_ADDICT_PROFESSION) && getWorld() instanceof ServerWorld sw) {
             damage(sw, PSDamageTypes.create(sw, PSDamageTypes.OVERDOSE), (offer.getUses() * offer.getSellItem().getCount()) + 1);
         }
     }

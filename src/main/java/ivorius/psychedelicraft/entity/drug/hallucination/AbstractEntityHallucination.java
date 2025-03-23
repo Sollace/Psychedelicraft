@@ -58,15 +58,15 @@ public abstract class AbstractEntityHallucination extends Hallucination {
         super.update();
 
         entity.age++;
-        entity.prevX = entity.getX();
-        entity.prevY = entity.getY();
-        entity.prevZ = entity.getZ();
+        entity.lastX = entity.getX();
+        entity.lastY = entity.getY();
+        entity.lastZ = entity.getZ();
 
-        entity.prevYaw = entity.getYaw();
-        entity.prevPitch = entity.getPitch();
+        entity.lastYaw = entity.getYaw();
+        entity.lastPitch = entity.getPitch();
 
         if (entity instanceof LivingEntity living) {
-            living.prevHeadYaw = living.headYaw;
+            living.lastHeadYaw = living.headYaw;
         }
 
         animateEntity();
@@ -91,11 +91,11 @@ public abstract class AbstractEntityHallucination extends Hallucination {
 
         Vec3d cameraPos = camera.getPos();
 
-        double x = MathHelper.lerp(tickDelta, entity.prevX, entity.getX()) - cameraPos.x;
-        double y = MathHelper.lerp(tickDelta, entity.prevY, entity.getY()) - cameraPos.y;
-        double z = MathHelper.lerp(tickDelta, entity.prevZ, entity.getZ()) - cameraPos.z;
-        float pitch = MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch(tickDelta));
-        float yaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw(tickDelta));
+        double x = MathHelper.lerp(tickDelta, entity.lastX, entity.getX()) - cameraPos.x;
+        double y = MathHelper.lerp(tickDelta, entity.lastY, entity.getY()) - cameraPos.y;
+        double z = MathHelper.lerp(tickDelta, entity.lastZ, entity.getZ()) - cameraPos.z;
+        float pitch = MathHelper.lerp(tickDelta, entity.lastPitch, entity.getPitch(tickDelta));
+        float yaw = MathHelper.lerp(tickDelta, entity.lastYaw, entity.getYaw(tickDelta));
 
         entity.lastRenderX = entity.getX();
         entity.lastRenderY = entity.getY();

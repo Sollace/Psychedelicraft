@@ -83,15 +83,15 @@ public class EntityIdentitySwapHallucination extends Hallucination {
             attachment.lastRenderX = selection.lastRenderX;
             attachment.lastRenderY = selection.lastRenderY;
             attachment.lastRenderZ = selection.lastRenderZ;
-            attachment.prevX = selection.prevX;
-            attachment.prevY = selection.prevY;
-            attachment.prevZ = selection.prevZ;
-            attachment.prevYaw = selection.prevYaw;
-            attachment.prevPitch = selection.prevPitch;
+            attachment.lastX = selection.lastX;
+            attachment.lastY = selection.lastY;
+            attachment.lastZ = selection.lastZ;
+            attachment.lastYaw = selection.lastYaw;
+            attachment.lastPitch = selection.lastPitch;
             attachment.setOnGround(selection.isOnGround());
 
             if (attachment instanceof LivingEntity living) {
-                living.prevHeadYaw = ((LivingEntity)selection).prevHeadYaw;
+                living.lastHeadYaw = ((LivingEntity)selection).lastHeadYaw;
                 living.headYaw = ((LivingEntity)selection).headYaw;
             }
 

@@ -153,7 +153,7 @@ public interface PSItemGroups {
                 if (Psychedelicraft.getConfig().enableHarmonium.get()) {
                     for (DyeColor dye : DyeColor.values()) {
                         ItemStack harmonium = PSItems.HARMONIUM.getDefaultStack();
-                        harmonium.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(dye.getSignColor(), true));
+                        harmonium.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(dye.getSignColor()));
                         entries.add(harmonium);
                     }
                 }

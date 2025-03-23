@@ -2,15 +2,16 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL20C;
-import org.lwjgl.opengl.GL30C;
-import com.mojang.blaze3d.platform.GlConst;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.opengl.GlConst;
+import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.textures.GpuTexture;
 
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.ShaderProgramDefinition;
+import net.minecraft.client.texture.GlTexture;
 
 public class BuiltGemoetryShader {
     private final int program;
@@ -37,19 +38,20 @@ public class BuiltGemoetryShader {
         private final int id;
         public int location;
         private final String name;
-        private final IntSupplier valueGetter;
+        private final Supplier<GpuTexture> valueGetter;
 
-        public Sampler(int id, String name, IntSupplier valueGetter) {
+        public Sampler(int id, String name, Supplier<GpuTexture> valueGetter) {
             this.id = id;
             this.name = name;
             this.valueGetter = valueGetter;
         }
 
         void bind(int program) {
-            int texId = valueGetter.getAsInt();
-            GL30C.glUniform1i(location, id);
-            RenderSystem.activeTexture(GlConst.GL_TEXTURE0 + id);
-            RenderSystem.bindTexture(texId);
+            GlTexture texId = (GlTexture)valueGetter.get();
+            GlUniform.setUniform(location, id);
+            GlStateManager._activeTexture(GlConst.GL_TEXTURE0 + id);
+            GlStateManager._bindTexture(texId.getGlId());
+            texId.checkDirty();
         }
     }
 
@@ -69,8 +71,8 @@ public class BuiltGemoetryShader {
             this.lastFragmentId = lastFragmentId;
         }
 
-        void addSampler(ShaderProgramDefinition.Sampler sampler, IntSupplier supplier) {
-            samplers.add(new Sampler(++lastFragmentId, sampler.name(), supplier));
+        void addSampler(String sampler, Supplier<GpuTexture> supplier) {
+            samplers.add(new Sampler(++lastFragmentId, sampler, supplier));
         }
 
         void addUniform(GlUniform uniform) {

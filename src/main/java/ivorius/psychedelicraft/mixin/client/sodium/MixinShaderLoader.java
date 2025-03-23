@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.mojang.blaze3d.shaders.ShaderType;
 
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
-import net.minecraft.client.gl.CompiledShader;
 import net.minecraft.util.Identifier;
 
 @Pseudo
@@ -22,7 +22,7 @@ abstract class MixinShaderLoader {
 
     @Inject(method = "loadShader", at = @At("HEAD"))
     private static void loadShader(@Coerce Object type, Identifier name, @Coerce Object constants, CallbackInfoReturnable<?> info) {
-        GeometryShader.INSTANCE.setup(type.toString().contentEquals("VERTEX") ? CompiledShader.Type.VERTEX : CompiledShader.Type.FRAGMENT, name);
+        GeometryShader.INSTANCE.setup(type.toString().contentEquals("VERTEX") ? ShaderType.VERTEX : ShaderType.FRAGMENT, name);
     }
 
     @ModifyReturnValue(method = "getShaderSource(Lnet/minecraft/util/Identifier;)Ljava/lang/String;", at = @At("RETURN"))

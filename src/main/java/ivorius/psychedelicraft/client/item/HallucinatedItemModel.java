@@ -11,16 +11,16 @@ import net.minecraft.client.render.model.ResolvableModel;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 
 public class HallucinatedItemModel implements ItemModel {
     public static final ItemModel INSTANCE = new HallucinatedItemModel();
 	@Override
-	public void update(ItemRenderState state, ItemStack stack, ItemModelManager resolver, ModelTransformationMode mode, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed) {
+	public void update(ItemRenderState state, ItemStack stack, ItemModelManager resolver, ItemDisplayContext displayContext, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed) {
 		if (stack.getItem() instanceof SuspiciousItem sus) {
             sus.getHallucinatedItem().map(Item::getDefaultStack).ifPresent(replacement -> {
-                resolver.update(state, replacement, mode, world, user, seed);
+                resolver.update(state, replacement, displayContext, world, user, seed);
             });
         }
 	}

@@ -15,11 +15,11 @@ import com.mojang.serialization.MapCodec;
 import ivorius.psychedelicraft.block.entity.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -135,7 +135,7 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+    public boolean canFillWithFluid(@Nullable LivingEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         if (player == null) {
             return false;
         }
@@ -168,18 +168,15 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
         return getValidMasterPosition(world, pos).flatMap(center -> PipeInsertable.tryExtract(world, center, direction));
     }
 
-    @Deprecated
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock()) && !world.isClient) {
-            getMasterPosition(world, pos).ifPresent(center -> {
-                BlockState masterState = world.getBlockState(center);
-                if (masterState.isOf(PSBlocks.MASH_TUB) || masterState.isOf(this)) {
-                    world.breakBlock(center, true);
-                }
-            });
-        }
-        super.onStateReplaced(state, world, pos, newState, moved);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        getMasterPosition(world, pos).ifPresent(center -> {
+            BlockState masterState = world.getBlockState(center);
+            if (masterState.isOf(PSBlocks.MASH_TUB) || masterState.isOf(this)) {
+                world.breakBlock(center, true);
+            }
+        });
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     private Optional<BlockPos> getMasterPosition(BlockView world, BlockPos pos) {
@@ -243,13 +240,13 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
         @Override
         public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
             super.writeNbt(compound, lookup);
-            compound.put("masterPos", NbtHelper.fromBlockPos(masterPos));
+            compound.put("masterPos", BlockPos.CODEC, masterPos);
         }
 
         @Override
         public void readNbt(NbtCompound compound, WrapperLookup lookup) {
             super.readNbt(compound, lookup);
-            masterPos = NbtHelper.toBlockPos(compound, "masterPos").orElse(BlockPos.ORIGIN);
+            masterPos = compound.get("masterPos", BlockPos.CODEC).orElse(BlockPos.ORIGIN);
         }
     }
 }

@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
@@ -67,7 +68,7 @@ public record ItemFluidsMixture(List<ItemFluids> fluids) implements TooltipAppen
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type, ComponentsAccess components) {
         if (isEmpty()) {
             return;
         }

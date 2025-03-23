@@ -122,7 +122,7 @@ public class DealerTaskListProvider {
                 return false;
             }
 
-            if (entity.getVillagerData().getProfession() != PSTradeOffers.DRUG_DEALER_PROFESSION) {
+            if (!entity.getVillagerData().profession().matchesKey(PSTradeOffers.DRUG_DEALER_PROFESSION)) {
                 return false;
             }
 

@@ -63,7 +63,7 @@ public class BottleRecipe extends ShapedRecipe {
             })
             .filter(color -> color != Colors.WHITE)
             .findFirst()
-            .ifPresent(color -> output.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(color, true)));
+            .ifPresent(color -> output.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(color)));
         return output;
     }
 }

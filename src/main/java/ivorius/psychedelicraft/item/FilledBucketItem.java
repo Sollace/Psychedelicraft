@@ -19,6 +19,7 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
@@ -103,7 +104,7 @@ public class FilledBucketItem extends BucketItem {
             BlockPos blockPos = hit.getBlockPos();
             Direction direction = hit.getSide();
             BlockPos blockPos2 = blockPos.offset(direction);
-            if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(blockPos2, direction, stack)) {
+            if (!world.canEntityModifyAt(user, blockPos) || !user.canPlaceOn(blockPos2, direction, stack)) {
                 return ActionResult.FAIL;
             }
 
@@ -153,16 +154,16 @@ public class FilledBucketItem extends BucketItem {
     }
 
     @Override
-    public void onEmptied(@Nullable PlayerEntity player, World world, ItemStack stack, BlockPos pos) {
+    public void onEmptied(@Nullable LivingEntity player, World world, ItemStack stack, BlockPos pos) {
     }
 
     @Override
-    public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
+    public boolean placeFluid(@Nullable LivingEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
         return false;
     }
 
     @SuppressWarnings("deprecation")
-    private static boolean placeFluid(ItemStack stack, ItemFluids fluids, FluidState fluidState, @Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hit) {
+    private static boolean placeFluid(ItemStack stack, ItemFluids fluids, FluidState fluidState, @Nullable LivingEntity player, World world, BlockPos pos, @Nullable BlockHitResult hit) {
         if (!(fluidState.getFluid() instanceof FlowableFluid)) {
             return false;
         }
@@ -181,7 +182,7 @@ public class FilledBucketItem extends BucketItem {
             int k = pos.getZ();
             world.playSound(player, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
             for (int l = 0; l < 8; ++l) {
-                world.addParticle(ParticleTypes.LARGE_SMOKE, i + Math.random(), j + Math.random(), k + Math.random(), 0.0, 0.0, 0.0);
+                world.addParticleClient(ParticleTypes.LARGE_SMOKE, i + Math.random(), j + Math.random(), k + Math.random(), 0.0, 0.0, 0.0);
             }
             return true;
         }
@@ -221,7 +222,7 @@ public class FilledBucketItem extends BucketItem {
         return false;
     }
 
-    private static void playEmptyingSound(Fluid fluid, @Nullable PlayerEntity player, WorldAccess world, BlockPos pos) {
+    private static void playEmptyingSound(Fluid fluid, @Nullable LivingEntity player, WorldAccess world, BlockPos pos) {
         SoundEvent soundEvent = FluidVariantAttributes.getEmptySound(FluidVariant.of(fluid));
         world.playSound(player, pos, soundEvent, SoundCategory.BLOCKS, 1, 1);
         world.emitGameEvent(player, GameEvent.FLUID_PLACE, pos);

@@ -20,7 +20,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.NumberRange.IntRange;
-import net.minecraft.predicate.item.ComponentSubPredicate;
+import net.minecraft.predicate.component.ComponentSubPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -82,7 +82,7 @@ public record FluidCapacity(int capacity) {
         }
 
         @Override
-        public boolean test(ItemStack stack, FluidCapacity capacity) {
+        public boolean test(FluidCapacity capacity) {
             return this.capacity.test(capacity.capacity());
         }
     }

@@ -1,12 +1,13 @@
 package ivorius.psychedelicraft.item;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -45,9 +46,10 @@ public class SuspiciousItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    @Deprecated
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         getHallucinatedItem().ifPresent(item -> {
-            item.appendTooltip(item.getDefaultStack(), context, tooltip, type);
+            item.appendTooltip(item.getDefaultStack(), context, displayComponent, textConsumer, type);
         });
     }
 

@@ -174,9 +174,9 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
         impurities = FluidMound.CODEC.decode(NbtOps.INSTANCE, compound.get("impurities")).result()
                 .map(Pair::getFirst)
                 .orElseGet(FluidMound::new);
-        timeToHarden = compound.getInt("timeToHarden");
-        fluid.fromNbt(compound.getCompound("fluid"), lookup);
-        craftingResult = ItemStack.fromNbt(lookup, compound.getCompound("craftingResult"));
+        timeToHarden = compound.getInt("timeToHarden", 0);
+        fluid.fromNbt(compound.getCompoundOrEmpty("fluid"), lookup);
+        craftingResult = compound.get("craftingResult", ItemStack.OPTIONAL_CODEC);
         matchingRecipe = Optional.empty();
     }
 }

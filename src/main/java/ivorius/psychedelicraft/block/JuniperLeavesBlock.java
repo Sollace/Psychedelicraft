@@ -6,22 +6,36 @@
 package ivorius.psychedelicraft.block;
 
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.*;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-public class JuniperLeavesBlock extends LeavesBlock {
-    public static final MapCodec<JuniperLeavesBlock> CODEC = createCodec(JuniperLeavesBlock::new);
+public class JuniperLeavesBlock extends TintedParticleLeavesBlock {
+    public static final MapCodec<JuniperLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(
+            instance -> instance.group(
+                    Codecs.rangedInclusiveFloat(0.0F, 1.0F)
+                        .fieldOf("leaf_particle_chance")
+                        .forGetter(tintedParticleLeavesBlock -> tintedParticleLeavesBlock.leafParticleChance),
+                    createSettingsCodec()
+                )
+                .apply(instance, JuniperLeavesBlock::new)
+        );
 
     public JuniperLeavesBlock(Settings settings) {
-        super(settings);
+        this(0.1F, settings);
+    }
+
+    public JuniperLeavesBlock(float particleChance, Settings settings) {
+        super(particleChance, settings);
     }
 
     @Override

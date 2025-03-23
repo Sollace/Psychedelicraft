@@ -96,6 +96,6 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
-        setTapOpenTicks(compound.getInt("timeLeftTapOpen"));
+        setTapOpenTicks(compound.getInt("timeLeftTapOpen", 0));
     }
 }

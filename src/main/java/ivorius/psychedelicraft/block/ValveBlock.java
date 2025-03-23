@@ -50,7 +50,7 @@ public class ValveBlock extends GlassTubeBlock {
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         world.setBlockState(pos, state.cycle(OPEN));
-        world.playSoundAtBlockCenter(pos, state.get(OPEN) ? PSSounds.BLOCK_VALVE_CLOSE : PSSounds.BLOCK_VALVE_OPEN, SoundCategory.BLOCKS, 1.5F, state.get(OPEN) ? 1 : 5, true);
+        world.playSoundAtBlockCenterClient(pos, state.get(OPEN) ? PSSounds.BLOCK_VALVE_CLOSE : PSSounds.BLOCK_VALVE_OPEN, SoundCategory.BLOCKS, 1.5F, state.get(OPEN) ? 1 : 5, true);
         return ActionResult.SUCCESS;
     }
 }

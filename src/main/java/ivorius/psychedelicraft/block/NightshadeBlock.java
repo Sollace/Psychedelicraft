@@ -11,6 +11,7 @@ import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -97,7 +98,7 @@ public class NightshadeBlock extends PlantBlock implements Fertilizable {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
         if (!(entity instanceof LivingEntity) || state.get(AGE) < 3 || entity.getType() == EntityType.FOX || entity.getType() == EntityType.BEE) {
             return;
         }

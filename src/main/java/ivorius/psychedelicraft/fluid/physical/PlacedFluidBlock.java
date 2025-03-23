@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
@@ -44,7 +44,7 @@ public abstract class PlacedFluidBlock extends FluidBlock {
     }
 
     @Override
-    public ItemStack tryDrainFluid(PlayerEntity player, WorldAccess world, BlockPos pos, BlockState state) {
+    public ItemStack tryDrainFluid(LivingEntity player, WorldAccess world, BlockPos pos, BlockState state) {
         if (state.get(LEVEL) == 0) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
             ItemStack stack = PSItems.FILLED_BUCKET.getDefaultStack();

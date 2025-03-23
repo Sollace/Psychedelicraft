@@ -23,6 +23,7 @@ import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.village.*;
 import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
@@ -33,7 +34,7 @@ import net.minecraft.world.poi.PointOfInterestTypes;
  */
 public interface PSTradeOffers {
     RegistryKey<PointOfInterestType> DRUG_DEALER_POI = poi("drug_dealer");
-    VillagerProfession DRUG_DEALER_PROFESSION = register("drug_dealer",
+    RegistryKey<VillagerProfession> DRUG_DEALER_PROFESSION = register("drug_dealer",
             type -> type.matchesKey(DRUG_DEALER_POI),
             type -> type.matchesKey(DRUG_DEALER_POI),
             ImmutableSet.of(
@@ -48,7 +49,7 @@ public interface PSTradeOffers {
             SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION
     );
 
-    VillagerProfession DRUG_ADDICT_PROFESSION = register("drug_addict",
+    RegistryKey<VillagerProfession> DRUG_ADDICT_PROFESSION = register("drug_addict",
             PointOfInterestType.NONE,
             VillagerProfession.IS_ACQUIRABLE_JOB_SITE,
             ImmutableSet.of(),
@@ -146,7 +147,19 @@ public interface PSTradeOffers {
         return RegistryKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, Psychedelicraft.id(id));
     }
 
-    private static VillagerProfession register(String id, Predicate<RegistryEntry<PointOfInterestType>> heldWorkstation, Predicate<RegistryEntry<PointOfInterestType>> acquirableWorkstation, ImmutableSet<Item> gatherableItems, ImmutableSet<Block> secondaryJobSites, @Nullable SoundEvent workSound) {
-        return Registry.register(Registries.VILLAGER_PROFESSION, Psychedelicraft.id(id), new VillagerProfession("psychedelicraft:" + id, heldWorkstation, acquirableWorkstation, gatherableItems, secondaryJobSites, workSound));
+    private static RegistryKey<VillagerProfession> register(String id,
+            Predicate<RegistryEntry<PointOfInterestType>> heldWorkstation,
+            Predicate<RegistryEntry<PointOfInterestType>> acquirableWorkstation,
+            ImmutableSet<Item> gatherableItems,
+            ImmutableSet<Block> secondaryJobSites,
+            @Nullable SoundEvent workSound) {
+
+        RegistryKey<VillagerProfession> key = RegistryKey.of(RegistryKeys.VILLAGER_PROFESSION, Psychedelicraft.id(id));
+
+        Registry.register(Registries.VILLAGER_PROFESSION, key, new VillagerProfession(
+                Text.translatable("entity." + key.getValue().getNamespace() + ".villager." + key.getValue().getPath()),
+                heldWorkstation, acquirableWorkstation, gatherableItems, secondaryJobSites, workSound)
+        );
+        return key;
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Created by lukas on 16.11.14.
@@ -25,7 +26,7 @@ public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<Bottle
     }
 
     @Override
-    public void render(BottleRackBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(BottleRackBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         matrices.push();
         matrices.translate(0.5F, 0.5F, 0.5F);
         Direction direction = entity.getCachedState().get(BottleRackBlock.FACING);

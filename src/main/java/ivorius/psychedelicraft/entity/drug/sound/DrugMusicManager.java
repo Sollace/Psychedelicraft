@@ -51,7 +51,7 @@ public class DrugMusicManager {
                 float speed = properties.getModifier(Drug.HEART_BEAT_SPEED);
                 delayUntilHeartbeat = speed <= 1 ? -MathHelper.floor(35 * (speed - 1F)) : MathHelper.floor(35F / (speed - 1F));
                 targetHeartbeatPulseStrength = 2 - properties.getModifier(Drug.PAIN_SUPPRESSION);
-                entity.getWorld().playSound(entity.getX(), entity.getY(), entity.getZ(),
+                entity.getWorld().playSoundClient(entity.getX(), entity.getY(), entity.getZ(),
                         PSSounds.ENTITY_PLAYER_HEARTBEAT,
                         SoundCategory.AMBIENT, heartbeatVolume, speed, false);
             }

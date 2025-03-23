@@ -9,8 +9,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.LoadedEntityModels;
 import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 
 public class RiftJarItemModelRenderer implements SpecialModelRenderer<Float> {
     private final RiftJarBlockEntityRenderer renderer;
@@ -25,8 +25,8 @@ public class RiftJarItemModelRenderer implements SpecialModelRenderer<Float> {
     }
 
     @Override
-    public void render(Float data, ModelTransformationMode modelTransformationMode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, boolean glint) {
-        renderer.renderAsItem(data, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false), matrices, vertices, light, overlay);
+    public void render(Float data, ItemDisplayContext displayContext, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, boolean glint) {
+        renderer.renderAsItem(data, MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false), matrices, vertices, light, overlay);
     }
 
     public static record Unbaked() implements SpecialModelRenderer.Unbaked {

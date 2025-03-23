@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipAppender;
@@ -50,7 +51,7 @@ public record ItemDrugs(List<DrugInfluence> influences) implements TooltipAppend
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type, ComponentsAccess components) {
         if (type.isAdvanced() && !influences.isEmpty()) {
             tooltip.accept(Text.translatable("psychedelicraft.item.contained_drug_effects").formatted(Formatting.GRAY));
 

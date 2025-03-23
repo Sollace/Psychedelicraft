@@ -51,6 +51,9 @@ public class ItemMound implements NbtSerialisable {
     }
 
     public void add(Item item, int amount) {
+        if (amount == 0) {
+            return;
+        }
         items.compute(item, (i, count) -> (count == null ? 0 : count) + amount);
         if (!indexes.contains(item)) {
             indexes.add(item);
@@ -124,7 +127,7 @@ public class ItemMound implements NbtSerialisable {
         compound.getKeys().forEach(key -> {
             Optional.ofNullable(Identifier.tryParse(key)).map(Registries.ITEM::get)
                 .filter(Objects::nonNull)
-                .ifPresent(item -> add(item, compound.getInt(key)));
+                .ifPresent(item -> add(item, compound.getInt(key, 0)));
         });
     }
 }

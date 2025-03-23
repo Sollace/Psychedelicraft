@@ -178,10 +178,10 @@ public class SimpleDrug implements Drug {
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        setDesiredValue(compound.getDouble("effect"));
-        setActiveValue(compound.getDouble("effectActive"));
-        setLocked(compound.getBoolean("locked"));
-        ticksActive = compound.getInt("ticksActive");
+        setDesiredValue(compound.getDouble("effect", 0));
+        setActiveValue(compound.getDouble("effectActive", 0));
+        setLocked(compound.getBoolean("locked", false));
+        ticksActive = compound.getInt("ticksActive", 0);
     }
 
     @Override
@@ -203,6 +203,6 @@ public class SimpleDrug implements Drug {
 
     protected static void rotateEntityYaw(Entity entity, double amount) {
         entity.setYaw((entity.getYaw() + (float)amount) % 360);
-        entity.prevYaw = entity.getYaw();
+        entity.lastYaw = entity.getYaw();
     }
 }

@@ -38,9 +38,12 @@ import net.minecraft.state.property.*;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 
 public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
     public static final MapCodec<BurdenedLatticeBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -151,7 +154,10 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
             if (world.getLightLevel(pos) >= 9 && random.nextInt(35) == 0) {
                 if (state.get(AGE) < MAX_AGE) {
                     world.setBlockState(pos, state.cycle(AGE), Block.NOTIFY_ALL);
-                    world.updateNeighborsAlways(pos, this);
+                    WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(
+                        world, null, Direction.UP
+                    );
+                    world.updateNeighborsAlways(pos, this, wireOrientation);
                 }
 
                 if (state.get(AGE) > 0) {

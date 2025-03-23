@@ -98,7 +98,7 @@ public class SleepDeprivationDrug extends SimpleDrug {
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         super.fromNbt(compound, lookup);
-        storedEnergy = compound.getFloat("storedEnergy");
+        storedEnergy = compound.getFloat("storedEnergy", 0);
     }
 
     @Override

@@ -159,9 +159,9 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
-        setTimeProcessed(compound.getInt("timeProcessed"));
-        setTimeNeeded(compound.getInt("timeNeeded"));
-        repeatCount = compound.getInt("repeatCount");
+        setTimeProcessed(compound.getInt("timeProcessed", 0));
+        setTimeNeeded(compound.getInt("timeNeeded", 0));
+        repeatCount = compound.getInt("repeatCount", 0);
     }
 
     @Override

@@ -13,8 +13,7 @@ import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import net.minecraft.component.ComponentType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.item.ComponentSubPredicate;
+import net.minecraft.predicate.component.ComponentSubPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -126,8 +125,8 @@ public record DrinkType(String drinkName, String symbolName, Optional<String> va
         }
 
         @Override
-        public boolean test(ItemStack stack, ItemFluids fluids) {
-            return (this.fluids.isEmpty() || this.fluids.get().test(stack, fluids))
+        public boolean test(ItemFluids fluids) {
+            return (this.fluids.isEmpty() || this.fluids.get().test(fluids))
                     && fluids.fluid() instanceof AlcoholicFluid alco
                     && alco.getVariant(fluids).isOf(name);
         }

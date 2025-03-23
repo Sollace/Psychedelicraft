@@ -71,7 +71,7 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
         if (!isValidContainer(stack)) {
             return this;
         }
-        world.playSoundAtBlockCenter(pos, BlockSoundGroup.GLASS.getPlaceSound(), SoundCategory.BLOCKS, 1, 1, true);
+        world.playSoundAtBlockCenterClient(pos, BlockSoundGroup.GLASS.getPlaceSound(), SoundCategory.BLOCKS, 1, 1, true);
         int capacity = FluidCapacity.get(stack);
         return stack.isOf(PSItems.BOTTLE) ? new LargeContents(entity, capacity, stack) : new SmallContents(entity, capacity, stack);
     }

@@ -200,9 +200,9 @@ public class RealityRiftEntity extends Entity {
 
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
-        setRiftSize(compound.getFloat("riftSize"));
-        setRiftClosing(compound.getBoolean("isRiftClosing"));
-        setInstability(compound.getFloat("instability"));
+        setRiftSize(compound.getFloat("riftSize", 0));
+        setRiftClosing(compound.getBoolean("isRiftClosing", false));
+        setInstability(compound.getFloat("instability", 0));
     }
 
     @Override

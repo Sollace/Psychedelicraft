@@ -52,7 +52,6 @@ import java.util.stream.*;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 
 public class DrugProperties implements NbtSerialisable {
@@ -309,11 +308,11 @@ public class DrugProperties implements NbtSerialisable {
     @Override
     public void fromNbt(NbtCompound tagCompound, WrapperLookup lookup) {
         drugs.clear();
-        DRUGS_CODEC.decode(NbtOps.INSTANCE, tagCompound.getCompound("Drugs")).result().map(Pair::getFirst).ifPresent(drugs::putAll);
+        tagCompound.get("Drugs", DRUGS_CODEC).ifPresent(drugs::putAll);
         influences.clear();
-        DrugInfluence.LIST_CODEC.decode(NbtOps.INSTANCE, tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE)).result().map(Pair::getFirst).ifPresent(influences::addAll);
-        stomach.fromNbt(tagCompound.getCompound("stomach"), lookup);
-        teethGrindingRate = tagCompound.getFloat("teethGrindingRate");
+        tagCompound.get("drugInfluences", DrugInfluence.LIST_CODEC).ifPresent(influences::addAll);
+        stomach.fromNbt(tagCompound.getCompoundOrEmpty("stomach"), lookup);
+        teethGrindingRate = tagCompound.getFloat("teethGrindingRate", 0);
         dirty = false;
     }
 

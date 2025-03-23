@@ -22,6 +22,7 @@ import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -30,8 +31,6 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundCategory;
@@ -137,7 +136,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
         if (!world.isClient && (entity.getY() > pos.getY() || entity.getY() >= pos.getY() && !entity.isSneaking()) && entity instanceof LivingEntity && Math.max(
                 Math.abs(entity.getX() - entity.lastRenderX),
                 Math.abs(entity.getZ() - entity.lastRenderZ)
@@ -262,7 +261,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
 
         @Override
         public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            readEntriesFromNbt(nbt.getCompound("entries"));
+            readEntriesFromNbt(nbt.getCompoundOrEmpty("entries"));
         }
 
         @Override
@@ -274,10 +273,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             entries.clear();
             nbt.getKeys().forEach(key -> {
                 int index = Integer.parseInt(key);
-                NbtList list = nbt.getList(key, NbtElement.COMPOUND_TYPE);
-                if (!list.isEmpty()) {
-                    entries.put(index, Entry.STACK_CODEC.decode(NbtOps.INSTANCE, list).getOrThrow().getFirst());
-                }
+                nbt.get(key, Entry.STACK_CODEC).ifPresent(s -> entries.put(index, s));
             });
         }
 

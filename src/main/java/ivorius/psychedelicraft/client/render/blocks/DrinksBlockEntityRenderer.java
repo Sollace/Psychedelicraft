@@ -22,6 +22,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
 public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrinksBlock.Data> {
@@ -31,7 +32,7 @@ public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrin
     public DrinksBlockEntityRenderer(BlockEntityRendererFactory.Context context) { }
 
     @Override
-    public void render(PlacedDrinksBlock.Data entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(PlacedDrinksBlock.Data entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         entity.forEachDrink((y, drink) -> {
             PlacedDrinksModelProvider.Entry geometry = PlacedDrinksModelProvider.INSTANCE.get("ground", drink.stack().getItem()).orElse(PlacedDrinksModelProvider.Entry.DEFAULT);
             matrices.push();

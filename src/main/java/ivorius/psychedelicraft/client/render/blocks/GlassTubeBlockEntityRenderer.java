@@ -17,6 +17,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
 public class GlassTubeBlockEntityRenderer implements BlockEntityRenderer<GlassTubeBlock.Data> {
@@ -29,7 +30,7 @@ public class GlassTubeBlockEntityRenderer implements BlockEntityRenderer<GlassTu
     }
 
     @Override
-    public void render(GlassTubeBlock.Data entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(GlassTubeBlock.Data entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         var contents = entity.getContents();
 
         BlockState state = entity.getCachedState();

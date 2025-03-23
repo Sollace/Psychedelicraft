@@ -67,14 +67,14 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     }
 
     private void spawnParticles(float spread) {
-        getWorld().addParticle(ParticleTypes.FLAME,
+        getWorld().addParticleClient(ParticleTypes.FLAME,
                 getWorld().getRandom().nextTriangular(getX(), 0.5 * spread),
                 getWorld().getRandom().nextTriangular(getY(), 0.5 * spread),
                 getWorld().getRandom().nextTriangular(getZ(), 0.5 * spread),
                 0, 0, 0
         );
 
-        getWorld().addParticle(ParticleTypes.LAVA,
+        getWorld().addParticleClient(ParticleTypes.LAVA,
                 getWorld().getRandom().nextTriangular(getX(), 0.5 * spread),
                 getWorld().getRandom().nextTriangular(getY() + getHeight(), 0.5 * spread),
                 getWorld().getRandom().nextTriangular(getZ(), 0.5 * spread),
@@ -113,7 +113,7 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
-        if (getWorld().isClient || isRemoved()) {
+        if (isRemoved()) {
             return;
         }
 
@@ -126,14 +126,14 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
 
         if (fireStrength > 0) {
             for (int i = 0; i < fireStrength * 2; i++) {
-                getWorld().addParticle(ParticleTypes.FLAME,
+                getWorld().addParticleClient(ParticleTypes.FLAME,
                         getWorld().getRandom().nextTriangular(getX(), 0.5 * fireStrength),
                         getWorld().getRandom().nextTriangular(getY(), 0.5 * fireStrength),
                         getWorld().getRandom().nextTriangular(getZ(), 0.5 * fireStrength),
                         0, 0, 0
                 );
 
-                getWorld().addParticle(ParticleTypes.LAVA,
+                getWorld().addParticleClient(ParticleTypes.LAVA,
                         getWorld().getRandom().nextTriangular(getX(), 0.5 * fireStrength),
                         getWorld().getRandom().nextTriangular(getY() + getHeight(), 0.5 * fireStrength),
                         getWorld().getRandom().nextTriangular(getZ(), 0.5 * fireStrength),
@@ -143,19 +143,21 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
         }
 
         if (explosionStrength > 0) {
-            getWorld().createExplosion(
-                    this,
-                    getDamageSources().thrown(this, getOwner()),
-                    new ExplosionBehavior() {
-                        @Override
-                        public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
-                            return state.isReplaceable();
-                        }
-                    },
-                    getPos(),
-                    explosionStrength,
-                    fireStrength > 0, ExplosionSourceType.MOB
-            );
+            if (!getWorld().isClient) {
+                getWorld().createExplosion(
+                        this,
+                        getDamageSources().thrown(this, getOwner()),
+                        new ExplosionBehavior() {
+                            @Override
+                            public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
+                                return state.isReplaceable();
+                            }
+                        },
+                        getPos(),
+                        explosionStrength,
+                        fireStrength > 0, ExplosionSourceType.MOB
+                );
+            }
         } else {
             playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1, 1);
         }

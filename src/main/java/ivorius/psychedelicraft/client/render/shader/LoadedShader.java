@@ -43,7 +43,7 @@ class LoadedShader {
             var original = ((PostEffectPassSupplier)processor).getPasses();
             try {
                 ((PostEffectPassSupplier)processor).setPasses(updater.passes);
-                processor.render(client.getFramebuffer(), pool);
+                processor.render(client.getFramebuffer(), pool, null);
             } finally {
                 ((PostEffectPassSupplier)processor).setPasses(original);
             }

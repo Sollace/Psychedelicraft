@@ -38,9 +38,9 @@ public interface LockableHungerManager {
     record State(Ratio hunger, Ratio saturation, boolean full) {
         static State fromNbt(NbtCompound compound) {
             return new State(
-                    Ratio.fromNbt(compound.getCompound("hunger")),
-                    Ratio.fromNbt(compound.getCompound("saturation")),
-                    compound.getBoolean("full")
+                    Ratio.fromNbt(compound.getCompoundOrEmpty("hunger")),
+                    Ratio.fromNbt(compound.getCompoundOrEmpty("saturation")),
+                    compound.getBoolean("full", false)
             );
         }
 
@@ -76,7 +76,7 @@ public interface LockableHungerManager {
         }
 
         static Ratio fromNbt(NbtCompound compound) {
-            return new Ratio(compound.getFloat("initial"), compound.getFloat("rate"));
+            return new Ratio(compound.getFloat("initial", 0), compound.getFloat("rate", 0));
         }
 
         public float toFloat(float reference) {

@@ -4,8 +4,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
@@ -33,9 +31,6 @@ public class BezierLabelRenderer {
     };
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, Bezier bezier, Style style, Text text) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
         length = text.getString().length();
         i = 0;
         Path path = bezier.getPath();
@@ -63,15 +58,13 @@ public class BezierLabelRenderer {
 
                     @Nullable TextColor color = charStyle.getColor();
                     Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
-                    textRenderer.draw(singleCharOrderedText, 0, 0, color == null ? 0xFFFFFFFF : color.getRgb(), false, positionMatrix, vertices, TextLayerType.NORMAL, 0, light);
+                    textRenderer.draw(singleCharOrderedText, 0, 0, color == null ? 0xFFFFFFFF : color.getRgb(), false, positionMatrix, vertices, TextLayerType.SEE_THROUGH, 0, light);
                     matrices.pop();
                 }
             }
             i++;
             return true;
         });
-
-        RenderSystem.disableBlend();
     }
 
     public static class Style {

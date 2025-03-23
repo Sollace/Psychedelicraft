@@ -38,7 +38,7 @@ public class BarrelModel extends Model {
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
-        ModelPartData barrel = root.addChild("barrel", ModelPartBuilder.create(), ModelTransform.pivot(0, 9, 0));
+        ModelPartData barrel = root.addChild("barrel", ModelPartBuilder.create(), ModelTransform.origin(0, 9, 0));
 
         barrel.addChild("cube_r1", ModelPartBuilder.create().uv(0, 30).cuboid(-4, 5, -8, 1, 1, 16, Dilation.NONE)
                 .uv(0, 28).cuboid(3, 5, -8, 1, 1, 16, Dilation.NONE)
@@ -48,14 +48,14 @@ public class BarrelModel extends Model {
                 .uv(82, 38).cuboid(-6, 5, -8, 2, 8, 16, Dilation.NONE)
                 .uv(0, 0).cuboid(-4, 5, -7, 8, 8, 14, Dilation.NONE)
                 .uv(45, 19).cuboid(-4, 3, -8, 8, 2, 16, Dilation.NONE)
-                .uv(45, 0).cuboid(-4, 13, -8, 8, 2, 16, Dilation.NONE), ModelTransform.pivot(0, -9, 0));
+                .uv(45, 0).cuboid(-4, 13, -8, 8, 2, 16, Dilation.NONE), ModelTransform.origin(0, -9, 0));
 
-        ModelPartData tap = barrel.addChild("tap", ModelPartBuilder.create(), ModelTransform.pivot(0, -2.5F, -7));
+        ModelPartData tap = barrel.addChild("tap", ModelPartBuilder.create(), ModelTransform.origin(0, -2.5F, -7));
         tap.addChild("handle", ModelPartBuilder.create()
-                .uv(12, 50).cuboid(-1.5F, 0, -0.5F, 3, 0, 1, Dilation.NONE), ModelTransform.pivot(0, 0.71F, -2));
+                .uv(12, 50).cuboid(-1.5F, 0, -0.5F, 3, 0, 1, Dilation.NONE), ModelTransform.origin(0, 0.71F, -2));
         tap.addChild("base", ModelPartBuilder.create()
                 .uv(7, 50).cuboid(-0.5F, 5.2F, -9.5F, 1, 2, 1, Dilation.NONE)
-                .uv(0, 50).cuboid(-0.5F, 6, -8.5F, 1, 1, 2, Dilation.NONE), ModelTransform.pivot(0, -6.5F, 7));
+                .uv(0, 50).cuboid(-0.5F, 6, -8.5F, 1, 1, 2, Dilation.NONE), ModelTransform.origin(0, -6.5F, 7));
 
         ModelPartData legs = root.addChild("rack", ModelPartBuilder.create(), ModelTransform.of(0, 3F, 0, 0, 0, MathHelper.PI));
         legs.addChild("back_legs", ModelPartBuilder.create().uv(94, 19).cuboid(-5, -2, -1, 10, 4, 2, Dilation.NONE), ModelTransform.of(0, 1.5969F, 5.9183F, 0.1487F, 0, 0));
@@ -67,10 +67,10 @@ public class BarrelModel extends Model {
     public void setRotationAngles(BarrelBlockEntity entity, float tickDelta) {
         tapHandle.yaw = entity.getTapRotation(tickDelta);
         barrel.pitch = entity.getCachedState().get(BarrelBlock.FACING).getAxis() == Axis.Y ? MathHelper.HALF_PI : 0;
-        barrel.pivotY = 9 - 2 * barrel.pitch;
+        barrel.originY = 9 - 2 * barrel.pitch;
         tap.roll = 0;//MinecraftClient.getInstance().player.age;
         tap.visible = barrel.pitch == 0 && entity.getCachedState().get(BarrelBlock.TAPPED);
         legs.visible = barrel.pitch == 0;
-        root.pivotY = legs.visible ? 0 : 2;
+        root.originY = legs.visible ? 0 : 2;
     }
 }

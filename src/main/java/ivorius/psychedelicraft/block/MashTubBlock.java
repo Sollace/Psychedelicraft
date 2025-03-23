@@ -22,10 +22,12 @@ import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.fluid.*;
 import net.minecraft.item.*;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -192,7 +194,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     }
 
     @Override
-    public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+    public boolean canFillWithFluid(@Nullable LivingEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         if (player == null) {
             return false;
         }
@@ -205,19 +207,17 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock()) && !world.isClient) {
-            BlockPos.iterateOutwards(pos, 1, 0, 1).forEach(p -> {
-                if (!p.equals(pos)) {
-                    BlockState neighbourState = world.getBlockState(p);
-                    if (neighbourState.isOf(PSBlocks.MASH_TUB_EDGE)) {
-                        world.removeBlockEntity(p);
-                        world.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-                    }
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        BlockPos.iterateOutwards(pos, 1, 0, 1).forEach(p -> {
+            if (!p.equals(pos)) {
+                BlockState neighbourState = world.getBlockState(p);
+                if (neighbourState.isOf(PSBlocks.MASH_TUB_EDGE)) {
+                    world.removeBlockEntity(p);
+                    world.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
                 }
-            });
-        }
-        super.onStateReplaced(state, world, pos, newState, moved);
+            }
+        });
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override

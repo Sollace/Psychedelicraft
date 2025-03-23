@@ -186,7 +186,7 @@ public class DrugRenderer {
         MinecraftClient client = MinecraftClient.getInstance();
         RenderPhase.SCREEN.push();
         try {
-            postEffects.render(pool, client.getRenderTickCounter().getTickDelta(false));
+            postEffects.render(pool, client.getRenderTickCounter().getTickProgress(false));
         } finally {
             RenderPhase.pop();
         }
@@ -196,7 +196,7 @@ public class DrugRenderer {
         MinecraftClient client = MinecraftClient.getInstance();
         RenderPhase.SCREEN.push();
         try {
-            getScreenEffects().render(context, client.getWindow(), tickCounter.getTickDelta(false));
+            getScreenEffects().render(context, client.getWindow(), tickCounter.getTickProgress(false));
         } finally {
             RenderPhase.pop();
         }

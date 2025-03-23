@@ -15,7 +15,7 @@ public class TrayContentsModel extends Model {
     public static TexturedModelData getTexturedModelData() {
         ModelData data = new ModelData();
         ModelPartData root = data.getRoot();
-        root.addChild("contents", ModelPartBuilder.create().uv(0, 0).cuboid(0, 0, 0, 10, 1, 16), ModelTransform.pivot(-5, 0, -8));
+        root.addChild("contents", ModelPartBuilder.create().uv(0, 0).cuboid(0, 0, 0, 10, 1, 16), ModelTransform.origin(-5, 0, -8));
 
         return TexturedModelData.of(data, 32, 32);
     }

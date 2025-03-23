@@ -8,14 +8,14 @@ import ivorius.psychedelicraft.entity.MolotovCocktailEntity;
 import net.minecraft.client.render.item.property.bool.BooleanProperty;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 
 public record FlyingProperty() implements BooleanProperty {
 	public static final MapCodec<FlyingProperty> CODEC = MapCodec.unit(new FlyingProperty());
 
 	@Override
-	public boolean getValue(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ModelTransformationMode modelTransformationMode) {
+	public boolean test(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ItemDisplayContext displayContext) {
 		return stack.getHolder() instanceof MolotovCocktailEntity;
 	}
 

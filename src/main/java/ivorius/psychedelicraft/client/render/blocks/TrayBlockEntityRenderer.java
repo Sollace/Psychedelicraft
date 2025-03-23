@@ -15,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 
 public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlockEntity> {
     private static final Identifier FLUID_TEXTURE = Psychedelicraft.id("textures/entity/tray/fluid.png");
@@ -26,7 +27,7 @@ public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlo
     }
 
     @Override
-    public void render(TrayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(TrayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         if (entity.getLevel() > 0 || entity.isHardened()) {
             matrices.push();
             matrices.translate(0.5, 1 / 16D, 0.5);
@@ -38,7 +39,7 @@ public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlo
 
             matrices.pop();
         }
-        super.render(entity, tickDelta, matrices, vertices, light, overlay);
+        super.render(entity, tickDelta, matrices, vertices, light, overlay, cameraPos);
     }
 
     @Override

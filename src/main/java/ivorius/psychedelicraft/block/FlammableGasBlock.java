@@ -37,7 +37,7 @@ public class FlammableGasBlock extends AirBlock {
         Vec3d center = pos.toCenterPos();
         var effect = EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, Colors.GREEN);
         for (int i = 0; i < 10; i++) {
-            world.addParticle(effect,
+            world.addParticleClient(effect,
                     random.nextTriangular(center.x, 0.5F),
                     random.nextTriangular(center.y, 0.5F),
                     random.nextTriangular(center.z, 0.5F),

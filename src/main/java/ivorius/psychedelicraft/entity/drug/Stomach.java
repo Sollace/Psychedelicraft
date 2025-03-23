@@ -9,7 +9,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -114,14 +113,13 @@ public class Stomach implements NbtSerialisable {
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        if (compound.contains("hunger", NbtElement.COMPOUND_TYPE)) {
-            getStomach().setLockedState(LockableHungerManager.State.fromNbt(compound.getCompound("hunger")));
-        } else {
-            getStomach().unlockHunger();
-        }
-        vomitCount = compound.getInt("vomitCount");
-        vomitCooldown = compound.getInt("vomitCooldown");
-        vomitingTicks = compound.getInt("vomitingTicks");
+        compound.getCompound("hunger").ifPresentOrElse(
+                comp -> getStomach().setLockedState(LockableHungerManager.State.fromNbt(comp)),
+                getStomach()::unlockHunger
+        );
+        vomitCount = compound.getInt("vomitCount", 0);
+        vomitCooldown = compound.getInt("vomitCooldown", 0);
+        vomitingTicks = compound.getInt("vomitingTicks", 0);
     }
 
     @Override

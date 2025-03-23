@@ -23,8 +23,9 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexRendering;
+import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BlockStateModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
@@ -49,11 +50,9 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
     public void renderAsItem(ItemFluids fluids, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         ITEM_ENTITY.getPrimaryTank().setContents(fluids);
         BlockState state = ITEM_ENTITY.getCachedState();
-        BakedModel model = MinecraftClient.getInstance().getBlockRenderManager().getModel(state);
-        MinecraftClient.getInstance().getBlockRenderManager()
-            .getModelRenderer().render(matrices.peek(), vertices.getBuffer(RenderLayers.getBlockLayer(state)), state, model, 1, 1, 1, light, overlay);
-        MinecraftClient.getInstance().getBlockRenderManager()
-            .getModelRenderer().render(matrices.peek(), vertices.getBuffer(RenderLayers.getEntityBlockLayer(state)), state, model, 1, 1, 1, light, overlay);
+        BlockStateModel model = MinecraftClient.getInstance().getBlockRenderManager().getModel(state);
+        BlockModelRenderer.render(matrices.peek(), vertices.getBuffer(RenderLayers.getBlockLayer(state)), model, 1, 1, 1, light, overlay);
+        BlockModelRenderer.render(matrices.peek(), vertices.getBuffer(RenderLayers.getEntityBlockLayer(state)), model, 1, 1, 1, light, overlay);
 
         if (!fluids.isEmpty()) {
             float fillPercentage = MathHelper.clamp((float)fluids.amount() / FluidVolumes.VAT, 0, 2);
@@ -70,7 +69,7 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
     }
 
     @Override
-    public void render(MashTubBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(MashTubBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         Resovoir tank = entity.getPrimaryTank();
         ItemFluids stack = tank.getContents();
 
@@ -135,7 +134,7 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
                 matrices.translate(0, bob, -0.2F);
                 matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-50 * spin));
                 matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees((ShaderContext.ticks() + c) % 360));
-                MinecraftClient.getInstance().getItemRenderer().renderItem(item.getDefaultStack(), ModelTransformationMode.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
+                MinecraftClient.getInstance().getItemRenderer().renderItem(item.getDefaultStack(), ItemDisplayContext.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
 
                 matrices.pop();
             }
@@ -143,7 +142,7 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
 
         matrices.pop();
 
-        super.render(entity, tickDelta, matrices, vertices, light, overlay);
+        super.render(entity, tickDelta, matrices, vertices, light, overlay, cameraPos);
 
         if (MinecraftClient.getInstance().getEntityRenderDispatcher().shouldRenderHitboxes() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
             if (entity.getWorld() != null && entity.getPos() != null && entity.getCachedState().getBlock() instanceof FluidFilled tub) {

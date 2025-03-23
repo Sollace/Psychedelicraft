@@ -14,15 +14,15 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.client.render.item.property.select.SelectProperty;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.StringIdentifiable;
 
 public record FilledProperty() implements SelectProperty<FilledProperty.FillPercentage> {
 	public static final SelectProperty.Type<FilledProperty, FillPercentage> TYPE = SelectProperty.Type.create(MapCodec.unit(new FilledProperty()), FillPercentage.CODEC);
 
 	@Override
-	public FillPercentage getValue(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ModelTransformationMode modelTransformationMode) {
+	public FillPercentage getValue(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ItemDisplayContext displayContext) {
 	    if (stack.getItem() instanceof PaperBagItem) {
             BagContentsComponent contents = BagContentsComponent.get(stack);
             return contents.isEmpty() ? FillPercentage.EMPTY : contents.count() > BagContentsComponent.FULL_COUNT
@@ -33,6 +33,11 @@ public record FilledProperty() implements SelectProperty<FilledProperty.FillPerc
         }
         return ItemFluids.of(stack).isEmpty() ? FillPercentage.EMPTY : FillPercentage.FULL;
 	}
+
+    @Override
+    public Codec<FillPercentage> valueCodec() {
+        return FilledProperty.FillPercentage.CODEC;
+    }
 
 	@Override
 	public SelectProperty.Type<FilledProperty, FillPercentage> getType() {
@@ -55,4 +60,5 @@ public record FilledProperty() implements SelectProperty<FilledProperty.FillPerc
             return name;
         }
 	}
+
 }

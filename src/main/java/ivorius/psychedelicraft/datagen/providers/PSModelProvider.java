@@ -21,14 +21,12 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.data.BlockStateModelGenerator;
 import net.minecraft.client.data.BlockStateModelGenerator.CrossType;
-import net.minecraft.client.data.BlockStateVariant;
 import net.minecraft.client.data.ItemModelGenerator;
 import net.minecraft.client.data.ModelIds;
 import net.minecraft.client.data.Models;
 import net.minecraft.client.data.TextureMap;
 import net.minecraft.client.data.TexturedModel;
-import net.minecraft.client.data.VariantSettings;
-import net.minecraft.client.data.VariantsBlockStateSupplier;
+import net.minecraft.client.data.VariantsBlockModelDefinitionCreator;
 import net.minecraft.client.render.item.tint.DyeTintSource;
 import net.minecraft.item.Items;
 import net.minecraft.util.Colors;
@@ -109,11 +107,10 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerDryingTable(generator, PSBlocks.IRON_DRYING_TABLE);
 
         List.of(PSBlocks.BOTTLE_RACK, PSBlocks.WALL_BOTTLE_RACK).forEach(block -> {
-            generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create()
-                    .put(VariantSettings.MODEL, ModelIds.getBlockModelId(PSBlocks.BOTTLE_RACK)))
-                    .coordinate(BlockStateModelGenerator.createNorthDefaultHorizontalRotationStates()));
+            generator.blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(block, BlockStateModelGenerator.createWeightedVariant(ModelIds.getBlockModelId(PSBlocks.BOTTLE_RACK)))
+                    .coordinate(BlockModels.NORTH_DEFAULT_ROTATION_OPERATIONS));
         });
-        generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(PSBlocks.FLASK, ModelIds.getBlockModelId(PSBlocks.FLASK)));
+        generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(PSBlocks.FLASK, BlockStateModelGenerator.createWeightedVariant(ModelIds.getBlockModelId(PSBlocks.FLASK))));
         generator.registerStateWithModelReference(PSBlocks.FLAMMABLE_GAS, Blocks.AIR);
 
         generateFluidModels(generator);

@@ -29,6 +29,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange.IntRange;
+import net.minecraft.predicate.component.ComponentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
@@ -193,10 +194,10 @@ class PSRecipeGenerator extends RecipeGenerator {
             .input(FluidIngredient.builder().fluid(SimpleFluid.of(Fluids.LAVA)).level(FluidVolumes.GLASS_BOTTLE).build(), PSItems.FILLED_GLASS_BOTTLE)
             .criterion("has_lava_bottle", conditionsFromPredicates(ItemPredicate.Builder.create()
                     .items(items, PSItems.FILLED_GLASS_BOTTLE)
-                    .subPredicate(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
+                    .components(ComponentsPredicate.Builder.create().partial(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
                             .fluid(SimpleFluid.of(Fluids.LAVA))
                             .amount(IntRange.atLeast(FluidVolumes.GLASS_BOTTLE))
-                            .build())))
+                            .build()).build())))
             .discard(Items.GLASS_BOTTLE)
             .offerTo(exporter, id(convertBetween(PSItems.OBSIDIAN_BOTTLE, PSItems.FILLED_GLASS_BOTTLE)));
         FluidAwareShapelessRecipeJsonBuilder.create(items, RecipeCategory.MISC, PSItems.OBSIDIAN_BOTTLE)
@@ -204,10 +205,10 @@ class PSRecipeGenerator extends RecipeGenerator {
             .input(FluidIngredient.builder().fluid(SimpleFluid.of(Fluids.LAVA)).level(FluidVolumes.GLASS_BOTTLE).build(), PSItems.FILLED_GLASS_BOTTLE)
             .criterion("has_lava_bottle", conditionsFromPredicates(ItemPredicate.Builder.create()
                     .items(items, PSItems.FILLED_GLASS_BOTTLE)
-                    .subPredicate(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
+                    .components(ComponentsPredicate.Builder.create().partial(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
                             .fluid(SimpleFluid.of(Fluids.LAVA))
                             .amount(IntRange.atLeast(FluidVolumes.GLASS_BOTTLE))
-                            .build())))
+                            .build()).build())))
             .discard(Items.GLASS_BOTTLE)
             .offerTo(exporter);
         offerSingleOutputShapelessRecipe(PSItems.OBSIDIAN_DUST, PSItems.OBSIDIAN_BOTTLE, "obsidian_bottle");
@@ -386,10 +387,10 @@ class PSRecipeGenerator extends RecipeGenerator {
                     .fluid(PSFluids.COFFEE).build()), RecipeCategory.FOOD, 0.2F, 200)
             .modification("warmth", FluidModifyingResult.Ops.ADD, 1)
             .criterion("has_cold_coffee", conditionsFromPredicates(ItemPredicate.Builder.create()
-                    .subPredicate(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
+                    .components(ComponentsPredicate.Builder.create().partial(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
                             .fluid(PSFluids.COFFEE)
                             .attribute("warmth", IntRange.atMost(1))
-                            .build())))
+                            .build()).build())))
             .offerTo(exporter, id("hot_coffee"));
 
         offerMashingRecipes();

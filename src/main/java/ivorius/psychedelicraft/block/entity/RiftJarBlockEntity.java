@@ -174,12 +174,12 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
 
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        currentRiftFraction = compound.getFloat("currentRiftFraction");
-        isOpening = compound.getBoolean("isOpening");
-        fractionOpen = compound.getFloat("fractionOpen");
-        jarBroken = compound.getBoolean("jarBroken");
-        suckingRifts = compound.getBoolean("suckingRifts");
-        fractionHandleUp = compound.getFloat("fractionHandleUp");
+        currentRiftFraction = compound.getFloat("currentRiftFraction", 0);
+        isOpening = compound.getBoolean("isOpening", false);
+        fractionOpen = compound.getFloat("fractionOpen", 0);
+        jarBroken = compound.getBoolean("jarBroken", false);
+        suckingRifts = compound.getBoolean("suckingRifts", false);
+        fractionHandleUp = compound.getFloat("fractionHandleUp", 0);
     }
 
     public static class JarRiftConnection {

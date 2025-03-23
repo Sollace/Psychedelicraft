@@ -180,10 +180,10 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
-        currentRecipe = Identifier.validate(compound.getString("currentRecipe")).result().map(id -> RegistryKey.of(RegistryKeys.RECIPE, id));
-        heat = compound.getFloat("heatRatio");
-        cookingTime = compound.getLong("cookingTime");
-        dryingProgress = compound.getFloat("dryingProgress");
+        currentRecipe = Identifier.validate(compound.getString("currentRecipe", "")).result().map(id -> RegistryKey.of(RegistryKeys.RECIPE, id));
+        heat = compound.getFloat("heatRatio", 0);
+        cookingTime = compound.getLong("cookingTime", 0);
+        dryingProgress = compound.getFloat("dryingProgress", 0);
     }
 
     @Override

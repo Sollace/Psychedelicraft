@@ -20,6 +20,8 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
+
 import org.joml.Matrix4f;
 
 public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBlockEntity> {
@@ -30,7 +32,7 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
     }
 
     @Override
-    public void render(BarrelBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(BarrelBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         matrices.push();
         matrices.translate(0.5F, 0, 0.5F);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - entity.getCachedState().get(BarrelBlock.FACING).getHorizontalQuarterTurns()));

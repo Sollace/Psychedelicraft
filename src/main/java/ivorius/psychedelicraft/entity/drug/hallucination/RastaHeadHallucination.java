@@ -84,7 +84,7 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
 
     @Override
     protected void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, double x, double y, double z, float pitch, float yaw, float tickDelta) {
-        yaw = 180 - MathHelper.lerp(tickDelta, ((LivingEntity)entity).prevHeadYaw, ((LivingEntity)entity).headYaw);
+        yaw = 180 - MathHelper.lerp(tickDelta, ((LivingEntity)entity).lastHeadYaw, ((LivingEntity)entity).headYaw);
 
         matrices.translate(x, y, z);
         matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(180));

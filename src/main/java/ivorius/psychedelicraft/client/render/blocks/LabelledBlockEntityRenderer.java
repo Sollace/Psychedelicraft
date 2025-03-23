@@ -12,6 +12,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.Vec3d;
 
 public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
 
@@ -53,7 +54,7 @@ public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> impleme
     }
 
     @Override
-    public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         if (shouldRenderLabel(entity)) {
             matrices.push();
             matrices.translate(0.5, 0, 0.5);

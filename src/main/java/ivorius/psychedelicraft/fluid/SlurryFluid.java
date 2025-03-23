@@ -47,7 +47,7 @@ public class SlurryFluid extends SimpleFluid implements Processable {
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
         ParticleUtil.spawnParticle(world, pos, new DrugDustParticleEffect(PSParticles.BUBBLE, getColor(getDefaultStack()), 1), ConstantIntProvider.create(5));
 
-        world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS,
+        world.playSoundAtBlockCenterClient(pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS,
                 0.5F + world.getRandom().nextFloat(),
                 0.3F + world.getRandom().nextFloat(), true);
     }

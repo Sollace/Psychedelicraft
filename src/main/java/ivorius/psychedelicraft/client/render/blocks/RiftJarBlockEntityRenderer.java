@@ -19,8 +19,6 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import java.util.Random;
 
 import org.joml.Vector3d;
@@ -53,7 +51,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
     }
 
     @Override
-    public void render(RiftJarBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(RiftJarBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         model.setAngles(entity, tickDelta);
         float crackedVisibility = entity.jarBroken ? 1 : Math.min((entity.currentRiftFraction - 0.5F) * 2, 1);
 
@@ -101,7 +99,6 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
 
         matrices.push();
         matrices.translate(0.5F, 0.5f, 0.5F);
-        RenderSystem.disableCull();
 
         Vec3d jarPosition = entity.getPos().toCenterPos();
 
@@ -138,7 +135,6 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
             BezierLabelRenderer.INSTANCE.render(matrices, vertices, light, OUTGOING_PATH, LABEL_STYLE.shift(ticks * -0.002F).topCap(outgoingStrength), SMALL_SPIRAL_TEXT);
         }
 
-        RenderSystem.enableCull();
         matrices.pop();
     }
 

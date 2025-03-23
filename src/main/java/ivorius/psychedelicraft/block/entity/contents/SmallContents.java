@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.block.ShapeUtil;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
+import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
@@ -26,7 +27,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
@@ -246,8 +246,8 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
 
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        capacity = compound.getInt("capacity");
-        auxiliaryTanks = NbtSerialisable.toList(new ArrayList<>(), compound.getList("fluids", NbtElement.COMPOUND_TYPE), lookup, this::createTank);
+        capacity = compound.getInt("capacity", FluidVolumes.GLASS_BOTTLE);
+        auxiliaryTanks = compound.getList("fluids").map(list -> NbtSerialisable.toList(new ArrayList<>(), list, lookup, this::createTank)).orElseGet(ArrayList::new);
     }
 
     @Override

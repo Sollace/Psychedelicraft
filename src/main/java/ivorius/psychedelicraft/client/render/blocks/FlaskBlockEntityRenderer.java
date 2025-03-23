@@ -16,6 +16,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Created by lukas on 25.10.14.
@@ -30,7 +31,7 @@ public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements Blo
     }
 
     @Override
-    public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         matrices.push();
         matrices.translate(0.5F, 0, 0.5F);
 

@@ -254,7 +254,7 @@ public class LargeContents extends SmallContents {
     @Override
     public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
         super.fromNbt(compound, lookup);
-        ingredients = new ItemMound(compound.getCompound("ingredients"), lookup);
+        ingredients = new ItemMound(compound.getCompoundOrEmpty("ingredients"), lookup);
     }
 
     @Override

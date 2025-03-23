@@ -37,7 +37,7 @@ public class PeyoteBlockEntityRenderer implements BlockEntityRenderer<PeyoteBloc
     }
 
     @Override
-    public void render(PeyoteBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(PeyoteBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         matrices.push();
         matrices.translate(0.5F, 0.5f, 0.5F);
         matrices.translate(0, 1, 0);

@@ -18,7 +18,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 
@@ -71,8 +70,6 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
 
     @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
     private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
-        if (tag.contains("psychedelicraft_drug_properties", NbtElement.COMPOUND_TYPE)) {
-            getDrugProperties().fromNbt(tag.getCompound("psychedelicraft_drug_properties"), getRegistryManager());
-        }
+        tag.getCompound("psychedelicraft_drug_properties").ifPresent(nbt -> getDrugProperties().fromNbt(nbt, getRegistryManager()));
     }
 }

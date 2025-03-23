@@ -10,17 +10,14 @@ import java.util.Random;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
-import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexFormat;
 
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
@@ -73,7 +70,7 @@ public class RenderUtil {
         RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.enableBlend();
-        BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         MatrixStack.Entry entry = context.getMatrices().peek();
         fastVertex(buffer, entry, x0, y1, z).texture(0, 1);
         fastVertex(buffer, entry, x1, y1, z).texture(1, 1);
@@ -91,7 +88,7 @@ public class RenderUtil {
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.enableBlend();
-        BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         MatrixStack.Entry entry = context.getMatrices().peek();
         fastVertex(buffer, entry, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1);
         fastVertex(buffer, entry, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1);
@@ -108,7 +105,7 @@ public class RenderUtil {
         RenderSystem.setShaderColor(r, g, b, a);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
-        BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         buffer.vertex(0, 0, 0).texture(0, 1)
               .vertex(0, frame.viewportHeight, 0).texture(0, 0)
               .vertex(frame.viewportWidth, frame.viewportHeight, 0).texture(1, 0)

@@ -8,8 +8,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.LoadedEntityModels;
 import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 
 public class VatItemModelRenderer implements SpecialModelRenderer<ItemFluids> {
     private final MashTubBlockEntityRenderer renderer;
@@ -24,7 +24,7 @@ public class VatItemModelRenderer implements SpecialModelRenderer<ItemFluids> {
     }
 
     @Override
-    public void render(ItemFluids data, ModelTransformationMode modelTransformationMode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, boolean glint) {
+    public void render(ItemFluids data, ItemDisplayContext displayContext, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, boolean glint) {
         renderer.renderAsItem(data, matrices, vertices, light, overlay);
     }
 

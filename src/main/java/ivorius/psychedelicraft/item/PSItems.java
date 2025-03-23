@@ -32,6 +32,7 @@ import net.minecraft.block.Block;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.WeaponComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
@@ -56,10 +57,10 @@ public interface PSItems {
     DrinkableItem SHOT_GLASS = register("shot_glass", s -> new DrinkableItem(s
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.SHOT)), FluidVolumes.GULP, DrinkableItem.DEFAULT_MAX_USE_TIME / 4, ConsumableFluid.ConsumptionType.DRINK));
     DrinkableItem BOTTLE = register("bottle", s -> new DrinkableItem(s
-            .component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true))
+            .component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE))
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BOTTLE)), FluidVolumes.GULP, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK));
     MolotovCocktailItem MOLOTOV_COCKTAIL = register("molotov_cocktail", s -> new MolotovCocktailItem(s
-            .component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE, true))
+            .component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.WHITE))
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BOTTLE))
             .maxCount(16)));
 
@@ -145,8 +146,9 @@ public interface PSItems {
     ));
 
     DrinkableItem SYRINGE = register("syringe", s -> new SyringeItem(s
-            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(DrinkableItem.FLUID_PER_INJECTION)
-    )));
+            .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(DrinkableItem.FLUID_PER_INJECTION))
+            .component(DataComponentTypes.WEAPON, new WeaponComponent(1, 130))
+    ));
 
     Item JUNIPER_LEAVES = register("juniper_leaves", PSBlocks.JUNIPER_LEAVES);
     Item FRUITING_JUNIPER_LEAVES = register("fruiting_juniper_leaves", PSBlocks.FRUITING_JUNIPER_LEAVES);
@@ -193,7 +195,7 @@ public interface PSItems {
     Item DRYING_TABLE = register("drying_table", PSBlocks.DRYING_TABLE);
     Item IRON_DRYING_TABLE = register("iron_drying_table", PSBlocks.IRON_DRYING_TABLE);
 
-    Item HARMONIUM = register("harmonium", s -> new Item(s.component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.RED, true))));
+    Item HARMONIUM = register("harmonium", s -> new Item(s.component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(Colors.RED))));
 
     Item OBSIDIAN_BOTTLE = register("obsidian_bottle", s -> new Item(s.maxCount(16)));
     Item OBSIDIAN_DUST = register("obsidian_dust", s -> new SnortableItem(s

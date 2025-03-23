@@ -7,14 +7,14 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.render.item.property.bool.BooleanProperty;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 
 public record TrippingProperty() implements BooleanProperty {
 	public static final MapCodec<TrippingProperty> CODEC = MapCodec.unit(new TrippingProperty());
 
 	@Override
-	public boolean getValue(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ModelTransformationMode modelTransformationMode) {
+	public boolean test(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ItemDisplayContext displayContext) {
 		return DrugProperties.of(user).filter(DrugProperties::isTripping).isPresent();
 	}
 

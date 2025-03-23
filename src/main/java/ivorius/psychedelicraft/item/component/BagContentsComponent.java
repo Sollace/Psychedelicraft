@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.PaperBagItem;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
@@ -67,7 +68,7 @@ public record BagContentsComponent(ItemStack stack, int count) implements Toolti
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type, ComponentsAccess components) {
         if (count > 0) {
             tooltip.accept(Text.literal(count() + " x ").append(stack().getName()));
         }

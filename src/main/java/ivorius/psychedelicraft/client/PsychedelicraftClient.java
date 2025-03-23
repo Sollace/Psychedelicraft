@@ -70,7 +70,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
             DrugProperties.of((Entity)client.player).ifPresent(properties -> {
-                DrugRenderer.INSTANCE.renderAllHallucinations(context.matrixStack(), context.consumers(), context.camera(), context.tickCounter().getTickDelta(false), properties);
+                DrugRenderer.INSTANCE.renderAllHallucinations(context.matrixStack(), context.consumers(), context.camera(), context.tickCounter().getTickProgress(false), properties);
             });
         });
 
@@ -85,11 +85,11 @@ public class PsychedelicraftClient implements ClientModInitializer {
             if (FluidCapacity.get(stack) > 0) {
                 Consumer<Text> consumer = tooltip::add;
                 FluidCapacity.appendTooltip(stack, context, consumer, type);
-                ItemFluids.of(stack).appendTooltip(context, consumer, type);
-                ItemFluidsMixture.of(stack).appendTooltip(context, consumer, type);
+                ItemFluids.of(stack).appendTooltip(context, consumer, type, stack);
+                ItemFluidsMixture.of(stack).appendTooltip(context, consumer, type, stack);
             }
 
-            ItemDrugs.get(stack).appendTooltip(context, tooltip::add, type);
+            ItemDrugs.get(stack).appendTooltip(context, tooltip::add, type, stack);
 
             if (!lines.isEmpty()) {
                 lines.addAll(1, tooltip);

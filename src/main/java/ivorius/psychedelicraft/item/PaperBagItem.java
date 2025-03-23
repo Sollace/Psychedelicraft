@@ -1,22 +1,27 @@
 package ivorius.psychedelicraft.item;
 
-import java.util.List;
+import java.util.function.Consumer;
+
+import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.item.component.BagContentsComponent;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
@@ -126,10 +131,11 @@ public class PaperBagItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+    @Deprecated
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         BagContentsComponent contents = stack.get(PSComponents.BAG_CONTENTS);
         if (contents != null) {
-            contents.appendTooltip(context, tooltip::add, type);
+            contents.appendTooltip(context, textConsumer, type, stack);
         }
     }
 
@@ -190,15 +196,16 @@ public class PaperBagItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (world.isClient() || !selected || stack.getCount() != 1) {
+    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot equipmentSlot) {
+
+        if (stack.getCount() != 1) {
             return;
         }
 
         if (entity instanceof PlayerEntity player) {
-            Inventory inv = player.getInventory();
-
-            if (inv.getStack(slot) != stack) {
+            PlayerInventory inv = player.getInventory();
+            int slot = inv.getSlotWithStack(stack);
+            if (slot < 0) {
                 return;
             }
 
@@ -219,7 +226,7 @@ public class PaperBagItem extends Item {
             }
 
             if (changed) {
-                player.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 1, 1);
+                player.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 1, 1);
                 stack.set(PSComponents.BAG_CONTENTS, builder.build());
                 inv.setStack(slot, stack);
             }

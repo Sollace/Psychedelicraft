@@ -6,6 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.RiftJarItem;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipAppender;
@@ -39,7 +40,7 @@ public record RiftFractionComponent(float amount) implements TooltipAppender {
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type, ComponentsAccess components) {
         tooltip.accept(Text.translatable("item.psychedelicraft.rift_jar." + getUnlocalizedFractionName(amount)).formatted(Formatting.GRAY));
     }
 

@@ -19,8 +19,8 @@ import net.minecraft.client.render.item.tint.TintSource;
 import net.minecraft.client.render.item.tint.TintSourceTypes;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 
 public interface PSItemProperties {
 
@@ -64,6 +64,6 @@ public interface PSItemProperties {
     }
 
     interface ValueSupplier<T> {
-        T getValue(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ModelTransformationMode modelTransformationMode);
+        T getValue(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed, ItemDisplayContext displayContext);
     }
 }

@@ -173,10 +173,10 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     @Override
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
-        tank.fromNbt(compound.getCompound("tank"), lookup);
+        tank.fromNbt(compound.getCompoundOrEmpty("tank"), lookup);
         Inventories.readNbt(compound, ioInventory.heldStacks, lookup);
-        inputSlot.fromNbt(compound.getCompound("inputSlot"), lookup);
-        outputSlot.fromNbt(compound.getCompound("outputSlot"), lookup);
+        inputSlot.fromNbt(compound.getCompoundOrEmpty("inputSlot"), lookup);
+        outputSlot.fromNbt(compound.getCompoundOrEmpty("outputSlot"), lookup);
     }
 
     @Override
@@ -325,8 +325,8 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
 
         @Override
         public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-            propertyDelegate.set(inputtedLevelsIndex, compound.getInt("inputtedLevels"));
-            propertyDelegate.set(levelsTransferredIndex, compound.getInt("levelsTransferred"));
+            propertyDelegate.set(inputtedLevelsIndex, compound.getInt("inputtedLevels", 0));
+            propertyDelegate.set(levelsTransferredIndex, compound.getInt("levelsTransferred", 0));
         }
     }
 }
