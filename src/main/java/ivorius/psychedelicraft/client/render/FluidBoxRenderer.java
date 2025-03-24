@@ -36,6 +36,8 @@ import org.joml.Vector4f;
  * Updated by Sollace on 5 Jan 2023
  */
 public class FluidBoxRenderer {
+    @SuppressWarnings("deprecation")
+    private static final Identifier BLOCK_ATLAS_TEXTURE = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     public static final Direction[] ALL = Direction.values();
     private static final Vector4f POSITION_VECTOR = new Vector4f(0, 0, 0, 1);
     private static final FluidBoxRenderer INSTANCE = new FluidBoxRenderer();
@@ -87,7 +89,7 @@ public class FluidBoxRenderer {
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemFluids fluids) {
         if (fluids.isEmpty()) {
             sprite = null;
-            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
+            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(BLOCK_ATLAS_TEXTURE));
             color = Colors.WHITE;
         } else {
             FluidAppearance appearance = FluidAppearance.of(fluids);
@@ -103,7 +105,7 @@ public class FluidBoxRenderer {
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemStack stack) {
         MinecraftClient.getInstance().getItemModelManager().update(itemRenderState, stack, ItemDisplayContext.FIRST_PERSON_LEFT_HAND, null, null, 0);
         sprite = itemRenderState.getParticleSprite(random);
-        buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
+        buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(BLOCK_ATLAS_TEXTURE));
         color = Colors.WHITE;
         return this;
     }

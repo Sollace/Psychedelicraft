@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.client.render.effect;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.RenderUtil;
@@ -49,7 +47,7 @@ public class TirednessScreenEffect implements ScreenEffect {
 
         overlayOpacity = MathUtils.approach(overlayOpacity, ticksBlinking > 0 ? drowsyness * 0.9F + MathHelper.sin(entity.age / 10F) : 0, 0.03F);
         if (drowsyness > 0.3F && overlayOpacity > 0.6F) {
-            entity.getWorld().playSound(entity.getX(), entity.getY(), entity.getZ(),
+            entity.getWorld().playSoundClient(entity.getX(), entity.getY(), entity.getZ(),
                 PSSounds.ENTITY_PLAYER_HEARTBEAT,
                 SoundCategory.AMBIENT, drowsyness, 0.3F, false);
         }
@@ -73,11 +71,7 @@ public class TirednessScreenEffect implements ScreenEffect {
             return;
         }
 
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.defaultBlendFunc();
         RenderUtil.drawOverlay(context, EYELID_OVERLAY, opacity * 0.8F, window.getScaledWidth(), window.getScaledHeight(), 0, 0, 1, 1, (int)(opacity * 5.8F));
-        RenderSystem.enableDepthTest();
     }
 
     @Override

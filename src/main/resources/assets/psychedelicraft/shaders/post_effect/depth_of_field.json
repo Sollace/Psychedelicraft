@@ -1,0 +1,58 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:post/blit",
+      "fragment_shader": "psychedelicraft:post/depth_of_field",
+      "inputs": [
+        {
+          "sampler_name": "Diffuse",
+          "target": "minecraft:main",
+          "bilinear": true
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth_buffer": true
+        }
+      ],
+      "output": "swap",
+      "uniforms": [
+        { "name": "pixelSize", "type": "vec2" },
+        { "name": "focalPointNear", "type": "float" },
+        { "name": "focalPointFar", "type": "float" },
+        { "name": "focalBlurNear", "type": "float" },
+        { "name": "focalBlurFar", "type": "float" },
+        { "name": "vertical", "type": "float" },
+        { "name": "depthRange", "type": "vec2" },
+        { "name": "OutSize", "type": "vec2", "values": [ 1.0, 1.0 ] },
+        {
+          "name": "ProjMat",
+          "type": "matrix4x4",
+          "values": [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+          ]
+        }
+      ]
+    },
+    {
+      "vertex_shader": "minecraft:post/blit",
+      "fragment_shader": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "uniforms": [
+        { "name": "ColorModulate", "type": "vec4", "values": [ 1, 1, 1, 1 ] }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}

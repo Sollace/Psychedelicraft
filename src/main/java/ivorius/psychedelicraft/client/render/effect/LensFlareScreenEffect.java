@@ -9,8 +9,6 @@ import java.util.stream.IntStream;
 
 import org.joml.*;
 
-import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
-import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -104,7 +102,6 @@ public class LensFlareScreenEffect implements ScreenEffect {
         int fogBlue = ColorHelper.getBlue(colorValue);
 
         float alpha = Math.min(1, sunPositionOnScreen.z);
-        RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
 
         float screenCenterX = screenWidth * 0.5f;
         float screenCenterY = screenHeight * 0.5f;
@@ -134,7 +131,6 @@ public class LensFlareScreenEffect implements ScreenEffect {
             float blendAlpha = Math.min(1, blendingSize / genSize / 150F);
 
             RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, blendAlpha * actualSunAlpha);
-            RenderSystem.blendFuncSeparate(SrcFactor.SRC_ALPHA, DstFactor.ONE, SrcFactor.ONE, DstFactor.ZERO);
             RenderUtil.drawQuad(context, BLINDNESS_OVERLAY,
                     blendCenterX - blendingSizeHalf,
                     blendCenterY - blendingSizeHalf,

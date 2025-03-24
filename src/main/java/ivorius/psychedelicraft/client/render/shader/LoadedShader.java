@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
-import org.joml.Vector4f;
-import org.joml.Vector4fc;
-
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.systems.RenderPass;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.shader.UniformBinding.UniformSetter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
@@ -19,118 +16,101 @@ import net.minecraft.client.util.Pool;
 import net.minecraft.util.Identifier;
 
 class LoadedShader {
-    private final UniformBinding.Set bindings;
 
     private final Identifier id;
     private final MinecraftClient client;
 
-    private final UpdateTracker updater = new UpdateTracker();
-    private final UniformValues uniformValues = new UniformValues();
+    private final UniformValues uniformValues;
+
+    private long lastUpdateTime;
+
+    private boolean shouldRender;
+    private final List<PostEffectPass> passes = new ArrayList<>();
 
     public LoadedShader(MinecraftClient client, Identifier id, UniformBinding.Set bindings) throws IOException, JsonSyntaxException {
         this.client = client;
         this.id = id;
-        this.bindings = bindings;
+        this.uniformValues = new UniformValues(bindings);
     }
 
+    @SuppressWarnings("deprecation")
     public void render(Pool pool, float tickDelta) {
         PostEffectProcessor processor = client.getShaderLoader().loadPostEffect(id, DefaultFramebufferSet.MAIN_ONLY);
         if (processor == null) {
             return;
         }
 
-        if (updater.update(processor, tickDelta)) {
+        if (updateUniforms(processor, tickDelta)) {
             var original = ((PostEffectPassSupplier)processor).getPasses();
             try {
-                ((PostEffectPassSupplier)processor).setPasses(updater.passes);
-                processor.render(client.getFramebuffer(), pool, null);
+                ((PostEffectPassSupplier)processor).setPasses(passes);
+                // Deprecated
+                processor.render(client.getFramebuffer(), pool, pass -> {
+                    try {
+                        for (var update : uniformValues.values) {
+                            update.accept(pass);
+                        }
+                    } catch (Throwable t) {
+                        throw new RuntimeException("Exception updating uniforms for shader " + id + " pass " + ((PostEffectPassSupplier.Pass)pass).getId(), t);
+                    }
+                });
             } finally {
                 ((PostEffectPassSupplier)processor).setPasses(original);
             }
         }
     }
 
-    class UpdateTracker {
-        private int updateCount;
+    private boolean updateUniforms(PostEffectProcessor processor, float tickDelta) {
+        long now = System.currentTimeMillis();
 
-        private final List<PostEffectPass> passes = new ArrayList<>();
-
-        public boolean update(PostEffectProcessor processor, float tickDelta) {
-            if (updateCount == 0) {
-                passes.clear();
-                uniformValues.update(processor, tickDelta, passes);
-            }
-
-            updateCount = (updateCount + 1) % 2;
-
-            if (uniformValues.values.isEmpty()) {
-                return false;
-            }
-
-            for (PostEffectPass pass : passes) {
-                try {
-                    for (var update : uniformValues.values) {
-                        update.accept(pass.getProgram());
-                    }
-                } catch (Throwable t) {
-                    throw new RuntimeException("Exception updating uniforms for shader " + id + " pass " + ((PostEffectPassSupplier.Pass)pass).getId(), t);
-                }
-            }
-            return true;
+        if (now > lastUpdateTime - 100) {
+            lastUpdateTime = now;
+            passes.clear();
+            shouldRender = false;
+            uniformValues.update(client, processor, tickDelta, passes, () -> shouldRender = true);
         }
+
+        return shouldRender;
     }
 
 
-    class UniformValues implements UniformSetter {
-        private final List<Consumer<ShaderProgram>> values = new ArrayList<>();
+    private static class UniformValues implements UniformSetter {
+        private final UniformBinding.Set bindings;
+        private final List<Consumer<RenderPass>> values = new ArrayList<>();
 
-        public void update(PostEffectProcessor postEffectProcessor, float tickDelta, List<PostEffectPass> retainedPasses) {
+        UniformValues(UniformBinding.Set bindings) {
+            this.bindings = bindings;
+        }
+
+        public void update(MinecraftClient client, PostEffectProcessor postEffectProcessor, float tickDelta, List<PostEffectPass> retainedPasses, Runnable markRenderable) {
             values.clear();
             final int width = client.getWindow().getFramebufferWidth();
             final int height = client.getWindow().getFramebufferHeight();
 
             bindings.global.bindUniforms(this, tickDelta, width, height, () -> {
                 for (PostEffectPass pass : ((PostEffectPassSupplier)postEffectProcessor).getPasses()) {
-                    var programBindings = bindings.programBindings.getOrDefault(((PostEffectPassSupplier.Pass)pass).getId(), UniformBinding.EMPTY);
-                    programBindings.bindUniforms(this, tickDelta, width, height, () -> retainedPasses.add(pass));
+                    Identifier id = ((PostEffectPassSupplier.Pass)pass).getPipeline().getFragmentShader();
+                    var programBindings = bindings.programBindings.getOrDefault(id, UniformBinding.EMPTY);
+                    programBindings.bindUniforms(this, tickDelta, width, height, () -> {
+                        retainedPasses.add(pass);
+                        markRenderable.run();
+                    });
+                    if (!Psychedelicraft.DEFAULT_NAMESPACE.equals(id.getNamespace())) {
+                        retainedPasses.add(pass);
+                    }
                 }
             });
         }
 
         @Override
         public void set(String name, float value) {
-            values.add(uniformSetter(name, uniform -> uniform.set(value)));
+            this.values.add(pass -> pass.setUniform(name, value));
         }
 
         @Override
         public void set(String name, float... values) {
             var copy = Arrays.copyOf(values, values.length);
-            this.values.add(uniformSetter(name, uniform -> uniform.set(copy)));
-        }
-
-        @Override
-        public void set(String name, Vector3fc values) {
-            var copy = new Vector3f(values);
-            this.values.add(uniformSetter(name, uniform -> uniform.set(copy)));
-        }
-
-        @Override
-        public void set(String name, Vector4fc values) {
-            var copy = new Vector4f(values);
-            this.values.add(uniformSetter(name, uniform -> uniform.set(copy)));
-        }
-
-        private static Consumer<ShaderProgram> uniformSetter(String name, Consumer<Uniform> consumer) {
-            return program -> {
-                try {
-                    var uniform = program.getUniform(name);
-                    if (uniform != null) {
-                        consumer.accept(uniform);
-                    }
-                } catch (Throwable t) {
-                    throw new RuntimeException("Exception setting uniform: " + name, t);
-                }
-            };
+            this.values.add(pass -> pass.setUniform(name, copy));
         }
     }
 

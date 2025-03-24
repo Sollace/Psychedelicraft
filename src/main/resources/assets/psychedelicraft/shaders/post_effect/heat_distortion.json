@@ -1,0 +1,60 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:post/blit",
+      "fragment_shader": "psychedelicraft:post/heat_distortion",
+      "inputs": [
+        {
+          "sampler_name": "Diffuse",
+          "target": "minecraft:main",
+          "bilinear": true
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth_buffer": true
+        },
+        {
+          "sample_name": "Noise",
+          "location": "psychedelicraft/heat_distortion_noise",
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "output": "swap",
+      "uniforms": [
+        { "name": "totalAlpha", "type": "float" },
+        { "name": "ticks", "type": "float" },
+        { "name": "strength", "type": "float" },
+        { "name": "OutSize", "type": "vec2", "values": [ 1.0, 1.0 ] },
+        {
+          "name": "ProjMat",
+          "type": "matrix4x4",
+          "values": [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+          ]
+        }
+      ]
+    },
+    {
+      "vertex_shader": "minecraft:post/blit",
+      "fragment_shader": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "uniforms": [
+        { "name": "ColorModulate", "type": "vec4", "values": [ 1, 1, 1, 1 ] }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}

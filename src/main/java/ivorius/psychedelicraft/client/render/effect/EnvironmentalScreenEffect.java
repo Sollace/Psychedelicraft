@@ -7,8 +7,6 @@ package ivorius.psychedelicraft.client.render.effect;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.MeteorlogicalUtil;
@@ -110,18 +108,11 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         if (PsychedelicraftClient.getConfig().hurtOverlayEnabled.get() && (
                 (entity.hurtTime > 0 && properties.getModifier(Drug.PAIN_SUPPRESSION) <= 1F)
                 || experiencedHealth < 5 || pulseStrength > 0)) {
-            RenderSystem.enableBlend();
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-            RenderSystem.defaultBlendFunc();
-
             float p1 = Math.max((float)entity.hurtTime / entity.maxHurtTime, pulseStrength);
             float p2 = (5 - (experiencedHealth * (1 - pulseStrength))) / 6F;
 
             float p = MathHelper.clamp(p1 > 0 ? p1 : p2 > 0 ? p2 : 0, 0, 1);
             RenderUtil.drawOverlay(context, HURT_OVERLAY, p, window.getScaledWidth(), window.getScaledHeight(), 0, 0, 1, 1, (int) ((1 - p) * 40));
-
-            RenderSystem.enableDepthTest();
         }
     }
 

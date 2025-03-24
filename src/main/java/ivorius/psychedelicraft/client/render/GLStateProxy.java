@@ -4,8 +4,9 @@ import static org.lwjgl.opengl.GL11.GL_BLEND;
 
 import org.lwjgl.opengl.*;
 
-import com.mojang.blaze3d.platform.GlConst;
+import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.TextureManager;
@@ -27,19 +28,19 @@ public class GLStateProxy {
     private static final float[] resolution = new float[2];
 
     public static boolean isColorSafeMode() {
-        RenderSystem.assertOnRenderThreadOrInit();
+        RenderSystem.assertOnRenderThread();
         return (GL11.glIsEnabled(GL_BLEND) && getBlendDFactor() != GL11.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     private static int getBlendDFactor() {
         // XXXX: (Sollace) accessor to GlStateManager.BLEND.dstFactorRGB;
-        RenderSystem.assertOnRenderThreadOrInit();
+        RenderSystem.assertOnRenderThread();
         return GL14.glGetInteger(GL14.GL_BLEND_DST_RGB);
     }
 
     public static void setResolution(float width, float height) {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> _setResolution(width, height));
+            RenderSystem.queueFencedTask(() -> _setResolution(width, height));
         } else {
             _setResolution(width, height);
         }
@@ -52,7 +53,7 @@ public class GLStateProxy {
     }
 
     public static float[] getResolution() {
-        RenderSystem.assertOnRenderThreadOrInit();
+        RenderSystem.assertOnRenderThread();
         if (!resolutionSet) {
             Window window = MinecraftClient.getInstance().getWindow();
             resolution[0] = 1F / window.getFramebufferWidth();
@@ -62,17 +63,17 @@ public class GLStateProxy {
     }
 
     public static void clearResolution() {
-        RenderSystem.assertOnRenderThreadOrInit();
+        RenderSystem.assertOnRenderThread();
         resolutionSet = false;
     }
 
     public static void enableTexCoords() {
-        RenderSystem.assertOnRenderThreadOrInit();
+        RenderSystem.assertOnRenderThread();
         usesScreenTexCoords = true;
     }
 
     public static void disableScreenTexCoords() {
-        RenderSystem.assertOnRenderThreadOrInit();
+        RenderSystem.assertOnRenderThread();
         usesScreenTexCoords = false;
     }
 
@@ -80,13 +81,7 @@ public class GLStateProxy {
         return usesScreenTexCoords;
     }
 
-    public static int getTextureId(Identifier texture) {
-        RenderSystem.assertOnRenderThreadOrInit();
-        return TEXURE_MANAGER.getTexture(texture).getGlId();
-    }
-
-    public enum ShadeMode {
-        FLAT,
-        SMOOTH
+    public static GpuTexture getTextureId(Identifier texture) {
+        return TEXURE_MANAGER.getTexture(texture).getGlTexture();
     }
 }

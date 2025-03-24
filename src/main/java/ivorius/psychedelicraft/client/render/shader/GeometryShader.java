@@ -9,8 +9,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.apache.commons.io.IOUtils;
 
 import com.mojang.blaze3d.shaders.ShaderType;
@@ -31,6 +29,9 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 public class GeometryShader {
+    // Deprecation: SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/blocks.png");
+    @SuppressWarnings("deprecation")
+    private static final Identifier BLOCK_ATLAS_TEXTURE = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     private static final String GEO_DIRECTORY = "shaders/geometry/";
     private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(^|\\n)ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
     private static final Identifier BASIC = Psychedelicraft.id("basic");
@@ -47,8 +48,7 @@ public class GeometryShader {
 
     private final Map<String, Supplier<GpuTexture>> samplers = Util.make(new HashMap<>(), map -> {
         map.put("PS_DepthSampler", () -> MinecraftClient.getInstance().getFramebuffer().getDepthAttachment());
-        // Deprecation: SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/blocks.png");
-        map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).getGlTexture());
+        map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(BLOCK_ATLAS_TEXTURE).getGlTexture());
     });
 
     public void setup(ShaderType type, Identifier name) {

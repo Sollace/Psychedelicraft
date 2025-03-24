@@ -3,19 +3,18 @@ package ivorius.psychedelicraft.client.render.effect;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.PowerDrug;
-import net.minecraft.client.gl.ShaderProgramKeys;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.Window;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug> {
@@ -53,32 +52,22 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
         if (powerLightnings > 0) {
             int lightningW = height;
 
-            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-            RenderSystem.blendFuncSeparate(
-                    GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE,
-                    GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
-            );
-            Tessellator tessellator = Tessellator.getInstance();
+            Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
 
             for (int i = 0; i < powerLightnings; i++) {
                 float lX = powerLR.nextInt(width + lightningW) - lightningW;
-                lX += (powerLR.nextFloat() - 0.5f) * lightningW * tickDelta * 2.0f;
+                lX += (powerLR.nextFloat() - 0.5f) * lightningW * tickDelta * 2;
                 int lIndex = powerLR.nextInt(LIGHTNING_TEXTURES.length);
                 boolean upsideDown = powerLR.nextBoolean();
-                float lightningTime = ((entity.age % 2) + tickDelta) * 0.5f;
+                float lightningTime = ((entity.age % 2) + tickDelta) * 0.5F;
 
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, (0.05f + power * 0.1f) * (1.0f - lightningTime));
-                RenderSystem.setShaderTexture(0, LIGHTNING_TEXTURES[lIndex]);
-
-                BufferBuilder buffer = tessellator.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-                buffer.vertex(lX, height, -90F).texture(0, upsideDown ? 0 : 1)
-                      .vertex(lX + lightningW, height, -90F).texture(1, upsideDown ? 0 : 1)
-                      .vertex(lX + lightningW, 0, -90F).texture(1, upsideDown ? 1 : 0)
-                      .vertex(lX, 0, -90F).texture(0, upsideDown ? 1 : 0);
-                BufferRenderer.drawWithGlobalProgram(buffer.end());
+                int color = ColorHelper.withAlpha(ColorHelper.channelFromFloat((0.05f + power * 0.1F) * (1 - lightningTime)), Colors.WHITE);
+                VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityAlpha(LIGHTNING_TEXTURES[lIndex]));
+                buffer.vertex(lX, height,              -90F).texture(0, upsideDown ? 0 : 1).color(color)
+                      .vertex(lX + lightningW, height, -90F).texture(1, upsideDown ? 0 : 1).color(color)
+                      .vertex(lX + lightningW, 0,      -90F).texture(1, upsideDown ? 1 : 0).color(color)
+                      .vertex(lX, 0,                   -90F).texture(0, upsideDown ? 1 : 0).color(color);
             }
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderSystem.defaultBlendFunc();
         }
     }
 

@@ -2,6 +2,8 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.util.List;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+
 import net.minecraft.client.gl.PostEffectPass;
 
 public interface PostEffectPassSupplier {
@@ -11,5 +13,7 @@ public interface PostEffectPassSupplier {
 
     interface Pass {
         String getId();
+
+        RenderPipeline getPipeline();
     }
 }

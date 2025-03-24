@@ -1,0 +1,63 @@
+
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:post/blit",
+      "fragment_shader": "psychedelicraft:post/digital_depth",
+      "inputs": [
+          {
+            "sampler_name": "Diffuse",
+            "target": "minecraft:main",
+            "bilinear": true
+          },
+          {
+            "sampler_name": "Depth",
+            "target": "minecraft:main",
+            "use_depth_buffer": true
+          },
+          {
+            "sampler_name": "Ascii",
+            "location": "psychedelicraft/bits",
+            "width": 128,
+            "height": 128
+          }
+      ],
+      "output": "swap",
+      "uniforms": [
+        { "name": "newResolution", "type": "vec2" },
+        { "name": "textProgress", "type": "float" },
+        { "name": "maxColors", "type": "float" },
+        { "name": "saturation", "type": "float" },
+        { "name": "totalAlpha", "type": "float" },
+        { "name": "depthRange", "type": "vec2" },
+        {
+          "name": "ProjMat",
+          "type": "matrix4x4",
+          "values": [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+          ]
+        }
+      ]
+    },
+    {
+      "vertex_shader": "minecraft:post/blit",
+      "fragment_shader": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "uniforms": [
+        { "name": "ColorModulate", "type": "vec4", "values": [ 1, 1, 1, 1 ] }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}

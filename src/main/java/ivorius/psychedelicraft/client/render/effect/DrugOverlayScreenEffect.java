@@ -1,7 +1,5 @@
 package ivorius.psychedelicraft.client.render.effect;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.entity.drug.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -32,12 +30,7 @@ public abstract class DrugOverlayScreenEffect<D extends Drug> implements ScreenE
         if (MinecraftClient.getInstance().player != null) {
             DrugProperties properties = DrugProperties.of(MinecraftClient.getInstance().player);
             context.getMatrices().push();
-            RenderSystem.enableBlend();
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-            RenderSystem.defaultBlendFunc();
             render(context, window, tickDelta, properties, (D)properties.getDrug(type));
-            RenderSystem.enableDepthTest();
             context.getMatrices().pop();
         }
     }

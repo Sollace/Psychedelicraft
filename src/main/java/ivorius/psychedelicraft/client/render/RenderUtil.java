@@ -11,13 +11,11 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexFormat;
-
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
@@ -67,51 +65,46 @@ public class RenderUtil {
     }
 
     public static void drawQuad(DrawContext context, Identifier texture, float x0, float y0, float x1, float y1, float z) {
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.enableBlend();
-        BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        drawQuad(context, RenderLayer.getEntityAlpha(texture), x0, y0, x1, y1, z);
+    }
+
+    public static void drawQuad(DrawContext context, RenderLayer layer, float x0, float y0, float x1, float y1) {
+        drawQuad(context, layer, x0, y0, x1, y1, 0);
+    }
+
+    public static void drawQuad(DrawContext context, RenderLayer layer, float x0, float y0, float x1, float y1, float z) {
+        Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumer buffer = vertices.getBuffer(layer);
         MatrixStack.Entry entry = context.getMatrices().peek();
         fastVertex(buffer, entry, x0, y1, z).texture(0, 1);
         fastVertex(buffer, entry, x1, y1, z).texture(1, 1);
         fastVertex(buffer, entry, x1, y0, z).texture(1, 0);
         fastVertex(buffer, entry, x0, y0, z).texture(0, 0);
-        BufferRenderer.drawWithGlobalProgram(buffer.end());
-        RenderSystem.disableBlend();
     }
 
     public static void drawOverlay(DrawContext context, Identifier texture,float alpha,
             int width, int height,
             float u0, float v0,
             float u1, float v1, int offset) {
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.enableBlend();
-        BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityAlpha(texture));
         MatrixStack.Entry entry = context.getMatrices().peek();
         fastVertex(buffer, entry, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1);
         fastVertex(buffer, entry, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1);
         fastVertex(buffer, entry, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0);
         fastVertex(buffer, entry, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0);
-        BufferRenderer.drawWithGlobalProgram(buffer.end());
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.disableBlend();
     }
 
-    public static void drawBuffer(Framebuffer frame, float r, float g, float b, float a) {
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        RenderSystem.setShaderTexture(0, frame.getColorAttachment());
+    public static void drawTexture(Identifier texture, int width, int height, float r, float g, float b, float a) {
         RenderSystem.setShaderColor(r, g, b, a);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
-        BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityAlpha(texture));
         buffer.vertex(0, 0, 0).texture(0, 1)
-              .vertex(0, frame.viewportHeight, 0).texture(0, 0)
-              .vertex(frame.viewportWidth, frame.viewportHeight, 0).texture(1, 0)
-              .vertex(frame.viewportWidth, 0, 0).texture(1, 1);
-        BufferRenderer.drawWithGlobalProgram(buffer.end());
-        RenderSystem.disableBlend();
+              .vertex(0, height, 0).texture(0, 0)
+              .vertex(width, height, 0).texture(1, 0)
+              .vertex(width, 0, 0).texture(1, 1);
     }
 
     public static void drawRepeatingSprite(DrawContext context, Sprite sprite, int x, int y, int width, int height, int color) {

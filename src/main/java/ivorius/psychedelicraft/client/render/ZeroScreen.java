@@ -11,25 +11,18 @@ import net.minecraft.util.TriState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
-public class ZeroScreen extends RenderLayer {
-    private ZeroScreen() {super(null, null, null, 0, false, false, null, null);}
+public abstract class ZeroScreen extends RenderLayer {
+    private ZeroScreen() {super(null, 0, false, false, null, null);}
 
-    public static final Identifier[] TEXTURES = IntStream.range(0, 8)
+    private static final Identifier[] TEXTURES = IntStream.range(0, 8)
             .mapToObj(i -> Psychedelicraft.id("textures/entity/reality_rift/zero_screen_" + i + ".png"))
             .toArray(Identifier[]::new);
-    public static final float X_PIXELS = 140 / 2F;
-    public static final float Y_PIXELS = 224 / 2F;
+    private static final float X_PIXELS = 140 / 2F;
+    private static final float Y_PIXELS = 224 / 2F;
 
-    protected static final ShaderProgram ZERO_MATTER_PROGRAM = new ShaderProgram(PSShaders.ZERO_MATTER);
-
-    private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> of("ps_zero_screen",
-            VertexFormats.POSITION_COLOR,
-            VertexFormat.DrawMode.QUADS, 256, false, false, MultiPhaseParameters.builder()
-            .transparency(TRANSLUCENT_TRANSPARENCY)
-            .lightmap(DISABLE_LIGHTMAP)
-            .program(ZERO_MATTER_PROGRAM)
-            .cull(DISABLE_CULLING)
-            .texture(new Texture(texture, TriState.FALSE, false))
+    private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> RenderLayer.of("ps_zero_screen", 1536, false, false, PSShaders.ZERO_MATTER, MultiPhaseParameters.builder()
+            .texture(new RenderLayer.Texture(texture, TriState.FALSE, false))
+            .lightmap(RenderLayer.DISABLE_LIGHTMAP)
             .build(false)
     ));
 

@@ -5,6 +5,8 @@ import java.util.*;
 import org.joml.Vector3fc;
 import org.joml.Vector4fc;
 
+import net.minecraft.util.Identifier;
+
 public interface UniformBinding {
     UniformBinding EMPTY = (uniforms, tickDelta, screenWidth, screenHeight, pass) -> pass.run();
 
@@ -15,9 +17,13 @@ public interface UniformBinding {
 
         void set(String name, float...values);
 
-        void set(String name, Vector3fc values);
+        default void set(String name, Vector3fc values) {
+            set(name, values.x(), values.y(), values.z());
+        }
 
-        void set(String name, Vector4fc values);
+        default void set(String name, Vector4fc values) {
+            set(name, values.x(), values.y(), values.z(), values.w());
+        }
 
         default boolean setIfNonZero(String name, float value) {
             set(name, value);
@@ -32,15 +38,15 @@ public interface UniformBinding {
     final class Set {
         UniformBinding global = EMPTY;
 
-        final Map<String, UniformBinding> programBindings = new HashMap<>();
+        final Map<Identifier, UniformBinding> programBindings = new HashMap<>();
 
         public Set bind(UniformBinding all) {
             this.global = all;
             return this;
         }
 
-        public Set program(String programName, UniformBinding binding) {
-            programBindings.put(programName, binding);
+        public Set program(Identifier fragmentShaderId, UniformBinding binding) {
+            programBindings.put(fragmentShaderId, binding);
             return this;
         }
     }

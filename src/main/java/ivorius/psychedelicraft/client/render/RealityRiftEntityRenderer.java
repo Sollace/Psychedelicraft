@@ -21,8 +21,6 @@ import net.minecraft.util.math.MathHelper;
 
 import org.joml.*;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import java.util.Random;
 import java.lang.Math;
 
@@ -65,8 +63,6 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
 
         renderRift(matrices, vertices, state.instability);
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(CENTER_TEXTURE));
         Vector4f vector = new Vector4f(0, 0, 0, 1);
 
@@ -99,8 +95,6 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
         consumer.vertex(pos.x, pos.y, pos.z, Colors.WHITE, 0, 1, light, 0, 1, 1, 1);
 
         matrices.pop();
-
-        RenderSystem.disableBlend();
 
         matrices.pop();
     }

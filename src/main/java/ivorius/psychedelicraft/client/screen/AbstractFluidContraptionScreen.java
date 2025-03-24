@@ -18,8 +18,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,8 +56,6 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         float[] color = appearance.rgba();
 
         RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, ColorHelper.fromFloats(color[3], color[0], color[1], color[2]));
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
     }
 
     public static void drawTank(DrawContext context, ItemFluids fluids, int capacity, int x, int y, int width, int height) {
@@ -75,8 +71,6 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         float[] color = appearance.rgba();
 
         RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y + height - fluidHeightPixels, width, fluidHeightPixels, ColorHelper.fromFloats(color[3], color[0], color[1], color[2]));
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
     }
 
     public static void drawTankTooltip(DrawContext context, Resovoir tank, int x, int y, int width, int height, int mouseX, int mouseY, List<Text> details) {

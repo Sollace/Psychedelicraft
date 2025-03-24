@@ -2,10 +2,7 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.util.*;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Pool;
 
 public class PostEffectRenderer {
@@ -13,16 +10,11 @@ public class PostEffectRenderer {
 
     public void render(Pool pool, float tickDelta) {
         if (PsychedelicraftClient.getConfig().shader2DEnabled.get()) {
-            RenderSystem.enableDepthTest();
-
             if (shaders.size() == 1) {
                 shaders.get(0).render(pool, tickDelta);
             } else {
                 shaders.forEach(shader -> shader.render(pool, tickDelta));
             }
-
-            MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
-            RenderSystem.disableDepthTest();
         }
     }
 
