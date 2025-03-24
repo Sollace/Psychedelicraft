@@ -189,10 +189,10 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.GLASS_CHALICE,
                 PSItems.SHOT_GLASS,
                 PSItems.STONE_CUP,
-                PSItems.SYRINGE,
                 PSItems.WOODEN_MUG
-        ).forEach(item -> ItemModels.registerDrinkHolder(generator, item));
-        ItemModels.registerDyeableDrinkHolder(generator, PSItems.BOTTLE);
+        ).forEach(item -> ItemModels.registerDrinkHolder(generator, item, "ground", "ground_fluid"));
+        ItemModels.registerDrinkHolder(generator, PSItems.SYRINGE);
+        ItemModels.registerDyeableDrinkHolder(generator, PSItems.BOTTLE, "ground", "ground_fluid", "burner");
         ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_BUCKET, Items.BUCKET,
                 ModelIds.getItemModelId(Items.LAVA_BUCKET),
                 ModelIds.getItemModelId(Items.WATER_BUCKET)
@@ -202,7 +202,8 @@ public class PSModelProvider extends FabricModelProvider {
         );
         ItemModels.registerParentedDrinkHolder(generator, PSItems.FILLED_GLASS_BOTTLE, Items.POTION,
                 Models.GENERATED.upload(Psychedelicraft.id("item/lava_bottle"), TextureMap.layer0(Psychedelicraft.id("item/lava_bottle")), generator.modelCollector),
-                ModelIds.getItemModelId(Items.POTION)
+                ModelIds.getItemModelId(Items.POTION),
+                "burner"
         );
 
         List.of(PSItems.WINE_GRAPE_LATTICE, PSItems.MORNING_GLORY_LATTICE).forEach(item -> {

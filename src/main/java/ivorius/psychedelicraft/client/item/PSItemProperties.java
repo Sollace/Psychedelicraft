@@ -52,6 +52,7 @@ public interface PSItemProperties {
         flag("tripping", TrippingProperty.CODEC);
         flag("flying", FlyingProperty.CODEC);
         flag("using", UsingProperty.CODEC);
+        option("placement", PlacementProperty.TYPE);
         option("filled", FilledProperty.TYPE);
         flag("contained_fluid", ContainedFluidProperty.CODEC);
         range("age", AgeProperty.CODEC);

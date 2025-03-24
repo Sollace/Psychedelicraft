@@ -1,12 +1,16 @@
 package ivorius.psychedelicraft.datagen.providers;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.item.ContainedFluidProperty;
 import ivorius.psychedelicraft.client.item.FilledProperty;
 import ivorius.psychedelicraft.client.item.FluidTintSource;
 import ivorius.psychedelicraft.client.item.FlyingProperty;
+import ivorius.psychedelicraft.client.item.PlacementProperty;
 import ivorius.psychedelicraft.client.item.UsingProperty;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
@@ -16,6 +20,7 @@ import net.minecraft.client.data.ModelIds;
 import net.minecraft.client.data.Models;
 import net.minecraft.client.data.TextureKey;
 import net.minecraft.client.data.TextureMap;
+import net.minecraft.client.render.item.model.ItemModel;
 import net.minecraft.client.render.item.property.numeric.DamageProperty;
 import net.minecraft.client.render.item.tint.DyeTintSource;
 import net.minecraft.client.render.item.tint.TintSource;
@@ -38,6 +43,22 @@ public interface ItemModels {
     TextureKey LATTICE = BlockModels.LATTICE;
     Model CROP_LATTICE_TEMPLATE = item("crop_lattice_template", LATTICE, TextureKey.CROP);
     Model LATTICE_TEMPLATE = item("lattice_template", LATTICE);
+
+    static Identifier getGroundModelId(String type, Item item) {
+        return getGroundModelId(type, Registries.ITEM.getId(item));
+    }
+
+    static Identifier getGroundModelFluidId(String type, Item item) {
+        return getGroundModelFluidId(type, Registries.ITEM.getId(item));
+    }
+
+    static Identifier getGroundModelId(String type, Identifier item) {
+        return item.withPath(p -> "item/" + p + "_on_" + type);
+    }
+
+    static Identifier getGroundModelFluidId(String type, Identifier item) {
+        return getGroundModelId(type, item).withSuffixedPath("_fluid");
+    }
 
     static Model item(String parent, TextureKey ... requiredTextureKeys) {
         return new Model(Optional.of(Psychedelicraft.id("item/" + parent)), Optional.empty(), requiredTextureKeys);
@@ -88,14 +109,14 @@ public interface ItemModels {
                 itemModelGenerator.modelCollector)
         );
 
-        itemModelGenerator.output.accept(item, condition(new FlyingProperty(),
+        itemModelGenerator.output.accept(item, applyPlacements(item, condition(new FlyingProperty(),
                 flying,
                 condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)), filledLava,
                         select(new FilledProperty(), basic, List.of(
                             switchCase(FilledProperty.FillPercentage.FULL, filled)
                         ))
-                ))
-        );
+                )
+        ), new String[] {"ground", "ground_fluid"}, dyeTint));
     }
 
     static void registerSmokeable(ItemModelGenerator itemModelGenerator, Item item) {
@@ -167,7 +188,7 @@ public interface ItemModels {
         ));
     }
 
-    static void registerDrinkHolder(ItemModelGenerator itemModelGenerator, Item item) {
+    static void registerDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, String...placements) {
         var empty = basic(itemModelGenerator.upload(item, GENERATED));
         var lavaFilled = basic(Models.GENERATED_TWO_LAYERS.upload(
                 ModelIds.getItemSubModelId(item, "_filled_with_lava"),
@@ -180,16 +201,31 @@ public interface ItemModels {
                 itemModelGenerator.modelCollector
         ), UNTINTED, new FluidTintSource(Colors.WHITE));
 
-        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)),
+        itemModelGenerator.output.accept(item, applyPlacements(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)),
                 lavaFilled,
                 select(new FilledProperty(), empty, List.of(
                         switchCase(FilledProperty.FillPercentage.FULL, filled)
                     )
                 )
-        ));
+        ), placements));
     }
 
-    static void registerDyeableDrinkHolder(ItemModelGenerator itemModelGenerator, Item item) {
+    static ItemModel.Unbaked applyPlacements(Item item, ItemModel.Unbaked model, String[] placements, TintSource... tints) {
+        if (placements.length > 0) {
+            TintSource[] fluidTints = tints.length == 0
+                    ? new TintSource[] {new FluidTintSource(Colors.WHITE)}
+                    : Stream.concat(Arrays.stream(tints), Stream.of(new FluidTintSource(Colors.WHITE))).toArray(TintSource[]::new);
+            return select(new PlacementProperty(), model, Arrays.stream(placements).map(placement -> {
+                return switchCase(placement, placement.endsWith("_fluid")
+                        ? tinted(getGroundModelFluidId(placement, item), fluidTints)
+                        : tints.length == 0 ? basic(getGroundModelId(placement, item)) : tinted(getGroundModelId(placement, item), tints)
+                );
+            }).toList());
+        }
+        return model;
+    }
+
+    static void registerDyeableDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, String...placements) {
         var overlay = TextureMap.getSubId(item, "_overlay");
         var base = TextureMap.getId(item);
 
@@ -207,16 +243,16 @@ public interface ItemModels {
                 itemModelGenerator.modelCollector
         ), dyeTint, new FluidTintSource(Colors.WHITE));
 
-        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)),
+        itemModelGenerator.output.accept(item, applyPlacements(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)),
                 lavaFilled,
                 select(new FilledProperty(), empty, List.of(
                         switchCase(FilledProperty.FillPercentage.FULL, filled)
                     )
                 )
-        ));
+        ), placements, dyeTint));
     }
 
-    static void registerParentedDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, Item parent, Identifier withLava, Identifier withWater) {
+    static void registerParentedDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, Item parent, Identifier withLava, Identifier withWater, String...placements) {
         var overlayTextureKey = parent == Items.POTION ? TextureKey.LAYER0 : TextureKey.LAYER1;
         var parentModel = new Model(Optional.of(ModelIds.getItemModelId(parent)), Optional.empty(), overlayTextureKey);
         var parentId = Registries.ITEM.getId(parent);
@@ -231,10 +267,10 @@ public interface ItemModels {
         var lavaFilled = basic(withLava);
         var waterFilled = basic(withWater);
 
-        itemModelGenerator.output.accept(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)),
+        itemModelGenerator.output.accept(item, applyPlacements(item, condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.LAVA)),
                 lavaFilled,
                 condition(new ContainedFluidProperty(SimpleFluid.of(Fluids.WATER)), waterFilled, empty)
-        ));
+        ), placements));
     }
 
     static void registerParentedDrinkHolder(ItemModelGenerator itemModelGenerator, Item item, Item parent, Identifier withLava) {
