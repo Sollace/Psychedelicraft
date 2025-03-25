@@ -1,29 +1,18 @@
 {
-    "targets": [
-        "swap"
+    "vertex": "minecraft:post/blit",
+    "fragment": "psychedelicraft:post/digital",
+    "samplers": [
+        { "name": "DiffuseSampler" },
+        { "name": "AsciiSampler" }
     ],
-    "passes": [
-        {
-            "name": "digital_depth",
-            "intarget": "minecraft:main",
-            "outtarget": "swap",
-            "auxtargets": [
-                { "name": "DepthSampler", "id": "minecraft:main:depth" },
-                { "name": "AsciiSampler", "id": "psychedelicraft/bits", "width": 128, "height": 128, "bilinear": false }
-            ],
-            "uniforms": [
-              { "name": "newResolution", "values": [ 1.0, 1.0 ] },
-              { "name": "textProgress", "values": [ 0.0 ] },
-              { "name": "maxColors", "values": [ 0.0 ] },
-              { "name": "saturation", "values": [ 0.0 ] },
-              { "name": "totalAlpha", "values": [ 0.0 ] },
-              { "name": "depthRange", "values": [ 0.0, 1.0 ] }
-            ]
-        },
-        {
-            "name": "blit",
-            "intarget": "swap",
-            "outtarget": "minecraft:main"
-        }
+    "uniforms": [
+        { "name": "newResolution", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+        { "name": "textProgress", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "maxColors", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "saturation", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 0.0 ] },
+
+        { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+        { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }
     ]
 }

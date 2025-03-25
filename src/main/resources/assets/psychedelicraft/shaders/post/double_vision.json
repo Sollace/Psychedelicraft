@@ -1,22 +1,15 @@
 {
-    "targets": [
-        "swap"
+    "vertex": "minecraft:post/blit",
+    "fragment": "psychedelicraft:post/double_vision",
+    "samplers": [
+        { "name": "DiffuseSampler" }
     ],
-    "passes": [
-        {
-            "name": "double_vision",
-            "intarget": "minecraft:main",
-            "outtarget": "swap",
-            "uniforms": [
-              { "name": "totalAlpha", "values": [ 1.0 ] },
-              { "name": "distance", "values": [ 0.0 ] },
-              { "name": "stretch", "values": [ 0.0 ] }
-            ]
-        },
-        {
-            "name": "blit",
-            "intarget": "swap",
-            "outtarget": "minecraft:main"
-        }
+    "uniforms": [
+        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "distance", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "stretch", "type": "float", "count": 1, "values": [ 0.0 ] },
+
+        { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+        { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }
     ]
 }

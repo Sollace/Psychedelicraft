@@ -1,39 +1,18 @@
 {
-    "targets": [
-        "temp",
-        "swap"
+    "vertex": "minecraft:post/blit",
+    "fragment": "psychedelicraft:post/simple_effects",
+    "samplers": [
+        { "name": "DiffuseSampler" }
     ],
-    "passes": [
-        {
-            "name": "simple_effects",
-            "intarget": "minecraft:main",
-            "outtarget": "temp",
-            "uniforms": [
-                { "name": "ticks", "values": [ 1.0 ] },
-                { "name": "slowColorRotation", "values": [ 0.0 ] },
-                { "name": "quickColorRotation", "values": [ 0.0 ] },
-                { "name": "colorIntensification", "values": [ 0.0 ] },
-                { "name": "desaturation", "values": [ 0.0 ] },
-                { "name": "inversion", "values": [ 0.0 ] }
-            ]
-        },
-        {
-            "name": "simple_effects_depth",
-            "intarget": "temp",
-            "outtarget": "swap",
-            "auxTargets": [
-                { "name": "DepthSampler", "id": "minecraft:main:depth" }
-            ],
-            "uniforms": [
-              { "name": "ticks", "values": [ 0.0 ] },
-              { "name": "colorSafeMode", "values": [ 0.0 ] },
-              { "name": "worldColorization", "values": [ 0.0, 0.0, 0.0, 0.0 ] }
-            ]
-        },
-        {
-            "name": "blit",
-            "intarget": "swap",
-            "outtarget": "minecraft:main"
-        }
+    "uniforms": [
+        { "name": "ticks", "type": "float", "count": 1, "values": [ 1.0 ] },
+        { "name": "slowColorRotation", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "quickColorRotation", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "colorIntensification", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "desaturation", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "inversion", "type": "float", "count": 1, "values": [ 0.0 ] },
+
+        { "name": "ProjMat",       "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+        { "name": "OutSize",       "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }
     ]
 }

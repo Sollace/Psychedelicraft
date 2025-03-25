@@ -1,14 +1,9 @@
 {
-    "blend": {
-        "func": "add",
-        "srcrgb": "srcalpha",
-        "dstrgb": "1-srcalpha"
-    },
-    "vertex": "blit",
-    "fragment": "digital",
-    "attributes": [ "Position" ],
+    "vertex": "minecraft:post/blit",
+    "fragment": "psychedelicraft:post/digital_depth",
     "samplers": [
         { "name": "DiffuseSampler" },
+        { "name": "DepthSampler" },
         { "name": "AsciiSampler" }
     ],
     "uniforms": [
@@ -17,6 +12,7 @@
         { "name": "maxColors", "type": "float", "count": 1, "values": [ 0.0 ] },
         { "name": "saturation", "type": "float", "count": 1, "values": [ 0.0 ] },
         { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 0.0 ] },
+        { "name": "depthRange", "type": "float", "count": 2, "values": [ 0.0, 1.0 ] },
 
         { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
         { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }

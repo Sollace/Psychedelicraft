@@ -1,23 +1,16 @@
 {
-    "targets": [
-        "swap"
+    "vertex": "minecraft:post/blit",
+    "fragment": "psychedelicraft:post/ps_blur",
+    "samplers": [
+        { "name": "DiffuseSampler" }
     ],
-    "passes": [
-        {
-            "name": "ps_blur",
-            "intarget": "minecraft:main",
-            "outtarget": "swap",
-            "uniforms": [
-                { "name": "pixelSize", "values": [ 1.0, 1.0 ] },
-                { "name": "hBlur",     "values": [ 1.0 ] },
-                { "name": "vBlur",     "values": [ 1.0 ] },
-                { "name": "repeats",   "values": [ 1.0 ] }
-            ]
-        },
-        {
-            "name": "blit",
-            "intarget": "swap",
-            "outtarget": "minecraft:main"
-        }
+    "uniforms": [
+        { "name": "pixelSize",  "type": "float", "count": 2,  "values": [ 1.0, 1.0 ] },
+        { "name": "hBlur",   "type": "float", "count": 1,  "values": [ 1.0 ] },
+        { "name": "vBlur", "type": "float", "count": 1,  "values": [ 1.0 ] },
+        { "name": "repeats", "type": "float", "count": 1,  "values": [ 1.0 ] },
+
+        { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+        { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }
     ]
 }

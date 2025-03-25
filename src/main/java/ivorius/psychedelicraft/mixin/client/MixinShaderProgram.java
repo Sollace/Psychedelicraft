@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -55,8 +56,8 @@ abstract class MixinShaderProgram implements AutoCloseable {
 
 @Mixin(GlImportProcessor.class)
 abstract class MixinGLImportProcessor {
-    @ModifyVariable(method = "readSource(Ljava/lang/String;)Ljava/util/List;", at = @At("HEAD"), argsOnly = true)
-    private String modifySource(String source) {
+    @ModifyReturnValue(method = "readSource(Ljava/util/List;)Ljava/util/List;", at = @At("RETURN"))
+    private List<String> modifySource(List<String> source) {
         return GeometryShader.INSTANCE.injectShaderSources(source);
     }
 }

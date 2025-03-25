@@ -1,16 +1,10 @@
 {
-    "blend": {
-        "func": "add",
-        "srcrgb": "srcalpha",
-        "dstrgb": "1-srcalpha"
-    },
-    "vertex": "blit",
-    "fragment": "distortion_map",
-    "attributes": [ "Position" ],
+    "vertex": "minecraft:post/blit",
+    "fragment": "psychedelicraft:post/distortion_map",
     "samplers": [
         { "name": "DiffuseSampler" },
-        { "name": "OverlaySampler1" },
-        { "name": "OverlaySampler2" }
+        { "name": "Overlay1Sampler" },
+        { "name": "Overlay2Sampler" }
     ],
     "uniforms": [
         { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },

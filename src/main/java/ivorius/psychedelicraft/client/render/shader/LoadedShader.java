@@ -54,16 +54,18 @@ class LoadedShader {
         private int updateCount;
 
         private final List<PostEffectPass> passes = new ArrayList<>();
+        private boolean enabled;
 
         public boolean update(PostEffectProcessor processor, float tickDelta) {
             if (updateCount == 0) {
                 passes.clear();
-                uniformValues.update(processor, tickDelta, passes);
+                enabled = false;
+                uniformValues.update(processor, tickDelta, passes, () -> enabled = true);
             }
 
             updateCount = (updateCount + 1) % 2;
 
-            if (uniformValues.values.isEmpty()) {
+            if (!enabled) {
                 return false;
             }
 
@@ -84,7 +86,7 @@ class LoadedShader {
     class UniformValues implements UniformSetter {
         private final List<Consumer<ShaderProgram>> values = new ArrayList<>();
 
-        public void update(PostEffectProcessor postEffectProcessor, float tickDelta, List<PostEffectPass> retainedPasses) {
+        public void update(PostEffectProcessor postEffectProcessor, float tickDelta, List<PostEffectPass> retainedPasses, Runnable enableShader) {
             values.clear();
             final int width = client.getWindow().getFramebufferWidth();
             final int height = client.getWindow().getFramebufferHeight();
@@ -92,7 +94,14 @@ class LoadedShader {
             bindings.global.bindUniforms(this, tickDelta, width, height, () -> {
                 for (PostEffectPass pass : ((PostEffectPassSupplier)postEffectProcessor).getPasses()) {
                     var programBindings = bindings.programBindings.getOrDefault(((PostEffectPassSupplier.Pass)pass).getId(), UniformBinding.EMPTY);
-                    programBindings.bindUniforms(this, tickDelta, width, height, () -> retainedPasses.add(pass));
+                    if (programBindings != UniformBinding.EMPTY) {
+                        programBindings.bindUniforms(this, tickDelta, width, height, () -> {
+                            retainedPasses.add(pass);
+                            enableShader.run();
+                        });
+                    } else {
+                        retainedPasses.add(pass);
+                    }
                 }
             });
         }

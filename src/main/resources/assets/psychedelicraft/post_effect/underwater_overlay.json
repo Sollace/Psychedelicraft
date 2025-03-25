@@ -1,0 +1,52 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "program": "psychedelicraft:post/distortion_map",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main"
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth": true
+        },
+        {
+          "sampler_name": "Overlay1",
+          "location": "minecraft:effect/psychedelicraft/water_distortion",
+          "width": 800,
+          "height": 800,
+          "bilinear": false
+        },
+        {
+          "sampler_name": "Overlay2",
+          "location": "minecraft:effect/psychedelicraft/water_distortion",
+          "width": 800,
+          "height": 800,
+          "bilinear": false
+        }
+      ],
+      "output": "swap",
+      "uniforms": [
+        { "name": "totalAlpha", "values": [ 1.0 ] },
+        { "name": "strength", "values": [ 0.0 ] },
+        { "name": "texTranslation0", "values": [ 0.0, 0.0 ] },
+        { "name": "texTranslation1", "values": [ 0.0, 0.0 ] }
+      ]
+    },
+    {
+      "program": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}

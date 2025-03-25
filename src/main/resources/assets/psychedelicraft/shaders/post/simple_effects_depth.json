@@ -1,12 +1,6 @@
 {
-    "blend": {
-        "func": "add",
-        "srcrgb": "srcalpha",
-        "dstrgb": "1-srcalpha"
-    },
-    "vertex": "blit",
-    "fragment": "simple_effects_depth",
-    "attributes": [ "Position" ],
+    "vertex": "minecraft:post/blit",
+    "fragment": "psychedelicraft:post/simple_effects_depth",
     "samplers": [
         { "name": "DiffuseSampler" },
         { "name": "DepthSampler" }

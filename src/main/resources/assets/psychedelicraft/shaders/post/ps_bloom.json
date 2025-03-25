@@ -1,22 +1,15 @@
 {
-    "targets": [
-        "swap"
+    "vertex": "minecraft:post/blit",
+    "fragment": "psychedelicraft:post/ps_bloom",
+    "samplers": [
+        { "name": "DiffuseSampler" }
     ],
-    "passes": [
-        {
-            "name": "ps_bloom",
-            "intarget": "minecraft:main",
-            "outtarget": "swap",
-            "uniforms": [
-                { "name": "pixelSize", "values": [ 1.0, 1.0 ] },
-                { "name": "vertical", "values": [ 1.0 ] },
-                { "name": "totalAlpha", "values": [ 1.0 ] }
-            ]
-        },
-        {
-            "name": "blit",
-            "intarget": "swap",
-            "outtarget": "minecraft:main"
-        }
+    "uniforms": [
+        { "name": "pixelSize",  "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
+        { "name": "vertical",   "type": "float",     "count": 1,  "values": [ 1.0 ] },
+        { "name": "totalAlpha", "type": "float",     "count": 1,  "values": [ 1.0 ] },
+
+        { "name": "ProjMat",    "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+        { "name": "OutSize",    "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }
     ]
 }

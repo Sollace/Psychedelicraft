@@ -1,0 +1,33 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "program": "psychedelicraft:post/ps_colored_bloom",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main"
+        }
+      ],
+      "output": "swap",
+      "uniforms": [
+        { "name": "pixelSize", "values": [ 1.0, 1.0 ] },
+        { "name": "bloomColor", "values": [ 1.0, 1.0, 1.0 ] },
+        { "name": "vertical", "values": [ 1.0 ] },
+        { "name": "totalAlpha", "values": [ 1.0 ] }
+      ]
+    },
+    {
+      "program": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}

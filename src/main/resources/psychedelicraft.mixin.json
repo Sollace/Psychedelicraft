@@ -35,6 +35,8 @@
       "client.MixinHeldItemRenderer",
       "client.MixinLivingEntityRenderer",
       "client.MixinLivingEntityRenderState",
+      "client.MixinPostEffectProcessor",
+      "client.MixinPostEffectPass",
       "client.sodium.MixinGlProgram",
       "client.sodium.MixinGlProgram_Builder",
       "client.sodium.MixinShaderLoader"

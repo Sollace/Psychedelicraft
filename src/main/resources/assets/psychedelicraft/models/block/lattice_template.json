@@ -1,5 +1,5 @@
 {
-	"parent": "block/cube_all",
+	"parent": "block/block",
 	"textures": {
 		"lattice": "psychedelicraft:block/lattice",
 		"particle": "#lattice"

@@ -31,7 +31,10 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
             // Add order = Application order!
             .addShader("heat_distortion", UniformBinding.start()
                     .program("heat_distortion", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getHeatDistortion();
+                        float strength = Math.max(
+                                DrugRenderer.INSTANCE.getEnvironmentalEffects().getHeatDistortion(),
+                                DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterDistortion()
+                        );
 
                         if (strength <= 0) {
                             return;
@@ -40,19 +43,6 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
                         setter.set("strength", strength);
                         setter.set("ticks", ShaderContext.ticks() * 0.15f);
-                        pass.run();
-                    }))
-            .addShader("underwater_distortion", UniformBinding.start()
-                    .program("heat_distortion", (setter, tickDelta, screenWidth, screenHeight, pass) -> {
-                        float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterDistortion();
-
-                        if (strength <= 0) {
-                            return;
-                        }
-
-                        setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
-                        setter.set("strength", strength);
-                        setter.set("ticks", ShaderContext.ticks() * 0.03f);
                         pass.run();
                     }))
             .addShader("simple_effects", UniformBinding.start()

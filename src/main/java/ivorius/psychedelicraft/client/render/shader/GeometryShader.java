@@ -10,7 +10,6 @@ import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.apache.commons.io.IOUtils;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -114,6 +113,15 @@ public class GeometryShader {
 
     public Map<ShaderProgramDefinition.Sampler, IntSupplier> getSamplers() {
         return samplers;
+    }
+
+    public List<String> injectShaderSources(List<String> source) {
+        String joined = String.join("%PS_DELIM%", source);
+        String converted = injectShaderSources(joined);
+        if (converted.equals(joined)) {
+            return source;
+        }
+        return List.of(converted.split("%PS_DELIM%"));
     }
 
     public String injectShaderSources(String source) {

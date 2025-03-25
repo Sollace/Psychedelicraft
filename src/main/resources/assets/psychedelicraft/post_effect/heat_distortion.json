@@ -1,0 +1,44 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "program": "psychedelicraft:post/heat_distortion",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main"
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth": true
+        },
+        {
+          "sampler_name": "Ascii",
+          "location": "minecraft:effect/psychedelicraft/heat_distortion_noise",
+          "width": 128,
+          "height": 128,
+          "bilinear": false
+        }
+      ],
+      "output": "swap",
+      "uniforms": [
+        { "name": "totalAlpha", "values": [ 1.0 ] },
+        { "name": "ticks", "values": [ 1.0 ] },
+        { "name": "strength", "values": [ 1.0 ] }
+      ]
+    },
+    {
+      "program": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}

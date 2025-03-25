@@ -6,6 +6,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.llamalad7.mixinextras.sugar.Local;
+
 import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import net.minecraft.client.gui.DrawContext;
@@ -40,13 +43,13 @@ abstract class MixinGameRenderer {
 
     @Inject(method = "render(Lnet/minecraft/client/render/RenderTickCounter;Z)V",
             at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V"))
-    private void onAfterWorldRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
-        DrugRenderer.INSTANCE.onAfterRenderWorld(pool);
+    private void onAfterWorldRender(RenderTickCounter tickCounter, boolean tick, CallbackInfo info) {
+        DrugRenderer.INSTANCE.onAfterRenderWorld(pool, tickCounter);
     }
 
     @Inject(method = "render(Lnet/minecraft/client/render/RenderTickCounter;Z)V",
             at = @At(value = "INVOKE", target = "net/minecraft/client/gui/hud/InGameHud.render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V"))
-    private void onRenderHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
+    private void onRenderHud(RenderTickCounter tickCounter, boolean tick, CallbackInfo info, @Local DrawContext context) {
         DrugRenderer.INSTANCE.onRenderOverlay(context, tickCounter);
     }
 }

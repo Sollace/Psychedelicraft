@@ -2,8 +2,8 @@
 
 uniform sampler2D DiffuseSampler;
 
-uniform sampler2D OverlaySampler1;
-uniform sampler2D OverlaySampler2;
+uniform sampler2D Overlay1Sampler;
+uniform sampler2D Overlay2Sampler;
 
 in vec2 texCoord;
 
@@ -15,8 +15,8 @@ uniform vec2 texTranslation1;
 out vec4 fragColor;
 
 void main() {
-  vec4 noisePixel0 = texture(OverlaySampler1, texCoord + texTranslation0);
-  vec4 noisePixel1 = texture(OverlaySampler2, texCoord + texTranslation1);
+  vec4 noisePixel0 = texture(Overlay1Sampler, texCoord + texTranslation0);
+  vec4 noisePixel1 = texture(Overlay2Sampler, texCoord + texTranslation1);
   vec2 joinedTranslation = clamp(noisePixel0.rg + noisePixel1.rg - 1.0, 0.0, 1.0);
 
   vec2 water1 = abs(noisePixel0.rg - 0.5) * 2.0;

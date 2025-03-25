@@ -1,0 +1,41 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "program": "psychedelicraft:post/depth_of_field",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main"
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth": true
+        }
+      ],
+      "output": "swap",
+      "uniforms": [
+        { "name": "pixelSize", "values": [ 1.0, 1.0 ] },
+        { "name": "focalPointNear", "values": [ 0.0 ] },
+        { "name": "focalPointFar", "values": [ 0.0 ] },
+        { "name": "focalBlurNear", "values": [ 0.0 ] },
+        { "name": "focalBlurFar", "values": [ 0.0 ] },
+        { "name": "vertical", "values": [ 1.0 ] },
+        { "name": "depthRange", "values": [ 0.0, 1.0 ] }
+      ]
+    },
+    {
+      "program": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}
