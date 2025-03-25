@@ -198,7 +198,7 @@ public interface PSItemGroups {
         return Stream.concat(Stream.of(PSFluids.EMPTY), Stream.concat(
                 Stream.of(Fluids.WATER, Fluids.LAVA).map(SimpleFluid::of),
                 SimpleFluid.REGISTRY.stream().filter(i -> !i.isEmpty())
-        ));
+        )).distinct();
     }
 
     static RegistryKey<ItemGroup> register(String name, ItemGroup.Builder builder) {

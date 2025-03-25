@@ -10,6 +10,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.FluidMound;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
@@ -20,18 +21,18 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldView;
 
 public interface PipeInsertable {
-    Either<Optional<PipeFluids>, Unit> STATUS_VOIDED = Either.right(Unit.INSTANCE);
-    Either<Optional<PipeFluids>, Unit> STATUS_ACCEPT_ALL = Either.left(Optional.empty());
+    Either<PipeFluids, Unit> STATUS_VOIDED = Either.right(Unit.INSTANCE);
+    Either<PipeFluids, Unit> STATUS_ACCEPT_ALL = Either.left(PipeFluids.EMPTY);
 
-    static Either<Optional<PipeFluids>, Unit> reject(PipeFluids fluids) {
-        return fluids.isEmpty() ? STATUS_ACCEPT_ALL : Either.left(Optional.of(fluids));
+    static Either<PipeFluids, Unit> reject(PipeFluids fluids) {
+        return fluids.isEmpty() ? STATUS_ACCEPT_ALL : Either.left(fluids);
     }
 
     default boolean acceptsConnectionFrom(WorldView world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction direction, boolean input) {
         return false;
     }
 
-    default Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+    default Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         return STATUS_VOIDED;
     }
 
@@ -50,7 +51,7 @@ public interface PipeInsertable {
     }
 
     @SuppressWarnings("deprecation")
-    static Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockPos pos, Direction direction, PipeFluids fluids) {
+    static Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockPos pos, Direction direction, PipeFluids fluids) {
         if (fluids.isEmpty()) {
             return STATUS_ACCEPT_ALL;
         }
@@ -73,11 +74,11 @@ public interface PipeInsertable {
     }
 
     public record PipeFluids(FluidMound fluids, int temperature) {
-        public static final PipeFluids EMPTY = new PipeFluids(new FluidMound(), 0);
+        public static final PipeFluids EMPTY = new PipeFluids(FluidMound.of(), 0);
         public static final Codec<PipeFluids> CODEC = RecordCodecBuilder.create(i -> i.group(
                 FluidMound.CODEC.fieldOf("fluids").forGetter(PipeFluids::fluids),
                 Codec.INT.fieldOf("temperature").forGetter(PipeFluids::temperature)
-        ).apply(i, PipeFluids::new));
+        ).apply(i, PipeFluids::of));
         public static final Codec<List<PipeFluids>> LIST_CODEC = Codec.xor(CODEC.listOf(), CODEC).flatXmap(
                 either -> Either.unwrap(either.mapBoth(DataResult::success, single -> DataResult.success(List.of(single)))),
                 list -> DataResult.success(Either.left(list))
@@ -86,16 +87,28 @@ public interface PipeInsertable {
             temperature = MathHelper.clamp(temperature, 0, 15);
         }
 
+        public static PipeFluids of(ItemFluids fluids, int temperature) {
+            return fluids.isEmpty() && temperature == 0 ? EMPTY : new PipeFluids(FluidMound.of(fluids), temperature);
+        }
+
+        public static PipeFluids of(FluidMound fluids, int temperature) {
+            return fluids.isEmpty() && temperature == 0 ? EMPTY : new PipeFluids(fluids, temperature);
+        }
+
         public boolean isEmpty() {
             return fluids.isEmpty();
         }
 
         public PipeFluids combine(PipeFluids fluids) {
-            return new PipeFluids(new FluidMound(fluids()).addAll(fluids.fluids()), MathHelper.lerp(0.5F, temperature(), fluids.temperature()));
+            return of(FluidMound.of(fluids()).addAll(fluids.fluids()), MathHelper.lerp(0.5F, temperature(), fluids.temperature()));
         }
 
         public PipeFluids withTemperature(int temperature) {
-            return new PipeFluids(new FluidMound(fluids()), temperature);
+            return of(FluidMound.of(fluids()), temperature);
+        }
+
+        public PipeFluids withFluids(FluidMound fluids) {
+            return of(fluids, temperature());
         }
 
         public FluidMound splitCondensate() {

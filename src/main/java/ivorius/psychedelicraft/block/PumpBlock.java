@@ -1,7 +1,6 @@
 package ivorius.psychedelicraft.block;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
@@ -132,9 +131,9 @@ public class PumpBlock extends FacingBlock implements PipeInsertable {
         BlockState outState = world.getBlockState(outPos);
         outState.getOrEmpty(GlassTubeBlock.IN).orElse(IODirection.NONE).getDirection().ifPresent(inDirection -> {
             if (inDirection == facing) {
-                PipeInsertable.tryInsert(sw, outPos, facing.getOpposite(), new PipeFluids(new FluidMound(List.of(
+                PipeInsertable.tryInsert(sw, outPos, facing.getOpposite(), PipeFluids.of(FluidMound.of(
                         SimpleFluid.of(inFluid.getFluidState().getFluid()).getDefaultStack(FluidVolumes.BUCKET)
-                )), 0));
+                ), 0));
                 if (inFluid.getBlock() instanceof FluidDrainable drainable) {
                     drainable.tryDrainFluid(null, world, inPos, inFluid);
                 }

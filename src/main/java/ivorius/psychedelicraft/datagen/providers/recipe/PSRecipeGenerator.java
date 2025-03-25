@@ -382,7 +382,7 @@ class PSRecipeGenerator extends RecipeGenerator {
 
         ComplexRecipeJsonBuilder.create(PouringRecipe::new).offerTo(exporter, "pour_drink");
 
-        SmeltingFluidRecipeJsonBuilder.create(OptionalFluidIngredient.of(FluidIngredient.builder()
+        SmeltingFluidRecipeJsonBuilder.create(items, OptionalFluidIngredient.of(FluidIngredient.builder()
                     .fluid(PSFluids.COFFEE).build()), RecipeCategory.FOOD, 0.2F, 200)
             .modification("warmth", FluidModifyingResult.Ops.ADD, 1)
             .criterion("has_cold_coffee", conditionsFromPredicates(ItemPredicate.Builder.create()

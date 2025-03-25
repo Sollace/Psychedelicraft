@@ -1,28 +1,40 @@
 package ivorius.psychedelicraft.fluid;
 
-import java.util.function.Function;
-
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
-    static final Function<Fluid, SimpleFluid> LOOKUP = ((Function<Fluid, Fluid>)(VanillaFluid::toStill)).andThen(Util.memoize(VanillaFluid::new));
-
-    @SuppressWarnings("deprecation")
-    private VanillaFluid(Fluid still) {
-        this(still.getRegistryEntry().getKey().get().getValue(), still, false);
+    static SimpleFluid register(Identifier id, Fluid fluid, boolean empty) {
+        return Registry.register(SimpleFluid.REGISTRY, id, new VanillaFluid(id, fluid, empty));
     }
 
-    VanillaFluid(Identifier id, Fluid still, boolean empty) {
+    static {
+        Registries.FLUID.streamEntries().forEach(entry -> {
+            register(entry.getKey().get().getValue(), entry.value());
+        });
+        RegistryEntryAddedCallback.event(Registries.FLUID).register((rawId, id, value) -> register(id, value));
+    }
+
+    private static void register(Identifier id, Fluid value) {
+        if (VanillaFluid.toStill(value) == value && !REGISTRY.containsId(id) && !"minecraft:empty".equals(id.toString())) {
+            VanillaFluid.register(id, value, false);
+            Psychedelicraft.LOGGER.info("Added vanilla fluid " + id);
+        }
+    }
+
+    private VanillaFluid(Identifier id, Fluid still, boolean empty) {
         super(id, 0xFFFFFFFF,
                 new PhysicalFluid(still, toFlowing(still), still.getDefaultState().getBlockState().getBlock()),
                 empty
@@ -33,7 +45,7 @@ public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
         return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid).getFlowing() : fluid;
     }
 
-    private static Fluid toStill(Fluid fluid) {
+    static Fluid toStill(Fluid fluid) {
         return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid).getStill() : fluid;
     }
 

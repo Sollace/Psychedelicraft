@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.recipe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -9,24 +10,28 @@ import com.mojang.serialization.Codec;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 
-public class FluidMound {
-    public static final Codec<FluidMound> CODEC = ItemFluids.CODEC.listOf().xmap(FluidMound::new, FluidMound::getFluids);
+public class FluidMound implements Iterable<ItemFluids> {
+    public static final Codec<FluidMound> CODEC = ItemFluids.CODEC.listOf().xmap(FluidMound::of, FluidMound::getFluids);
+
+    public static FluidMound of() {
+        return new FluidMound();
+    }
+
+    public static FluidMound of(ItemFluids...fluids) {
+        return of(List.of(fluids));
+    }
+
+    public static FluidMound of(Iterable<ItemFluids> fluids) {
+        return of().addAll(fluids);
+    }
+
+    public static FluidMound of(Processable.Context context) {
+        return of(context.getAuxiliaryTanks().stream().map(tank -> tank.getContents()).toList());
+    }
 
     private final List<ItemFluids> fluids = new ArrayList<>();
 
-    public FluidMound(FluidMound fluids) {
-        this(fluids.getFluids());
-    }
-
-    public FluidMound(Processable.Context context) {
-        this(context.getAuxiliaryTanks().stream().map(tank -> tank.getContents()).toList());
-    }
-
-    public FluidMound(List<ItemFluids> fluids) {
-        fluids.forEach(this::add);
-    }
-
-    public FluidMound() {}
+    private FluidMound() {}
 
     public List<ItemFluids> getFluids() {
         return fluids;
@@ -36,8 +41,8 @@ public class FluidMound {
         return fluids.get(index);
     }
 
-    public FluidMound addAll(FluidMound fluids) {
-        fluids.fluids.forEach(this::add);
+    public FluidMound addAll(Iterable<ItemFluids> fluids) {
+        fluids.forEach(this::add);
         return this;
     }
 
@@ -118,7 +123,7 @@ public class FluidMound {
     }
 
     public FluidMound split(Predicate<ItemFluids> predicate) {
-        FluidMound removed = new FluidMound(new ArrayList<>());
+        FluidMound removed = FluidMound.of();
         this.fluids.removeIf(fluid -> {
             if (predicate.test(fluid)) {
                 removed.add(fluid);
@@ -127,5 +132,10 @@ public class FluidMound {
             return false;
         });
         return removed;
+    }
+
+    @Override
+    public Iterator<ItemFluids> iterator() {
+        return this.fluids.iterator();
     }
 }

@@ -201,9 +201,9 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     }
 
     private void craft(ServerWorld world, CraftableContents contents) {
-        var consumer = new BunsenBurnerRecipe.Product(new FluidMound(), new ArrayList<>());
+        var consumer = new BunsenBurnerRecipe.Product(FluidMound.of(), new ArrayList<>());
         var input = new ReactingRecipe.Input(
-                new FluidMound(this),
+                FluidMound.of(this),
                 contents.getCraftingIngredients(),
                 consumer
         );
@@ -267,7 +267,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     }
 
     @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+    public Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         if (direction != Direction.DOWN) {
             return PipeInsertable.reject(fluids);
         }
