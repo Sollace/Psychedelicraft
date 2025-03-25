@@ -75,7 +75,7 @@ public interface PSRenderers {
         BuiltinItemRendererRegistry.INSTANCE.register(PSItems.MASH_TUB, MashTubBlockEntityRenderer::renderStack);
 
         SimpleFluid.REGISTRY.forEach(fluid -> {
-            if (fluid.isEmpty()) {
+            if (fluid.isEmpty() || !fluid.isCustomFluid()) {
                 return;
             }
             BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(),

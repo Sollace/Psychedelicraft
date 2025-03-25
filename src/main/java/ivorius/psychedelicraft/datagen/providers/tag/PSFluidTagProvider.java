@@ -17,7 +17,7 @@ public class PSFluidTagProvider extends FabricTagProvider.FluidTagProvider {
 
     @Override
     protected void configure(WrapperLookup wrapperLookup) {
-        getOrCreateTagBuilder(FluidTags.WATER).add(SimpleFluid.REGISTRY.stream().filter(i -> !i.isEmpty()).flatMap(i -> Stream.of(
+        getOrCreateTagBuilder(FluidTags.WATER).add(SimpleFluid.REGISTRY.stream().filter(i -> !i.isEmpty() && i.isCustomFluid()).flatMap(i -> Stream.of(
                 i.getPhysical().getStandingFluid(),
                 i.getPhysical().getFlowingFluid()
         )).toArray(Fluid[]::new));

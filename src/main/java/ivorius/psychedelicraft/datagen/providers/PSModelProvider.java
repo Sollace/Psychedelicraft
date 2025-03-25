@@ -140,7 +140,7 @@ public class PSModelProvider extends FabricModelProvider {
 
         var fluidCollector = BlockModels.createFluidCollector(generator);
         SimpleFluid.REGISTRY.forEach(fluid -> {
-            if (!fluid.isEmpty()) {
+            if (!fluid.isEmpty() && fluid.isCustomFluid()) {
                 fluidCollector.accept(fluid, Objects.requireNonNull(fluids.get(fluid), fluid.getId() + " has no mapped appearance for its block"));
             }
         });

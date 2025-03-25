@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Lifecycle;
 
 import io.netty.buffer.ByteBuf;
 import ivorius.psychedelicraft.PSTags;
@@ -42,6 +43,8 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.SimpleDefaultedRegistry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.State;
 import net.minecraft.text.Text;
@@ -62,7 +65,8 @@ import net.minecraft.world.World;
  */
 public class SimpleFluid implements Combustable {
     public static final Identifier EMPTY_KEY = Psychedelicraft.id("empty");
-    public static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.createDefaulted(RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids")), EMPTY_KEY).buildAndRegister();
+    public static final RegistryKey<Registry<SimpleFluid>> REGISTRY_KEY = RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids"));
+    public static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.from(new SimpleDefaultedRegistry<>(EMPTY_KEY.toString(), REGISTRY_KEY, Lifecycle.stable(), true)).buildAndRegister();
     public static final Codec<SimpleFluid> CODEC = Identifier.CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
     public static final PacketCodec<ByteBuf, SimpleFluid> PACKET_CODEC = Identifier.PACKET_CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
 
@@ -80,7 +84,7 @@ public class SimpleFluid implements Combustable {
         if (fluid instanceof PlacedFluid pf) {
             return pf.getType();
         }
-        return VanillaFluid.LOOKUP.apply(fluid);
+        return REGISTRY.get(Registries.FLUID.getId(VanillaFluid.toStill(fluid)));
     }
 
     protected final Identifier id;
@@ -96,18 +100,16 @@ public class SimpleFluid implements Combustable {
 
     private final Supplier<ItemFluids> defaultStack = Suppliers.memoize(() -> ItemFluids.create(this, 1, Map.of()));
 
-    public SimpleFluid(Identifier id, Settings settings) {
-        this(id, settings, false);
-    }
+    private final RegistryEntry.Reference<SimpleFluid> registryEntry = REGISTRY.createEntry(this);
 
-    protected SimpleFluid(Identifier id, Settings settings, boolean empty) {
+    protected SimpleFluid(Identifier id, Settings settings) {
+        Registry.register(REGISTRY, id, this);
         this.id = id;
         this.settings = settings;
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.custom = true;
-        this.empty = empty;
+        this.empty = false;
         physical = new PhysicalFluid(id, this);
-        Registry.register(REGISTRY, id, this);
         FluidVariantAttributes.register(physical.getStandingFluid(), new FluidVariantAttributeHandler() {
             @Override
             public Text getName(FluidVariant fluidVariant) {
@@ -123,6 +125,11 @@ public class SimpleFluid implements Combustable {
         this.symbol = id.withPath(p -> "textures/fluid/" + p + ".png");
         this.custom = false;
         this.physical = physical;
+    }
+
+    @Deprecated
+    public RegistryEntry.Reference<SimpleFluid> getRegistryEntry() {
+        return registryEntry;
     }
 
     @SuppressWarnings("unchecked")
@@ -267,6 +274,11 @@ public class SimpleFluid implements Combustable {
     }
 
     @Override
+    public String toString() {
+        return REGISTRY.getEntry(this).getIdAsString();
+    }
+
+    @Override
     public float getFireStrength(ItemFluids stack) {
         return settings.flammability * stack.amount();
     }
@@ -274,11 +286,6 @@ public class SimpleFluid implements Combustable {
     @Override
     public float getExplosionStrength(ItemFluids stack) {
         return settings.explosiveness * stack.amount();
-    }
-
-    @Deprecated
-    public static Iterable<SimpleFluid> all() {
-        return REGISTRY;
     }
 
     @SuppressWarnings("unchecked")

@@ -11,7 +11,7 @@ import net.minecraft.registry.RegistryKey;
 
 public record TickRates (Map<RegistryKey<SimpleFluid>, TickRate> values) {
     public static final Codec<TickRates> CODEC = Codec.unboundedMap(
-        RegistryKey.createCodec(SimpleFluid.REGISTRY.getKey()),
+        RegistryKey.createCodec(SimpleFluid.REGISTRY_KEY),
         TickRate.CODEC
     ).xmap(Function.identity(), values -> {
         var mutable = new HashMap<>(TickRate.getDefaults());
