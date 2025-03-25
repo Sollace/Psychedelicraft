@@ -29,7 +29,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class GeometryShader {
     private static final String GEO_DIRECTORY = "shaders/geometry/";
-    private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(^|\\n)ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
+    private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(?:^|\\n)ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
     private static final Identifier BASIC = Psychedelicraft.id("basic");
 
     public static final GeometryShader INSTANCE = new GeometryShader();
@@ -168,11 +168,11 @@ public class GeometryShader {
         }
 
         geometrySources = PS_VARIABLE_PATTERN.matcher(geometrySources).replaceAll(match -> {
-            String fieldSlug = Arrays.stream(match.group(3).split(","))
+            String fieldSlug = Arrays.stream(match.group(2).split(","))
                     .map(String::trim)
-                    .filter(field -> !vertexSources.contains(field))
+                    .filter(field -> !vertexSources.contains(match.group(1) + " " + field))
                     .collect(Collectors.joining(", "));
-            return fieldSlug.isEmpty() ? "/* " + match.group(0) + "*/" : match.group(2) + " " + fieldSlug + ";";
+            return fieldSlug.isEmpty() ? "/* " + match.group(0) + "*/" : match.group(1) + " " + fieldSlug + ";";
         });
         String newline = System.lineSeparator();
         return writeSources(vertexSources.replace("void main()", "void i_parent_shaders_main()" + newline) + newline + "/*PSYCHEDELICRAFT START*/" + newline + geometrySources + newline + "/*PSYCHEDELICRAFT END*/", "merged");
