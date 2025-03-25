@@ -160,7 +160,7 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+    public Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         return getValidMasterPosition(world, pos).map(center -> PipeInsertable.tryInsert(world, center, direction, fluids)).orElse(PipeInsertable.reject(fluids));
     }
 

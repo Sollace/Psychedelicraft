@@ -2,8 +2,6 @@ package ivorius.psychedelicraft.block.entity.contents;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import com.mojang.datafixers.util.Either;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -133,22 +131,21 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     }
 
     @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+    public Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         if (direction != Direction.DOWN) {
             return PipeInsertable.reject(fluids);
         }
 
-        FluidMound mound = new FluidMound(fluids.fluids());
+        FluidMound remainder = FluidMound.of(fluids.fluids());
 
         fluids.fluids().getFluids().forEach(fluid -> {
             int transferred = getPrimaryTank().deposit(fluid);
             if (transferred > 0) {
-                mound.remove(fluid.ofAmount(transferred));
-                return;
+                remainder.remove(fluid.ofAmount(transferred));
             }
         });
 
-        return PipeInsertable.reject(new PipeFluids(mound, fluids.temperature()));
+        return PipeInsertable.reject(fluids.withFluids(remainder));
     }
 
     @Override
@@ -185,7 +182,7 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
         product.items().forEach(stack -> Block.dropStack(world, entity.getPos(), stack));
-        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, new PipeFluids(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
+        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
             onFluidWasted(world);
         }
     }

@@ -34,7 +34,6 @@ import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.recipe.FluidMound;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 
 /**
@@ -132,7 +131,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     }
 
     @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+    public Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         Resovoir tank = getTankOnSide(direction);
         fluids.fluids().getFluids().stream().filter(i -> tank.getContents().canCombine(i)).findFirst().ifPresent(f -> {
             int amountMoved = tank.deposit(f);
@@ -147,7 +146,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     public Optional<PipeFluids> tryExtract(ServerWorld world, BlockState state, BlockPos pos, Direction direction) {
         Resovoir tank = getTankOnSide(direction);
         ItemFluids fluids = tank.drain((int)tank.getCapacity() / 10);
-        return fluids.isEmpty() ? Optional.empty() : Optional.of(new PipeFluids(new FluidMound(List.of(fluids)), 0));
+        return fluids.isEmpty() ? Optional.empty() : Optional.of(PipeFluids.of(fluids, 0));
     }
 
     @Deprecated

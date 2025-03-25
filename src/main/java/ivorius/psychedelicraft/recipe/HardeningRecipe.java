@@ -57,7 +57,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
 
     @Override
     public boolean matches(Input input, World world) {
-        FluidMound fluids = new FluidMound(input.impurities());
+        FluidMound fluids = FluidMound.of(input.impurities());
         return isCoreFluid(input.coreFluid()) && impurities.stream().allMatch(i -> fluids.removeMatch(i) > 0);
     }
 

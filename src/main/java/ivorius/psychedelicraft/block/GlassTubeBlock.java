@@ -347,7 +347,7 @@ public class GlassTubeBlock extends BlockWithEntity {
             return temperatureDrop;
         }
 
-        public Either<Optional<PipeFluids>, Unit> receiveContents(ServerWorld world, BlockPos pos, BlockState state, PipeFluids contents) {
+        public Either<PipeFluids, Unit> receiveContents(ServerWorld world, BlockPos pos, BlockState state, PipeFluids contents) {
             pushContentsForward(world, pos, state.get(OUT));
             var status = Optional.of(contents).filter(i -> !i.isEmpty()).map(i -> i.withTemperature(i.temperature() - getTemperatureDrop(world, pos))).map(newContents -> {
                 if (this.contents.size() < 10) {
@@ -379,30 +379,46 @@ public class GlassTubeBlock extends BlockWithEntity {
                 return;
             }
 
-            markDirty();
-
             if (contents.size() >= 10) {
-                PipeFluids fluids = contents.removeLast();
-                if (!fluids.isEmpty()) {
-                    world.playSound(null, pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS, 0.1F, 0.001F);
-                    Optional<PipeFluids> pushedBack = fluids.isEmpty() ? Optional.empty() : direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, fluids)).orElse(STATUS_VOIDED).ifRight(unit -> {
-                        fluids.fluids().getFluids().forEach(fluid -> {
-                            Vector3f outVec = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
-                            world.spawnParticles(
-                                    fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
-                                        : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
-                                        : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid.fluid()),
-                                    pos.getX() + 0.5 + outVec.x * 0.5,
-                                    pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
-                                    pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
-                        });
-                    }).left().flatMap(Function.identity());
-                    if (pushedBack.isPresent() && !pushedBack.get().isEmpty()) {
-                        contents.addFirst(pushedBack.get());
+                for (int i = contents.size() - 2; i > 0; i--) {
+                    if (contents.get(i).isEmpty() && !contents.get(i - 1).isEmpty()) {
+                        contents.remove(i);
+                        contents.addFirst(PipeFluids.EMPTY);
+                        markDirty();
+                    }
+                }
+
+                if (!contents.isEmpty()) {
+                    PipeFluids fluids = contents.removeLast();
+                    if (!fluids.isEmpty()) {
+                        PipeFluids pushedBack = fluids.isEmpty() ? PipeFluids.EMPTY : direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, fluids)).orElse(STATUS_VOIDED).ifRight(unit -> {
+                            fluids.fluids().getFluids().forEach(fluid -> {
+                                Vector3f outVec = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
+                                world.spawnParticles(
+                                        fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
+                                            : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
+                                            : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid.fluid()),
+                                        pos.getX() + 0.5 + outVec.x * 0.5,
+                                        pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
+                                        pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
+                            });
+                        }).left().orElse(PipeFluids.EMPTY);
+                        if (!pushedBack.isEmpty()) {
+                            contents.addLast(pushedBack);
+                            if (!pushedBack.equals(fluids)) {
+                                markDirty();
+                            }
+                        } else {
+                            world.playSound(null, pos, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP, SoundCategory.BLOCKS, 0.1F, 0.001F);
+                            markDirty();
+                        }
+                    } else {
+                        markDirty();
                     }
                 }
             } else {
                 contents.addFirst(PipeFluids.EMPTY);
+                markDirty();
             }
 
             scheduleNextTick(world);
@@ -422,10 +438,11 @@ public class GlassTubeBlock extends BlockWithEntity {
                 return;
             }
 
-            markDirty();
-
             if (world.getReceivedStrongRedstonePower(pos) == 15) {
-                getCachedState().get(IN).getDirection().flatMap(d -> PipeInsertable.tryExtract(world, pos.offset(d), d)).ifPresent(contents::addFirst);
+                getCachedState().get(IN).getDirection().flatMap(d -> PipeInsertable.tryExtract(world, pos.offset(d), d)).ifPresent(fluid -> {
+                    contents.addFirst(fluid);
+                    markDirty();
+                });
             }
 
             scheduleNextTick(world);
@@ -437,7 +454,7 @@ public class GlassTubeBlock extends BlockWithEntity {
         }
 
         @Override
-        public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+        public Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
             if (state.get(IN).direction == direction.getOpposite()) {
                 return receiveContents(world, pos, state, fluids);
             }
