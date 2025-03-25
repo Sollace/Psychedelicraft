@@ -23,9 +23,11 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 
 public class SmeltingFluidRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
+    private final RegistryEntryLookup<Item> items;
     private final RecipeCategory category;
     private final CookingRecipeCategory cookingCategory;
 
@@ -39,7 +41,8 @@ public class SmeltingFluidRecipeJsonBuilder implements CraftingRecipeJsonBuilder
 
     private final Map<String, FluidModifyingResult.Modification> modifications = new HashMap<>();
 
-    private SmeltingFluidRecipeJsonBuilder(RecipeCategory category, CookingRecipeCategory cookingCategory, OptionalFluidIngredient input, float experience, int cookingTime) {
+    private SmeltingFluidRecipeJsonBuilder(RegistryEntryLookup<Item> items, RecipeCategory category, CookingRecipeCategory cookingCategory, OptionalFluidIngredient input, float experience, int cookingTime) {
+        this.items = items;
         this.category = category;
         this.cookingCategory = cookingCategory;
         this.input = input;
@@ -47,8 +50,8 @@ public class SmeltingFluidRecipeJsonBuilder implements CraftingRecipeJsonBuilder
         this.cookingTime = cookingTime;
     }
 
-    public static SmeltingFluidRecipeJsonBuilder create(OptionalFluidIngredient input, RecipeCategory category, float experience, int cookingTime) {
-        return new SmeltingFluidRecipeJsonBuilder(category, CookingRecipeCategory.FOOD, input, experience, cookingTime);
+    public static SmeltingFluidRecipeJsonBuilder create(RegistryEntryLookup<Item> items, OptionalFluidIngredient input, RecipeCategory category, float experience, int cookingTime) {
+        return new SmeltingFluidRecipeJsonBuilder(items, category, CookingRecipeCategory.FOOD, input, experience, cookingTime);
     }
 
     @Override
@@ -93,7 +96,8 @@ public class SmeltingFluidRecipeJsonBuilder implements CraftingRecipeJsonBuilder
                 input,
                 new FluidModifyingResult(modifications, output.getDefaultStack()),
                 experience,
-                cookingTime
+                cookingTime,
+                items
         ), builder.build(recipeKey.getValue().withPrefixedPath("recipes/" + category.getName() + "/")));
     }
 
