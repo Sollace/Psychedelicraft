@@ -238,8 +238,8 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
         return this;
     }
 
-    public ShaderLoader addShader(String id, UniformBinding.Set bindings) {
-        return addShader(Psychedelicraft.id("shaders/post/" + id + ".json"), bindings);
+    public ShaderLoader addShader(String name, UniformBinding.Set bindings) {
+        return addShader(Psychedelicraft.id(name), bindings);
     }
 
     @Override

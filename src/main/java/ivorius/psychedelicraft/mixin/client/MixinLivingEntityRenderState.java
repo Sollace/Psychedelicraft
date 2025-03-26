@@ -10,6 +10,7 @@ import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 abstract class MixinLivingEntityRenderState implements DrugPropertiesContainer.Mutable {
     private DrugProperties psychedelicraft_drugProperties;
 
+    @Override
     public DrugProperties getDrugProperties() {
         return psychedelicraft_drugProperties;
     }

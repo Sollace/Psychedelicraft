@@ -11,6 +11,7 @@ import org.joml.Vector4fc;
 
 import com.google.gson.JsonSyntaxException;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.shader.UniformBinding.UniformSetter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
@@ -33,20 +34,25 @@ class LoadedShader {
         this.bindings = bindings;
     }
 
+    @SuppressWarnings("deprecation")
     public void render(Pool pool, float tickDelta) {
-        PostEffectProcessor processor = client.getShaderLoader().loadPostEffect(id, DefaultFramebufferSet.MAIN_ONLY);
-        if (processor == null) {
-            return;
-        }
-
-        if (updater.update(processor, tickDelta)) {
-            var original = ((PostEffectPassSupplier)processor).getPasses();
-            try {
-                ((PostEffectPassSupplier)processor).setPasses(updater.passes);
-                processor.render(client.getFramebuffer(), pool);
-            } finally {
-                ((PostEffectPassSupplier)processor).setPasses(original);
+        try {
+            PostEffectProcessor processor = client.getShaderLoader().loadPostEffect(id, DefaultFramebufferSet.MAIN_ONLY);
+            if (processor == null) {
+                return;
             }
+
+            if (updater.update(processor, tickDelta)) {
+                var original = ((PostEffectPassSupplier)processor).getPasses();
+                try {
+                    ((PostEffectPassSupplier)processor).setPasses(updater.passes);
+                    processor.render(client.getFramebuffer(), pool);
+                } finally {
+                    ((PostEffectPassSupplier)processor).setPasses(original);
+                }
+            }
+        } catch (Throwable t) {
+            Psychedelicraft.LOGGER.error(t.getMessage());
         }
     }
 
