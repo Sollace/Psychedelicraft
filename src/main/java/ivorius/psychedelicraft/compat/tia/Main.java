@@ -22,7 +22,11 @@ public class Main implements TlaApiPlugin {
                 PSItems.SHOT_GLASS, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.SYRINGE,
                 PSItems.FILLED_GLASS_BOTTLE, PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL
         );
-        context.getFluidComparisons().register(TlaStackComparison.compareComponents(), SimpleFluid.REGISTRY.stream().flatMap(f -> {
+
+        context.getFluidComparisons().register(TlaStackComparison.of(
+                (left, right) -> RecipeUtil.toItemFluids(left).canCombine(RecipeUtil.toItemFluids(right)),
+                stack -> RecipeUtil.toItemFluids(stack).getHash()
+        ), SimpleFluid.REGISTRY.stream().flatMap(f -> {
             return Stream.of(f.getPhysical().getStandingFluid(), f.getPhysical().getFlowingFluid());
         }).toList());
     }
