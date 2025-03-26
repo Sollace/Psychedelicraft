@@ -17,7 +17,6 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
 record RecipeCategory(Identifier id, CategoryIcon icon, TlaIngredient stations, int width, int height) implements TlaCategory {
@@ -36,8 +35,6 @@ record RecipeCategory(Identifier id, CategoryIcon icon, TlaIngredient stations, 
             TlaStack.of(PSItems.MASH_TUB).asIngredient(),
             TlaStack.of(PSItems.BUNSEN_BURNER).asIngredient()
     ), 260, 20, FluidStagesEmiRecipe.generate());
-
-    public static final RecipeCategory WORLD_INTERACTION = register(new RecipeCategory(Identifier.of("emi", "world_interaction"), CategoryIcon.item(Items.GRASS_BLOCK), TlaStack.of(Items.GRASS_BLOCK).asIngredient(), 125, 18), WorldInteractionEmiRecipe::generate);
 
     static RecipeCategory register(String name, ItemConvertible station, int width, int height, @Nullable BiConsumer<RecipeCategory, PluginContext> recipeConstructor) {
         return register(name, station, TlaIngredient.ofStacks(TlaStack.of(station)), width, height, recipeConstructor);

@@ -70,8 +70,8 @@ dependencies {
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
 
-    modImplementation "com.github.MattiDragon:TLA-Api:${project.tla_version}"
-    include "com.github.MattiDragon:TLA-Api:${project.tla_version}"
+    modImplementation "com.github.MattiDragon:TlaApi:${project.tla_version}"
+    include "com.github.MattiDragon:TlaApi:${project.tla_version}"
 
     if (project.use_sodium == '1' || project.use_iris == '1') {
       modCompileOnly "maven.modrinth:sodium:${project.sodium_version}", { exclude group: "net.fabricmc.fabric-api" }

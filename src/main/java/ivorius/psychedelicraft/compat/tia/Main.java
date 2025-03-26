@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.compat.tia;
 
 import java.util.stream.Stream;
 
+import io.github.mattidragon.tlaapi.api.BuiltInRecipeCategory;
 import io.github.mattidragon.tlaapi.api.plugin.PluginContext;
 import io.github.mattidragon.tlaapi.api.plugin.TlaApiPlugin;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStackComparison;
@@ -16,6 +17,10 @@ public class Main implements TlaApiPlugin {
     @Override
     public void register(PluginContext context) {
         RecipeCategory.bootstrap(context);
+
+        context.getVanillaCategory(BuiltInRecipeCategory.WORLD_INTERACTION_OTHER).ifPresent(category -> {
+            WorldInteractionPSRecipe.generate(category, context);
+        });
 
         context.getItemComparisons().register(TlaStackComparison.compareComponents(),
                 PSItems.WOODEN_MUG, PSItems.STONE_CUP, PSItems.GLASS_CHALICE,
