@@ -23,13 +23,15 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
+
 
 public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     public static final MapCodec<FluidAwareShapelessRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(FluidAwareShapelessRecipe::getGroup),
             CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FluidAwareShapelessRecipe::getCategory),
             ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
-            OptionalFluidIngredient.CODEC.listOf().fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
+            OptionalFluidIngredient.CODEC.codec().listOf().fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
             Ingredient.CODEC.optionalFieldOf("destroy").forGetter(recipe -> recipe.destructedIngredient)
     ).apply(instance, FluidAwareShapelessRecipe::new));
     public static final PacketCodec<RegistryByteBuf, FluidAwareShapelessRecipe> PACKET_CODEC = PacketCodec.tuple(
@@ -50,7 +52,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         super(group, category, output,
                 // parent expects regular ingredients but we don't actually use them
                 input.stream()
-                .flatMap(i -> i.receptical().stream())
+                .map(OptionalFluidIngredient::toVanilla)
                 .toList()
         );
         this.output = output;

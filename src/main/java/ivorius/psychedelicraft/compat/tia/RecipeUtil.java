@@ -3,23 +3,27 @@ package ivorius.psychedelicraft.compat.tia;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
+import io.github.mattidragon.tlaapi.api.recipe.TlaStack.TlaFluidStack;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack.TlaItemStack;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.recipe.FluidIngredient;
+import ivorius.psychedelicraft.item.component.PSComponents;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.registry.Registries;
 
 interface RecipeUtil {
     static TlaStack toTlaStack(ItemFluids fluids) {
-        return TlaStack.of(fluids.toVariant(), fluids.amount() / 1000);
+        return TlaStack.of(fluids.toVariant(), fluids.amount() > 0 ? Math.max(1, fluids.amount() / 1000) : 0);
     }
 
     static TlaStack toTlaStack(ItemStack receptical, ItemFluids fluids) {
@@ -40,6 +44,25 @@ interface RecipeUtil {
 
     static TlaIngredient toIngredient(ItemFluids fluids) {
         return toTlaStack(fluids).asIngredient();
+    }
+
+    static ItemFluids toItemFluids(TlaStack stack) {
+        if (stack instanceof TlaFluidStack fl) {
+            FluidVariant fluid = fl.getFluidVariant();
+            return fluid.isBlank() ? ItemFluids.EMPTY : ItemFluids.of(fluid, Math.max(1, (int)stack.getAmount()));
+        }
+        Optional<? extends ItemFluids> fluids = stack.getComponents().get(PSComponents.FLUIDS);
+        if (fluids != null && fluids.isPresent()) {
+            return fluids.get();
+        }
+        if (stack instanceof TlaItemStack it) {
+            fluids = it.getItemVariant().getComponents().get(PSComponents.FLUIDS);
+            if (fluids != null && fluids.isPresent()) {
+                return fluids.get();
+            }
+        }
+
+        return ItemFluids.EMPTY;
     }
 
     static List<ItemFluids> getMatchingFluids(ItemFluids.Predicate predicate, int amount) {

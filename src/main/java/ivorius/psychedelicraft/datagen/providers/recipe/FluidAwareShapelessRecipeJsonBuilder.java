@@ -8,8 +8,8 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.recipe.FluidAwareShapelessRecipe;
-import ivorius.psychedelicraft.recipe.FluidIngredient;
-import ivorius.psychedelicraft.recipe.OptionalFluidIngredient;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;

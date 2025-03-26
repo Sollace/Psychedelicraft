@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.recipe;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -13,8 +12,6 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
@@ -22,7 +19,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.PSTags;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 
 /**
  * Created by Sollace on 5 Jan 2023
@@ -75,15 +73,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             OptionalFluidIngredient input,
             FluidModifyingResult result,
             float experience, int cookingTime) {
-        this(group, category, input, result, experience, cookingTime, Registries.ITEM);
-    }
-
-    public SmeltingFluidRecipe(
-            String group, CookingRecipeCategory category,
-            OptionalFluidIngredient input,
-            FluidModifyingResult result,
-            float experience, int cookingTime, RegistryEntryLookup<Item> itemsLookup) {
-        super(group, category, input.receptical().orElse(Ingredient.fromTag(itemsLookup.getOrThrow(PSTags.Items.ALL_RECEPTICALS))), result.result(), experience, cookingTime);
+        super(group, category, input.toVanilla(), result.result(), experience, cookingTime);
         this.input = input;
         this.result = result;
     }

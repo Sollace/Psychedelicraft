@@ -14,10 +14,10 @@ import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSSubPredicates;
-import ivorius.psychedelicraft.recipe.FluidIngredient;
 import ivorius.psychedelicraft.recipe.FluidModifyingResult;
-import ivorius.psychedelicraft.recipe.OptionalFluidIngredient;
 import ivorius.psychedelicraft.recipe.PouringRecipe;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.data.recipe.ComplexRecipeJsonBuilder;
 import net.minecraft.data.recipe.RecipeExporter;
@@ -382,7 +382,7 @@ class PSRecipeGenerator extends RecipeGenerator {
 
         ComplexRecipeJsonBuilder.create(PouringRecipe::new).offerTo(exporter, "pour_drink");
 
-        SmeltingFluidRecipeJsonBuilder.create(items, OptionalFluidIngredient.of(FluidIngredient.builder()
+        SmeltingFluidRecipeJsonBuilder.create(OptionalFluidIngredient.of(FluidIngredient.builder()
                     .fluid(PSFluids.COFFEE).build()), RecipeCategory.FOOD, 0.2F, 200)
             .modification("warmth", FluidModifyingResult.Ops.ADD, 1)
             .criterion("has_cold_coffee", conditionsFromPredicates(ItemPredicate.Builder.create()

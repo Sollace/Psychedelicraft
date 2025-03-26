@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 
 public class FluidMound implements Iterable<ItemFluids> {
     public static final Codec<FluidMound> CODEC = ItemFluids.CODEC.listOf().xmap(FluidMound::of, FluidMound::getFluids);

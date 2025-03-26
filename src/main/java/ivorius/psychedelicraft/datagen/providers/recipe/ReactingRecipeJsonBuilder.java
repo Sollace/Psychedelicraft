@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.recipe.FluidIngredient;
 import ivorius.psychedelicraft.recipe.ReactingRecipe;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
