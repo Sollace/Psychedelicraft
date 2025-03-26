@@ -1,14 +1,19 @@
-package ivorius.psychedelicraft.recipe;
+package ivorius.psychedelicraft.recipe.ingredient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
-
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.PSTags;
-
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -19,13 +24,13 @@ import net.minecraft.util.collection.DefaultedList;
 public record OptionalFluidIngredient (
         Optional<FluidIngredient> fluid,
         Optional<Ingredient> receptical
-) implements Predicate<ItemStack> {
+) implements CustomIngredient, Predicate<ItemStack> {
     public static final OptionalFluidIngredient EMPTY = new OptionalFluidIngredient(Optional.empty(), Optional.empty());
-    public static final Codec<OptionalFluidIngredient> CODEC = RecordCodecBuilder.create(i -> i.group(
+    public static final MapCodec<OptionalFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             FluidIngredient.CODEC.optionalFieldOf("fluid").forGetter(OptionalFluidIngredient::fluid),
             Ingredient.DISALLOW_EMPTY_CODEC.optionalFieldOf("receptical").forGetter(OptionalFluidIngredient::receptical)
     ).apply(i, OptionalFluidIngredient::new));
-    public static final Codec<DefaultedList<OptionalFluidIngredient>> LIST_CODEC = CODEC.listOf().xmap(
+    public static final Codec<DefaultedList<OptionalFluidIngredient>> LIST_CODEC = CODEC.codec().listOf().xmap(
             values -> DefaultedList.copyOf(EMPTY, values.toArray(OptionalFluidIngredient[]::new)),
             defaultedList -> new ArrayList<>(defaultedList)
     );
@@ -51,11 +56,25 @@ public record OptionalFluidIngredient (
         return fluid.isEmpty() && receptical.isEmpty();
     }
 
-    public Ingredient toVanillaIngredient() {
-        return fluid
-                .map(f -> f.toVanillaIngredient(receptical().orElse(Ingredient.fromTag(PSTags.Items.ALL_RECEPTICALS))))
-                .or(() -> receptical)
-                .orElse(Ingredient.EMPTY);
+    @Override
+    public List<ItemStack> getMatchingStacks() {
+        return receptical
+                .map(ingredient -> Arrays.stream(ingredient.getMatchingStacks()))
+                .orElseGet(FluidIngredient::allRecepticals)
+                .map(fluid
+                        .map(fluid -> (Function<ItemStack, ItemStack>)(receptical -> ItemFluids.set(receptical, fluid.getAsItemFluid(FluidCapacity.get(receptical)))))
+                        .orElse(Function.identity()))
+                .toList();
+    }
+
+    @Override
+    public boolean requiresTesting() {
+        return true;
+    }
+
+    @Override
+    public CustomIngredientSerializer<?> getSerializer() {
+        return PSIngredients.FLUID;
     }
 
     @Override

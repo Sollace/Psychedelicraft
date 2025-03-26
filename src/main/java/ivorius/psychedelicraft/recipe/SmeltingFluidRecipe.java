@@ -20,6 +20,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
+
 /**
  * Created by Sollace on 5 Jan 2023
  *
@@ -73,7 +76,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             OptionalFluidIngredient input,
             FluidModifyingResult result,
             float experience, int cookingTime) {
-        super(group, category, input.toVanillaIngredient(), result.result(), experience, cookingTime);
+        super(group, category, input.toVanilla(), result.result(), experience, cookingTime);
         this.input = input;
         this.result = result;
     }

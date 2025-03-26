@@ -25,6 +25,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 
 public class FluidAwareShapelessRecipe extends ShapelessRecipe {
@@ -53,7 +54,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         super(group, category, output,
                 // parent expects regular ingredients but we don't actually use them
                 input.stream()
-                .map(OptionalFluidIngredient::toVanillaIngredient)
+                .map(OptionalFluidIngredient::toVanilla)
                 .collect(Collectors.toCollection(DefaultedList::of))
         );
         this.output = output;
