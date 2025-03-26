@@ -40,7 +40,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
             PacketCodecs.STRING, HardeningRecipe::hardeningGroup,
             FluidIngredient.PACKET_CODEC, HardeningRecipe::coreFluid,
             FluidIngredient.PACKET_CODEC.collect(PacketCodecs.toList()), HardeningRecipe::impurities,
-            ItemStack.PACKET_CODEC, HardeningRecipe::result,
+            ItemStack.OPTIONAL_PACKET_CODEC, HardeningRecipe::result,
             PacketCodecUtils.INT_PROVIDER_VALUE_CODEC, HardeningRecipe::amount,
             PacketCodecs.INTEGER, HardeningRecipe::hardeningTime,
             HardeningRecipe::new

@@ -108,7 +108,7 @@ public interface ItemModels {
     static void registerSniffable(ItemModelGenerator itemModelGenerator, Item item) {
         itemModelGenerator.output.accept(item, condition(new UsingProperty(),
                 basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE)),
-                basic(itemModelGenerator.registerSubModel(item, "_using", SMOKEABLE_USING_TEMPLATE))
+                basic(SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_using"), TextureMap.layer0(item), itemModelGenerator.modelCollector))
         ));
     }
 

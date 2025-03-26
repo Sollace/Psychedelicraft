@@ -1,5 +1,5 @@
 {
-  "parent": "block/cube_all",
+  "parent": "block/block",
 	"textures": {
 		"top": "psychedelicraft:block/pump_top",
 		"back": "psychedelicraft:block/pump_back",

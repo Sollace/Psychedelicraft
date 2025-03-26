@@ -41,6 +41,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 
+import static net.minecraft.client.data.ItemModels.*;
+
 public interface BlockModels {
     TextureKey CONNECTION = TextureKey.of("connection");
     Model VINE_CONNECTION_TEMPLATE = block("vine_connection_template", CONNECTION);
@@ -82,6 +84,7 @@ public interface BlockModels {
         generator.registerBuiltinWithParticle(block, Registries.BLOCK.getOptionalValue(planksId).or(() -> {
             return Registries.BLOCK.getOptionalValue(Identifier.ofVanilla(planksId.getPath()));
         }).orElse(Blocks.OAK_PLANKS));
+        generator.registerItemModel(block.asItem());
     }
 
     static BiConsumer<SimpleFluid, String> createFluidCollector(BlockStateModelGenerator generator) {
@@ -261,7 +264,11 @@ public interface BlockModels {
         MultipartBlockStateSupplier states = MultipartBlockStateSupplier.create(block);
         addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(block, "_in"));
         addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(block, "_out"));
-        Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()), TextureMap.layer0(TextureMap.getId(block.asItem())), generator.modelCollector);
+        generator.itemModelOutput.accept(block.asItem(), basic(
+                Models.HANDHELD_ROD.upload(
+                        ModelIds.getItemModelId(block.asItem()),
+                        TextureMap.layer0(TextureMap.getId(block.asItem())),
+                        generator.modelCollector)));
         generator.blockStateCollector.accept(states);
     }
 
@@ -272,7 +279,10 @@ public interface BlockModels {
         states
             .with(When.create().set(ValveBlock.OPEN, true), BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_open")))
             .with(When.create().set(ValveBlock.OPEN, false), BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_closed")));
-        Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()), TextureMap.layer0(TextureMap.getId(block.asItem())), generator.modelCollector);
+        generator.itemModelOutput.accept(block.asItem(), basic(
+                Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()),
+                TextureMap.layer0(TextureMap.getId(block.asItem())),
+                generator.modelCollector)));
         generator.blockStateCollector.accept(states);
     }
 

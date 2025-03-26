@@ -11,9 +11,14 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.recipe.display.FurnaceRecipeDisplay;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -100,5 +105,21 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     @Override
     public ItemStack craft(SingleStackRecipeInput inventory, WrapperLookup registries) {
         return result.applyTo(inventory.item());
+    }
+
+    @Override
+    public List<RecipeDisplay> getDisplays() {
+        return List.of(
+            new FurnaceRecipeDisplay(
+                ingredient().toDisplay(),
+                SlotDisplay.AnyFuelSlotDisplay.INSTANCE,
+                result.result().isEmpty()
+                    ? input.toDisplay(result::applyTo)
+                    : new SlotDisplay.StackSlotDisplay(result.applyTo(result.result())),
+                new SlotDisplay.ItemSlotDisplay(getCookerItem()),
+                getCookingTime(),
+                getExperience()
+            )
+        );
     }
 }

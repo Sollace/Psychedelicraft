@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.recipe.ingredient;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -67,12 +68,20 @@ public record OptionalFluidIngredient (
 
     @Override
     public SlotDisplay toDisplay() {
-        // Matches the vanilla logic in Ingredient.toDisplay()
         return new SlotDisplay.CompositeSlotDisplay(getMatchingItems().map(item -> {
             ItemStack stack = item.value().getDefaultStack();
             return fluid.map(i -> {
                 return ItemFluids.set(stack, i.getAsItemFluid(FluidCapacity.get(stack)));
             }).orElse(stack);
+        }).map(stack -> (SlotDisplay)new SlotDisplay.StackSlotDisplay(stack)).toList());
+    }
+
+    public SlotDisplay toDisplay(Function<ItemStack, ItemStack> mutator) {
+        return new SlotDisplay.CompositeSlotDisplay(getMatchingItems().map(item -> {
+            ItemStack stack = item.value().getDefaultStack();
+            return fluid.map(i -> {
+                return mutator.apply(ItemFluids.set(stack, i.getAsItemFluid(FluidCapacity.get(stack))));
+            }).orElseGet(() -> mutator.apply(stack));
         }).map(stack -> (SlotDisplay)new SlotDisplay.StackSlotDisplay(stack)).toList());
     }
 

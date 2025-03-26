@@ -17,7 +17,7 @@
         },
         {
           "sampler_name": "Overlay1",
-          "location": "minecraft:effect/psychedelicraft/water_distortion",
+          "location": "minecraft:psychedelicraft/water_distortion",
           "width": 800,
           "height": 800,
           "bilinear": false

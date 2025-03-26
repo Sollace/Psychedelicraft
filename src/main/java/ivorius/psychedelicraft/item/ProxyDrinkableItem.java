@@ -18,7 +18,7 @@ public class ProxyDrinkableItem extends DrinkableItem {
     private final Item basis;
 
     public ProxyDrinkableItem(Item basis, Settings settings, int capacity, ConsumableFluid.ConsumptionType consumptionType) {
-        super(settings.recipeRemainder(basis), capacity, DEFAULT_MAX_USE_TIME, consumptionType);
+        super(settings.recipeRemainder(basis).translationKey(basis.getTranslationKey()), capacity, DEFAULT_MAX_USE_TIME, consumptionType);
         this.basis = basis;
     }
 
