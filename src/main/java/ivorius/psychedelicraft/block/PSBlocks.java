@@ -11,15 +11,12 @@ import java.util.List;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.block.entity.BlockEntityTypeSupportHelper;
-import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.world.gen.PSSaplingGenerators;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.registry.Registries;
@@ -171,11 +168,6 @@ public interface PSBlocks {
     }
 
     static void bootstrap() {
-        PSBlockEntities.bootstrap();
-
-        BlockEntityTypeSupportHelper.of(BlockEntityType.SIGN).addSupportedBlocks(JUNIPER_SIGN, JUNIPER_WALL_SIGN);
-        BlockEntityTypeSupportHelper.of(BlockEntityType.HANGING_SIGN).addSupportedBlocks(JUNIPER_HANGING_SIGN, JUNIPER_WALL_HANGING_SIGN);
-
         FlammableBlockRegistry.getDefaultInstance().add(JUNIPER_LOG, 5, 5);
         FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_JUNIPER_LOG, 5, 5);
         FlammableBlockRegistry.getDefaultInstance().add(JUNIPER_WOOD, 5, 5);

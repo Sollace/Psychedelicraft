@@ -30,6 +30,9 @@ public interface PSBlockEntities {
         return Registry.register(Registries.BLOCK_ENTITY_TYPE, Psychedelicraft.id(id), builder.build());
     }
 
-    static void bootstrap() { }
+    static void bootstrap() {
+        BlockEntityTypeSupportHelper.of(BlockEntityType.SIGN).addSupportedBlocks(PSBlocks.JUNIPER_SIGN, PSBlocks.JUNIPER_WALL_SIGN);
+        BlockEntityTypeSupportHelper.of(BlockEntityType.HANGING_SIGN).addSupportedBlocks(PSBlocks.JUNIPER_HANGING_SIGN, PSBlocks.JUNIPER_WALL_HANGING_SIGN);
+    }
 }
 
