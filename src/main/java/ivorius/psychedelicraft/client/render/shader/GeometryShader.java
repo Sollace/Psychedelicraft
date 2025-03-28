@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.SodiumCompat;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -42,10 +43,11 @@ public class GeometryShader {
 
     private final Map<Identifier, Optional<String>> loadedPrograms = new HashMap<>();
 
-
     private final Map<String, Supplier<Integer>> samplers = Util.make(new HashMap<>(), map -> {
-        map.put("PS_DepthSampler", () -> MinecraftClient.getInstance().getFramebuffer().getDepthAttachment());
-        map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).getGlId());
+        map.put("PS_SurfaceFractalSampler", () -> {
+            Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
+            return client.getTextureManager().getTexture(sprite.getAtlasId()).getGlId();
+        });
     });
 
     public void setup(Type type, String domain, String name) {
@@ -83,6 +85,7 @@ public class GeometryShader {
         register.accept(new BoundUniform("PS_SurfaceFractalCoords", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
             if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) > 0) {
                 Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
+                SodiumCompat.markSpriteActive(sprite);
                 uniform.set(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
             } else {
                 uniform.set(MathUtils.ZERO);

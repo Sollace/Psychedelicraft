@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.client.render.effect;
 
+import ivorius.psychedelicraft.client.SodiumCompat;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.AlcoholDrug;
 import net.minecraft.block.Blocks;
@@ -22,7 +23,10 @@ public class AlcoholOverlayScreenEffect extends DrugOverlayScreenEffect<AlcoholD
         }
 
         float overlayAlpha = Math.min(0.8F, (MathHelper.sin(tickDelta / 80F) * alcohol * 0.5F + alcohol));
-        Sprite sprite = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
+        Sprite sprite = MinecraftClient.getInstance().getBlockRenderManager()
+                .getModels()
+                .getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
         context.drawSprite(0, 0, -90, window.getScaledWidth(), window.getScaledHeight(), sprite, 1, 1, 1, overlayAlpha);
+        SodiumCompat.markSpriteActive(sprite);
     }
 }
