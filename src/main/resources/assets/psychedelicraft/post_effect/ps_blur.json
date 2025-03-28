@@ -7,7 +7,7 @@
       "program": "psychedelicraft:post/ps_blur",
       "inputs": [
         {
-          "sampler_name": "In",
+          "sampler_name": "Diffuse",
           "target": "minecraft:main"
         }
       ],

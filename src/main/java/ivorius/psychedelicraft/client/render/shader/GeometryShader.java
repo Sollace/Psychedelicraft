@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.SodiumCompat;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -21,7 +22,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.gl.CompiledShader.Type;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -43,9 +43,10 @@ public class GeometryShader {
     private final Map<Identifier, Optional<String>> loadedPrograms = new HashMap<>();
 
     private final Map<ShaderProgramDefinition.Sampler, IntSupplier> samplers = Util.make(new HashMap<>(), map -> {
-        map.put(new ShaderProgramDefinition.Sampler("PS_DepthSampler"), () -> MinecraftClient.getInstance().getFramebuffer().getDepthAttachment());
-        // Deprecation: SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/blocks.png");
-        map.put(new ShaderProgramDefinition.Sampler("PS_SurfaceFractalSampler"), () -> MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).getGlId());
+        map.put(new ShaderProgramDefinition.Sampler("PS_SurfaceFractalSampler"), () -> {
+            Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
+            return client.getTextureManager().getTexture(sprite.getAtlasId()).getGlId();
+        });
     });
 
     public void setup(Type type, Identifier name) {
@@ -78,6 +79,7 @@ public class GeometryShader {
         register.accept(new BoundUniform("PS_SurfaceFractalCoords", "float", 4, uniform -> {
             if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) > 0) {
                 Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
+                SodiumCompat.markSpriteActive(sprite);
                 uniform.set(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
             } else {
                 uniform.set(MathUtils.ZERO);

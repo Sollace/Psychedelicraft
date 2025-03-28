@@ -31,9 +31,10 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
             // Add order = Application order!
             .addShader("heat_distortion", UniformBinding.start()
                     .program(Psychedelicraft.id("heat_distortion"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                        float water = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterDistortion();
                         float strength = Math.max(
                                 DrugRenderer.INSTANCE.getEnvironmentalEffects().getHeatDistortion(),
-                                DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterDistortion()
+                                water
                         );
 
                         if (strength <= 0) {
@@ -41,7 +42,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         }
 
                         setter.set("strength", strength);
-                        setter.set("ticks", ShaderContext.ticks() * 0.15f);
+                        setter.set("ticks", ShaderContext.ticks() * (water > 0 ? 0.03f : 0.15F));
                         pass.run();
                     }))
             .addShader("simple_effects", UniformBinding.start()

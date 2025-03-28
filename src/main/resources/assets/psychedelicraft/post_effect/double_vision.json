@@ -7,7 +7,7 @@
       "program": "psychedelicraft:post/double_vision",
       "inputs": [
         {
-          "sampler_name": "In",
+          "sampler_name": "Diffuse",
           "target": "minecraft:main"
         }
       ],

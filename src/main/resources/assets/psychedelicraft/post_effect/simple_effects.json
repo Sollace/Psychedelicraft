@@ -8,7 +8,7 @@
       "program": "psychedelicraft:post/simple_effects",
       "inputs": [
         {
-          "sampler_name": "In",
+          "sampler_name": "Diffuse",
           "target": "minecraft:main"
         }
       ],

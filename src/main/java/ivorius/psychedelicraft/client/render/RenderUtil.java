@@ -115,6 +115,7 @@ public class RenderUtil {
               .vertex(frame.viewportWidth, 0, 0).texture(1, 1);
         BufferRenderer.drawWithGlobalProgram(buffer.end());
         RenderSystem.disableBlend();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
     public static void drawRepeatingSprite(DrawContext context, Sprite sprite, int x, int y, int width, int height, int color) {

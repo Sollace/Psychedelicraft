@@ -7,7 +7,7 @@
       "program": "psychedelicraft:post/ps_blur_noise",
       "inputs": [
         {
-          "sampler_name": "In",
+          "sampler_name": "Diffuse",
           "target": "minecraft:main"
         }
       ],
