@@ -16,7 +16,7 @@
           "use_depth": true
         },
         {
-          "sampler_name": "Ascii",
+          "sampler_name": "Noise",
           "location": "minecraft:psychedelicraft/heat_distortion_noise",
           "width": 128,
           "height": 128,
