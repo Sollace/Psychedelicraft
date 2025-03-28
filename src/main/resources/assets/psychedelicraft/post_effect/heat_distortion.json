@@ -7,7 +7,7 @@
       "program": "psychedelicraft:post/heat_distortion",
       "inputs": [
         {
-          "sampler_name": "In",
+          "sampler_name": "Diffuse",
           "target": "minecraft:main"
         },
         {

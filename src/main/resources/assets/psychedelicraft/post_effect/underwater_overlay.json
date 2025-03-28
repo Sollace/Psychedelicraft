@@ -7,7 +7,7 @@
       "program": "psychedelicraft:post/distortion_map",
       "inputs": [
         {
-          "sampler_name": "In",
+          "sampler_name": "Diffuse",
           "target": "minecraft:main"
         },
         {
