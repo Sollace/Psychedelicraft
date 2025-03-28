@@ -22,6 +22,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.gl.ShaderStage.Type;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.*;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
@@ -45,8 +46,13 @@ public class GeometryShader {
 
     private final Map<String, Supplier<Integer>> samplers = Util.make(new HashMap<>(), map -> {
         map.put("PS_SurfaceFractalSampler", () -> {
-            Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
-            return client.getTextureManager().getTexture(sprite.getAtlasId()).getGlId();
+            @SuppressWarnings("deprecation")
+            Identifier id = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+            if (client.player != null) {
+                id = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance()).getAtlasId();
+            }
+
+            return client.getTextureManager().getTexture(id).getGlId();
         });
     });
 
