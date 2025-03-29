@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.block.BurnerBlock;
 import ivorius.psychedelicraft.block.GlassTubeBlock;
 import ivorius.psychedelicraft.block.GlassTubeBlock.IODirection;
 import ivorius.psychedelicraft.block.ValveBlock;
+import ivorius.psychedelicraft.client.item.VatItemModelRenderer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -253,6 +254,7 @@ public interface BlockModels {
     static void registerVat(BlockStateModelGenerator generator, Block core, Block edge, Block materialBase) {
         generator.registerBuiltinWithParticle(edge, ModelIds.getBlockModelId(materialBase));
         generator.registerSingleton(core, VAT);
+        generator.registerSpecialItemModel(core, new VatItemModelRenderer.Unbaked());
     }
 
     static void registerDryingTable(BlockStateModelGenerator generator, Block block) {
