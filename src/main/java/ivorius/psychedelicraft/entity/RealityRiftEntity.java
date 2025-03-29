@@ -6,6 +6,7 @@
 package ivorius.psychedelicraft.entity;
 
 import ivorius.psychedelicraft.ParticleHelper;
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
@@ -15,6 +16,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -141,6 +143,11 @@ public class RealityRiftEntity extends Entity {
         }
 
         if (getWorld() instanceof ServerWorld sw) {
+            if (Psychedelicraft.getConfig().randomTicksUntilRiftSpawn.get() == 0) {
+                kill(sw);
+                return;
+            }
+
             float searchDistance = 5.0f + getInstability() * 50.0f;
             for (LivingEntity entityLivingBase : getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(searchDistance), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                 double dist = entityLivingBase.distanceTo(this);
@@ -184,7 +191,6 @@ public class RealityRiftEntity extends Entity {
             setRiftSize(getRiftSize() - 1F / 20F / 20F / 60F);
         }
 
-       // setRiftSize(getRiftSize() - 1.0f / 1.0f / 20.0f / 60.0f);
         visualRiftSize = MathUtils.nearValue(visualRiftSize, getRiftSize(), 0.05f, 0.005f);
 
         if (!getWorld().isClient) {
@@ -200,9 +206,15 @@ public class RealityRiftEntity extends Entity {
 
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
-        setRiftSize(compound.getFloat("riftSize"));
-        setRiftClosing(compound.getBoolean("isRiftClosing"));
-        setInstability(compound.getFloat("instability"));
+        if (compound.contains("riftSize", NbtElement.FLOAT_TYPE)) {
+            setRiftSize(compound.getFloat("riftSize"));
+        }
+        if (compound.contains("isRiftClosing")) {
+            setRiftClosing(compound.getBoolean("isRiftClosing"));
+        }
+        if (compound.contains("instability", NbtElement.FLOAT_TYPE)) {
+            setInstability(compound.getFloat("instability"));
+        }
     }
 
     @Override
