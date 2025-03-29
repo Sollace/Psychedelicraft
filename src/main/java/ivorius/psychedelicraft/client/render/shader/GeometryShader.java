@@ -29,6 +29,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 public class GeometryShader {
+    @SuppressWarnings("deprecation")
+    private static final Identifier BLOCK_ATLAS_TEXTURE = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     private static final String GEO_DIRECTORY = "shaders/geometry/";
     private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(?:^|\\n)ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
     private static final Identifier BASIC = Psychedelicraft.id("basic");
@@ -45,8 +47,7 @@ public class GeometryShader {
 
     private final Map<ShaderProgramDefinition.Sampler, IntSupplier> samplers = Util.make(new HashMap<>(), map -> {
         map.put(new ShaderProgramDefinition.Sampler("PS_SurfaceFractalSampler"), () -> {
-            @SuppressWarnings("deprecation")
-            Identifier id = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+            Identifier id = BLOCK_ATLAS_TEXTURE;
             if (client.player != null) {
                 id = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance()).getAtlasId();
             }

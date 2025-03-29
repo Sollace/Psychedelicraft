@@ -14,7 +14,6 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
-import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -35,11 +34,11 @@ public class SmokeableItem extends Item {
 
     private final List<DrugInfluence> drugEffects;
 
-    private final Vector3f smokeColor;
+    private final int smokeColor;
 
     private final int useStages;
 
-    public SmokeableItem(Settings settings, int useStages, Vector3f smokeColor, DrugInfluence... drugEffects) {
+    public SmokeableItem(Settings settings, int useStages, int smokeColor, DrugInfluence... drugEffects) {
         super(settings);
         this.smokeColor = smokeColor;
         this.useStages = useStages;
@@ -98,7 +97,7 @@ public class SmokeableItem extends Item {
             DrugProperties.of(player).addAll(drugEffects);
         });
 
-        var effect = new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, MathUtils.getArgb(smokeColor), 1);
+        var effect = new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, smokeColor, 1);
         for (int i = 0; i < 30; i++) {
             ((ServerWorld)world).spawnParticles(effect,
                     world.random.nextTriangular(pos.getX() + 0.5, 0.3),

@@ -8,8 +8,6 @@ package ivorius.psychedelicraft.item;
 import java.util.List;
 import java.util.function.Function;
 
-import org.joml.Vector3f;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
 import ivorius.psychedelicraft.entity.PSEntities;
@@ -122,15 +120,15 @@ public interface PSItems {
     Item DRIED_TOBACCO = register("dried_tobacco");
 
     SmokeableItem CIGARETTE = register("cigarette", s -> new SmokeableItem(
-            s.maxCount(1).maxDamage(1), 2, SmokeableItem.WHITE,
+            s.maxCount(1).maxDamage(1), 2, Colors.WHITE,
             new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
     ));
     SmokeableItem CIGAR = register("cigar", s -> new SmokeableItem(
-            s.maxCount(1).maxDamage(3), 4, new Vector3f(0.6F, 0.6F, 0.5F),
+            s.maxCount(1).maxDamage(3), 4, 0xFF99997F,
             new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
     ));
     SmokeableItem JOINT = register("joint", s -> new SmokeableItem(
-            s.maxCount(1).maxDamage(2), 2, new Vector3f(0.9F, 0.9F, 0.9F),
+            s.maxCount(1).maxDamage(2), 2, 0xFFE5E5E5,
             new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)
     ));
 
@@ -183,7 +181,7 @@ public interface PSItems {
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)))
     ));
     Item PEYOTE_JOINT = register("peyote_joint", s -> new SmokeableItem(
-            s.maxCount(1).maxDamage(2), 2, new Vector3f(0.5F, 0.9F, 0.4F),
+            s.maxCount(1).maxDamage(2), 2, 0xFF7FE566,
             new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INHALED, 0.003, 0.0015, 0.4f),
             new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.1f)
     ));
@@ -242,14 +240,14 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.INHALED, 0.1, 0.02, 0.8F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.4, 0.1, 0.9F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.5, 0.1, 0.2F)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.INHALED, 0.04, 0.01, 0.65F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.INHALED, 0.04, 0.01, 0.65F, DyedColorComponent.getColor(stack, Colors.WHITE))));
     // TODO: Play around with the bongs benefits
     BongItem BONG = register("bong", s -> new BongItem(s.maxDamage(128)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.001, 0.2F)))
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.4, 0.1, 0.4F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.5, 0.1, 0.1F)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, DyedColorComponent.getColor(stack, Colors.WHITE))));
 
     Item VOMIT = register("vomit");
     Item PAPER_BAG = register("paper_bag", s -> new PaperBagItem(s.component(PSComponents.BAG_CONTENTS, BagContentsComponent.EMPTY)));
@@ -326,17 +324,5 @@ public interface PSItems {
         List.of(
             WOODEN_MUG, STONE_CUP, GLASS_CHALICE, SHOT_GLASS, BOTTLE, FILLED_BUCKET, FILLED_BOWL, FILLED_GLASS_BOTTLE
         ).forEach(FluidCauldronBehavior::register);
-
-        /*UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
-
-            if (player.isSpectator()) {
-                return ActionResult.PASS;
-            }
-
-            ItemStack stack = player.getStackInHand(hand);
-            if (stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(Items.))
-
-            return ActionResult.PASS;
-        });*/
     }
 }

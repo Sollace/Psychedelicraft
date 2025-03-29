@@ -12,7 +12,7 @@ import net.minecraft.client.gl.GlImportProcessor;
 
 @Mixin(GlImportProcessor.class)
 abstract class MixinGLImportProcessor {
-    @ModifyReturnValue(method = "readSource(Ljava/util/List;)Ljava/util/List;", at = @At("RETURN"))
+    @ModifyReturnValue(method = "readSource(Ljava/lang/String;)Ljava/util/List;", at = @At("RETURN"))
     private List<String> modifySource(List<String> source) {
         return GeometryShader.INSTANCE.injectShaderSources(source);
     }

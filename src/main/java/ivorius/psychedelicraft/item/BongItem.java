@@ -86,8 +86,7 @@ public class BongItem extends Item {
             getUsedConsumable(drugProperties.asEntity()).ifPresent(consumable -> {
                 if (user.getRandom().nextInt(2) == 0) {
                     float s = (float)user.getRandom().nextTriangular(0.5, 0.25);
-                    ParticleHelper.spawnParticleAtFace(user, new DrugDustParticleEffect(PSParticles.BUBBLE,
-                            MathUtils.getArgb(consumable.getValue().smokeColor), s), 0.2F);
+                    ParticleHelper.spawnParticleAtFace(user, new DrugDustParticleEffect(PSParticles.BUBBLE, consumable.content().smokeColor(), s), 0.2F);
                 }
             });
         });
@@ -131,14 +130,14 @@ public class BongItem extends Item {
     public record Consumable (
             ItemStack consumedItem,
             Function<ItemStack, List<DrugInfluence>> drugInfluences,
-            Vector3f smokeColor
+            int smokeColor
     ) {
         public Consumable(ItemStack consumedItem, DrugInfluence...drugInfluences) {
-            this(consumedItem, stack -> List.of(drugInfluences), SmokeableItem.WHITE);
+            this(consumedItem, stack -> List.of(drugInfluences), Colors.WHITE);
         }
 
         public Consumable(ItemStack consumedItem, Function<ItemStack, DrugInfluence> drugInfluences) {
-            this(consumedItem, stack -> List.of(drugInfluences.apply(stack)), SmokeableItem.WHITE);
+            this(consumedItem, stack -> List.of(drugInfluences.apply(stack)), Colors.WHITE);
         }
     }
 }

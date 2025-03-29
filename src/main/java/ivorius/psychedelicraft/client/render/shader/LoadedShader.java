@@ -48,12 +48,12 @@ class LoadedShader {
     class UpdateTracker {
         private int updateCount;
 
-        private long processorHash;
+        //private long processorHash;
         private boolean enabled;
 
         public boolean update(PostEffectProcessor processor, float tickDelta) {
             //if (updateCount == 0 || processor.hashCode() != processorHash) {
-                processorHash = processor.hashCode();
+                //processorHash = processor.hashCode();
                 enabled = false;
                 uniformValues.update(processor, tickDelta, () -> enabled = true);
             //}

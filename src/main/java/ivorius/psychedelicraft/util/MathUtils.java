@@ -48,46 +48,47 @@ public interface MathUtils {
         return value;
     }
 
+    @Deprecated
     static Vector3f unpackRgb(int c) {
         return new Vector3f(r(c), g(c), b(c));
     }
 
+    @Deprecated
     static Vector4f unpackArgb(int c) {
-        return new Vector4f(a(c), r(c), g(c), b(c));
-    }
-
-    static float a(int c) {
-        return ColorHelper.getAlpha(c) / 255F;
-    }
-
-    static float r(int c) {
-        return ColorHelper.getRed(c) / 255F;
-    }
-
-    static float g(int c) {
-        return ColorHelper.getGreen(c) / 255F;
-    }
-
-    static float b(int c) {
-        return ColorHelper.getBlue(c) / 255F;
-    }
-
-    static int withAlpha(int color, float alpha) {
-        return (color & 0xFFFFFF) | ((int)(alpha * 255) & 0xFF) << 24;
-    }
-
-    static int mixColors(int left, int right, float progress) {
-        return ColorHelper.fromFloats(
-                MathHelper.lerp(a(left), a(right), progress),
-                MathHelper.lerp(r(left), r(right), progress),
-                MathHelper.lerp(g(left), g(right), progress),
-                MathHelper.lerp(b(left), b(right), progress)
+        return new Vector4f(
+                ColorHelper.getAlphaFloat(c),
+                ColorHelper.getRedFloat(c),
+                ColorHelper.getGreenFloat(c),
+                ColorHelper.getBlueFloat(c)
         );
     }
 
     @Deprecated
-    static int packArgb(float a, float r, float g, float b) {
-        return ColorHelper.fromFloats(a, r, g, b);
+    static float a(int c) {
+        return ColorHelper.getAlphaFloat(c);
+    }
+
+    @Deprecated
+    static float r(int c) {
+        return ColorHelper.getRedFloat(c);
+    }
+
+    @Deprecated
+    static float g(int c) {
+        return ColorHelper.getGreenFloat(c);
+    }
+
+    @Deprecated
+    static float b(int c) {
+        return ColorHelper.getBlueFloat(c);
+    }
+
+    static int withAlpha(int color, float alpha) {
+        return ColorHelper.withAlpha(ColorHelper.channelFromFloat(alpha), color);
+    }
+
+    static int mixColors(int left, int right, float progress) {
+        return ColorHelper.lerp(progress, left, right);
     }
 
     @Deprecated
