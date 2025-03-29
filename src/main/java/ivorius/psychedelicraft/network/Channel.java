@@ -10,8 +10,8 @@ import ivorius.psychedelicraft.Psychedelicraft;
  * @since 1 Jan 2023
  */
 public interface Channel {
-    S2CPacketType<MsgDrugProperties> UPDATE_DRUG_PROPERTIES = SimpleNetworking.serverToClient(Psychedelicraft.id("update_drug_properties"), MsgDrugProperties::new);
-    S2CPacketType<MsgHallucinate> HALLUCINATE = SimpleNetworking.serverToClient(Psychedelicraft.id("hallucinate"), MsgHallucinate::new);
+    S2CPacketType<MsgDrugProperties> UPDATE_DRUG_PROPERTIES = SimpleNetworking.serverToClient(Psychedelicraft.id("update_drug_properties"), MsgDrugProperties.PACKET_CODEC);
+    S2CPacketType<MsgHallucinate> HALLUCINATE = SimpleNetworking.serverToClient(Psychedelicraft.id("hallucinate"), MsgHallucinate.PACKET_CODEC);
 
     static void bootstrap() { }
 

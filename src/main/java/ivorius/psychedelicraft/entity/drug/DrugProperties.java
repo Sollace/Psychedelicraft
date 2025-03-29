@@ -19,7 +19,6 @@ import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgDrugProperties;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
-import ivorius.psychedelicraft.util.MathUtils;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
@@ -52,6 +51,7 @@ import java.util.stream.*;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 
 public class DrugProperties implements NbtSerialisable {
@@ -68,8 +68,7 @@ public class DrugProperties implements NbtSerialisable {
     private final DrugMusicManager soundManager = new DrugMusicManager(this);
 
     private int timeBreathingSmoke;
-    @Nullable
-    private Vector3f breathSmokeColor;
+    private int breathSmokeColor = -1;
 
     private final PlayerEntity entity;
 
@@ -179,7 +178,7 @@ public class DrugProperties implements NbtSerialisable {
         return drugs.keySet();
     }
 
-    public void startBreathingSmoke(int time, Vector3f color) {
+    public void startBreathingSmoke(int time, int color) {
         this.breathSmokeColor = color;
         this.timeBreathingSmoke = time + 10; //10 is the time spent breathing in
         markDirty();
@@ -279,11 +278,11 @@ public class DrugProperties implements NbtSerialisable {
 
             if (timeBreathingSmoke > 10 && entity.getWorld().isClient) {
                 if (random.nextInt(2) == 0) {
-                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, MathUtils.getArgb(breathSmokeColor), 1), random.nextFloat() * 0.05F + 0.1F);
+                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, breathSmokeColor, 1), random.nextFloat() * 0.05F + 0.1F);
                 }
 
                 if (random.nextInt(5) == 0) {
-                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, MathUtils.getArgb(breathSmokeColor), 2.5F), random.nextFloat() * 0.05F + 0.1F);
+                    ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, breathSmokeColor, 2.5F), random.nextFloat() * 0.05F + 0.1F);
                 }
             }
         }

@@ -1,11 +1,8 @@
 package ivorius.psychedelicraft.client.particle;
 
-import org.joml.Vector3f;
-
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.FluidParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
-import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.PendingParticleFactory;
 import net.minecraft.client.particle.BlockLeakParticle;
@@ -17,6 +14,7 @@ import net.minecraft.client.particle.WaterSplashParticle;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.math.ColorHelper;
 
 /**
  * @author Sollace
@@ -49,8 +47,8 @@ public interface PSParticleFactories {
     }
 
     static Particle setColor(Particle particle, FluidParticleEffect effect) {
-        Vector3f color = MathUtils.unpackRgb(effect.fluid().getColor(effect.fluid().getDefaultStack()));
-        particle.setColor(color.x, color.y, color.z);
+        int color = effect.fluid().getColor(effect.fluid().getDefaultStack());
+        particle.setColor(ColorHelper.getRedFloat(color), ColorHelper.getGreenFloat(color), ColorHelper.getBlueFloat(color));
         return particle;
     }
 

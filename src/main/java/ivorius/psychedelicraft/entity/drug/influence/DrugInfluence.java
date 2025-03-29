@@ -7,7 +7,6 @@ package ivorius.psychedelicraft.entity.drug.influence;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.joml.Vector3f;
 
 import com.mojang.serialization.Codec;
@@ -22,17 +21,12 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 
 public class DrugInfluence {
-    private static final Codec<Vector3f> COLOR_CODEC = RecordCodecBuilder.create(i -> i.group(
+    private static final Codec<Integer> COLOR_CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.FLOAT.fieldOf("r").forGetter(Vector3f::x),
             Codec.FLOAT.fieldOf("g").forGetter(Vector3f::y),
             Codec.FLOAT.fieldOf("b").forGetter(Vector3f::z)
-    ).apply(i, Vector3f::new));
-    private static final PacketCodec<RegistryByteBuf, Optional<Vector3f>> COLOR_PACKET_CODEC = PacketCodecs.optional(PacketCodec.tuple(
-        PacketCodecs.FLOAT, Vector3f::x,
-        PacketCodecs.FLOAT, Vector3f::y,
-        PacketCodecs.FLOAT, Vector3f::z,
-        Vector3f::new
-    ));
+    ).apply(i, Vector3f::new)).xmap(MathUtils::getArgb, MathUtils::unpackRgb);
+
     public static final Codec<DrugInfluence> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             DrugType.REGISTRY.getCodec().fieldOf("drugType").forGetter(DrugInfluence::getDrugType),
             Codec.INT.fieldOf("delay").forGetter(DrugInfluence::getDelay),
@@ -48,7 +42,7 @@ public class DrugInfluence {
             PacketCodecs.DOUBLE, DrugInfluence::getInfluenceDelta,
             PacketCodecs.DOUBLE, DrugInfluence::getBaseIncrease,
             PacketCodecs.DOUBLE, DrugInfluence::getTargetInfluence,
-            COLOR_PACKET_CODEC, DrugInfluence::getColor,
+            PacketCodecs.optional(PacketCodecs.INTEGER), DrugInfluence::getColor,
             DrugInfluence::new
     );
 
@@ -61,17 +55,17 @@ public class DrugInfluence {
 
     protected double targetInfluence;
 
-    private final Optional<Vector3f> color;
+    private final Optional<Integer> color;
 
     public DrugInfluence(DrugType<?> drugType, int delay, double factor, double base, double target) {
         this(drugType, delay, factor, base, target, Optional.empty());
     }
 
-    public DrugInfluence(DrugType<?> drugType, int delay, double factor, double base, double target, Vector3f color) {
+    public DrugInfluence(DrugType<?> drugType, int delay, double factor, double base, double target, int color) {
         this(drugType, delay, factor, base, target, Optional.of(color));
     }
 
-    private DrugInfluence(DrugType<?> drugType, int delay, double factor, double base, double target, Optional<Vector3f> color) {
+    private DrugInfluence(DrugType<?> drugType, int delay, double factor, double base, double target, Optional<Integer> color) {
         this.drugType = drugType;
         this.delay = delay;
         this.influenceDelta = factor;
@@ -104,7 +98,7 @@ public class DrugInfluence {
         return targetInfluence;
     }
 
-    public Optional<Vector3f> getColor() {
+    public Optional<Integer> getColor() {
         return color;
     }
 
@@ -130,7 +124,7 @@ public class DrugInfluence {
         drugProperties.addToDrug(drugType, value);
         color.ifPresent(color -> {
             if (drugProperties.getDrug(getDrugType()) instanceof HarmoniumDrug harmonium) {
-                MathUtils.lerp((float)(value + (1 - value) * (1 - harmonium.getActiveValue())), harmonium.currentColor, color);
+                MathUtils.lerp((float)(value + (1 - value) * (1 - harmonium.getActiveValue())), harmonium.currentColor, MathUtils.unpackRgb(color));
             }
         });
     }

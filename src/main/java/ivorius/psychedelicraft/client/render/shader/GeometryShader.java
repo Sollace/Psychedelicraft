@@ -31,7 +31,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 public class GeometryShader {
-    // Deprecation: SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/blocks.png");
     @SuppressWarnings("deprecation")
     private static final Identifier BLOCK_ATLAS_TEXTURE = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     private static final String GEO_DIRECTORY = "shaders/geometry/";
@@ -50,8 +49,7 @@ public class GeometryShader {
 
     private final Map<String, Supplier<GpuTexture>> samplers = Util.make(new HashMap<>(), map -> {
         map.put("PS_SurfaceFractalSampler", () -> {
-            @SuppressWarnings("deprecation")
-            Identifier id = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+            Identifier id = BLOCK_ATLAS_TEXTURE;
             if (client.player != null) {
                 id = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance()).getAtlasId();
             }

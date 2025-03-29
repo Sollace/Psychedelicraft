@@ -29,7 +29,7 @@ public record FilledProperty() implements SelectProperty<FilledProperty.FillPerc
                     ? (contents.count() > BagContentsComponent.FULL_COUNT * 2F ? FillPercentage.FULL : FillPercentage.THREE_QUARTER) : FillPercentage.HALF;
         }
         if (stack.getItem() instanceof BongItem item) {
-            return item.hasUsableConsumable(user) ? FillPercentage.FULL : FillPercentage.EMPTY;
+            return item.getConsumableSlotIndex(user) != -1 ? FillPercentage.FULL : FillPercentage.EMPTY;
         }
         return ItemFluids.of(stack).isEmpty() ? FillPercentage.EMPTY : FillPercentage.FULL;
 	}
