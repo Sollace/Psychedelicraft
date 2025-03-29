@@ -21,8 +21,6 @@ import net.minecraft.util.math.MathHelper;
 
 import org.joml.*;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import java.util.Random;
 import java.lang.Math;
 
@@ -45,10 +43,11 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
     @Override
     public void updateRenderState(RealityRiftEntity entity, State state, float tickDelta) {
         super.updateRenderState(entity, state, tickDelta);
-        state.visualRiftSize = entity.visualRiftSize < 0.01f
-                ? (entity.visualRiftSize * 10.0f)
-                : (0.1f + (entity.visualRiftSize - 0.01f) * 0.1f);
-        state.instability = state.age + tickDelta + (entity.getInstability() * entity.getInstability() * 3000);
+        float size = entity.getRiftSize(tickDelta);
+        float instability = entity.getInstability();
+        state.visualRiftSize = size < 0.01F ? (size * 10)
+                : (0.1F + 0.1F * (size - 0.01F));
+        state.instability = state.age + tickDelta + (instability * instability * 3000);
     }
 
     @Override
@@ -65,9 +64,7 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
 
         renderRift(matrices, vertices, state.instability);
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(CENTER_TEXTURE));
+        VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissiveNoOutline(CENTER_TEXTURE));
         Vector4f vector = new Vector4f(0, 0, 0, 1);
 
         matrices.push();
@@ -99,9 +96,6 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
         consumer.vertex(pos.x, pos.y, pos.z, Colors.WHITE, 0, 1, light, 0, 1, 1, 1);
 
         matrices.pop();
-
-        RenderSystem.disableBlend();
-
         matrices.pop();
     }
 
@@ -181,6 +175,4 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
         public float visualRiftSize;
         public float instability;
     }
-
-
 }
