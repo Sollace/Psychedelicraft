@@ -182,11 +182,10 @@ public class DrugRenderer {
         }
     }
 
-    public void onAfterRenderWorld(Pool pool) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public void onAfterRenderWorld(Pool pool, RenderTickCounter tickCounter) {
         RenderPhase.SCREEN.push();
         try {
-            postEffects.render(pool, client.getRenderTickCounter().getTickProgress(false));
+            postEffects.render(pool, tickCounter.getTickProgress(false));
         } finally {
             RenderPhase.pop();
         }

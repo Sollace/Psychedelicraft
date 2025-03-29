@@ -55,6 +55,11 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
+    protected boolean isTransparent(BlockState state) {
+        return true;
+    }
+
+    @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return getValidMasterPosition(world, pos)
                 .map(center -> MashTubBlock.COLLISSION_SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ()))
@@ -159,7 +164,7 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+    public Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         return getValidMasterPosition(world, pos).map(center -> PipeInsertable.tryInsert(world, center, direction, fluids)).orElse(PipeInsertable.reject(fluids));
     }
 

@@ -11,16 +11,21 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.recipe.display.FurnaceRecipeDisplay;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.PSTags;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 
 /**
  * Created by Sollace on 5 Jan 2023
@@ -73,7 +78,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             OptionalFluidIngredient input,
             FluidModifyingResult result,
             float experience, int cookingTime) {
-        super(group, category, input.receptical().orElse(Ingredient.fromTag(Registries.ITEM.getOrThrow(PSTags.Items.ALL_RECEPTICALS))), result.result(), experience, cookingTime);
+        super(group, category, input.toVanilla(), result.result(), experience, cookingTime);
         this.input = input;
         this.result = result;
     }
@@ -100,5 +105,21 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     @Override
     public ItemStack craft(SingleStackRecipeInput inventory, WrapperLookup registries) {
         return result.applyTo(inventory.item());
+    }
+
+    @Override
+    public List<RecipeDisplay> getDisplays() {
+        return List.of(
+            new FurnaceRecipeDisplay(
+                ingredient().toDisplay(),
+                SlotDisplay.AnyFuelSlotDisplay.INSTANCE,
+                result.result().isEmpty()
+                    ? input.toDisplay(result::applyTo)
+                    : new SlotDisplay.StackSlotDisplay(result.applyTo(result.result())),
+                new SlotDisplay.ItemSlotDisplay(getCookerItem()),
+                getCookingTime(),
+                getExperience()
+            )
+        );
     }
 }

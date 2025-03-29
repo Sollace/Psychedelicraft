@@ -21,6 +21,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 
 /**
  * Created by Sollace on 19 Jul 2024

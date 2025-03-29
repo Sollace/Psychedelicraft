@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.block.NightshadeBlock;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.TobaccoPlantBlock;
 import ivorius.psychedelicraft.block.VineStemBlock;
+import ivorius.psychedelicraft.client.item.RiftJarItemModelRenderer;
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
@@ -70,6 +71,7 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerPumpHead(generator, PSBlocks.PUMP_HEAD);
 
         generator.registerBuiltinWithParticle(PSBlocks.RIFT_JAR, Blocks.GLASS);
+        generator.registerSpecialItemModel(PSBlocks.RIFT_JAR, new RiftJarItemModelRenderer.Unbaked());
 
         generator.registerBuiltinWithParticle(PSBlocks.PEYOTE, ModelIds.getItemModelId(PSItems.PEYOTE));
         generator.registerBuiltinWithParticle(PSBlocks.PLACED_DRINK, ModelIds.getBlockModelId(Blocks.STONE));
@@ -139,7 +141,7 @@ public class PSModelProvider extends FabricModelProvider {
 
         var fluidCollector = BlockModels.createFluidCollector(generator);
         SimpleFluid.REGISTRY.forEach(fluid -> {
-            if (!fluid.isEmpty()) {
+            if (!fluid.isEmpty() && fluid.isCustomFluid()) {
                 fluidCollector.accept(fluid, Objects.requireNonNull(fluids.get(fluid), fluid.getId() + " has no mapped appearance for its block"));
             }
         });

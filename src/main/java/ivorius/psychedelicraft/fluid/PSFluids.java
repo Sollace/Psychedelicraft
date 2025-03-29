@@ -16,14 +16,13 @@ import ivorius.psychedelicraft.fluid.alcohol.DrinkType.Variation;
 import ivorius.psychedelicraft.fluid.alcohol.StatePredicate;
 import ivorius.psychedelicraft.fluid.alcohol.TickRate;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.Colors;
 
 /**
  * Created by lukas on 22.10.14.
  */
 public interface PSFluids {
-    SimpleFluid EMPTY = Registry.register(SimpleFluid.REGISTRY, SimpleFluid.EMPTY_KEY, new VanillaFluid(SimpleFluid.EMPTY_KEY, Fluids.EMPTY, true));
+    SimpleFluid EMPTY = VanillaFluid.register(SimpleFluid.EMPTY_KEY, Fluids.EMPTY, true);
     AlcoholicFluid WHEAT_HOP = new AlcoholicFluid(Psychedelicraft.id("wheat_hop"), new AlcoholicFluid.Settings()
             .alcohol(0.25, 1.7, 0.1)
             .tickRate(TickRate.ofMinutes(30, 60, 100, 30))

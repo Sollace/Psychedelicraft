@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
@@ -39,7 +40,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
             PacketCodecs.STRING, HardeningRecipe::hardeningGroup,
             FluidIngredient.PACKET_CODEC, HardeningRecipe::coreFluid,
             FluidIngredient.PACKET_CODEC.collect(PacketCodecs.toList()), HardeningRecipe::impurities,
-            ItemStack.PACKET_CODEC, HardeningRecipe::result,
+            ItemStack.OPTIONAL_PACKET_CODEC, HardeningRecipe::result,
             PacketCodecUtils.INT_PROVIDER_VALUE_CODEC, HardeningRecipe::amount,
             PacketCodecs.INTEGER, HardeningRecipe::hardeningTime,
             HardeningRecipe::new
@@ -57,7 +58,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
 
     @Override
     public boolean matches(Input input, World world) {
-        FluidMound fluids = new FluidMound(input.impurities());
+        FluidMound fluids = FluidMound.of(input.impurities());
         return isCoreFluid(input.coreFluid()) && impurities.stream().allMatch(i -> fluids.removeMatch(i) > 0);
     }
 

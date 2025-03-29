@@ -68,7 +68,7 @@ public interface PSRenderers {
                 PSBlocks.POTTED_HOP, PSBlocks.POTTED_TOBACCO, PSBlocks.POTTED_COCA, PSBlocks.POTTED_COFFEA);
 
         SimpleFluid.REGISTRY.forEach(fluid -> {
-            if (fluid.isEmpty()) {
+            if (fluid.isEmpty() || !fluid.isCustomFluid()) {
                 return;
             }
             BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(),

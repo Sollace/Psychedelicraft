@@ -9,12 +9,14 @@ import java.util.*;
 import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 
 import com.mojang.blaze3d.shaders.ShaderType;
 import com.mojang.blaze3d.textures.GpuTexture;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.SodiumCompat;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -33,7 +35,7 @@ public class GeometryShader {
     @SuppressWarnings("deprecation")
     private static final Identifier BLOCK_ATLAS_TEXTURE = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     private static final String GEO_DIRECTORY = "shaders/geometry/";
-    private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(^|\\n)ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
+    private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(?:^|\\n)ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
     private static final Identifier BASIC = Psychedelicraft.id("basic");
 
     public static final GeometryShader INSTANCE = new GeometryShader();
@@ -47,8 +49,15 @@ public class GeometryShader {
     private final Map<Identifier, Optional<String>> loadedPrograms = new HashMap<>();
 
     private final Map<String, Supplier<GpuTexture>> samplers = Util.make(new HashMap<>(), map -> {
-        map.put("PS_DepthSampler", () -> MinecraftClient.getInstance().getFramebuffer().getDepthAttachment());
-        map.put("PS_SurfaceFractalSampler", () -> MinecraftClient.getInstance().getTextureManager().getTexture(BLOCK_ATLAS_TEXTURE).getGlTexture());
+        map.put("PS_SurfaceFractalSampler", () -> {
+            @SuppressWarnings("deprecation")
+            Identifier id = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+            if (client.player != null) {
+                id = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance()).getAtlasId();
+            }
+
+            return client.getTextureManager().getTexture(id).getGlTexture();
+        });
     });
 
     public void setup(ShaderType type, Identifier name) {
@@ -81,6 +90,7 @@ public class GeometryShader {
         register.accept(new BoundUniform("PS_SurfaceFractalCoords", UniformType.VEC4, uniform -> {
             if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) > 0) {
                 Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
+                SodiumCompat.markSpriteActive(sprite);
                 uniform.set(new float[] {sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV()});
             } else {
                 uniform.set(MathUtils.ZERO);
@@ -116,6 +126,15 @@ public class GeometryShader {
 
     public Map<String, Supplier<GpuTexture>> getSamplers() {
         return samplers;
+    }
+
+    public List<String> injectShaderSources(List<String> source) {
+        String joined = String.join("%PS_DELIM%", source);
+        String converted = injectShaderSources(joined);
+        if (converted.equals(joined)) {
+            return source;
+        }
+        return List.of(converted.split("%PS_DELIM%"));
     }
 
     public String injectShaderSources(String source) {
@@ -162,11 +181,11 @@ public class GeometryShader {
         }
 
         geometrySources = PS_VARIABLE_PATTERN.matcher(geometrySources).replaceAll(match -> {
-            String fieldSlug = Arrays.stream(match.group(3).split(","))
+            String fieldSlug = Arrays.stream(match.group(2).split(","))
                     .map(String::trim)
-                    .filter(field -> !vertexSources.contains(field))
+                    .filter(field -> !vertexSources.contains(match.group(1) + " " + field))
                     .collect(Collectors.joining(", "));
-            return fieldSlug.isEmpty() ? "/* " + match.group(0) + "*/" : match.group(2) + " " + fieldSlug + ";";
+            return fieldSlug.isEmpty() ? "/* " + match.group(0) + "*/" : match.group(1) + " " + fieldSlug + ";";
         });
         String newline = System.lineSeparator();
         return writeSources(vertexSources.replace("void main()", "void i_parent_shaders_main()" + newline) + newline + "/*PSYCHEDELICRAFT START*/" + newline + geometrySources + newline + "/*PSYCHEDELICRAFT END*/", "merged");

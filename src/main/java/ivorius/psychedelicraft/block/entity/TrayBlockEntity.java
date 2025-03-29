@@ -35,7 +35,7 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
     static final int MAX_CAPACITY = 50;
 
     private final Resovoir fluid = new Resovoir(MAX_CAPACITY, (tank, level) -> {});
-    private FluidMound impurities = new FluidMound();
+    private FluidMound impurities = FluidMound.of();
 
     private boolean dirty;
 
@@ -80,7 +80,7 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
                     craftingResult = Optional.of(recipe.craft(
                             new HardeningRecipe.Input(fluid.getContents(), impurities),
                             world.getRegistryManager()).copyWithCount(recipe.amount().get(world.random)));
-                    impurities = new FluidMound();
+                    impurities = FluidMound.of();
 
                     fluid.clear();
                     matchingRecipe = Optional.empty();
@@ -109,16 +109,13 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
     }
 
     @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
-        if (direction != Direction.DOWN) {
-            return PipeInsertable.reject(fluids);
-        }
-        if (isHardened() || timeToHarden > 0) {
+    public Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+        if (direction != Direction.DOWN || isHardened() || timeToHarden > 0) {
             return PipeInsertable.reject(fluids);
         }
 
-        FluidMound remainder = new FluidMound(fluids.fluids());
-        PipeFluids copy = new PipeFluids(fluids.fluids(), fluids.temperature());
+        FluidMound remainder = FluidMound.of(fluids.fluids());
+        PipeFluids copy = PipeFluids.of(fluids.fluids(), fluids.temperature());
         copy.splitCondensate().getFluids().forEach(fluid -> {
             if (getLevel() < MAX_CAPACITY && canAccept(world, fluid) && this.fluid.getContents().canCombine(fluid)) {
                 int amountDeposited = this.fluid.deposit(fluid);
@@ -146,7 +143,7 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
             return PipeInsertable.STATUS_ACCEPT_ALL;
         }
 
-        return PipeInsertable.reject(new PipeFluids(remainder, fluids.temperature()));
+        return PipeInsertable.reject(fluids.withFluids(remainder));
     }
 
     private boolean canAccept(ServerWorld world, ItemFluids fluids) {
@@ -173,7 +170,7 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
         super.readNbt(compound, lookup);
         impurities = FluidMound.CODEC.decode(NbtOps.INSTANCE, compound.get("impurities")).result()
                 .map(Pair::getFirst)
-                .orElseGet(FluidMound::new);
+                .orElseGet(FluidMound::of);
         timeToHarden = compound.getInt("timeToHarden", 0);
         fluid.fromNbt(compound.getCompoundOrEmpty("fluid"), lookup);
         craftingResult = compound.get("craftingResult", ItemStack.OPTIONAL_CODEC);

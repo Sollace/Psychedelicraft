@@ -1,4 +1,4 @@
-package ivorius.psychedelicraft.mixin.client;
+package ivorius.psychedelicraft.mixin.client.shader;
 
 import java.util.List;
 import java.util.Map;
@@ -6,17 +6,13 @@ import java.util.Map;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.shaders.ShaderType;
 import com.mojang.blaze3d.textures.GpuTexture;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.*;
-import net.minecraft.resource.Resource;
-import net.minecraft.util.Identifier;
 
 @Mixin(ShaderProgram.class)
 abstract class MixinShaderProgram implements AutoCloseable {
@@ -49,21 +45,5 @@ abstract class MixinShaderProgram implements AutoCloseable {
                 uniformsByName.put(uniform.getName(), uniform);
             }
         });
-    }
-}
-
-@Mixin(GlImportProcessor.class)
-abstract class MixinGLImportProcessor {
-    @ModifyVariable(method = "readSource(Ljava/lang/String;)Ljava/util/List;", at = @At("HEAD"), argsOnly = true)
-    private String modifySource(String source) {
-        return GeometryShader.INSTANCE.injectShaderSources(source);
-    }
-}
-
-@Mixin(ShaderLoader.class)
-abstract class MixinShaderLoader {
-    @Inject(method = "loadShaderSource(Lnet/minecraft/util/Identifier;Lnet/minecraft/resource/Resource;Lnet/minecraft/client/gl/CompiledShader$Type;Ljava/util/Map;Lcom/google/common/collect/ImmutableMap$Builder;)V", at = @At("HEAD"))
-    private static void onLoadShaderSource(Identifier id, Resource resource, ShaderType type, Map<Identifier, Resource> allResources, @SuppressWarnings("rawtypes") Builder builder, CallbackInfo info) {
-        GeometryShader.INSTANCE.setup(type, type.idConverter().toResourceId(id));
     }
 }

@@ -54,7 +54,7 @@ import net.minecraft.world.event.GameEvent;
 public class FilledBucketItem extends BucketItem {
 
     public FilledBucketItem(Settings settings) {
-        super(Fluids.EMPTY, settings.recipeRemainder(Items.BUCKET));
+        super(Fluids.EMPTY, settings.recipeRemainder(Items.BUCKET).translationKey(Items.BUCKET.getTranslationKey()));
         registerDispenserBehaviour(this);
     }
 

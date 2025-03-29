@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.compat.tia;
 
 import java.util.stream.Stream;
 
+import io.github.mattidragon.tlaapi.api.BuiltInRecipeCategory;
 import io.github.mattidragon.tlaapi.api.plugin.PluginContext;
 import io.github.mattidragon.tlaapi.api.plugin.TlaApiPlugin;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStackComparison;
@@ -17,12 +18,20 @@ public class Main implements TlaApiPlugin {
     public void register(PluginContext context) {
         RecipeCategory.bootstrap(context);
 
+        context.getVanillaCategory(BuiltInRecipeCategory.WORLD_INTERACTION_OTHER).ifPresent(category -> {
+            WorldInteractionPSRecipe.generate(category, context);
+        });
+
         context.getItemComparisons().register(TlaStackComparison.compareComponents(),
                 PSItems.WOODEN_MUG, PSItems.STONE_CUP, PSItems.GLASS_CHALICE,
                 PSItems.SHOT_GLASS, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.SYRINGE,
                 PSItems.FILLED_GLASS_BOTTLE, PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL
         );
-        context.getFluidComparisons().register(TlaStackComparison.compareComponents(), SimpleFluid.REGISTRY.stream().flatMap(f -> {
+
+        context.getFluidComparisons().register(TlaStackComparison.of(
+                (left, right) -> RecipeUtil.toItemFluids(left).canCombine(RecipeUtil.toItemFluids(right)),
+                stack -> RecipeUtil.toItemFluids(stack).getHash()
+        ), SimpleFluid.REGISTRY.stream().flatMap(f -> {
             return Stream.of(f.getPhysical().getStandingFluid(), f.getPhysical().getFlowingFluid());
         }).toList());
     }

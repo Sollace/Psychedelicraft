@@ -37,8 +37,9 @@ public record TickRate (int ticksPerFermentation, int ticksPerDistillation, int 
     public interface Tickable {
         TickRate getDefaultTickRate();
 
+        @SuppressWarnings("deprecation")
         default TickRate getTickRate() {
-            return Psychedelicraft.getConfig().fluidAttributes.get().values().getOrDefault(SimpleFluid.REGISTRY.getKey((SimpleFluid)this), getDefaultTickRate());
+            return Psychedelicraft.getConfig().fluidAttributes.get().values().getOrDefault(((SimpleFluid)this).getRegistryEntry().getKey().orElseThrow(), getDefaultTickRate());
         }
     }
 }

@@ -24,6 +24,7 @@ public interface PSShaders {
             .withLocation(Psychedelicraft.id("pipeline/zero_matter"))
             .withCull(false)
             .withBlend(BlendFunction.TRANSLUCENT)
+            .withDepthWrite(false)
             .withShaderDefine("ZERO_MATTER_LAYERS", 15).build()
     );
 

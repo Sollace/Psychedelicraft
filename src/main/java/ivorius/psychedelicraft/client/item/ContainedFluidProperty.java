@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 
 public record ContainedFluidProperty(SimpleFluid fluid) implements BooleanProperty {
 	public static final MapCodec<ContainedFluidProperty> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-	        SimpleFluid.REGISTRY.getCodec().fieldOf("fluid").forGetter(ContainedFluidProperty::fluid)
+	        SimpleFluid.CODEC.fieldOf("fluid").forGetter(ContainedFluidProperty::fluid)
     ).apply(i, ContainedFluidProperty::new));
 
 	@Override

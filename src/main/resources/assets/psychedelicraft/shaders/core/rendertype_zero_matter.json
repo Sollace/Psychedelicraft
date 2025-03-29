@@ -1,12 +1,6 @@
 {
-    "blend": {
-        "func": "add",
-        "srcrgb": "srcalpha",
-        "dstrgb": "1-srcalpha"
-    },
-    "vertex": "psychedelicraft:rendertype_zero_matter",
-    "fragment": "psychedelicraft:rendertype_zero_matter",
-    "attributes": [],
+    "vertex": "psychedelicraft:core/rendertype_zero_matter",
+    "fragment": "psychedelicraft:core/rendertype_zero_matter",
     "samplers": [
         { "name": "Sampler0" },
         { "name": "Sampler1" }

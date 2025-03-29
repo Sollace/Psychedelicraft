@@ -1,53 +1,52 @@
 {
-    "targets": [
-        "swap"
-    ],
-    "passes": [
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "program": "psychedelicraft:post/distortion_map",
+      "inputs": [
         {
-            "name": "distortion_map",
-            "intarget": "minecraft:main",
-            "outtarget": "swap",
-            "auxtargets": [
-                { "name": "DepthSampler", "id": "minecraft:main:depth" },
-                { "name": "OverlaySampler1", "id": "psychedelicraft/water_distortion", "width": 800, "height": 600, "bilinear": false },
-                { "name": "OverlaySampler2", "id": "psychedelicraft/water_distortion", "width": 800, "height": 600, "bilinear": false }
-            ],
-            "uniforms": [
-              { "name": "totalAlpha", "values": [ 1.0 ] },
-              { "name": "strength", "values": [ 0.0 ] },
-              { "name": "texTranslation0", "values": [ 0.0, 0.0 ] },
-              { "name": "texTranslation1", "values": [ 0.0, 0.0 ] }
-            ]
+          "sampler_name": "Diffuse",
+          "target": "minecraft:main"
         },
         {
-            "name": "blit",
-            "intarget": "swap",
-            "outtarget": "minecraft:main"
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth": true
+        },
+        {
+          "sampler_name": "Overlay1",
+          "location": "minecraft:psychedelicraft/water_distortion",
+          "width": 800,
+          "height": 800,
+          "bilinear": false
+        },
+        {
+          "sampler_name": "Overlay2",
+          "location": "minecraft:psychedelicraft/water_distortion",
+          "width": 800,
+          "height": 800,
+          "bilinear": false
         }
-    ]
-}
-
-{
-    "blend": {
-        "func": "add",
-        "srcrgb": "srcalpha",
-        "dstrgb": "1-srcalpha"
+      ],
+      "output": "swap",
+      "uniforms": [
+        { "name": "totalAlpha", "type": "float" },
+        { "name": "strength", "type": "float" },
+        { "name": "texTranslation0", "type": "vec2" },
+        { "name": "texTranslation1", "type": "vec2" }
+      ]
     },
-    "vertex": "blit",
-    "fragment": "distortion_map",
-    "attributes": [ "Position" ],
-    "samplers": [
-        { "name": "DiffuseSampler" },
-        { "name": "OverlaySampler1" },
-        { "name": "OverlaySampler2" }
-    ],
-    "uniforms": [
-        { "name": "totalAlpha", "type": "float", "count": 1, "values": [ 1.0 ] },
-        { "name": "strength", "type": "float", "count": 1, "values": [ 0.0 ] },
-        { "name": "texTranslation0", "type": "float", "count": 2, "values": [ 0.0, 0.0 ] },
-        { "name": "texTranslation1", "type": "float", "count": 2, "values": [ 0.0, 0.0 ] },
-
-        { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
-        { "name": "OutSize", "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] }
-    ]
+    {
+      "program": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
 }

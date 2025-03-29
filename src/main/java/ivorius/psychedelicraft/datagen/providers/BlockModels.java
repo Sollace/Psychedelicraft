@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.block.BurnerBlock;
 import ivorius.psychedelicraft.block.GlassTubeBlock;
 import ivorius.psychedelicraft.block.GlassTubeBlock.IODirection;
 import ivorius.psychedelicraft.block.ValveBlock;
+import ivorius.psychedelicraft.client.item.VatItemModelRenderer;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -40,6 +41,7 @@ import net.minecraft.util.math.AxisRotation;
 import net.minecraft.util.math.Direction;
 
 import static net.minecraft.client.data.BlockStateModelGenerator.*;
+import static net.minecraft.client.data.ItemModels.*;
 
 public interface BlockModels {
     TextureKey CONNECTION = TextureKey.of("connection");
@@ -90,6 +92,7 @@ public interface BlockModels {
         generator.registerBuiltinWithParticle(block, Registries.BLOCK.getOptionalValue(planksId).or(() -> {
             return Registries.BLOCK.getOptionalValue(Identifier.ofVanilla(planksId.getPath()));
         }).orElse(Blocks.OAK_PLANKS));
+        generator.registerItemModel(block.asItem());
     }
 
     static BiConsumer<SimpleFluid, String> createFluidCollector(BlockStateModelGenerator generator) {
@@ -228,6 +231,7 @@ public interface BlockModels {
     static void registerVat(BlockStateModelGenerator generator, Block core, Block edge, Block materialBase) {
         generator.registerBuiltinWithParticle(edge, ModelIds.getBlockModelId(materialBase));
         generator.registerSingleton(core, VAT);
+        generator.registerSpecialItemModel(core, new VatItemModelRenderer.Unbaked());
     }
 
     static void registerDryingTable(BlockStateModelGenerator generator, Block block) {
@@ -239,7 +243,11 @@ public interface BlockModels {
         MultipartBlockModelDefinitionCreator states = MultipartBlockModelDefinitionCreator.create(block);
         addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(block, "_in"));
         addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(block, "_out"));
-        Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()), TextureMap.layer0(TextureMap.getId(block.asItem())), generator.modelCollector);
+        generator.itemModelOutput.accept(block.asItem(), basic(
+                Models.HANDHELD_ROD.upload(
+                        ModelIds.getItemModelId(block.asItem()),
+                        TextureMap.layer0(TextureMap.getId(block.asItem())),
+                        generator.modelCollector)));
         generator.blockStateCollector.accept(states);
     }
 
@@ -250,7 +258,10 @@ public interface BlockModels {
         states
             .with(createMultipartConditionBuilder().put(ValveBlock.OPEN, true), createWeightedVariant(ModelIds.getBlockSubModelId(block, "_open")))
             .with(createMultipartConditionBuilder().put(ValveBlock.OPEN, false), createWeightedVariant(ModelIds.getBlockSubModelId(block, "_closed")));
-        Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()), TextureMap.layer0(TextureMap.getId(block.asItem())), generator.modelCollector);
+        generator.itemModelOutput.accept(block.asItem(), basic(
+                Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()),
+                TextureMap.layer0(TextureMap.getId(block.asItem())),
+                generator.modelCollector)));
         generator.blockStateCollector.accept(states);
     }
 

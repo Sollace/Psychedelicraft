@@ -10,8 +10,6 @@ import java.util.function.Function;
 
 import org.joml.Vector3f;
 
-import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.*;
 import ivorius.psychedelicraft.entity.PSEntities;
@@ -67,17 +65,21 @@ public interface PSItems {
     List<FlaskItem> ALL_BARRELS = PSBlocks.ALL_BARRELS.stream().map(block -> register(Registries.BLOCK.getId(block).getPath(), barrel(block))).toList();
 
     FlaskItem MASH_TUB = register("mash_tub", s -> new MashTubItem(PSBlocks.MASH_TUB, s
+            .translationKey(PSBlocks.MASH_TUB.getTranslationKey())
             .maxCount(16)
             .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.FERMENT)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.VAT))));
     FlaskItem FLASK = register("flask", s -> new FlaskItem(PSBlocks.FLASK, s
+            .translationKey(PSBlocks.FLASK.getTranslationKey())
             .maxCount(16)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.FLASK))));
     FlaskItem DISTILLERY = register("distillery", s -> new FlaskItem(PSBlocks.DISTILLERY, s
+            .translationKey(PSBlocks.DISTILLERY.getTranslationKey())
             .maxCount(16)
             .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.DISTILL)
             .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.FLASK))));
     RiftJarItem RIFT_JAR = register("rift_jar", s -> new RiftJarItem(PSBlocks.RIFT_JAR, s
+            .translationKey(PSBlocks.RIFT_JAR.getTranslationKey())
             .component(PSComponents.RIFT_FRACTION, RiftFractionComponent.DEFAULT)));
 
     DrinkableItem FILLED_GLASS_BOTTLE = register("filled_glass_bottle", s -> new ProxyDrinkableItem(Items.GLASS_BOTTLE, s.component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.GLASS_BOTTLE)), FluidVolumes.GLASS_BOTTLE, ConsumableFluid.ConsumptionType.DRINK));
@@ -88,7 +90,7 @@ public interface PSItems {
             new FoodComponent.Builder().nutrition(1).saturationModifier(0.5F).build(), PSConsumableComponents.FAST_FOOD
     ), 15));
 
-    Item CANNABIS_SEEDS = register("cannabis_seeds", s -> new BlockItem(PSBlocks.CANNABIS, s.translationKey(PSBlocks.CANNABIS.getTranslationKey())));
+    Item CANNABIS_SEEDS = register("cannabis_seeds", s -> new BlockItem(PSBlocks.CANNABIS, s));
     Item CANNABIS_LEAF = register("cannabis_leaf");
     Item CANNABIS_BUDS = register("cannabis_buds");
     Item DRIED_CANNABIS_LEAF = register("dried_cannabis_leaf");
@@ -100,7 +102,7 @@ public interface PSItems {
     ));
 
     Item HOP_CONES = register("hop_cones");
-    Item HOP_SEEDS = register("hop_seeds", s -> new BlockItem(PSBlocks.HOP, s.translationKey(PSBlocks.HOP.getTranslationKey())));
+    Item HOP_SEEDS = register("hop_seeds", s -> new BlockItem(PSBlocks.HOP, s));
 
     Item BROWN_MAGIC_MUSHROOMS = register("brown_magic_mushrooms", s -> new EdibleItem(s
             .food(EdibleItem.NON_FILLING_EDIBLE)
@@ -117,7 +119,7 @@ public interface PSItems {
     ));
 
     Item TOBACCO_LEAVES = register("tobacco");
-    Item TOBACCO_SEEDS = register("tobacco_seeds", s -> new BlockItem(PSBlocks.TOBACCO, s.translationKey(PSBlocks.TOBACCO.getTranslationKey())));
+    Item TOBACCO_SEEDS = register("tobacco_seeds", s -> new BlockItem(PSBlocks.TOBACCO, s));
     Item DRIED_TOBACCO = register("dried_tobacco");
 
     SmokeableItem CIGARETTE = register("cigarette", s -> new SmokeableItem(
@@ -133,7 +135,7 @@ public interface PSItems {
             new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)
     ));
 
-    Item COCA_SEEDS = register("coca_seeds", s -> new BlockItem(PSBlocks.COCA, s.translationKey(PSBlocks.COCA.getTranslationKey())));
+    Item COCA_SEEDS = register("coca_seeds", s -> new BlockItem(PSBlocks.COCA, s));
     Item COCA_LEAVES = register("coca_leaves");
     Item DRIED_COCA_LEAVES = register("dried_coca_leaves");
     Item COCAINE_POWDER = register("cocaine_powder", s -> new SnortableItem(s
@@ -171,7 +173,7 @@ public interface PSItems {
     Item JUNIPER_FENCE_GATE = register("juniper_fence_gate", PSBlocks.JUNIPER_FENCE_GATE);
     Item JUNIPER_BUTTON = register("juniper_button", PSBlocks.JUNIPER_BUTTON);
     Item JUNIPER_SLAB = register("juniper_slab", PSBlocks.JUNIPER_SLAB);
-    Item JUNIPER_BOAT = TerraformBoatItemHelper.registerBoatItem(Psychedelicraft.id("juniper_boat"), false, false);
+    Item JUNIPER_BOAT = register("juniper_boat", s -> new BoatItem(PSEntities.JUNIPER_BOAT, s.maxCount(1)));
     Item JUNIPER_CHEST_BOAT = register("juniper_chest_boat", s -> new BoatItem(PSEntities.JUNIPER_CHEST_BOAT, s.maxCount(1)));
 
     Item COFFEA_CHERRIES = register("coffea_cherries", s -> new BlockItem(PSBlocks.COFFEA, s.translationKey(PSBlocks.COFFEA.getTranslationKey())));
@@ -191,7 +193,7 @@ public interface PSItems {
     Item LATTICE = register("lattice", PSBlocks.LATTICE);
     Item WINE_GRAPE_LATTICE = register("wine_grape_lattice", PSBlocks.WINE_GRAPE_LATTICE);
     Item MORNING_GLORY_LATTICE = register("morning_glory_lattice", PSBlocks.MORNING_GLORY_LATTICE);
-    Item BOTTLE_RACK = register("bottle_rack", s -> new VerticallyAttachableBlockItem(PSBlocks.BOTTLE_RACK, PSBlocks.WALL_BOTTLE_RACK, Direction.DOWN, s));
+    Item BOTTLE_RACK = register("bottle_rack", s -> new VerticallyAttachableBlockItem(PSBlocks.BOTTLE_RACK, PSBlocks.WALL_BOTTLE_RACK, Direction.DOWN, s.translationKey(PSBlocks.BOTTLE_RACK.getTranslationKey())));
     Item DRYING_TABLE = register("drying_table", PSBlocks.DRYING_TABLE);
     Item IRON_DRYING_TABLE = register("iron_drying_table", PSBlocks.IRON_DRYING_TABLE);
 
@@ -286,7 +288,7 @@ public interface PSItems {
     Item BROKEN_GLASS = register("broken_glass");
 
     static Item register(String name, Block block) {
-        return register(name, s -> new BlockItem(block, s));
+        return register(name, s -> new BlockItem(block, s.translationKey(block.getTranslationKey())));
     }
 
     static Item register(String name) {
@@ -295,6 +297,7 @@ public interface PSItems {
 
     static Function<Item.Settings, FlaskItem> barrel(Block block) {
         return s -> new FlaskItem(block, s.maxCount(16)
+                .translationKey(block.getTranslationKey())
                 .maxCount(16)
                 .component(PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE)
                 .component(PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL)));

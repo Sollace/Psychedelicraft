@@ -30,19 +30,19 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
     public static final ShaderLoader POST_EFFECTS = new ShaderLoader(DrugRenderer.INSTANCE.getPostEffects())
             // Add order = Application order!
             .addShader("heat_distortion", UniformBinding.start()
-                    .program(Psychedelicraft.id("post/heat_distortion"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("heat_distortion"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                        float water = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterDistortion();
                         float strength = Math.max(
                                 DrugRenderer.INSTANCE.getEnvironmentalEffects().getHeatDistortion(),
-                                DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterDistortion()
+                                water
                         );
 
                         if (strength <= 0) {
                             return;
                         }
 
-                        setter.set("pixelSize", 1F / screenWidth, 1F / screenHeight);
                         setter.set("strength", strength);
-                        setter.set("ticks", ShaderContext.ticks() * 0.15f);
+                        setter.set("ticks", ShaderContext.ticks() * (water > 0 ? 0.03f : 0.15F));
                         pass.run();
                     }))
             .addShader("simple_effects", UniformBinding.start()
@@ -50,7 +50,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         setter.set("ticks", ShaderContext.ticks());
                         pass.run();
                     })
-                    .program(Psychedelicraft.id("post/simple_effects"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("simple_effects"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var h = ShaderContext.hallucinations();
                         if (setter.setIfNonZero("quickColorRotation", h.get(Drug.FAST_COLOR_ROTATION))
                          | setter.setIfNonZero("slowColorRotation", h.get(Drug.SLOW_COLOR_ROTATION))
@@ -62,7 +62,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                             pass.run();
                         }
                     })
-                    .program(Psychedelicraft.id("post/simple_effects_depth"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("simple_effects_depth"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var h = ShaderContext.hallucinations();
                         // var pulses = h.getPulseColor(tickDelta);
                         var worldColorization = h.getContrastColorization(tickDelta);
@@ -80,7 +80,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         }
                     }))
             .addShader("blur", UniformBinding.start()
-                    .program(Psychedelicraft.id("post/blur"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("blur"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float[] blur = ShaderContext.hallucinations().getBlur();
 
                         if (blur[0] > 0 || blur[1] > 0) {
@@ -92,7 +92,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         }
                     }))
             .addShader("depth_of_field", UniformBinding.start()
-                    .program(Psychedelicraft.id("post/depth_of_field"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("depth_of_field"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         var config = PsychedelicraftClient.getConfig();
 
                         float zNear = 0.05F;
@@ -126,7 +126,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         }
                     }))
             .addShader("bloom", UniformBinding.start()
-                    .program(Psychedelicraft.id("post/bloom"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("bloom"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float bloom = ShaderContext.hallucinations().get(Drug.BLOOM_HALLUCINATION_STRENGTH);
                         if (bloom > 0) {
                             setter.set("pixelSize", 1F / screenWidth * 2F, 1F / screenHeight * 2F);
@@ -140,7 +140,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         }
                     }))
             .addShader("colored_bloom", UniformBinding.start()
-                    .program(Psychedelicraft.id("post/colored_bloom"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("colored_bloom"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         Vector4fc color = ShaderContext.hallucinations().getColorBloom(tickDelta, RenderPhase.current() == RenderPhase.SKY);
                         if (color.w() <= 0) {
                             return;
@@ -158,7 +158,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         }
                     }))
             .addShader("double_vision", UniformBinding.start()
-                    .program(Psychedelicraft.id("post/double_vision"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("double_vision"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = ShaderContext.modifier(Drug.DOUBLE_VISION);
 
                         if (strength > 0) {
@@ -169,7 +169,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         }
                     }))
             .addShader("blur_noise", UniformBinding.start()
-                    .program(Psychedelicraft.id("post/blur_noise"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("blur_noise"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = ShaderContext.drug(DrugType.POWER) * 0.6F;
 
                         if (strength <= 0) {
@@ -182,7 +182,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         pass.run();
                     }))
             .addShader("underwater_overlay", UniformBinding.start()
-                    .program(Psychedelicraft.id("post/distortion_map"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("distortion_map"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float strength = DrugRenderer.INSTANCE.getEnvironmentalEffects().getWaterScreenDistortion();
 
                         if (strength > 0) {
@@ -194,7 +194,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         }
                     }))
             .addShader("digital", UniformBinding.start()
-                    .program(Psychedelicraft.id("post/digital_depth"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
+                    .program(Psychedelicraft.id("digital_depth"), (setter, tickDelta, screenWidth, screenHeight, pass) -> {
                         float digital = ShaderContext.drug(DrugType.ZERO);
                         if (digital <= 0) {
                             return;
@@ -238,8 +238,8 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
         return this;
     }
 
-    public ShaderLoader addShader(String id, UniformBinding.Set bindings) {
-        return addShader(Psychedelicraft.id("shaders/post_effect/" + id + ".json"), bindings);
+    public ShaderLoader addShader(String name, UniformBinding.Set bindings) {
+        return addShader(Psychedelicraft.id(name), bindings);
     }
 
     @Override

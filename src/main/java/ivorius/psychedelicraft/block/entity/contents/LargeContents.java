@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.block.entity.contents;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import com.mojang.datafixers.util.Either;
 
 import ivorius.psychedelicraft.PSSounds;
@@ -176,12 +177,12 @@ public class LargeContents extends SmallContents {
     }
 
     @Override
-    public Either<Optional<PipeFluids>, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
+    public Either<PipeFluids, Unit> tryInsert(ServerWorld world, BlockState state, BlockPos pos, Direction direction, PipeFluids fluids) {
         if (direction != Direction.DOWN) {
             return PipeInsertable.reject(fluids);
         }
 
-        FluidMound mound = new FluidMound(fluids.fluids());
+        FluidMound mound = FluidMound.of(fluids.fluids());
 
         synchronized (auxiliaryTanks) {
             fluids.fluids().getFluids().forEach(fluid -> {
@@ -204,7 +205,7 @@ public class LargeContents extends SmallContents {
             });
         }
 
-        return PipeInsertable.reject(new PipeFluids(mound, fluids.temperature()));
+        return PipeInsertable.reject(PipeFluids.of(mound, fluids.temperature()));
     }
 
     private boolean isValidIngredient(ServerWorld world, ItemStack stack) {
@@ -234,7 +235,7 @@ public class LargeContents extends SmallContents {
     @Override
     public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
         product.items().forEach(stack -> ingredients.addStack(stack));
-        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, new PipeFluids(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
+        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
             onFluidWasted(world);
         }
     }

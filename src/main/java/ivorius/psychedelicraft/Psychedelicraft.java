@@ -7,6 +7,7 @@ package ivorius.psychedelicraft;
 
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.PSBlocks;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.command.*;
 import ivorius.psychedelicraft.config.PSConfig;
 import ivorius.psychedelicraft.entity.PSEntities;
@@ -83,7 +84,7 @@ public class Psychedelicraft implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             DrugProperties.of(handler.player).sendCapabilities();
         });
-
+        PSBlockEntities.bootstrap();
         PSBlocks.bootstrap();
         PSItems.bootstrap();
         PSTags.bootstrap();

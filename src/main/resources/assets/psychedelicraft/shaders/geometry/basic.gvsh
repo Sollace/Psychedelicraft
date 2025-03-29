@@ -1,6 +1,4 @@
 
-ps_in vec2 texCoord0;
-
 uniform sampler2D PS_SurfaceFractalSampler;
 
 uniform float PS_WorldTicks;

@@ -7,11 +7,15 @@ package ivorius.psychedelicraft.recipe;
 
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
@@ -97,5 +101,19 @@ public class MixingRecipe extends ShapelessRecipe {
         return RecipeUtils.recepticals(inventory.getStacks().stream()).findFirst().map(receptical -> {
             return ItemFluids.set(receptical.copy(), output.ofAmount(Math.min(output.amount(), FluidCapacity.get(receptical))));
         }).orElse(ItemStack.EMPTY);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public List<RecipeDisplay> getDisplays() {
+        return List.of(
+            new ShapelessCraftingRecipeDisplay(
+                Stream.concat(input.stream(), Stream.of(receptical)).map(Ingredient::toDisplay).toList(),
+                new SlotDisplay.CompositeSlotDisplay(receptical.getMatchingItems()
+                        .map(i -> (SlotDisplay)new SlotDisplay.StackSlotDisplay(ItemFluids.set(i.value().getDefaultStack(), output)))
+                        .toList()),
+                new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+            )
+        );
     }
 }
