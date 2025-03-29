@@ -40,6 +40,7 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
 
     @Override
     public void render(RealityRiftEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+
         matrices.push();
         matrices.translate(0, entity.getHeight() * 0.5, 0);
 
