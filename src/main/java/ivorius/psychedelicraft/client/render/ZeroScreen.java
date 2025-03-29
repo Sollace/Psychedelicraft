@@ -28,6 +28,7 @@ public class ZeroScreen extends RenderLayer {
             .transparency(TRANSLUCENT_TRANSPARENCY)
             .lightmap(DISABLE_LIGHTMAP)
             .program(ZERO_MATTER_PROGRAM)
+            .writeMaskState(COLOR_MASK)
             .cull(DISABLE_CULLING)
             .texture(new Texture(texture, TriState.FALSE, false))
             .build(false)
