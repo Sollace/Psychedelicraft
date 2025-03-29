@@ -19,8 +19,6 @@ import net.minecraft.util.math.MathHelper;
 
 import org.joml.*;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import java.util.Random;
 import java.lang.Math;
 
@@ -45,25 +43,24 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
         matrices.push();
         matrices.translate(0, entity.getHeight() * 0.5, 0);
 
-        float visualRiftSize = entity.visualRiftSize < 0.01f
-                ? (entity.visualRiftSize * 10.0f)
-                : (0.1f + (entity.visualRiftSize - 0.01f) * 0.1f);
+        float size = entity.getRiftSize(tickDelta);
+        float instability = entity.getInstability();
+
+        float visualRiftSize = size < 0.01F ? (size * 10)
+                : (0.1F + 0.1F * (size - 0.01F));
 
         matrices.scale(visualRiftSize, visualRiftSize, visualRiftSize);
 
-        float instability = entity.getInstability();
         renderRift(matrices, vertices, tickDelta, entity.age + tickDelta + (instability * instability * 3000));
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(CENTER_TEXTURE));
+        VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissiveNoOutline(CENTER_TEXTURE));
         Vector4f vector = new Vector4f(0, 0, 0, 1);
 
         matrices.push();
         matrices.scale(5F, 5F, 5F);
         Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
 
-        float size = 1;
+        size = 1;
 
         light = 0;
 
@@ -88,9 +85,6 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
         consumer.vertex(pos.x, pos.y, pos.z, Colors.WHITE, 0, 1, light, 0, 1, 1, 1);
 
         matrices.pop();
-
-        RenderSystem.disableBlend();
-
         matrices.pop();
     }
 
