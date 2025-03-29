@@ -41,7 +41,7 @@ public interface PSModelPredicates {
                         ? (contents.count() > BagContentsComponent.FULL_COUNT * 2F ? 1 : 0.75F) : 0.5F;
             }
             if (stack.getItem() instanceof BongItem item) {
-                return item.hasUsableConsumable(entity) ? 1 : 0;
+                return item.getConsumableSlotIndex(entity) != -1 ? 1 : 0;
             }
             return ItemFluids.of(stack).isEmpty() ? 0 : 1;
         });
