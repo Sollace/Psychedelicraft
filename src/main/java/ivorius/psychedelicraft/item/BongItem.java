@@ -11,7 +11,6 @@ import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.RecipeUtils;
-import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,8 +24,9 @@ import net.minecraft.world.World;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
-import org.joml.Vector3f;
+import com.google.common.base.Predicates;
 
 /**
  * Created by calebmanley on 4/05/2014.
@@ -55,11 +55,10 @@ public class BongItem extends Item {
         DrugProperties.of(entity).ifPresent(drugProperties -> {
             getUsedConsumable(drugProperties.asEntity()).ifPresent(consumable -> {
                 PlayerInventory inventory = drugProperties.asEntity().getInventory();
-                int slot = inventory.getSlotWithStack(consumable.getKey());
-                inventory.removeStack(slot, 1);
-                drugProperties.addAll(consumable.getValue().drugInfluences().apply(consumable.getKey()));
+                ItemStack s = inventory.removeStack(consumable.slot(), 1);
+                drugProperties.addAll(consumable.content().drugInfluences().apply(s));
                 stack.damage(1, drugProperties.asEntity(), EquipmentSlot.MAINHAND);
-                drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), consumable.getValue().smokeColor);
+                drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), consumable.content().smokeColor());
             });
         });
 
@@ -68,7 +67,7 @@ public class BongItem extends Item {
 
     @Override
     public ActionResult use(World world, PlayerEntity player, Hand hand) {
-        if (!DrugProperties.of(player).isBreathingSmoke() && hasUsableConsumable(player)) {
+        if (!DrugProperties.of(player).isBreathingSmoke() && getConsumableSlotIndex(player) != -1) {
             player.setCurrentHand(hand);
             return ActionResult.CONSUME;
         }
@@ -92,34 +91,32 @@ public class BongItem extends Item {
         });
     }
 
-    public Optional<Map.Entry<ItemStack, Consumable>> getUsedConsumable(LivingEntity entity) {
-        if (!(entity instanceof PlayerEntity)) {
+    public Optional<RecipeUtils.Slot<Consumable>> getUsedConsumable(LivingEntity entity) {
+        if (!(entity instanceof PlayerEntity player)) {
             return Optional.empty();
         }
 
-        return RecipeUtils.stacks(((PlayerEntity)entity)
-                .getInventory())
-                .flatMap(stack -> consumables.stream()
-                    .filter(consumable -> ItemStack.areItemsEqual(stack, consumable.consumedItem))
-                    .limit(1)
-                    .map(c -> Map.entry(stack, c)))
+        return RecipeUtils.slots(player.getInventory(), Predicates.alwaysTrue(), stack -> consumables.stream()
+                .filter(consumable -> consumable.test(stack)).findFirst().orElse(null))
+                .filter(slot -> slot.content() != null && slot.slot() != -1)
                 .findFirst();
     }
 
-    public boolean hasUsableConsumable(LivingEntity entity) {
-        if (!(entity instanceof PlayerEntity)) {
-            return false;
+    public int getConsumableSlotIndex(LivingEntity entity) {
+        if (!(entity instanceof PlayerEntity player)) {
+            return -1;
         }
 
-        PlayerInventory inventory = ((PlayerEntity)entity).getInventory();
+        PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); i++) {
             for (Consumable consumable : consumables) {
-                if (ItemStack.areItemsEqual(inventory.getStack(i), consumable.consumedItem)) {
-                    return true;
+                if (consumable.test(inventory.getStack(i))) {
+                    return i;
                 }
             }
         }
-        return false;
+
+        return -1;
     }
 
     @Override
@@ -131,13 +128,18 @@ public class BongItem extends Item {
             ItemStack consumedItem,
             Function<ItemStack, List<DrugInfluence>> drugInfluences,
             int smokeColor
-    ) {
+    ) implements Predicate<ItemStack> {
         public Consumable(ItemStack consumedItem, DrugInfluence...drugInfluences) {
             this(consumedItem, stack -> List.of(drugInfluences), Colors.WHITE);
         }
 
         public Consumable(ItemStack consumedItem, Function<ItemStack, DrugInfluence> drugInfluences) {
             this(consumedItem, stack -> List.of(drugInfluences.apply(stack)), Colors.WHITE);
+        }
+
+        @Override
+        public boolean test(ItemStack stack) {
+            return ItemStack.areItemsEqual(stack, consumedItem);
         }
     }
 }
