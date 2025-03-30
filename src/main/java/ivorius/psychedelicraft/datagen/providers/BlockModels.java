@@ -33,6 +33,7 @@ import net.minecraft.client.data.VariantSettings.Rotation;
 import net.minecraft.client.data.VariantsBlockStateSupplier;
 import net.minecraft.client.data.When;
 import net.minecraft.client.data.When.PropertyCondition;
+import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.property.EnumProperty;
@@ -51,7 +52,10 @@ public interface BlockModels {
     TextureKey LATTICE = TextureKey.of("lattice");
     Model CROP_LATTICE_TEMPLATE = block("crop_lattice_template", LATTICE, TextureKey.CROP);
     Model LATTICE_TEMPLATE = block("lattice_template", LATTICE);
-    Model COMPLEX_BLOCK = block("complex_block");
+
+    Identifier COMPLEX_BLOCK_ID = Psychedelicraft.id("block/complex_block");
+
+    Model COMPLEX_BLOCK = block("complex_block", TextureKey.TEXTURE, TextureKey.PARTICLE);
     Model VAT_TEMPLATE = block("vat_template", TextureKey.ALL);
     Model TRAY_TEMPLATE = block("tray_template", TextureKey.ALL);
 
@@ -63,6 +67,10 @@ public interface BlockModels {
 
     static Model block(String parent, TextureKey ... requiredTextureKeys) {
         return new Model(Optional.of(Psychedelicraft.id("block/" + parent)), Optional.empty(), requiredTextureKeys);
+    }
+
+    static void registerSpecialItemModel(BlockStateModelGenerator generator, Block block, Identifier parent, SpecialModelRenderer.Unbaked unbaked) {
+        generator.itemModelOutput.accept(block.asItem(), special(parent, unbaked));
     }
 
     static void generateWoodset(BlockStateModelGenerator generator, BlockFamily family,

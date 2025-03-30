@@ -6,7 +6,7 @@
 		"bottom": "psychedelicraft:block/pump_bottom",
 		"side": "psychedelicraft:block/pump_sides",
 		"front": "psychedelicraft:block/pump_front",
-    "particle": "psychedelicraft:block/pump_top"
+    "particle": "#top"
 	},
 	"elements": [
 		{
