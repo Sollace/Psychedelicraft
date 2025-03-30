@@ -1,8 +1,10 @@
 package ivorius.psychedelicraft.mixin.client.shader;
 
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.GlImportProcessor;

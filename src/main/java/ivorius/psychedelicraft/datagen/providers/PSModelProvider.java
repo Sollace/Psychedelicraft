@@ -71,7 +71,11 @@ public class PSModelProvider extends FabricModelProvider {
         BlockModels.registerPumpHead(generator, PSBlocks.PUMP_HEAD);
 
         generator.registerBuiltinWithParticle(PSBlocks.RIFT_JAR, Blocks.GLASS);
-        generator.registerSpecialItemModel(PSBlocks.RIFT_JAR, new RiftJarItemModelRenderer.Unbaked());
+        BlockModels.registerSpecialItemModel(generator, PSBlocks.RIFT_JAR, BlockModels.COMPLEX_BLOCK.upload(
+                PSBlocks.RIFT_JAR.asItem(),
+                TextureMap.texture(PSBlocks.RIFT_JAR),
+                generator.modelCollector
+        ), new RiftJarItemModelRenderer.Unbaked());
 
         generator.registerBuiltinWithParticle(PSBlocks.PEYOTE, ModelIds.getItemModelId(PSItems.PEYOTE));
         generator.registerBuiltinWithParticle(PSBlocks.PLACED_DRINK, ModelIds.getBlockModelId(Blocks.STONE));

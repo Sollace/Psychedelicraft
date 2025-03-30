@@ -218,6 +218,11 @@ public class FilledBucketItem extends BucketItem {
                playEmptyingSound(fluidState.getFluid(), player, world, pos);
                return true;
             }
+        } else if (world.isAir(pos) || placeInto) {
+            if (world.setBlockState(pos, placedBlockState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD) || state.getFluidState().isStill()) {
+                playEmptyingSound(fluidState.getFluid(), player, world, pos);
+                return true;
+            }
         }
         return false;
     }

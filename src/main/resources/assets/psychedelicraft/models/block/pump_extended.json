@@ -4,7 +4,8 @@
 		"bottom": "psychedelicraft:block/pump_bottom",
 		"inner": "psychedelicraft:block/pump_inner",
 		"side": "psychedelicraft:block/pump_sides",
-		"front": "psychedelicraft:block/pump_front"
+		"front": "psychedelicraft:block/pump_front",
+    "particle": "#front"
 	},
 	"elements": [
 		{

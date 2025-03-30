@@ -1,0 +1,22 @@
+{
+	"texture_size": [32, 32],
+	"textures": {
+		"particle": "psychedelicraft:block/glass_tube",
+		"glass_tubing": "psychedelicraft:block/glass_tube"
+	},
+	"elements": [
+		{
+			"name": "tube",
+			"from": [7.3, -6.25, 7.3],
+			"to": [8.7, 0.05, 8.7],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0.75, 8]},
+			"faces": {
+				"north": {"uv": [10, 3, 12, 10], "texture": "#glass_tubing"},
+				"east": {"uv": [12, 3, 14, 10], "texture": "#glass_tubing"},
+				"south": {"uv": [14, 3, 16, 10], "texture": "#glass_tubing"},
+				"west": {"uv": [8, 3, 10, 10], "texture": "#glass_tubing"},
+				"up": {"uv": [3, 3, 0, 0], "texture": "#glass_tubing"}
+			}
+		}
+	]
+}

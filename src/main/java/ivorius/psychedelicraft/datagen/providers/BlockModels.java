@@ -30,8 +30,10 @@ import net.minecraft.client.data.TexturedModel;
 import net.minecraft.client.data.VariantsBlockModelDefinitionCreator;
 import net.minecraft.client.render.model.json.ModelVariantOperator;
 import net.minecraft.client.render.model.json.MultipartModelConditionBuilder;
+import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.registry.Registries;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
@@ -50,7 +52,10 @@ public interface BlockModels {
     TextureKey LATTICE = TextureKey.of("lattice");
     Model CROP_LATTICE_TEMPLATE = block("crop_lattice_template", LATTICE, TextureKey.CROP);
     Model LATTICE_TEMPLATE = block("lattice_template", LATTICE);
-    Model COMPLEX_BLOCK = block("complex_block");
+
+    Identifier COMPLEX_BLOCK_ID = Psychedelicraft.id("block/complex_block");
+
+    Model COMPLEX_BLOCK = block("complex_block", TextureKey.TEXTURE, TextureKey.PARTICLE);
     Model VAT_TEMPLATE = block("vat_template", TextureKey.ALL);
     Model TRAY_TEMPLATE = block("tray_template", TextureKey.ALL);
 
@@ -70,6 +75,10 @@ public interface BlockModels {
 
     static Model block(String parent, TextureKey ... requiredTextureKeys) {
         return new Model(Optional.of(Psychedelicraft.id("block/" + parent)), Optional.empty(), requiredTextureKeys);
+    }
+
+    static void registerSpecialItemModel(BlockStateModelGenerator generator, Block block, Identifier parent, SpecialModelRenderer.Unbaked unbaked) {
+        generator.itemModelOutput.accept(block.asItem(), special(parent, unbaked));
     }
 
     static void generateWoodset(BlockStateModelGenerator generator, BlockFamily family,
@@ -241,8 +250,10 @@ public interface BlockModels {
 
     static void registerTubing(BlockStateModelGenerator generator, Block block) {
         MultipartBlockModelDefinitionCreator states = MultipartBlockModelDefinitionCreator.create(block);
-        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(block, "_in"));
-        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(block, "_out"));
+        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(block, "_in"), BlockStateModelGenerator::createMultipartConditionBuilder);
+        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(block, "_out"), BlockStateModelGenerator::createMultipartConditionBuilder);
+        addPipeExtensionStates(states, GlassTubeBlock.IN, GlassTubeBlock.EXTENDED_IN, ModelIds.getBlockModelId(block));
+        addPipeExtensionStates(states, GlassTubeBlock.OUT, GlassTubeBlock.EXTENDED_OUT, ModelIds.getBlockModelId(block));
         generator.itemModelOutput.accept(block.asItem(), basic(
                 Models.HANDHELD_ROD.upload(
                         ModelIds.getItemModelId(block.asItem()),
@@ -253,8 +264,10 @@ public interface BlockModels {
 
     static void registerTubingWithTap(BlockStateModelGenerator generator, Block tube, Block block) {
         MultipartBlockModelDefinitionCreator states = MultipartBlockModelDefinitionCreator.create(block);
-        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(tube, "_in"));
-        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(tube, "_out"));
+        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(tube, "_in"), BlockStateModelGenerator::createMultipartConditionBuilder);
+        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(tube, "_out"), BlockStateModelGenerator::createMultipartConditionBuilder);
+        addPipeExtensionStates(states, GlassTubeBlock.IN, GlassTubeBlock.EXTENDED_IN, ModelIds.getBlockModelId(tube));
+        addPipeExtensionStates(states, GlassTubeBlock.OUT, GlassTubeBlock.EXTENDED_OUT, ModelIds.getBlockModelId(tube));
         states
             .with(createMultipartConditionBuilder().put(ValveBlock.OPEN, true), createWeightedVariant(ModelIds.getBlockSubModelId(block, "_open")))
             .with(createMultipartConditionBuilder().put(ValveBlock.OPEN, false), createWeightedVariant(ModelIds.getBlockSubModelId(block, "_closed")));
@@ -284,13 +297,17 @@ public interface BlockModels {
         );
     }
 
-    static MultipartBlockModelDefinitionCreator addPipeConnectionStates(MultipartBlockModelDefinitionCreator states, EnumProperty<IODirection> property, Identifier model) {
+    static MultipartBlockModelDefinitionCreator addPipeConnectionStates(MultipartBlockModelDefinitionCreator states, EnumProperty<IODirection> property, Identifier model, Supplier<MultipartModelConditionBuilder> when) {
         return states
-             .with(createMultipartConditionBuilder().put(property, IODirection.UP), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R180)))
-             .with(createMultipartConditionBuilder().put(property, IODirection.DOWN), createWeightedVariant(createModelVariant(model)))
-             .with(createMultipartConditionBuilder().put(property, IODirection.EAST), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R90).withRotationY(AxisRotation.R270)))
-             .with(createMultipartConditionBuilder().put(property, IODirection.WEST), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R90).withRotationY(AxisRotation.R90)))
-             .with(createMultipartConditionBuilder().put(property, IODirection.NORTH), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R90).withRotationY(AxisRotation.R180)))
-             .with(createMultipartConditionBuilder().put(property, IODirection.SOUTH), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R90)));
+             .with(when.get().put(property, IODirection.UP), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R180)))
+             .with(when.get().put(property, IODirection.DOWN), createWeightedVariant(createModelVariant(model)))
+             .with(when.get().put(property, IODirection.EAST), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R90).withRotationY(AxisRotation.R270)))
+             .with(when.get().put(property, IODirection.WEST), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R90).withRotationY(AxisRotation.R90)))
+             .with(when.get().put(property, IODirection.NORTH), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R90).withRotationY(AxisRotation.R180)))
+             .with(when.get().put(property, IODirection.SOUTH), createWeightedVariant(createModelVariant(model).withRotationX(AxisRotation.R90)));
+    }
+
+    static MultipartBlockModelDefinitionCreator addPipeExtensionStates(MultipartBlockModelDefinitionCreator states, EnumProperty<IODirection> property, BooleanProperty extensionProperty, Identifier model) {
+        return addPipeConnectionStates(states, property, model.withSuffixedPath("_extension"), () -> createMultipartConditionBuilder().put(extensionProperty, true));
     }
 }

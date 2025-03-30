@@ -21,7 +21,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 
 public class DrugInfluence {
-    private static final Codec<Integer> COLOR_CODEC = RecordCodecBuilder.create(i -> i.group(
+    private static final Codec<Integer> COLOR_CODEC = RecordCodecBuilder.<Vector3f>create(i -> i.group(
             Codec.FLOAT.fieldOf("r").forGetter(Vector3f::x),
             Codec.FLOAT.fieldOf("g").forGetter(Vector3f::y),
             Codec.FLOAT.fieldOf("b").forGetter(Vector3f::z)
