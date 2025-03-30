@@ -178,7 +178,6 @@ public class GlassTubeBlock extends BlockWithEntity {
                 getConnectionStateForNeighborUpdate(pos, state, direction, neighborPos, neighborState, world, IN),
                 getConnectionStateForNeighborUpdate(pos, state, direction, neighborPos, neighborState, world, OUT)
         ), world, pos);
-
     }
 
     private BlockState updateExtensions(BlockState state, WorldView world, BlockPos pos) {
