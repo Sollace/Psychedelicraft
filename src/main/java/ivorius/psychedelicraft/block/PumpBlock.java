@@ -129,9 +129,11 @@ public class PumpBlock extends FacingBlock implements PipeInsertable {
         BlockState outState = world.getBlockState(outPos);
         outState.getOrEmpty(GlassTubeBlock.IN).orElse(IODirection.NONE).getDirection().ifPresent(inDirection -> {
             if (inDirection == facing) {
-                PipeInsertable.tryInsert(sw, outPos, facing.getOpposite(), PipeFluids.of(FluidMound.of(
-                        SimpleFluid.of(inFluid.getFluidState().getFluid()).getDefaultStack(FluidVolumes.BUCKET)
-                ), 0));
+                for (int i = 0; i < 10; i++) {
+                    PipeInsertable.tryInsert(sw, outPos, facing.getOpposite(), PipeFluids.of(FluidMound.of(
+                            SimpleFluid.of(inFluid.getFluidState().getFluid()).getDefaultStack(FluidVolumes.BUCKET / 10)
+                    ), 0));
+                }
                 if (inFluid.getBlock() instanceof FluidDrainable drainable) {
                     drainable.tryDrainFluid(null, world, inPos, inFluid);
                 }

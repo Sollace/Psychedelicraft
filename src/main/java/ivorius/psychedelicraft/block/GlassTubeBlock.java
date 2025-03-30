@@ -48,6 +48,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
@@ -70,6 +71,8 @@ public class GlassTubeBlock extends BlockWithEntity {
 
     public static final EnumProperty<IODirection> IN = EnumProperty.of("in", IODirection.class);
     public static final EnumProperty<IODirection> OUT = EnumProperty.of("out", IODirection.class);
+    public static final BooleanProperty EXTENDED_IN = BooleanProperty.of("extended_in");
+    public static final BooleanProperty EXTENDED_OUT = BooleanProperty.of("extended_out");
 
     public static final double RADIUS = 0.06;
     private static final VoxelShape DEFAULT_SHAPE = VoxelShapes.cuboid(0.4, 0.4, 0.4, 0.6, 0.6, 0.6);
@@ -102,8 +105,8 @@ public class GlassTubeBlock extends BlockWithEntity {
     protected GlassTubeBlock(Settings settings) {
         super(settings);
         setDefaultState(stateManager.getDefaultState()
-                .with(IN, IODirection.NONE)
-                .with(OUT, IODirection.NONE)
+                .with(IN, IODirection.NONE).with(EXTENDED_IN, false)
+                .with(OUT, IODirection.NONE).with(EXTENDED_OUT, false)
         );
     }
 
@@ -119,7 +122,7 @@ public class GlassTubeBlock extends BlockWithEntity {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(IN, OUT);
+        builder.add(IN, OUT, EXTENDED_IN, EXTENDED_OUT);
     }
 
     @Override
@@ -148,7 +151,7 @@ public class GlassTubeBlock extends BlockWithEntity {
         BlockPos neighborPos = ctx.getBlockPos().offset(ctx.getSide().getOpposite());
         BlockState neighborState = world.getBlockState(neighborPos);
 
-        return getConnectionsForRedirection(world, neighborPos, neighborState)
+        return updateExtensions(getConnectionsForRedirection(world, neighborPos, neighborState)
                 .findFirst()
                 .map(placingConnection -> {
                     IODirection other = getValidConnectionDirections(ctx.getWorld(), ctx.getBlockPos(), placingConnection, placedDir.getOpposite())
@@ -163,15 +166,28 @@ public class GlassTubeBlock extends BlockWithEntity {
                     IODirection in = getValidConnectionDirections(ctx.getWorld(), ctx.getBlockPos(), OUT, placedDir).findFirst().orElse(placedDir.getOpposite());
                     IODirection out = getValidConnectionDirections(ctx.getWorld(), ctx.getBlockPos(), IN, in).findFirst().orElse(in.getOpposite());
                     return setDirection(state, in, out);
-                });
+                }), world, ctx.getBlockPos());
     }
 
     @Override
     protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        return setDirection(state,
+        return updateExtensions(setDirection(state,
                 getConnectionStateForNeighborUpdate(pos, state, direction, neighborPos, neighborState, world, IN),
                 getConnectionStateForNeighborUpdate(pos, state, direction, neighborPos, neighborState, world, OUT)
-        );
+        ), world, pos);
+    }
+
+    private BlockState updateExtensions(BlockState state, WorldAccess world, BlockPos pos) {
+        IODirection in = state.get(IN);
+        IODirection out = state.get(OUT);
+        return state.with(EXTENDED_IN, in != IODirection.NONE && canConnectInto(world, pos, in.direction))
+                .with(EXTENDED_OUT, out != IODirection.NONE && canConnectInto(world, pos, out.direction));
+    }
+
+    private boolean canConnectInto(WorldAccess world, BlockPos pos, Direction direction) {
+        pos = pos.offset(direction);
+        BlockState state = world.getBlockState(pos);
+        return !(state.getBlock() instanceof GlassTubeBlock) && PipeInsertable.getPipeInterableAt(world, state, pos) != null;
     }
 
     private IODirection getConnectionStateForNeighborUpdate(BlockPos pos, BlockState state, Direction direction, BlockPos neighborPos, BlockState neighbor, WorldAccess world, EnumProperty<IODirection> property) {
@@ -278,7 +294,7 @@ public class GlassTubeBlock extends BlockWithEntity {
         EAST(Direction.EAST),
         WEST(Direction.WEST);
 
-        static final Map<Direction, IODirection> LOOKUP = Arrays.stream(values())
+        public static final Map<Direction, IODirection> LOOKUP = Arrays.stream(values())
                 .filter(i -> i.getDirection().isPresent())
                 .collect(Collectors.toMap(i -> i.getDirection().get(), Function.identity()));
         static final List<IODirection> VALUES = LOOKUP.values().stream().toList();

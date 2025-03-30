@@ -34,6 +34,7 @@ import net.minecraft.data.client.When.PropertyCondition;
 import net.minecraft.data.client.BlockStateModelGenerator.TintType;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.registry.Registries;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
@@ -258,16 +259,20 @@ public interface BlockModels {
 
     static void registerTubing(BlockStateModelGenerator generator, Block block) {
         MultipartBlockStateSupplier states = MultipartBlockStateSupplier.create(block);
-        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(block, "_in"));
-        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(block, "_out"));
+        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(block, "_in"), () -> When.create());
+        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(block, "_out"), () -> When.create());
+        addPipeExtensionStates(states, GlassTubeBlock.IN, GlassTubeBlock.EXTENDED_IN, ModelIds.getBlockModelId(block));
+        addPipeExtensionStates(states, GlassTubeBlock.OUT, GlassTubeBlock.EXTENDED_OUT, ModelIds.getBlockModelId(block));
         Models.HANDHELD_ROD.upload(ModelIds.getItemModelId(block.asItem()), TextureMap.layer0(TextureMap.getId(block.asItem())), generator.modelCollector);
         generator.blockStateCollector.accept(states);
     }
 
     static void registerTubingWithTap(BlockStateModelGenerator generator, Block tube, Block block) {
         MultipartBlockStateSupplier states = MultipartBlockStateSupplier.create(block);
-        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(tube, "_in"));
-        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(tube, "_out"));
+        addPipeConnectionStates(states, GlassTubeBlock.IN, ModelIds.getBlockSubModelId(tube, "_in"), () -> When.create());
+        addPipeConnectionStates(states, GlassTubeBlock.OUT, ModelIds.getBlockSubModelId(tube, "_out"), () -> When.create());
+        addPipeExtensionStates(states, GlassTubeBlock.IN, GlassTubeBlock.EXTENDED_IN, ModelIds.getBlockModelId(tube));
+        addPipeExtensionStates(states, GlassTubeBlock.OUT, GlassTubeBlock.EXTENDED_OUT, ModelIds.getBlockModelId(tube));
         states
             .with(When.create().set(ValveBlock.OPEN, true), BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_open")))
             .with(When.create().set(ValveBlock.OPEN, false), BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_closed")));
@@ -294,18 +299,22 @@ public interface BlockModels {
         );
     }
 
-    static MultipartBlockStateSupplier addPipeConnectionStates(MultipartBlockStateSupplier states, EnumProperty<IODirection> property, Identifier model) {
-        return states.with(When.create().set(property, IODirection.UP), BlockStateVariant.create()
+    static MultipartBlockStateSupplier addPipeExtensionStates(MultipartBlockStateSupplier states, EnumProperty<IODirection> property, BooleanProperty extensionProperty, Identifier model) {
+        return addPipeConnectionStates(states, property, model.withSuffixedPath("_extension"), () -> When.create().set(extensionProperty, true));
+    }
+
+    static MultipartBlockStateSupplier addPipeConnectionStates(MultipartBlockStateSupplier states, EnumProperty<IODirection> property, Identifier model, Supplier<PropertyCondition> when) {
+        return states.with(when.get().set(property, IODirection.UP), BlockStateVariant.create()
             .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R180).put(VariantSettings.Y, Rotation.R0)
-        ).with(When.create().set(property, IODirection.DOWN), BlockStateVariant.create()
+        ).with(when.get().set(property, IODirection.DOWN), BlockStateVariant.create()
             .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R0).put(VariantSettings.Y, Rotation.R0)
-        ).with(When.create().set(property, IODirection.EAST), BlockStateVariant.create()
+        ).with(when.get().set(property, IODirection.EAST), BlockStateVariant.create()
             .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R90).put(VariantSettings.Y, Rotation.R270)
-        ).with(When.create().set(property, IODirection.WEST), BlockStateVariant.create()
+        ).with(when.get().set(property, IODirection.WEST), BlockStateVariant.create()
             .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R90).put(VariantSettings.Y, Rotation.R90)
-        ).with(When.create().set(property, IODirection.NORTH), BlockStateVariant.create()
+        ).with(when.get().set(property, IODirection.NORTH), BlockStateVariant.create()
             .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R90).put(VariantSettings.Y, Rotation.R180)
-        ).with(When.create().set(property, IODirection.SOUTH), BlockStateVariant.create()
+        ).with(when.get().set(property, IODirection.SOUTH), BlockStateVariant.create()
             .put(VariantSettings.MODEL, model).put(VariantSettings.X, Rotation.R90).put(VariantSettings.Y, Rotation.R0)
         );
     }
