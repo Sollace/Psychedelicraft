@@ -38,7 +38,7 @@ out vec4 fragColor;
 void main() {
   vec4 scale = vec4(1.25, 1.25, 0.25, 0.25);
   vec3 color = textureProj(Sampler0, texProj0 * scale).rgb;
-  for (int i = 0; i < EndPortalLayers; i++) {
+  for (int i = 0; i < ZERO_MATTER_LAYERS; i++) {
     color += textureProj(Sampler1, texProj0 * end_portal_layer(float(i + 1)) * scale).rgb;
   }
 
