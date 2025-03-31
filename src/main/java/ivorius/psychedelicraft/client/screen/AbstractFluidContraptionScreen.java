@@ -14,7 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -54,9 +53,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         FluidBoxRenderer.FluidAppearance appearance = FluidBoxRenderer.FluidAppearance.of(tank.getContents());
 
-        float[] color = appearance.rgba();
-
-        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, ColorHelper.fromFloats(color[3], color[0], color[1], color[2]));
+        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, appearance.color());
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     }
@@ -71,9 +68,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
 
         FluidBoxRenderer.FluidAppearance appearance = FluidBoxRenderer.FluidAppearance.of(fluids);
 
-        float[] color = appearance.rgba();
-
-        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y + height - fluidHeightPixels, width, fluidHeightPixels, ColorHelper.fromFloats(color[3], color[0], color[1], color[2]));
+        RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y + height - fluidHeightPixels, width, fluidHeightPixels, appearance.color());
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     }

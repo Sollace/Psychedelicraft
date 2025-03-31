@@ -25,8 +25,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.util.MathUtils;
-
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -209,15 +207,6 @@ public class FluidBoxRenderer {
             }
 
             return ColorHelper.fullAlpha(stack.fluid().getColor(stack));
-        }
-
-        public float[] rgba() {
-            return new float[] {
-                    MathUtils.r(color),
-                    MathUtils.g(color),
-                    MathUtils.b(color),
-                    1
-            };
         }
     }
 

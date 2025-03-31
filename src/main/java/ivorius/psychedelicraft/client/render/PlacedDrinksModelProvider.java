@@ -17,7 +17,6 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer.FluidAppearance;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.Context;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
 import net.minecraft.client.MinecraftClient;
@@ -35,6 +34,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
@@ -122,8 +122,12 @@ public class PlacedDrinksModelProvider
 
     private void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, int light, int overlay, int color) {
         MatrixStack.Entry entry = matrices.peek();
+        float r = ColorHelper.getRedFloat(color);
+        float g = ColorHelper.getGreenFloat(color);
+        float b = ColorHelper.getBlueFloat(color);
+        float a = ColorHelper.getAlphaFloat(color);
         for (BakedQuad bakedQuad : quads) {
-            vertices.quad(entry, bakedQuad, MathUtils.r(color), MathUtils.g(color), MathUtils.b(color), MathUtils.a(color), light, overlay);
+            vertices.quad(entry, bakedQuad, r, g, b, a, light, overlay);
         }
     }
 

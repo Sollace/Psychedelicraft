@@ -14,7 +14,6 @@ import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderProgramKeys;
@@ -39,15 +38,6 @@ public class RenderUtil {
     public static Random random(long seed) {
         RNG.setSeed(seed);
         return RNG;
-    }
-
-    public static void setColor(int color, boolean hasAlpha) {
-        RenderSystem.setShaderColor(
-                MathUtils.r(color),
-                MathUtils.g(color),
-                MathUtils.b(color),
-                hasAlpha ? MathUtils.a(color) : 1
-        );
     }
 
     public static VertexConsumer getBuffer(RenderLayer layer) {
