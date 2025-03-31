@@ -72,6 +72,11 @@ public interface BlockModels {
             .register(Direction.SOUTH, ROTATE_Y_180)
             .register(Direction.WEST, ROTATE_Y_270)
             .register(Direction.EAST, ROTATE_Y_90);
+    BlockStateVariantMap<ModelVariantOperator> NORTH_DEFAULT_HORIZONTAL_ROTATION_OPERATIONS = BlockStateVariantMap.operations(Properties.HORIZONTAL_FACING)
+            .register(Direction.EAST, ROTATE_Y_90)
+            .register(Direction.SOUTH, ROTATE_Y_180)
+            .register(Direction.WEST, ROTATE_Y_270)
+            .register(Direction.NORTH, NO_OP);
 
     static Model block(String parent, TextureKey ... requiredTextureKeys) {
         return new Model(Optional.of(Psychedelicraft.id("block/" + parent)), Optional.empty(), requiredTextureKeys);

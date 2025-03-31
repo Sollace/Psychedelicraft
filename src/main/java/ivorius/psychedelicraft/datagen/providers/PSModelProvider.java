@@ -114,7 +114,7 @@ public class PSModelProvider extends FabricModelProvider {
 
         List.of(PSBlocks.BOTTLE_RACK, PSBlocks.WALL_BOTTLE_RACK).forEach(block -> {
             generator.blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(block, BlockStateModelGenerator.createWeightedVariant(ModelIds.getBlockModelId(PSBlocks.BOTTLE_RACK)))
-                    .coordinate(BlockModels.NORTH_DEFAULT_ROTATION_OPERATIONS));
+                    .coordinate(BlockModels.NORTH_DEFAULT_HORIZONTAL_ROTATION_OPERATIONS));
         });
         generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(PSBlocks.FLASK, BlockStateModelGenerator.createWeightedVariant(ModelIds.getBlockModelId(PSBlocks.FLASK))));
         generator.registerStateWithModelReference(PSBlocks.FLAMMABLE_GAS, Blocks.AIR);
