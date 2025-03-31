@@ -51,7 +51,7 @@ public class CocaineDrug extends SimpleDrug {
         double chance = (getActiveValue() - 0.8F) * 0.1F;
 
         if (entity.age % 20 == 0 && random.nextFloat() < chance) {
-            entity.damage(properties.damageOf(random.nextFloat() < 0.4F
+            PSDamageTypes.damage(entity.getWorld(), entity, properties.damageOf(random.nextFloat() < 0.4F
                     ? PSDamageTypes.STROKE
                     : random.nextFloat() < 0.5F
                     ? PSDamageTypes.HEART_FAILURE

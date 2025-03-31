@@ -44,7 +44,7 @@ public class EthanolFluid extends DrugFluid {
                 DrugProperties.of(entity).ifPresentOrElse(properties -> {
                     properties.addToDrug(DrugType.ALCOHOL, 0.1);
                 }, () -> {
-                    entity.damage(world.getDamageSources().create(PSDamageTypes.ALCOHOL_POSIONING), 1);
+                    PSDamageTypes.damage(world, entity, world.getDamageSources().create(PSDamageTypes.ALCOHOL_POSIONING), 1);
                 });
             }
         });
