@@ -31,28 +31,30 @@ public class PSSoundsProvider extends SoundsProvider {
     protected void generate(BiConsumer<SoundEvent, SoundTypeBuilder> exporter) {
         exporter.accept(PSSounds.ENTITY_PLAYER_HEARTBEAT, SoundTypeBuilder.of(PSSounds.ENTITY_PLAYER_HEARTBEAT)
                 .category(SoundCategory.PLAYERS)
-                .sound(Sound.builder(Psychedelicraft.id("heart_beat")).build())
+                .sound(Sound.builder(Psychedelicraft.id("heart_beat")))
         );
         exporter.accept(PSSounds.ENTITY_PLAYER_BREATH, SoundTypeBuilder.of(PSSounds.ENTITY_PLAYER_BREATH)
                 .category(SoundCategory.PLAYERS)
-                .sound(Sound.builder(Psychedelicraft.id("breath")).build())
+                .sound(Sound.builder(Psychedelicraft.id("breath")))
         );
+        exporter.accept(PSSounds.ENTITY_PLAYER_SQUEAK, SoundTypeBuilder.of(PSSounds.ENTITY_PLAYER_SQUEAK)
+                .category(SoundCategory.PLAYERS)
+                .sound(Sound.builder(Psychedelicraft.id("squeak/squeak")), 3));
         exporter.accept(PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK, SoundTypeBuilder.of(PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK)
                 .category(SoundCategory.PLAYERS)
-                .subtitle("subtitles.psychedelicraft.entity.player.pacify")
-                .sound(Sound.builder(Psychedelicraft.id("pacifier/pacifier")).build(), 9)
+                .sound(Sound.builder(Psychedelicraft.id("pacifier/pacifier")), 9)
         );
         exporter.accept(PSSounds.BLOCK_TRAY_HARDEN, SoundTypeBuilder.of(PSSounds.BLOCK_TRAY_HARDEN)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("mob/turtle/egg/egg_crack")).build(), 5)
+                .sound(Sound.builder(Identifier.ofVanilla("mob/turtle/egg/egg_crack")), 5)
         );
         exporter.accept(PSSounds.BLOCK_VALVE_OPEN, SoundTypeBuilder.of(PSSounds.BLOCK_VALVE_OPEN)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("mob/parrot/idle")).volume(0.7F).build(), 1)
+                .sound(Sound.builder(Identifier.ofVanilla("mob/parrot/idle")).volume(0.7F), 1)
         );
         exporter.accept(PSSounds.BLOCK_VALVE_CLOSE, SoundTypeBuilder.of(PSSounds.BLOCK_VALVE_CLOSE)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("mob/parrot/idle")).volume(0.7F).build(), 1)
+                .sound(Sound.builder(Identifier.ofVanilla("mob/parrot/idle")).volume(0.7F), 1)
         );
 
         List<Function<Sound.Builder, Sound.Builder>> variationFuncs = List.of(
@@ -67,43 +69,39 @@ public class PSSoundsProvider extends SoundsProvider {
                 .category(SoundCategory.BLOCKS);
         Stream.of(1, 2, 3).forEach(index -> {
             variationFuncs.forEach(func -> {
-                builder.sound(func.apply(Sound.builder(Identifier.ofVanilla("block/candle/extinguish" + index)).attenuationDistance(8)).build());
+                builder.sound(func.apply(Sound.builder(Identifier.ofVanilla("block/candle/extinguish" + index)).attenuationDistance(8)));
             });
         });
         exporter.accept(PSSounds.BLOCK_BUNSEN_BURNER_WORK, builder);
         exporter.accept(PSSounds.BLOCK_BUNSEN_BURNER_OVERHEAT, SoundTypeBuilder.of(PSSounds.BLOCK_BUNSEN_BURNER_OVERHEAT)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("fire/fire")).build())
+                .sound(Sound.builder(Identifier.ofVanilla("fire/fire")))
         );
         exporter.accept(PSSounds.BLOCK_BUNSEN_BURNER_FILL, SoundTypeBuilder.of(PSSounds.BLOCK_BUNSEN_BURNER_FILL)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("item/armor/equip_leather")).build(), 6)
+                .sound(Sound.builder(Identifier.ofVanilla("item/armor/equip_leather")), 6)
         );
         exporter.accept(PSSounds.ITEM_SYRINGE_INJECT, SoundTypeBuilder.of(PSSounds.ITEM_SYRINGE_INJECT)
                 .category(SoundCategory.PLAYERS)
-                .subtitle("subtitle.psychedelicraft.item_syringe_inject")
-                .sound(Sound.builder(Psychedelicraft.id("inject/inject")).build(), 2)
+                .sound(Sound.builder(Psychedelicraft.id("inject/inject")), 2)
         );
         exporter.accept(PSSounds.BLOCK_RIFT_JAR_TOGGLE, SoundTypeBuilder.of(PSSounds.BLOCK_RIFT_JAR_TOGGLE)
                 .category(SoundCategory.BLOCKS)
-                .subtitle("subtitle.psychedelicraft.rift_jar_toggles")
-                .sound(Sound.builder(Identifier.ofVanilla("block/end_portal/eyeplace")).build(), 3)
+                .sound(Sound.builder(Identifier.ofVanilla("block/end_portal/eyeplace")), 3)
         );
         exporter.accept(PSSounds.BLOCK_RIFT_JAR_OPEN, SoundTypeBuilder.of(PSSounds.BLOCK_RIFT_JAR_OPEN)
                 .category(SoundCategory.BLOCKS)
-                .subtitle("subtitle.psychedelicraft.rift_jar_open")
-                .sound(Sound.builder(Psychedelicraft.id("rift_jar/jar_open")).build())
+                .sound(Sound.builder(Psychedelicraft.id("rift_jar/jar_open")))
         );
         exporter.accept(PSSounds.BLOCK_RIFT_JAR_CLOSE, SoundTypeBuilder.of(PSSounds.BLOCK_RIFT_JAR_CLOSE)
                 .category(SoundCategory.BLOCKS)
-                .subtitle("subtitle.psychedelicraft.rift_jar_close")
-                .sound(Sound.builder(Psychedelicraft.id("rift_jar/jar_open")).build())
+                .sound(Sound.builder(Psychedelicraft.id("rift_jar/jar_open")))
         );
 
         DrugType.REGISTRY.forEach(type -> {
             exporter.accept(type.soundEvent(), SoundTypeBuilder.of()
-                    .category(SoundCategory.AMBIENT)
-                    .sound(Sound.builder(Psychedelicraft.id("drugs/generic")).stream(true).build())
+                    .category(SoundCategory.MUSIC)
+                    .sound(Sound.builder(Psychedelicraft.id("drugs/generic")).stream(true))
             );
         });
     }

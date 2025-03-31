@@ -473,7 +473,7 @@
   "distortion.psychedelicraft.hics.2": "*hip*",
   "distortion.psychedelicraft.hics.3": "*hiuc*",
 
-  "subtitle.psychedelicraft.rift_jar_open": "Słoik na szczeliny otwiera się",
-  "subtitle.psychedelicraft.rift_jar_close": "Słoik na szczeliny zamyka się",
-  "subtitle.psychedelicraft.rift_jar_toggles": "Słoik na szczeliny przełącza się"
+  "subtitles.psychedelicraft.block.rift_jar.open": "Słoik na szczeliny otwiera się",
+  "subtitles.psychedelicraft.block.rift_jar.close": "Słoik na szczeliny zamyka się",
+  "subtitles.psychedelicraft.block.rift_jar.toggle": "Słoik na szczeliny przełącza się"
 }

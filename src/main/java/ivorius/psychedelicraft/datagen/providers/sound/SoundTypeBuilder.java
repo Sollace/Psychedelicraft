@@ -9,13 +9,17 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.spongepowered.include.com.google.common.base.Preconditions;
+
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 
 public class SoundTypeBuilder {
     private SoundCategory category = SoundCategory.NEUTRAL;
@@ -23,7 +27,7 @@ public class SoundTypeBuilder {
     private final List<Sound> sounds = new ArrayList<>();
 
     public static SoundTypeBuilder of(SoundEvent event) {
-        return of().subtitle("subtitle." + event.getId().getNamespace() + "." + event.getId().getPath());
+        return of().subtitle("subtitles." + event.getId().getNamespace() + "." + event.getId().getPath());
     }
 
     public static SoundTypeBuilder of() {
@@ -42,19 +46,26 @@ public class SoundTypeBuilder {
         return this;
     }
 
-    public SoundTypeBuilder sound(Sound sound) {
-        sounds.add(sound);
+    public SoundTypeBuilder sound(Sound.Builder sound) {
+        sounds.add(sound.build(""));
         return this;
     }
 
-    public SoundTypeBuilder sound(Sound sound, int count) {
+    public SoundTypeBuilder sound(Sound.Builder sound, int count) {
         for (int i = 1; i <= count; i++) {
-            sound(new Sound(sound.name().withSuffixedPath(i + ""), sound.volume(), sound.pitch(), sound.attenuationDistance(), sound.stream()));
+            sounds.add(sound.build("" + i));
         }
         return this;
     }
 
     public SoundType build() {
+        Preconditions.checkState(!sounds.isEmpty(), "Sound definition must have at least one sound file");
+        for (Sound sound : sounds) {
+            if (sound.type() == Sound.RegistrationType.SOUND_EVENT) {
+                Registries.SOUND_EVENT.getOrEmpty(sound.name()).orElseThrow(() -> new IllegalStateException("References sound event " + sound.name() + " does not exist"));
+            }
+        }
+
         return new SoundType(sounds, category, subtitle);
     }
 
@@ -68,20 +79,24 @@ public class SoundTypeBuilder {
         ).apply(i, SoundType::new));
     }
 
-    public record Sound(Identifier name, Optional<Float> volume, Optional<Float> pitch, Optional<Integer> attenuationDistance, Optional<Boolean> stream) {
+    public record Sound(Identifier name, RegistrationType type, float volume, float pitch, int weight, int attenuationDistance, boolean stream, boolean preload) {
         private static final Codec<Sound> MAP_CODEC = RecordCodecBuilder.create(i -> i.group(
                 Identifier.CODEC.fieldOf("name").forGetter(Sound::name),
-                Codec.FLOAT.optionalFieldOf("volume").forGetter(Sound::volume),
-                Codec.FLOAT.optionalFieldOf("pitch").forGetter(Sound::pitch),
-                Codec.INT.optionalFieldOf("attenuation_distance").forGetter(Sound::attenuationDistance),
-                Codec.BOOL.optionalFieldOf("stream").forGetter(Sound::stream)
+                RegistrationType.CODEC.optionalFieldOf("type", RegistrationType.FILE).forGetter(Sound::type),
+                Codec.FLOAT.optionalFieldOf("volume", 1F).forGetter(Sound::volume),
+                Codec.FLOAT.optionalFieldOf("pitch", 1F).forGetter(Sound::pitch),
+                Codec.INT.optionalFieldOf("weight", 1).forGetter(Sound::weight),
+                Codec.INT.optionalFieldOf("attenuation_distance", 16).forGetter(Sound::attenuationDistance),
+                Codec.BOOL.optionalFieldOf("stream", false).forGetter(Sound::stream),
+                Codec.BOOL.optionalFieldOf("preload", false).forGetter(Sound::preload)
         ).apply(i, Sound::new));
+
         private static final Codec<Sound> STRING_CODEC = Identifier.CODEC.xmap(
-                id -> new Sound(id, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()),
+                id -> new Sound(id, RegistrationType.FILE, 1F, 1F, 1, 16, false, false),
                 Sound::name
         );
         public static final Codec<Sound> CODEC = Codec.xor(STRING_CODEC, MAP_CODEC).xmap(Either::unwrap, sound -> {
-            if (sound.volume().isPresent() || sound.pitch().isPresent() || sound.attenuationDistance().isPresent() || sound.stream().isPresent()) {
+            if (sound.type() != RegistrationType.FILE || sound.volume() != 1F || sound.pitch() != 1F || sound.weight() != 1 || sound.attenuationDistance() != 16 || sound.stream() || sound.preload()) {
                 return Either.right(sound);
             }
             return Either.left(sound);
@@ -91,39 +106,75 @@ public class SoundTypeBuilder {
             return new Builder(name);
         }
 
+        public enum RegistrationType implements StringIdentifiable {
+            FILE("fule"),
+            SOUND_EVENT("event");
+
+            public static final Codec<RegistrationType> CODEC = StringIdentifiable.createCodec(RegistrationType::values);
+
+            private final String name;
+
+            RegistrationType(String name) {
+                this.name = name;
+            }
+
+            @Override
+            public String asString() {
+                return name;
+            }
+        }
+
         public static class Builder {
             private final Identifier name;
-            private Optional<Float> volume = Optional.empty();
-            private Optional<Float> pitch = Optional.empty();
-            private Optional<Integer> attenuationDistance = Optional.empty();
-            private Optional<Boolean> stream = Optional.empty();
+            private float volume = 1F;
+            private float pitch = 1F;
+            private int attenuationDistance = 16;
+            private int weight = 1;
+            private boolean stream = false;
+            private boolean preload = false;
+            private RegistrationType type = RegistrationType.FILE;
 
             private Builder(Identifier name) {
                 this.name = name;
             }
 
             public Builder volume(float volume) {
-                this.volume = Optional.of(volume);
+                this.volume = volume;
                 return this;
             }
 
             public Builder pitch(float pitch) {
-                this.pitch = Optional.of(pitch);
+                this.pitch = pitch;
                 return this;
             }
 
             public Builder attenuationDistance(int attenuationDistance) {
-                this.attenuationDistance = Optional.of(attenuationDistance);
+                this.attenuationDistance = attenuationDistance;
+                return this;
+            }
+
+            public Builder weight(int weight) {
+                this.weight = weight;
                 return this;
             }
 
             public Builder stream(boolean stream) {
-                this.stream = Optional.of(stream);
+                this.stream = stream;
                 return this;
             }
 
-            public Sound build() {
-                return new Sound(name, volume, pitch, attenuationDistance, stream);
+            public Builder preload(boolean preload) {
+                this.preload = preload;
+                return this;
+            }
+
+            public Builder type(RegistrationType type) {
+                this.type = type;
+                return this;
+            }
+
+            public Sound build(String suffix) {
+                return new Sound(name.withSuffixedPath(suffix), type, volume, pitch, weight, attenuationDistance, stream, preload);
             }
         }
     }
