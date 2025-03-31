@@ -20,6 +20,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 /**
  * Created by lukas on 25.10.14.
@@ -40,62 +41,63 @@ public class RenderUtil {
         return MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().getBuffer(layer);
     }
 
-    private static VertexConsumer fastVertex(VertexConsumer buffer, MatrixStack.Entry entry, float x, float y, float z) {
-        entry.getPositionMatrix().transform(POSITION_VECTOR.set(x, y, z, 1));
-        return buffer.vertex(POSITION_VECTOR.x, POSITION_VECTOR.y, POSITION_VECTOR.z);
+    public static void vertex(VertexConsumer buffer, MatrixStack matrices, float x, float y, float z, float u, float v, int light, int overlay) {
+        vertex(buffer, matrices, x, y, z, Colors.WHITE, u, v, light, overlay);
     }
 
-    public static void vertex(VertexConsumer buffer, MatrixStack matrices, float x, float y, float z, float u, float v, int light, int overlay) {
+    public static void vertex(VertexConsumer buffer, MatrixStack matrices, float x, float y, float z, int color, float u, float v, int light, int overlay) {
         matrices.peek().getPositionMatrix().transform(POSITION_VECTOR.set(x, y, z, 1));
-        matrices.peek().getNormalMatrix().transform(NORMAL_VECTOR.set(0, 1, 0));
-        buffer.vertex(POSITION_VECTOR.x, POSITION_VECTOR.y, POSITION_VECTOR.z, Colors.WHITE, u, v, light, overlay, NORMAL_VECTOR.x, NORMAL_VECTOR.y, NORMAL_VECTOR.z);
+        matrices.peek().getNormalMatrix().transform(NORMAL_VECTOR.set(0, -1, 0));
+        buffer.vertex(POSITION_VECTOR.x, POSITION_VECTOR.y, POSITION_VECTOR.z, color, u, v, overlay, light, NORMAL_VECTOR.x, NORMAL_VECTOR.y, NORMAL_VECTOR.z);
     }
 
     public static void drawQuad(DrawContext context, Identifier texture, float x0, float y0, float x1, float y1) {
         drawQuad(context, texture, x0, y0, x1, y1, 0);
     }
 
-    public static void drawQuad(DrawContext context, Identifier texture, float x0, float y0, float x1, float y1, float z) {
-        drawQuad(context, RenderLayer.getEntityAlpha(texture), x0, y0, x1, y1, z);
+    private static void drawQuad(DrawContext context, Identifier texture, float x0, float y0, float x1, float y1, float z) {
+        drawQuad(context, RenderLayer.getBlockScreenEffect(texture), x0, y0, x1, y1, z);
     }
 
-    public static void drawQuad(DrawContext context, RenderLayer layer, float x0, float y0, float x1, float y1) {
-        drawQuad(context, layer, x0, y0, x1, y1, 0);
-    }
-
-    public static void drawQuad(DrawContext context, RenderLayer layer, float x0, float y0, float x1, float y1, float z) {
+    private static void drawQuad(DrawContext context, RenderLayer layer, float x0, float y0, float x1, float y1, float z) {
         Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         VertexConsumer buffer = vertices.getBuffer(layer);
-        MatrixStack.Entry entry = context.getMatrices().peek();
-        fastVertex(buffer, entry, x0, y1, z).texture(0, 1);
-        fastVertex(buffer, entry, x1, y1, z).texture(1, 1);
-        fastVertex(buffer, entry, x1, y0, z).texture(1, 0);
-        fastVertex(buffer, entry, x0, y0, z).texture(0, 0);
+        MatrixStack matrices = context.getMatrices();
+        vertex(buffer, matrices, x0, y1, z, Colors.WHITE, 0, 1, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertex(buffer, matrices, x1, y1, z, Colors.WHITE, 1, 1, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertex(buffer, matrices, x1, y0, z, Colors.WHITE, 1, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertex(buffer, matrices, x0, y0, z, Colors.WHITE, 0, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertices.draw();
     }
 
-    public static void drawOverlay(DrawContext context, Identifier texture,float alpha,
+    public static void drawOverlay(DrawContext context, Identifier texture, float alpha,
             int width, int height,
             float u0, float v0,
             float u1, float v1, int offset) {
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityAlpha(texture));
-        MatrixStack.Entry entry = context.getMatrices().peek();
-        fastVertex(buffer, entry, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1);
-        fastVertex(buffer, entry, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1);
-        fastVertex(buffer, entry, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0);
-        fastVertex(buffer, entry, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+        VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(texture));
+        MatrixStack matrices = context.getMatrices();
+        int color = ColorHelper.withAlpha(ColorHelper.channelFromFloat(alpha), Colors.WHITE);
+        vertex(buffer, matrices, -offset, height + offset, SCREEN_Z_OFFSET, color, u0, v1, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertex(buffer, matrices, width + offset, height + offset, SCREEN_Z_OFFSET, color, u1, v1, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertex(buffer, matrices, width + offset, -offset, SCREEN_Z_OFFSET, color, u1, v0, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertex(buffer, matrices, -offset, -offset, SCREEN_Z_OFFSET, color, u0, v0, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertices.draw();
     }
 
-    public static void drawTexture(Identifier texture, int width, int height, float r, float g, float b, float a) {
-        RenderSystem.setShaderColor(r, g, b, a);
+    public static void drawTexture(DrawContext context, Identifier texture, int width, int height, float r, float g, float b, float a) {
+        int color = ColorHelper.fromFloats(a, r, g, b);
         Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityAlpha(texture));
-        buffer.vertex(0, 0, 0).texture(0, 1)
-              .vertex(0, height, 0).texture(0, 0)
-              .vertex(width, height, 0).texture(1, 0)
-              .vertex(width, 0, 0).texture(1, 1);
+        var layer = RenderLayer.getGuiTexturedOverlay(texture);
+        VertexConsumer buffer = vertices.getBuffer(layer);
+        MatrixStack matrices = context.getMatrices();
+        float scaleFactor = (float)MinecraftClient.getInstance().getWindow().getScaleFactor();
+        vertex(buffer, matrices, 0, height / scaleFactor, 0, color, 0, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertex(buffer, matrices, width / scaleFactor, height / scaleFactor, 0, color, 1, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertex(buffer, matrices, width / scaleFactor, 0, 0, color, 1, 1, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertex(buffer, matrices, 0, 0, 0, color, 0, 1, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+        vertices.draw();
     }
 
     public static void drawRepeatingSprite(DrawContext context, Sprite sprite, int x, int y, int width, int height, int color) {
@@ -112,7 +114,7 @@ public class RenderUtil {
                 int w = tileX == tilesX ? remainedWidth : tileSize;
                 int h = tileY == tilesY ? remainedHeight : tileSize;
                 if (h > 0 && w > 0) {
-                    context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, x + tileX * tileSize, y + tileY * tileSize, w, h, color);
+                    context.drawSpriteStretched(RenderLayer::getGuiTexturedOverlay, sprite, x + tileX * tileSize, y + tileY * tileSize, w, h, color);
                 }
             }
         }

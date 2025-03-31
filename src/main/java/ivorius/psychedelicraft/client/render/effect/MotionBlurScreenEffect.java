@@ -14,17 +14,15 @@ import com.mojang.blaze3d.textures.TextureFormat;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.util.Window;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 
 /**
  * Created by lukas on 21.02.14.
@@ -150,13 +148,19 @@ public class MotionBlurScreenEffect implements ScreenEffect {
 
         public void sample() {
             Framebuffer input = MinecraftClient.getInstance().getFramebuffer();
+            if (width != input.textureWidth || height != input.textureHeight) {
+                close();
+                width = input.textureWidth;
+                height = input.textureHeight;
+            }
             if (glTexture == null || glTexture.isClosed()) {
-                glTexture = RenderSystem.getDevice().createTexture(() -> "PS_MotionBlurFrame" + sample, TextureFormat.RGBA8, input.textureWidth, input.textureHeight, 1);
+                glTexture = RenderSystem.getDevice().createTexture(() -> "PS_MotionBlurFrame" + sample + this.hashCode(), TextureFormat.RGBA8, input.textureWidth, input.textureHeight, 1);
                 width = input.textureWidth;
                 height = input.textureHeight;
             }
             CommandEncoder inCommand = RenderSystem.getDevice().createCommandEncoder();
-            inCommand.copyTextureToTexture(glTexture, input.getColorAttachment(), 0, 0, 0, 0, 0, input.textureWidth, input.textureHeight);
+            inCommand.copyTextureToTexture(input.getColorAttachment(), glTexture, 0, 0, 0, 0, 0, input.textureWidth, input.textureHeight);
+            inCommand.copyTextureToTexture(input.getColorAttachment(), glTexture, 0, 0, 0, 0, 0, input.textureWidth, input.textureHeight);
             prepared = true;
         }
 
@@ -166,10 +170,10 @@ public class MotionBlurScreenEffect implements ScreenEffect {
         }
 
         public void drawToScreen(DrawContext context) {
-            float alpha = Math.min(1, sample * 0.002f * motionBlur);
+            float alpha = Math.min(1, sample * 0.008F * motionBlur);
 
             if (prepared && alpha > 0) {
-                context.drawGuiTexture(RenderLayer::getEntityAlpha, id, 0, 0, width, height, ColorHelper.withAlpha(ColorHelper.channelFromFloat(alpha), Colors.WHITE));
+                RenderUtil.drawTexture(context, id, width, height, 1, 1, 1, alpha);
             }
         }
     }

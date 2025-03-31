@@ -3,7 +3,10 @@ package ivorius.psychedelicraft.client.render.effect;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.PowerDrug;
 import net.minecraft.client.MinecraftClient;
@@ -62,11 +65,13 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
                 float lightningTime = ((entity.age % 2) + tickDelta) * 0.5F;
 
                 int color = ColorHelper.withAlpha(ColorHelper.channelFromFloat((0.05f + power * 0.1F) * (1 - lightningTime)), Colors.WHITE);
-                VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityAlpha(LIGHTNING_TEXTURES[lIndex]));
+                var layer = RenderLayer.getGuiTexturedOverlay(LIGHTNING_TEXTURES[lIndex]);
+                VertexConsumer buffer = vertices.getBuffer(layer);
                 buffer.vertex(lX, height,              -90F).texture(0, upsideDown ? 0 : 1).color(color)
                       .vertex(lX + lightningW, height, -90F).texture(1, upsideDown ? 0 : 1).color(color)
                       .vertex(lX + lightningW, 0,      -90F).texture(1, upsideDown ? 1 : 0).color(color)
                       .vertex(lX, 0,                   -90F).texture(0, upsideDown ? 1 : 0).color(color);
+                vertices.draw(layer);
             }
         }
     }
@@ -76,7 +81,8 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
             int x = rand.nextInt(screenWidth + width) - width;
             int y = rand.nextInt(screenHeight + height) - height;
 
-            context.drawTexture(RenderLayer::getGuiTextured, POWER_PARTICLE_TEXTURE, x, y, -90, 0, 0, width, height, 16, 16);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+            RenderUtil.drawQuad(context, POWER_PARTICLE_TEXTURE, x, y, x + width, y + height);
         }
     }
 }

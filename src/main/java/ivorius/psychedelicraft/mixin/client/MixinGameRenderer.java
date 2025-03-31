@@ -4,6 +4,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -42,7 +43,7 @@ abstract class MixinGameRenderer {
     }
 
     @Inject(method = "render(Lnet/minecraft/client/render/RenderTickCounter;Z)V",
-            at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V"))
+            at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V", shift = Shift.AFTER))
     private void onAfterWorldRender(RenderTickCounter tickCounter, boolean tick, CallbackInfo info) {
         DrugRenderer.INSTANCE.onAfterRenderWorld(pool, tickCounter);
     }
