@@ -2,28 +2,39 @@ package ivorius.psychedelicraft.client.sound;
 
 import java.util.Optional;
 
-import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.minecraft.client.sound.MovingSoundInstance;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 
 /**
  * Created by lukas on 22.11.14.
  */
 public class MovingSoundDrug extends MovingSoundInstance {
-    private final DrugProperties properties;
-    private final DrugType<?> drugType;
+    private DrugProperties properties;
+    private DrugType<?> drugType;
 
-    public MovingSoundDrug(SoundEvent event, SoundCategory category, DrugProperties properties, DrugType<?> drugType) {
-        super(event, category, Random.create());
+    private float prevVolume;
+
+    public MovingSoundDrug(DrugProperties properties, DrugType<?> drugType, float initialVolume) {
+        super(drugType.soundEvent(), SoundCategory.AMBIENT, SoundInstance.createRandom());
+        this.repeat = true;
+        this.repeatDelay = 0;
+        this.prevVolume = initialVolume;
+        this.volume = initialVolume;
+        this.relative = true;
         this.properties = properties;
         this.drugType = drugType;
-        this.repeat = true;
+        this.attenuationType = SoundInstance.AttenuationType.NONE;
+    }
+
+    @Override
+    public boolean shouldAlwaysPlay() {
+        return true;
     }
 
     public void markCompleted() {
@@ -36,27 +47,28 @@ public class MovingSoundDrug extends MovingSoundInstance {
 
     @Override
     public void tick() {
-        volume = getTargetVolume();
+        prevVolume = volume;
+        volume = MathUtils.approach(volume, getTargetVolume(), 0.1F);
 
-        if (MathHelper.approximatelyEquals(volume, 0) || properties.asEntity().isRemoved()) {
+        if (isDone()) {
             setDone();
-            return;
         }
+    }
 
-        x = (float) properties.asEntity().getX();
-        y = (float) properties.asEntity().getY();
-        z = (float) properties.asEntity().getZ();
+    @Override
+    public boolean isDone() {
+        return super.isDone() || MathHelper.approximatelyEquals(volume, 0) || properties.asEntity().isRemoved() || MinecraftClient.getInstance().world == null;
+    }
+
+    @Override
+    public final float getVolume() {
+        float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        return MathHelper.lerp(tickDelta, prevVolume, volume) * sound.getVolume().get(random);
     }
 
     private float getTargetVolume() {
-        double activeValue = Optional.of(drugType)
-                .map(properties::getDrug)
-                .filter(drug -> drug.getType() == drugType)
-                .map(Drug::getActiveValue)
-                .orElse(0D);
-        if (activeValue <= ClientDrugMusicManager.PLAY_THRESHOLD) {
-            return 0;
-        }
-        return MathUtils.project(MathHelper.clamp((float)activeValue, 0, 1), 0, 0.4F);
+        float activeValue = Optional.of(drugType).map(properties::getDrugValue).orElse(0F) - ClientDrugMusicManager.PLAY_THRESHOLD;
+        System.out.println(activeValue);
+        return MathHelper.clamp(activeValue, 0, 1);
     }
 }

@@ -1,51 +1,80 @@
 package ivorius.psychedelicraft.client.sound;
 
+import java.lang.ref.WeakReference;
 import java.util.Comparator;
-import java.util.Optional;
+import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.entity.drug.*;
+import ivorius.psychedelicraft.mixin.client.SoundsAccessor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.SoundManager;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.client.sound.Sound;
+import net.minecraft.client.sound.Sound.RegistrationType;
+import net.minecraft.client.sound.SoundContainer;
+import net.minecraft.util.Identifier;
 
 /**
  * Created by Sollace on 11 June 2023
  */
 public class ClientDrugMusicManager {
     public static final float PLAY_THRESHOLD = 0.01F;
+    private static final Identifier EMPTY_SOUND_ID = Psychedelicraft.id("drugs/generic");
 
-    private Optional<MovingSoundDrug> activeSound = Optional.empty();
+    private WeakReference<MovingSoundDrug> activeSound = new WeakReference<>(null);
 
     public void update(DrugProperties properties) {
-        DrugType<?> activeDrug = getActiveSound().map(MovingSoundDrug::getType).orElse(null);
-        Comparator<DrugType<?>> comparator = Comparator.comparing(type -> properties.getDrugValue(type));
+        MovingSoundDrug sound = getActiveSound();
         DrugType.REGISTRY
             .stream()
-            .filter(PsychedelicraftClient.getConfig()::hasBackgroundMusic)
-            .filter(type -> properties.getDrugValue(type) >= PLAY_THRESHOLD)
-            .sorted(comparator.reversed())
+            .filter(type -> properties.getDrugValue(type) >= PLAY_THRESHOLD && hasSoundsDefined(type.soundEvent().getId()))
+            .sorted(Comparator.comparing(properties::getDrugValue).reversed())
             .findFirst()
-            .filter(type -> type != activeDrug)
-            .ifPresent(drugType -> activeSound = Optional.ofNullable(startPlayingSound(properties, drugType)));
+            .filter(type -> sound == null || type != sound.getType())
+            .ifPresent(drugType -> startPlayingSound(properties, drugType));
     }
 
-    private Optional<MovingSoundDrug> getActiveSound() {
-        if (activeSound.isPresent()) {
-            activeSound = activeSound.filter(sound -> !sound.isDone());
+    @Nullable
+    private MovingSoundDrug getActiveSound() {
+        MovingSoundDrug sound = activeSound.get();
+        if (sound != null && sound.isDone()) {
+            activeSound = new WeakReference<>(null);
+            return null;
         }
-        return activeSound;
+        return sound;
     }
 
-    private MovingSoundDrug startPlayingSound(DrugProperties properties, DrugType<?> type) {
+    private void startPlayingSound(DrugProperties properties, DrugType<?> type) {
         Psychedelicraft.LOGGER.info("Playing drug background music for " + type.id());
-        SoundEvent sound = type.soundEvent();
-        SoundManager manager = MinecraftClient.getInstance().getSoundManager();
-        activeSound.ifPresent(MovingSoundDrug::markCompleted);
-        MovingSoundDrug newSound = new MovingSoundDrug(sound, SoundCategory.AMBIENT, properties, type);
-        manager.play(newSound);
-        return newSound;
+        MovingSoundDrug sound = getActiveSound();
+        if (sound != null) {
+            MinecraftClient.getInstance().getSoundManager().stop(sound);
+            sound.markCompleted();
+        }
+        MovingSoundDrug newSound = new MovingSoundDrug(properties, type, sound == null ? 0.1F : sound.getVolume());
+        MinecraftClient.getInstance().getSoundManager().play(newSound);
+        activeSound = new WeakReference<>(newSound);
+    }
+
+    private boolean hasSoundsDefined(Identifier soundEventId) {
+        return hasSoundsDefined(MinecraftClient.getInstance().getSoundManager().get(soundEventId));
+    }
+
+    private boolean hasSoundsDefined(SoundContainer<Sound> sound) {
+        if (sound instanceof SoundsAccessor set) {
+            for (var s : set.getSounds()) {
+                if (hasSoundsDefined(s)) {
+                    return true;
+                }
+            }
+        }
+
+        if (sound instanceof Sound s) {
+            if (s.getRegistrationType() == RegistrationType.SOUND_EVENT) {
+                return hasSoundsDefined(s.getIdentifier());
+            }
+            return !EMPTY_SOUND_ID.equals(s.getIdentifier());
+        }
+
+        return false;
     }
 }
