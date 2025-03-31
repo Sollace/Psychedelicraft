@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 
 import com.mojang.blaze3d.shaders.ShaderType;
