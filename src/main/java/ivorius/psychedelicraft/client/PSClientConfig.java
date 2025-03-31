@@ -1,10 +1,6 @@
 package ivorius.psychedelicraft.client;
 
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.joml.Vector2f;
 
 import com.google.gson.GsonBuilder;
@@ -13,6 +9,7 @@ import com.minelittlepony.common.util.settings.Config;
 import com.minelittlepony.common.util.settings.HeirarchicalJsonConfigAdapter;
 import com.minelittlepony.common.util.settings.Setting;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import net.minecraft.util.math.MathHelper;
 
 public class PSClientConfig extends Config {
     public final Setting<Float> dofFocalPointNear = value("visual", "dofFocalPointNear", 0.2F)
@@ -62,9 +59,14 @@ public class PSClientConfig extends Config {
             .addComment("Default: {x: 0.05, y: 0.05}");
     private transient float[] digitalEffectPixelRescaleF;
 
-    public final Setting<Set<DrugType<?>>> drugsWithBackgroundMusic = value("audio", "drugsWithBackgroundMusic", DrugType.REGISTRY.stream().collect(Collectors.toUnmodifiableSet()))
-            .addComment("List of drug ids that should play a background music when the player has that drug active")
-            .addComment("Default: []");
+    public final Setting<Boolean> drugsBackgroundMusic = value("audio", "drugsBackgroundMusic", true)
+            .addComment("Enables and disables background music to play when certain drugs are active.")
+            .addComment("Default: True");
+
+    public final Setting<Float> drugsBackgroundMusicThreshold = value("audio", "drugsBackgroundMusicThreshold", 0.01F)
+            .addComment("The threshold value for when background music should start playing. Music only plays if the drug strength is greater than this value")
+            .addComment("Default: 0.01")
+            .addComment("Minimum: 0.01, Maximum: 1");
 
     public PSClientConfig(Path path) {
         super(new HeirarchicalJsonConfigAdapter(new GsonBuilder().registerTypeAdapter(DrugType.class, RegistryTypeAdapter.of(DrugType.REGISTRY))), path);
@@ -78,19 +80,7 @@ public class PSClientConfig extends Config {
         return digitalEffectPixelRescaleF;
     }
 
-    public boolean hasBackgroundMusic(DrugType<?> drugType) {
-        return drugsWithBackgroundMusic.get().contains(drugType);
-    }
-
-    public boolean setHasBackgroundMusic(DrugType<?> drugType, boolean value) {
-        var values = new HashSet<>(drugsWithBackgroundMusic.get());
-        if (value) {
-            values.add(drugType);
-        } else {
-            values.remove(drugType);
-        }
-        drugsWithBackgroundMusic.set(values);
-
-        return value;
+    public float getBGMThreshold() {
+        return MathHelper.clamp(drugsBackgroundMusicThreshold.get(), 0.01F, 1);
     }
 }

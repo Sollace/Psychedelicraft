@@ -1,7 +1,6 @@
 package ivorius.psychedelicraft.client.sound;
 
-import java.util.Optional;
-
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
@@ -67,8 +66,9 @@ public class MovingSoundDrug extends MovingSoundInstance {
     }
 
     private float getTargetVolume() {
-        float activeValue = Optional.of(drugType).map(properties::getDrugValue).orElse(0F) - ClientDrugMusicManager.PLAY_THRESHOLD;
-        System.out.println(activeValue);
-        return MathHelper.clamp(activeValue, 0, 1);
+        if (!PsychedelicraftClient.getConfig().drugsBackgroundMusic.get()) {
+            return 0;
+        }
+        return MathHelper.clamp(properties.getDrugValue(drugType) - PsychedelicraftClient.getConfig().getBGMThreshold(), 0, 1);
     }
 }

@@ -5,6 +5,7 @@ import java.util.Comparator;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.mixin.client.SoundsAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -17,16 +18,18 @@ import net.minecraft.util.Identifier;
  * Created by Sollace on 11 June 2023
  */
 public class ClientDrugMusicManager {
-    public static final float PLAY_THRESHOLD = 0.01F;
     private static final Identifier EMPTY_SOUND_ID = Psychedelicraft.id("drugs/generic");
 
     private WeakReference<MovingSoundDrug> activeSound = new WeakReference<>(null);
 
     public void update(DrugProperties properties) {
+        if (!PsychedelicraftClient.getConfig().drugsBackgroundMusic.get()) {
+            return;
+        }
         MovingSoundDrug sound = getActiveSound();
         DrugType.REGISTRY
             .stream()
-            .filter(type -> properties.getDrugValue(type) >= PLAY_THRESHOLD && hasSoundsDefined(type.soundEvent().getId()))
+            .filter(type -> properties.getDrugValue(type) >= PsychedelicraftClient.getConfig().getBGMThreshold() && hasSoundsDefined(type.soundEvent().getId()))
             .sorted(Comparator.comparing(properties::getDrugValue).reversed())
             .findFirst()
             .filter(type -> sound == null || type != sound.getType())
