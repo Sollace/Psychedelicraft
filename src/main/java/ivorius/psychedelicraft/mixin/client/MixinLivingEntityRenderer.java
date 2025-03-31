@@ -40,7 +40,7 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extends Livin
 
     @Inject(method = "updateRenderState", at = @At("RETURN"))
     private void onUpdateRenderState(T entity, S state, float tickDelta, CallbackInfo info) {
-        if (state instanceof VillagerEntityRenderState v && v.getVillagerData().profession().matchesKey(PSTradeOffers.DRUG_ADDICT_PROFESSION)) {
+        if (state instanceof VillagerEntityRenderState v && v.getVillagerData() != null && v.getVillagerData().profession().matchesKey(PSTradeOffers.DRUG_ADDICT_PROFESSION)) {
             float shakeAmount = AddictTaskListProvider.getShakeAmount(entity);
             state.bodyYaw += shakeAmount;
             v.hurt |= Math.abs(shakeAmount) > 5F;
