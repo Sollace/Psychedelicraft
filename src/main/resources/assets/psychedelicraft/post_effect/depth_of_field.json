@@ -26,18 +26,7 @@
         { "name": "focalBlurNear", "type": "float" },
         { "name": "focalBlurFar", "type": "float" },
         { "name": "vertical", "type": "float" },
-        { "name": "depthRange", "type": "vec2" },
-        { "name": "OutSize", "type": "vec2", "values": [ 1.0, 1.0 ] },
-        {
-          "name": "ProjMat",
-          "type": "matrix4x4",
-          "values": [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-          ]
-        }
+        { "name": "depthRange", "type": "vec2" }
       ]
     },
     {

@@ -19,17 +19,7 @@
         { "name": "hBlur", "type": "float" },
         { "name": "vBlur", "type": "float" },
         { "name": "repeats", "type": "float" },
-        { "name": "OutSize", "type": "vec2", "values": [ 1, 1 ] },
-        {
-          "name": "ProjMat",
-          "type": "matrix4x4",
-          "values": [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-          ]
-        }
+        { "name": "OutSize", "type": "vec2", "values": [ 1, 1 ] }
       ]
     },
     {

@@ -32,17 +32,7 @@
         { "name": "maxColors", "type": "float" },
         { "name": "saturation", "type": "float" },
         { "name": "totalAlpha", "type": "float" },
-        { "name": "depthRange", "type": "vec2" },
-        {
-          "name": "ProjMat",
-          "type": "matrix4x4",
-          "values": [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-          ]
-        }
+        { "name": "depthRange", "type": "vec2" }
       ]
     },
     {

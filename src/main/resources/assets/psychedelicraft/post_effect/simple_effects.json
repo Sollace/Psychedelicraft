@@ -21,18 +21,7 @@
                 { "name": "quickColorRotation", "type": "float" },
                 { "name": "colorIntensification", "type": "float" },
                 { "name": "desaturation", "type": "float" },
-                { "name": "inversion", "type": "float" },
-                {
-                  "name": "ProjMat",
-                  "type": "matrix4x4",
-                  "values": [
-                      1, 0, 0, 0,
-                      0, 1, 0, 0,
-                      0, 0, 1, 0,
-                      0, 0, 0, 1
-                  ]
-                },
-                { "name": "OutSize", "type": "vec2", "count": 2, "values": [ 1, 1 ] }
+                { "name": "inversion", "type": "float" }
             ]
         },
         {
@@ -52,19 +41,8 @@
             "output": "swap",
             "uniforms": [
               { "name": "ticks", "type": "float" },
-              { "name": "colorSafeMode", "values": [ 0.0 ] },
-              { "name": "worldColorization", "values": [ 0.0, 0.0, 0.0, 0.0 ] },
-              {
-                "name": "ProjMat",
-                "type": "matrix4x4",
-                "values": [
-                    1, 0, 0, 0,
-                    0, 1, 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1
-                ]
-              },
-              { "name": "OutSize", "type": "vec2", "count": 2, "values": [ 1, 1 ] }
+              { "name": "colorSafeMode", "type": "float" },
+              { "name": "worldColorization", "type": "vec4" }
             ]
         },
         {

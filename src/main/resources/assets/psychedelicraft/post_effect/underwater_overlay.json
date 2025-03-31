@@ -4,7 +4,8 @@
   },
   "passes": [
     {
-      "program": "psychedelicraft:post/distortion_map",
+      "vertex_shader": "minecraft:post/blit",
+      "fragment_shader": "psychedelicraft:post/distortion_map",
       "inputs": [
         {
           "sampler_name": "Diffuse",
@@ -39,12 +40,16 @@
       ]
     },
     {
-      "program": "minecraft:post/blit",
+      "vertex_shader": "minecraft:post/blit",
+      "fragment_shader": "minecraft:post/blit",
       "inputs": [
         {
           "sampler_name": "In",
           "target": "swap"
         }
+      ],
+      "uniforms": [
+        { "name": "ColorModulate", "type": "vec4", "values": [ 1, 1, 1, 1 ] }
       ],
       "output": "minecraft:main"
     }
