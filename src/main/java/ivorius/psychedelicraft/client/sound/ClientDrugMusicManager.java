@@ -39,7 +39,7 @@ public class ClientDrugMusicManager {
     @Nullable
     private MovingSoundDrug getActiveSound() {
         MovingSoundDrug sound = activeSound.get();
-        if (sound != null && sound.isDone()) {
+        if (sound != null && (sound.isDone() || !MinecraftClient.getInstance().getSoundManager().isPlaying(sound))) {
             activeSound = new WeakReference<>(null);
             return null;
         }
