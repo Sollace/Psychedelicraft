@@ -12,11 +12,6 @@
           "target": "minecraft:main"
         },
         {
-          "sampler_name": "Depth",
-          "target": "minecraft:main",
-          "use_depth": true
-        },
-        {
           "sampler_name": "Overlay1",
           "location": "minecraft:psychedelicraft/water_distortion",
           "width": 800,

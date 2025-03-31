@@ -83,7 +83,7 @@ class LoadedShader {
             bindings.global.bindUniforms(this, tickDelta, width, height, () -> {
                 for (var pass : ((PostEffectPassSupplier)processor).getPasses()) {
                     String passId = pass.getId();
-                    var programBindings = bindings.programBindings.getOrDefault(passId, UniformBinding.EMPTY);
+                    var programBindings = bindings.programBindings.getOrDefault(Identifier.of(passId).withPrefixedPath("post/"), UniformBinding.EMPTY);
                     if (programBindings != UniformBinding.EMPTY) {
                         pass.setDisabled();
                         currentPassUniforms = passUniforms.computeIfAbsent(passId, i -> new HashSet<>(globalUniforms));
