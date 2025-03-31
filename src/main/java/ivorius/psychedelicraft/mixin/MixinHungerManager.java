@@ -23,6 +23,22 @@ abstract class MixinHungerManager implements LockableHungerManager, GluttonyMana
     private State lockedState;
 
     private float overeating;
+    private boolean shaking;
+
+    @Override
+    public float getActualSaturationLevel() {
+        return saturationLevel;
+    }
+
+    @Override
+    public int getActualFoodLevel() {
+        return foodLevel;
+    }
+
+    @Override
+    public void setShanksShaking(boolean shaking) {
+        this.shaking = shaking;
+    }
 
     @Inject(method = "add(IF)V", at = @At("HEAD"))
     private void onAdd(int food, float saturationModifier, CallbackInfo info) {
@@ -47,7 +63,9 @@ abstract class MixinHungerManager implements LockableHungerManager, GluttonyMana
 
     @Inject(method = "getSaturationLevel()F", at = @At("HEAD"), cancellable = true)
     private void onGetSaturationLevel(CallbackInfoReturnable<Float> info) {
-        if (lockedState != null) {
+        if (shaking) {
+            info.setReturnValue(-1F);
+        } else if (lockedState != null) {
             info.setReturnValue(lockedState.saturation().toFloat(saturationLevel));
         }
     }
