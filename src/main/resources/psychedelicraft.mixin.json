@@ -9,6 +9,7 @@
       "MixinAbstractBlockSettings",
       "MixinAbstractFurnaceBlockEntity",
       "MixinEntity",
+      "MixinItemEntity",
       "MixinLivingEntity",
       "MixinLoseJobOnSiteLossTask",
       "MixinPlayerEntity",

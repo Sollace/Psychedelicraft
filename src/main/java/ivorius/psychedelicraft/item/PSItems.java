@@ -246,7 +246,7 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.5, 0.1, 0.1F)))
             .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(DyedColorComponent.getColor(stack, Colors.WHITE)))));
 
-    Item VOMIT = register("vomit", new Item(new Settings()));
+    Item VOMIT = register("vomit", new VomitItem(new Settings()));
     Item PAPER_BAG = register("paper_bag", new PaperBagItem(new Settings().component(PSComponents.BAG_CONTENTS, BagContentsComponent.EMPTY)));
     Item BAG_O_VOMIT = register("bag_o_vomit", new SuspiciousItem(new Settings()
             .food(new FoodComponent.Builder().nutrition(8).saturationModifier(0.8f).snack().alwaysEdible().build()
@@ -311,17 +311,5 @@ public interface PSItems {
         List.of(
             WOODEN_MUG, STONE_CUP, GLASS_CHALICE, SHOT_GLASS, BOTTLE, FILLED_BUCKET, FILLED_BOWL, FILLED_GLASS_BOTTLE
         ).forEach(FluidCauldronBehavior::register);
-
-        /*UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
-
-            if (player.isSpectator()) {
-                return ActionResult.PASS;
-            }
-
-            ItemStack stack = player.getStackInHand(hand);
-            if (stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(Items.))
-
-            return ActionResult.PASS;
-        });*/
     }
 }
