@@ -34,6 +34,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -296,6 +297,8 @@ public class DrugProperties implements NbtSerialisable {
     public void sendCapabilities() {
         if (!entity.getWorld().isClient) {
             Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this, entity.getRegistryManager()), entity);
+            // We have to ensure it's sent to ourselves as well (Send to surrounding players ends to us but that doesn't seem to work when loading into a world??)
+            Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this, entity.getRegistryManager()), (ServerPlayerEntity)entity);
         }
     }
 
