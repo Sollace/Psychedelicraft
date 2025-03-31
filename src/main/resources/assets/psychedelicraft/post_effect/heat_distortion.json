@@ -19,7 +19,7 @@
         },
         {
           "sampler_name": "Noise",
-          "location": "psychedelicraft/heat_distortion_noise",
+          "location": "minecraft:psychedelicraft/heat_distortion_noise",
           "width": 128,
           "height": 128
         }
