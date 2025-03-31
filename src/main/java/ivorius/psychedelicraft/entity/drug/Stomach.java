@@ -22,6 +22,9 @@ public class Stomach implements NbtSerialisable {
     private int vomitCount;
     private int vomitCooldown;
     private int vomitingTicks;
+    private int hungerCooldown;
+
+    private int previousFoodLevel;
 
     private final PlayerEntity entity;
 
@@ -38,21 +41,41 @@ public class Stomach implements NbtSerialisable {
         return (GluttonyManager)entity.getHungerManager();
     }
 
+    public int getCooldown() {
+        return getStomach().getLockedState() == null ? 0 : hungerCooldown;
+    }
+
+    public int setVisibleState(int ticks) {
+        boolean shaking = vomitingTicks > 0 || getGlut().getOvereating() > 8
+                || getStomach().getLockedState() != null && (
+                       getStomach().getActualFoodLevel() <= 3
+                    || getStomach().getActualFoodLevel() != previousFoodLevel
+                    || hungerCooldown < 50
+        );
+        if (shaking) {
+            getStomach().setShanksShaking(true);
+            return 0;
+        }
+        return ticks;
+    }
+
     public void onTick() {
+        previousFoodLevel = getStomach().getActualFoodLevel();
         final float hungerSuppression = MathHelper.clamp(properties.getModifier(Drug.HUNGER_SUPPRESSION), -1, 1);
         final boolean shouldLockHunger = Math.abs(hungerSuppression) > MathHelper.EPSILON;
 
         if (shouldLockHunger != (getStomach().getLockedState() != null)) {
             if (shouldLockHunger) {
+                hungerCooldown = 120;
                 getStomach().lockHunger(hungerSuppression > 0, hungerSuppression);
-            } else {
+            } else if (--hungerCooldown <= 0) {
                 getStomach().unlockHunger();
             }
 
             properties.markDirty();
         }
 
-        if (getStomach().getLockedState() != null) {
+        if (shouldLockHunger && getStomach().getLockedState() != null) {
             getStomach().getLockedState().setRate(hungerSuppression);
         }
 
@@ -61,6 +84,7 @@ public class Stomach implements NbtSerialisable {
         }
 
         if (vomitingTicks > 0) {
+            vomitingTicks--;
             if (entity.age % (int)(1 + entity.getWorld().random.nextFloat() * 3) == 0) {
                 int count = (int)(entity.getWorld().random.nextFloat() * (vomitingTicks / 2));
                 for (int i = 0; i < count; i++) {
@@ -120,6 +144,7 @@ public class Stomach implements NbtSerialisable {
         vomitCount = compound.getInt("vomitCount", 0);
         vomitCooldown = compound.getInt("vomitCooldown", 0);
         vomitingTicks = compound.getInt("vomitingTicks", 0);
+        hungerCooldown = compound.getInt("hungerCooldown", 0);
     }
 
     @Override
@@ -131,5 +156,6 @@ public class Stomach implements NbtSerialisable {
         compound.putInt("vomitCount", vomitCount);
         compound.putInt("vomitCooldown", vomitCooldown);
         compound.putInt("vomitingTicks", vomitingTicks);
+        compound.putInt("hungerCooldown", hungerCooldown);
     }
 }

@@ -16,6 +16,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.item.PlacementProperty;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.Context;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
 import net.minecraft.client.MinecraftClient;

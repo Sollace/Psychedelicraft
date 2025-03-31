@@ -22,7 +22,6 @@ import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemDrugs;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
-import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.registry.FuelRegistryEvents;
 import net.minecraft.block.Block;
 import net.minecraft.component.DataComponentTypes;
@@ -251,7 +250,7 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.5, 0.1, 0.1F)))
             .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, DyedColorComponent.getColor(stack, Colors.WHITE))));
 
-    Item VOMIT = register("vomit");
+    Item VOMIT = register("vomit", VomitItem::new);
     Item PAPER_BAG = register("paper_bag", s -> new PaperBagItem(s.component(PSComponents.BAG_CONTENTS, BagContentsComponent.EMPTY)));
     Item BAG_O_VOMIT = register("bag_o_vomit", s -> new SuspiciousItem(s
             .food(new FoodComponent.Builder().nutrition(8).saturationModifier(0.8f).alwaysEdible().build(), PSConsumableComponents.FAST_FOOD),

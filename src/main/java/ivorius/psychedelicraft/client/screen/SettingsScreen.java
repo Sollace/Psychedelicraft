@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.*;
+import net.minecraft.util.Formatting;
 
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.IField.IChangeCallback;
@@ -20,8 +21,8 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PSClientConfig;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.config.PSConfig;
-import ivorius.psychedelicraft.entity.drug.DrugType;
 
+import java.net.URI;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -85,11 +86,6 @@ public class SettingsScreen extends GameGui {
         createToggle(LEFT, row += 20, "gui.psychedelicraft.option.heat_distortion", config.doHeatDistortion);
         createToggle(LEFT, row += 20, "gui.psychedelicraft.option.water_distortion", config.doWaterDistortion);
         createToggle(LEFT, row += 20, "gui.psychedelicraft.option.motion_blur", config.doMotionBlur);
-        row += 10;
-        content.addButton(new Label(LEFT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.overlays");
-        createToggle(LEFT, row += 25, "gui.psychedelicraft.option.water_overlay", config.waterOverlayEnabled);
-        createToggle(LEFT, row += 25, "gui.psychedelicraft.option.hurt_overlay", config.hurtOverlayEnabled);
-        createFormattedSlider(LEFT, row += 25, "gui.psychedelicraft.option.sun_glare_intensity", config.sunFlareIntensity);
 
         content.addButton(new Label(LEFT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.dof");
         content.addButton(new Label(LEFT, row += 25)).getStyle().setText("gui.psychedelicraft.option.focal_point.near");
@@ -111,6 +107,7 @@ public class SettingsScreen extends GameGui {
             })
             .getStyle().setText(Text.translatable("button.reset"));
 
+        clear = Math.max(row, clear);
 
         if (RIGHT != LEFT) {
             clear = row;
@@ -119,11 +116,20 @@ public class SettingsScreen extends GameGui {
             row += 25;
         }
 
-        content.addButton(new Label(RIGHT - 5, row)).getStyle().setText("gui.psychedelicraft.options.sounds");
-        content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.themes");
-        for (DrugType<?> type : DrugType.REGISTRY) {
-            createToggle(RIGHT, row += 20, type.id().getPath(), config.hasBackgroundMusic(type), value -> config.setHasBackgroundMusic(type, value));
-        }
+        content.addButton(new Label(RIGHT - 5, row)).getStyle().setText("gui.psychedelicraft.options.overlays");
+        createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.water_overlay", config.waterOverlayEnabled);
+        createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.hurt_overlay", config.hurtOverlayEnabled);
+        createFormattedSlider(RIGHT, row += 25, "gui.psychedelicraft.option.sun_glare_intensity", config.sunFlareIntensity);
+        row += 10;
+
+        content.addButton(new Label(RIGHT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.sounds");
+        createToggle(RIGHT, row += 20, "gui.psychedelicraft.option.themes", config.drugsBackgroundMusic);
+        createFormattedSlider(RIGHT, row += 25, 0.01F, 1F, "gui.psychedelicraft.option.themes_threshold", config.drugsBackgroundMusicThreshold);
+        content.addButton(new Label(RIGHT - 5, row += 25)).getStyle().setText(
+                Text.translatable("gui.psychedelicraft.option.themes.explain")
+                    .formatted(Formatting.BLUE, Formatting.BOLD, Formatting.UNDERLINE)
+                    .styled(s -> s.withClickEvent(new ClickEvent.OpenUrl(URI.create("https://github.com/Sollace/Psychedelicraft/wiki/Drug-Background-Music"))))
+        );
 
         if (serverConfig != null) {
             row = Math.max(row, clear);
@@ -131,7 +137,7 @@ public class SettingsScreen extends GameGui {
             content.addButton(new Label(LEFT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.gameplay");
 
             content.addButton(new Label(LEFT, row += 25)).getStyle().setText("gui.psychedelicraft.options.message_distortion");
-            content.addButton(new EnumSlider<>(LEFT, row += 25, serverConfig.messageDistortion.get()));
+            content.addButton(new EnumSlider<>(LEFT, row += 25, serverConfig.messageDistortion.get())).setWidth(150);
 
             if (RIGHT != LEFT) {
                 clear = row;
@@ -140,15 +146,20 @@ public class SettingsScreen extends GameGui {
                 row += 25;
             }
 
-            content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.features");
+            content.addButton(new Label(RIGHT, row)).getStyle().setText("gui.psychedelicraft.options.features");
             createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.harmonium", serverConfig.enableHarmonium);
             createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.rift_jars", serverConfig.enableRiftJars);
             createToggle(RIGHT, row += 25, "gui.psychedelicraft.option.gameplay.molotovs", !serverConfig.disableMolotovs.get(), z -> {
                 return !serverConfig.disableMolotovs.set(!z);
             });
 
-            content.addButton(new Label(RIGHT, row += 25)).getStyle().setText("gui.psychedelicraft.options.balancing");
-            createFormattedSlider(RIGHT, row += 25, 0, 1800, "gui.psychedelicraft.option.gameplay.rift_spawnrate", serverConfig.randomTicksUntilRiftSpawn.get() / PSConfig.MINUTE, z -> {
+            if (RIGHT != LEFT) {
+            } else {
+                row += 25;
+            }
+
+            content.addButton(new Label(LEFT, row)).getStyle().setText("gui.psychedelicraft.options.balancing");
+            createFormattedSlider(LEFT, row += 25, 0, 1800, "gui.psychedelicraft.option.gameplay.rift_spawnrate", serverConfig.randomTicksUntilRiftSpawn.get() / PSConfig.MINUTE, z -> {
                 return (serverConfig.randomTicksUntilRiftSpawn.set((int)(z * PSConfig.MINUTE)) / (float)PSConfig.MINUTE);
             });
         }
