@@ -38,7 +38,7 @@ public class AlcoholDrug extends SimpleDrug {
         double activeValue = getActiveValue();
 
         if ((getTicksActive() % 20) == 0 && random.nextFloat() < (activeValue - 0.9F) * 2) {
-            entity.damage(world, PSDamageTypes.create(entity.getWorld(), PSDamageTypes.ALCOHOL_POSIONING), (int) ((activeValue - 0.9F) * 50 + 4));
+            PSDamageTypes.damage(world, entity, world.getDamageSources().create(PSDamageTypes.ALCOHOL_POSIONING), (int) ((activeValue - 0.9F) * 50 + 4));
             if (entity.isDead()) {
                 return true;
             }

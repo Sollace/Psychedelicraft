@@ -53,7 +53,7 @@ public class SmoothCameraHelper {
     }
 
     public void tick(DrugProperties properties) {
-        float multiplier = MathHelper.clamp(properties.getModifier(Drug.HEAD_MOTION_INERTNESS), 0, 1);
+        float multiplier = 1 - MathHelper.clamp(properties.getModifier(Drug.HEAD_MOTION_INERTNESS), 0, 1) * 0.9F;
         float speed = getSpeed();
         smoothedCursor.set(
                 (float)xSmoother.smooth(cursorDelta.x, multiplier * speed),

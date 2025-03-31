@@ -19,12 +19,20 @@ public interface LockableHungerManager {
         setLockedState(null);
     }
 
+    float getActualSaturationLevel();
+
+    int getActualFoodLevel();
+
+    void setShanksShaking(boolean shaking);
+
     default void makePermanent() {
         if (getLockedState() != null) {
             HungerManager hunger = getHungerManager();
-            hunger.setSaturationLevel(hunger.getSaturationLevel());
-            hunger.setFoodLevel(hunger.getFoodLevel());
+            float saturation = hunger.getSaturationLevel();
+            int food = hunger.getFoodLevel();
             unlockHunger();
+            hunger.setSaturationLevel(saturation);
+            hunger.setFoodLevel(food);
         }
     }
 

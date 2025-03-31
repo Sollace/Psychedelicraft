@@ -41,22 +41,22 @@ public class BathSaltsDrug extends SimpleDrug {
 
         if (entity.age % 20 == 0 && random.nextFloat() < chance) {
             if (random.nextFloat() < 0.4F) {
-                entity.damage(world, properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
+                PSDamageTypes.damage(world, entity, properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
                 return true;
             }
 
             if (random.nextFloat() < 0.5F) {
-                entity.damage(world, properties.damageOf(PSDamageTypes.HEART_FAILURE), Integer.MAX_VALUE);
+                PSDamageTypes.damage(world, entity, properties.damageOf(PSDamageTypes.HEART_FAILURE), Integer.MAX_VALUE);
                 return true;
             }
 
             if (random.nextFloat() < 0.5F) {
-                entity.damage(world, properties.damageOf(PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
+                PSDamageTypes.damage(world, entity, properties.damageOf(PSDamageTypes.RESPIRATORY_FAILURE), Integer.MAX_VALUE);
                 return true;
             }
 
             if (random.nextFloat() < 0.5F) {
-                entity.damage(world, properties.damageOf(PSDamageTypes.KIDNEY_FAILURE), Integer.MAX_VALUE);
+                PSDamageTypes.damage(world, entity, properties.damageOf(PSDamageTypes.KIDNEY_FAILURE), Integer.MAX_VALUE);
                 return true;
             }
         }

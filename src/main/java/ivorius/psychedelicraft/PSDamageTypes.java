@@ -5,10 +5,13 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public interface PSDamageTypes {
@@ -37,6 +40,27 @@ public interface PSDamageTypes {
 
     static DamageSource create(World world, Entity source, @Nullable Entity attacker, RegistryKey<DamageType> type) {
         return new DamageSource(world.getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getEntry(type.getValue()).orElseThrow(), source, attacker);
+    }
+
+    static boolean damage(ServerWorld world, Entity target, DamageSource source, float amount) {
+        if (target instanceof LivingEntity l) {
+            Difficulty difficulty = world.getDifficulty();
+            float health = l.getHealth();
+            amount = switch (difficulty) {
+                case PEACEFUL -> Math.min(health - 0.5F, amount);
+                case EASY -> amount * 0.5F;
+                case HARD -> amount * 0.75F;
+                case NORMAL -> amount;
+            };
+            if (world.getLevelProperties().isHardcore() && amount >= health) {
+                if (world.getRandom().nextInt(200) == 0) {
+                    amount = Math.min(health - 0.5F, amount);
+                } else {
+                    amount = health * world.getRandom().nextTriangular(0.8F, 0.3F);
+                }
+            }
+        }
+        return target.damage(world, source, amount);
     }
 
     private static RegistryKey<DamageType> register(String name) {
