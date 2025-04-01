@@ -102,7 +102,7 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
 
     public void renderRift(MatrixStack matrices, VertexConsumerProvider vertices, float age) {
         ZeroScreen.render(age, (layer, u, v) -> {
-            renderLightsScreen(matrices, vertices.getBuffer(layer), u, v, age, 1, 0xffffffff, 20);
+            renderLightsScreen(matrices, vertices.getBuffer(layer), u, v, age, 1, Colors.WHITE, 20);
         });
     }
 
@@ -113,10 +113,8 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
         float width = 2.5F;
         float rotation = ticks / 200F;
 
-        Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
-        int light = 0x0;
-
-        Vector4f vector = new Vector4f(0, 0, 0, 1);
+        int overlay = OverlayTexture.DEFAULT_UV;
+        int light = LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE;
 
         for (int i = 0; i < number; ++i) {
             float xLogFunc = (((float) i / number * 28493.0f + ticks) / 10F) % 20F;
@@ -141,29 +139,14 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
                 float var8 = RANDOM.nextFloat() * 20 + 5;
                 float var9 = RANDOM.nextFloat() * 2 + 1;
 
-                vector.set(0, 0, 0, 1);
-                Vector4f pos = positionMatrix.transform(vector);
-
                 int opaque = MathUtils.withAlpha(Colors.WHITE, alpha * lightAlpha);
                 int transparent = MathUtils.withAlpha(Colors.WHITE, 0);
 
-                vertices.vertex(pos.x, pos.y, pos.z, opaque, 0, 0, light, 0, 1, 1, 1);
-
-                vector.set(-width * var9, var8, -0.5F * var9, 1);
-                pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, transparent, 1, 0, light, 0, 1, 1, 1);
-
-                vector.set(width * var9, var8, -0.5F * var9, 1);
-                pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, transparent, 0, 1, light, 0, 1, 1, 1);
-
-                vector.set(0, var8, var9, 1);
-                pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, transparent, 1, 1, light, 0, 1, 1, 1);
-
-                vector.set(-width * var9, var8, -0.5F * var9, 1);
-                pos = positionMatrix.transform(vector);
-                vertices.vertex(pos.x, pos.y, pos.z, transparent, 1, 1, light, 0, 1, 1, 1);
+                RenderUtil.vertex(vertices, matrices, 0, 0, 0, opaque, 0, 0, light, overlay);
+                RenderUtil.vertex(vertices, matrices, -width * var9, var8, -0.5F * var9, transparent, 0, 0, light, overlay);
+                RenderUtil.vertex(vertices, matrices, width * var9, var8, -0.5F * var9, transparent, 0, 0, light, overlay);
+                RenderUtil.vertex(vertices, matrices, 0, var8, var9, transparent, 0, 0, light, overlay);
+                RenderUtil.vertex(vertices, matrices, -width * var9, var8, -0.5F * var9, transparent, 0, 0, light, overlay);
             }
         }
 

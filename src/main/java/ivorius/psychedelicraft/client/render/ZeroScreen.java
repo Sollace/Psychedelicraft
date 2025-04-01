@@ -6,7 +6,6 @@ import java.util.stream.IntStream;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.shader.PSShaders;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -22,7 +21,7 @@ public abstract class ZeroScreen extends RenderLayer {
 
     private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> RenderLayer.of("ps_zero_screen", 1536, false, false, PSShaders.ZERO_MATTER, MultiPhaseParameters.builder()
             .texture(Textures.create()
-                    .add(EndPortalBlockEntityRenderer.SKY_TEXTURE, false, false)
+                    .add(texture, false, false)
                     .add(texture, false, false)
                     .build())
             .lightmap(RenderLayer.DISABLE_LIGHTMAP)

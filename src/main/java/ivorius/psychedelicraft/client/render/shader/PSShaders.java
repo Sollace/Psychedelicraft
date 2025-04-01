@@ -16,7 +16,7 @@ public interface PSShaders {
             .withSampler("Sampler0")
             .withSampler("Sampler1")
             .withUniform("GameTime", UniformType.FLOAT)
-            .withVertexFormat(VertexFormats.POSITION, VertexFormat.DrawMode.QUADS)
+            .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS)
             .buildSnippet();
 
     RenderPipeline ZERO_MATTER = RenderPipelines.register(
