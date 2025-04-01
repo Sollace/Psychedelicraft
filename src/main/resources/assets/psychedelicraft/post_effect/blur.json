@@ -6,7 +6,7 @@
     {
       "vertex_shader": "minecraft:post/blit",
       "fragment_shader": "psychedelicraft:post/blur",
-      "samplers": [
+      "inputs": [
         {
           "sampler_name": "Diffuse",
           "target": "minecraft:main",

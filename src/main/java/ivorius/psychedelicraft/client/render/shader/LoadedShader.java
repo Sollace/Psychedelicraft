@@ -41,7 +41,7 @@ class LoadedShader {
                 processor.render(client.getFramebuffer(), pool, null);
             }
         } catch (Throwable t) {
-            Psychedelicraft.LOGGER.error(t.getMessage());
+            Psychedelicraft.LOGGER.error("Exception applying shader pass: {}", t);
         }
     }
 

@@ -6,7 +6,7 @@
     {
       "vertex_shader": "minecraft:post/blit",
       "fragment_shader": "psychedelicraft:post/blur_noise",
-      "samplers": [
+      "inputs": [
         {
           "sampler_name": "Diffuse",
           "target": "minecraft:main",
@@ -18,8 +18,7 @@
         { "name": "pixelSize", "type": "vec2" },
         { "name": "strength", "type": "float" },
         { "name": "seed", "type": "float" },
-        { "name": "totalAlpha", "type": "float" },
-        { "name": "OutSize", "type": "vec2", "values": [ 1, 1 ] }
+        { "name": "totalAlpha", "type": "float" }
       ]
     },
     {
