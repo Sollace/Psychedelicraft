@@ -42,6 +42,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
                         }
 
                         setter.set("strength", strength);
+                        setter.set("totalAlpha", 1);
                         setter.set("ticks", ShaderContext.ticks() * (water > 0 ? 0.03f : 0.15F));
                         pass.run();
                     }))
