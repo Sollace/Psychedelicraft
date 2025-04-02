@@ -48,16 +48,8 @@ public interface ItemModels {
         return getGroundModelId(type, Registries.ITEM.getId(item));
     }
 
-    static Identifier getGroundModelFluidId(String type, Item item) {
-        return getGroundModelFluidId(type, Registries.ITEM.getId(item));
-    }
-
     static Identifier getGroundModelId(String type, Identifier item) {
         return item.withPath(p -> "item/" + p + "_on_" + type);
-    }
-
-    static Identifier getGroundModelFluidId(String type, Identifier item) {
-        return getGroundModelId(type, item).withSuffixedPath("_fluid");
     }
 
     static Model item(String parent, TextureKey ... requiredTextureKeys) {
@@ -217,7 +209,7 @@ public interface ItemModels {
                     : Stream.concat(Arrays.stream(tints), Stream.of(new FluidTintSource(Colors.WHITE))).toArray(TintSource[]::new);
             return select(new PlacementProperty(), model, Arrays.stream(placements).map(placement -> {
                 return switchCase(placement, placement.endsWith("_fluid")
-                        ? tinted(getGroundModelFluidId(placement, item), fluidTints)
+                        ? tinted(getGroundModelId(placement, item), fluidTints)
                         : tints.length == 0 ? basic(getGroundModelId(placement, item)) : tinted(getGroundModelId(placement, item), tints)
                 );
             }).toList());

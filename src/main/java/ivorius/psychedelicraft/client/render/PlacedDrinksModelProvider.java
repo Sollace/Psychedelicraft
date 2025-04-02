@@ -84,8 +84,11 @@ public class PlacedDrinksModelProvider
             if (stack.isOf(Items.GLASS_BOTTLE)) {
                 stack = stack.withItem(PSItems.FILLED_GLASS_BOTTLE);
             }
+            matrices.push();
+            matrices.translate(0.5, 0.5, 0.5);
             PlacementProperty.setCurrent(type);
             MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, null, 0);
+            matrices.pop();
         } finally {
             PlacementProperty.setCurrent(null);
         }

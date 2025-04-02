@@ -3,6 +3,13 @@
 	  "cup": "psychedelicraft:item/cup_placed",
 		"particle": "#cup"
 	},
+  "display": {
+    "fixed": {
+      "rotation": [ 0, 0, 0 ],
+      "translation": [ 0, 0, 0],
+      "scale":[ 1, 1, 1 ]
+    }
+  },
 	"elements": [
 		{
 			"name": "west",
