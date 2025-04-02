@@ -37,7 +37,7 @@ abstract class MixinVillagerTaskListProvider {
     @Shadow
     private static Pair<Integer, Task<LivingEntity>> createBusyFollowTask() { return null; }
 
-    @Inject(method = "createWorkTasks(Lnet/minecraft/village/VillagerProfession;F)Lcom/google/common/collect/ImmutableList;", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "createWorkTasks(Lnet/minecraft/registry/entry/RegistryEntry;F)Lcom/google/common/collect/ImmutableList;", at = @At("HEAD"), cancellable = true)
     private static void onCreateWorkTasks(RegistryEntry<VillagerProfession> profession, float speed,
             CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>>> info) {
         if (profession.matchesKey(PSTradeOffers.DRUG_DEALER_PROFESSION)) {

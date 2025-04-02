@@ -12,10 +12,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.mojang.blaze3d.shaders.ShaderType;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.CompiledShader.Type;
 import net.minecraft.util.Identifier;
 
 @Pseudo
@@ -38,7 +39,7 @@ abstract class MixinProgramSource {
                 }
                 return;
             }
-            GeometryShader.INSTANCE.setup(Type.VERTEX, Identifier.of(name).withPrefixedPath("iris/"));
+            GeometryShader.INSTANCE.setup(ShaderType.VERTEX, Identifier.of(name).withPrefixedPath("iris/"));
             recomputedVertexSource = Optional.ofNullable(GeometryShader.INSTANCE.injectShaderSources(info.getReturnValue().orElse(null)));
         }
         info.setReturnValue(recomputedVertexSource);
@@ -53,7 +54,7 @@ abstract class MixinProgramSource {
                 }
                 return;
             }
-            GeometryShader.INSTANCE.setup(Type.FRAGMENT, Identifier.of(name).withPrefixedPath("iris/"));
+            GeometryShader.INSTANCE.setup(ShaderType.FRAGMENT, Identifier.of(name).withPrefixedPath("iris/"));
             recomputedFragmentSource = Optional.ofNullable(GeometryShader.INSTANCE.injectShaderSources(info.getReturnValue().orElse(null)));
         }
         info.setReturnValue(recomputedFragmentSource);

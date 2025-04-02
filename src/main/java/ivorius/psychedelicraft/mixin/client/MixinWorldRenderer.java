@@ -11,7 +11,7 @@ import net.minecraft.client.render.WorldRenderer;
 @Mixin(WorldRenderer.class)
 abstract class MixinWorldRenderer {
     private static final String SKY = "renderSky(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/Fog;)V";
-    private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/render/FrameGraphBuilder;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/option/CloudRenderMode;Lnet/minecraft/util/math/Vec3d;FIF)V";
+    private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/option/CloudRenderMode;Lnet/minecraft/util/math/Vec3d;FIF)V";
 
     @Inject(method = SKY, at = @At("HEAD"))
     private void beforeRenderSky(CallbackInfo info) {
