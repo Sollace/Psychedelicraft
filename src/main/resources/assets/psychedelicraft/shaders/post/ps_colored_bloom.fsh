@@ -13,7 +13,7 @@ out vec4 fragColor;
 
 float influenceFromColor(vec3 color1, vec3 color2) {
   vec3 rdistCol = (color1 - color2);
-  vec3 distCol = sqrt(rdistCol * rdistCol);
+  vec3 distCol = (rdistCol * rdistCol);
   
   float influence = 1.0 - (distCol.r + distCol.g + distCol.b) * 2.0;
   
