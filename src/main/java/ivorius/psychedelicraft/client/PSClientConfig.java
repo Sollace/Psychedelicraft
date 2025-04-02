@@ -68,6 +68,24 @@ public class PSClientConfig extends Config {
             .addComment("Default: 0.01")
             .addComment("Minimum: 0.01, Maximum: 1");
 
+    public final Setting<Boolean> irisSupport = value("compatibility", "irisSupport", true)
+            .addComment("Enables and disables shader injections for iris. Turn this off if you're having troubles")
+            .addComment("Default: True");
+
+    public final Setting<Boolean> sodiumSupport = value("compatibility", "sodiumSupport", true)
+            .addComment("Enables and disables shader injections for sodium. Turn this off if you're having troubles")
+            .addComment("Default: True");
+
+    public final Setting<Boolean> exportShaderSources = value("debug", "printsShaderSources", false)
+            .addComment("Enabled printing of shader vertex and fragment sources for easier debugging")
+            .addComment("(May impact performance)")
+            .addComment("Default: False");
+
+    public final Setting<Boolean> forceShaderRecompiles = value("debug", "forceShaderRecompiles", false)
+            .addComment("Forces geometry shaders to be read every time")
+            .addComment("(May impact performance)")
+            .addComment("Default: False");
+
     public PSClientConfig(Path path) {
         super(new HeirarchicalJsonConfigAdapter(new GsonBuilder().registerTypeAdapter(DrugType.class, RegistryTypeAdapter.of(DrugType.REGISTRY))), path);
         digitalEffectPixelRescale.onChanged(i -> digitalEffectPixelRescaleF = null);

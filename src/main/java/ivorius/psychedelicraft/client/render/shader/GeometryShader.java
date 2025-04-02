@@ -11,8 +11,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.SodiumCompat;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
@@ -133,7 +135,11 @@ public class GeometryShader {
         return List.of(converted.split("%PS_DELIM%"));
     }
 
-    public String injectShaderSources(String source) {
+    public String injectShaderSources(@Nullable String source) {
+        if (source == null) {
+            return null;
+        }
+
         if (source.indexOf("PSYCHEDELICRAFT") != -1) {
             Psychedelicraft.LOGGER.info("Skipping already-processed shader " + name);
             return source;
@@ -175,6 +181,12 @@ public class GeometryShader {
             || vertexSources.indexOf("in float v_FragDistance") != -1) {
             geometrySources = geometrySources.replaceAll("vertexDistance", "v_FragDistance");
         }
+        if (name.getPath().startsWith("iris/")) {
+            geometrySources = geometrySources.replaceAll("/\\*replaceme\\*/Position", "cameraPosition");
+            if (vertexSources.indexOf("uniform vec3 cameraPosition") == -1) {
+                geometrySources = "uniform vec3 cameraPosition;" + geometrySources;
+            }
+        }
 
         geometrySources = PS_VARIABLE_PATTERN.matcher(geometrySources).replaceAll(match -> {
             String fieldSlug = Arrays.stream(match.group(2).split(","))
@@ -188,24 +200,29 @@ public class GeometryShader {
     }
 
     private String writeSources(String sources, String suffex) {
+        if (!PsychedelicraftClient.getConfig().exportShaderSources.get()) {
+            return sources;
+        }
         Path output = FabricLoader.getInstance().getGameDir().resolve("logs/shader_compilation/" + type.name().toLowerCase(Locale.ROOT) + "/" + name.getNamespace() + "/" + name.getPath() + "_" + suffex);
         try {
             Files.createDirectories(output.getParent());
             Files.deleteIfExists(output);
         } catch (IOException e) {
-            e.printStackTrace();
+            Psychedelicraft.LOGGER.error("Could not remove stale shader sources file {} {}", output, e);
         }
         try (var writer = Files.newBufferedWriter(output, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
             writer.append(sources);
             writer.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            Psychedelicraft.LOGGER.error("Could not write shader sources to file {} {}", output, e);
         }
         return sources;
     }
 
     private Optional<String> loadProgram(Identifier id) {
-        loadedPrograms.clear();
+        if (PsychedelicraftClient.getConfig().forceShaderRecompiles.get()) {
+            loadedPrograms.clear();
+        }
         return loadedPrograms.computeIfAbsent(id, i -> {
             return manager.getResource(i).map(res -> {
                 try (var stream = res.getInputStream()) {
