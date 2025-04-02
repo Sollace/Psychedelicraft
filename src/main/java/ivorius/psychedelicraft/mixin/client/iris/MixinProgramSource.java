@@ -1,16 +1,18 @@
 package ivorius.psychedelicraft.mixin.client.iris;
 
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderStage.Type;
@@ -19,41 +21,41 @@ import net.minecraft.util.Identifier;
 @Pseudo
 @Mixin(targets = {"net.irisshaders.iris.shaderpack.programs.ProgramSource"}, remap = false)
 abstract class MixinProgramSource {
-    @Shadow @Mutable
-    private @Final String vertexSource;
-    @Shadow @Mutable
-    private @Final String fragmentSource;
-
-    @Inject(
-        method = "<init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/irisshaders/iris/shaderpack/properties/ProgramDirectives;Lnet/irisshaders/iris/shaderpack/programs/ProgramSet;)V",
-        at = @At("TAIL")
-    )
-    private void onInit(String name, String vertexSource, String geometrySource, String tessControlSource, String tessEvalSource, String fragmentSource,
-            @Coerce Object directives, @Coerce Object parent, CallbackInfo info) {
-        psychedelicraft_modifySources(name);
-    }
-
-    @Inject(
-        method = "<init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/irisshaders/iris/shaderpack/programs/ProgramSet;Lnet/irisshaders/iris/shaderpack/properties/ShaderProperties;Lnet/irisshaders/iris/gl/blending/BlendModeOverride;)V",
-        at = @At("TAIL")
-    )
-    private void onInit(String name, String vertexSource, String geometrySource, String tessControlSource, String tessEvalSource, String fragmentSource,
-            @Coerce Object parent, @Coerce Object properties, @Coerce Object defaultBlendModeOverride, CallbackInfo info) {
-        psychedelicraft_modifySources(name);
-    }
+    @Shadow
+    private @Final String name;
 
     @Unique
-    private void psychedelicraft_modifySources(String name) {
-        if (MinecraftClient.getInstance().getResourceManager() == null) {
-            return;
+    private @Nullable Optional<String> recomputedVertexSource;
+    @Unique
+    private @Nullable Optional<String> recomputedFragmentSource;
+
+    @Inject(method = "getVertexSource()Ljava/util/Optional;", at = @At("RETURN"), cancellable = true)
+    private void onGetVertexSource(CallbackInfoReturnable<Optional<String>> info) {
+        if (recomputedVertexSource == null) {
+            if (MinecraftClient.getInstance().getResourceManager() == null) {
+                if (info.getReturnValue().isPresent()) {
+                    Psychedelicraft.LOGGER.info("Iris is initialising too early!");
+                }
+                return;
+            }
+            GeometryShader.INSTANCE.setup(Type.VERTEX, Identifier.of(name).withPrefixedPath("iris/"));
+            recomputedVertexSource = Optional.ofNullable(GeometryShader.INSTANCE.injectShaderSources(info.getReturnValue().orElse(null)));
         }
+        info.setReturnValue(recomputedVertexSource);
+    }
 
-        System.out.println("Created iris shader shource " + name);
-        Identifier id = Identifier.of(name).withPrefixedPath("iris/");
-        GeometryShader.INSTANCE.setup(Type.FRAGMENT, id);
-        this.fragmentSource = GeometryShader.INSTANCE.injectShaderSources(fragmentSource);
-
-        GeometryShader.INSTANCE.setup(Type.VERTEX, id);
-        this.vertexSource = GeometryShader.INSTANCE.injectShaderSources(vertexSource);
+    @Inject(method = "getFragmentSource()Ljava/util/Optional;", at = @At("RETURN"), cancellable = true)
+    private void onGetFragmentSource(CallbackInfoReturnable<Optional<String>> info) {
+        if (recomputedFragmentSource == null) {
+            if (MinecraftClient.getInstance().getResourceManager() == null) {
+                if (info.getReturnValue().isPresent()) {
+                    Psychedelicraft.LOGGER.info("Iris is initialising too early!");
+                }
+                return;
+            }
+            GeometryShader.INSTANCE.setup(Type.FRAGMENT, Identifier.of(name).withPrefixedPath("iris/"));
+            recomputedFragmentSource = Optional.ofNullable(GeometryShader.INSTANCE.injectShaderSources(info.getReturnValue().orElse(null)));
+        }
+        info.setReturnValue(recomputedFragmentSource);
     }
 }

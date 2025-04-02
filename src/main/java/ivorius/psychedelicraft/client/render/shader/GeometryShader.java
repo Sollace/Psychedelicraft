@@ -6,12 +6,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
@@ -19,6 +23,7 @@ import ivorius.psychedelicraft.client.SodiumCompat;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
@@ -29,11 +34,13 @@ import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.Profiler;
 
-public class GeometryShader {
+public class GeometryShader implements IdentifiableResourceReloadListener {
     private static final String GEO_DIRECTORY = "shaders/geometry/";
     private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(^|\\n)ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
     private static final Identifier BASIC = Psychedelicraft.id("basic");
+    private static final Identifier ID = Psychedelicraft.id("geometry_shaders");
 
     public static final GeometryShader INSTANCE = new GeometryShader();
 
@@ -41,7 +48,8 @@ public class GeometryShader {
     private Type type;
 
     private final MinecraftClient client = MinecraftClient.getInstance();
-    private final ResourceManager manager = client.getResourceManager();
+    @Nullable
+    private ResourceManager manager = client.getResourceManager();
 
     private final Map<Identifier, Optional<String>> loadedPrograms = new HashMap<>();
 
@@ -56,6 +64,20 @@ public class GeometryShader {
             return client.getTextureManager().getTexture(id).getGlId();
         });
     });
+
+    @Override
+    public Identifier getFabricId() {
+        return ID;
+    }
+
+    @Override
+    public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager,
+            Profiler prepareProfiler, Profiler applyProfiler,
+            Executor prepareExecutor, Executor applyExecutor) {
+        loadedPrograms.clear();
+        this.manager = manager;
+        return CompletableFuture.completedFuture(null);
+    }
 
     public void setup(Type type, String domain, String name) {
         this.name = Identifier.of(name);
@@ -83,47 +105,55 @@ public class GeometryShader {
     }
 
     public void addUniforms(ShaderProgramSetupView program, Consumer<GlUniform> register) {
-        register.accept(new BoundUniform("PS_SurfaceFractalStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().get(Drug.FRACTALS), 0, 1) : 0);
-        }));
-        register.accept(new BoundUniform("PS_Pulses", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
-            uniform.set(isEnabled() ? ShaderContext.hallucinations().getPulseColor(ShaderContext.tickDelta(), RenderPhase.current() == RenderPhase.SKY) : MathUtils.ZERO);
-        }));
-        register.accept(new BoundUniform("PS_SurfaceFractalCoords", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
+        addUniforms(new UniformCollection() {
+            @Override
+            public void vec1(String name, FloatSupplier value) {
+                register.accept(new BoundUniform(name, GlUniform.getTypeIndex("float"), 1, program, uniform -> uniform.set(value.getAsFloat())));
+            }
+
+            @Override
+            public void vec3(String name, Supplier<Vector3f> value) {
+                register.accept(new BoundUniform(name, GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> uniform.set(value.get())));
+            }
+
+            @Override
+            public void vec4(String name, Supplier<Vector4f> value) {
+                register.accept(new BoundUniform(name, GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> uniform.set(value.get())));
+            }
+        });
+    }
+
+    public void addUniforms(UniformCollection uniformHolder) {
+        uniformHolder.vec1("PS_SurfaceFractalStrength", () -> isEnabled() ? MathHelper.clamp(ShaderContext.hallucinations().get(Drug.FRACTALS), 0, 1) : 0);
+        uniformHolder.vec4("PS_Pulses", () -> isEnabled() ? ShaderContext.hallucinations().getPulseColor(ShaderContext.tickDelta(), RenderPhase.current() == RenderPhase.SKY) : MathUtils.ZERO);
+        uniformHolder.vec4("PS_SurfaceFractalCoords", () -> {
             if (isEnabled() && ShaderContext.hallucinations().get(Drug.FRACTALS) > 0) {
                 Sprite sprite = client.getBlockRenderManager().getModels().getModelParticleSprite(ShaderContext.hallucinations().getFractalAppearance());
                 SodiumCompat.markSpriteActive(sprite);
-                uniform.set(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
-            } else {
-                uniform.set(MathUtils.ZERO);
+                return new Vector4f(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
             }
-        }));
-        register.accept(new BoundUniform("PS_PlayerPosition", GlUniform.getTypeIndex("float") + 2, 3, program, uniform -> uniform.set(ShaderContext.position().toVector3f())));
-        register.accept(new BoundUniform("PS_WorldTicks", GlUniform.getTypeIndex("float"), 1, program, uniform -> uniform.set(ShaderContext.ticks())));
-        register.accept(new BoundUniform("PS_WavesMatrix", GlUniform.getTypeIndex("float") + 3, 4, program, uniform -> {
+            return MathUtils.ZERO;
+        });
+        uniformHolder.vec3("PS_PlayerPosition", () -> ShaderContext.position().toVector3f());
+        uniformHolder.vec1("PS_WorldTicks", () -> ShaderContext.ticks());
+        uniformHolder.vec4("PS_WavesMatrix", () -> {
             if (isWorld() && RenderPhase.current() != RenderPhase.CLOUDS) {
-                uniform.set(
+                return new Vector4f(
                     ShaderContext.hallucinations().get(Drug.SMALL_WAVES),
                     ShaderContext.hallucinations().get(Drug.BIG_WAVES),
                     ShaderContext.hallucinations().get(Drug.WIGGLE_WAVES),
                     ShaderContext.hallucinations().get(Drug.BUBBLING_WAVES)
                 );
-            } else {
-                uniform.set(MathUtils.ZERO);
             }
-        }));
-        register.accept(new BoundUniform("PS_DistantWorldDeformation", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.DISTANT_WAVES) : 0F);
-        }));
-        register.accept(new BoundUniform("PS_FractalFractureStrength", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() ? ShaderContext.hallucinations().get(Drug.SHATTERING_WAVES) : 0F);
-        }));
-        register.accept(new BoundUniform("PS_lsdBlendRatio", GlUniform.getTypeIndex("float"), 1, program, uniform -> {
-            uniform.set(isWorld() && RenderPhase.current() != RenderPhase.CLOUDS
-                    ? ShaderContext.modifier(Drug.RAINBOW_WAVES)
-                    : RenderPhase.current() == RenderPhase.SKY ? ShaderContext.modifier(Drug.RAINBOW_WAVES) * 1.1F
-                            : 0F);
-        }));
+            return MathUtils.ZERO;
+        });
+        uniformHolder.vec1("PS_DistantWorldDeformation", () -> isWorld() ? ShaderContext.hallucinations().get(Drug.DISTANT_WAVES) : 0F);
+        uniformHolder.vec1("PS_FractalFractureStrength", () -> isWorld() ? ShaderContext.hallucinations().get(Drug.SHATTERING_WAVES) : 0F);
+        uniformHolder.vec1("PS_lsdBlendRatio", () -> isWorld() && RenderPhase.current() != RenderPhase.CLOUDS
+                ? ShaderContext.modifier(Drug.RAINBOW_WAVES)
+                : RenderPhase.current() == RenderPhase.SKY
+                    ? ShaderContext.modifier(Drug.RAINBOW_WAVES) * 1.1F
+                    : 0F);
     }
 
     public Map<String, Supplier<Integer>> getSamplers() {
@@ -215,18 +245,30 @@ public class GeometryShader {
     }
 
     private Optional<String> loadProgram(Identifier id) {
-        if (PsychedelicraftClient.getConfig().forceShaderRecompiles.get()) {
-            loadedPrograms.clear();
+        synchronized (this) {
+            if (PsychedelicraftClient.getConfig().forceShaderRecompiles.get()) {
+                return manager.getResource(id).map(res -> {
+                    try (var stream = res.getInputStream()) {
+                        return IOUtils.toString(stream, StandardCharsets.UTF_8);
+                    } catch (IOException e) {
+                        return null;
+                    }
+                });
+            }
+            Optional<String> source = loadedPrograms.getOrDefault(id, Optional.empty());
+            if (source.isEmpty()) {
+                source = manager.getResource(id).map(res -> {
+                    try (var stream = res.getInputStream()) {
+                        return IOUtils.toString(stream, StandardCharsets.UTF_8);
+                    } catch (IOException e) {
+                        return null;
+                    }
+                });
+                loadedPrograms.put(id, source);
+            }
+
+            return source;
         }
-        return loadedPrograms.computeIfAbsent(id, i -> {
-            return manager.getResource(i).map(res -> {
-                try (var stream = res.getInputStream()) {
-                    return IOUtils.toString(stream, StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    return null;
-                }
-            });
-        });
     }
 
     static class BoundUniform extends GlUniform {
