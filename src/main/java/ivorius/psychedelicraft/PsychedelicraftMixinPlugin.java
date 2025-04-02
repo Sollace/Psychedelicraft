@@ -17,13 +17,18 @@ public class PsychedelicraftMixinPlugin implements IMixinConfigPlugin {
 
     private String sodiumPackage = "";
     private boolean hasSodium;
+    private boolean hasIris;
 
     @Override
     public void onLoad(String mixinPackage) {
         hasSodium = FabricLoader.getInstance().isModLoaded("sodium");
+        hasIris = FabricLoader.getInstance().isModLoaded("iris");
         if (hasSodium) {
             sodiumPackage = isTargetAvailable("caffeinemc") ? "caffeinemc" : "jellysquid";
             LOGGER.info("Detected sodium package: " + sodiumPackage);
+        }
+        if (hasIris) {
+            LOGGER.info("Detected iris");
         }
     }
 
@@ -36,6 +41,9 @@ public class PsychedelicraftMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.startsWith(MIXIN_PACKAGE) && mixinClassName.indexOf("sodium") != -1) {
             return hasSodium && targetClassName.indexOf(sodiumPackage) != -1;
+        }
+        if (mixinClassName.startsWith(MIXIN_PACKAGE) && mixinClassName.indexOf(".iris.") != -1) {
+            return hasIris;
         }
         return true;
     }

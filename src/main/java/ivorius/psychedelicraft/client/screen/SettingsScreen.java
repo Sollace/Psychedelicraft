@@ -122,6 +122,11 @@ public class SettingsScreen extends GameGui {
         createFormattedSlider(RIGHT, row += 25, "gui.psychedelicraft.option.sun_glare_intensity", config.sunFlareIntensity);
         row += 10;
 
+        content.addButton(new Label(RIGHT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.compatibility");
+        createToggle(RIGHT, row += 20, "gui.psychedelicraft.option.shaders_iris", config.irisSupport);
+        createToggle(RIGHT, row += 20, "gui.psychedelicraft.option.shaders_sodium", config.sodiumSupport);
+        row += 10;
+
         content.addButton(new Label(RIGHT - 5, row += 25)).getStyle().setText("gui.psychedelicraft.options.sounds");
         createToggle(RIGHT, row += 20, "gui.psychedelicraft.option.themes", config.drugsBackgroundMusic);
         createFormattedSlider(RIGHT, row += 25, 0.01F, 1F, "gui.psychedelicraft.option.themes_threshold", config.drugsBackgroundMusicThreshold);
