@@ -15,13 +15,15 @@
         {
           "sampler_name": "Depth",
           "target": "minecraft:main",
-          "use_depth_buffer": true
+          "use_depth_buffer": true,
+          "bilinear": true
         },
         {
           "sampler_name": "Noise",
           "location": "minecraft:psychedelicraft/heat_distortion_noise",
           "width": 128,
-          "height": 128
+          "height": 128,
+          "bilinear": true
         }
       ],
       "output": "swap",

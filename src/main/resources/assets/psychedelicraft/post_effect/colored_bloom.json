@@ -6,11 +6,10 @@
     {
       "vertex_shader": "minecraft:post/blit",
       "fragment_shader": "psychedelicraft:post/colored_bloom",
-      "samplers": [
+      "inputs": [
         {
           "sampler_name": "Diffuse",
-          "target": "minecraft:main",
-          "bilinear": true
+          "target": "minecraft:main"
         }
       ],
       "output": "swap",
@@ -18,8 +17,7 @@
         { "name": "pixelSize", "type": "vec2" },
         { "name": "bloomColor", "type": "vec3" },
         { "name": "vertical", "type": "float" },
-        { "name": "totalAlpha", "type": "float" },
-        { "name": "OutSize", "type": "vec2", "values": [ 1.0, 1.0 ] }
+        { "name": "totalAlpha", "type": "float" }
       ]
     },
     {
