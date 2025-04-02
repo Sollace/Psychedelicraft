@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 })
 abstract class MixinShaderLoader {
 
-    @Inject(method = "loadShader", at = @At("HEAD"))
+    @Inject(method = "loadShader(Lnet/caffeinemc/mods/sodium/client/gl/shader/ShaderType;Lnet/minecraft/util/Identifier;Lnet/caffeinemc/mods/sodium/client/gl/shader/ShaderConstants;)Lnet/caffeinemc/mods/sodium/client/gl/shader/GlShader;", at = @At("HEAD"))
     private static void loadShader(@Coerce Object type, Identifier name, @Coerce Object constants, CallbackInfoReturnable<?> info) {
         GeometryShader.INSTANCE.setup(type.toString().contentEquals("VERTEX") ? CompiledShader.Type.VERTEX : CompiledShader.Type.FRAGMENT, name);
     }
