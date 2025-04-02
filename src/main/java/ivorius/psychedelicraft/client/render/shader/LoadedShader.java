@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import com.google.gson.JsonSyntaxException;
@@ -15,13 +16,13 @@ import net.minecraft.client.util.Pool;
 import net.minecraft.util.Identifier;
 
 class LoadedShader {
-    private final UniformBinding.Set bindings;
-
     private final Identifier id;
     private final MinecraftClient client;
 
-    private final UpdateTracker updater = new UpdateTracker();
-    private final UniformValues uniformValues = new UniformValues();
+    private final UniformBinding.Set bindings;
+
+    private final List<Pass> passes = new ArrayList<>();
+    private int passCount = 0;
 
     public LoadedShader(MinecraftClient client, Identifier id, UniformBinding.Set bindings) throws IOException, JsonSyntaxException {
         this.client = client;
@@ -37,7 +38,18 @@ class LoadedShader {
                 return;
             }
 
-            if (updater.update(processor, tickDelta)) {
+            passCount = 0;
+            passes.clear();
+
+            Map<String, Pass> passById = new HashMap<>();
+            update(client, processor, tickDelta, (id, callback) -> {
+                passCount = Math.max(passCount, passById.computeIfAbsent(id, this::addPass).add(callback));
+            });
+
+            for (int i = 0; i < passCount; i++) {
+                for (Pass pass : passes) {
+                    pass.replay(i);
+                }
                 processor.render(client.getFramebuffer(), pool);
             }
         } catch (Throwable t) {
@@ -45,68 +57,57 @@ class LoadedShader {
         }
     }
 
-    class UpdateTracker {
-        private int updateCount;
+    private Pass addPass(String id) {
+        Pass pass = new Pass(new ArrayList<>());
+        passes.add(pass);
+        return pass;
+    }
 
-        //private long processorHash;
-        private boolean enabled;
+    record Pass(List<Runnable> callbacks) {
+        int add(Runnable callback) {
+            callbacks.add(callback);
+            return callbacks.size();
+        }
 
-        public boolean update(PostEffectProcessor processor, float tickDelta) {
-            //if (updateCount == 0 || processor.hashCode() != processorHash) {
-                //processorHash = processor.hashCode();
-                enabled = false;
-                uniformValues.update(processor, tickDelta, () -> enabled = true);
-            //}
-
-            updateCount = (updateCount + 1) % 2;
-
-            return enabled;
+        void replay(int pass) {
+            if (pass >= 0 && pass < callbacks.size()) {
+                callbacks.get(pass).run();
+            }
         }
     }
 
+    public void update(MinecraftClient client, PostEffectProcessor processor, float tickDelta, BiConsumer<String, Runnable> passCollector) {
+        final int width = client.getWindow().getFramebufferWidth();
+        final int height = client.getWindow().getFramebufferHeight();
 
-    class UniformValues implements UniformSetter {
-        private final Map<String, Supplier<List<Float>>> uniformValues = new HashMap<>();
-        private final Map<String, Set<String>> passUniforms = new HashMap<>();
-        private final Set<String> globalUniforms = new HashSet<>();
+        PassState globalState = new PassState(new HashMap<>());
 
-        private Set<String> currentPassUniforms = globalUniforms;
+        bindings.global.bindUniforms(globalState, tickDelta, width, height, () -> {
+            for (var pass : ((PostEffectPassSupplier)processor).getPasses()) {
+                String passId = pass.getId();
+                var programBindings = bindings.programBindings.getOrDefault(passId, UniformBinding.EMPTY);
+                if (programBindings != UniformBinding.EMPTY) {
+                    pass.setDisabled();
+                    PassState state = new PassState(new HashMap<>(globalState.uniforms));
 
-        public void update(PostEffectProcessor processor, float tickDelta, Runnable enableShader) {
-            uniformValues.clear();
-            globalUniforms.clear();
-            passUniforms.clear();
-            currentPassUniforms = globalUniforms;
-
-            final int width = client.getWindow().getFramebufferWidth();
-            final int height = client.getWindow().getFramebufferHeight();
-
-            bindings.global.bindUniforms(this, tickDelta, width, height, () -> {
-                for (var pass : ((PostEffectPassSupplier)processor).getPasses()) {
-                    String passId = pass.getId();
-                    var programBindings = bindings.programBindings.getOrDefault(passId, UniformBinding.EMPTY);
-                    if (programBindings != UniformBinding.EMPTY) {
-                        pass.setDisabled();
-                        currentPassUniforms = passUniforms.computeIfAbsent(passId, i -> new HashSet<>(globalUniforms));
-                        programBindings.bindUniforms(this, tickDelta, width, height, () -> {
-                            enableShader.run();
-                            pass.setUniformUpdater(program -> {
-                                List<PostEffectPipeline.Uniform> uniforms = new ArrayList<>();
-                                for (String uniformName : currentPassUniforms) {
-                                    uniforms.add(new PostEffectPipeline.Uniform(uniformName, uniformValues.get(uniformName).get()));
-                                }
-                                return uniforms;
-                            });
-                        });
-                    }
+                    programBindings.bindUniforms(state, tickDelta, width, height, () -> {
+                        passCollector.accept(passId, () -> pass.setUniformUpdater(pipeline -> state.bind()));
+                    });
                 }
-            });
-        }
+            }
+        });
+    }
 
+    record PassState(Map<String, PostEffectPipeline.Uniform> uniforms) implements UniformSetter {
         @Override
         public void set(String name, Supplier<List<Float>> setter) {
-            currentPassUniforms.add(name);
-            uniformValues.put(name, setter);
+            uniforms.put(name, new PostEffectPipeline.Uniform(name, setter.get()));
+        }
+
+        List<PostEffectPipeline.Uniform> bind() {
+            List<PostEffectPipeline.Uniform> uniforms = new ArrayList<>();
+            uniforms.addAll(this.uniforms().values());
+            return uniforms;
         }
     }
 }
