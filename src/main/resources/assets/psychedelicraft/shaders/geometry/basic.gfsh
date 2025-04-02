@@ -7,7 +7,6 @@ ps_in float vertexDistance;
 ps_in vec4 vertexColor;
 
 ps_in float psyColorMultiplier;
-ps_in float lsdBlendRatio;
 
 ps_out vec4 fragColor;
 

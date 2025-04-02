@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.shader.BuiltGemoetryShader;
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 
@@ -40,7 +41,9 @@ abstract class MixinGlProgram_Builder {
 
     @Inject(method = "link", at = @At("HEAD"))
     private void onLink(Function<?, ?> factory, CallbackInfoReturnable<?> info) {
-        psychedelicraft_shader = GeometryShader.INSTANCE.createShaderBuilder(program, psychedelicraft_maxAttributes, psychedelicraft_maxFragments);
+        if (PsychedelicraftClient.getConfig().sodiumSupport.get()) {
+            psychedelicraft_shader = GeometryShader.INSTANCE.createShaderBuilder(program, psychedelicraft_maxAttributes, psychedelicraft_maxFragments);
+        }
     }
 
     @Inject(method = "link", at = @At("RETURN"))

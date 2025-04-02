@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 
+import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.CompiledShader;
 import net.minecraft.util.Identifier;
@@ -22,11 +23,16 @@ abstract class MixinShaderLoader {
 
     @Inject(method = "loadShader(Lnet/caffeinemc/mods/sodium/client/gl/shader/ShaderType;Lnet/minecraft/util/Identifier;Lnet/caffeinemc/mods/sodium/client/gl/shader/ShaderConstants;)Lnet/caffeinemc/mods/sodium/client/gl/shader/GlShader;", at = @At("HEAD"))
     private static void loadShader(@Coerce Object type, Identifier name, @Coerce Object constants, CallbackInfoReturnable<?> info) {
-        GeometryShader.INSTANCE.setup(type.toString().contentEquals("VERTEX") ? CompiledShader.Type.VERTEX : CompiledShader.Type.FRAGMENT, name);
+        if (PsychedelicraftClient.getConfig().sodiumSupport.get()) {
+            GeometryShader.INSTANCE.setup(type.toString().contentEquals("VERTEX") ? CompiledShader.Type.VERTEX : CompiledShader.Type.FRAGMENT, name);
+        }
     }
 
     @ModifyReturnValue(method = "getShaderSource(Lnet/minecraft/util/Identifier;)Ljava/lang/String;", at = @At("RETURN"))
     private static String modifyShaderSources(String sources, Identifier name) {
-        return GeometryShader.INSTANCE.injectShaderSources(sources);
+        if (PsychedelicraftClient.getConfig().sodiumSupport.get()) {
+            return GeometryShader.INSTANCE.injectShaderSources(sources);
+        }
+        return sources;
     }
 }
