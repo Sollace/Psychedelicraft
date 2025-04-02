@@ -107,7 +107,7 @@ public interface MathUtils {
                     MathHelper.lerp(alpha / max, colorBase.x, color.x()),
                     MathHelper.lerp(alpha / max, colorBase.y, color.y()),
                     MathHelper.lerp(alpha / max, colorBase.z, color.z()),
-                    MathHelper.clamp(max, 0, 1)
+                    max
             );
         }
         return colorBase;
