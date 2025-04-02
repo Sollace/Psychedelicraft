@@ -103,7 +103,7 @@ public class HallucinationManager {
         return MathUtils.mixColorsDynamic(
                 (sky ? skyColor : bloomColor).getColor(tickDelta),
                 Drug.BLOOM.apply(properties),
-                MathHelper.clamp(1.5f * visualisations.getMultiplier(HallucinationTypes.COLOR_BLOOM), 0, 1)
+                MathHelper.clamp(1.5f * visualisations.getMultiplier(HallucinationTypes.COLOR_BLOOM), 0, 1.5F)
         );
     }
 
