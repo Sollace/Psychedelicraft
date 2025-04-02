@@ -54,7 +54,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
     public float getWaterDistortion() {
         float peyote = ShaderContext.drug(DrugType.PEYOTE);
         float wetness = PsychedelicraftClient.getConfig().doWaterDistortion.get() && wasInWater ? 0.05125F : 0;
-        return Math.max(peyote * 0.1073F, wetness);
+        return Math.max(peyote * 0.173F, wetness);
     }
 
     public float getWaterScreenDistortion() {
