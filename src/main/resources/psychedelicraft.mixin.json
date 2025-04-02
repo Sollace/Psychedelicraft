@@ -40,6 +40,7 @@
       "client.SoundsAccessor",
       "client.sodium.MixinGlProgram",
       "client.sodium.MixinGlProgram_Builder",
-      "client.sodium.MixinShaderLoader"
+      "client.sodium.MixinShaderLoader",
+      "client.iris.MixinProgramSource"
     ]
 }
