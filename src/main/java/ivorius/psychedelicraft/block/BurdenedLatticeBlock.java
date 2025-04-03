@@ -122,7 +122,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
             if (!world.isClient) {
                 getFarmingLootTableKey()
-                    .map(world.getServer().getReloadableRegistries()::getLootTable)
+                    .map(world.method_69071().getReloadableRegistries()::getLootTable)
                     .ifPresent(table -> table.generateLoot(new LootWorldContext.Builder((ServerWorld)world)
                             .add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
                             .add(LootContextParameters.TOOL, player.getStackInHand(hand))

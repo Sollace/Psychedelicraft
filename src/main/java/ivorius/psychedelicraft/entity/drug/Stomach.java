@@ -90,7 +90,7 @@ public class Stomach implements NbtSerialisable {
                 for (int i = 0; i < count; i++) {
                     vomitingTicks--;
                     if (!entity.getWorld().isClient) {
-                        entity.dropItem(PSItems.VOMIT.getDefaultStack(), true, true).setPickupDelayInfinite();
+                        entity.dropItem(PSItems.VOMIT.getDefaultStack(), true, true, true).setPickupDelayInfinite();
                         playBarfNoise();
                     }
                 }

@@ -135,7 +135,7 @@ public class PaperBagItem extends Item {
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         BagContentsComponent contents = stack.get(PSComponents.BAG_CONTENTS);
         if (contents != null) {
-            contents.appendTooltip(context, textConsumer, type, stack);
+            contents.appendTooltip(context, textConsumer, type, null, stack);
         }
     }
 
@@ -145,7 +145,7 @@ public class PaperBagItem extends Item {
         ItemStack swithdrawn = BagContentsComponent.withdraw(bag, user.isSneaky() ? 1 : BagContentsComponent.get(bag).stack().getMaxCount());
 
         if (!swithdrawn.isEmpty()) {
-            user.dropItem(swithdrawn, false, false);
+            user.dropItem(swithdrawn, false, false, true);
             user.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 1, 1);
             user.incrementStat(Stats.USED.getOrCreateStat(this));
             return ActionResult.SUCCESS.withNewHandStack(bag);
@@ -175,7 +175,7 @@ public class PaperBagItem extends Item {
             }).findAny().isEmpty()) {
 
             if (!contents.isEmpty()) {
-                context.getPlayer().dropItem(builder.split(context.getPlayer().isSneaky() ? 1 : contents.stack().getMaxCount()), false, false);
+                context.getPlayer().dropItem(builder.split(context.getPlayer().isSneaky() ? 1 : contents.stack().getMaxCount()), false, false, true);
                 bag.set(PSComponents.BAG_CONTENTS, builder.build());
                 context.getPlayer().playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 1, 1);
                 return ActionResult.SUCCESS;

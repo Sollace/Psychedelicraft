@@ -85,11 +85,11 @@ public class PsychedelicraftClient implements ClientModInitializer {
             if (FluidCapacity.get(stack) > 0) {
                 Consumer<Text> consumer = tooltip::add;
                 FluidCapacity.appendTooltip(stack, context, consumer, type);
-                ItemFluids.of(stack).appendTooltip(context, consumer, type, stack);
-                ItemFluidsMixture.of(stack).appendTooltip(context, consumer, type, stack);
+                ItemFluids.of(stack).appendTooltip(context, consumer, type, null, stack);
+                ItemFluidsMixture.of(stack).appendTooltip(context, consumer, type, null, stack);
             }
 
-            ItemDrugs.get(stack).appendTooltip(context, tooltip::add, type, stack);
+            ItemDrugs.get(stack).appendTooltip(context, tooltip::add, type, null, stack);
 
             if (!lines.isEmpty()) {
                 lines.addAll(1, tooltip);

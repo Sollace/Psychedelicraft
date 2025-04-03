@@ -9,9 +9,9 @@ import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.component.ComponentMap;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -83,7 +83,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
                     tooltip.add(Text.translatable("psychedelicraft.container.levels", FluidVolumes.format(fluids.amount()), FluidVolumes.format(capacity)).formatted(Formatting.GRAY));
                 }
             }
-            fluids.appendTooltip(Item.TooltipContext.DEFAULT, tooltip::add, TooltipType.BASIC, ComponentMap.EMPTY);
+            fluids.appendTooltip(Item.TooltipContext.DEFAULT, tooltip::add, TooltipType.BASIC, MinecraftClient.getInstance().player, ItemStack.EMPTY);
             tooltip.addAll(details);
             context.drawTooltip(MinecraftClient.getInstance().textRenderer, tooltip, mouseX, mouseY);
         }

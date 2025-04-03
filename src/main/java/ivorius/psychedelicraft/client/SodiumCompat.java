@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.client;
 
-import net.caffeinemc.mods.sodium.api.texture.SpriteUtil;
+//import net.caffeinemc.mods.sodium.api.texture.SpriteUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.texture.Sprite;
 
@@ -17,7 +17,7 @@ public final class SodiumCompat {
 
     static class Impl {
         static void markSpriteActive(Sprite sprite) {
-            SpriteUtil.INSTANCE.markSpriteActive(sprite);
+            //SpriteUtil.INSTANCE.markSpriteActive(sprite);
         }
     }
 }

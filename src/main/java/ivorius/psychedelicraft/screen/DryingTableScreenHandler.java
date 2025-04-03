@@ -18,7 +18,7 @@ public class DryingTableScreenHandler extends ScreenHandler {
     private final PropertyDelegate properties;
 
     public DryingTableScreenHandler(int syncId, PlayerInventory inventory, BlockPos pos) {
-        this(syncId, inventory, (DryingTableBlockEntity)inventory.player.getWorld().getBlockEntity(pos));
+        this(syncId, inventory, (DryingTableBlockEntity)inventory.method_69259().getWorld().getBlockEntity(pos));
     }
 
     public DryingTableScreenHandler(int syncId, PlayerInventory inventory, DryingTableBlockEntity container) {
@@ -26,7 +26,7 @@ public class DryingTableScreenHandler extends ScreenHandler {
         this.inventory = inventory;
         this.properties = container.propertyDelegate;
 
-        addSlot(new SlotDryingTableResult(inventory.player, container, 0, 124, 35));
+        addSlot(new SlotDryingTableResult(inventory.method_69259(), container, 0, 124, 35));
 
         for (int x = 0; x < 3; ++x) {
             for (int y = 0; y < 3; ++y) {

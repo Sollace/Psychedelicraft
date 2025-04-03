@@ -20,7 +20,7 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentType;
-import net.minecraft.component.ComponentsAccess;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item.TooltipContext;
@@ -174,7 +174,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type, ComponentsAccess components) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type, PlayerEntity playerEntity, ItemStack itemStack) {
         fluid().appendTooltip(this, tooltip, type);
         if (type.isAdvanced()) {
             tooltip.accept(Text.literal("Contents:").formatted(Formatting.DARK_GRAY));

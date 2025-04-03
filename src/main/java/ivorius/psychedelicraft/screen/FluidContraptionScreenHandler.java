@@ -34,7 +34,7 @@ public class FluidContraptionScreenHandler<T extends FlaskBlockEntity> extends S
 
     @SuppressWarnings("unchecked")
     public FluidContraptionScreenHandler(ScreenHandlerType<? extends FluidContraptionScreenHandler<T>> type, int syncId, PlayerInventory inventory, BlockWithFluid.InteractionData data) {
-        this(type, syncId, inventory, (T)inventory.player.getWorld().getBlockEntity(data.pos()), data.side());
+        this(type, syncId, inventory, (T)inventory.method_69259().getWorld().getBlockEntity(data.pos()), data.side());
     }
 
     public FluidContraptionScreenHandler(ScreenHandlerType<? extends FluidContraptionScreenHandler<T>> type, int syncId, PlayerInventory inventory, T blockEntity, Direction direction) {
