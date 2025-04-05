@@ -10,17 +10,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
-public abstract class ZeroScreen extends RenderLayer {
-    private ZeroScreen() {super(null, 0, false, false, null, null);}
-
+public abstract class ZeroScreen {
     private static final Identifier[] TEXTURES = IntStream.range(0, 8)
             .mapToObj(i -> Psychedelicraft.id("textures/entity/reality_rift/zero_screen_" + i + ".png"))
             .toArray(Identifier[]::new);
     private static final float X_PIXELS = 140 / 2F;
     private static final float Y_PIXELS = 224 / 2F;
 
-    private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> RenderLayer.of("ps_zero_screen", 1536, false, false, PSShaders.ZERO_MATTER, MultiPhaseParameters.builder()
-            .texture(Textures.create()
+    private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> RenderLayer.of("ps_zero_screen", 1536, false, false, PSShaders.ZERO_MATTER, RenderLayer.MultiPhaseParameters.builder()
+            .texture(RenderLayer.Textures.create()
                     .add(texture, false, false)
                     .add(texture, false, false)
                     .build())
