@@ -41,14 +41,10 @@ public interface Combustable {
     float getExplosionStrength(ItemFluids stack);
 
     static Combustable fromStack(ItemStack stack) {
-        if (ItemFluids.of(stack).fluid() instanceof Combustable exploder) {
-            return exploder;
-        }
-
-        return NON_COMBUSTABLE;
+        return ItemFluids.of(stack).fluid();
     }
 
     static Combustable fromStack(ItemFluids stack) {
-        return stack.fluid() instanceof Combustable exploder ? exploder : NON_COMBUSTABLE;
+        return stack.fluid();
     }
 }

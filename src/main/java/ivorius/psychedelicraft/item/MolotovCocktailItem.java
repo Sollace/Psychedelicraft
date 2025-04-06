@@ -6,7 +6,6 @@
 package ivorius.psychedelicraft.item;
 
 import ivorius.psychedelicraft.entity.MolotovCocktailEntity;
-import ivorius.psychedelicraft.fluid.Combustable;
 import ivorius.psychedelicraft.fluid.ConsumableFluid;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.item.component.ItemFluids;
@@ -83,13 +82,10 @@ public class MolotovCocktailItem extends DrinkableItem implements DyeableItem {
 
     private int getQuality(ItemStack stack) {
         ItemFluids fluids = ItemFluids.of(stack);
-        if (fluids.fluid() instanceof Combustable exploding) {
-            float explStr = exploding.getExplosionStrength(fluids) * 0.8f;
-            float fireStr = exploding.getFireStrength(fluids) * 0.6f;
 
-            return MathHelper.clamp(MathHelper.floor((fireStr + explStr) + 0.5f), 0, 7);
-        }
+        float explStr = fluids.fluid().getExplosionStrength(fluids) * 0.8f;
+        float fireStr = fluids.fluid().getFireStrength(fluids) * 0.6f;
 
-        return 0;
+        return MathHelper.clamp(MathHelper.floor((fireStr + explStr) + 0.5f), 0, 7);
     }
 }
