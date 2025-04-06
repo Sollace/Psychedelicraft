@@ -16,7 +16,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.RotationAxis;
@@ -36,7 +35,7 @@ public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBloc
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - entity.getCachedState().get(BarrelBlock.FACING).asRotation()));
 
         model.setRotationAngles(entity, tickDelta);
-        model.render(matrices, vertices.getBuffer(model.getLayer(getBarrelTexture(entity))), light, overlay, Colors.WHITE);
+        model.render(matrices, vertices.getBuffer(model.getLayer(getBarrelTexture(entity))), light, overlay, 1, 1, 1, 1);
 
         Resovoir tank = entity.getPrimaryTank();
 

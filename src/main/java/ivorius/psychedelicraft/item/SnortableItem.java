@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.item;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.UseAction;
 
@@ -18,7 +17,7 @@ public class SnortableItem extends EdibleItem {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getMaxUseTime(ItemStack stack) {
         return 32;
     }
 }

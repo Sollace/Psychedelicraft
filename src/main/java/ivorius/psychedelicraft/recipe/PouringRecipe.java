@@ -4,11 +4,11 @@ import java.util.List;
 
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -31,12 +31,13 @@ public class PouringRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean matches(CraftingRecipeInput inventory, World world) {
+    public boolean matches(RecipeInputInventory inventory, World world) {
+        List<ItemStack> stacks = RecipeUtils.stacks(inventory).toList();
         List<ItemStack> recepticals = RecipeUtils
-                .recepticals(inventory.getStacks().stream())
+                .recepticals(stacks.stream())
                 .toList();
 
-        if (inventory.getStacks().size() != 2 || recepticals.size() != 2) {
+        if (stacks.size() != 2 || recepticals.size() != 2) {
             return false;
         }
 
@@ -51,8 +52,8 @@ public class PouringRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        var recepticals = RecipeUtils.recepticals(inventory.getStacks().stream()).toList();
+    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
+        var recepticals = RecipeUtils.recepticals(RecipeUtils.stacks(inventory)).toList();
 
         ItemFluids.Transaction to = ItemFluids.Transaction.begin(recepticals.get(1).copyWithCount(1));
         ItemFluids.Transaction from = ItemFluids.Transaction.begin(recepticals.get(0).copy());
@@ -67,10 +68,10 @@ public class PouringRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput inventory) {
+    public DefaultedList<ItemStack> getRemainder(RecipeInputInventory inventory) {
         var recepticals = RecipeUtils.recepticalSlots(inventory).toList();
         if (recepticals.size() < 2) {
-            return DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
+            return DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
         }
 
         ItemFluids.Transaction to = ItemFluids.Transaction.begin(recepticals.get(1).content());
@@ -78,8 +79,8 @@ public class PouringRecipe extends SpecialCraftingRecipe {
 
         from.withdraw(Math.min(from.fluids().amount(), to.capacity() - to.fluids().amount()));
 
-        DefaultedList<ItemStack> remainder = DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
-        remainder.set(recepticals.get(0).position(), from.toItemStack());
+        DefaultedList<ItemStack> remainder = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
+        remainder.set(recepticals.get(0).slot(), from.toItemStack());
         return remainder;
     }
 

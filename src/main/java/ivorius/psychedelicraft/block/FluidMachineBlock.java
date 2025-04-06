@@ -14,12 +14,12 @@ abstract class FluidMachineBlock<T extends FluidProcessingBlockEntity> extends B
     }
 
     @Override
-    protected boolean emitsRedstonePower(BlockState state) {
+    public boolean emitsRedstonePower(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         // signal 0-15 to indicate progress
         return direction.getAxis() == Axis.Y ? 0 : toRedstoneSignal(getProgress(world, pos), 15);
     }

@@ -24,7 +24,7 @@ public interface MutableStructurePool {
             registries.registerEntryAdded(RegistryKeys.TEMPLATE_POOL, (rawId, id, pool) -> {
                 boolean isInjectedPool = id.getNamespace().equals(Psychedelicraft.VANILLA_EXTENSIONS_NAMESPACE);
                 if (isInjectedPool || id.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
-                    Identifier targetId = isInjectedPool ? Identifier.of(id.getPath()) : id;
+                    Identifier targetId = isInjectedPool ? new Identifier(id.getPath()) : id;
 
                     if (registeredPools.computeIfAbsent(targetId, PoolPair::new).offer(isInjectedPool, pool)) {
                         registeredPools.remove(targetId);

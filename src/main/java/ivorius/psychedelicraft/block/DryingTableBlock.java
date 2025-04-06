@@ -17,11 +17,13 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -43,19 +45,19 @@ public class DryingTableBlock extends BlockWithEntity {
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
-            player.openHandledScreen(new ExtendedScreenHandlerFactory<BlockPos>() {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
                 public Text getDisplayName() {
                     return DryingTableBlock.this.getName();
@@ -66,8 +68,8 @@ public class DryingTableBlock extends BlockWithEntity {
                 }
 
                 @Override
-                public BlockPos getScreenOpeningData(ServerPlayerEntity player) {
-                    return pos;
+                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+                    buf.writeBlockPos(pos);
                 }
             });
             return ActionResult.SUCCESS;
@@ -86,24 +88,24 @@ public class DryingTableBlock extends BlockWithEntity {
     }
 
     @Override
-    protected boolean hasComparatorOutput(BlockState state) {
+    public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
             return (int)(be.getHeatRatio() * 15);
         }).orElse(0);
     }
 
     @Override
-    protected boolean emitsRedstonePower(BlockState state) {
+    public boolean emitsRedstonePower(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
             return (int)(be.getDryingProgress() * 15);
         }).orElse(0);

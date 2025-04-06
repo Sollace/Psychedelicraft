@@ -80,7 +80,7 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
     }
 
     public void setup(Type type, String domain, String name) {
-        this.name = Identifier.of(name);
+        this.name = new Identifier(name);
         this.type = type;
     }
 

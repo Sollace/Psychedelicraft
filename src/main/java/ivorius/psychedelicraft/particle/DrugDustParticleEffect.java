@@ -3,25 +3,57 @@ package ivorius.psychedelicraft.particle;
 import java.util.concurrent.atomic.AtomicReference;
 import org.joml.Vector3f;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.*;
 import net.minecraft.util.dynamic.Codecs;
 
 public class DrugDustParticleEffect extends DustParticleEffect {
+    @SuppressWarnings("deprecation")
     static ParticleType<DrugDustParticleEffect> createType() {
         AtomicReference<ParticleType<DrugDustParticleEffect>> type = new AtomicReference<>();
-        type.set(FabricParticleTypes.complex(RecordCodecBuilder.mapCodec(instance -> instance.group(
+
+        var codec = RecordCodecBuilder.create(instance -> instance.group(
                 Codecs.VECTOR_3F.fieldOf("color").forGetter(DustParticleEffect::getColor),
-                SCALE_CODEC.fieldOf("scale").forGetter(DustParticleEffect::getScale)
-            ).apply(instance, (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale))), PacketCodec.tuple(
-                PacketCodecs.VECTOR3F, DustParticleEffect::getColor,
-                PacketCodecs.FLOAT, DustParticleEffect::getScale,
-                (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale)
-            )));
+                Codec.FLOAT.fieldOf("scale").forGetter(DustParticleEffect::getScale)
+            ).apply(instance, (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale)));
+        var packetCodec = PacketCodec.tuple(
+            PacketCodecs.VECTOR3F, DustParticleEffect::getColor,
+            PacketCodecs.FLOAT, DustParticleEffect::getScale,
+            (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale)
+        );
+
+        type.set(new ParticleType<>(false, new ParticleEffect.Factory<>() {
+            @Override
+            public DrugDustParticleEffect read(ParticleType<DrugDustParticleEffect> type, StringReader reader) throws CommandSyntaxException {
+                reader.expect(' ');
+                float r = reader.readFloat();
+                reader.expect(' ');
+                float g = reader.readFloat();
+                reader.expect(' ');
+                float b = reader.readFloat();
+                reader.expect(' ');
+                float scale = reader.readFloat();
+                return new DrugDustParticleEffect(type, new Vector3f(r, g, b), scale);
+            }
+
+            @Override
+            public DrugDustParticleEffect read(ParticleType<DrugDustParticleEffect> type, PacketByteBuf buf) {
+                return packetCodec.decode(buf);
+            }
+        }) {
+            @Override
+            public Codec<DrugDustParticleEffect> getCodec() {
+                return codec;
+            }
+        });
+
         return type.get();
     }
 

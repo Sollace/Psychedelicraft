@@ -4,9 +4,7 @@ import java.util.function.UnaryOperator;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.Processable;
-import net.minecraft.component.ComponentType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import ivorius.psychedelicraft.util.compat.ComponentType;
 
 public interface PSComponents {
     ComponentType<BagContentsComponent> BAG_CONTENTS = register("bag_contents", builder -> builder.codec(BagContentsComponent.CODEC).packetCodec(BagContentsComponent.PACKET_CODEC));
@@ -19,7 +17,7 @@ public interface PSComponents {
     ComponentType<Impurities> IMPURITIES = register("impurities", builder -> builder.codec(Impurities.CODEC).packetCodec(Impurities.PACKET_CODEC));
 
     private static <T> ComponentType<T> register(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
-        return Registry.register(Registries.DATA_COMPONENT_TYPE, Psychedelicraft.id(id), builderOperator.apply(ComponentType.builder()).build());
+        return ComponentType.register(Psychedelicraft.id(id), builderOperator.apply(new ComponentType.Builder<>()));
     }
 
     static void bootstrap() {

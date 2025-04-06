@@ -58,7 +58,7 @@ public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
     public void consume(ItemFluids stack, LivingEntity entity, ConsumptionType type) {
         if (getPhysical().isIn(FluidTags.LAVA)) {
             entity.setOnFireFromLava();
-            entity.setOnFireFor(30F);
+            entity.setFireTicks(30);
         }
     }
 

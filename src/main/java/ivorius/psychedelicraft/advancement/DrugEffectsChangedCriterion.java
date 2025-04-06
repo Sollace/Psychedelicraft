@@ -52,7 +52,7 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
                             DrugType.REGISTRY.getCodec().fieldOf("id").forGetter(DrugPredicate::type),
                             DoubleRange.CODEC.fieldOf("value").forGetter(DrugPredicate::range)
                     ).apply(instance, DrugPredicate::new))
-            ).xmap(Either::unwrap, Either::right);
+            ).xmap(either -> either.left().or(either::right).orElseThrow(), Either::right);
 
             @Override
             public boolean test(DrugProperties properties) {

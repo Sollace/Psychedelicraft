@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.datagen.providers.loot;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -8,6 +7,7 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.PSComponents;
+import ivorius.psychedelicraft.util.compat.ComponentChanges;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.SimpleFabricLootTableProvider;
 import net.minecraft.item.ItemConvertible;
@@ -17,18 +17,16 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.LootTable.Builder;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.function.SetComponentsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.function.SetNbtLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 
+@SuppressWarnings("deprecation")
 public class PSChestAdditionsLootTableProvider extends SimpleFabricLootTableProvider {
-    public PSChestAdditionsLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
-        super(dataOutput, registryLookup, LootContextTypes.CHEST);
+    public PSChestAdditionsLootTableProvider(FabricDataOutput dataOutput) {
+        super(dataOutput, LootContextTypes.CHEST);
     }
 
     @Override
@@ -37,11 +35,11 @@ public class PSChestAdditionsLootTableProvider extends SimpleFabricLootTableProv
     }
 
     @Override
-    public void accept(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> exporter) {
-        acceptAdditions((id, builder) -> exporter.accept(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(Psychedelicraft.VANILLA_EXTENSIONS_NAMESPACE, id.getValue().getPath())), builder));
+    public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
+        acceptAdditions((id, builder) -> exporter.accept(Identifier.of(Psychedelicraft.VANILLA_EXTENSIONS_NAMESPACE, id.getPath()), builder));
     }
 
-    public void acceptAdditions(BiConsumer<RegistryKey<LootTable>, Builder> exporter) {
+    public void acceptAdditions(BiConsumer<Identifier, Builder> exporter) {
         exporter.accept(LootTables.ABANDONED_MINESHAFT_CHEST, LootTable.builder().pool(LootPool.builder()
                 .with(loot(PSItems.WINE_GRAPES, 8, 3, 8))
                 .with(loot(PSItems.CIGARETTE, 5, 1, 8))
@@ -73,7 +71,7 @@ public class PSChestAdditionsLootTableProvider extends SimpleFabricLootTableProv
                 .rolls(UniformLootNumberProvider.create(3, 8))
                 .with(loot(PSItems.WOODEN_MUG, 1, 1, 16))
                 .with(loot(PSItems.CIGARETTE, 1, 1, 16))
-                .with(loot(PSItems.WOODEN_MUG, 3, 1, 1).apply(SetComponentsLootFunction.builder(PSComponents.FLUIDS, PSFluids.COFFEE.getDefaultStack(FluidVolumes.MUG).withAttribute("warmth", 2))))
+                .with(loot(PSItems.WOODEN_MUG, 3, 1, 1).apply(SetNbtLootFunction.builder(ComponentChanges.builder().add(PSComponents.FLUIDS, PSFluids.COFFEE.getDefaultStack(FluidVolumes.MUG).withAttribute("warmth", 2)).build())))
         ));
         exporter.accept(LootTables.VILLAGE_TANNERY_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(3, 8))
@@ -85,7 +83,7 @@ public class PSChestAdditionsLootTableProvider extends SimpleFabricLootTableProv
                 .with(loot(PSItems.WOODEN_MUG, 1, 1, 16))
                 .with(loot(PSItems.CIGARETTE, 2, 1, 16))
                 .with(loot(PSItems.JOINT, 2, 1, 16))
-                .with(loot(PSItems.WOODEN_MUG, 3, 1, 1).apply(SetComponentsLootFunction.builder(PSComponents.FLUIDS, PSFluids.COFFEE.getDefaultStack(FluidVolumes.MUG))))
+                .with(loot(PSItems.WOODEN_MUG, 3, 1, 1).apply(SetNbtLootFunction.builder(ComponentChanges.builder().add(PSComponents.FLUIDS, PSFluids.COFFEE.getDefaultStack(FluidVolumes.MUG)).build())))
                 .with(ItemEntry.builder(PSItems.STONE_CUP))
                 .with(loot(PSItems.HASH_MUFFIN, 1, 1, 8))
         ));
@@ -95,10 +93,10 @@ public class PSChestAdditionsLootTableProvider extends SimpleFabricLootTableProv
                 .with(loot(PSItems.CIGARETTE, 1, 1, 16))
                 .with(loot(PSItems.CIGAR, 2, 1, 4))
                 .with(loot(PSItems.JOINT, 1, 1, 1))
-                .with(loot(PSItems.WOODEN_MUG, 1, 1, 1).apply(SetComponentsLootFunction.builder(PSComponents.FLUIDS, PSFluids.COFFEE.getDefaultStack(FluidVolumes.MUG).withAttribute("warmth", 2))))
-                .with(loot(PSItems.STONE_CUP, 1, 1, 1).apply(SetComponentsLootFunction.builder(PSComponents.FLUIDS, PSFluids.PEYOTE_JUICE.getDefaultStack(FluidVolumes.CUP))))
-                .with(loot(PSItems.SYRINGE, 1, 1, 1).apply(SetComponentsLootFunction.builder(PSComponents.FLUIDS, PSFluids.COCAINE.getDefaultStack(FluidVolumes.SYRINGE))))
-                .with(loot(PSItems.SYRINGE, 1, 1, 1).apply(SetComponentsLootFunction.builder(PSComponents.FLUIDS, PSFluids.CAFFEINE.getDefaultStack(FluidVolumes.SYRINGE))))
+                .with(loot(PSItems.WOODEN_MUG, 1, 1, 1).apply(SetNbtLootFunction.builder(ComponentChanges.builder().add(PSComponents.FLUIDS, PSFluids.COFFEE.getDefaultStack(FluidVolumes.MUG).withAttribute("warmth", 2)).build())))
+                .with(loot(PSItems.STONE_CUP, 1, 1, 1).apply(SetNbtLootFunction.builder(ComponentChanges.builder().add(PSComponents.FLUIDS, PSFluids.PEYOTE_JUICE.getDefaultStack(FluidVolumes.CUP)).build())))
+                .with(loot(PSItems.SYRINGE, 1, 1, 1).apply(SetNbtLootFunction.builder(ComponentChanges.builder().add(PSComponents.FLUIDS, PSFluids.COCAINE.getDefaultStack(FluidVolumes.SYRINGE)).build())))
+                .with(loot(PSItems.SYRINGE, 1, 1, 1).apply(SetNbtLootFunction.builder(ComponentChanges.builder().add(PSComponents.FLUIDS, PSFluids.CAFFEINE.getDefaultStack(FluidVolumes.SYRINGE)).build())))
                 .with(loot(PSItems.HASH_MUFFIN, 1, 1, 8))
         ));
         exporter.accept(LootTables.VILLAGE_WEAPONSMITH_CHEST, LootTable.builder().pool(LootPool.builder()
@@ -106,7 +104,7 @@ public class PSChestAdditionsLootTableProvider extends SimpleFabricLootTableProv
                 .with(loot(PSItems.WOODEN_MUG, 3, 1, 16))
                 .with(loot(PSItems.CIGARETTE, 1, 1, 16))
                 .with(loot(PSItems.CIGAR, 2, 1, 2))
-                .with(loot(PSItems.WOODEN_MUG, 1, 1, 1).apply(SetComponentsLootFunction.builder(PSComponents.FLUIDS, PSFluids.COFFEE.getDefaultStack(FluidVolumes.MUG).withAttribute("warmth", 2))))
+                .with(loot(PSItems.WOODEN_MUG, 1, 1, 1).apply(SetNbtLootFunction.builder(ComponentChanges.builder().add(PSComponents.FLUIDS, PSFluids.COFFEE.getDefaultStack(FluidVolumes.MUG).withAttribute("warmth", 2)).build())))
                 .with(loot(PSItems.HASH_MUFFIN, 3, 1, 8))
         ));
     }

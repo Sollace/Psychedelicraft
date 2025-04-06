@@ -87,22 +87,22 @@ public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return STANDING_SHAPES.get(state.get(FACING).getAxis());
     }
 
     @Override
-    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
@@ -113,18 +113,19 @@ public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
     }
 
     @Override
-    protected ItemActionResult onInteractWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
+    protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BarrelBlockEntity blockEntity) {
+        ItemStack stack = player.getStackInHand(hand);
 
         if (stack.isOf(Items.STICK)) {
             world.playSound(player, pos, SoundEvents.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS);
             world.emitGameEvent(player, GameEvent.BLOCK_OPEN, pos);
             world.setBlockState(pos, state.with(FACING, state.get(FACING).getAxis() == Axis.Y ? player.getHorizontalFacing().getOpposite() : Direction.DOWN));
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
         int capacity = FluidCapacity.get(stack);
         if (!state.get(TAPPED) || state.get(FACING).getAxis() == Axis.Y || capacity == 0) {
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return ActionResult.PASS;
         }
 
         if (ItemFluids.of(stack).amount() < capacity) {
@@ -152,20 +153,20 @@ public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
                     }
                 }
 
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
         }
 
-        return ItemActionResult.FAIL;
+        return ActionResult.FAIL;
     }
 
     @Override
-    protected boolean emitsRedstonePower(BlockState state) {
+    public boolean emitsRedstonePower(BlockState state) {
         return state.get(FACING).getAxis() != Axis.Y;
     }
 
     @Override
-    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         // only output at the back
         if (direction != state.get(FACING)) {
             return 0;
@@ -175,7 +176,7 @@ public class BarrelBlock extends FluidMachineBlock<BarrelBlockEntity> {
     }
 
     @Override
-    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         // only output at the back
         if (direction != state.get(FACING)) {
             return 0;

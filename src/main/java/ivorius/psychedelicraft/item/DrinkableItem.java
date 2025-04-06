@@ -81,7 +81,7 @@ public class DrinkableItem extends Item {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getMaxUseTime(ItemStack stack) {
         return consumptionTime;
     }
 

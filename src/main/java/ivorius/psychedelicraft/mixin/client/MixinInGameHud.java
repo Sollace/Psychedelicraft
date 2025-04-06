@@ -11,7 +11,6 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.LockableHungerManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
 
 @Mixin(InGameHud.class)
@@ -20,9 +19,9 @@ abstract class MixinInGameHud {
     private int ticks;
     private int originalTicks;
 
-    @Inject(method = "render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V", at = @At("HEAD"))
-    private void onRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
-        DrugRenderer.INSTANCE.onRenderOverlay(context, tickCounter);
+    @Inject(method = "render(Lnet/minecraft/client/gui/DrawContext;F)V", at = @At("HEAD"))
+    private void onRender(DrawContext context, float tickDelta, CallbackInfo info) {
+        DrugRenderer.INSTANCE.onRenderOverlay(context);
     }
 
     @Inject(method = "renderFood", at = @At("HEAD"))

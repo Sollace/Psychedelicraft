@@ -14,7 +14,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -149,16 +148,16 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
+    public void writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
         compound.putInt("timeProcessed", getTimeProcessed());
         compound.putInt("timeNeeded", getTimeNeeded());
         compound.putInt("repeatCount", repeatCount);
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
+    public void readNbt(NbtCompound compound) {
+        super.readNbt(compound);
         setTimeProcessed(compound.getInt("timeProcessed"));
         setTimeNeeded(compound.getInt("timeNeeded"));
         repeatCount = compound.getInt("repeatCount");

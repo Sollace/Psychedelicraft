@@ -9,14 +9,15 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.math.BlockPos;
 
 /**
  * @author Sollace
  * @since 12 Jan 2023
  */
 public interface PSScreenHandlers {
-    ScreenHandlerType<DryingTableScreenHandler> DRYING_TABLE = register("drying_table", new ExtendedScreenHandlerType<>(DryingTableScreenHandler::new, BlockPos.PACKET_CODEC));
+    ScreenHandlerType<DryingTableScreenHandler> DRYING_TABLE = register("drying_table", new ExtendedScreenHandlerType<>((syncId, inventory, pos) -> {
+        return new DryingTableScreenHandler(syncId, inventory, pos.readBlockPos());
+    }));
 
     ScreenHandlerType<FluidContraptionScreenHandler<BarrelBlockEntity>> BARREL = register("barrel", contraptionScreenHander());
     ScreenHandlerType<FluidContraptionScreenHandler<DistilleryBlockEntity>> DISTILLERY = register("distillery", contraptionScreenHander());
@@ -30,8 +31,7 @@ public interface PSScreenHandlers {
     static <T extends FlaskBlockEntity> ScreenHandlerType<FluidContraptionScreenHandler<T>> contraptionScreenHander() {
         final AtomicReference<ScreenHandlerType<FluidContraptionScreenHandler<T>>> type = new AtomicReference<>(null);
         type.set(new ExtendedScreenHandlerType<>(
-                (sync, inventory, data) -> new FluidContraptionScreenHandler<>(type.get(), sync, inventory, data),
-                BlockWithFluid.InteractionData.PACKET_CODEC
+                (sync, inventory, buf) -> new FluidContraptionScreenHandler<>(type.get(), sync, inventory, new BlockWithFluid.InteractionData(buf))
         ));
         return type.get();
     }

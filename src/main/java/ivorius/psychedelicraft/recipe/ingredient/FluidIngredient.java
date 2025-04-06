@@ -18,14 +18,14 @@ import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.RecipeUtils;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 
 public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> level, Map<String, Integer> attributes) implements CustomIngredient, Predicate<ItemStack> {
     public static final FluidIngredient EMPTY = new FluidIngredient(Optional.empty(), Optional.empty(), Map.of());
@@ -38,7 +38,7 @@ public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> le
             SimpleFluid.CODEC.xmap(fluid -> new FluidIngredient(Optional.of(fluid), Optional.empty(), Map.of()), i -> i.fluid().orElse(PSFluids.EMPTY)),
             MAP_CODEC.codec()
         ).xmap(RecipeUtils::iDontCareWhich, Either::right);
-    public static final PacketCodec<RegistryByteBuf, FluidIngredient> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, FluidIngredient> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.optional(SimpleFluid.PACKET_CODEC), FluidIngredient::fluid,
             PacketCodecs.optional(PacketCodecs.INTEGER), FluidIngredient::level,
             PacketCodecs.map(HashMap::new, PacketCodecs.STRING, PacketCodecs.INTEGER), FluidIngredient::attributes,

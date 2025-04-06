@@ -17,6 +17,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -48,9 +49,9 @@ public class ValveBlock extends GlassTubeBlock {
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         world.setBlockState(pos, state.cycle(OPEN));
         world.playSoundAtBlockCenter(pos, state.get(OPEN) ? PSSounds.BLOCK_VALVE_CLOSE : PSSounds.BLOCK_VALVE_OPEN, SoundCategory.BLOCKS, 1.5F, state.get(OPEN) ? 1 : 5, true);
-        return ActionResult.SUCCESS_NO_ITEM_USED;
+        return ActionResult.SUCCESS;
     }
 }

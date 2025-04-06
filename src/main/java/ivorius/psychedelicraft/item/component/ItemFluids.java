@@ -17,22 +17,21 @@ import ivorius.psychedelicraft.fluid.container.FluidTransferUtils;
 import ivorius.psychedelicraft.fluid.container.RecepticalHandler;
 import ivorius.psychedelicraft.fluid.container.VariantMarshal;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
+import ivorius.psychedelicraft.util.compat.ComponentChanges;
+import ivorius.psychedelicraft.util.compat.ComponentType;
+import ivorius.psychedelicraft.util.compat.ItemSubPredicate;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.minecraft.component.ComponentChanges;
-import net.minecraft.component.ComponentType;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.predicate.NumberRange.IntRange;
-import net.minecraft.predicate.item.ComponentSubPredicate;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -45,7 +44,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
             Codec.INT.optionalFieldOf("amount", 1).forGetter(ItemFluids::amount),
             ATTRIBUTES_CODEC.optionalFieldOf("attributes", Map.of()).forGetter(ItemFluids::attributes)
     ).apply(instance, ItemFluids::create));
-    public static final PacketCodec<RegistryByteBuf, ItemFluids> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, ItemFluids> PACKET_CODEC = PacketCodec.tuple(
             SimpleFluid.PACKET_CODEC, ItemFluids::fluid,
             PacketCodecs.INTEGER, ItemFluids::amount,
             PacketCodecs.map(HashMap::new, PacketCodecs.STRING, PacketCodecs.INTEGER), ItemFluids::attributes,
@@ -54,12 +53,12 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     @NotNull
     public static ItemFluids direct(ItemStack stack) {
-        return stack.getOrDefault(PSComponents.FLUIDS, EMPTY);
+        return StackCompat.getOrDefault(stack, PSComponents.FLUIDS, EMPTY);
     }
 
     @NotNull
     public static ItemFluids of(ItemStack stack) {
-        ItemFluids fluids = stack.get(PSComponents.FLUIDS);
+        ItemFluids fluids = StackCompat.get(stack, PSComponents.FLUIDS);
         if (fluids == null) {
             var fabricContents = FluidTransferUtils.getContents(stack);
             if (fabricContents.isPresent()) {
@@ -76,7 +75,7 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     }
 
     public static ItemFluids of(FluidVariant variant, int capacity) {
-        Optional<? extends ItemFluids> fluidsOptional = variant.getComponents().get(PSComponents.FLUIDS);
+        Optional<? extends ItemFluids> fluidsOptional = Optional.ofNullable(StackCompat.get(variant, PSComponents.FLUIDS));
         ItemFluids fluids = fluidsOptional == null ? null : fluidsOptional.orElse(null);
         if (fluids == null) {
             return create(SimpleFluid.of(variant.getFluid()), capacity, Map.of());
@@ -173,9 +172,9 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
-        fluid().appendTooltip(this, tooltip, type);
-        if (type.isAdvanced()) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip) {
+        fluid().appendTooltip(this, tooltip, context);
+        if (context.isAdvanced()) {
             tooltip.accept(Text.literal("Contents:").formatted(Formatting.DARK_GRAY));
             if (isEmpty()) {
                 tooltip.accept(Text.literal(" <empty>").formatted(Formatting.DARK_GRAY));
@@ -189,20 +188,20 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     }
 
     public NbtElement encode() {
-        return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
+        return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow(false, s -> {});
     }
 
     public static ItemFluids decode(NbtElement nbt) {
         return ItemFluids.CODEC.decode(NbtOps.INSTANCE, nbt).result().map(pair -> pair.getFirst()).orElse(ItemFluids.EMPTY);
     }
 
-    public record Predicate(Optional<List<SimpleFluid>> fluid, IntRange amount, Map<String, IntRange> attributes) implements ComponentSubPredicate<ItemFluids> {
+    public record Predicate(Optional<List<SimpleFluid>> fluid, IntRange amount, Map<String, IntRange> attributes) implements ItemSubPredicate<ItemFluids> {
         public static final Codec<Predicate> CODEC = RecordCodecBuilder.create(i -> i.group(
                 SimpleFluid.CODEC.listOf().optionalFieldOf("fluid").forGetter(Predicate::fluid),
                 IntRange.CODEC.optionalFieldOf("amount", IntRange.ANY).forGetter(Predicate::amount),
                 Codec.unboundedMap(Codec.STRING, IntRange.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(Predicate::attributes)
         ).apply(i, Predicate::new));
-        public static final PacketCodec<RegistryByteBuf, Predicate> PACKET_CODEC = PacketCodec.tuple(
+        public static final PacketCodec<PacketByteBuf, Predicate> PACKET_CODEC = PacketCodec.tuple(
                 PacketCodecs.optional(SimpleFluid.PACKET_CODEC.collect(PacketCodecs.toList())), Predicate::fluid,
                 PacketCodecUtils.INT_RANGE, Predicate::amount,
                 PacketCodecs.map(HashMap::new, PacketCodecs.STRING, PacketCodecUtils.INT_RANGE), Predicate::attributes,
@@ -267,11 +266,11 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public interface Transaction {
         static Transaction begin(ItemStack initialStack) {
-            if (initialStack.get(PSComponents.FLUID_CAPACITY) == null) {
+            if (StackCompat.get(initialStack, PSComponents.FLUID_CAPACITY) == null) {
                 if (FluidTransferUtils.getCapacity(initialStack) == 0) {
                     ItemStack filledStack = RecepticalHandler.get(initialStack).toFilled(initialStack, ItemFluids.of(FluidVariant.of(Fluids.WATER), 1));
                     if (filledStack != initialStack && filledStack.getItem() != initialStack.getItem()) {
-                        if (filledStack.get(PSComponents.FLUID_CAPACITY) != null) {
+                        if (StackCompat.get(filledStack, PSComponents.FLUID_CAPACITY) != null) {
                             return new DirectTransaction(initialStack);
                         }
                     }

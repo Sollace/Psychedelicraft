@@ -60,26 +60,26 @@ public class PsychedelicraftClient implements ClientModInitializer {
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
             DrugProperties.of((Entity)client.player).ifPresent(properties -> {
-                DrugRenderer.INSTANCE.renderAllHallucinations(context.matrixStack(), context.consumers(), context.camera(), context.tickCounter().getTickDelta(false), properties);
+                DrugRenderer.INSTANCE.renderAllHallucinations(context.matrixStack(), context.consumers(), context.camera(), client.getTickDelta(), properties);
             });
         });
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ShaderLoader.POST_EFFECTS);
 
-        ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
+        ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
 
             List<Text> tooltip = new ArrayList<>();
 
-            Processable.ProcessType.appendTooltip(stack, context, tooltip, type);
+            Processable.ProcessType.appendTooltip(stack, context, tooltip);
 
             if (FluidCapacity.get(stack) > 0) {
                 Consumer<Text> consumer = tooltip::add;
-                FluidCapacity.appendTooltip(stack, context, consumer, type);
-                ItemFluids.of(stack).appendTooltip(context, consumer, type);
-                ItemFluidsMixture.of(stack).appendTooltip(context, consumer, type);
+                FluidCapacity.appendTooltip(stack, context, consumer);
+                ItemFluids.of(stack).appendTooltip(context, consumer);
+                ItemFluidsMixture.of(stack).appendTooltip(context, consumer);
             }
 
-            ItemDrugs.get(stack).appendTooltip(context, tooltip::add, type);
+            ItemDrugs.get(stack).appendTooltip(context, tooltip::add);
 
             if (!lines.isEmpty()) {
                 lines.addAll(1, tooltip);

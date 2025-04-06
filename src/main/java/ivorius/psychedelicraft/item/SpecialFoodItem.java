@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.item;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
 
 /**
@@ -20,7 +19,7 @@ public class SpecialFoodItem extends Item {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getMaxUseTime(ItemStack stack) {
         return eatSpeed;
     }
 }

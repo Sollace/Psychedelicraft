@@ -5,9 +5,9 @@
 
 package ivorius.psychedelicraft.fluid;
 
-import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -82,7 +82,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid {
 
         if (type == ConsumptionType.DRINK) {
             if (((Settings)getSettings()).foodLevel != null && entity instanceof PlayerEntity player) {
-                player.getHungerManager().add(((Settings)getSettings()).foodLevel.nutrition(), ((Settings)getSettings()).foodLevel.saturation());
+                player.getHungerManager().add(((Settings)getSettings()).foodLevel.getHunger(), ((Settings)getSettings()).foodLevel.getSaturationModifier());
             }
         }
     }

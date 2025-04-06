@@ -13,7 +13,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -30,8 +29,8 @@ public class ItemMound implements NbtSerialisable {
         indexes.addAll(original.indexes);
     }
 
-    public ItemMound(NbtCompound compound, WrapperLookup lookup) {
-        fromNbt(compound, lookup);
+    public ItemMound(NbtCompound compound) {
+        fromNbt(compound);
     }
 
     public void addStack(ItemStack stack) {
@@ -109,14 +108,14 @@ public class ItemMound implements NbtSerialisable {
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void toNbt(NbtCompound compound) {
         items.forEach((item, count) -> {
             compound.putInt(Registries.ITEM.getId(item).toString(), count);
         });
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void fromNbt(NbtCompound compound) {
         items.clear();
         indexes.clear();
         compound.getKeys().forEach(key -> {

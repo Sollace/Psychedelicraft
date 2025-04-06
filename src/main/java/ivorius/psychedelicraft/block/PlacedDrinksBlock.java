@@ -33,12 +33,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -70,22 +68,22 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
     @Override
-    protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+    public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return SHAPE;
     }
 
     @Override
-    protected boolean hasSidedTransparency(BlockState state) {
+    public boolean hasSidedTransparency(BlockState state) {
         return true;
     }
 
     @Override
-    protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return 1;
     }
 
@@ -105,8 +103,9 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.PLACED_DRINK).flatMap(be -> {
+            ItemStack heldStack = player.getStackInHand(hand);
 
             if (heldStack.isEmpty()) {
                 return Data.getHitPos(hit).map(be::removeDrink).map(extracted -> {
@@ -125,11 +124,12 @@ public class PlacedDrinksBlock extends BlockWithEntity {
             return Data.getHitPos(hit).map(position -> {
                 return be.placeDrink(position, player.isCreative() ? heldStack.copyWithCount(1) : heldStack, player.getHeadYaw());
             });
-        }).map(TypedActionResult::getResult).orElse(ActionResult.FAIL).isAccepted() ? ItemActionResult.SUCCESS : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }).map(TypedActionResult::getResult).orElse(ActionResult.FAIL);
     }
 
+    @Deprecated
     @Override
-    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         if (builder.getOptional(LootContextParameters.BLOCK_ENTITY) instanceof Data be) {
             builder = builder.addDynamicDrop(BlockWithFluid.CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
                 be.forEachDrink((y, entry) -> {
@@ -143,7 +143,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!world.isClient && (entity.getY() > pos.getY() || entity.getY() >= pos.getY() && !entity.isSneaking()) && entity instanceof LivingEntity && Math.max(
                 Math.abs(entity.getX() - entity.lastRenderX),
                 Math.abs(entity.getZ() - entity.lastRenderZ)
@@ -177,7 +177,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         }
 
         if (state.isOf(PSBlocks.PLACED_DRINK)) {
-            return state.onUseWithItem(context.getStack(), context.getWorld(), context.getPlayer(), context.getHand(), new BlockHitResult(
+            return state.onUse(context.getWorld(), context.getPlayer(), context.getHand(), new BlockHitResult(
                     context.getHitPos(), context.getSide(), context.getBlockPos(), true
             )).isAccepted() ? ActionResult.SUCCESS : ActionResult.PASS;
         }
@@ -189,8 +189,8 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         BlockPos hitPos = Data.getHitPos(blockPos, context.getHitPos());
         context.getWorld().setBlockState(blockPos, PSBlocks.PLACED_DRINK.getDefaultState());
         return context.getWorld().getBlockEntity(blockPos, PSBlockEntities.PLACED_DRINK).map(be -> {
-            return be.placeDrink(hitPos, context.getStack().split(1), context.getPlayerYaw()).getResult().isAccepted() ? ItemActionResult.SUCCESS : ItemActionResult.FAIL;
-        }).orElse(ItemActionResult.FAIL).isAccepted() ? ActionResult.SUCCESS : ActionResult.FAIL;
+            return be.placeDrink(hitPos, context.getStack().split(1), context.getPlayerYaw()).getResult();
+        }).orElse(ActionResult.FAIL);
     }
 
     public static class Data extends SyncedBlockEntity {
@@ -267,12 +267,12 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         }
 
         @Override
-        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
+        public void readNbt(NbtCompound nbt) {
             readEntriesFromNbt(nbt.getCompound("entries"));
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
+        protected void writeNbt(NbtCompound nbt) {
             nbt.put("entries", writeEntriesToNbt(new NbtCompound()));
         }
 
@@ -282,7 +282,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                 int index = Integer.parseInt(key);
                 NbtList list = nbt.getList(key, NbtElement.COMPOUND_TYPE);
                 if (!list.isEmpty()) {
-                    entries.put(index, Entry.STACK_CODEC.decode(NbtOps.INSTANCE, list).getOrThrow().getFirst());
+                    entries.put(index, Entry.STACK_CODEC.decode(NbtOps.INSTANCE, list).getOrThrow(false, s -> {}).getFirst());
                 }
             });
         }

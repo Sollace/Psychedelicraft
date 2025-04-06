@@ -77,17 +77,17 @@ public interface MathUtils {
     }
 
     static int mixColors(int left, int right, float progress) {
-        return ColorHelper.Argb.fromFloats(
-                MathHelper.lerp(a(left), a(right), progress),
-                MathHelper.lerp(r(left), r(right), progress),
-                MathHelper.lerp(g(left), g(right), progress),
-                MathHelper.lerp(b(left), b(right), progress)
+        return ColorHelper.Argb.getArgb(
+                (int)(MathHelper.lerp(a(left), a(right), progress) * 255),
+                (int)(MathHelper.lerp(r(left), r(right), progress) * 255),
+                (int)(MathHelper.lerp(g(left), g(right), progress) * 255),
+                (int)(MathHelper.lerp(b(left), b(right), progress) * 255)
         );
     }
 
     @Deprecated
     static int packArgb(float a, float r, float g, float b) {
-        return ColorHelper.Argb.fromFloats(a, r, g, b);
+        return ColorHelper.Argb.getArgb((int)(a * 255), (int)(r * 255), (int)(g * 255), (int)(b * 255));
     }
 
     static Vector4fc mixColorsDynamic(Vector3fc color, Vector4f colorBase, float alpha) {

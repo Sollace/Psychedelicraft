@@ -13,7 +13,7 @@ import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
@@ -52,9 +52,9 @@ class WorldInteractionPSRecipe implements TlaRecipe {
             );
         }).toList());
         context.addGenerator(client -> List.of(
-            new WorldInteractionPSRecipe(category, Psychedelicraft.id("morning_glory_flowers"), TlaStack.of(PSItems.MORNING_GLORY_LATTICE).asIngredient(), TlaIngredient.ofItemTag(ConventionalItemTags.SHEAR_TOOLS), TlaStack.of(PSItems.MORNING_GLORY)),
-            new WorldInteractionPSRecipe(category, Psychedelicraft.id("juniper_berries"), TlaStack.of(PSItems.FRUITING_JUNIPER_LEAVES).asIngredient(), TlaIngredient.ofItemTag(ConventionalItemTags.SHEAR_TOOLS), TlaStack.of(PSItems.JUNIPER_BERRIES)),
-            new WorldInteractionPSRecipe(category, Psychedelicraft.id("wine_grapes"), TlaStack.of(PSItems.WINE_GRAPE_LATTICE).asIngredient(), TlaIngredient.ofItemTag(ConventionalItemTags.SHEAR_TOOLS), TlaStack.of(PSItems.WINE_GRAPES))
+            new WorldInteractionPSRecipe(category, Psychedelicraft.id("morning_glory_flowers"), TlaStack.of(PSItems.MORNING_GLORY_LATTICE).asIngredient(), TlaIngredient.ofItemTag(ConventionalItemTags.SHEARS), TlaStack.of(PSItems.MORNING_GLORY)),
+            new WorldInteractionPSRecipe(category, Psychedelicraft.id("juniper_berries"), TlaStack.of(PSItems.FRUITING_JUNIPER_LEAVES).asIngredient(), TlaIngredient.ofItemTag(ConventionalItemTags.SHEARS), TlaStack.of(PSItems.JUNIPER_BERRIES)),
+            new WorldInteractionPSRecipe(category, Psychedelicraft.id("wine_grapes"), TlaStack.of(PSItems.WINE_GRAPE_LATTICE).asIngredient(), TlaIngredient.ofItemTag(ConventionalItemTags.SHEARS), TlaStack.of(PSItems.WINE_GRAPES))
         ));
 
         context.removeRecipes(recipe -> removedFluidInteractionRecipeIds.contains(recipe.getId()));

@@ -24,11 +24,11 @@ public interface PSEntities {
             .alwaysUpdateVelocity(true)
             .trackingTickInterval(10)
             .maxTrackingRange(4)
-            .dimensions(0.1F, 0.1F));
+            .setDimensions(0.1F, 0.1F));
     EntityType<RealityRiftEntity> REALITY_RIFT = register("reality_rift", EntityType.Builder.create(RealityRiftEntity::new, SpawnGroup.MISC)
             .trackingTickInterval(3)
             .maxTrackingRange(5)
-            .dimensions(2F, 2F));
+            .setDimensions(2F, 2F));
 
     TerraformBoatType JUNIPER_BOAT_TYPE = Registry.register(TerraformBoatTypeRegistry.INSTANCE, Psychedelicraft.id("juniper"), new TerraformBoatType.Builder()
             .planks(PSItems.JUNIPER_PLANKS)

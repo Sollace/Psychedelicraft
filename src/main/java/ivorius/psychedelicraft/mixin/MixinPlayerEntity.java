@@ -65,13 +65,13 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
 
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
     private void onWriteCustomDataToTag(NbtCompound tag, CallbackInfo info) {
-        tag.put("psychedelicraft_drug_properties", getDrugProperties().toNbt(getRegistryManager()));
+        tag.put("psychedelicraft_drug_properties", getDrugProperties().toNbt());
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
     private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
         if (tag.contains("psychedelicraft_drug_properties", NbtElement.COMPOUND_TYPE)) {
-            getDrugProperties().fromNbt(tag.getCompound("psychedelicraft_drug_properties"), getRegistryManager());
+            getDrugProperties().fromNbt(tag.getCompound("psychedelicraft_drug_properties"));
         }
     }
 }

@@ -18,12 +18,12 @@ import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
 import ivorius.psychedelicraft.recipe.FluidMound;
 import ivorius.psychedelicraft.recipe.ItemMound;
 import ivorius.psychedelicraft.recipe.PSRecipes;
+import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -78,7 +78,7 @@ public class LargeContents extends SmallContents {
                 && ingredients.getCounts().getInt(stack.getItem()) < 5) {
             if (isValidIngredient(stack)) {
                 if (!player.getWorld().isClient) {
-                    ingredients.addStack(stack.splitUnlessCreative(1, player));
+                    ingredients.addStack(StackCompat.splitUnlessCreative(stack, 1, player));
                     player.setStackInHand(hand, stack);
                     entity.playSound(null, PSSounds.BLOCK_BUNSEN_BURNER_FILL);
                 }
@@ -248,15 +248,15 @@ public class LargeContents extends SmallContents {
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.toNbt(compound, lookup);
-        compound.put("ingredients", ingredients.toNbt(lookup));
+    public void toNbt(NbtCompound compound) {
+        super.toNbt(compound);
+        compound.put("ingredients", ingredients.toNbt());
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.fromNbt(compound, lookup);
-        ingredients = new ItemMound(compound.getCompound("ingredients"), lookup);
+    public void fromNbt(NbtCompound compound) {
+        super.fromNbt(compound);
+        ingredients = new ItemMound(compound.getCompound("ingredients"));
     }
 
     @Override

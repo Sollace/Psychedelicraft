@@ -22,13 +22,13 @@ public class SyringeItem extends DrinkableItem {
         super(settings, FluidVolumes.SYRINGE, DrinkableItem.DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.INJECT);
     }
 
-    @Override
+    //@Override
     public float getBonusAttackDamage(Entity target, float baseAttackDamage, DamageSource damageSource) {
         if (!(target instanceof LivingEntity l)) {
             return 0;
         }
         float hurtTime = l.maxHurtTime == 0 ? 0 : l.hurtTime / (float)l.maxHurtTime;
-        return (float)target.getRandom().nextTriangular(3, 1.5) * (1 + hurtTime);
+        return (float)target.getWorld().random.nextTriangular(3, 1.5) * (1 + hurtTime);
     }
 
     @Override
@@ -42,6 +42,11 @@ public class SyringeItem extends DrinkableItem {
             return false;
         }
         attacker.setStackInHand(hand, use(stack, target.getWorld(), target, attacker));
+        DamageSource damageSource = attacker instanceof PlayerEntity player ? attacker.getDamageSources().playerAttack(player) : attacker.getDamageSources().mobAttack(attacker);
+        float bonus = getBonusAttackDamage(target, 0, damageSource);
+        if (bonus > 0) {
+            target.damage(damageSource, bonus);
+        }
 
         return true;
     }

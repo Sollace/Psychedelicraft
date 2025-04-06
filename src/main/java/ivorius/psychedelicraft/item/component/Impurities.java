@@ -11,13 +11,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
-import net.minecraft.item.Item.TooltipContext;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.StackCompat;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
@@ -28,7 +27,7 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
     public static final Codec<Impurities> CODEC = RecordCodecBuilder.create(i -> i.group(
             Impurity.CODEC.listOf().xmap(Set::copyOf, List::copyOf).fieldOf("impurities").forGetter(Impurities::impurities)
     ).apply(i, Impurities::new));
-    public static final PacketCodec<RegistryByteBuf, Impurities> PACKET_CODEC = PacketCodecUtils.ofEnum(Impurity.class)
+    public static final PacketCodec<PacketByteBuf, Impurities> PACKET_CODEC = PacketCodecUtils.ofEnum(Impurity.class)
             .collect(PacketCodecs.toCollection(i -> (Set<Impurity>)new HashSet<Impurity>(i)))
             .xmap(Impurities::new, Impurities::impurities);
 
@@ -37,7 +36,7 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
     }
 
     public static Impurities get(ItemStack stack) {
-        return stack.getOrDefault(PSComponents.IMPURITIES, EMPTY);
+        return StackCompat.getOrDefault(stack, PSComponents.IMPURITIES, EMPTY);
     }
 
     public static boolean isOn(ItemStack stack, Impurity impurity) {
@@ -45,12 +44,12 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
     }
 
     public static ItemStack set(ItemStack stack, Impurity...impurities) {
-        stack.set(PSComponents.IMPURITIES, new Impurities(Set.of(impurities)));
+        StackCompat.set(stack, PSComponents.IMPURITIES, new Impurities(Set.of(impurities)));
         return stack;
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip) {
 
         if (!impurities.isEmpty()) {
             impurities.stream().map(i -> i.getName())

@@ -25,13 +25,13 @@ import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -120,8 +120,8 @@ public interface PSRenderers {
                 }
 
                 @Override
-                public void appendTooltip(FluidVariant fluidVariant, List<Text> tooltip, TooltipType type) {
-                    fluid.appendTooltip(ItemFluids.of(fluidVariant, 1), tooltip::add, type);
+                public void appendTooltip(FluidVariant fluidVariant, List<Text> tooltip, TooltipContext context) {
+                    fluid.appendTooltip(ItemFluids.of(fluidVariant, 1), tooltip::add, context);
                 }
             });
         });

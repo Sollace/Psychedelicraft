@@ -61,7 +61,7 @@ public class MovingSoundDrug extends MovingSoundInstance {
 
     @Override
     public final float getVolume() {
-        float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        float tickDelta = MinecraftClient.getInstance().getTickDelta();
         return MathHelper.lerp(tickDelta, prevVolume, volume) * sound.getVolume().get(random);
     }
 

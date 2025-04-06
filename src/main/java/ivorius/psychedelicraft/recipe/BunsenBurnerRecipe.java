@@ -4,10 +4,10 @@ import java.util.List;
 
 import ivorius.psychedelicraft.fluid.Processable.ByProductConsumer;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.compat.RecipeInput;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.input.RecipeInput;
 
 public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
     /**

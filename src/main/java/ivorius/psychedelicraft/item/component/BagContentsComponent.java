@@ -7,14 +7,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.PaperBagItem;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.StackCompat;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 
 public record BagContentsComponent(ItemStack stack, int count) implements TooltipAppender {
@@ -24,8 +23,8 @@ public record BagContentsComponent(ItemStack stack, int count) implements Toolti
             ItemStack.CODEC.fieldOf("stack").forGetter(BagContentsComponent::stack),
             Codec.INT.fieldOf("count").forGetter(BagContentsComponent::count)
     ).apply(instance, BagContentsComponent::of));
-    public static final PacketCodec<RegistryByteBuf, BagContentsComponent> PACKET_CODEC = PacketCodec.tuple(
-            ItemStack.OPTIONAL_PACKET_CODEC, BagContentsComponent::stack,
+    public static final PacketCodec<PacketByteBuf, BagContentsComponent> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.ITEM_STACK, BagContentsComponent::stack,
             PacketCodecs.INTEGER, BagContentsComponent::count,
             BagContentsComponent::of
     );
@@ -38,12 +37,11 @@ public record BagContentsComponent(ItemStack stack, int count) implements Toolti
     }
 
     public static BagContentsComponent get(ItemStack stack) {
-        BagContentsComponent contents = stack.get(PSComponents.BAG_CONTENTS);
-        return contents == null ? EMPTY : contents;
+        return StackCompat.getOrDefault(stack, PSComponents.BAG_CONTENTS, EMPTY);
     }
 
     public static BagContentsComponent set(ItemStack stack, Builder builder) {
-        return stack.set(PSComponents.BAG_CONTENTS, builder.build());
+        return StackCompat.set(stack, PSComponents.BAG_CONTENTS, builder.build());
     }
 
     public static ItemStack withdraw(ItemStack stack, int count) {
@@ -67,7 +65,7 @@ public record BagContentsComponent(ItemStack stack, int count) implements Toolti
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip) {
         if (count > 0) {
             tooltip.accept(Text.literal(count() + " x ").append(stack().getName()));
         }
@@ -101,7 +99,7 @@ public record BagContentsComponent(ItemStack stack, int count) implements Toolti
             //if (stack.getItem() instanceof PaperBagItem) {
             //    return canAdd(getContents(stack).stack());
             //}
-            return (this.stack.isEmpty() || ItemStack.areItemsAndComponentsEqual(this.stack, stack)) && count < getMaxCountForItem(stack.getItem());
+            return (this.stack.isEmpty() || ItemStack.canCombine(this.stack, stack)) && count < getMaxCountForItem(stack.getItem());
         }
 
         public boolean add(ItemStack stack) {

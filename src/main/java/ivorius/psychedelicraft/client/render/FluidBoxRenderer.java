@@ -18,7 +18,6 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import ivorius.psychedelicraft.item.component.ItemFluids;
@@ -122,7 +121,10 @@ public class FluidBoxRenderer {
         position.transform(POSITION_VECTOR);
         buffer.vertex(
                 POSITION_VECTOR.x * scale, POSITION_VECTOR.y * scale, POSITION_VECTOR.z * scale,
-                ColorHelper.Argb.fullAlpha(color),
+                MathUtils.r(color),
+                MathUtils.g(color),
+                MathUtils.b(color),
+                1,
                 u, v,
                 overlay, light,
                 direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ()
@@ -195,11 +197,11 @@ public class FluidBoxRenderer {
                 FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(stack.fluid().getPhysical().getStandingFluid());
                 if (handler != null) {
                     FluidState state = stack.fluid().getPhysical().getStandingFluid().getDefaultState();
-                    return ColorHelper.Argb.fullAlpha(handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state));
+                    return 0xFF000000 | (handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state));
                 }
             }
 
-            return ColorHelper.Argb.fullAlpha(stack.fluid().getColor(stack));
+            return 0xFF000000 | (stack.fluid().getColor(stack));
         }
 
         public float[] rgba() {

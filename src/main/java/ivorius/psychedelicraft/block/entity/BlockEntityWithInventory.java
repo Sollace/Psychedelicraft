@@ -13,7 +13,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 
@@ -32,16 +31,16 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
-        Inventories.writeNbt(compound, inventory, lookup);
+    public void writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
+        Inventories.writeNbt(compound, inventory);
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
+    public void readNbt(NbtCompound compound) {
+        super.readNbt(compound);
         inventory.clear();
-        Inventories.readNbt(compound, inventory, lookup);
+        Inventories.readNbt(compound, inventory);
     }
 
     @Override

@@ -41,7 +41,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
@@ -51,8 +50,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
@@ -116,7 +115,7 @@ public class GlassTubeBlock extends BlockWithEntity {
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
@@ -126,20 +125,21 @@ public class GlassTubeBlock extends BlockWithEntity {
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE_CACHE.apply(state);
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ItemStack stack = player.getStackInHand(hand);
 
         if (stack.isOf(Items.STICK)) {
             world.setBlockState(pos, state.with(IN, state.get(OUT)).with(OUT, state.get(IN)), Block.FORCE_STATE);
             world.playSound(player, pos, state.getSoundGroup().getPlaceSound(), SoundCategory.PLAYERS);
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS;
     }
 
     @Override
@@ -170,7 +170,7 @@ public class GlassTubeBlock extends BlockWithEntity {
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         return updateExtensions(setDirection(state,
                 getConnectionStateForNeighborUpdate(pos, state, direction, neighborPos, neighborState, world, IN),
                 getConnectionStateForNeighborUpdate(pos, state, direction, neighborPos, neighborState, world, OUT)
@@ -253,14 +253,15 @@ public class GlassTubeBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).ifPresent(data -> {
             data.pushContentsForward(world, pos, state.get(OUT));
         });
     }
 
+    @Deprecated
     @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
         if (world instanceof ServerWorld sw) {
             world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).ifPresent(data -> {
@@ -271,12 +272,12 @@ public class GlassTubeBlock extends BlockWithEntity {
     }
 
     @Override
-    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> (int)((data.contents.size() / 10F) * 15)).orElse(0);
     }
 
@@ -479,15 +480,15 @@ public class GlassTubeBlock extends BlockWithEntity {
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
-            super.writeNbt(nbt, lookup);
+        protected void writeNbt(NbtCompound nbt) {
+            super.writeNbt(nbt);
             PipeFluids.LIST_CODEC.encodeStart(NbtOps.INSTANCE, contents).result()
                 .ifPresent(el -> nbt.put("contents", el));
         }
 
         @Override
-        protected void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            super.readNbt(nbt, lookup);
+        public void readNbt(NbtCompound nbt) {
+            super.readNbt(nbt);
             contents.clear();
             PipeFluids.LIST_CODEC.decode(NbtOps.INSTANCE, nbt.get("contents")).result().map(Pair::getFirst).ifPresent(contents::addAll);
         }

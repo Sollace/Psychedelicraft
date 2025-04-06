@@ -8,13 +8,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
-import net.minecraft.item.Item.TooltipContext;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.StackCompat;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
@@ -24,7 +23,7 @@ public record ItemDrugs(List<DrugInfluence> influences) implements TooltipAppend
     public static final Codec<ItemDrugs> CODEC = RecordCodecBuilder.create(i -> i.group(
             DrugInfluence.CODEC.listOf().fieldOf("influences").forGetter(ItemDrugs::influences)
     ).apply(i, ItemDrugs::of));
-    public static final PacketCodec<RegistryByteBuf, ItemDrugs> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, ItemDrugs> PACKET_CODEC = PacketCodec.tuple(
             DrugInfluence.PACKET_CODEC.collect(PacketCodecs.toList()), ItemDrugs::influences,
             ItemDrugs::of
     );
@@ -42,7 +41,7 @@ public record ItemDrugs(List<DrugInfluence> influences) implements TooltipAppend
     }
 
     public static ItemDrugs get(ItemStack stack) {
-        return stack.getOrDefault(PSComponents.DRUGS, EMPTY);
+        return StackCompat.getOrDefault(stack, PSComponents.DRUGS, EMPTY);
     }
 
     public void applyTo(DrugProperties properties) {
@@ -50,8 +49,8 @@ public record ItemDrugs(List<DrugInfluence> influences) implements TooltipAppend
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
-        if (type.isAdvanced() && !influences.isEmpty()) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip) {
+        if (context.isAdvanced() && !influences.isEmpty()) {
             tooltip.accept(Text.translatable("psychedelicraft.item.contained_drug_effects").formatted(Formatting.GRAY));
 
             influences.forEach(influence -> {

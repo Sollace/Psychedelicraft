@@ -8,12 +8,11 @@ package ivorius.psychedelicraft.block;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.item.PSItems;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -23,8 +22,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -76,7 +75,7 @@ public class AgavePlantBlock extends SucculentPlantBlock {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity) || entity.getType() == EntityType.FOX || entity.getType() == EntityType.BEE) {
             return;
         }
@@ -96,11 +95,12 @@ public class AgavePlantBlock extends SucculentPlantBlock {
 
     @Deprecated
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ItemStack stack = player.getStackInHand(hand);
         int age = state.get(getAgeProperty());
 
-        if ((stack.isIn(ConventionalItemTags.SHEAR_TOOLS) && age >= 1)) {
-            stack.damage(1, player, EquipmentSlot.MAINHAND);
+        if ((stack.isIn(ConventionalItemTags.SHEARS) && age >= 1)) {
+            stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
             dropStack(world, pos, new ItemStack(PSItems.AGAVE_LEAF, 1 + world.random.nextInt(2)));
 
             state = state.with(getAgeProperty(), age - 1);
@@ -108,21 +108,21 @@ public class AgavePlantBlock extends SucculentPlantBlock {
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
 
             if (stack.isOf(Items.BONE_MEAL)) {
-                return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                return ActionResult.PASS;
             }
 
             world.playSound(null, pos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS,
                     1,
                     0.8F + world.random.nextFloat() * 0.4F
             );
-            return ItemActionResult.success(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         if (stack.isEmpty()) {
             player.damage(player.getDamageSources().cactus(), 1);
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
-        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
     @Override
@@ -139,6 +139,6 @@ public class AgavePlantBlock extends SucculentPlantBlock {
                 || stack.isIn(ItemTags.SWORDS)
                 || stack.isIn(ItemTags.AXES)
                 || stack.isIn(ItemTags.HOES)
-                || stack.isIn(ConventionalItemTags.SHEAR_TOOLS);
+                || stack.isIn(ConventionalItemTags.SHEARS);
     }
 }

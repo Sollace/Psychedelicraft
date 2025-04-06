@@ -64,13 +64,13 @@ public class RiftJarModel extends Model {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g, float b, float a) {
         interior.hidden = true;
-        tree.render(matrices, vertices, light, overlay, color);
+        tree.render(matrices, vertices, light, overlay, r, g, b, a);
         interior.hidden = false;
     }
 
-    public void renderInterior(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-        interior.render(matrices, vertices, light, overlay, color);
+    public void renderInterior(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float r, float g, float b, float a) {
+        interior.render(matrices, vertices, light, overlay, r, g, b, a);
     }
 }

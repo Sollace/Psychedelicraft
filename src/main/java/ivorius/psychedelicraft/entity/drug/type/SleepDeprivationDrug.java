@@ -15,7 +15,6 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.random.Random;
 
 /**
@@ -95,14 +94,14 @@ public class SleepDeprivationDrug extends SimpleDrug {
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.fromNbt(compound, lookup);
+    public void fromNbt(NbtCompound compound) {
+        super.fromNbt(compound);
         storedEnergy = compound.getFloat("storedEnergy");
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.toNbt(compound, lookup);
+    public void toNbt(NbtCompound compound) {
+        super.toNbt(compound);
         compound.putFloat("storedEnergy", storedEnergy);
     }
 }

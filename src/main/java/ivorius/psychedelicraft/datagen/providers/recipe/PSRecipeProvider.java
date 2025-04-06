@@ -19,9 +19,10 @@ import ivorius.psychedelicraft.recipe.FluidModifyingResult;
 import ivorius.psychedelicraft.recipe.PouringRecipe;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
+import ivorius.psychedelicraft.util.compat.ItemSubPredicate;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.data.server.recipe.ComplexRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
@@ -51,7 +52,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
     private final CompletableFuture<WrapperLookup> registries;
 
     public PSRecipeProvider(FabricDataOutput output, CompletableFuture<WrapperLookup> registries) {
-        super(output, registries);
+        super(output);
         this.registries = registries;
     }
 
@@ -77,7 +78,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
     private void offerSmokingImpliments(RecipeExporter exporter) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, PSItems.SMOKING_PIPE)
             .input('W', ItemTags.PLANKS).criterion("has_planks", conditionsFromTag(ItemTags.PLANKS))
-            .input('S', ConventionalItemTags.WOODEN_RODS).criterion("has_stick", conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
+            .input('S', Items.STICK).criterion("has_stick", conditionsFromItem(Items.STICK))
             .input('I', Items.IRON_INGOT)
             .pattern("  I")
             .pattern(" S ")
@@ -165,7 +166,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, PSItems.BOTTLE_RACK)
             .input('#', ItemTags.PLANKS).criterion("has_planks", conditionsFromTag(ItemTags.PLANKS))
-            .input('I', ConventionalItemTags.WOODEN_RODS).criterion("has_stick", conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
+            .input('I', Items.STICK).criterion("has_stick", conditionsFromItem(Items.STICK))
             .pattern("I#I")
             .pattern("#I#")
             .pattern("I#I")
@@ -198,10 +199,10 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .input(FluidIngredient.builder().fluid(SimpleFluid.of(Fluids.LAVA)).level(FluidVolumes.GLASS_BOTTLE).build(), PSItems.FILLED_GLASS_BOTTLE)
             .criterion("has_lava_bottle", conditionsFromPredicates(ItemPredicate.Builder.create()
                     .items(PSItems.FILLED_GLASS_BOTTLE)
-                    .subPredicate(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
+                    .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
                             .fluid(SimpleFluid.of(Fluids.LAVA))
                             .amount(IntRange.atLeast(FluidVolumes.GLASS_BOTTLE))
-                            .build())))
+                            .build()).build())))
             .discard(Items.GLASS_BOTTLE)
             .offerTo(exporter, Psychedelicraft.id(convertBetween(PSItems.OBSIDIAN_BOTTLE, PSItems.FILLED_GLASS_BOTTLE)));
         FluidAwareShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.OBSIDIAN_BOTTLE)
@@ -209,10 +210,10 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .input(FluidIngredient.builder().fluid(SimpleFluid.of(Fluids.LAVA)).level(FluidVolumes.GLASS_BOTTLE).build(), PSItems.FILLED_GLASS_BOTTLE)
             .criterion("has_lava_bottle", conditionsFromPredicates(ItemPredicate.Builder.create()
                     .items(PSItems.FILLED_GLASS_BOTTLE)
-                    .subPredicate(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
+                    .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
                             .fluid(SimpleFluid.of(Fluids.LAVA))
                             .amount(IntRange.atLeast(FluidVolumes.GLASS_BOTTLE))
-                            .build())))
+                            .build()).build())))
             .discard(Items.GLASS_BOTTLE)
             .offerTo(exporter);
         offerSingleOutputShapelessRecipe(exporter, PSItems.OBSIDIAN_DUST, PSItems.OBSIDIAN_BOTTLE, "obsidian_bottle");
@@ -379,7 +380,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
     private void offerLiquirRecipes(RecipeExporter exporter) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.LATTICE)
             .input('O', ItemTags.PLANKS)
-            .input('I', ConventionalItemTags.WOODEN_RODS).criterion("has_stick", conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
+            .input('I', Items.STICK).criterion("has_stick", conditionsFromItem(Items.STICK))
             .pattern("III")
             .pattern("IOI")
             .pattern("OIO")
@@ -391,10 +392,10 @@ public class PSRecipeProvider extends FabricRecipeProvider {
                     .fluid(PSFluids.COFFEE).build()), RecipeCategory.FOOD, 0.2F, 200)
             .modification("warmth", FluidModifyingResult.Ops.ADD, 1)
             .criterion("has_cold_coffee", conditionsFromPredicates(ItemPredicate.Builder.create()
-                    .subPredicate(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
+                    .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
                             .fluid(PSFluids.COFFEE)
                             .attribute("warmth", IntRange.atMost(1))
-                            .build())))
+                            .build()).build())))
             .offerTo(exporter, Psychedelicraft.id("hot_coffee"));
 
         offerMashingRecipes(exporter);
@@ -506,7 +507,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, result)
             .input('#', planks).criterion(hasItem(planks), conditionsFromItem(planks))
             .input('I', Items.IRON_INGOT)
-            .input('S', ConventionalItemTags.WOODEN_RODS).criterion("has_stick", conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
+            .input('S', Items.STICK).criterion("has_stick", conditionsFromItem(Items.STICK))
             .pattern(" I ")
             .pattern("# #")
             .pattern("S#S")
@@ -516,7 +517,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
     private static Optional<Item> lookupItem(RegistryEntryLookup<Item> lookup, Identifier id) {
         return lookup
             .getOptional(RegistryKey.of(RegistryKeys.ITEM, id))
-            .or(() -> lookup.getOptional(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla(id.getPath()))))
+            .or(() -> lookup.getOptional(RegistryKey.of(RegistryKeys.ITEM, new Identifier(id.getPath()))))
             .map(RegistryEntry::value);
     }
 

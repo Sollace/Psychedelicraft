@@ -89,27 +89,27 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    protected boolean hasSidedTransparency(BlockState state) {
+    public boolean hasSidedTransparency(BlockState state) {
         return true;
     }
 
     @Override
-    protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return 0.2F;
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return COLLISSION_SHAPE;
     }
 
     @Override
-    protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+    public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return RAYCAST_SHAPE;
     }
 
@@ -132,22 +132,19 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     }
 
     @Override
-    protected ItemActionResult onInteractWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
+    public ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
+        ItemStack heldStack = player.getStackInHand(hand);
+
         if (!heldStack.isEmpty()) {
             TypedActionResult<ItemStack> result = blockEntity.interactWithItem(heldStack.copyWithCount(1));
             if (result.getResult().isAccepted()) {
                 if (!world.isClient) {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, result.getValue()));
                 }
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-
-    @Override
-    protected ActionResult onInteract(BlockState state, World world, BlockPos pos, PlayerEntity player, MashTubBlockEntity blockEntity) {
         if (!blockEntity.solidContents.isEmpty()) {
             PSCriteria.SIMPLY_MASHING.trigger(player, blockEntity.solidContents);
             Block.dropStack(world, pos, blockEntity.solidContents);
@@ -160,7 +157,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     }
 
     @Override
-    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         return MashTubItem.findPlacementPosition(world, pos).isPresent();
     }
 
@@ -187,7 +184,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     }
 
     @Override
-    protected boolean canBucketPlace(BlockState state, Fluid fluid) {
+    public boolean canBucketPlace(BlockState state, Fluid fluid) {
         return false;
     }
 
@@ -204,8 +201,9 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
         }).isPresent();
     }
 
+    @Deprecated
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock()) && !world.isClient) {
             BlockPos.iterateOutwards(pos, 1, 0, 1).forEach(p -> {
                 if (!p.equals(pos)) {

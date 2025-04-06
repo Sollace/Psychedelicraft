@@ -5,13 +5,11 @@
 
 package ivorius.psychedelicraft.recipe;
 
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -27,21 +25,23 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
 
 public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     public static final MapCodec<FluidAwareShapelessRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(FluidAwareShapelessRecipe::getGroup),
             CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(FluidAwareShapelessRecipe::getCategory),
-            ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
+            ItemStack.CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
             OptionalFluidIngredient.LIST_CODEC.fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
             Ingredient.ALLOW_EMPTY_CODEC.optionalFieldOf("destroy", Ingredient.empty()).forGetter(recipe -> recipe.destructedIngredient)
     ).apply(instance, FluidAwareShapelessRecipe::new));
-    public static final PacketCodec<RegistryByteBuf, FluidAwareShapelessRecipe> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, FluidAwareShapelessRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, FluidAwareShapelessRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, FluidAwareShapelessRecipe::getCategory,
-            ItemStack.OPTIONAL_PACKET_CODEC, recipe -> recipe.output,
+            PacketCodecs.ITEM_STACK, recipe -> recipe.output,
             OptionalFluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), recipe -> recipe.ingredients,
-            Ingredient.PACKET_CODEC, recipe -> recipe.destructedIngredient,
+            PacketCodecs.INGREDIENT, recipe -> recipe.destructedIngredient,
             FluidAwareShapelessRecipe::new
     );
 
@@ -73,9 +73,9 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(CraftingRecipeInput inventory, World world) {
+    public boolean matches(RecipeInputInventory inventory, World world) {
         List<OptionalFluidIngredient> unmatchedInputs = new ArrayList<>(ingredients);
-        long matches = inventory.getStacks().stream()
+        long matches = RecipeUtils.stacks(inventory)
                     .filter(stack -> unmatchedInputs.stream()
                         .filter(ingredient -> ingredient.test(stack))
                         .findFirst()
@@ -87,13 +87,13 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput inventory) {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
+    public DefaultedList<ItemStack> getRemainder(RecipeInputInventory inventory) {
+        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
 
         boolean destroyed = false;
 
         for (int i = 0; i < defaultedList.size(); ++i) {
-            ItemStack stack = inventory.getStackInSlot(i);
+            ItemStack stack = inventory.getStack(i);
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
 
             if (consumedFluids.stream()

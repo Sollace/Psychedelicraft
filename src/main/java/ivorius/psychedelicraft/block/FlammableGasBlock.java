@@ -7,11 +7,9 @@ import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TorchBlock;
-import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -35,19 +33,19 @@ public class FlammableGasBlock extends AirBlock {
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         Vec3d center = pos.toCenterPos();
-        var effect = EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, Colors.GREEN);
         for (int i = 0; i < 10; i++) {
-            world.addParticle(effect,
+            world.addParticle(ParticleTypes.ENTITY_EFFECT,
                     random.nextTriangular(center.x, 0.5F),
                     random.nextTriangular(center.y, 0.5F),
                     random.nextTriangular(center.z, 0.5F),
-                    0, 0, 0
+                    0, 1F, 0
             );
         }
     }
 
+    @Deprecated
     @Override
-    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         for (Direction direction : Direction.values()) {
             BlockState neighbor = world.getBlockState(pos.offset(direction));
             if (neighbor.getBlock() instanceof TorchBlock || neighbor.getFluidState().isIn(FluidTags.LAVA)) {

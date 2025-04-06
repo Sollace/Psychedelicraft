@@ -8,13 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.StackCompat;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Item.TooltipContext;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
@@ -24,7 +23,7 @@ public record ItemFluidsMixture(List<ItemFluids> fluids) implements TooltipAppen
     public static final Codec<ItemFluidsMixture> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ItemFluids.CODEC.listOf().fieldOf("fluids").forGetter(ItemFluidsMixture::fluids)
     ).apply(instance, ItemFluidsMixture::of));
-    public static final PacketCodec<RegistryByteBuf, ItemFluidsMixture> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, ItemFluidsMixture> PACKET_CODEC = PacketCodec.tuple(
             ItemFluids.PACKET_CODEC.collect(PacketCodecs.toList()), ItemFluidsMixture::fluids,
             ItemFluidsMixture::of
     );
@@ -36,7 +35,7 @@ public record ItemFluidsMixture(List<ItemFluids> fluids) implements TooltipAppen
 
     @NotNull
     public static ItemFluidsMixture of(ItemStack stack) {
-        ItemFluidsMixture fluids = stack.get(PSComponents.FLUIDS_MIXTURE);
+        ItemFluidsMixture fluids = StackCompat.get(stack, PSComponents.FLUIDS_MIXTURE);
         return fluids == null ? EMPTY : fluids;
     }
 
@@ -45,11 +44,11 @@ public record ItemFluidsMixture(List<ItemFluids> fluids) implements TooltipAppen
         if (capacity > 0) {
             ItemFluidsMixture mixture = of(fluids);
             if (mixture.fluids.size() < 2) {
-                stack.remove(PSComponents.FLUIDS_MIXTURE);
+                StackCompat.remove(stack, PSComponents.FLUIDS_MIXTURE);
                 return ItemFluids.set(stack, mixture.getFirstFluid());
             }
             stack = ItemFluids.getItemForFluids(stack, mixture.getFirstFluid());
-            stack.set(PSComponents.FLUIDS_MIXTURE, mixture);
+            StackCompat.set(stack, PSComponents.FLUIDS_MIXTURE, mixture);
         }
         return stack;
     }
@@ -67,7 +66,7 @@ public record ItemFluidsMixture(List<ItemFluids> fluids) implements TooltipAppen
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip) {
         if (isEmpty()) {
             return;
         }

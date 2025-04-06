@@ -19,11 +19,11 @@ public class CodecTypeAdapter<T> extends TypeAdapter<T> {
 
     @Override
     public void write(JsonWriter out, T value) throws IOException {
-        Streams.write(codec.encodeStart(JsonOps.INSTANCE, value).getOrThrow(), out);
+        Streams.write(codec.encodeStart(JsonOps.INSTANCE, value).getOrThrow(false, s -> {}), out);
     }
 
     @Override
     public T read(JsonReader in) throws IOException {
-        return codec.decode(JsonOps.INSTANCE, Streams.parse(in)).getOrThrow().getFirst();
+        return codec.decode(JsonOps.INSTANCE, Streams.parse(in)).getOrThrow(false, s -> {}).getFirst();
     }
 }

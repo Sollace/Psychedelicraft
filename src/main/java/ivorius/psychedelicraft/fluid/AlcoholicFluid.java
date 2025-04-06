@@ -15,13 +15,12 @@ import ivorius.psychedelicraft.fluid.physical.FluidStateManager;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
@@ -239,7 +238,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable, TickRate.T
     }
 
     @Override
-    public void appendTooltip(ItemFluids stack, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemFluids stack, Consumer<Text> tooltip, TooltipContext type) {
 
         int distillation = DISTILLATION.get(stack);
         int maturation = MATURATION.get(stack);
@@ -257,7 +256,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable, TickRate.T
             tooltip.accept(Text.translatable("psychedelicraft.alcohol.maturations", maturation, Maturity.getMaturity(maturation).getName()).formatted(Formatting.GRAY));
         }
 
-        tooltip.accept(Text.translatable("psychedelicraft.alcohol.potency", AttributeModifiersComponent.DECIMAL_FORMAT.format(getAlcoholContent(stack))).formatted(Formatting.GRAY));
+        tooltip.accept(Text.translatable("psychedelicraft.alcohol.potency", ItemStack.MODIFIER_FORMAT.format(getAlcoholContent(stack))).formatted(Formatting.GRAY));
 
         /*if (distillation > 0 || maturation > 0 || fermentation > 0) {
             tooltip.add(Text.empty());

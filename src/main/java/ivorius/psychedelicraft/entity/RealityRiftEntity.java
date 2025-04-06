@@ -13,7 +13,6 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.*;
-import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.DustParticleEffect;
@@ -70,8 +69,10 @@ public class RealityRiftEntity extends Entity {
     }
 
     @Override
-    protected void initDataTracker(Builder builder) {
-        builder.add(SIZE, 0F).add(CLOSING, false).add(INSTABILITY, 0F);
+    protected void initDataTracker() {
+        this.dataTracker.startTracking(SIZE, 0F);
+        this.dataTracker.startTracking(CLOSING, false);
+        this.dataTracker.startTracking(INSTABILITY, 0F);
     }
 
     public float getRiftSize() {

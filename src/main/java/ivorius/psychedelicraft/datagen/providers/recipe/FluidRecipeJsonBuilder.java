@@ -24,7 +24,7 @@ public interface FluidRecipeJsonBuilder extends CraftingRecipeJsonBuilder {
     @Override
     default void offerTo(RecipeExporter exporter, String recipePath) {
         Identifier defaultId = getOutputFluids().fluid().getId();
-        Identifier id = Identifier.of(recipePath);
+        Identifier id = new Identifier(recipePath);
         if (id.equals(defaultId)) {
             throw new IllegalStateException("Recipe " + recipePath + " should remove its 'save' argument as it is equal to default one");
         }

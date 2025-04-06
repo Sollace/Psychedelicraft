@@ -46,15 +46,15 @@ public class PSSoundsProvider extends SoundsProvider {
         );
         exporter.accept(PSSounds.BLOCK_TRAY_HARDEN, SoundTypeBuilder.of(PSSounds.BLOCK_TRAY_HARDEN)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("mob/turtle/egg/egg_crack")), 5)
+                .sound(Sound.builder(new Identifier("mob/turtle/egg/egg_crack")), 5)
         );
         exporter.accept(PSSounds.BLOCK_VALVE_OPEN, SoundTypeBuilder.of(PSSounds.BLOCK_VALVE_OPEN)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("mob/parrot/idle")).volume(0.7F), 1)
+                .sound(Sound.builder(new Identifier("mob/parrot/idle")).volume(0.7F), 1)
         );
         exporter.accept(PSSounds.BLOCK_VALVE_CLOSE, SoundTypeBuilder.of(PSSounds.BLOCK_VALVE_CLOSE)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("mob/parrot/idle")).volume(0.7F), 1)
+                .sound(Sound.builder(new Identifier("mob/parrot/idle")).volume(0.7F), 1)
         );
 
         List<Function<Sound.Builder, Sound.Builder>> variationFuncs = List.of(
@@ -69,17 +69,17 @@ public class PSSoundsProvider extends SoundsProvider {
                 .category(SoundCategory.BLOCKS);
         Stream.of(1, 2, 3).forEach(index -> {
             variationFuncs.forEach(func -> {
-                builder.sound(func.apply(Sound.builder(Identifier.ofVanilla("block/candle/extinguish" + index)).attenuationDistance(8)));
+                builder.sound(func.apply(Sound.builder(new Identifier("block/candle/extinguish" + index)).attenuationDistance(8)));
             });
         });
         exporter.accept(PSSounds.BLOCK_BUNSEN_BURNER_WORK, builder);
         exporter.accept(PSSounds.BLOCK_BUNSEN_BURNER_OVERHEAT, SoundTypeBuilder.of(PSSounds.BLOCK_BUNSEN_BURNER_OVERHEAT)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("fire/fire")))
+                .sound(Sound.builder(new Identifier("fire/fire")))
         );
         exporter.accept(PSSounds.BLOCK_BUNSEN_BURNER_FILL, SoundTypeBuilder.of(PSSounds.BLOCK_BUNSEN_BURNER_FILL)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("item/armor/equip_leather")), 6)
+                .sound(Sound.builder(new Identifier("item/armor/equip_leather")), 6)
         );
         exporter.accept(PSSounds.ITEM_SYRINGE_INJECT, SoundTypeBuilder.of(PSSounds.ITEM_SYRINGE_INJECT)
                 .category(SoundCategory.PLAYERS)
@@ -87,7 +87,7 @@ public class PSSoundsProvider extends SoundsProvider {
         );
         exporter.accept(PSSounds.BLOCK_RIFT_JAR_TOGGLE, SoundTypeBuilder.of(PSSounds.BLOCK_RIFT_JAR_TOGGLE)
                 .category(SoundCategory.BLOCKS)
-                .sound(Sound.builder(Identifier.ofVanilla("block/end_portal/eyeplace")), 3)
+                .sound(Sound.builder(new Identifier("block/end_portal/eyeplace")), 3)
         );
         exporter.accept(PSSounds.BLOCK_RIFT_JAR_OPEN, SoundTypeBuilder.of(PSSounds.BLOCK_RIFT_JAR_OPEN)
                 .category(SoundCategory.BLOCKS)

@@ -1,5 +1,5 @@
 package ivorius.psychedelicraft.datafix;
-
+/*
 import com.mojang.serialization.Dynamic;
 
 import net.minecraft.datafixer.fix.ItemStackComponentizationFix;
@@ -34,3 +34,4 @@ final class PSItemStackComponentizations {
         }
     }
 }
+*/

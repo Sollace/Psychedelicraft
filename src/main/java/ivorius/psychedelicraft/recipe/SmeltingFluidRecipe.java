@@ -5,14 +5,12 @@
 
 package ivorius.psychedelicraft.recipe;
 
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CookingRecipeCategory;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.world.World;
 
 import java.lang.ref.WeakReference;
@@ -22,6 +20,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
 
 /**
  * Created by Sollace on 5 Jan 2023
@@ -56,7 +56,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
             Codec.FLOAT.fieldOf("experience").forGetter(SmeltingFluidRecipe::getExperience),
             Codec.INT.optionalFieldOf("cookingTIme", 200).forGetter(SmeltingFluidRecipe::getCookingTime)
         ).apply(instance, SmeltingFluidRecipe::new));
-    public static final PacketCodec<RegistryByteBuf, SmeltingFluidRecipe> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, SmeltingFluidRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, SmeltingFluidRecipe::getGroup,
             RecipeUtils.COOKING_RECIPE_CATEGORY_PACKET_CODEC, SmeltingFluidRecipe::getCategory,
             OptionalFluidIngredient.PACKET_CODEC, recipe -> recipe.input,
@@ -69,7 +69,7 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     private final OptionalFluidIngredient input;
     private final FluidModifyingResult result;
 
-    private WeakReference<SingleStackRecipeInput> lastQueriedInventory = new WeakReference<>(null);
+    private WeakReference<Inventory> lastQueriedInventory = new WeakReference<>(null);
 
     public SmeltingFluidRecipe(
             String group, CookingRecipeCategory category,
@@ -95,14 +95,14 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     }
 
     @Override
-    public boolean matches(SingleStackRecipeInput inventory, World world) {
+    public boolean matches(Inventory inventory, World world) {
         lastQueriedInventory = new WeakReference<>(inventory);
-        return input.test(inventory.item());
+        return input.test(inventory.getStack(0));
     }
 
     @Override
-    public ItemStack getResult(WrapperLookup registries) {
-        SingleStackRecipeInput inventory = lastQueriedInventory.get();
+    public ItemStack getResult(DynamicRegistryManager registries) {
+        Inventory inventory = lastQueriedInventory.get();
         if (inventory == null) {
             return super.getResult(registries);
         }
@@ -110,8 +110,8 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     }
 
     @Override
-    public ItemStack craft(SingleStackRecipeInput inventory, WrapperLookup registries) {
+    public ItemStack craft(Inventory inventory, DynamicRegistryManager registries) {
         lastQueriedInventory = new WeakReference<>(inventory);
-        return result.applyTo(inventory.item());
+        return result.applyTo(inventory.getStack(0));
     }
 }

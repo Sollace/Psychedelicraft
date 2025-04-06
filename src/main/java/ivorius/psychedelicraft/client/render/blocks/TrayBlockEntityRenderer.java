@@ -34,7 +34,7 @@ public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlo
             contentsModel.setAngles(entity, tickDelta);
             contentsModel.render(matrices, vertices.getBuffer(
                     entity.isHardened() ? RenderLayer.getEntitySolid(FLUID_TEXTURE) : RenderLayer.getEntityTranslucent(FLUID_TEXTURE)
-            ), light, overlay);
+            ), light, overlay, 1, 1, 1, 1);
 
             matrices.pop();
         }
@@ -59,7 +59,7 @@ public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlo
 
             Text text = entity.getCraftingResult().get().getName();
 
-            textRenderer.draw(text, -(textRenderer.getWidth(text) - 5) / 2F, 0, Colors.BLUE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+            textRenderer.draw(text, -(textRenderer.getWidth(text) - 5) / 2F, 0, 0xFF0000FF, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
 
         }
     }

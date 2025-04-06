@@ -72,8 +72,8 @@ public class DealerTaskListProvider {
         @Override
         protected void performAdditionalWork(ServerWorld world, VillagerEntity entity) {
             entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE).ifPresent(globalPos -> {
-                if (world.getBlockState(globalPos.pos()).isIn(PSTags.Blocks.DRYING_TABLES)) {
-                    world.getBlockEntity(globalPos.pos(), PSBlockEntities.DRYING_TABLE).ifPresent(blockEntity -> {
+                if (world.getBlockState(globalPos.getPos()).isIn(PSTags.Blocks.DRYING_TABLES)) {
+                    world.getBlockEntity(globalPos.getPos(), PSBlockEntities.DRYING_TABLE).ifPresent(blockEntity -> {
                         ItemStack output = blockEntity.getStack(DryingTableBlockEntity.OUTPUT_SLOT_INDEX);
                         DryingRecipe.Input input = new DryingRecipe.Input(output, entity.getInventory().getHeldStacks());
 

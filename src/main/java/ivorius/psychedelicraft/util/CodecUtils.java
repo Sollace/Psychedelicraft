@@ -62,7 +62,10 @@ public interface CodecUtils {
     }
 
     static <T> Codec<DefaultedList<T>> toDefaultedList(Codec<T> elementCodec, T def) {
-        return elementCodec.listOf(1, 9).flatXmap(ingredients -> {
+        return elementCodec.listOf().flatXmap(ingredients -> {
+            if (ingredients.size() < 1 || ingredients.size() > 9) {
+                return DataResult.error(() -> "List must have between 1 and 9 values", new DefaultedList<>(ingredients, def) {});
+            }
             return DataResult.success(new DefaultedList<>(ingredients, def) {});
         }, DataResult::success);
     }

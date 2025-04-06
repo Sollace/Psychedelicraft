@@ -69,7 +69,8 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, (0.05f + power * 0.1f) * (1.0f - lightningTime));
                 RenderSystem.setShaderTexture(0, LIGHTNING_TEXTURES[lIndex]);
 
-                BufferBuilder buffer = tessellator.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+                BufferBuilder buffer = tessellator.getBuffer();
+                buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
                 buffer.vertex(lX, height, -90F).texture(0, upsideDown ? 0 : 1)
                       .vertex(lX + lightningW, height, -90F).texture(1, upsideDown ? 0 : 1)
                       .vertex(lX + lightningW, 0, -90F).texture(1, upsideDown ? 1 : 0)

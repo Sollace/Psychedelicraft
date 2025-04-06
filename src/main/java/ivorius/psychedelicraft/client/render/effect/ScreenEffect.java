@@ -16,7 +16,8 @@ public interface ScreenEffect extends AutoCloseable {
 
     @Deprecated
     static void drawScreen(int screenWidth, int screenHeight) {
-        BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+        buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         buffer.vertex(0, 0, 0).texture(0, 1)
               .vertex(0, screenHeight, 0).texture(0, 0)
               .vertex(screenWidth, screenHeight, 0).texture(1, 0)

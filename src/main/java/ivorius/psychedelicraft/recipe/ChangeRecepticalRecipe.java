@@ -1,19 +1,20 @@
 package ivorius.psychedelicraft.recipe;
 
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
 
 /**
  * Created by lukas on 10.11.14.
@@ -28,13 +29,13 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
     public static final MapCodec<ChangeRecepticalRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(ChangeRecepticalRecipe::getGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ChangeRecepticalRecipe::getCategory),
-            ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
+            ItemStack.CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
             RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ChangeRecepticalRecipe::getIngredients)
     ).apply(instance, ChangeRecepticalRecipe::new));
-    public static final PacketCodec<RegistryByteBuf, ChangeRecepticalRecipe> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, ChangeRecepticalRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, ChangeRecepticalRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ChangeRecepticalRecipe::getCategory,
-            ItemStack.OPTIONAL_PACKET_CODEC, recipe -> recipe.output,
+            PacketCodecs.ITEM_STACK, recipe -> recipe.output,
             RecipeUtils.INGREDIENTS_PACKET_CODEC, ChangeRecepticalRecipe::getIngredients,
             ChangeRecepticalRecipe::new
     );
@@ -52,12 +53,12 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(CraftingRecipeInput inventory, World world) {
-        return RecipeUtils.recepticals(inventory.getStacks().stream()).count() == 1 && super.matches(inventory, world);
+    public boolean matches(RecipeInputInventory inventory, World world) {
+        return RecipeUtils.recepticals(RecipeUtils.stacks(inventory)).count() == 1 && super.matches(inventory, world);
     }
 
     @Override
-    public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        return RecipeUtils.copyInputFluidToResult(getResult(registries).copy(), inventory.getStacks());
+    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
+        return RecipeUtils.copyInputFluidToResult(getResult(registries).copy(), RecipeUtils.stacks(inventory).toList());
     }
 }

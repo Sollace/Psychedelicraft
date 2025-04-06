@@ -8,6 +8,7 @@ import ivorius.psychedelicraft.item.FilledBucketItem;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
+import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
@@ -26,7 +27,7 @@ public final class VariantMarshal {
     public static void bootstrap() {
         FluidStorage.GENERAL_COMBINED_PROVIDER.register(context -> {
             ItemStack stack = context.getItemVariant().toStack();
-            if (stack.get(PSComponents.FLUIDS) != null) {
+            if (StackCompat.get(stack, PSComponents.FLUIDS) != null) {
                 // F***k the fabric apis. Use something that actually works
                 return new ItemFluidsStorage(context);
             }
@@ -143,7 +144,7 @@ public final class VariantMarshal {
 
         @Override
         public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-            ItemFluids inputFluids = resource.getComponents().get(PSComponents.FLUIDS).orElse(null);
+            ItemFluids inputFluids = StackCompat.get(resource, PSComponents.FLUIDS);
             if (inputFluids == null) {
                 SimpleFluid fluid = SimpleFluid.of(resource.getFluid());
                 inputFluids = ItemFluids.create(fluid, (int)maxAmount, Map.of());
@@ -174,7 +175,7 @@ public final class VariantMarshal {
 
         @Override
         public long getCapacity() {
-            FluidCapacity capacity = getCurrentStack().get(PSComponents.FLUID_CAPACITY);
+            FluidCapacity capacity = StackCompat.get(getCurrentStack(), PSComponents.FLUID_CAPACITY);
             return capacity == null ? 0 : capacity.capacity();
         }
     }

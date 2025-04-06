@@ -50,7 +50,7 @@ public class TrayBlock extends BlockWithEntity {
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
@@ -60,7 +60,7 @@ public class TrayBlock extends BlockWithEntity {
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return state.get(AXIS) == Axis.X ? X_SHAPE : Z_SHAPE;
     }
 
@@ -69,8 +69,9 @@ public class TrayBlock extends BlockWithEntity {
         return getDefaultState().with(AXIS, ctx.getHorizontalPlayerFacing().rotateYClockwise().getAxis());
     }
 
+    @Deprecated
     @Override
-    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+    public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         if (builder.getOptional(LootContextParameters.BLOCK_ENTITY) instanceof TrayBlockEntity be) {
             builder = builder.addDynamicDrop(BlockWithFluid.CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
                 be.getCraftingResult().ifPresent(result -> {

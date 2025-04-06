@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -17,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir {
     public static final Resovoir EMPTY = new Resovoir(0, (r, l) -> {}) {
         @Override
-        public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+        public void fromNbt(NbtCompound compound) {
 
         }
     };
@@ -160,14 +159,14 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void toNbt(NbtCompound compound) {
         compound.put("fluid", fluids.encode());
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void fromNbt(NbtCompound compound) {
         if (compound.contains("stack", NbtElement.COMPOUND_TYPE)) {
-            fluids = ItemFluids.of(ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("stack")));
+            fluids = ItemFluids.of(ItemStack.fromNbt(compound.getCompound("stack")));
         } else {
             fluids = ItemFluids.decode(compound.get("fluid"));
         }

@@ -6,10 +6,10 @@ import java.util.function.Function;
 import com.mojang.datafixers.util.Function7;
 
 import io.netty.buffer.ByteBuf;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.intprovider.IntProvider;
@@ -24,19 +24,19 @@ public interface PacketCodecUtils {
             OPTIONAL_VAR_LONG, IntRange::maxSquared,
             IntRange::new
     );
-    PacketCodec<ByteBuf, IntProvider> INT_PROVIDER_VALUE_CODEC = PacketCodecs.optional(PacketCodecs.NBT_ELEMENT).xmap(
+    PacketCodec<PacketByteBuf, IntProvider> INT_PROVIDER_VALUE_CODEC = PacketCodecs.optional(PacketCodecs.NBT_ELEMENT).xmap(
             nbt -> nbt.flatMap(i -> IntProvider.VALUE_CODEC.decode(NbtOps.INSTANCE, i).result().map(pair -> pair.getFirst())).orElseThrow(),
             input -> IntProvider.VALUE_CODEC.encodeStart(NbtOps.INSTANCE, input).result());
 
-    static <T extends Enum<T>> PacketCodec<RegistryByteBuf, T> ofEnum(Class<T> type) {
-        return PacketCodec.ofStatic(RegistryByteBuf::writeEnumConstant, b -> b.readEnumConstant(type));
+    static <T extends Enum<T>> PacketCodec<PacketByteBuf, T> ofEnum(Class<T> type) {
+        return PacketCodec.ofStatic(PacketByteBuf::writeEnumConstant, b -> b.readEnumConstant(type));
     }
 
     static<B extends ByteBuf, V> PacketCodec.ResultFunction<B, V, DefaultedList<V>> toDefaultedList() {
         return PacketCodecs.toCollection(DefaultedList::ofSize);
     }
 
-    static <B, C, T1, T2, T3, T4, T5, T6, T7> PacketCodec<B, C> tuple(
+    static <B extends ByteBuf, C, T1, T2, T3, T4, T5, T6, T7> PacketCodec<B, C> tuple(
             PacketCodec<? super B, T1> codec1, Function<C, T1> from1,
             PacketCodec<? super B, T2> codec2, Function<C, T2> from2,
             PacketCodec<? super B, T3> codec3, Function<C, T3> from3,

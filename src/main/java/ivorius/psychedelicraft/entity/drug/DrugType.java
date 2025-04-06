@@ -14,6 +14,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import java.util.function.Function;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.PSSounds;
@@ -54,8 +55,8 @@ public record DrugType<T extends Drug> (
         return constructor.apply(this);
     }
 
-    public MapCodec<T> codec() {
-        return this.codecFunction.apply(this);
+    public Codec<T> codec() {
+        return this.codecFunction.apply(this).codec();
     }
 
     public SoundEvent soundEvent() {

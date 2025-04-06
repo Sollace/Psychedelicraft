@@ -36,7 +36,7 @@ public abstract class SoundsProvider implements DataProvider {
 
             return CompletableFuture.allOf(data.entrySet().stream().map(file -> {
                 Path outputPath = output.resolvePath(DataOutput.OutputType.RESOURCE_PACK).resolve(file.getKey() + "/sounds.json");
-                return DataProvider.writeCodecToPath(writer, lookup, CODEC, file.getValue(), outputPath);
+                return DataProvider.writeCodecToPath(writer, CODEC, file.getValue(), outputPath);
             }).toArray(CompletableFuture[]::new));
         });
     }

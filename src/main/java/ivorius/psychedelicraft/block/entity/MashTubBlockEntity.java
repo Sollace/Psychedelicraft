@@ -37,7 +37,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -75,7 +74,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     @Override
     public void accept(ItemStack stack) {
         if (!solidContents.isEmpty()) {
-            if (ItemStack.areItemsAndComponentsEqual(solidContents, stack)) {
+            if (ItemStack.canCombine(solidContents, stack)) {
                 int maxToMove = Math.min(stack.getCount(), solidContents.getMaxCount() - solidContents.getCount());
                 if (maxToMove > 0) {
                     stack.decrement(maxToMove);
@@ -321,25 +320,25 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
+    public void writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
         if (!solidContents.isEmpty()) {
-            compound.put("solidContents", solidContents.encodeAllowEmpty(lookup));
+            compound.put("solidContents", solidContents.writeNbt(new NbtCompound()));
         }
-        compound.put("suppliedIngredients", suppliedIngredients.toNbt(lookup));
+        compound.put("suppliedIngredients", suppliedIngredients.toNbt());
         compound.put("auxiliaryFluids", auxiliaryFluids.encode());
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
+    public void readNbt(NbtCompound compound) {
+        super.readNbt(compound);
         solidContents = compound.contains("solidContents", NbtElement.COMPOUND_TYPE)
-                ? ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("solidContents"))
+                ? ItemStack.fromNbt(compound.getCompound("solidContents"))
                 : ItemStack.EMPTY;
         auxiliaryFluids = compound.contains("auxiliaryFluids", NbtElement.COMPOUND_TYPE)
                 ? ItemFluids.decode(compound.get("auxiliaryFluids"))
                 : ItemFluids.EMPTY;
-        suppliedIngredients.fromNbt(compound.getCompound("suppliedIngredients"), lookup);
+        suppliedIngredients.fromNbt(compound.getCompound("suppliedIngredients"));
     }
 
     class Stew implements NbtSerialisable {
@@ -380,13 +379,13 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
 
         @Override
-        public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+        public void toNbt(NbtCompound compound) {
             compound.putInt("stewTime", stewTime);
             compound.putString("recipe", recipe.toString());
         }
 
         @Override
-        public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+        public void fromNbt(NbtCompound compound) {
             stewTime = compound.getInt("stewTime");
             recipe = Identifier.validate(compound.getString("recipe")).result().orElse(null);
         }

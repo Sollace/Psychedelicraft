@@ -16,12 +16,12 @@ import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item.TooltipContext;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -130,7 +130,7 @@ public interface Processable {
         private final String timeLabel = "time.until." + name;
 
         public static final Codec<ProcessType> CODEC = StringIdentifiable.createBasicCodec(ProcessType::values);
-        public static final PacketCodec<RegistryByteBuf, ProcessType> PACKET_CODEC = PacketCodecUtils.ofEnum(ProcessType.class);
+        public static final PacketCodec<PacketByteBuf, ProcessType> PACKET_CODEC = PacketCodecUtils.ofEnum(ProcessType.class);
 
         public Text getStatus() {
             return status;
@@ -145,8 +145,8 @@ public interface Processable {
             return name;
         }
 
-        public static void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            Processable.ProcessType processType = stack.get(PSComponents.PROCESS_TYPE);
+        public static void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip) {
+            Processable.ProcessType processType = StackCompat.get(stack, PSComponents.PROCESS_TYPE);
             if (processType != null) {
                 tooltip.add(Text.translatable("psychedelicraft.container.process_type." + processType.asString()).formatted(Formatting.BLUE));
             }

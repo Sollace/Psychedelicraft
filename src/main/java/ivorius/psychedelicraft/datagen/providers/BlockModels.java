@@ -78,7 +78,7 @@ public interface BlockModels {
     static void registerBarrel(BlockStateModelGenerator generator, Block block) {
         Identifier planksId = Registries.BLOCK.getId(block).withPath(p -> p.replace("_barrel", "_planks"));
         generator.registerBuiltin(block, Registries.BLOCK.getOrEmpty(planksId).or(() -> {
-            return Registries.BLOCK.getOrEmpty(Identifier.ofVanilla(planksId.getPath()));
+            return Registries.BLOCK.getOrEmpty(new Identifier(planksId.getPath()));
         }).orElse(Blocks.OAK_PLANKS)).includeWithoutItem(block);
         generator.registerItemModel(block.asItem());
     }

@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
@@ -161,21 +160,21 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
-        compound.put("tank", tank.toNbt(lookup));
-        Inventories.writeNbt(compound, ioInventory.heldStacks, lookup);
-        compound.put("inputSlot", inputSlot.toNbt(lookup));
-        compound.put("outputSlot", outputSlot.toNbt(lookup));
+    public void writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
+        compound.put("tank", tank.toNbt());
+        Inventories.writeNbt(compound, ioInventory.heldStacks);
+        compound.put("inputSlot", inputSlot.toNbt());
+        compound.put("outputSlot", outputSlot.toNbt());
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
-        tank.fromNbt(compound.getCompound("tank"), lookup);
-        Inventories.readNbt(compound, ioInventory.heldStacks, lookup);
-        inputSlot.fromNbt(compound.getCompound("inputSlot"), lookup);
-        outputSlot.fromNbt(compound.getCompound("outputSlot"), lookup);
+    public void readNbt(NbtCompound compound) {
+        super.readNbt(compound);
+        tank.fromNbt(compound.getCompound("tank"));
+        Inventories.readNbt(compound, ioInventory.heldStacks);
+        inputSlot.fromNbt(compound.getCompound("inputSlot"));
+        outputSlot.fromNbt(compound.getCompound("outputSlot"));
     }
 
     @Override
@@ -317,13 +316,13 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
         }
 
         @Override
-        public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+        public void toNbt(NbtCompound compound) {
             compound.putInt("inputtedLevels", propertyDelegate.get(inputtedLevelsIndex));
             compound.putInt("levelsTransferred", propertyDelegate.get(levelsTransferredIndex));
         }
 
         @Override
-        public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+        public void fromNbt(NbtCompound compound) {
             propertyDelegate.set(inputtedLevelsIndex, compound.getInt("inputtedLevels"));
             propertyDelegate.set(levelsTransferredIndex, compound.getInt("levelsTransferred"));
         }

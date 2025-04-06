@@ -13,14 +13,15 @@ import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
-import net.minecraft.component.type.PotionContentsComponent;
+import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BucketItem;
 import net.minecraft.item.GlassBottleItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
+import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
@@ -65,16 +66,14 @@ public class RecepticalHandler {
     }
 
     public static ItemStack changeStackType(ItemStack item, Item newType) {
-        return item.getItem() == newType ? item : item.withItem(newType);
+        return item.getItem() == newType ? item : StackCompat.withItem(item, newType);
     }
 
     public static ItemStack applyFluid(ItemStack stack, ItemFluids contents) {
         if (contents.isEmpty()) {
-            if (stack.contains(PSComponents.FLUIDS)) {
-                stack.remove(PSComponents.FLUIDS);
-            }
+            StackCompat.remove(stack, PSComponents.FLUIDS);
         } else {
-            stack.set(PSComponents.FLUIDS, contents);
+            StackCompat.set(stack, PSComponents.FLUIDS, contents);
         }
         return stack;
     }
@@ -88,7 +87,7 @@ public class RecepticalHandler {
     }
 
     static {
-        register(stack -> stack.isIn(ConventionalItemTags.BUCKETS) || stack.isIn(ConventionalItemTags.EMPTY_BUCKETS) || stack.isOf(PSItems.FILLED_BUCKET), new RecepticalHandler() {
+        register(stack -> stack.getItem() instanceof BucketItem || stack.isOf(PSItems.FILLED_BUCKET), new RecepticalHandler() {
             private final Function<SimpleFluid, Optional<Item>> filledBuckets = Util.memoize(fluid -> {
                 String path = fluid.getId().getPath() + "_bucket";
                 return Registries.ITEM.getIds().stream().filter(id -> id.getPath().equals(path)).findFirst().map(Registries.ITEM::get);
@@ -121,7 +120,7 @@ public class RecepticalHandler {
                     return applyFluid(changeStackType(item, PSItems.FILLED_GLASS_BOTTLE), contents);
                 }
                 if (contents.isOf(Fluids.WATER)) {
-                    return PotionContentsComponent.createStack(Items.POTION, Potions.WATER);
+                    return PotionUtil.setPotion(Items.POTION.getDefaultStack(), Potions.WATER);
                 }
                 Item newType = contents.amount() < FluidVolumes.GLASS_BOTTLE || !contents.isBaseForm()
                         ? PSItems.FILLED_GLASS_BOTTLE

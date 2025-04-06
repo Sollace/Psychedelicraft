@@ -15,7 +15,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -122,7 +121,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
                     DryingRecipe.Input input = new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList());
                     world.getRecipeManager()
                         .getFirstMatch(PSRecipes.DRYING_TYPE, input, world, currentRecipe.get())
-                        .ifPresent(recipe -> craft(recipe.value(), input));
+                        .ifPresent(recipe -> craft(recipe.getSecond().value(), input));
                     currentRecipe = Optional.empty();
                     dryingProgress = 0;
                     cookingTime = 0;
@@ -164,8 +163,8 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
+    public void writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
         currentRecipe.ifPresent(r -> {
             compound.putString("currentRecipe", r.toString());
         });
@@ -175,8 +174,8 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
+    public void readNbt(NbtCompound compound) {
+        super.readNbt(compound);
         currentRecipe = Identifier.validate(compound.getString("currentRecipe")).result();
         heat = compound.getFloat("heatRatio");
         cookingTime = compound.getLong("cookingTime");

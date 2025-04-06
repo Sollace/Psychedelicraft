@@ -1,8 +1,6 @@
 package ivorius.psychedelicraft.datagen.providers.loot;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonObject;
@@ -19,7 +17,6 @@ import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 import net.minecraft.block.Block;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.loot.LootPool;
@@ -33,16 +30,12 @@ import net.minecraft.loot.entry.DynamicEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
 import net.minecraft.loot.function.ConditionalLootFunction;
-import net.minecraft.loot.function.CopyStateLootFunction;
+import net.minecraft.loot.function.CopyStateFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Util;
@@ -50,13 +43,13 @@ import net.minecraft.util.Util;
 public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
     private ConditionalLootFunction.Builder<?> fortuneBonus;
 
-    public PSBlockLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<WrapperLookup> registryLookup) {
-        super(dataOutput, registryLookup);
+    public PSBlockLootTableProvider(FabricDataOutput dataOutput) {
+        super(dataOutput);
     }
 
     @Override
     public void generate() {
-        fortuneBonus = ApplyBonusLootFunction.binomialWithBonusCount(getEnchantment(Enchantments.FORTUNE), 0.5714286F, 3);
+        fortuneBonus = ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286F, 3);
         // simple drops
         List.of(
                 PSBlocks.DRYING_TABLE,
@@ -150,8 +143,8 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
 
         // check for missing blocks
         Registries.BLOCK.forEach(block -> {
-            var key = block.getLootTableKey();
-            if (key.getValue().getNamespace().equalsIgnoreCase("psychedelicraft") && !lootTables.containsKey(key)) {
+            var key = block.getLootTableId();
+            if (key.getNamespace().equalsIgnoreCase("psychedelicraft") && !lootTables.containsKey(key)) {
                 Psychedelicraft.LOGGER.warn("No loot table provided for " + key);
             }
             if (block instanceof BurdenedLatticeBlock b) {
@@ -201,7 +194,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                                 .properties(StatePredicate.Builder.create()
                                         .exactMatch(Properties.AGE_4, Properties.AGE_4_MAX)
                                 ))
-                        .conditionally(TableBonusLootCondition.builder(getEnchantment(Enchantments.FORTUNE),0.2F, 0.3F, 0.4F, 0.5F, 0.6F))
+                        .conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.2F, 0.3F, 0.4F, 0.5F, 0.6F))
                         .alternatively(ItemEntry.builder(seeds).apply(fortuneBonus))
                 ).conditionally(SurvivesExplosionLootCondition.builder()));
     }
@@ -252,9 +245,9 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
             .pool(
                 LootPool.builder()
                     .rolls(ConstantLootNumberProvider.create(1.0F))
-                    .conditionally(createWithoutShearsOrSilkTouchCondition())
+                    .conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS)
                     .with(addSurvivesExplosionCondition(leaves, ItemEntry.builder(fruit))
-                        .conditionally(TableBonusLootCondition.builder(getEnchantment(Enchantments.FORTUNE),
+                        .conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE,
                                 0.005F, 0.0055555557F, 0.00625F, 0.008333334F, 0.025F
                         ))
                     )
@@ -266,7 +259,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
             .pool(
                 LootPool.builder()
                     .rolls(ConstantLootNumberProvider.create(1.0F))
-                    .conditionally(createWithoutShearsOrSilkTouchCondition())
+                    .conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS)
                     .with(addSurvivesExplosionCondition(leaves, ItemEntry.builder(fruit)).apply(fortuneBonus))
             );
     }
@@ -274,11 +267,11 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
     public LootTable.Builder latticeCropDrops(Block block, Item product, Item seeds) {
         return LootTable.builder()
                 .pool(LootPool.builder()
-                        .conditionally(createSilkTouchCondition())
+                        .conditionally(WITH_SILK_TOUCH)
                         .rolls(ConstantLootNumberProvider.create(1.0F))
-                        .with(addSurvivesExplosionCondition(block, ItemEntry.builder(block)).apply(CopyStateLootFunction.builder(block).addProperty(Properties.AGE_3))))
+                        .with(addSurvivesExplosionCondition(block, ItemEntry.builder(block)).apply(CopyStateFunction.builder(block).addProperty(Properties.AGE_3))))
                 .pool(LootPool.builder()
-                        .conditionally(createWithoutSilkTouchCondition())
+                        .conditionally(WITHOUT_SILK_TOUCH)
                         .rolls(ConstantLootNumberProvider.create(1.0F))
                         .with(addSurvivesExplosionCondition(product, ItemEntry.builder(product))
                                 .conditionally(BlockStatePropertyLootCondition.builder(block)
@@ -288,7 +281,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                                 .alternatively(ItemEntry.builder(seeds))
                         ))
                 .pool(LootPool.builder()
-                        .conditionally(createWithoutSilkTouchCondition())
+                        .conditionally(WITHOUT_SILK_TOUCH)
                         .rolls(ConstantLootNumberProvider.create(1.0F))
                         .with(addSurvivesExplosionCondition(block, ItemEntry.builder(PSBlocks.LATTICE))));
     }
@@ -306,14 +299,10 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                         )));
     }
 
-    private RegistryEntry<Enchantment> getEnchantment(RegistryKey<Enchantment> key) {
-        return registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(key);
-    }
-
     @SuppressWarnings("deprecation")
     static <T extends Comparable<T>> LootCondition.Builder rangedStateCondition(Block block, Property<T> property, @Nullable T min, @Nullable T max) {
-        return () -> JsonOps.INSTANCE.getMap(Util.make(new JsonObject(), json -> {
-            json.addProperty("block", block.getRegistryEntry().getIdAsString());
+        return () -> BlockStatePropertyLootCondition.CODEC.decode(JsonOps.INSTANCE, Util.make(new JsonObject(), json -> {
+            json.addProperty("block", block.getRegistryEntry().getKey().get().getValue().toString());
             json.addProperty("condition", Registries.LOOT_CONDITION_TYPE.getId(LootConditionTypes.BLOCK_STATE_PROPERTY).toString());
             json.add("properties", Util.make(new JsonObject(), o -> {
                 o.add(property.getName(), Util.make(new JsonObject(), oo -> {
@@ -321,7 +310,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                     if (max != null) oo.addProperty("max", String.valueOf(max));
                 }));
             }));
-        })).flatMap(map -> BlockStatePropertyLootCondition.CODEC.decode(JsonOps.INSTANCE, map)).getOrThrow();
+        })).getOrThrow(false, s -> {}).getFirst();
     }
 
     private LootTable.Builder dynamicContentDrops(Block block) {

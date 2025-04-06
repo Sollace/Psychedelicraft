@@ -66,8 +66,8 @@ class LoadedShader extends PostEffectProcessor {
     }
 
     @Override
-    public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest, boolean linear) throws IOException {
-        PostEffectPass pass = super.addPass(programName, source, dest, linear);
+    public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest) throws IOException {
+        PostEffectPass pass = super.addPass(programName, source, dest);
         if (passes == null) {
             passes = new ArrayList<>();
         }

@@ -7,7 +7,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
@@ -23,9 +22,9 @@ public abstract class SyncedBlockEntity extends BlockEntity {
     }
 
     @Override
-    public final NbtCompound toInitialChunkDataNbt(WrapperLookup lookup) {
-        NbtCompound compound = super.toInitialChunkDataNbt(lookup);
-        writeNbt(compound, lookup);
+    public final NbtCompound toInitialChunkDataNbt() {
+        NbtCompound compound = super.toInitialChunkDataNbt();
+        writeNbt(compound);
         return compound;
     }
 

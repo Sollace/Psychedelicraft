@@ -11,7 +11,6 @@ import org.joml.Vector4f;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class HarmoniumDrug extends SimpleDrug {
     public final Vector3f currentColor = new Vector3f(1, 1, 1);
@@ -31,16 +30,16 @@ public class HarmoniumDrug extends SimpleDrug {
     }
 
     @Override
-    public void toNbt(NbtCompound tagCompound, WrapperLookup lookup) {
-        super.toNbt(tagCompound, lookup);
+    public void toNbt(NbtCompound tagCompound) {
+        super.toNbt(tagCompound);
         tagCompound.putFloat("currentColor[0]", currentColor.x);
         tagCompound.putFloat("currentColor[1]", currentColor.y);
         tagCompound.putFloat("currentColor[2]", currentColor.z);
     }
 
     @Override
-    public void fromNbt(NbtCompound tagCompound, WrapperLookup lookup) {
-        super.fromNbt(tagCompound, lookup);
+    public void fromNbt(NbtCompound tagCompound) {
+        super.fromNbt(tagCompound);
         currentColor.set(
                 tagCompound.getFloat("currentColor[0]"),
                 tagCompound.getFloat("currentColor[1]"),

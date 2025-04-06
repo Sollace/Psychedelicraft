@@ -47,8 +47,9 @@ public class LatticeBlock extends HorizontalConnectingBlock implements Waterlogg
         builder.add(NORTH, SOUTH, EAST, WEST, WATERLOGGED);
     }
 
+    @Deprecated
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
@@ -124,7 +125,7 @@ public class LatticeBlock extends HorizontalConnectingBlock implements Waterlogg
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         if (state.get(WATERLOGGED).booleanValue()) {
             return Fluids.WATER.getStill(false);
         }

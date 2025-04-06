@@ -12,11 +12,11 @@ import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -55,7 +55,7 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
 
         ItemStack container = stack.copyWithCount(1);
         int capacity = FluidCapacity.get(stack);
-        stack.decrementUnlessCreative(1, player);
+        StackCompat.decrementUnlessCreative(stack, 1, player);
 
         entity.setContainer(container);
         entity.playSound(player, BlockSoundGroup.GLASS.getPlaceSound());
@@ -80,11 +80,11 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void toNbt(NbtCompound compound) {
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void fromNbt(NbtCompound compound) {
     }
 
     @Override

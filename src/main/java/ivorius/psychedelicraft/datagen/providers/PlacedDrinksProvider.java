@@ -44,7 +44,7 @@ public class PlacedDrinksProvider implements DataProvider {
             });
 
             Path outputPath = output.resolvePath(DataOutput.OutputType.RESOURCE_PACK).resolve("psychedelicraft/placeable_drinks.json");
-            return DataProvider.writeCodecToPath(writer, lookup, CODEC, data, outputPath);
+            return DataProvider.writeCodecToPath(writer, CODEC, data, outputPath);
         });
     }
 

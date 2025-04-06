@@ -31,8 +31,8 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -62,7 +62,7 @@ public class PlacedDrinksModelProvider
         return CompletableFuture.supplyAsync(() -> {
             return resourceManager.getResource(CONFIG_LOCATION).map(resource -> {
                 try (BufferedReader reader = resource.getReader()) {
-                    return CODEC.decode(JsonOps.INSTANCE, JsonHelper.deserialize(GSON, reader, JsonElement.class)).getOrThrow().getFirst();
+                    return CODEC.decode(JsonOps.INSTANCE, JsonHelper.deserialize(GSON, reader, JsonElement.class)).getOrThrow(false, s -> {}).getFirst();
                 } catch (IOException e) {
                     Psychedelicraft.LOGGER.error("Could not load client drinks file", e);
                 }
@@ -89,7 +89,7 @@ public class PlacedDrinksModelProvider
     }
 
     public void renderDrink(String type, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        int dyeColor = DyedColorComponent.getColor(stack, Colors.WHITE);
+        int dyeColor = stack.getItem() instanceof DyeableItem d ? d.getColor(stack) : Colors.WHITE;
 
         renderDrinkModel(stack, matrices, vertices, light, overlay, dyeColor, getGroundModelId(type, stack.getItem()));
 
@@ -133,7 +133,7 @@ public class PlacedDrinksModelProvider
     private void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, int light, int overlay, int color) {
         MatrixStack.Entry entry = matrices.peek();
         for (BakedQuad bakedQuad : quads) {
-            vertices.quad(entry, bakedQuad, MathUtils.r(color), MathUtils.g(color), MathUtils.b(color), MathUtils.a(color), light, overlay);
+            vertices.quad(entry, bakedQuad, MathUtils.r(color), MathUtils.g(color), MathUtils.b(color), light, overlay);
         }
     }
 

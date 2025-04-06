@@ -10,15 +10,15 @@ import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.RecipeInput;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.input.RecipeInput;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.world.World;
 
@@ -27,15 +27,15 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
             Codec.STRING.fieldOf("group").forGetter(HardeningRecipe::hardeningGroup),
             FluidIngredient.CODEC.fieldOf("core_fluid").forGetter(HardeningRecipe::coreFluid),
             FluidIngredient.CODEC.listOf().fieldOf("impurities").forGetter(HardeningRecipe::impurities),
-            ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(HardeningRecipe::result),
+            ItemStack.CODEC.fieldOf("result").forGetter(HardeningRecipe::result),
             IntProvider.POSITIVE_CODEC.fieldOf("amount").forGetter(HardeningRecipe::amount),
             Codec.INT.optionalFieldOf("hardening_time", 20).forGetter(HardeningRecipe::hardeningTime)
     ).apply(i, HardeningRecipe::new));
-    public static final PacketCodec<RegistryByteBuf, HardeningRecipe> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, HardeningRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, HardeningRecipe::hardeningGroup,
             FluidIngredient.PACKET_CODEC, HardeningRecipe::coreFluid,
             FluidIngredient.PACKET_CODEC.collect(PacketCodecs.toList()), HardeningRecipe::impurities,
-            ItemStack.PACKET_CODEC, HardeningRecipe::result,
+            PacketCodecs.ITEM_STACK, HardeningRecipe::result,
             PacketCodecUtils.INT_PROVIDER_VALUE_CODEC, HardeningRecipe::amount,
             PacketCodecs.INTEGER, HardeningRecipe::hardeningTime,
             HardeningRecipe::new
@@ -76,7 +76,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
     }
 
     @Override
-    public ItemStack craft(Input input, WrapperLookup lookup) {
+    public ItemStack craft(Input input, DynamicRegistryManager lookup) {
         return getResult(lookup);
     }
 
@@ -86,7 +86,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
     }
 
     @Override
-    public ItemStack getResult(WrapperLookup lookup) {
+    public ItemStack getResult(DynamicRegistryManager lookup) {
         return result;
     }
 

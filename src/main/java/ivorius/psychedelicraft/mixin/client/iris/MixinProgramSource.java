@@ -38,7 +38,7 @@ abstract class MixinProgramSource {
                 }
                 return;
             }
-            GeometryShader.INSTANCE.setup(Type.VERTEX, Identifier.of(name).withPrefixedPath("iris/"));
+            GeometryShader.INSTANCE.setup(Type.VERTEX, new Identifier(name).withPrefixedPath("iris/"));
             recomputedVertexSource = Optional.ofNullable(GeometryShader.INSTANCE.injectShaderSources(info.getReturnValue().orElse(null)));
         }
         info.setReturnValue(recomputedVertexSource);
@@ -53,7 +53,7 @@ abstract class MixinProgramSource {
                 }
                 return;
             }
-            GeometryShader.INSTANCE.setup(Type.FRAGMENT, Identifier.of(name).withPrefixedPath("iris/"));
+            GeometryShader.INSTANCE.setup(Type.FRAGMENT, new Identifier(name).withPrefixedPath("iris/"));
             recomputedFragmentSource = Optional.ofNullable(GeometryShader.INSTANCE.injectShaderSources(info.getReturnValue().orElse(null)));
         }
         info.setReturnValue(recomputedFragmentSource);

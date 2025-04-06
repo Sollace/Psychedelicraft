@@ -11,7 +11,6 @@ import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.RecipeUtils;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -58,7 +57,7 @@ public class BongItem extends Item {
                 PlayerInventory inventory = drugProperties.asEntity().getInventory();
                 ItemStack s = inventory.removeStack(consumable.slot(), 1);
                 drugProperties.addAll(consumable.content().drugInfluences().apply(s));
-                stack.damage(1, drugProperties.asEntity(), EquipmentSlot.MAINHAND);
+                stack.damage(1, drugProperties.asEntity(), i -> i.sendToolBreakStatus(entity.getActiveHand()));
                 drugProperties.startBreathingSmoke(10 + world.random.nextInt(10), consumable.content().smokeColor());
             });
         });
@@ -123,7 +122,7 @@ public class BongItem extends Item {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getMaxUseTime(ItemStack stack) {
         return 30;
     }
 

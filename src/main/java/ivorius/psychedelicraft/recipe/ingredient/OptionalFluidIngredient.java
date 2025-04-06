@@ -12,12 +12,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -34,9 +34,9 @@ public record OptionalFluidIngredient (
             values -> DefaultedList.copyOf(EMPTY, values.toArray(OptionalFluidIngredient[]::new)),
             defaultedList -> new ArrayList<>(defaultedList)
     );
-    public static final PacketCodec<RegistryByteBuf, OptionalFluidIngredient> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, OptionalFluidIngredient> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.optional(FluidIngredient.PACKET_CODEC), OptionalFluidIngredient::fluid,
-            PacketCodecs.optional(Ingredient.PACKET_CODEC), OptionalFluidIngredient::receptical,
+            PacketCodecs.optional(PacketCodecs.INGREDIENT), OptionalFluidIngredient::receptical,
             OptionalFluidIngredient::new
     );
 

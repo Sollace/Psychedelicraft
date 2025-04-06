@@ -1,10 +1,11 @@
 package ivorius.psychedelicraft.recipe;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -51,8 +52,24 @@ public interface PSRecipes {
     static void bootstrap() { }
 
     record Serializer<T extends Recipe<?>> (
-            MapCodec<T> codec,
-            PacketCodec<RegistryByteBuf, T> packetCodec
+            Codec<T> codec,
+            PacketCodec<PacketByteBuf, T> packetCodec
         ) implements RecipeSerializer<T> {
+        Serializer(
+                MapCodec<T> codec,
+                PacketCodec<PacketByteBuf, T> packetCodec
+            ) {
+            this(codec.codec(), packetCodec);
+        }
+
+        @Override
+        public T read(PacketByteBuf buf) {
+            return packetCodec.decode(buf);
+        }
+
+        @Override
+        public void write(PacketByteBuf buf, T recipe) {
+            packetCodec.encode(buf, recipe);
+        }
     }
 }

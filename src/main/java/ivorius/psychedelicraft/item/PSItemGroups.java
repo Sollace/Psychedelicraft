@@ -14,8 +14,6 @@ import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
@@ -153,7 +151,7 @@ public interface PSItemGroups {
                 if (Psychedelicraft.getConfig().enableHarmonium.get()) {
                     for (DyeColor dye : DyeColor.values()) {
                         ItemStack harmonium = PSItems.HARMONIUM.getDefaultStack();
-                        harmonium.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(dye.getSignColor(), true));
+                        PSItems.HARMONIUM.setColor(harmonium, dye.getSignColor());
                         entries.add(harmonium);
                     }
                 }

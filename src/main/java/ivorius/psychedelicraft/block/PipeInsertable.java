@@ -12,9 +12,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.FluidMound;
+import ivorius.psychedelicraft.util.compat.EitherCompat;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Unit;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -79,8 +81,8 @@ public interface PipeInsertable {
                 FluidMound.CODEC.fieldOf("fluids").forGetter(PipeFluids::fluids),
                 Codec.INT.fieldOf("temperature").forGetter(PipeFluids::temperature)
         ).apply(i, PipeFluids::of));
-        public static final Codec<List<PipeFluids>> LIST_CODEC = Codec.xor(CODEC.listOf(), CODEC).flatXmap(
-                either -> Either.unwrap(either.mapBoth(DataResult::success, single -> DataResult.success(List.of(single)))),
+        public static final Codec<List<PipeFluids>> LIST_CODEC = Codecs.xor(CODEC.listOf(), CODEC).flatXmap(
+                either -> EitherCompat.unwrap(either.mapBoth(DataResult::success, single -> DataResult.success(List.of(single)))),
                 list -> DataResult.success(Either.left(list))
         );
         public PipeFluids {

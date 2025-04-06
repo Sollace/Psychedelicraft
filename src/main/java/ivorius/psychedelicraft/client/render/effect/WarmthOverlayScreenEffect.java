@@ -7,7 +7,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDrug> {
@@ -46,16 +45,14 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
                 float mY = (float) y / (float) steps * height / 7 * 5 + segHeight;
 
                 if (init) {
-                    int color = ColorHelper.Argb.fromFloats(
-                            Math.max(0, alpha - prog * 0.4F),
-                            1,
-                            0.5F + prog * 0.3F,
-                            0.35F + prog * 0.1F
-                    );
-                    buffer.vertex(mXL,    mY,    -90, color, 0, (float)  y      / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
-                    buffer.vertex(mXR,    mY,    -90, color, 1, (float)  y      / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
-                    buffer.vertex(prevXR, prevY, -90, color, 1, (float) (y - 1) / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
-                    buffer.vertex(prevXL, prevY, -90, color, 0, (float) (y - 1) / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
+                    float a = Math.max(0, alpha - prog * 0.4F);
+                    float r = 1;
+                    float g = 0.5F + prog * 0.3F;
+                    float b = 0.35F + prog * 0.1F;
+                    buffer.vertex(mXL,    mY,    -90, a, r, g, b, 0, (float)  y      / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
+                    buffer.vertex(mXR,    mY,    -90, a, r, g, b, 1, (float)  y      / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
+                    buffer.vertex(prevXR, prevY, -90, a, r, g, b, 1, (float) (y - 1) / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
+                    buffer.vertex(prevXL, prevY, -90, a, r, g, b, 0, (float) (y - 1) / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
                 } else {
                     init = true;
                 }

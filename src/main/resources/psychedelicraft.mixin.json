@@ -19,7 +19,7 @@
       "MixinVoxelShape",
       "MixinHungerManager",
       "MixinBlockEntityType",
-      "datafix.MixinItemStackComponentizationFix"
+      "compat.MixinNbtPredicate"
     ],
     "client": [
       "client.MixinCamera",

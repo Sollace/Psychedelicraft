@@ -68,17 +68,17 @@ public class DistilleryBlock extends FluidMachineBlock<DistilleryBlockEntity> {
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
     @Override
-    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
@@ -98,7 +98,7 @@ public class DistilleryBlock extends FluidMachineBlock<DistilleryBlockEntity> {
 
     @Deprecated
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(FACING).getAxis() == Axis.Y || state.get(FACING) == direction) {
             return state.with(FACING, Direction.Type.HORIZONTAL.stream().filter(d -> {
                 return canConnectTo(world.getBlockState(pos.offset(d)), d);
@@ -109,7 +109,7 @@ public class DistilleryBlock extends FluidMachineBlock<DistilleryBlockEntity> {
     }
 
     @Override
-    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         // only output at the back
         if (direction != state.get(FACING)) {
             return 0;

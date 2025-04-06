@@ -26,7 +26,6 @@ import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -237,15 +236,15 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void toNbt(NbtCompound compound) {
         compound.putInt("capacity", capacity);
-        compound.put("fluids", NbtSerialisable.fromList(getAuxiliaryTanks(), lookup));
+        compound.put("fluids", NbtSerialisable.fromList(getAuxiliaryTanks()));
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void fromNbt(NbtCompound compound) {
         capacity = compound.getInt("capacity");
-        auxiliaryTanks = NbtSerialisable.toList(new ArrayList<>(), compound.getList("fluids", NbtElement.COMPOUND_TYPE), lookup, this::createTank);
+        auxiliaryTanks = NbtSerialisable.toList(new ArrayList<>(), compound.getList("fluids", NbtElement.COMPOUND_TYPE), this::createTank);
     }
 
     @Override

@@ -29,17 +29,18 @@ import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
 import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributeHandler;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.fluid.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -68,7 +69,7 @@ public class SimpleFluid implements Combustable {
     public static final RegistryKey<Registry<SimpleFluid>> REGISTRY_KEY = RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids"));
     public static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.from(new SimpleDefaultedRegistry<>(EMPTY_KEY.toString(), REGISTRY_KEY, Lifecycle.stable(), true)).buildAndRegister();
     public static final Codec<SimpleFluid> CODEC = Identifier.CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
-    public static final PacketCodec<ByteBuf, SimpleFluid> PACKET_CODEC = Identifier.PACKET_CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
+    public static final PacketCodec<ByteBuf, SimpleFluid> PACKET_CODEC = PacketCodecs.IDENTIFIER.xmap(SimpleFluid::byId, SimpleFluid::getId);
 
     public static SimpleFluid byId(@Nullable Identifier id) {
         if (id == null) {
@@ -223,7 +224,7 @@ public class SimpleFluid implements Combustable {
         return Text.translatable(getTranslationKey());
     }
 
-    public void appendTooltip(ItemFluids stack, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemFluids stack, Consumer<Text> tooltip, TooltipContext type) {
 
     }
 
@@ -240,7 +241,7 @@ public class SimpleFluid implements Combustable {
     }
 
     public boolean isSuitableContainer(ItemStack container) {
-        return container.isIn(ConventionalItemTags.BUCKETS);
+        return container.isIn(ConventionalItemTags.EMPTY_BUCKETS);
     }
 
     public TagKey<Item> getPreferredContainerTag() {
@@ -275,7 +276,7 @@ public class SimpleFluid implements Combustable {
 
     @Override
     public String toString() {
-        return REGISTRY.getEntry(this).getIdAsString();
+        return REGISTRY.getEntry(this).getKey().map(k->k.toString()).orElse("<unregistered>");
     }
 
     @Override

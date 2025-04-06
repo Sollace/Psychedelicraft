@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundCategory;
@@ -22,7 +23,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class MolotovCocktailItem extends DrinkableItem {
+public class MolotovCocktailItem extends DrinkableItem implements DyeableItem {
     public MolotovCocktailItem(Settings settings) {
         super(settings, FluidVolumes.BOTTLE, DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK);
     }
@@ -33,7 +34,7 @@ public class MolotovCocktailItem extends DrinkableItem {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getMaxUseTime(ItemStack stack) {
         return 7200;
     }
 
@@ -44,7 +45,7 @@ public class MolotovCocktailItem extends DrinkableItem {
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        float strength = user.getItemUseTimeLeft() / (float)getMaxUseTime(stack, user);
+        float strength = user.getItemUseTimeLeft() / (float)getMaxUseTime(stack);
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
 
         if (!world.isClient) {

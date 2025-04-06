@@ -20,12 +20,10 @@ import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Unit;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -56,31 +54,31 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return getValidMasterPosition(world, pos)
                 .map(center -> MashTubBlock.COLLISSION_SHAPE.offset(center.getX() - pos.getX(), 0, center.getZ() - pos.getZ()))
                 .orElseGet(VoxelShapes::empty);
     }
 
     @Override
-    protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+    public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return getValidMasterPosition(world, pos)
                 .map(center -> MashTubBlock.getShape(center.getX() - pos.getX() + 1, center.getZ() - pos.getZ() + 1))
                 .orElseGet(VoxelShapes::empty);
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.INVISIBLE;
     }
 
     @Override
-    protected boolean hasSidedTransparency(BlockState state) {
+    public boolean hasSidedTransparency(BlockState state) {
         return true;
     }
 
     @Override
-    protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return 1;
     }
 
@@ -101,21 +99,14 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return getValidMasterPosition(world, pos).map(p -> {
-            return world.getBlockState(p).onUse(world, player, new BlockHitResult(hit.getPos(), hit.getSide(), p, hit.isInsideBlock()));
+            return world.getBlockState(p).onUse(world, player, hand, new BlockHitResult(hit.getPos(), hit.getSide(), p, hit.isInsideBlock()));
         }).orElse(ActionResult.PASS);
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        return getValidMasterPosition(world, pos).map(p -> {
-            return world.getBlockState(p).onUseWithItem(stack, world, player, hand, new BlockHitResult(hit.getPos(), hit.getSide(), p, hit.isInsideBlock()));
-        }).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
-    }
-
-    @Override
-    protected boolean canBucketPlace(BlockState state, Fluid fluid) {
+    public boolean canBucketPlace(BlockState state, Fluid fluid) {
         return false;
     }
 
@@ -197,24 +188,24 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    protected boolean emitsRedstonePower(BlockState state) {
+    public boolean emitsRedstonePower(BlockState state) {
         return true;
     }
 
     @Override
-    protected boolean hasComparatorOutput(BlockState state) {
+    public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return getValidMasterPosition(world, pos)
                 .map(p -> world.getBlockState(p).getWeakRedstonePower(world, p, direction))
                 .orElse(0);
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return getValidMasterPosition(world, pos)
                 .map(p -> world.getBlockState(p).getComparatorOutput(world, p))
                 .orElse(0);
@@ -242,15 +233,15 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
         }
 
         @Override
-        public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-            super.writeNbt(compound, lookup);
+        public void writeNbt(NbtCompound compound) {
+            super.writeNbt(compound);
             compound.put("masterPos", NbtHelper.fromBlockPos(masterPos));
         }
 
         @Override
-        public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-            super.readNbt(compound, lookup);
-            masterPos = NbtHelper.toBlockPos(compound, "masterPos").orElse(BlockPos.ORIGIN);
+        public void readNbt(NbtCompound compound) {
+            super.readNbt(compound);
+            masterPos = NbtHelper.toBlockPos(compound.getCompound("masterPos"));
         }
     }
 }

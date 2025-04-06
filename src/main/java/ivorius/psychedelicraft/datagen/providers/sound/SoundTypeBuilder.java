@@ -15,11 +15,13 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.util.compat.EitherCompat;
 import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.dynamic.Codecs;
 
 public class SoundTypeBuilder {
     private SoundCategory category = SoundCategory.NEUTRAL;
@@ -71,7 +73,7 @@ public class SoundTypeBuilder {
 
     public record SoundType(List<Sound> sounds, SoundCategory category, Optional<String> subtitle) {
         private static final Map<String, SoundCategory> CATEGORIES = Arrays.stream(SoundCategory.values()).collect(Collectors.toMap(SoundCategory::getName, Function.identity()));
-        private static final Codec<SoundCategory> SOUND_CATEGORY_CODEC = Codec.stringResolver(SoundCategory::getName, name -> CATEGORIES.getOrDefault(name.toLowerCase(Locale.ROOT), SoundCategory.NEUTRAL));
+        private static final Codec<SoundCategory> SOUND_CATEGORY_CODEC = Codec.STRING.xmap(name -> CATEGORIES.getOrDefault(name.toLowerCase(Locale.ROOT), SoundCategory.NEUTRAL), SoundCategory::getName);
         public static final Codec<SoundType> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Sound.CODEC.listOf().fieldOf("sounds").forGetter(SoundType::sounds),
                 SOUND_CATEGORY_CODEC.fieldOf("category").forGetter(SoundType::category),
@@ -95,7 +97,7 @@ public class SoundTypeBuilder {
                 id -> new Sound(id, RegistrationType.FILE, 1F, 1F, 1, 16, false, false),
                 Sound::name
         );
-        public static final Codec<Sound> CODEC = Codec.xor(STRING_CODEC, MAP_CODEC).xmap(Either::unwrap, sound -> {
+        public static final Codec<Sound> CODEC = Codecs.xor(STRING_CODEC, MAP_CODEC).xmap(EitherCompat::unwrap, sound -> {
             if (sound.type() != RegistrationType.FILE || sound.volume() != 1F || sound.pitch() != 1F || sound.weight() != 1 || sound.attenuationDistance() != 16 || sound.stream() || sound.preload()) {
                 return Either.right(sound);
             }

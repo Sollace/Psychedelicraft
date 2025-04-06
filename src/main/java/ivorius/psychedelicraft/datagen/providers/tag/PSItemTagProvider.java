@@ -9,7 +9,7 @@ import ivorius.psychedelicraft.datagen.Datagen;
 import ivorius.psychedelicraft.item.PSItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -79,15 +79,14 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 PSItems.AGAVE_LEAF,
                 PSItems.SYRINGE,
                 PSItems.JOINT, PSItems.CIGARETTE, PSItems.CIGAR, PSItems.MORNING_GLORY
-        ).forceAddTag(ConventionalItemTags.COOKIE_FOODS)
-            .forceAddTag(ConventionalItemTags.BERRY_FOODS)
-            .forceAddTag(ConventionalItemTags.CANDY_FOODS)
-            .forceAddTag(ConventionalItemTags.MUSIC_DISCS)
+        ).add(Items.COOKIE)//.forceAddTag(ConventionalItemTags.COOKIE_FOODS)
+            .add(Items.GLOW_BERRIES, Items.SWEET_BERRIES, PSItems.BELLADONNA_BERRIES, PSItems.JUNIPER_BERRIES)//.forceAddTag(ConventionalItemTags.BERRY_FOODS)
+            //.forceAddTag(ConventionalItemTags.CANDY_FOODS)
+            .forceAddTag(ItemTags.MUSIC_DISCS)//.forceAddTag(ConventionalItemTags.MUSIC_DISCS)
             .forceAddTag(ConventionalItemTags.GEMS)
             .forceAddTag(ConventionalItemTags.DUSTS)
             .forceAddTag(ConventionalItemTags.DYES)
-            .forceAddTag(ConventionalItemTags.COOKED_FISH_FOODS)
-            .forceAddTag(ConventionalItemTags.RAW_FISH_FOODS)
+            .forceAddTag(ConventionalItemTags.FOODS)
             .forceAddTag(ItemTags.VILLAGER_PLANTABLE_SEEDS)
             .forceAddTag(ItemTags.BUTTONS)
             .forceAddTag(ItemTags.SMALL_FLOWERS)
@@ -129,7 +128,7 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(PSConventionalTags.Items.GRAPES).add(PSItems.WINE_GRAPES);
         getOrCreateTagBuilder(PSConventionalTags.Items.HONEY).add(Items.HONEYCOMB, Items.HONEY_BOTTLE);
         getOrCreateTagBuilder(PSConventionalTags.Items.TOMATOES).add(PSItems.TOMATO);
-        getOrCreateTagBuilder(ConventionalItemTags.BERRY_FOODS).add(PSItems.BELLADONNA_BERRIES, PSItems.JUNIPER_BERRIES);
+       // getOrCreateTagBuilder(ConventionalItemTags.BERRY_FOODS).add(PSItems.BELLADONNA_BERRIES, PSItems.JUNIPER_BERRIES);
         getOrCreateTagBuilder(ConventionalItemTags.DUSTS).add(
                 PSItems.OBSIDIAN_DUST,
                 PSItems.COCAINE_POWDER, PSItems.HEROINE_POWDER

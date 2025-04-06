@@ -30,7 +30,7 @@ public interface ShaderContext {
     }
 
     static float tickDelta() {
-        return MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        return MinecraftClient.getInstance().getTickDelta();
     }
 
     static long time() {

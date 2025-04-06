@@ -82,7 +82,7 @@ public class BottleRackBlock extends BlockWithEntity {
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
@@ -103,37 +103,39 @@ public class BottleRackBlock extends BlockWithEntity {
 
     @Override
     @Deprecated
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return shapes.apply(state.get(FACING));
     }
 
     @Override
-    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
-    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).map(be -> {
+            ItemStack heldStack = player.getStackInHand(hand);
             if (heldStack.isEmpty()) {
                 TypedActionResult<ItemStack> extracted = be.extractItem(hit, state.get(FACING));
                 if (extracted.getResult().isAccepted()) {
                     player.setStackInHand(hand, extracted.getValue());
                 }
-                return extracted.getResult() == ActionResult.SUCCESS ? ItemActionResult.SUCCESS : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                return extracted.getResult();
             }
 
             return be.insertItem(heldStack, hit, state.get(FACING));
-        }).orElse(ItemActionResult.FAIL);
+        }).orElse(ActionResult.FAIL);
     }
 
+    @Deprecated
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock()) && !world.isClient) {
             world.getBlockEntity(pos, PSBlockEntities.BOTTLE_RACK).ifPresent(be -> {
                 ItemScatterer.spawn(world, pos, be);

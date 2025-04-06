@@ -28,7 +28,7 @@ public class PSEntityTypeTagProvider extends FabricTagProvider<EntityType<?>> {
                 EntityType.WOLF, EntityType.FOX,
                 EntityType.SILVERFISH, EntityType.ENDERMITE,
                 EntityType.VILLAGER, EntityType.ILLUSIONER, EntityType.PILLAGER, EntityType.WANDERING_TRADER,
-                EntityType.BOGGED, EntityType.SKELETON, EntityType.WITHER_SKELETON,
+                EntityType.SKELETON, EntityType.WITHER_SKELETON,
                 EntityType.IRON_GOLEM,
                 EntityType.SNOW_GOLEM,
                 EntityType.HORSE, EntityType.MULE, EntityType.SKELETON_HORSE, EntityType.ZOMBIE_HORSE,

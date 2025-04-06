@@ -17,9 +17,9 @@ import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.entity.drug.type.HarmoniumDrug;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 
 public class DrugInfluence {
     private static final Codec<Vector3f> COLOR_CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -27,7 +27,7 @@ public class DrugInfluence {
             Codec.FLOAT.fieldOf("g").forGetter(Vector3f::y),
             Codec.FLOAT.fieldOf("b").forGetter(Vector3f::z)
     ).apply(i, Vector3f::new));
-    private static final PacketCodec<RegistryByteBuf, Optional<Vector3f>> COLOR_PACKET_CODEC = PacketCodecs.optional(PacketCodec.tuple(
+    private static final PacketCodec<PacketByteBuf, Optional<Vector3f>> COLOR_PACKET_CODEC = PacketCodecs.optional(PacketCodec.tuple(
         PacketCodecs.FLOAT, Vector3f::x,
         PacketCodecs.FLOAT, Vector3f::y,
         PacketCodecs.FLOAT, Vector3f::z,
@@ -42,7 +42,7 @@ public class DrugInfluence {
             COLOR_CODEC.optionalFieldOf("color").forGetter(DrugInfluence::getColor)
     ).apply(instance, DrugInfluence::new));
     public static final Codec<List<DrugInfluence>> LIST_CODEC = CODEC.listOf();
-    public static final PacketCodec<RegistryByteBuf, DrugInfluence> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, DrugInfluence> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.registryValue(DrugType.REGISTRY.getKey()), DrugInfluence::getDrugType,
             PacketCodecs.INTEGER, DrugInfluence::getDelay,
             PacketCodecs.DOUBLE, DrugInfluence::getInfluenceDelta,

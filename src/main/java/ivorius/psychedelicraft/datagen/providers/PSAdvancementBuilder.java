@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 public class PSAdvancementBuilder {
-    private static final Identifier BACKGROUND = Identifier.ofVanilla("textures/gui/advancements/backgrounds/stone.png");
+    private static final Identifier BACKGROUND = new Identifier("textures/gui/advancements/backgrounds/stone.png");
 
     public static PSAdvancementBuilder create(Identifier id, ItemConvertible icon) {
         return new PSAdvancementBuilder(id, icon, null);

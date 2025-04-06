@@ -25,7 +25,7 @@ public class PacifierItem extends Item implements Equipment {
     private static boolean consumePacifier(LivingEntity entity, Hand hand) {
         ItemStack pacifier = entity.getStackInHand(hand);
         if (pacifier.isOf(PSItems.PACIFIER)) {
-            pacifier.damage(1, entity, LivingEntity.getSlotForHand(hand));
+            pacifier.damage(1, entity, e -> e.sendToolBreakStatus(hand));
             return true;
         }
         return false;

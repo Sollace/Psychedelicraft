@@ -56,7 +56,7 @@ public class CannabisPlantBlock extends CropBlock {
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 
@@ -89,7 +89,7 @@ public class CannabisPlantBlock extends CropBlock {
     }
 
     @Override
-    protected final boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    public final boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         if (state.get(NATURAL)) {
             BlockState floor = world.getBlockState(pos.down());
             return floor.isOf(this) || floor.isOf(Blocks.GRASS_BLOCK) || floor.isIn(BlockTags.DIRT);
@@ -103,7 +103,7 @@ public class CannabisPlantBlock extends CropBlock {
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.getBaseLightLevel(pos.up(), 0) >= 9 && random.nextFloat() < getRandomGrowthChance()) {
             if (isFertilizable(world, pos, state)) {
                 applyGrowth(world, pos, state, false);
@@ -181,7 +181,7 @@ public class CannabisPlantBlock extends CropBlock {
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.UP) {
             return state.with(GROWING, neighborState.isAir() && getPlantSize(world, pos) < getMaxHeight());
         }

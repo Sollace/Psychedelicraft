@@ -16,6 +16,7 @@ import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange.IntRange;
@@ -51,12 +52,9 @@ interface RecipeUtil {
             FluidVariant fluid = fl.getFluidVariant();
             return fluid.isBlank() ? ItemFluids.EMPTY : ItemFluids.of(fluid, Math.max(1, (int)stack.getAmount()));
         }
-        Optional<? extends ItemFluids> fluids = stack.getComponents().get(PSComponents.FLUIDS);
-        if (fluids != null && fluids.isPresent()) {
-            return fluids.get();
-        }
+
         if (stack instanceof TlaItemStack it) {
-            fluids = it.getItemVariant().getComponents().get(PSComponents.FLUIDS);
+            Optional<? extends ItemFluids> fluids = Optional.ofNullable(StackCompat.get(it.getItemVariant(), PSComponents.FLUIDS));
             if (fluids != null && fluids.isPresent()) {
                 return fluids.get();
             }

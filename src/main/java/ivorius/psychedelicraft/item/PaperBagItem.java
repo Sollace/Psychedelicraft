@@ -5,8 +5,10 @@ import java.util.List;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.item.component.BagContentsComponent;
 import ivorius.psychedelicraft.item.component.PSComponents;
+import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,7 +17,6 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -127,10 +128,10 @@ public class PaperBagItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
-        BagContentsComponent contents = stack.get(PSComponents.BAG_CONTENTS);
+    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+        BagContentsComponent contents = StackCompat.get(stack, PSComponents.BAG_CONTENTS);
         if (contents != null) {
-            contents.appendTooltip(context, tooltip::add, type);
+            contents.appendTooltip(context, tooltip::add);
         }
     }
 
@@ -171,20 +172,20 @@ public class PaperBagItem extends Item {
 
             if (!contents.isEmpty()) {
                 context.getPlayer().dropItem(builder.split(context.getPlayer().isSneaky() ? 1 : contents.stack().getMaxCount()), false, false);
-                bag.set(PSComponents.BAG_CONTENTS, builder.build());
+                StackCompat.set(bag, PSComponents.BAG_CONTENTS, builder.build());
                 context.getPlayer().playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 1, 1);
                 return ActionResult.SUCCESS;
             }
-            bag.set(PSComponents.BAG_CONTENTS, builder.build());
+            StackCompat.set(bag, PSComponents.BAG_CONTENTS, builder.build());
             return ActionResult.FAIL;
         }
 
         if (bag.getCount() > 1) {
             bag = bag.split(1);
-            bag.set(PSComponents.BAG_CONTENTS, builder.build());
+            StackCompat.set(bag, PSComponents.BAG_CONTENTS, builder.build());
             context.getPlayer().getInventory().insertStack(bag);
         } else {
-            bag.set(PSComponents.BAG_CONTENTS, builder.build());
+            StackCompat.set(bag, PSComponents.BAG_CONTENTS, builder.build());
         }
         context.getPlayer().playSound(SoundEvents.ITEM_BUNDLE_INSERT, 1, 1);
         return ActionResult.SUCCESS;
@@ -221,7 +222,7 @@ public class PaperBagItem extends Item {
 
             if (changed) {
                 player.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 1, 1);
-                stack.set(PSComponents.BAG_CONTENTS, builder.build());
+                StackCompat.set(stack, PSComponents.BAG_CONTENTS, builder.build());
                 inv.setStack(slot, stack);
             }
         }

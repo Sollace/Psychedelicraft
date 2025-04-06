@@ -32,13 +32,10 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.event.GameEvent;
@@ -54,7 +51,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 
 public class DrugProperties implements NbtSerialisable {
-    public static final Identifier DRUG_EFFECT = Psychedelicraft.id("drugs");
+    public static final UUID DRUG_EFFECT = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1");//Psychedelicraft.id("drugs");
 
     private static final Codec<Map<DrugType<?>, Drug>> DRUGS_CODEC = Codec.unboundedMap(DrugType.REGISTRY.getCodec(), Drug.CODEC);
 
@@ -224,12 +221,12 @@ public class DrugProperties implements NbtSerialisable {
                 entity.addExhaustion(0.05F);
             }
 
-            if (!entity.hasStatusEffect(PSEffects.TEETH_GRINDING) && ((getDrugValue(DrugType.METHAMPHETAMINE) <= 0.001F
+            if (!entity.hasStatusEffect(PSEffects.TEETH_GRINDING.value()) && ((getDrugValue(DrugType.METHAMPHETAMINE) <= 0.001F
                     && teethGrindingRate > 1
                     && entity.age % 200 == 0
                     && random.nextFloat() * (entity.isSleeping() ? 2 : 1) < teethGrindingRate / 100F))) {
                 PSCriteria.SIDE_EFFECT.trigger(entity);
-                entity.addStatusEffect(new StatusEffectInstance(PSEffects.TEETH_GRINDING, 1000));
+                entity.addStatusEffect(new StatusEffectInstance(PSEffects.TEETH_GRINDING.value(), 1000));
                 if (!PacifierItem.consumePacifier(entity)) {
                     teethGrindingRate = Math.max(0, teethGrindingRate - 0.00001F);
                     entity.damage(damageOf(PSDamageTypes.TEETH_GRINDING), 1);
@@ -296,28 +293,28 @@ public class DrugProperties implements NbtSerialisable {
 
     public void sendCapabilities() {
         if (!entity.getWorld().isClient) {
-            Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this, entity.getRegistryManager()), entity);
+            Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this), entity);
             // We have to ensure it's sent to ourselves as well (Send to surrounding players ends to us but that doesn't seem to work when loading into a world??)
-            Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this, entity.getRegistryManager()), (ServerPlayerEntity)entity);
+            Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this), (ServerPlayerEntity)entity);
         }
     }
 
     @Override
-    public void fromNbt(NbtCompound tagCompound, WrapperLookup lookup) {
+    public void fromNbt(NbtCompound tagCompound) {
         drugs.clear();
         DRUGS_CODEC.decode(NbtOps.INSTANCE, tagCompound.getCompound("Drugs")).result().map(Pair::getFirst).ifPresent(drugs::putAll);
         influences.clear();
         DrugInfluence.LIST_CODEC.decode(NbtOps.INSTANCE, tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE)).result().map(Pair::getFirst).ifPresent(influences::addAll);
-        stomach.fromNbt(tagCompound.getCompound("stomach"), lookup);
+        stomach.fromNbt(tagCompound.getCompound("stomach"));
         teethGrindingRate = tagCompound.getFloat("teethGrindingRate");
         dirty = false;
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void toNbt(NbtCompound compound) {
         DRUGS_CODEC.encodeStart(NbtOps.INSTANCE, drugs).result().ifPresent(drugs -> compound.put("Drugs", drugs));
         DrugInfluence.LIST_CODEC.encodeStart(NbtOps.INSTANCE, influences).result().ifPresent(influenceTagList -> compound.put("drugInfluences", influenceTagList));
-        compound.put("stomach", stomach.toNbt(lookup));
+        compound.put("stomach", stomach.toNbt());
         compound.putFloat("teethGrindingRate", teethGrindingRate);
     }
 
@@ -362,14 +359,14 @@ public class DrugProperties implements NbtSerialisable {
         return modifier.get(this);
     }
 
-    private void changeDrugModifierMultiply(LivingEntity entity, RegistryEntry<EntityAttribute> attribute, double value) {
+    private void changeDrugModifierMultiply(LivingEntity entity, EntityAttribute attribute, double value) {
         // 2: ret *= 1.0 + value
-        changeDrugModifier(entity, attribute, value - 1.0, Operation.ADD_MULTIPLIED_TOTAL);
+        changeDrugModifier(entity, attribute, value - 1.0, Operation.MULTIPLY_TOTAL);
     }
 
-    private void changeDrugModifier(LivingEntity entity, RegistryEntry<EntityAttribute> attribute, double value, Operation operation) {
+    private void changeDrugModifier(LivingEntity entity, EntityAttribute attribute, double value, Operation operation) {
         EntityAttributeInstance speedInstance = entity.getAttributeInstance(attribute);
         speedInstance.removeModifier(DRUG_EFFECT);
-        speedInstance.addTemporaryModifier(new EntityAttributeModifier(DRUG_EFFECT, value, operation));
+        speedInstance.addTemporaryModifier(new EntityAttributeModifier(DRUG_EFFECT, "Drug Effects", value, operation));
     }
 }

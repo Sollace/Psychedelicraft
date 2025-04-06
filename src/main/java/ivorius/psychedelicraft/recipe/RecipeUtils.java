@@ -7,12 +7,10 @@ package ivorius.psychedelicraft.recipe;
 
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.Arrays;
@@ -31,6 +29,8 @@ import com.mojang.serialization.DataResult;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
 
 public interface RecipeUtils {
     Codec<DefaultedList<Ingredient>> SHAPELESS_RECIPE_INGREDIENTS_CODEC = Ingredient.DISALLOW_EMPTY_CODEC.listOf().flatXmap(ingredients -> {
@@ -44,14 +44,16 @@ public interface RecipeUtils {
         return DataResult.success(DefaultedList.copyOf(Ingredient.EMPTY, ingredients2));
     }, DataResult::success);
 
-    PacketCodec<RegistryByteBuf, CraftingRecipeCategory> CRAFTING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CraftingRecipeCategory.class);
-    PacketCodec<RegistryByteBuf, CookingRecipeCategory> COOKING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CookingRecipeCategory.class);
-    PacketCodec<RegistryByteBuf, DefaultedList<Ingredient>> INGREDIENTS_PACKET_CODEC = Ingredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList());
+    PacketCodec<PacketByteBuf, CraftingRecipeCategory> CRAFTING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CraftingRecipeCategory.class);
+    PacketCodec<PacketByteBuf, CookingRecipeCategory> COOKING_RECIPE_CATEGORY_PACKET_CODEC = PacketCodecUtils.ofEnum(CookingRecipeCategory.class);
+    PacketCodec<PacketByteBuf, DefaultedList<Ingredient>> INGREDIENTS_PACKET_CODEC = PacketCodecs.INGREDIENT.collect(PacketCodecUtils.toDefaultedList());
 
     static ItemStack copyInputFluidToResult(ItemStack result, List<ItemStack> inputs) {
         return RecipeUtils.recepticals(inputs.stream()).findFirst().map(input -> {
             // copy bottle contents to the new stack
-            return ItemFluids.set(input.copyComponentsToNewStack(result.getItem(), result.getCount()), ItemFluids.of(input));
+            var copy = result.copy();
+            copy.setNbt(input.getNbt());
+            return ItemFluids.set(copy, ItemFluids.of(input));
         }).orElse(result);
     }
 
@@ -59,7 +61,7 @@ public interface RecipeUtils {
         return stacks.filter(stack -> FluidCapacity.get(stack) > 0);
     }
 
-    static Stream<Entry<ItemStack>> recepticalSlots(RecipeInput input) {
+    static Stream<Slot<ItemStack>> recepticalSlots(Inventory input) {
         return slots(input, stack -> FluidCapacity.get(stack) > 0, Function.identity());
     }
 
@@ -67,12 +69,6 @@ public interface RecipeUtils {
         return IntStream.range(0, inventory.size())
                 .mapToObj(inventory::getStack)
                 .filter(s -> !s.isEmpty());
-    }
-
-    static <T> Stream<Entry<T>> slots(RecipeInput input, Predicate<ItemStack> filter, Function<ItemStack, T> func) {
-        return IntStream.range(0, input.getSize())
-                .filter(i -> filter.test(input.getStackInSlot(i)))
-                .mapToObj(i -> new Entry<>(func.apply(input.getStackInSlot(i)), i));
     }
 
     static <T> Stream<Slot<T>> slots(Inventory inventory, Predicate<ItemStack> filter, Function<ItemStack, T> func) {

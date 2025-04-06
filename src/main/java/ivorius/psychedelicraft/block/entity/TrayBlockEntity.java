@@ -18,7 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -157,23 +156,23 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
+    public void writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
         FluidMound.CODEC.encodeStart(NbtOps.INSTANCE, impurities).result().ifPresent(nbt -> compound.put("impurities", nbt));
         compound.putInt("timeToHarden", timeToHarden);
-        compound.put("fluid", fluid.toNbt(lookup));
+        compound.put("fluid", fluid.toNbt());
         craftingResult.flatMap(s -> ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, s).result()).ifPresent(nbt -> compound.put("craftingResult", nbt));
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
+    public void readNbt(NbtCompound compound) {
+        super.readNbt(compound);
         impurities = FluidMound.CODEC.decode(NbtOps.INSTANCE, compound.get("impurities")).result()
                 .map(Pair::getFirst)
                 .orElseGet(FluidMound::of);
         timeToHarden = compound.getInt("timeToHarden");
-        fluid.fromNbt(compound.getCompound("fluid"), lookup);
-        craftingResult = ItemStack.fromNbt(lookup, compound.getCompound("craftingResult"));
+        fluid.fromNbt(compound.getCompound("fluid"));
+        craftingResult = Optional.of(ItemStack.fromNbt(compound.getCompound("craftingResult"))).filter(s -> !s.isEmpty());
         matchingRecipe = Optional.empty();
     }
 }

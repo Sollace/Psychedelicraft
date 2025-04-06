@@ -6,12 +6,10 @@
 package ivorius.psychedelicraft.recipe;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -22,6 +20,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import ivorius.psychedelicraft.util.compat.PacketCodec;
+import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import ivorius.psychedelicraft.util.CodecUtils;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 
@@ -43,7 +43,7 @@ public record ReactingRecipe (
             Ingredients.CODEC.fieldOf("ingredients").forGetter(ReactingRecipe::ingredients),
             Codec.INT.optionalFieldOf("stew_time", 0).forGetter(ReactingRecipe::stewTime)
     ).apply(instance, ReactingRecipe::new));
-    public static final PacketCodec<RegistryByteBuf, ReactingRecipe> PACKET_CODEC = PacketCodec.tuple(
+    public static final PacketCodec<PacketByteBuf, ReactingRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, ReactingRecipe::reducingGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ReactingRecipe::category,
             Result.PACKET_CODEC, ReactingRecipe::result,
@@ -83,7 +83,7 @@ public record ReactingRecipe (
     }
 
     @Override
-    public ItemStack craft(Input input, WrapperLookup lookup) {
+    public ItemStack craft(Input input, DynamicRegistryManager lookup) {
         if (ingredients.matchSolids(input.input())) {
             int level = ingredients.consumeMatchingFluids(input.fluids());
             if (!result.fluid().isEmpty()) {
@@ -94,7 +94,7 @@ public record ReactingRecipe (
     }
 
     @Override
-    public ItemStack getResult(WrapperLookup lookup) {
+    public ItemStack getResult(DynamicRegistryManager lookup) {
         return result.byProduct();
     }
 
@@ -104,11 +104,11 @@ public record ReactingRecipe (
     ) {
         public static final MapCodec<Result> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 ItemFluids.CODEC.fieldOf("fluid").forGetter(Result::fluid),
-                ItemStack.OPTIONAL_CODEC.optionalFieldOf("by_product", ItemStack.EMPTY).forGetter(Result::byProduct)
+                ItemStack.CODEC.optionalFieldOf("by_product", ItemStack.EMPTY).forGetter(Result::byProduct)
         ).apply(instance, Result::new));
-        public static final PacketCodec<RegistryByteBuf, Result> PACKET_CODEC = PacketCodec.tuple(
+        public static final PacketCodec<PacketByteBuf, Result> PACKET_CODEC = PacketCodec.tuple(
                 ItemFluids.PACKET_CODEC, Result::fluid,
-                ItemStack.OPTIONAL_PACKET_CODEC, Result::byProduct,
+                PacketCodecs.ITEM_STACK, Result::byProduct,
                 Result::new
         );
     }
@@ -127,9 +127,9 @@ public record ReactingRecipe (
                 CodecUtils.toDefaultedList(FluidIngredient.CODEC, FluidIngredient.EMPTY).optionalFieldOf("fluids", DefaultedList.of()).forGetter(Ingredients::fluids),
                 CodecUtils.toDefaultedList(Ingredient.DISALLOW_EMPTY_CODEC, Ingredient.EMPTY).optionalFieldOf("solids", DefaultedList.of()).forGetter(Ingredients::solids)
         ).apply(instance, Ingredients::new));
-        public static final PacketCodec<RegistryByteBuf, Ingredients> PACKET_CODEC = PacketCodec.tuple(
+        public static final PacketCodec<PacketByteBuf, Ingredients> PACKET_CODEC = PacketCodec.tuple(
                 FluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), Ingredients::fluids,
-                Ingredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), Ingredients::solids,
+                PacketCodecs.INGREDIENT.collect(PacketCodecUtils.toDefaultedList()), Ingredients::solids,
                 Ingredients::new
         );
 

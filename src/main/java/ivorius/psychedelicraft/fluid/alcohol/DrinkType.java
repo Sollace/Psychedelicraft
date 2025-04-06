@@ -12,9 +12,9 @@ import ivorius.psychedelicraft.fluid.AlcoholicFluid;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
-import net.minecraft.component.ComponentType;
+import ivorius.psychedelicraft.util.compat.ComponentType;
+import ivorius.psychedelicraft.util.compat.ItemSubPredicate;
 import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.item.ComponentSubPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -106,7 +106,7 @@ public record DrinkType(String drinkName, String symbolName, Optional<String> va
         String WINE = "wine";
     }
 
-    public record Predicate(Optional<ItemFluids.Predicate> fluids, DrinkType name) implements ComponentSubPredicate<ItemFluids> {
+    public record Predicate(Optional<ItemFluids.Predicate> fluids, DrinkType name) implements ItemSubPredicate<ItemFluids> {
         public static final Codec<Predicate> CODEC = RecordCodecBuilder.create(i -> i.group(
                 ItemFluids.Predicate.CODEC.optionalFieldOf("fluids").forGetter(Predicate::fluids),
                 Codec.STRING.xmap(DrinkType::of, DrinkType::drinkName).fieldOf("drink_name").forGetter(Predicate::name)
@@ -121,15 +121,15 @@ public record DrinkType(String drinkName, String symbolName, Optional<String> va
         }
 
         @Override
-        public ComponentType<ItemFluids> getComponentType() {
-            return PSComponents.FLUIDS;
-        }
-
-        @Override
         public boolean test(ItemStack stack, ItemFluids fluids) {
             return (this.fluids.isEmpty() || this.fluids.get().test(stack, fluids))
                     && fluids.fluid() instanceof AlcoholicFluid alco
                     && alco.getVariant(fluids).isOf(name);
+        }
+
+        @Override
+        public ComponentType<ItemFluids> getComponentType() {
+            return PSComponents.FLUIDS;
         }
     }
 }

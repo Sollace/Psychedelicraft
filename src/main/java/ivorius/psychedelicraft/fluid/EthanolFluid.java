@@ -5,7 +5,7 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -52,7 +52,7 @@ public class EthanolFluid extends DrugFluid {
 
     @Override
     public boolean isSuitableContainer(ItemStack container) {
-        return container.isIn(ConventionalItemTags.BUCKETS);
+        return container.isIn(ConventionalItemTags.EMPTY_BUCKETS);
     }
 
     @Override

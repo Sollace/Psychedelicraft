@@ -37,6 +37,7 @@ import ivorius.psychedelicraft.recipe.ItemMound;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.ReactingRecipe;
 import ivorius.psychedelicraft.util.NbtSerialisable;
+import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -49,7 +50,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -86,9 +86,9 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
     public void setContainer(ItemStack container) {
         this.container = container.copy();
-        this.container.remove(PSComponents.FLUIDS);
-        this.container.remove(PSComponents.FLUIDS_MIXTURE);
-        this.container.remove(PSComponents.RIFT_FRACTION);
+        StackCompat.remove(this.container, PSComponents.FLUIDS);
+        StackCompat.remove(this.container, PSComponents.FLUIDS_MIXTURE);
+        StackCompat.remove(this.container, PSComponents.RIFT_FRACTION);
         this.processingTime = 0;
         markDirty();
     }
@@ -273,32 +273,32 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
+    public void writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
         compound.putInt("temperature", temperature);
         compound.putInt("processingTime", processingTime);
         ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, container).result().ifPresent(container -> compound.put("container", container));
         compound.putString("contentsType", contents.getId().toString());
-        compound.put("contents", contents.toNbt(lookup));
+        compound.put("contents", contents.toNbt());
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
+    public void readNbt(NbtCompound compound) {
+        super.readNbt(compound);
         temperature = compound.getInt("temperature");
         processingTime = compound.getInt("processingTime");
-        container = ItemStack.OPTIONAL_CODEC
+        container = ItemStack.CODEC
                 .decode(NbtOps.INSTANCE, compound.get("container"))
                 .result()
                 .map(Pair::getFirst)
                 .orElse(ItemStack.EMPTY);
-        Identifier contentType = Identifier.of(compound.getString("contentsType"));
+        Identifier contentType = new Identifier(compound.getString("contentsType"));
         if (contentType.equals(contents.getId())) {
-            contents.fromNbt(compound.getCompound("contents"), lookup);
+            contents.fromNbt(compound.getCompound("contents"));
         } else {
             contents = Contents.TYPES
                     .getOrDefault(contentType, Contents.TYPES.get(EmptyContents.ID))
-                    .create(this, compound.getCompound("contents"), lookup);
+                    .create(this, compound.getCompound("contents"));
         }
     }
 
@@ -387,15 +387,15 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
 
     public interface Contents extends NbtSerialisable, PipeInsertable {
         Map<Identifier, Factory> TYPES = Util.make(new HashMap<>(), map -> {
-            map.put(EmptyContents.ID, (entity, nbt, lookup) -> new EmptyContents(entity));
-            map.put(SmallContents.ID, (entity, nbt, lookup) -> {
+            map.put(EmptyContents.ID, (entity, nbt) -> new EmptyContents(entity));
+            map.put(SmallContents.ID, (entity, nbt) -> {
                 SmallContents contents = new SmallContents(entity, 0, ItemStack.EMPTY);
-                contents.fromNbt(nbt, lookup);
+                contents.fromNbt(nbt);
                 return contents;
             });
-            map.put(LargeContents.ID, (entity, nbt, lookup) -> {
+            map.put(LargeContents.ID, (entity, nbt) -> {
                 SmallContents contents = new LargeContents(entity, 0, ItemStack.EMPTY);
-                contents.fromNbt(nbt, lookup);
+                contents.fromNbt(nbt);
                 return contents;
             });
         });
@@ -414,7 +414,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         VoxelShape getOutlineShape();
 
         interface Factory {
-            Contents create(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup);
+            Contents create(BurnerBlockEntity entity, NbtCompound compound);
         }
     }
 
