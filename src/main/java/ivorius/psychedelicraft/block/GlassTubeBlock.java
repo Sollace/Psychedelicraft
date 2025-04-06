@@ -368,12 +368,12 @@ public class GlassTubeBlock extends BlockWithEntity {
             pushContentsForward(world, pos, state.get(OUT));
             var status = Optional.of(contents).filter(i -> !i.isEmpty()).map(i -> i.withTemperature(i.temperature() - getTemperatureDrop(world, pos))).map(newContents -> {
                 if (this.contents.size() < 10) {
-                    this.contents.addFirst(newContents);
+                    this.contents.add(0, newContents);
                 } else {
-                    PipeFluids first = this.contents.getFirst();
+                    PipeFluids first = this.contents.get(0);
                     if (first.isEmpty()) {
-                        this.contents.removeFirst();
-                        this.contents.addFirst(contents);
+                        this.contents.remove(0);
+                        this.contents.add(0, contents);
                     } else {
                         Optional<PipeFluids> available = this.contents.stream().filter(i -> i.fluids().totalSize() < 100).findFirst();
                         if (available.isEmpty()) {
@@ -400,13 +400,13 @@ public class GlassTubeBlock extends BlockWithEntity {
                 for (int i = contents.size() - 2; i > 0; i--) {
                     if (contents.get(i).isEmpty() && !contents.get(i - 1).isEmpty()) {
                         contents.remove(i);
-                        contents.addFirst(PipeFluids.EMPTY);
+                        contents.add(0, PipeFluids.EMPTY);
                         markDirty();
                     }
                 }
 
                 if (!contents.isEmpty()) {
-                    PipeFluids fluids = contents.removeLast();
+                    PipeFluids fluids = contents.remove(contents.size() - 1);
                     if (!fluids.isEmpty()) {
                         PipeFluids pushedBack = fluids.isEmpty() ? PipeFluids.EMPTY : direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, fluids)).orElse(STATUS_VOIDED).ifRight(unit -> {
                             fluids.fluids().getFluids().forEach(fluid -> {
@@ -421,7 +421,7 @@ public class GlassTubeBlock extends BlockWithEntity {
                             });
                         }).left().orElse(PipeFluids.EMPTY);
                         if (!pushedBack.isEmpty()) {
-                            contents.addLast(pushedBack);
+                            contents.add(pushedBack);
                             if (!pushedBack.equals(fluids)) {
                                 markDirty();
                             }
@@ -434,7 +434,7 @@ public class GlassTubeBlock extends BlockWithEntity {
                     }
                 }
             } else {
-                contents.addFirst(PipeFluids.EMPTY);
+                contents.add(0, PipeFluids.EMPTY);
                 markDirty();
             }
 
@@ -457,7 +457,7 @@ public class GlassTubeBlock extends BlockWithEntity {
 
             if (world.getReceivedStrongRedstonePower(pos) == 15) {
                 getCachedState().get(IN).getDirection().flatMap(d -> PipeInsertable.tryExtract(world, pos.offset(d), d)).ifPresent(fluid -> {
-                    contents.addFirst(fluid);
+                    contents.add(0, fluid);
                     markDirty();
                 });
             }

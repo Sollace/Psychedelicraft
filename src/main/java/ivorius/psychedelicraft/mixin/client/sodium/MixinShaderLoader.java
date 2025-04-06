@@ -7,8 +7,6 @@ import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.client.gl.ShaderStage;
@@ -28,11 +26,10 @@ abstract class MixinShaderLoader {
         }
     }
 
-    @ModifyReturnValue(method = "getShaderSource(Lnet/minecraft/util/Identifier;)Ljava/lang/String;", at = @At("RETURN"))
-    private static String modifyShaderSources(String sources, Identifier name) {
+    @Inject(method = "getShaderSource(Lnet/minecraft/util/Identifier;)Ljava/lang/String;", at = @At("RETURN"), cancellable = true)
+    private static void modifyShaderSources(Identifier name, CallbackInfoReturnable<String> info) {
         if (PsychedelicraftClient.getConfig().sodiumSupport.get()) {
-            return GeometryShader.INSTANCE.injectShaderSources(sources);
+            info.setReturnValue(GeometryShader.INSTANCE.injectShaderSources(info.getReturnValue()));
         }
-        return sources;
     }
 }

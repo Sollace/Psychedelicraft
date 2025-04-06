@@ -7,9 +7,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import com.llamalad7.mixinextras.injector.ModifyReceiver;
 
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import ivorius.psychedelicraft.block.entity.FluidFilled;
@@ -38,15 +37,15 @@ abstract class MixinEntity implements TouchingWaterAccessor {
 
     private FluidState collidedFluid = Fluids.EMPTY.getDefaultState();
 
-    @ModifyReceiver(method = "updateMovementInFluid", at = @At(
+    @Redirect(method = "updateMovementInFluid", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/fluid/FluidState;getVelocity(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/Vec3d;"
     ))
-    private FluidState captureFluid(FluidState state, BlockView view, BlockPos pos) {
+    private Vec3d captureFluid(FluidState state, BlockView view, BlockPos pos) {
         if (state.isIn(FluidTags.WATER)) {
             collidedFluid = state;
         }
-        return state;
+        return state.getVelocity(view, pos);
     }
 
     @Inject(method = "updateMovementInFluid", at = @At("HEAD"))

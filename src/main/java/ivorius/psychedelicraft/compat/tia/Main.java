@@ -22,16 +22,18 @@ public class Main implements TlaApiPlugin {
             WorldInteractionPSRecipe.generate(category, context);
         });
 
-        context.getItemComparisons().register(TlaStackComparison.compareComponents(),
+        var fluidTypedComparison = TlaStackComparison.of(
+                (left, right) -> RecipeUtil.toItemFluids(left).canCombine(RecipeUtil.toItemFluids(right)),
+                stack -> RecipeUtil.toItemFluids(stack).getHash()
+        );
+
+        context.getItemComparisons().register(fluidTypedComparison,
                 PSItems.WOODEN_MUG, PSItems.STONE_CUP, PSItems.GLASS_CHALICE,
                 PSItems.SHOT_GLASS, PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL, PSItems.SYRINGE,
                 PSItems.FILLED_GLASS_BOTTLE, PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL
         );
 
-        context.getFluidComparisons().register(TlaStackComparison.of(
-                (left, right) -> RecipeUtil.toItemFluids(left).canCombine(RecipeUtil.toItemFluids(right)),
-                stack -> RecipeUtil.toItemFluids(stack).getHash()
-        ), SimpleFluid.REGISTRY.stream().flatMap(f -> {
+        context.getFluidComparisons().register(fluidTypedComparison, SimpleFluid.REGISTRY.stream().flatMap(f -> {
             return Stream.of(f.getPhysical().getStandingFluid(), f.getPhysical().getFlowingFluid());
         }).toList());
     }

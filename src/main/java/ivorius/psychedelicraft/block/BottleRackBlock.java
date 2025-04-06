@@ -4,6 +4,7 @@ import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.client.render.blocks.VoxelShapeUtil;
 import ivorius.psychedelicraft.mixin.MixinAbstractBlockSettings;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.mojang.serialization.Codec;
@@ -66,10 +67,10 @@ public class BottleRackBlock extends BlockWithEntity {
             Function<Direction, VoxelShape> shapes) {
         super(Util.make(settings, s -> {
             if (zOffset != 0) {
-                ((MixinAbstractBlockSettings)s).setOffsetter((state, world, pos) -> {
+                ((MixinAbstractBlockSettings)s).setOffsetter(Optional.of((state, world, pos) -> {
                     offsets.apply(state.get(FACING));
                     return VoxelShapeUtil.rotate(new Vec3d(0, 0, -3 / 16D), state.get(FACING));
-                });
+                }));
             }
         }).nonOpaque().dynamicBounds());
         this.shapes = shapes;

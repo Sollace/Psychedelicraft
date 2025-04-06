@@ -19,17 +19,13 @@ public class DrugDustParticleEffect extends DustParticleEffect {
     static ParticleType<DrugDustParticleEffect> createType() {
         AtomicReference<ParticleType<DrugDustParticleEffect>> type = new AtomicReference<>();
 
-        var codec = RecordCodecBuilder.create(instance -> instance.group(
-                Codecs.VECTOR_3F.fieldOf("color").forGetter(DustParticleEffect::getColor),
-                Codec.FLOAT.fieldOf("scale").forGetter(DustParticleEffect::getScale)
-            ).apply(instance, (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale)));
-        var packetCodec = PacketCodec.tuple(
-            PacketCodecs.VECTOR3F, DustParticleEffect::getColor,
-            PacketCodecs.FLOAT, DustParticleEffect::getScale,
-            (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale)
-        );
+        class Factory implements ParticleEffect.Factory<DrugDustParticleEffect> {
+            private final PacketCodec<PacketByteBuf, DrugDustParticleEffect> packetCodec = PacketCodec.tuple(
+                PacketCodecs.VECTOR3F, DustParticleEffect::getColor,
+                PacketCodecs.FLOAT, DustParticleEffect::getScale,
+                (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale)
+            );
 
-        type.set(new ParticleType<>(false, new ParticleEffect.Factory<>() {
             @Override
             public DrugDustParticleEffect read(ParticleType<DrugDustParticleEffect> type, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
@@ -47,7 +43,14 @@ public class DrugDustParticleEffect extends DustParticleEffect {
             public DrugDustParticleEffect read(ParticleType<DrugDustParticleEffect> type, PacketByteBuf buf) {
                 return packetCodec.decode(buf);
             }
-        }) {
+        }
+
+        type.set(new ParticleType<>(false, new Factory()) {
+            private final Codec<DrugDustParticleEffect> codec = RecordCodecBuilder.<DrugDustParticleEffect>create(instance -> instance.group(
+                    Codecs.VECTOR_3F.fieldOf("color").forGetter(DustParticleEffect::getColor),
+                    Codec.FLOAT.fieldOf("scale").forGetter(DustParticleEffect::getScale)
+                ).apply(instance, (color, scale) -> new DrugDustParticleEffect(type.get(), color, scale)));
+
             @Override
             public Codec<DrugDustParticleEffect> getCodec() {
                 return codec;
