@@ -10,7 +10,6 @@ import ivorius.psychedelicraft.client.render.DrugRenderer;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Mixin(GameRenderer.class)
@@ -24,12 +23,12 @@ abstract class MixinGameRenderer {
     }
 
     @Inject(method = "renderWorld", at = @At("HEAD"))
-    private void beforeRenderWorld(RenderTickCounter tickCounter, CallbackInfo info) {
+    private void beforeRenderWorld(CallbackInfo info) {
         RenderPhase.WORLD.push();
     }
 
     @Inject(method = "renderWorld", at = @At("RETURN"))
-    private void afterRenderWorld(RenderTickCounter tickCounter, CallbackInfo info) {
+    private void afterRenderWorld(CallbackInfo info) {
         RenderPhase.pop();
     }
 

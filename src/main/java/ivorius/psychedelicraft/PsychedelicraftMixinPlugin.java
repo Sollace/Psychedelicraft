@@ -9,6 +9,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
+import ivorius.psychedelicraft.client.SodiumCompat;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class PsychedelicraftMixinPlugin implements IMixinConfigPlugin {
@@ -25,6 +26,7 @@ public class PsychedelicraftMixinPlugin implements IMixinConfigPlugin {
         hasIris = FabricLoader.getInstance().isModLoaded("iris");
         if (hasSodium) {
             sodiumPackage = isTargetAvailable("caffeinemc") ? "caffeinemc" : "jellysquid";
+            SodiumCompat.IS_JELLY_SODIUM_LOADED = "jellysquid".equals(sodiumPackage);
             LOGGER.info("Detected sodium package: " + sodiumPackage);
         }
         if (hasIris) {

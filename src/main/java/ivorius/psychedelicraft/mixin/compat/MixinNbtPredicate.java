@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import ivorius.psychedelicraft.util.compat.ItemSubPredicate;
@@ -28,7 +29,7 @@ abstract class MixinNbtPredicate {
     private List<ItemSubPredicate<?>> itemSubPredicates;
 
     @Inject(method = "<init>(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("RETURN"))
-    private void onInit(NbtCompound nbt) {
+    private void onInit(NbtCompound nbt, CallbackInfo info) {
         if (nbt.contains("psychedelicraft:sub_predicates", NbtElement.COMPOUND_TYPE)) {
             itemSubPredicates = ItemSubPredicate.readNbt(nbt.getCompound("psychedelicraft:sub_predicates"));
             this.nbt.remove("psychedelicraft:sub_predicates");

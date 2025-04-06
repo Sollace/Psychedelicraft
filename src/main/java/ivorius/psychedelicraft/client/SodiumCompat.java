@@ -1,23 +1,22 @@
 package ivorius.psychedelicraft.client;
 
-import me.jellysquid.mods.sodium.client.render.texture.SpriteUtil;
-import net.fabricmc.loader.api.FabricLoader;
+import ivorius.psychedelicraft.mixin.client.sodium.JellySquidSpriteUtil;
 import net.minecraft.client.texture.Sprite;
 
 public final class SodiumCompat {
-    static final boolean IS_SODIUM_LOADED = FabricLoader.getInstance().isModLoaded("sodium");
+    public static boolean IS_JELLY_SODIUM_LOADED;
 
     public static void markSpriteActive(Sprite sprite) {
-        if (!IS_SODIUM_LOADED) {
+        // We only need it for legacy versions since the bug is fixed in newer
+        if (!IS_JELLY_SODIUM_LOADED) {
             return;
         }
         Impl.markSpriteActive(sprite);
     }
 
-
     static class Impl {
         static void markSpriteActive(Sprite sprite) {
-            SpriteUtil.markSpriteActive(sprite);
+            JellySquidSpriteUtil.invokeMarkSpriteActive(sprite);
         }
     }
 }

@@ -4,7 +4,7 @@ buildscript {
     }
 }
 plugins {
-    id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
     id 'maven-publish'
     id 'com.modrinth.minotaur' version '2.+'
     id 'org.ajoberstar.reckon' version '0.13.1'
@@ -65,9 +65,9 @@ dependencies {
     modApi "com.sollace:fabwork:${project.fabwork_version}"
     include "com.sollace:fabwork:${project.fabwork_version}"
 
-    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
+    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}"), { exclude group: "net.fabricmc.fabric-api" }
 
-    modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
+    modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}", { exclude group: "net.fabricmc.fabric-api" }
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
 
     modImplementation "com.github.MattiDragon:TlaApi:${project.tla_version}"
@@ -84,7 +84,7 @@ dependencies {
     }
 
     if (project.tmi_type == 'emi') {
-      modCompileOnly "dev.emi:emi-fabric:${project.emi_version}"
+      modCompileOnly "dev.emi:emi-fabric:${project.emi_version}", { exclude group: "net.fabricmc.fabric-api" }
     }
     if (project.tmi_type == 'rei') {
       modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${project.rei_version}"
