@@ -54,10 +54,12 @@ public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> impleme
             matrices.push();
             matrices.translate(0.5, 0, 0.5);
             matrices.multiply(MinecraftClient.getInstance().getEntityRenderDispatcher().getRotation());
+            matrices.scale(-1, -1, -1);
             matrices.translate(0, 0, getLabelDistanceFromCenter(entity));
             float scale = getLabelScale(entity, tickDelta);
-            matrices.scale(scale, -scale, scale);
+            matrices.scale(scale, scale, scale);
             renderLabels(entity, tickDelta, matrices, vertices, light, overlay);
+
             matrices.pop();
         }
     }
