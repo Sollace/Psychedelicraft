@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+
 import ivorius.psychedelicraft.client.render.BlockBreakingProgressAccessor;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import net.minecraft.client.render.WorldRenderer;
@@ -18,6 +19,10 @@ import net.minecraft.entity.player.BlockBreakingInfo;
 abstract class MixinWorldRenderer implements BlockBreakingProgressAccessor {
     private static final String SKY = "renderSky(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/Fog;)V";
     private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/render/FrameGraphBuilder;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/option/CloudRenderMode;Lnet/minecraft/util/math/Vec3d;FIF)V";
+
+    @Override
+    @Accessor
+    public abstract Long2ObjectMap<SortedSet<BlockBreakingInfo>> getBlockBreakingProgressions();
 
     @Override
     @Accessor
