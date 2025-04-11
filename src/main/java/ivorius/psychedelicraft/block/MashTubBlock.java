@@ -19,6 +19,7 @@ import ivorius.psychedelicraft.item.MashTubItem;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import ivorius.psychedelicraft.screen.PSScreenHandlers;
+import ivorius.psychedelicraft.util.compat.EitherCompat;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.*;
@@ -57,6 +58,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
             createShape(-8, 0, -8,  1, 16, 32),
             createShape(-8, 0, -8, 32,  1, 32)
     );
+
     static final VoxelShape RAYCAST_SHAPE = createShape(-8, 0, -8, 32, 16, 32);
 
     static final VoxelShape CORNER_RAYCAST_SHAPE = createCuboidShape(0, 0, 0, 8, 16, 8);
@@ -136,13 +138,12 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
         ItemStack heldStack = player.getStackInHand(hand);
 
         if (!heldStack.isEmpty()) {
-            TypedActionResult<ItemStack> result = blockEntity.interactWithItem(heldStack.copyWithCount(1));
-            if (result.getResult().isAccepted()) {
+            return EitherCompat.unwrap(blockEntity.interactWithItem(heldStack, player).mapLeft(stack -> {
                 if (!world.isClient) {
-                    player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, result.getValue()));
+                    player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, stack));
                 }
                 return ActionResult.SUCCESS;
-            }
+            }));
         }
 
         if (!blockEntity.solidContents.isEmpty()) {

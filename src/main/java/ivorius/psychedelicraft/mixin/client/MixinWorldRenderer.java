@@ -1,18 +1,29 @@
 package ivorius.psychedelicraft.mixin.client;
 
+import java.util.SortedSet;
+
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+
 import ivorius.psychedelicraft.client.render.DrugRenderer;
+import ivorius.psychedelicraft.client.render.BlockBreakingProgressAccessor;
 import ivorius.psychedelicraft.client.render.RenderPhase;
+import net.minecraft.client.render.BlockBreakingInfo;
 import net.minecraft.client.render.WorldRenderer;
 
 @Mixin(WorldRenderer.class)
-abstract class MixinWorldRenderer {
+abstract class MixinWorldRenderer implements BlockBreakingProgressAccessor {
     private static final String SKY = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V";
     private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/util/math/MatrixStack;Lorg/joml/Matrix4f;FDDD)V";
+
+    @Override
+    @Accessor
+    public abstract Long2ObjectMap<SortedSet<BlockBreakingInfo>> getBlockBreakingProgressions();
 
     @Inject(method = SKY, at = @At("HEAD"))
     private void beforeRenderSky(CallbackInfo info) {
