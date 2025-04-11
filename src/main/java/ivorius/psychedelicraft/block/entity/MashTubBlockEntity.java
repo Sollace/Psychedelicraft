@@ -32,6 +32,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -43,7 +44,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
@@ -182,46 +183,46 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
     }
 
-    public TypedActionResult<ItemStack> interactWithItem(ItemStack stack) {
+    public Either<ItemStack, ItemActionResult> interactWithItem(ItemStack stack, PlayerEntity player) {
 
         if (!currentStew.isEmpty()) {
-            return TypedActionResult.fail(stack);
+            return Either.right(ItemActionResult.FAIL);
         }
 
         if (getWorld().isClient) {
-            return TypedActionResult.success(stack);
+            return Either.right(ItemActionResult.SUCCESS);
         }
 
         if (FluidCapacity.get(stack) > 0) {
-            ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
+            ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copy());
             Resovoir tank = getPrimaryTank();
             FluidVariant variant = t.fluids().toVariant();
             if (!t.fluids().isEmpty()) {
                 if (tank.deposit(t, t.capacity()) > 0) {
                     getWorld().playSound(null, getPos(), FluidVariantAttributes.getEmptySound(variant), SoundCategory.BLOCKS, 1, 1);
-                    return TypedActionResult.success(t.toItemStack());
+                    return Either.left(t.toItemStack());
                 }
             } else {
                 if (tank.withdraw(t, t.capacity()) > 0) {
                     getWorld().playSound(null, getPos(), FluidVariantAttributes.getFillSound(variant), SoundCategory.BLOCKS, 1, 1);
-                    return TypedActionResult.success(t.toItemStack());
+                    return Either.left(t.toItemStack());
                 }
             }
 
-            return TypedActionResult.fail(stack);
+            return Either.right(ItemActionResult.FAIL);
         }
 
         if (isAcceptingIngredients() && acceptsItem(stack)) {
-            ItemStack consumed = stack.split(1);
+            ItemStack consumed = stack.splitUnlessCreative(1, player);
             suppliedIngredients.add(consumed.getItem(), 1);
             beginStewing();
             markForUpdate();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
             getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
-            return TypedActionResult.success(stack);
+            return Either.right(ItemActionResult.SUCCESS);
         }
 
-        return TypedActionResult.pass(stack);
+        return Either.right(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
     }
 
     public boolean acceptsItem(ItemStack stack) {

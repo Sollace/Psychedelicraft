@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.advancement.PSCriteria;
@@ -57,6 +58,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
             createShape(-8, 0, -8,  1, 16, 32),
             createShape(-8, 0, -8, 32,  1, 32)
     );
+
     static final VoxelShape RAYCAST_SHAPE = createShape(-8, 0, -8, 32, 16, 32);
 
     static final VoxelShape CORNER_RAYCAST_SHAPE = createCuboidShape(0, 0, 0, 8, 16, 8);
@@ -134,13 +136,12 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     @Override
     protected ItemActionResult onInteractWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
         if (!heldStack.isEmpty()) {
-            TypedActionResult<ItemStack> result = blockEntity.interactWithItem(heldStack.copyWithCount(1));
-            if (result.getResult().isAccepted()) {
+            return Either.unwrap(blockEntity.interactWithItem(heldStack, player).mapLeft(stack -> {
                 if (!world.isClient) {
-                    player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, result.getValue()));
+                    player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, stack));
                 }
                 return ItemActionResult.SUCCESS;
-            }
+            }));
         }
 
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
