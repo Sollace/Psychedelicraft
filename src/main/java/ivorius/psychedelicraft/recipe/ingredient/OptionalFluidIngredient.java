@@ -74,7 +74,7 @@ public record OptionalFluidIngredient (
 
     @Override
     public CustomIngredientSerializer<?> getSerializer() {
-        return PSIngredients.FLUID;
+        return PSIngredients.OPTIONAL_FLUID;
     }
 
     @Override
