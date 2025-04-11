@@ -41,6 +41,8 @@ public interface PSRenderers {
     static void bootstrap() {
         EntityRendererRegistry.register(PSEntities.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
         EntityRendererRegistry.register(PSEntities.REALITY_RIFT, RealityRiftEntityRenderer::new);
+        EntityRendererRegistry.register(PSEntities.JUNIPER_BOAT, context -> new CustomBoatEntityRenderer<>(context, PSEntities.JUNIPER_BOAT, false));
+        EntityRendererRegistry.register(PSEntities.JUNIPER_CHEST_BOAT, context -> new CustomBoatEntityRenderer<>(context, PSEntities.JUNIPER_CHEST_BOAT, true));
 
         BlockEntityRendererFactories.register(PSBlockEntities.DISTILLERY, FlaskBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(PSBlockEntities.FLASK, FlaskBlockEntityRenderer::new);
