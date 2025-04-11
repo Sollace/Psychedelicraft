@@ -83,8 +83,6 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
         pos = positionMatrix.transform(vector);
         consumer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, 0, 1, light, 0, 1, 1, 1);
 
-        consumer.next();
-
         matrices.pop();
         matrices.pop();
     }
@@ -153,8 +151,6 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
                 vector.set(-width * var9, var8, -0.5F * var9, 1);
                 pos = positionMatrix.transform(vector);
                 vertices.vertex(pos.x, pos.y, pos.z, 1, 1, 1, transparent, 1, 1, light, 0, 1, 1, 1);
-
-                vertices.next();
             }
         }
 
