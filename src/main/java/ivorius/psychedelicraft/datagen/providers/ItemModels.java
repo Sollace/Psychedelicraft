@@ -100,15 +100,15 @@ public interface ItemModels {
 
     static void registerSmokeable(ItemModelGenerator itemModelGenerator, Item item) {
         itemModelGenerator.output.accept(item, condition(new UsingProperty(),
-                basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE)),
-                basic(itemModelGenerator.registerSubModel(item, "_using", SMOKEABLE_USING_TEMPLATE))
+                basic(itemModelGenerator.registerSubModel(item, "_using", SMOKEABLE_USING_TEMPLATE)),
+                basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE))
         ));
     }
 
     static void registerSniffable(ItemModelGenerator itemModelGenerator, Item item) {
         itemModelGenerator.output.accept(item, condition(new UsingProperty(),
-                basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE)),
-                basic(SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_using"), TextureMap.layer0(item), itemModelGenerator.modelCollector))
+                basic(SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_using"), TextureMap.layer0(item), itemModelGenerator.modelCollector)),
+                basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE))
         ));
     }
 
@@ -121,7 +121,7 @@ public interface ItemModels {
                         rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_using_3", SMOKEABLE_USING_TEMPLATE)), 3)
                 )),
                 rangeDispatch(new DamageProperty(true), 3, List.of(
-                        rangeDispatchEntry(basic(itemModelGenerator.upload(item, SMOKEABLE_USING_TEMPLATE)), 0),
+                        rangeDispatchEntry(basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE)), 0),
                         rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_1", SMOKEABLE_TEMPLATE)), 1),
                         rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_2", SMOKEABLE_TEMPLATE)), 2),
                         rangeDispatchEntry(basic(itemModelGenerator.registerSubModel(item, "_3", SMOKEABLE_TEMPLATE)), 3)
