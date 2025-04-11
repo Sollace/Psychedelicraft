@@ -5,11 +5,14 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
+import org.jetbrains.annotations.Nullable;
+
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.FluidFilled;
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
+import ivorius.psychedelicraft.client.render.BlockBreakingProgressAccessor;
 import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
@@ -19,19 +22,23 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
+import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.BlockStateModel;
+import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 /**
  * Renders fluid in the mash tub, or the solid contents
@@ -70,6 +77,15 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
 
     @Override
     public void render(MashTubBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
+
+        int damageStage = getDamageStage(entity.getWorld(), entity.getPos());
+        if (damageStage != 0) {
+            BlockState state = entity.getCachedState();
+            BlockStateModel model = MinecraftClient.getInstance().getBlockRenderManager().getModel(state);
+            VertexConsumer consumer = new OverlayVertexConsumer(vertices.getBuffer(ModelBaker.BLOCK_DESTRUCTION_RENDER_LAYERS.get(damageStage)), matrices.peek(), 1F);
+            BlockModelRenderer.render(matrices.peek(), consumer, model, 1, 1, 1, light, overlay);
+        }
+
         Resovoir tank = entity.getPrimaryTank();
         ItemFluids stack = tank.getContents();
 
@@ -180,5 +196,19 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
         matrices.scale(0.9F, 0.9F, 0.9F);
         Text fill = getFillPercentage(entity, FluidVolumes.VAT);
         textRenderer.draw(fill, -(textRenderer.getWidth(fill) - 5) / 2F, -textRenderer.fontHeight - 2, Colors.WHITE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);
+    }
+
+    static int getDamageStage(@Nullable World world, @Nullable BlockPos center) {
+        if (world == null || center == null || BlockBreakingProgressAccessor.getStage(center) != 0) {
+            return 0;
+        }
+        int stage = 0;
+        for (BlockPos pos : BlockPos.iterateInSquare(center, 1, Direction.EAST, Direction.SOUTH)) {
+            if (world.getBlockState(pos).isOf(PSBlocks.MASH_TUB_EDGE)) {
+                stage = Math.max(stage, BlockBreakingProgressAccessor.getStage(pos));
+            }
+        }
+
+        return stage;
     }
 }
