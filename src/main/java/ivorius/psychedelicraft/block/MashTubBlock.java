@@ -60,6 +60,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
             createShape(-8, 0, -8,  1, 16, 32),
             createShape(-8, 0, -8, 32,  1, 32)
     );
+
     static final VoxelShape RAYCAST_SHAPE = createShape(-8, 0, -8, 32, 16, 32);
 
     static final VoxelShape CORNER_RAYCAST_SHAPE = createCuboidShape(0, 0, 0, 8, 16, 8);
@@ -137,7 +138,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     @Override
     protected ActionResult onInteractWithItem(ItemStack heldStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, MashTubBlockEntity blockEntity) {
         if (!heldStack.isEmpty()) {
-            return Either.unwrap(blockEntity.interactWithItem(heldStack.copy()).mapLeft(stack -> {
+            return Either.unwrap(blockEntity.interactWithItem(heldStack, player).mapLeft(stack -> {
                 if (!world.isClient) {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(heldStack, player, stack));
                 }
