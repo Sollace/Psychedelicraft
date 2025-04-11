@@ -1,7 +1,12 @@
 package ivorius.psychedelicraft.fluid;
 
+import java.util.function.Supplier;
+
+import com.google.common.base.Suppliers;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
+import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
@@ -24,7 +29,16 @@ public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
         Registries.FLUID.streamEntries().forEach(entry -> {
             register(entry.getKey().get().getValue(), entry.value());
         });
-        RegistryEntryAddedCallback.event(Registries.FLUID).register((rawId, id, value) -> register(id, value));
+        RegistryEntryAddedCallback.event(Registries.FLUID).register((rawId, id, value) -> {
+            if (value instanceof PlacedFluid) {
+                return;
+            }
+            try {
+                register(id, value);
+            } catch (Throwable e) {
+                Psychedelicraft.LOGGER.info("Could not register vanilla fluid {}", id, e);
+            }
+        });
     }
 
     private static void register(Identifier id, Fluid value) {
@@ -36,13 +50,13 @@ public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
 
     private VanillaFluid(Identifier id, Fluid still, boolean empty) {
         super(id, 0xFFFFFFFF,
-                new PhysicalFluid(still, toFlowing(still), still.getDefaultState().getBlockState().getBlock()),
+                new PhysicalFluid(() -> still, toFlowing(still), Suppliers.memoize(() -> still.getDefaultState().getBlockState().getBlock())),
                 empty
         );
     }
 
-    private static Fluid toFlowing(Fluid fluid) {
-        return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid).getFlowing() : fluid;
+    private static Supplier<Fluid> toFlowing(Fluid fluid) {
+        return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid)::getFlowing : Suppliers.ofInstance(fluid);
     }
 
     static Fluid toStill(Fluid fluid) {
