@@ -1,13 +1,9 @@
 package ivorius.psychedelicraft.advancement;
 
 import java.util.Optional;
-import java.util.function.Function;
-
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
+import com.google.gson.JsonObject;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.advancement.AdvancementCriterion;
@@ -15,14 +11,22 @@ import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange.IntRange;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 
 public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventCriterion.Conditions> {
     @Override
-    public Codec<Conditions> getConditionsCodec() {
-        return Conditions.CODEC;
+    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> predicate,
+            AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return new Conditions(predicate,
+                (AlcoholicFluid)SimpleFluid.REGISTRY.get(Identifier.tryParse(JsonHelper.getString(json, "fluid", "r"))),
+                IntRange.fromJson(json.get("fermentation")),
+                IntRange.fromJson(json.get("maturation")),
+                IntRange.fromJson(json.get("distillation"))
+        );
     }
 
     public void trigger(PlayerEntity player, ItemStack stack) {
@@ -35,14 +39,16 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
         void trigger(@Nullable PlayerEntity player);
     }
 
-    public record Conditions (Optional<LootContextPredicate> player, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) implements AbstractCriterion.Conditions {
-        public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
-                SimpleFluid.CODEC.xmap(AlcoholicFluid.class::cast, Function.identity()).fieldOf("fluid").forGetter(Conditions::fluid),
-                IntRange.CODEC.optionalFieldOf("fermentation", IntRange.ANY).forGetter(Conditions::fermentation),
-                IntRange.CODEC.optionalFieldOf("maturation", IntRange.ANY).forGetter(Conditions::maturation),
-                IntRange.CODEC.optionalFieldOf("distillation", IntRange.ANY).forGetter(Conditions::distillation)
-        ).apply(instance, Conditions::new));
+    public record Conditions(Optional<LootContextPredicate> getPlayerPredicate, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) implements AbstractCriterion.Conditions {
+        @Override
+        public JsonObject toJson() {
+            JsonObject json = new JsonObject();
+            json.addProperty("fluid", fluid.getId().toString());
+            json.add("fermentation", fermentation.toJson());
+            json.add("maturation", maturation.toJson());
+            json.add("distillation", distillation.toJson());
+            return json;
+        }
 
         public static AdvancementCriterion<Conditions> create(AlcoholicFluid fluid) {
             return PSCriteria.SIMPLY_MASHING.create(new Conditions(Optional.empty(), fluid, IntRange.ANY, IntRange.ANY, IntRange.ANY));

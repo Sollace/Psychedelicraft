@@ -10,8 +10,6 @@ import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.MapCodec;
-
 import ivorius.psychedelicraft.block.entity.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
@@ -37,15 +35,8 @@ import net.minecraft.world.*;
  * Updated by Sollace on 7 Feb 2023
  */
 public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, PipeInsertable {
-    public static final MapCodec<MashTubWallBlock> CODEC = createCodec(MashTubWallBlock::new);
-
     public MashTubWallBlock(Settings settings) {
         super(settings.luminance(LightBlock.STATE_TO_LUMINANCE));
-    }
-
-    @Override
-    protected MapCodec<? extends MashTubWallBlock> getCodec() {
-        return CODEC;
     }
 
     @Override
@@ -83,7 +74,7 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return getValidMasterPosition(world, pos).map(center -> {
             BlockState masterState = world.getBlockState(center);
             return masterState.getBlock().getPickStack(world, center, masterState);

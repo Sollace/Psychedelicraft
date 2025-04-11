@@ -11,7 +11,6 @@ import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 import ivorius.psychedelicraft.client.screen.DryingTableScreen;
 import ivorius.psychedelicraft.recipe.DryingRecipe;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -73,9 +72,8 @@ class DryingEmiRecipe implements PSRecipe {
         widgets.addTexture(SUN, 95, 0);
 
         long cookingTime = DryingTableBlockEntity.getCookingTime(recipe.value().cookTime(), false);
-        ClientWorld world = MinecraftClient.getInstance().world;
         widgets.addAnimatedTexture(ARROW_FILL, 60, 18 + y, (int)cookingTime, true, false, false).addTooltip(
-            Text.translatable("psychedelicraft.recipe.drying_time", StringHelper.formatTicks((int)cookingTime, world == null ? 20 : world.getTickManager().getTickRate()))
+            Text.translatable("psychedelicraft.recipe.drying_time", StringHelper.formatTicks((int)cookingTime))
         );
     }
 

@@ -7,10 +7,6 @@ import ivorius.psychedelicraft.mixin.MixinAbstractBlockSettings;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import ivorius.psychedelicraft.block.entity.BottleRackBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -33,11 +29,6 @@ import net.minecraft.world.*;
  * Created by lukas on 16.11.14.
  */
 public class BottleRackBlock extends BlockWithEntity {
-    public static final MapCodec<BottleRackBlock> CODEC = RecordCodecBuilder.mapCodec(
-            instance -> instance.group(
-                    Codec.INT.fieldOf("z_offset").forGetter(BottleRackBlock::getZOffset),
-                    createSettingsCodec()
-            ).apply(instance, BottleRackBlock::new));
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     private static final VoxelShape BASE_SHAPE = VoxelShapes.union(
@@ -75,11 +66,6 @@ public class BottleRackBlock extends BlockWithEntity {
         }).nonOpaque().dynamicBounds());
         this.shapes = shapes;
         this.zOffset = zOffset;
-    }
-
-    @Override
-    protected MapCodec<? extends BottleRackBlock> getCodec() {
-        return CODEC;
     }
 
     @Override

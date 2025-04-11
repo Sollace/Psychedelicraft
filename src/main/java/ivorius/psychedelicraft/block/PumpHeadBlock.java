@@ -1,7 +1,5 @@
 package ivorius.psychedelicraft.block;
 
-import com.mojang.serialization.MapCodec;
-
 import ivorius.psychedelicraft.client.render.blocks.VoxelShapeUtil;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.Block;
@@ -25,8 +23,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class PumpHeadBlock extends FacingBlock {
-    public static final MapCodec<PumpHeadBlock> CODEC = createCodec(PumpHeadBlock::new);
-
     private static final VoxelShape UP_SHAPE = VoxelShapes.union(
             createCuboidShape(3, 0, 3, 13, 13, 13),
             createCuboidShape(2, 12, 2, 14, 14, 14)
@@ -52,17 +48,12 @@ public class PumpHeadBlock extends FacingBlock {
     }
 
     @Override
-    protected MapCodec<? extends PumpHeadBlock> getCodec() {
-        return CODEC;
-    }
-
-    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return PSItems.PUMP.getDefaultStack();
     }
 
@@ -87,12 +78,12 @@ public class PumpHeadBlock extends FacingBlock {
     }
 
     @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (!world.isClient && player.getAbilities().creativeMode) {
             checkSupport(state, world, pos);
         }
 
-        return super.onBreak(world, pos, state, player);
+        super.onBreak(world, pos, state, player);
     }
 
     @Deprecated

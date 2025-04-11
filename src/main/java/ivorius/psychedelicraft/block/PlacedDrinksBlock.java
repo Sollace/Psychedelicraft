@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.util.collection.IntObjectHashMap;
@@ -46,20 +45,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class PlacedDrinksBlock extends BlockWithEntity {
-    public static final MapCodec<PlacedDrinksBlock> CODEC = createCodec(PlacedDrinksBlock::new);
     private static final Optional<TypedActionResult<ItemStack>> FAILURE = Optional.of(TypedActionResult.fail(ItemStack.EMPTY));
     private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 1, 16);
 
     protected PlacedDrinksBlock(Settings settings) {
         super(settings.noCollision());
-    }
-
-    @Override
-    protected MapCodec<? extends PlacedDrinksBlock> getCodec() {
-        return CODEC;
     }
 
     @Override
@@ -88,7 +80,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return Psychedelicraft.getCrossHairTarget()
                 .filter(hit -> hit.getType() == HitResult.Type.BLOCK)
                 .map(hit -> (BlockHitResult)hit)

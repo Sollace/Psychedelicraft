@@ -20,7 +20,8 @@ public interface PSRecipes {
     RecipeSerializer<ChangeRecepticalRecipe> CHANGE_RECEPTICAL = serializer("change_receptical", new Serializer<>(ChangeRecepticalRecipe.CODEC, ChangeRecepticalRecipe.PACKET_CODEC));
     RecipeSerializer<PouringRecipe> CRAFTING_POURING = serializer("crafting_pouring", new SpecialRecipeSerializer<>(PouringRecipe::new));
     RecipeSerializer<SmeltingFluidRecipe> SMELTING_RECEPTICAL = serializer("smelting_receptical", new Serializer<>(SmeltingFluidRecipe.CODEC, SmeltingFluidRecipe.PACKET_CODEC));
-    RecipeSerializer<BottleRecipe> CRAFTING_SHAPED = serializer("crafting_shaped", new Serializer<>(BottleRecipe.CODEC, BottleRecipe.PACKET_CODEC));
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    RecipeSerializer<BottleRecipe> CRAFTING_SHAPED = serializer("crafting_shaped", (RecipeSerializer)new BottleRecipe.Serializer());
     RecipeSerializer<FluidAwareShapelessRecipe> CRAFTING_SHAPELESS_FLUID = serializer("crafting_shapeless_fluid", new Serializer<>(FluidAwareShapelessRecipe.CODEC, FluidAwareShapelessRecipe.PACKET_CODEC));
 
     RecipeType<MashingRecipe> MASHING_TYPE = type("mashing");

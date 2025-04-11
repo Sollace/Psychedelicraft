@@ -16,7 +16,7 @@ import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSSubPredicates;
 import ivorius.psychedelicraft.recipe.FluidModifyingResult;
-import ivorius.psychedelicraft.recipe.PouringRecipe;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 import ivorius.psychedelicraft.util.compat.ItemSubPredicate;
@@ -43,8 +43,6 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Identifier;
 
 public class PSRecipeProvider extends FabricRecipeProvider {
@@ -174,7 +172,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
     }
 
     private void offerJuniperWoodset(RecipeExporter exporter) {
-        generateFamily(exporter, PSBlockFamilies.JUNIPER, FeatureSet.of(FeatureFlags.VANILLA));
+        generateFamily(exporter, PSBlockFamilies.JUNIPER);
         offerPlanksRecipe(exporter, PSBlocks.JUNIPER_PLANKS, PSTags.Items.JUNIPER_LOGS, 4);
         offerBarkBlockRecipe(exporter, PSBlocks.JUNIPER_WOOD, PSBlocks.JUNIPER_LOG);
         offerBarkBlockRecipe(exporter, PSBlocks.STRIPPED_JUNIPER_WOOD, PSBlocks.STRIPPED_JUNIPER_LOG);
@@ -386,7 +384,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .pattern("OIO")
             .offerTo(exporter);
 
-        ComplexRecipeJsonBuilder.create(PouringRecipe::new).offerTo(exporter, "pour_drink");
+        ComplexRecipeJsonBuilder.create(PSRecipes.CRAFTING_POURING).offerTo(exporter, "pour_drink");
 
         SmeltingFluidRecipeJsonBuilder.create(OptionalFluidIngredient.of(FluidIngredient.builder()
                     .fluid(PSFluids.COFFEE).build()), RecipeCategory.FOOD, 0.2F, 200)

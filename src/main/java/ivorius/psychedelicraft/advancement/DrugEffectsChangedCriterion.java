@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
@@ -14,15 +17,16 @@ import ivorius.psychedelicraft.entity.drug.DrugType;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.predicate.NumberRange.DoubleRange;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsChangedCriterion.Conditions> {
     @Override
-    public Codec<Conditions> getConditionsCodec() {
-        return Conditions.CODEC;
+    protected Conditions conditionsFromJson(JsonObject obj, Optional<LootContextPredicate> predicate,
+            AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return new Conditions(predicate, Conditions.DRUGS_CODEC.decode(JsonOps.INSTANCE, obj.get("drugs")).result().map(Pair::getFirst).orElseGet(List::of));
     }
 
     public void trigger(DrugProperties properties) {
@@ -31,11 +35,16 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
         }
     }
 
-    public record Conditions(Optional<LootContextPredicate> player, List<DrugPredicate> drugs) implements AbstractCriterion.Conditions {
-        public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
-                DrugPredicate.CODEC.listOf().fieldOf("drugs").forGetter(Conditions::drugs)
-        ).apply(instance, Conditions::new));
+    public record Conditions(Optional<LootContextPredicate> getPlayerPredicate, List<DrugPredicate> drugs) implements AbstractCriterion.Conditions {
+        static final Codec<List<DrugPredicate>> DRUGS_CODEC = DrugPredicate.CODEC.listOf();
+        @Override
+        public JsonObject toJson() {
+            JsonObject json = new JsonObject();
+            DRUGS_CODEC.encodeStart(JsonOps.INSTANCE, drugs).result().ifPresent(a -> {
+                json.add("drugs", a);
+            });
+            return null;
+        }
 
         public static AdvancementCriterion<Conditions> create(Collection<DrugType<?>> types) {
             return PSCriteria.DRUG_EFFECTS_CHANGED.create(new Conditions(Optional.empty(), types.stream().map(type -> new DrugPredicate(type, DoubleRange.atLeast(MathHelper.EPSILON))).toList()));

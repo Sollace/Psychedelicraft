@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.MapCodec;
-
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
@@ -21,6 +19,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -46,7 +45,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BurnerBlock extends BlockWithEntity {
-    public static final MapCodec<BurnerBlock> CODEC = createCodec(BurnerBlock::new);
     public static final VoxelShape SHAPE = ShapeUtil.createCenteredShape(5, 2, 5);
     private static final Map<Identifier, VoxelShape> SHAPE_CACHE = new HashMap<>(Map.of(EmptyContents.ID, SHAPE));
 
@@ -59,11 +57,6 @@ public class BurnerBlock extends BlockWithEntity {
                 .emissiveLighting((state, world, pos) -> state.getOrEmpty(LIT).orElse(false))
         );
         setDefaultState(getDefaultState().with(LIT, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BurnerBlock> getCodec() {
-        return CODEC;
     }
 
     @Override
@@ -134,7 +127,9 @@ public class BurnerBlock extends BlockWithEntity {
     @Deprecated
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        ItemScatterer.onStateReplaced(state, newState, world, pos);
+        if (!state.isOf(newState.getBlock()) && world.getBlockEntity(pos) instanceof Inventory i) {
+            ItemScatterer.spawn(world, pos, i);
+        }
         super.onStateReplaced(state, world, pos, newState, moved);
     }
 

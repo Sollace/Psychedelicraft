@@ -48,7 +48,7 @@ public class DryingTableScreen extends HandledScreen<DryingTableScreenHandler> {
         }
         int timeRemaining = handler.getTimeRemaining();
         if (timeRemaining != 0) {
-            context.drawText(this.textRenderer, Text.literal(StringHelper.formatTicks(timeRemaining, client.world.getTickManager().getTickRate())), x + 90, y + 50, Colors.GRAY, false);
+            context.drawText(this.textRenderer, Text.literal(StringHelper.formatTicks(timeRemaining)), x + 90, y + 50, Colors.GRAY, false);
         }
     }
 

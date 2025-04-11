@@ -163,7 +163,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     public void writeNbt(NbtCompound compound) {
         super.writeNbt(compound);
         compound.put("tank", tank.toNbt());
-        Inventories.writeNbt(compound, ioInventory.heldStacks);
+        Inventories.writeNbt(compound, ioInventory.stacks);
         compound.put("inputSlot", inputSlot.toNbt());
         compound.put("outputSlot", outputSlot.toNbt());
     }
@@ -172,7 +172,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     public void readNbt(NbtCompound compound) {
         super.readNbt(compound);
         tank.fromNbt(compound.getCompound("tank"));
-        Inventories.readNbt(compound, ioInventory.heldStacks);
+        Inventories.readNbt(compound, ioInventory.stacks);
         inputSlot.fromNbt(compound.getCompound("inputSlot"));
         outputSlot.fromNbt(compound.getCompound("outputSlot"));
     }

@@ -129,7 +129,7 @@ public interface Processable {
         private final Text status = Text.translatable("fluid.status." + name);
         private final String timeLabel = "time.until." + name;
 
-        public static final Codec<ProcessType> CODEC = StringIdentifiable.createBasicCodec(ProcessType::values);
+        public static final Codec<ProcessType> CODEC = StringIdentifiable.createCodec(ProcessType::values);
         public static final PacketCodec<PacketByteBuf, ProcessType> PACKET_CODEC = PacketCodecUtils.ofEnum(ProcessType.class);
 
         public Text getStatus() {

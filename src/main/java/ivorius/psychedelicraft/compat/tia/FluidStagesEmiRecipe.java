@@ -14,8 +14,6 @@ import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
@@ -71,7 +69,6 @@ class FluidStagesEmiRecipe implements PSRecipe {
 
     record Stage(Processable.Transition transition, TlaIngredient input, TlaIngredient output, TlaIngredient container) {
         public void buildGui(int x, int y, GuiBuilder widgets, boolean last) {
-            ClientWorld world = MinecraftClient.getInstance().world;
             widgets.addSlot(input, x, y).markInput();
             widgets.addSlot(container, x + 19, y).markCatalyst();
 
@@ -80,7 +77,7 @@ class FluidStagesEmiRecipe implements PSRecipe {
             widgets.addAnimatedArrow(x + 40, y, ticks < 20 ? 1 : ticks / 20).addTooltip(
                     Text.translatable("gui.psychedelicraft.recipe.fluid_process",
                             Text.translatable("fluid.status." + transition.type().asString()),
-                            StringHelper.formatTicks(ticks, world == null ? 20 : world.getTickManager().getTickRate())
+                            StringHelper.formatTicks(ticks)
                     )
             );
             widgets.addText(Text.literal(transition.multiplier() + "x"), x + 45, y + 9, -1, true);

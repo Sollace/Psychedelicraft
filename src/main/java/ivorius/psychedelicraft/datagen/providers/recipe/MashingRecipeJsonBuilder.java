@@ -12,13 +12,14 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonBuilder;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -29,7 +30,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
-public class MashingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
+public class MashingRecipeJsonBuilder extends RecipeJsonBuilder implements FluidRecipeJsonBuilder {
     static final ItemFluids.Predicate WATER_PREDICATE = ItemFluids.Predicate.builder()
             .fluid(SimpleFluid.of(Fluids.WATER))
             .amount(IntRange.atLeast(FluidVolumes.VAT / 4))
@@ -115,9 +116,9 @@ public class MashingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		criteria.forEach(builder::criterion);
-		exporter.accept(recipeId, new MashingRecipe(
+		exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.MASHING, new MashingRecipe(
 	            Objects.requireNonNullElse(group, ""),
-	            CraftingRecipeJsonBuilder.toCraftingCategory(category),
+	            getCraftingCategory(category),
 	            baseFluid,
 	            output,
 	            new MashingRecipe.Ingredients(DefaultedList.copyOf(
@@ -125,7 +126,7 @@ public class MashingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
                         ingredients.toArray(MashingRecipe.Ingredients.Entry[]::new)
                 )),
 	            stewTime
-        ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+        ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
 	}
 
 	private void validate(Identifier recipeId) {

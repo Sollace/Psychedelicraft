@@ -15,7 +15,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encoding.StringEncoding;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RawShapedRecipe;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
@@ -34,7 +33,6 @@ public interface PacketCodecs {
     PacketCodec<ByteBuf, Identifier> IDENTIFIER = STRING.xmap(Identifier::new, Identifier::toString);
     PacketCodec<PacketByteBuf, Ingredient> INGREDIENT = PacketCodec.ofStatic((buff, i) -> i.write(buff), Ingredient::fromPacket);
     PacketCodec<PacketByteBuf, ItemStack> ITEM_STACK = PacketCodec.ofStatic(PacketByteBuf::writeItemStack, PacketByteBuf::readItemStack);
-    PacketCodec<PacketByteBuf, RawShapedRecipe> RAW_SHAPED_RECIPE = PacketCodec.ofStatic((buf, i) -> i.writeToBuf(buf), RawShapedRecipe::readFromBuf);
 
     PacketCodec<PacketByteBuf, Optional<ItemStack>> OPTIONAL_ITEM_STACK = optional(ITEM_STACK);
 

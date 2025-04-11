@@ -20,8 +20,8 @@ import ivorius.psychedelicraft.network.MsgDrugProperties;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.util.NbtSerialisable;
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FireBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
@@ -242,7 +242,7 @@ public class DrugProperties implements NbtSerialisable {
                 }
             }
 
-            ((FireBlock)Blocks.FIRE).registerFlammableBlock(PSFluids.ATROPINE.getPhysical().getBlock(), 60, 100);
+            FlammableBlockRegistry.getDefaultInstance().add(PSFluids.ATROPINE.getPhysical().getBlock(), 60, 100);
 
             if (pacifierSqueakDelay > 0 && --pacifierSqueakDelay == 0) {
                 entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,

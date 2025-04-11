@@ -262,7 +262,7 @@ public interface PSFluids {
             .color(Colors.BLACK).flammability(2.3F, 2)
             .viscocity(2)
             .sprites(Psychedelicraft.id("block/fluid/petrolium_flow"), Psychedelicraft.id("block/fluid/petrolium_still")));
-    SimpleFluid GASOLINE = new SimpleFluid(Psychedelicraft.id("gasoline"), new Settings().color(Colors.LIGHT_YELLOW).flammability(1.3F, 5));
+    SimpleFluid GASOLINE = new SimpleFluid(Psychedelicraft.id("gasoline"), new Settings().color(0xFFFFFF55).flammability(1.3F, 5));
     DrugFluid ACID = new DrugFluid(Psychedelicraft.id("acid"), chemicalSolution(DrugType.LSD));
     DrugFluid ATROPINE = new DrugFluid(Psychedelicraft.id("atropine"), chemicalSolution(DrugType.ATROPINE));
     DrugFluid COCAINE = new DrugFluid(Psychedelicraft.id("cocaine"), chemicalSolution(DrugType.COCAINE));

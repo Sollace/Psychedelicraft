@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.recipe.FluidAwareShapelessRecipe;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 import net.minecraft.advancement.Advancement;
@@ -15,6 +16,7 @@ import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -24,7 +26,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
-public class FluidAwareShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
+public class FluidAwareShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements CraftingRecipeJsonBuilder {
     private final RecipeCategory category;
     private final Item output;
     private final int count;
@@ -133,13 +135,18 @@ public class FluidAwareShapelessRecipeJsonBuilder implements CraftingRecipeJsonB
             .rewards(AdvancementRewards.Builder.recipe(recipeId))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         advancementBuilder.forEach(builder::criterion);
-        exporter.accept(recipeId, new FluidAwareShapelessRecipe(
-                Objects.requireNonNullElse(group, ""),
-                CraftingRecipeJsonBuilder.toCraftingCategory(category),
-                new ItemStack(output, count),
-                inputs,
-                destroyedContainer
-            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+        exporter.accept(RecipeJsonBuilderCompat.createProvider(
+                recipeId,
+                PSRecipes.CRAFTING_SHAPELESS_FLUID,
+                new FluidAwareShapelessRecipe(
+                        Objects.requireNonNullElse(group, ""),
+                        getCraftingCategory(category),
+                        new ItemStack(output, count),
+                        inputs,
+                        destroyedContainer
+                    ),
+                builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))
+        ));
     }
 
     private void validate(Identifier recipeId) {

@@ -52,7 +52,7 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity>
 
         renderRift(matrices, vertices, tickDelta, entity.age + tickDelta + (instability * instability * 3000));
 
-        VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissiveNoOutline(CENTER_TEXTURE));
+        VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissive(CENTER_TEXTURE, false));
         Vector4f vector = new Vector4f(0, 0, 0, 1);
 
         matrices.push();

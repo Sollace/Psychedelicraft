@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.recipe.FluidModifyingResult;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.SmeltingFluidRecipe;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 import net.minecraft.advancement.Advancement;
@@ -86,14 +87,14 @@ public class SmeltingFluidRecipeJsonBuilder implements CraftingRecipeJsonBuilder
             .rewards(AdvancementRewards.Builder.recipe(recipeId))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         criteria.forEach(builder::criterion);
-        exporter.accept(recipeId, new SmeltingFluidRecipe(
+        exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.SMELTING_RECEPTICAL, new SmeltingFluidRecipe(
                 Objects.requireNonNullElse(group, ""),
                 cookingCategory,
                 input,
                 new FluidModifyingResult(modifications, output.getDefaultStack()),
                 experience,
                 cookingTime
-        ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+        ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
     }
 
     private void validate(Identifier recipeId) {

@@ -8,8 +8,6 @@ package ivorius.psychedelicraft.block;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.MapCodec;
-
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.TrayBlockEntity;
 import net.minecraft.block.*;
@@ -32,8 +30,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class TrayBlock extends BlockWithEntity {
-    public static final MapCodec<TrayBlock> CODEC = createCodec(TrayBlock::new);
-
     private static final VoxelShape X_SHAPE = ShapeUtil.createCenteredShape(9, 2, 6);
     private static final VoxelShape Z_SHAPE = ShapeUtil.createCenteredShape(6, 2, 9);
 
@@ -42,11 +38,6 @@ public class TrayBlock extends BlockWithEntity {
     public TrayBlock(Settings settings) {
         super(settings.nonOpaque());
         this.setDefaultState(getDefaultState().with(AXIS, Direction.Axis.X));
-    }
-
-    @Override
-    protected MapCodec<? extends TrayBlock> getCodec() {
-        return CODEC;
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.ReactingRecipe;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import net.minecraft.advancement.Advancement;
@@ -15,8 +16,8 @@ import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -27,7 +28,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
-public class ReactingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
+public class ReactingRecipeJsonBuilder extends RecipeJsonBuilder implements FluidRecipeJsonBuilder {
     private final RecipeCategory category;
     private final Map<String, AdvancementCriterion<?>> criterions = new LinkedHashMap<>();
     @Nullable
@@ -108,13 +109,13 @@ public class ReactingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
             .rewards(AdvancementRewards.Builder.recipe(recipeId))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         criterions.forEach(builder::criterion);
-        exporter.accept(recipeId, new ReactingRecipe(
+        exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.REACTING, new ReactingRecipe(
                 Objects.requireNonNullElse(group, ""),
-                CraftingRecipeJsonBuilder.toCraftingCategory(category),
+                getCraftingCategory(category),
                 new ReactingRecipe.Result(output, new ItemStack(byProduct)),
                 new ReactingRecipe.Ingredients(inputFluids, inputItems),
                 stewTime
-            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
     }
 
     private void validate(Identifier recipeId) {

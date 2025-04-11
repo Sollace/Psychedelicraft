@@ -20,8 +20,6 @@ import org.joml.Vector3f;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.MapCodec;
-
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.SyncedBlockEntity;
 import ivorius.psychedelicraft.particle.FluidParticleEffect;
@@ -66,8 +64,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class GlassTubeBlock extends BlockWithEntity {
-    public static final MapCodec<GlassTubeBlock> CODEC = createCodec(GlassTubeBlock::new);
-
     public static final EnumProperty<IODirection> IN = EnumProperty.of("in", IODirection.class);
     public static final EnumProperty<IODirection> OUT = EnumProperty.of("out", IODirection.class);
     public static final BooleanProperty EXTENDED_IN = BooleanProperty.of("extended_in");
@@ -107,11 +103,6 @@ public class GlassTubeBlock extends BlockWithEntity {
                 .with(IN, IODirection.NONE).with(EXTENDED_IN, false)
                 .with(OUT, IODirection.NONE).with(EXTENDED_OUT, false)
         );
-    }
-
-    @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
     }
 
     @Override

@@ -49,9 +49,9 @@ public interface FluidCauldronBehavior {
     CauldronBehavior LAVA = createCauldronInteraction(SimpleFluid.of(Fluids.LAVA));
 
     static void register(Item item) {
-        CauldronBehavior.EMPTY_CAULDRON_BEHAVIOR.map().put(item, FluidCauldronBehavior.AIR);
-        CauldronBehavior.LAVA_CAULDRON_BEHAVIOR.map().put(item, FluidCauldronBehavior.LAVA);
-        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(item, FluidCauldronBehavior.WATER);
+        CauldronBehavior.EMPTY_CAULDRON_BEHAVIOR.put(item, FluidCauldronBehavior.AIR);
+        CauldronBehavior.LAVA_CAULDRON_BEHAVIOR.put(item, FluidCauldronBehavior.LAVA);
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.put(item, FluidCauldronBehavior.WATER);
     }
 
     static CauldronBehavior createCauldronInteraction(SimpleFluid fluidType) {

@@ -9,13 +9,14 @@ import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.MixingRecipe;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
@@ -24,7 +25,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
-public class MixingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
+public class MixingRecipeJsonBuilder extends RecipeJsonBuilder implements FluidRecipeJsonBuilder {
     private final RecipeCategory category;
     private final ItemFluids output;
     private final DefaultedList<Ingredient> inputs = DefaultedList.of();
@@ -106,13 +107,13 @@ public class MixingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
             .rewards(AdvancementRewards.Builder.recipe(recipeId))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         advancementBuilder.forEach(builder::criterion);
-        exporter.accept(recipeId, new MixingRecipe(
+        exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.FILL_RECEPTICAL, new MixingRecipe(
                 Objects.requireNonNullElse(group, ""),
-                CraftingRecipeJsonBuilder.toCraftingCategory(category),
+                getCraftingCategory(category),
                 output,
                 receptical,
                 inputs
-            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
     }
 
     private void validate(Identifier recipeId) {

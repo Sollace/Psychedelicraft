@@ -192,7 +192,7 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     }
 
     protected void onFluidWasted(ServerWorld world) {
-        world.spawnParticles(ParticleTypes.DUST_PLUME,
+        world.spawnParticles(ParticleTypes.CLOUD,
                 entity.getPos().getX() + world.getRandom().nextTriangular(0.5F, 0.1F),
                 entity.getPos().getY() + 0.6F,
                 entity.getPos().getZ() + world.getRandom().nextTriangular(0.5F, 0.1F),

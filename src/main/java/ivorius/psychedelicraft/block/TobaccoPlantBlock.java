@@ -4,8 +4,6 @@
  */
 package ivorius.psychedelicraft.block;
 
-import com.mojang.serialization.MapCodec;
-
 import net.minecraft.block.*;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.StateManager;
@@ -14,17 +12,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.*;
 
 public class TobaccoPlantBlock extends CannabisPlantBlock {
-    public static final MapCodec<TobaccoPlantBlock> CODEC = createCodec(TobaccoPlantBlock::new);
     public static final BooleanProperty TOP = BooleanProperty.of("top");
 
     public TobaccoPlantBlock(Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(TOP, false));
-    }
-
-    @Override
-    public MapCodec<? extends TobaccoPlantBlock> getCodec() {
-        return CODEC;
     }
 
     @Override

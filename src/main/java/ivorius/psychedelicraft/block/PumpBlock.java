@@ -5,8 +5,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.MapCodec;
-
 import ivorius.psychedelicraft.block.GlassTubeBlock.IODirection;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
@@ -33,18 +31,11 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class PumpBlock extends FacingBlock implements PipeInsertable {
-    public static final MapCodec<PumpBlock> CODEC = createCodec(PumpBlock::new);
-
     public static final BooleanProperty POWERED = Properties.POWERED;
 
     public PumpBlock(Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(POWERED, false));
-    }
-
-    @Override
-    protected MapCodec<? extends PumpBlock> getCodec() {
-        return CODEC;
     }
 
     @Override

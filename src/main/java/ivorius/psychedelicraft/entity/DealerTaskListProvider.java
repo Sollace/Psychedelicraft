@@ -75,7 +75,7 @@ public class DealerTaskListProvider {
                 if (world.getBlockState(globalPos.getPos()).isIn(PSTags.Blocks.DRYING_TABLES)) {
                     world.getBlockEntity(globalPos.getPos(), PSBlockEntities.DRYING_TABLE).ifPresent(blockEntity -> {
                         ItemStack output = blockEntity.getStack(DryingTableBlockEntity.OUTPUT_SLOT_INDEX);
-                        DryingRecipe.Input input = new DryingRecipe.Input(output, entity.getInventory().getHeldStacks());
+                        DryingRecipe.Input input = new DryingRecipe.Input(output, entity.getInventory().stacks);
 
                         world.getRecipeManager().getFirstMatch(PSRecipes.DRYING_TYPE, input, world)
                                 .map(RecipeEntry::value)

@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.block;
 
-import com.mojang.serialization.MapCodec;
-
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
@@ -30,7 +28,6 @@ import net.minecraft.world.*;
  * Created by lukas on 25.10.14.
  */
 public class DistilleryBlock extends FluidMachineBlock<DistilleryBlockEntity> {
-    public static final MapCodec<DistilleryBlock> CODEC = createCodec(DistilleryBlock::new);
     private static final VoxelShape SHAPE = VoxelShapes.union(
         Block.createCuboidShape(5, 0, 5, 11, 6, 11),
         Block.createCuboidShape(4, 0, 6, 12, 5, 10),
@@ -44,11 +41,6 @@ public class DistilleryBlock extends FluidMachineBlock<DistilleryBlockEntity> {
     public DistilleryBlock(Settings settings) {
         super(settings.nonOpaque());
         setDefaultState(getDefaultState().with(FACING, Direction.UP));
-    }
-
-    @Override
-    protected MapCodec<? extends DistilleryBlock> getCodec() {
-        return CODEC;
     }
 
     @Override

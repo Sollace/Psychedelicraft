@@ -1,13 +1,15 @@
 package ivorius.psychedelicraft.world.gen;
 
-import java.util.Optional;
-
-import net.minecraft.block.SaplingGenerator;
+import net.minecraft.block.sapling.SaplingGenerator;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public interface PSSaplingGenerators {
-    SaplingGenerator JUNIPER = new SaplingGenerator("psychedelicraft:juniper",
-            Optional.empty(),
-            Optional.of(PSFeatureConfigs.JUNIPER_TREE),
-            Optional.empty()
-    );
+    SaplingGenerator JUNIPER = new SaplingGenerator() {
+        @Override
+        protected RegistryKey<ConfiguredFeature<?, ?>> getTreeFeature(Random random, boolean bees) {
+            return PSFeatureConfigs.JUNIPER_TREE;
+        }
+    };
 }

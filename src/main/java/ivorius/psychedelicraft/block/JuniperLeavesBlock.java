@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.block;
 
-import com.mojang.serialization.MapCodec;
-
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,15 +16,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class JuniperLeavesBlock extends LeavesBlock {
-    public static final MapCodec<JuniperLeavesBlock> CODEC = createCodec(JuniperLeavesBlock::new);
-
     public JuniperLeavesBlock(Settings settings) {
         super(settings);
-    }
-
-    @Override
-    public MapCodec<? extends JuniperLeavesBlock> getCodec() {
-        return CODEC;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package ivorius.psychedelicraft.block;
 
-import com.mojang.serialization.MapCodec;
-
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
@@ -17,17 +15,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class FlammableGasBlock extends AirBlock {
-    public static final MapCodec<FlammableGasBlock> CODEC = createCodec(FlammableGasBlock::new);
-
     public FlammableGasBlock(Settings settings) {
         super(settings.ticksRandomly());
         FlammableBlockRegistry.getDefaultInstance().add(this, new FlammableBlockRegistry.Entry(150, 2000));
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public MapCodec<AirBlock> getCodec() {
-        return (MapCodec)CODEC;
     }
 
     @Override

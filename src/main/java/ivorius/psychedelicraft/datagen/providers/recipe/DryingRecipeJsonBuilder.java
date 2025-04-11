@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.recipe.DryingRecipe;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
@@ -73,10 +74,10 @@ public class DryingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		criteria.forEach(builder::criterion);
-		exporter.accept(recipeId, new DryingRecipe(
-	            Objects.requireNonNullElse(group, ""),
-	            input, new ItemStack(output, outputCount),
-	            experience, cookingTime), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+		exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.DRYING, new DryingRecipe(
+                Objects.requireNonNullElse(group, ""),
+                input, new ItemStack(output, outputCount),
+                experience, cookingTime), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
 	}
 
 	private void validate(Identifier recipeId) {

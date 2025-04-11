@@ -5,8 +5,6 @@
 
 package ivorius.psychedelicraft.block;
 
-import com.mojang.serialization.MapCodec;
-
 import net.minecraft.block.*;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.tag.BlockTags;
@@ -22,7 +20,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
 public class CannabisPlantBlock extends CropBlock {
-    public static final MapCodec<CannabisPlantBlock> CODEC = createCodec(CannabisPlantBlock::new);
     public static final int MAX_AGE = 15;
     public static final int MAX_AGE_WHILE_COVERED = 11;
 
@@ -34,11 +31,6 @@ public class CannabisPlantBlock extends CropBlock {
     public CannabisPlantBlock(Settings settings) {
         super(settings.ticksRandomly().nonOpaque());
         setDefaultState(getDefaultState().with(NATURAL, false));
-    }
-
-    @Override
-    public MapCodec<? extends CannabisPlantBlock> getCodec() {
-        return CODEC;
     }
 
     public BlockState getStateForHeight(int y) {

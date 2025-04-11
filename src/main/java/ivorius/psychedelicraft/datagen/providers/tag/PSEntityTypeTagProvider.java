@@ -19,7 +19,7 @@ public class PSEntityTypeTagProvider extends FabricTagProvider<EntityType<?>> {
         getOrCreateTagBuilder(PSTags.Entities.SINGLE_ENTITY_HALLUCINATIONS).add(
                 EntityType.CREEPER,
                 EntityType.ZOMBIE, EntityType.HUSK, EntityType.DROWNED,
-                EntityType.BLAZE, EntityType.BREEZE,
+                EntityType.BLAZE,
                 EntityType.ENDERMAN,
                 EntityType.COW, EntityType.MOOSHROOM,
                 EntityType.SHEEP,

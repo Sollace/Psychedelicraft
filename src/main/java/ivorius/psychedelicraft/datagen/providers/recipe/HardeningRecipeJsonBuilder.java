@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.recipe.HardeningRecipe;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
@@ -97,14 +98,14 @@ public class HardeningRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		criteria.forEach(builder::criterion);
-		exporter.accept(recipeId, new HardeningRecipe(
+		exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.HARDENING, new HardeningRecipe(
 	            Objects.requireNonNullElse(group, ""),
 	            baseFluid,
 	            impurities,
 	            new ItemStack(output),
 	            amount,
 	            stewTime
-        ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+        ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
 	}
 
 	private void validate(Identifier recipeId) {

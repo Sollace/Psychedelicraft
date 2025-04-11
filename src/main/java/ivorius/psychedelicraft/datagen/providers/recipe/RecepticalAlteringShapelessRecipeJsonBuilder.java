@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.recipe.ChangeRecepticalRecipe;
+import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
@@ -13,6 +14,7 @@ import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -22,7 +24,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
-public class RecepticalAlteringShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
+public class RecepticalAlteringShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements CraftingRecipeJsonBuilder {
     private final RecipeCategory category;
     private final Item output;
     private final int count;
@@ -93,12 +95,12 @@ public class RecepticalAlteringShapelessRecipeJsonBuilder implements CraftingRec
             .rewards(AdvancementRewards.Builder.recipe(recipeId))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         advancementBuilder.forEach(builder::criterion);
-        exporter.accept(recipeId, new ChangeRecepticalRecipe(
+        exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.CHANGE_RECEPTICAL, new ChangeRecepticalRecipe(
                 Objects.requireNonNullElse(group, ""),
-                CraftingRecipeJsonBuilder.toCraftingCategory(category),
+                getCraftingCategory(category),
                 new ItemStack(output, count),
                 inputs
-            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
     }
 
     private void validate(Identifier recipeId) {

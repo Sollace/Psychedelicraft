@@ -5,12 +5,9 @@
 
 package ivorius.psychedelicraft.block;
 
-import com.mojang.serialization.MapCodec;
-
 import ivorius.psychedelicraft.PSSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
@@ -23,18 +20,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ValveBlock extends GlassTubeBlock {
-    public static final MapCodec<GlassTubeBlock> CODEC = createCodec(ValveBlock::new);
-
     public static final BooleanProperty OPEN = Properties.OPEN;
 
     protected ValveBlock(Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(OPEN, true));
-    }
-
-    @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
     }
 
     @Override
