@@ -1,6 +1,10 @@
 package ivorius.psychedelicraft.fluid.physical;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
+
+import com.google.common.base.Suppliers;
 
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
@@ -14,14 +18,14 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public final class PhysicalFluid {
-    private final Fluid standing;
-    private final Fluid flowing;
-    private final Block block;
+    private final Supplier<Fluid> standing;
+    private final Supplier<Fluid> flowing;
+    private final Supplier<Block> block;
 
     @Nullable
     private final SimpleFluid type;
 
-    public PhysicalFluid(Fluid standing, Fluid flowing, Block block) {
+    public PhysicalFluid(Supplier<Fluid> standing, Supplier<Fluid> flowing, Supplier<Block> block) {
         this.standing = standing;
         this.flowing = flowing;
         this.block = block;
@@ -31,21 +35,21 @@ public final class PhysicalFluid {
     public PhysicalFluid(Identifier id, SimpleFluid type) {
         @SuppressWarnings("unused") Object o = Fluids.EMPTY;
         this.type = type;
-        standing = Registry.register(Registries.FLUID, id, PlacedFluid.still(this));
-        flowing = Registry.register(Registries.FLUID, id.withPath(p -> "flowing_" + p), PlacedFluid.flowing(this));
-        block = type.isEmpty() ? Blocks.AIR : Registry.register(Registries.BLOCK, id, PlacedFluidBlock.create(this));
+        standing = Suppliers.ofInstance(Registry.register(Registries.FLUID, id, PlacedFluid.still(this)));
+        flowing = Suppliers.ofInstance(Registry.register(Registries.FLUID, id.withPath(p -> "flowing_" + p), PlacedFluid.flowing(this)));
+        block = Suppliers.ofInstance(type.isEmpty() ? Blocks.AIR : Registry.register(Registries.BLOCK, id, PlacedFluidBlock.create(this)));
     }
 
     public Fluid getStandingFluid() {
-        return standing;
+        return standing.get();
     }
 
     public Fluid getFlowingFluid() {
-        return flowing;
+        return flowing.get();
     }
 
     public Block getBlock() {
-        return block;
+        return block.get();
     }
 
     @Nullable
@@ -70,7 +74,7 @@ public final class PhysicalFluid {
 
     @SuppressWarnings("deprecation")
     public boolean isIn(TagKey<Fluid> tag) {
-        return standing.isIn(tag);
+        return getStandingFluid().isIn(tag);
     }
 
     public boolean isOf(Fluid fluid) {

@@ -28,19 +28,21 @@ public interface FluidCauldronBehavior {
         Block cauldron = t.fluids().fluid().getPhysical().getCauldron();
 
         // TODO: Lava cauldrons do not have levels
-        int amountRequired = cauldron.getDefaultState().contains(LeveledCauldronBlock.LEVEL) ? FluidVolumes.GLASS_BOTTLE : FluidVolumes.BUCKET;
+        if (cauldron != null) {
+            int amountRequired = cauldron.getDefaultState().contains(LeveledCauldronBlock.LEVEL) ? FluidVolumes.GLASS_BOTTLE : FluidVolumes.BUCKET;
 
-        if (cauldron != null && t.fluids().amount() >= amountRequired) {
-            int levels = Math.min(t.fluids().amount() / amountRequired, LeveledCauldronBlock.MAX_LEVEL);
-            Item item = stack.getItem();
-            t.withdraw(levels * FluidVolumes.GLASS_BOTTLE);
-            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
-            player.incrementStat(Stats.USE_CAULDRON);
-            player.incrementStat(Stats.USED.getOrCreateStat(item));
-            world.setBlockState(pos, cauldron.getDefaultState().withIfExists(LeveledCauldronBlock.LEVEL, levels));
-            world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1, 1);
-            world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
-            return ItemActionResult.SUCCESS;
+            if (t.fluids().amount() >= amountRequired) {
+                int levels = Math.min(t.fluids().amount() / amountRequired, LeveledCauldronBlock.MAX_LEVEL);
+                Item item = stack.getItem();
+                t.withdraw(levels * FluidVolumes.GLASS_BOTTLE);
+                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+                player.incrementStat(Stats.USE_CAULDRON);
+                player.incrementStat(Stats.USED.getOrCreateStat(item));
+                world.setBlockState(pos, cauldron.getDefaultState().withIfExists(LeveledCauldronBlock.LEVEL, levels));
+                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1, 1);
+                world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
+                return ItemActionResult.SUCCESS;
+            }
         }
 
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
