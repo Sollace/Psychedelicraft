@@ -1,9 +1,6 @@
 package ivorius.psychedelicraft.fluid.container;
 
-import java.util.Map;
-
 import ivorius.psychedelicraft.fluid.PSFluids;
-import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.FilledBucketItem;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
@@ -144,32 +141,37 @@ public final class VariantMarshal {
 
         @Override
         public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-            ItemFluids inputFluids = StackCompat.get(resource, PSComponents.FLUIDS);
-            if (inputFluids == null) {
-                SimpleFluid fluid = SimpleFluid.of(resource.getFluid());
-                inputFluids = ItemFluids.create(fluid, (int)maxAmount, Map.of());
-            } else {
-                inputFluids = inputFluids.ofAmount((int)maxAmount);
-            }
-
+            ItemFluids inputFluids = ItemFluids.of(resource, (int)maxAmount);
             ItemFluids.Transaction t = new ItemFluids.DirectTransaction(getCurrentStack(), (int)getCapacity(), ItemFluids.direct(getCurrentStack()));
 
             inputFluids = t.deposit(inputFluids);
 
-            if (context.exchange(ItemVariant.of(t.toItemStack()), 1, transaction) == 1) {
-                return t.capacity();
+            long difference = maxAmount - inputFluids.amount();
+
+            if (difference == 0) {
+                return 0;
             }
-            return maxAmount - inputFluids.amount();
+
+            context.exchange(ItemVariant.of(t.toItemStack()), 1, transaction);
+            return difference;
         }
 
         @Override
         public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-            ItemFluids.Transaction t = new ItemFluids.DirectTransaction(getCurrentStack(), (int)getCapacity(), ItemFluids.direct(getCurrentStack()));
+            ItemFluids fluids = ItemFluids.direct(getCurrentStack());
+
+            if (!fluids.canCombine(ItemFluids.of(resource, (int)maxAmount))) {
+                return 0;
+            }
+
+            ItemFluids.Transaction t = new ItemFluids.DirectTransaction(getCurrentStack(), (int)getCapacity(), fluids);
             ItemFluids withdrawn = t.withdraw((int)maxAmount);
-            // What even is this for??
-            /*if (context.exchange(ItemVariant.of(t.toItemStack()), 1, transaction) == 1) {
-                return t.capacity();
-            }*/
+
+            if (withdrawn.isEmpty()) {
+                return 0;
+            }
+
+            context.exchange(ItemVariant.of(t.toItemStack()), 1, transaction);
             return withdrawn.amount();
         }
 
