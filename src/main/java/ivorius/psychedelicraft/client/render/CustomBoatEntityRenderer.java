@@ -22,9 +22,9 @@ public class CustomBoatEntityRenderer<T extends AbstractBoatEntity> extends Abst
 
     public CustomBoatEntityRenderer(EntityRendererFactory.Context ctx, EntityType<T> type, boolean chest) {
         super(ctx);
-        texture = EntityType.getId(type).withPath(path -> "textures/entity/" + path + ".png");
+        texture = EntityType.getId(type).withPath(path -> "textures/entity/" + (chest ? "chest_boat" : "boat") + "/" + path.replace(chest ? "_chest_boat" : "_boat", "") + ".png");
         waterMaskModel = new Model.SinglePartModel(ctx.getPart(EntityModelLayers.BOAT), id -> RenderLayer.getWaterMask());
-        model = new BoatEntityModel((chest ? BoatEntityModel.getChestTexturedModelData() : BoatEntityModel.getBaseTexturedModelData()).createModel());
+        model = new BoatEntityModel((chest ? BoatEntityModel.getChestTexturedModelData() : BoatEntityModel.getTexturedModelData()).createModel());
     }
 
     @Override
