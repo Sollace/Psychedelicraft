@@ -20,6 +20,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagBuilder;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 
 public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
     private final PSBlockTagProvider blockTagProvider;
@@ -133,5 +134,24 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 PSItems.OBSIDIAN_DUST,
                 PSItems.COCAINE_POWDER, PSItems.HEROINE_POWDER
         );
+
+        exportCroptopiaTags();
+        exportFarmersDelightTags();
+    }
+
+    private void exportCroptopiaTags() {
+        String namespace = "croptopia";
+        getOrCreateTagBuilder(PSConventionalTags.Items.APPLES).addOptional(Identifier.of(namespace, "apple"));
+        getOrCreateTagBuilder(PSConventionalTags.Items.POTATO).addOptional(Identifier.of(namespace, "sweetpotato"));
+        getOrCreateTagBuilder(PSConventionalTags.Items.BANANAS).addOptional(Identifier.of(namespace, "banana"));
+        getOrCreateTagBuilder(PSConventionalTags.Items.PINEAPPLES).addOptional(Identifier.of(namespace, "pineapple"));
+        getOrCreateTagBuilder(PSConventionalTags.Items.CORN).addOptional(Identifier.of(namespace, "corn"));
+        getOrCreateTagBuilder(PSConventionalTags.Items.RICE).addOptional(Identifier.of(namespace, "rice"));
+        getOrCreateTagBuilder(PSConventionalTags.Items.TOMATOES).addOptional(Identifier.of(namespace, "tomato"));
+    }
+
+    private void exportFarmersDelightTags() {
+        String namespace = "farmersdelight";
+        getOrCreateTagBuilder(PSConventionalTags.Items.TOMATOES).addOptional(Identifier.of(namespace, "tomato"));
     }
 }
