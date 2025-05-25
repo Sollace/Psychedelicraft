@@ -18,6 +18,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -80,11 +81,7 @@ public class MixingRecipe extends ShapelessRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput inventory, World world) {
-        List<ItemStack> recepticals = RecipeUtils.recepticals(inventory.getStacks()
-                .stream())
-                .filter(receptical -> input.stream().noneMatch(i -> i.test(receptical)))
-                .toList();
-
+        List<ItemStack> recepticals = getOutputRecepticals(inventory).toList();
         return recepticals.size() == 1
                 && ItemFluids.of(recepticals.get(0)).isOf(Fluids.WATER)
                 && FluidCapacity.getPercentage(recepticals.get(0)) >= 1
@@ -96,10 +93,18 @@ public class MixingRecipe extends ShapelessRecipe {
         return receptical.getMatchingStacks()[0];
     }
 
+    private Stream<ItemStack> getOutputRecepticals(CraftingRecipeInput inventory) {
+        return RecipeUtils.recepticals(inventory.getStacks()
+                .stream())
+                .filter(receptical)
+                .filter(receptical -> input.stream().noneMatch(i -> i.test(receptical)) && ItemFluids.of(receptical).isOf(Fluids.WATER));
+    }
+
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        return RecipeUtils.recepticals(inventory.getStacks().stream()).findFirst().map(receptical -> {
-            return ItemFluids.set(receptical.copy(), output.ofAmount(Math.min(output.amount(), FluidCapacity.get(receptical))));
-        }).orElse(ItemStack.EMPTY);
+        return getOutputRecepticals(inventory)
+                .findFirst()
+                .map(receptical -> output.amount() <= 1 ? output.ofFilling(receptical.copy()) : ItemFluids.set(receptical.copy(), output.ofAmount(Math.min(output.amount(), FluidCapacity.get(receptical)))))
+                .orElse(ItemStack.EMPTY);
     }
 }
