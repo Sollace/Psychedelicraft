@@ -243,6 +243,14 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
         }
 
         @Override
+        public void onBlockReplaced(BlockPos pos, BlockState oldState) {
+            BlockState masterState = world.getBlockState(masterPos);
+            if (masterState.isOf(PSBlocks.MASH_TUB) || masterState.isOf(PSBlocks.MASH_TUB_EDGE)) {
+                world.breakBlock(masterPos, true);
+            }
+        }
+
+        @Override
         public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
             super.writeNbt(compound, lookup);
             compound.put("masterPos", BlockPos.CODEC, masterPos);

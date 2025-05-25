@@ -31,6 +31,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -183,7 +184,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
     }
 
-    public Either<ItemStack, ActionResult> interactWithItem(ItemStack stack) {
+    public Either<ItemStack, ActionResult> interactWithItem(ItemStack stack, PlayerEntity player) {
 
         if (!currentStew.isEmpty()) {
             return Either.right(ActionResult.FAIL);
@@ -194,7 +195,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
 
         if (FluidCapacity.get(stack) > 0) {
-            ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
+            ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copy());
             Resovoir tank = getPrimaryTank();
             FluidVariant variant = t.fluids().toVariant();
             if (!t.fluids().isEmpty()) {
@@ -213,13 +214,13 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
 
         if (world instanceof ServerWorld sw && isAcceptingIngredients() && acceptsItem(stack)) {
-            ItemStack consumed = stack.split(1);
+            ItemStack consumed = stack.splitUnlessCreative(1, player);
             suppliedIngredients.add(consumed.getItem(), 1);
             beginStewing(sw);
             markForUpdate();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
             getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
-            return Either.left(stack);
+            return Either.right(ActionResult.SUCCESS_SERVER);
         }
 
         return Either.right(ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);

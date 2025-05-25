@@ -330,6 +330,6 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
 
     private ItemFluids copyOrWithdraw(Resovoir tank, boolean dryRun, float drainPercentage) {
         int amount = MathHelper.ceil(tank.getContents().amount() * drainPercentage);
-        return dryRun ? tank.drain(amount) : tank.getContents().ofAmount(Math.min(amount, tank.getContents().amount()));
+        return dryRun ? tank.getContents().ofAmount(Math.min(amount, tank.getContents().amount())) : tank.drain(amount);
     }
 }

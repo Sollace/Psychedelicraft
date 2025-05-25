@@ -1,7 +1,12 @@
 package ivorius.psychedelicraft.fluid;
 
+import java.util.function.Supplier;
+
+import com.google.common.base.Suppliers;
+
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.physical.PhysicalFluid;
+import ivorius.psychedelicraft.fluid.physical.PlacedFluid;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
@@ -17,32 +22,57 @@ import net.minecraft.util.Identifier;
 
 public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
     static SimpleFluid register(Identifier id, Fluid fluid, boolean empty) {
-        return Registry.register(SimpleFluid.REGISTRY, id, new VanillaFluid(id, fluid, empty));
+        if (!id.getNamespace().equals(Psychedelicraft.DEFAULT_NAMESPACE)
+                && !ALIASED_IDS.containsKey(id)) {
+            Identifier alias = Psychedelicraft.id(id.getPath());
+            if (REGISTRY.containsId(alias)) {
+                SimpleFluid aliasFluid = REGISTRY.get(alias);
+                if (aliasFluid != null && !aliasFluid.isEmpty()) {
+                    ALIASED_IDS.put(id, aliasFluid);
+                    return aliasFluid;
+                }
+            }
+        }
+
+        return Registry.register(REGISTRY, id, new VanillaFluid(id, fluid, empty));
     }
 
-    static {
+    static void bootstrap() {
         Registries.FLUID.streamEntries().forEach(entry -> {
             register(entry.getKey().get().getValue(), entry.value());
         });
-        RegistryEntryAddedCallback.event(Registries.FLUID).register((rawId, id, value) -> register(id, value));
+        RegistryEntryAddedCallback.event(Registries.FLUID).register((rawId, id, value) -> {
+            if (value instanceof PlacedFluid) {
+                return;
+            }
+            try {
+                register(id, value);
+            } catch (Throwable e) {
+                Psychedelicraft.LOGGER.info("Could not register vanilla fluid {}", id, e);
+            }
+        });
     }
 
     private static void register(Identifier id, Fluid value) {
         if (VanillaFluid.toStill(value) == value && !REGISTRY.containsId(id) && !"minecraft:empty".equals(id.toString())) {
-            VanillaFluid.register(id, value, false);
-            Psychedelicraft.LOGGER.info("Added vanilla fluid " + id);
+            Identifier registeredId = REGISTRY.getId(VanillaFluid.register(id, value, false));
+            if (registeredId.equals(id)) {
+                Psychedelicraft.LOGGER.info("Added vanilla fluid " + id);
+            } else {
+                Psychedelicraft.LOGGER.info("Aliased vanilla fluid " + id + " <=> " + registeredId);
+            }
         }
     }
 
     private VanillaFluid(Identifier id, Fluid still, boolean empty) {
         super(id, 0xFFFFFFFF,
-                new PhysicalFluid(still, toFlowing(still), still.getDefaultState().getBlockState().getBlock()),
+                new PhysicalFluid(() -> still, toFlowing(still), Suppliers.memoize(() -> still.getDefaultState().getBlockState().getBlock())),
                 empty
         );
     }
 
-    private static Fluid toFlowing(Fluid fluid) {
-        return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid).getFlowing() : fluid;
+    private static Supplier<Fluid> toFlowing(Fluid fluid) {
+        return fluid instanceof FlowableFluid ? ((FlowableFluid)fluid)::getFlowing : Suppliers.ofInstance(fluid);
     }
 
     static Fluid toStill(Fluid fluid) {
@@ -64,6 +94,6 @@ public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
 
     @Override
     public boolean isSuitableContainer(ItemStack container) {
-        return container.isIn(getPreferredContainerTag()) || container.isOf(Items.BUCKET) || container.isOf(PSItems.FILLED_BUCKET);
+        return container.isIn(getPreferredContainerTag()) || container.isOf(Items.BUCKET) || container.isOf(PSItems.FILLED_BUCKET) || container.isOf(Items.GLASS_BOTTLE);
     }
 }

@@ -288,6 +288,11 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
         }
 
         @Override
+        public void set(Vector4f vec) {
+            this.set(new float[] {vec.x, vec.y, vec.z, vec.w});
+        }
+
+        @Override
         public void upload() {
             valueGetter.accept(this);
             super.upload();
