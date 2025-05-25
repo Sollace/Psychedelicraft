@@ -35,7 +35,7 @@ class DrawingFluidEmiRecipe implements PSRecipe {
         this.category = category;
         this.background = category.getId().withPath(p -> "textures/gui/" + p + ".png");
         this.contents = contents;
-        this.id = category.id().withSuffixedPath("/" + contents.type().fluid().getId().toUnderscoreSeparatedString() + contents.type().fluid().getUniqueKey(contents.type()));
+        this.id = category.id().withSuffixedPath("/" + contents.type().fluid().getId().toUnderscoreSeparatedString() + contents.type().fluid().getUniqueKey(contents.type())).withPrefixedPath("/");
         this.capacity = capacity;
     }
 

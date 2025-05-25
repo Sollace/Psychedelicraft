@@ -28,7 +28,7 @@ public final class RecipeJsonBuilderCompat {
 
             @Override
             public void serialize(JsonObject json) {
-                serializer.codec().encode(recipe, JsonOps.INSTANCE, json);
+                json.asMap().putAll(serializer.codec().encodeStart(JsonOps.INSTANCE, recipe).result().orElseThrow().getAsJsonObject().asMap());
             }
         };
     }
