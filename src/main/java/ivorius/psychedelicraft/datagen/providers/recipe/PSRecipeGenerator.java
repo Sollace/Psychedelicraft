@@ -428,12 +428,12 @@ class PSRecipeGenerator extends RecipeGenerator {
         offerMixing(PSFluids.PEYOTE_JUICE, PSItems.PEYOTE);
         offerMixing(PSFluids.COFFEE, PSItems.COFFEE_BEANS, PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);
 
-        MixingRecipeJsonBuilder.create(items, RecipeCategory.FOOD, PSFluids.BATH_SALTS, 500)
-            .input(Items.LAVA_BUCKET)
+        MixingRecipeJsonBuilder.create(items, RecipeCategory.FOOD, PSFluids.BATH_SALTS, 1)
+            .input(FluidIngredient.builder().fluid(Fluids.LAVA).level(FluidVolumes.GLASS_BOTTLE).build().toVanilla())
             .input(PSItems.OBSIDIAN_DUST).criterion(hasItem(PSItems.OBSIDIAN_DUST), conditionsFromItem(PSItems.OBSIDIAN_DUST))
             .receptical(PSTags.Items.DRUG_RECEPTICALS)
             .offerTo(exporter);
-        MixingRecipeJsonBuilder.create(items, RecipeCategory.FOOD, PSFluids.CAFFEINE, 500)
+        MixingRecipeJsonBuilder.create(items, RecipeCategory.FOOD, PSFluids.CAFFEINE, 1)
             .input(PSItems.COFFEE_BEANS, 2).criterion(hasItem(PSItems.COFFEE_BEANS), conditionsFromItem(PSItems.COFFEE_BEANS))
             .receptical(PSTags.Items.DRUG_RECEPTICALS)
             .offerTo(exporter);
@@ -460,7 +460,7 @@ class PSRecipeGenerator extends RecipeGenerator {
     }
 
     private void offerMixing(SimpleFluid output, ItemConvertible input, TagKey<Item> receptical) {
-        MixingRecipeJsonBuilder.create(items, RecipeCategory.FOOD, output, 500)
+        MixingRecipeJsonBuilder.create(items, RecipeCategory.FOOD, output, 1)
             .input(input, 2).criterion(hasItem(input), conditionsFromItem(input))
             .receptical(receptical)
             .offerTo(exporter);

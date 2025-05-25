@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.recipe;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.recipe.ingredient.PSIngredients;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.*;
@@ -48,7 +49,9 @@ public interface PSRecipes {
         return Registry.register(Registries.RECIPE_SERIALIZER, Psychedelicraft.id(name), serializer);
     }
 
-    static void bootstrap() { }
+    static void bootstrap() {
+        PSIngredients.bootstrap();
+    }
 
     record Serializer<T extends Recipe<?>> (
             MapCodec<T> codec,
