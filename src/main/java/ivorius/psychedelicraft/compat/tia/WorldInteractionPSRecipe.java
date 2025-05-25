@@ -62,7 +62,7 @@ class WorldInteractionPSRecipe implements TlaRecipe {
 
     public WorldInteractionPSRecipe(TlaCategory category, Identifier id, TlaIngredient left, TlaIngredient right, TlaStack output) {
         this.category = category;
-        this.id = id;
+        this.id = id.withPrefixedPath("/");
         this.left = List.of(left);
         this.right = List.of(right);
         this.outputs = List.of(output);

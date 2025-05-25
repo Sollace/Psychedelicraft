@@ -55,7 +55,7 @@ class FluidStagesEmiRecipe implements PSRecipe {
     private FluidStagesEmiRecipe(RecipeCategory category, List<Processable.Process> processes) {
         this.category = category;
         Processable.Process process = processes.get(0);
-        this.id = process.id();
+        this.id = process.id().withPrefixedPath("/");
         stages = IntStream.range(0, process.transitions().size()).mapToObj(i -> {
             var transition = process.transitions().get(i);
             return new Stage(transition,
