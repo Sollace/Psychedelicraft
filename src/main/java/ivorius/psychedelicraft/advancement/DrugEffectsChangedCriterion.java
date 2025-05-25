@@ -43,7 +43,7 @@ public class DrugEffectsChangedCriterion extends AbstractCriterion<DrugEffectsCh
             DRUGS_CODEC.encodeStart(JsonOps.INSTANCE, drugs).result().ifPresent(a -> {
                 json.add("drugs", a);
             });
-            return null;
+            return json;
         }
 
         public static AdvancementCriterion<Conditions> create(Collection<DrugType<?>> types) {
