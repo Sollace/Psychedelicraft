@@ -434,8 +434,8 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         offerMixing(exporter, PSFluids.PEYOTE_JUICE, PSItems.PEYOTE);
         offerMixing(exporter, PSFluids.COFFEE, PSItems.COFFEE_BEANS, PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);
 
-        MixingRecipeJsonBuilder.create(RecipeCategory.FOOD, PSFluids.BATH_SALTS, 500)
-            .input(Items.LAVA_BUCKET)
+        MixingRecipeJsonBuilder.create(RecipeCategory.FOOD, PSFluids.BATH_SALTS, 1)
+            .input(FluidIngredient.builder().fluid(Fluids.LAVA).level(FluidVolumes.GLASS_BOTTLE).build().toVanilla())
             .input(PSItems.OBSIDIAN_DUST).criterion(hasItem(PSItems.OBSIDIAN_DUST), conditionsFromItem(PSItems.OBSIDIAN_DUST))
             .receptical(PSTags.Items.DRUG_RECEPTICALS)
             .offerTo(exporter);
