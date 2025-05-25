@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public record DrinkType(String drinkName, String symbolName, Optional<String> variant, Optional<DrugInfluence> extraDrug, FluidAppearance appearance) {
+    public static final DrinkType ROOT = of("");
     public static final DrinkType TEA = of("tea").withAppearance(FluidAppearance.TEA);
     public static final DrinkType JUICE = of("juice");
     public static final DrinkType WORT = of("wort").withAppearance(FluidAppearance.BEER);
@@ -79,7 +80,7 @@ public record DrinkType(String drinkName, String symbolName, Optional<String> va
     }
 
     public Text getName(Text fluidName) {
-        Text name = Text.translatable("psychedelicraft.alcohol.drink." + drinkName, fluidName);
+        Text name = drinkName.isEmpty() ? fluidName : Text.translatable("psychedelicraft.alcohol.drink." + drinkName, fluidName);
 
         if (variant.isPresent()) {
             return Text.translatable("psychedelicraft.alcohol.drink.variant." + variant.get(), name);
