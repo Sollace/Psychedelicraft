@@ -68,12 +68,18 @@ public class SimpleFluid implements Combustable {
     public static final Identifier EMPTY_KEY = Psychedelicraft.id("empty");
     public static final RegistryKey<Registry<SimpleFluid>> REGISTRY_KEY = RegistryKey.<SimpleFluid>ofRegistry(Psychedelicraft.id("fluids"));
     public static final Registry<SimpleFluid> REGISTRY = FabricRegistryBuilder.from(new SimpleDefaultedRegistry<>(EMPTY_KEY.toString(), REGISTRY_KEY, Lifecycle.stable(), true)).buildAndRegister();
+    protected static final Map<Identifier, SimpleFluid> ALIASED_IDS = new HashMap<>();
+
     public static final Codec<SimpleFluid> CODEC = Identifier.CODEC.xmap(SimpleFluid::byId, SimpleFluid::getId);
     public static final PacketCodec<ByteBuf, SimpleFluid> PACKET_CODEC = PacketCodecs.IDENTIFIER.xmap(SimpleFluid::byId, SimpleFluid::getId);
 
     public static SimpleFluid byId(@Nullable Identifier id) {
         if (id == null) {
             return PSFluids.EMPTY;
+        }
+        SimpleFluid fluid = ALIASED_IDS.get(id);
+        if (fluid != null) {
+            return fluid;
         }
         return REGISTRY.getOrEmpty(id).orElseGet(() -> Registries.FLUID.getOrEmpty(id).map(SimpleFluid::of).orElse(PSFluids.EMPTY));
     }
@@ -85,7 +91,12 @@ public class SimpleFluid implements Combustable {
         if (fluid instanceof PlacedFluid pf) {
             return pf.getType();
         }
-        return REGISTRY.get(Registries.FLUID.getId(VanillaFluid.toStill(fluid)));
+        Identifier id = Registries.FLUID.getId(VanillaFluid.toStill(fluid));
+        SimpleFluid alias = ALIASED_IDS.get(id);
+        if (alias != null) {
+            return alias;
+        }
+        return REGISTRY.get(id);
     }
 
     protected final Identifier id;

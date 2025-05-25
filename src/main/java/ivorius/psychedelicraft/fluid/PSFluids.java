@@ -200,7 +200,7 @@ public interface PSFluids {
             .alcohol(0.35, 1.7, 0.1)
             .distilledColor(0x77cac4b2)
             .matureColor(0x88D6BC90)
-            .variants(DrinkTypes.builder(DrinkType.WORT.withAppearance(FluidAppearance.RICE_WINE))
+            .variants(DrinkTypes.builder(DrinkType.ROOT.withAppearance(FluidAppearance.RICE_WINE))
                     .vinegar(DrinkType.VINEGAR.withAppearance(FluidAppearance.RICE_WINE))
                     .firstFerment(DrinkType.HALF_WASH.withAppearance(FluidAppearance.RICE_WINE))
                     .secondFerment(DrinkType.BLAAND.withAppearance(FluidAppearance.RICE_WINE))
@@ -299,5 +299,7 @@ public interface PSFluids {
                 .color(0x44e8f4f8);
     }
 
-    static void bootstrap() { }
+    static void bootstrap() {
+        VanillaFluid.bootstrap();
+    }
 }
