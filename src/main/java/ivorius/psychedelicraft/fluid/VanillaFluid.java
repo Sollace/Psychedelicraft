@@ -94,6 +94,6 @@ public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
 
     @Override
     public boolean isSuitableContainer(ItemStack container) {
-        return container.isIn(getPreferredContainerTag()) || container.isOf(Items.BUCKET) || container.isOf(PSItems.FILLED_BUCKET);
+        return container.isIn(getPreferredContainerTag()) || container.isOf(Items.BUCKET) || container.isOf(PSItems.FILLED_BUCKET) || container.isOf(Items.GLASS_BOTTLE);
     }
 }
