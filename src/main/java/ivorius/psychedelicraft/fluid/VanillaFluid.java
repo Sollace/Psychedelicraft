@@ -22,10 +22,22 @@ import net.minecraft.util.Identifier;
 
 public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
     static SimpleFluid register(Identifier id, Fluid fluid, boolean empty) {
-        return Registry.register(SimpleFluid.REGISTRY, id, new VanillaFluid(id, fluid, empty));
+        if (!id.getNamespace().equals(Psychedelicraft.DEFAULT_NAMESPACE)
+                && !ALIASED_IDS.containsKey(id)) {
+            Identifier alias = Psychedelicraft.id(id.getPath());
+            if (REGISTRY.containsId(alias)) {
+                SimpleFluid aliasFluid = REGISTRY.get(alias);
+                if (aliasFluid != null && !aliasFluid.isEmpty()) {
+                    ALIASED_IDS.put(id, aliasFluid);
+                    return aliasFluid;
+                }
+            }
+        }
+
+        return Registry.register(REGISTRY, id, new VanillaFluid(id, fluid, empty));
     }
 
-    static {
+    static void bootstrap() {
         Registries.FLUID.streamEntries().forEach(entry -> {
             register(entry.getKey().get().getValue(), entry.value());
         });
@@ -43,8 +55,12 @@ public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
 
     private static void register(Identifier id, Fluid value) {
         if (VanillaFluid.toStill(value) == value && !REGISTRY.containsId(id) && !"minecraft:empty".equals(id.toString())) {
-            VanillaFluid.register(id, value, false);
-            Psychedelicraft.LOGGER.info("Added vanilla fluid " + id);
+            Identifier registeredId = REGISTRY.getId(VanillaFluid.register(id, value, false));
+            if (registeredId.equals(id)) {
+                Psychedelicraft.LOGGER.info("Added vanilla fluid " + id);
+            } else {
+                Psychedelicraft.LOGGER.info("Aliased vanilla fluid " + id + " <=> " + registeredId);
+            }
         }
     }
 
@@ -78,6 +94,6 @@ public class VanillaFluid extends SimpleFluid implements ConsumableFluid {
 
     @Override
     public boolean isSuitableContainer(ItemStack container) {
-        return container.isIn(getPreferredContainerTag()) || container.isOf(Items.BUCKET) || container.isOf(PSItems.FILLED_BUCKET);
+        return container.isIn(getPreferredContainerTag()) || container.isOf(Items.BUCKET) || container.isOf(PSItems.FILLED_BUCKET) || container.isOf(Items.GLASS_BOTTLE);
     }
 }

@@ -20,8 +20,9 @@ public interface PSIngredients {
         return serializer;
     }
 
-    record Serializer<T extends CustomIngredient>(Identifier id, MapCodec<T> codec, PacketCodec<PacketByteBuf, T> packetCodec) implements CustomIngredientSerializer<T> {
+    static void bootstrap() {}
 
+    record Serializer<T extends CustomIngredient>(Identifier id, MapCodec<T> codec, PacketCodec<PacketByteBuf, T> packetCodec) implements CustomIngredientSerializer<T> {
         @Override
         public Identifier getIdentifier() {
             return id;

@@ -22,6 +22,7 @@ import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -104,6 +105,10 @@ public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> le
         public Builder fluid(SimpleFluid fluid) {
             this.fluid = Optional.of(fluid);
             return this;
+        }
+
+        public Builder fluid(Fluid fluid) {
+            return fluid(SimpleFluid.of(fluid));
         }
 
         public Builder level(int level) {
