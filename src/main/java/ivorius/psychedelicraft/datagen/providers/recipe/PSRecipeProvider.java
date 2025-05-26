@@ -284,7 +284,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.GLASS_VALVE)
             .input('-', PSItems.GLASS_TUBE).criterion(hasItem(PSItems.GLASS_TUBE), conditionsFromItem(PSItems.GLASS_TUBE))
-            .input('*', Items.IRON_INGOT).criterion(hasItem(PSItems.GLASS_TUBE), conditionsFromItem(PSItems.GLASS_TUBE))
+            .input('*', Items.IRON_INGOT).criterion(hasItem(Items.IRON_INGOT), conditionsFromItem(Items.IRON_INGOT))
             .pattern("*")
             .pattern("-")
             .offerTo(exporter);
