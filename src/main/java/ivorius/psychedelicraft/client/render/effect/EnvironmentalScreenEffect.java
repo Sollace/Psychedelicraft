@@ -48,7 +48,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         if (!PsychedelicraftClient.getConfig().doHeatDistortion.get()) {
             return 0;
         }
-        return wasInWater ? 0 : MathHelper.clamp(((currentHeat - 1) * 0.08f), 0, 1F);
+        return wasInWater ? 0 : MathHelper.clamp(((currentHeat - 1) * 0.008f), 0, 1F);
     }
 
     public float getWaterDistortion() {
