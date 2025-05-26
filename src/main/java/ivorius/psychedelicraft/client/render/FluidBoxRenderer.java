@@ -108,7 +108,7 @@ public class FluidBoxRenderer {
     }
 
     public FluidBoxRenderer draw(Box box, Direction... directions) {
-        return draw((float)box.minX, (float)box.minY, (float)box.minZ, (float)box.getLengthX(), (float)box.getLengthY(), (float)box.getLengthZ(), directions);
+        return draw((float)box.minX, (float)box.minY, (float)box.minZ, (float)box.getXLength(), (float)box.getYLength(), (float)box.getZLength(), directions);
     }
 
     public FluidBoxRenderer draw(float x, float y, float z, float width, float height, float length, Direction... directions) {

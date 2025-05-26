@@ -97,7 +97,7 @@ public class CannabisPlantBlock extends CropBlock {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.getBaseLightLevel(pos.up(), 0) >= 9 && random.nextFloat() < getRandomGrowthChance()) {
-            if (isFertilizable(world, pos, state)) {
+            if (isFertilizable(world, pos, state, false)) {
                 applyGrowth(world, pos, state, false);
             }
         }
@@ -144,13 +144,13 @@ public class CannabisPlantBlock extends CropBlock {
     }
 
     @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
         if (!isMature(state)) {
             return true;
         }
         pos = pos.up();
         state = world.getBlockState(pos);
-        return state.isOf(this) && isFertilizable(world, pos, state);
+        return state.isOf(this) && isFertilizable(world, pos, state, isClient);
     }
 
     protected int getPlantSize(WorldView world, BlockPos pos) {

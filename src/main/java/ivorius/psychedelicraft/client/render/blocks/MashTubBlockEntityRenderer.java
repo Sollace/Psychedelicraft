@@ -161,7 +161,7 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
 
                 box = tub.getFluidCollisionBox(entity.getWorld(), entity.getCachedState(), entity.getPos());
 
-                matrices.translate(-box.minX - ((box.getLengthX() - 1) / 2), -box.minY, -box.minZ - ((box.getLengthZ() - 1) / 2));
+                matrices.translate(-box.minX - ((box.getXLength() - 1) / 2), -box.minY, -box.minZ - ((box.getZLength() - 1) / 2));
                 WorldRenderer.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 1, 1, 1, 1);
                 matrices.pop();
             }

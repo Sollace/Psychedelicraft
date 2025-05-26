@@ -17,7 +17,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -66,8 +65,7 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
         if (getLevel() >= MAX_CAPACITY && !isHardened()) {
             if (matchingRecipe.isEmpty()) {
                 matchingRecipe = world.getRecipeManager()
-                        .getFirstMatch(PSRecipes.TRAY, new HardeningRecipe.Input(fluid.getContents(), impurities), world)
-                        .map(RecipeEntry::value);
+                        .getFirstMatch(PSRecipes.TRAY, new HardeningRecipe.Input(fluid.getContents(), impurities), world);
             }
 
             matchingRecipe.ifPresent(recipe -> {
@@ -147,12 +145,12 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
 
     private boolean canAccept(ServerWorld world, ItemFluids fluids) {
         return !fluids.isEmpty() && world.getRecipeManager().listAllOfType(PSRecipes.TRAY).stream()
-                .anyMatch(recipe -> recipe.value().isCoreFluid(fluids));
+                .anyMatch(recipe -> recipe.isCoreFluid(fluids));
     }
 
     private boolean canAcceptImpurity(ServerWorld world, ItemFluids fluids) {
         return !fluids.isEmpty() && world.getRecipeManager().listAllOfType(PSRecipes.TRAY).stream()
-                .anyMatch(recipe -> recipe.value().isCoreFluid(fluid.getContents()) && recipe.value().isValidImpurity(fluids));
+                .anyMatch(recipe -> recipe.isCoreFluid(fluid.getContents()) && recipe.isValidImpurity(fluids));
     }
 
     @Override

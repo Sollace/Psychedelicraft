@@ -65,20 +65,20 @@ interface RecipeUtil {
 
     static List<ItemFluids> getMatchingFluids(ItemFluids.Predicate predicate, int amount) {
         List<SimpleFluid> fluids = predicate.fluid().filter(l -> !l.isEmpty()).orElseGet(() -> Registries.FLUID.stream().map(SimpleFluid::of).toList());
-        if (predicate.amount().max().isPresent()) {
-            amount = Math.min(amount, predicate.amount().max().get());
+        if (predicate.amount().getMax() != null) {
+            amount = Math.min(amount, predicate.amount().getMax());
         }
-        if (predicate.amount().min().isPresent()) {
-            amount = Math.max(amount, predicate.amount().min().get());
+        if (predicate.amount().getMin() != null) {
+            amount = Math.max(amount, predicate.amount().getMin());
         }
         final int a = amount;
         return fluids.stream().map(fluid -> fluid.getDefaultStack(a)).toList();
     }
 
     static IntStream stream(IntRange range) {
-        int from = range.min().orElse(0);
-        int to = range.max().orElse(16);
-        return IntStream.range(from, to + 1);
+        Integer from = range.getMin();
+        Integer to = range.getMax();
+        return IntStream.range(from == null ? 0 : from, (to == null ? 16 : to) + 1);
     }
 
     static Stream<TlaIngredient> grouped(Stream<TlaIngredient> ingredients) {

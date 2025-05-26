@@ -46,9 +46,6 @@
     "modmenu": "*"
   },
   "custom": {
-    "fabwork": {
-      "requiredOn": "*"
-    },
     "modmenu": {
       "links": {
         "modmenu.discord": "https://discord.gg/mt7uwQ4",

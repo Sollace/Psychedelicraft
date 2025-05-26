@@ -1,25 +1,34 @@
 package ivorius.psychedelicraft.advancement;
 
-import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonObject;
+
+import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterion;
+import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventCriterion.Conditions> {
+    static final Identifier ID = Psychedelicraft.id("mashed_item");
+
     @Override
-    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> predicate,
+    public Identifier getId() {
+        return ID;
+    }
+
+    @Override
+    protected Conditions conditionsFromJson(JsonObject json, LootContextPredicate predicate,
             AdvancementEntityPredicateDeserializer predicateDeserializer) {
         return new Conditions(predicate,
                 (AlcoholicFluid)SimpleFluid.REGISTRY.get(Identifier.tryParse(JsonHelper.getString(json, "fluid", "r"))),
@@ -39,10 +48,23 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
         void trigger(@Nullable PlayerEntity player);
     }
 
-    public record Conditions(Optional<LootContextPredicate> getPlayerPredicate, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) implements AbstractCriterion.Conditions {
+    public static class Conditions extends AbstractCriterionConditions {
+        private final AlcoholicFluid fluid;
+        private final IntRange fermentation;
+        private final IntRange maturation;
+        private final IntRange distillation;
+
+        public Conditions(LootContextPredicate entity, AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) {
+            super(ID, entity);
+            this.fluid = fluid;
+            this.fermentation = fermentation;
+            this.maturation = maturation;
+            this.distillation = distillation;
+        }
+
         @Override
-        public JsonObject toJson() {
-            JsonObject json = new JsonObject();
+        public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
+            JsonObject json = super.toJson(serializer);
             json.addProperty("fluid", fluid.getId().toString());
             json.add("fermentation", fermentation.toJson());
             json.add("maturation", maturation.toJson());
@@ -50,12 +72,12 @@ public class MashingTubEventCriterion extends AbstractCriterion<MashingTubEventC
             return json;
         }
 
-        public static AdvancementCriterion<Conditions> create(AlcoholicFluid fluid) {
-            return PSCriteria.SIMPLY_MASHING.create(new Conditions(Optional.empty(), fluid, IntRange.ANY, IntRange.ANY, IntRange.ANY));
+        public static Conditions create(AlcoholicFluid fluid) {
+            return new Conditions(LootContextPredicate.EMPTY, fluid, IntRange.ANY, IntRange.ANY, IntRange.ANY);
         }
 
-        public static AdvancementCriterion<Conditions> create(AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) {
-            return PSCriteria.SIMPLY_MASHING.create(new Conditions(Optional.empty(), fluid, fermentation, maturation, distillation));
+        public static Conditions create(AlcoholicFluid fluid, IntRange fermentation, IntRange maturation, IntRange distillation) {
+            return new Conditions(LootContextPredicate.EMPTY, fluid, fermentation, maturation, distillation);
         }
 
         public boolean test(ServerPlayerEntity player, ItemStack stack) {

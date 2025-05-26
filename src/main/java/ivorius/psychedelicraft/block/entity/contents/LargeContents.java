@@ -213,7 +213,7 @@ public class LargeContents extends SmallContents {
         return FluidCapacity.get(stack) == 0 && entity.getWorld().getRecipeManager()
                 .listAllOfType(PSRecipes.CHEMISTRY)
                 .stream()
-                .anyMatch(recipe -> recipe.value().getIngredients().stream().anyMatch(i -> i.test(stack)));
+                .anyMatch(recipe -> recipe.getIngredients().stream().anyMatch(i -> i.test(stack)));
     }
 
     @Override

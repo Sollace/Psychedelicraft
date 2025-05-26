@@ -8,24 +8,23 @@ import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.recipe.HardeningRecipe;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 
 class TrayEmiRecipe implements PSRecipe {
-    private final RecipeEntry<HardeningRecipe> recipe;
+    private final HardeningRecipe recipe;
 
     private final TlaIngredient base;
     private final List<TlaIngredient> impurities;
     private final List<TlaStack> output;
 
-    public TrayEmiRecipe(RecipeEntry<HardeningRecipe> recipe) {
+    public TrayEmiRecipe(HardeningRecipe recipe) {
         this.recipe = recipe;
-        this.base = RecipeUtil.toIngredient(recipe.value().coreFluid(), 1);
-        this.impurities = recipe.value().impurities().stream().map(i -> {
-            recipe.value().coreFluid();
+        this.base = RecipeUtil.toIngredient(recipe.coreFluid(), 1);
+        this.impurities = recipe.impurities().stream().map(i -> {
+            recipe.coreFluid();
             return RecipeUtil.toIngredient(i, 1);
         }).toList();
-        this.output = List.of(TlaStack.of(recipe.value().getResult(MinecraftClient.getInstance().world.getRegistryManager())));
+        this.output = List.of(TlaStack.of(recipe.getOutput(MinecraftClient.getInstance().world.getRegistryManager())));
     }
 
     @Override
@@ -35,7 +34,7 @@ class TrayEmiRecipe implements PSRecipe {
 
     @Override
     public Identifier getId() {
-        return recipe.id();
+        return recipe.getId();
     }
 
     @Override
@@ -78,7 +77,7 @@ class TrayEmiRecipe implements PSRecipe {
         }
         widgets.addArrow(100, y + 23, false);
         widgets.addSlot(output.get(0), 170, y + 20).makeLarge().markOutput();
-        widgets.addAnimatedArrow(130, y + 23, Math.max(1, recipe.value().hardeningTime()) * 900);
+        widgets.addAnimatedArrow(130, y + 23, Math.max(1, recipe.hardeningTime()) * 900);
         widgets.addSlot(TlaStack.of(PSItems.TRAY), 130, y + 23).disableBackground().markCatalyst();
     }
 

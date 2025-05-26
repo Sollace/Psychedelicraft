@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 
 import ivorius.psychedelicraft.client.render.PlacedDrinksModelProvider;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.util.compat.DataProviderCompat;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
@@ -44,7 +45,7 @@ public class PlacedDrinksProvider implements DataProvider {
             });
 
             Path outputPath = output.resolvePath(DataOutput.OutputType.RESOURCE_PACK).resolve("psychedelicraft/placeable_drinks.json");
-            return DataProvider.writeCodecToPath(writer, CODEC, data, outputPath);
+            return DataProviderCompat.writeCodecToPath(writer, CODEC, data, outputPath);
         });
     }
 

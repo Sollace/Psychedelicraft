@@ -29,11 +29,12 @@ import com.mojang.serialization.DataResult;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
+import ivorius.psychedelicraft.util.compat.IngredientCompat;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
 
 public interface RecipeUtils {
-    Codec<DefaultedList<Ingredient>> SHAPELESS_RECIPE_INGREDIENTS_CODEC = Ingredient.DISALLOW_EMPTY_CODEC.listOf().flatXmap(ingredients -> {
+    Codec<DefaultedList<Ingredient>> SHAPELESS_RECIPE_INGREDIENTS_CODEC = IngredientCompat.DISALLOW_EMPTY_CODEC.listOf().flatXmap(ingredients -> {
         Ingredient[] ingredients2 = ingredients.stream().filter(ingredient -> !ingredient.isEmpty()).toArray(Ingredient[]::new);
         if (ingredients2.length == 0) {
             return DataResult.error(() -> "No ingredients for shapeless recipe");

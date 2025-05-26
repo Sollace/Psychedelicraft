@@ -7,6 +7,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.util.compat.IngredientCompat;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import ivorius.psychedelicraft.util.compat.RecipeInput;
@@ -14,10 +15,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public record DryingRecipe(
+        Identifier id,
         String dryingGroup,
         Ingredient input,
         ItemStack output,
@@ -25,13 +28,15 @@ public record DryingRecipe(
         float cookTime
     ) implements Recipe<DryingRecipe.Input> {
     public static final MapCodec<DryingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Identifier.CODEC.fieldOf("id").forGetter(DryingRecipe::getId),
             Codec.STRING.optionalFieldOf("group", "").forGetter(DryingRecipe::dryingGroup),
-            Ingredient.ALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(DryingRecipe::input),
+            IngredientCompat.ALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(DryingRecipe::input),
             ItemStack.CODEC.fieldOf("result").forGetter(DryingRecipe::output),
             Codec.FLOAT.optionalFieldOf("experience", 0F).forGetter(DryingRecipe::experience),
             Codec.FLOAT.optionalFieldOf("cookingTime", 1F).forGetter(DryingRecipe::cookTime)
         ).apply(instance, DryingRecipe::new));
     public static final PacketCodec<PacketByteBuf, DryingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.IDENTIFIER, DryingRecipe::getId,
             PacketCodecs.STRING, DryingRecipe::dryingGroup,
             PacketCodecs.INGREDIENT, DryingRecipe::input,
             PacketCodecs.ITEM_STACK, DryingRecipe::output,
@@ -39,6 +44,11 @@ public record DryingRecipe(
             PacketCodecs.FLOAT, DryingRecipe::cookTime,
             DryingRecipe::new
     );
+
+    @Override
+    public Identifier getId() {
+        return id;
+    }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
@@ -82,7 +92,7 @@ public record DryingRecipe(
 
     @Override
     public ItemStack craft(Input input, DynamicRegistryManager lookup) {
-        return getResult(lookup);
+        return getOutput(lookup);
     }
 
     @Override
@@ -91,7 +101,7 @@ public record DryingRecipe(
     }
 
     @Override
-    public ItemStack getResult(DynamicRegistryManager registriesLookup) {
+    public ItemStack getOutput(DynamicRegistryManager registriesLookup) {
         return output.copy();
     }
 

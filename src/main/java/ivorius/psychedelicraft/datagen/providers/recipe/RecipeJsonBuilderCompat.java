@@ -2,28 +2,35 @@ package ivorius.psychedelicraft.datagen.providers.recipe;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.advancement.AdvancementEntry;
+
+import ivorius.psychedelicraft.recipe.PSRecipes;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
 
 public final class RecipeJsonBuilderCompat {
-    static <T extends Recipe<?>> RecipeJsonProvider createProvider(Identifier id, RecipeSerializer<T> serializer, T recipe, AdvancementEntry advancement) {
+    static <T extends Recipe<?>> RecipeJsonProvider createProvider(PSRecipes.Serializer<T> serializer, T recipe, Advancement.Builder advancement, Identifier advancementId) {
         return new RecipeJsonProvider() {
             @Override
-            public Identifier id() {
-                return id;
+            public Identifier getRecipeId() {
+                return recipe.getId();
             }
 
             @Override
-            public RecipeSerializer<?> serializer() {
+            public RecipeSerializer<?> getSerializer() {
                 return serializer;
             }
 
             @Override
-            public AdvancementEntry advancement() {
-                return advancement;
+            public JsonObject toAdvancementJson() {
+                return advancement.toJson();
+            }
+
+            @Override
+            public Identifier getAdvancementId() {
+                return advancementId;
             }
 
             @Override

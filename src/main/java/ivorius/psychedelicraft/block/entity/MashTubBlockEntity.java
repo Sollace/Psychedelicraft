@@ -38,7 +38,6 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -237,8 +236,8 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         return acceptsItem(stack)
             && (world.getRecipeManager()
                 .listAllOfType(PSRecipes.MASHING_TYPE).stream()
-                .filter(recipe -> recipe.value().baseFluid().test(getPrimaryTank().getContents()))
-                .flatMap(recipe -> recipe.value().getIngredients().stream())
+                .filter(recipe -> recipe.baseFluid().test(getPrimaryTank().getContents()))
+                .flatMap(recipe -> recipe.getIngredients().stream())
                 .anyMatch(i -> i.test(stack)));
     }
 
@@ -262,7 +261,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     public Stream<MashingRecipe> getPotentialMatches() {
         var input = new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients);
-        return world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream().map(RecipeEntry::value).filter(recipe -> {
+        return world.getRecipeManager().listAllOfType(PSRecipes.MASHING_TYPE).stream().filter(recipe -> {
             return recipe.matchesPartially(input, world);
         });
     }
@@ -348,9 +347,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         private Identifier recipe;
         private int stewTime;
 
-        public Stew(RecipeEntry<MashingRecipe> recipe) {
-            this.recipe = recipe.id();
-            this.stewTime = (2 + world.getRandom().nextInt(4)) + recipe.value().stewTime();
+        public Stew(MashingRecipe recipe) {
+            this.recipe = recipe.getId();
+            this.stewTime = (2 + world.getRandom().nextInt(4)) + recipe.stewTime();
         }
 
         public boolean tick() {
@@ -363,7 +362,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
                 spawnBubbles(9, 0.5F, SoundEvents.BLOCK_BUBBLE_COLUMN_UPWARDS_INSIDE);
                 markDirty();
                 if (--stewTime <= 0) {
-                    if (world.getRecipeManager().get(recipe).map(RecipeEntry::value).orElse(null) instanceof MashingRecipe recipe) {
+                    if (world.getRecipeManager().get(recipe).orElse(null) instanceof MashingRecipe recipe) {
                         var input = new MashingRecipe.Input(getPrimaryTank().getContents(), solidContents, suppliedIngredients);
                         getPrimaryTank().setContents(recipe.result().ofAmount(getPrimaryTank().getContents().amount()));
 

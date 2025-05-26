@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -12,12 +13,12 @@ import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.SmeltingFluidRecipe;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriterionMerger;
+import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
@@ -33,7 +34,8 @@ public class SmeltingFluidRecipeJsonBuilder implements CraftingRecipeJsonBuilder
     private Item output = Items.AIR;
     private final float experience;
     private final int cookingTime;
-    private final Map<String, AdvancementCriterion<?>> criteria = new LinkedHashMap<>();
+    private final Map<String, CriterionConditions> criteria = new LinkedHashMap<>();
+    private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
     @Nullable
     private String group;
 
@@ -52,7 +54,7 @@ public class SmeltingFluidRecipeJsonBuilder implements CraftingRecipeJsonBuilder
     }
 
     @Override
-    public SmeltingFluidRecipeJsonBuilder criterion(String name, AdvancementCriterion<?> criterion) {
+    public SmeltingFluidRecipeJsonBuilder criterion(String name, CriterionConditions criterion) {
         criteria.put(name, criterion);
         return this;
     }
@@ -79,26 +81,27 @@ public class SmeltingFluidRecipeJsonBuilder implements CraftingRecipeJsonBuilder
     }
 
     @Override
-    public void offerTo(RecipeExporter exporter, Identifier recipeId) {
+    public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         recipeId = recipeId.withSuffixedPath("_from_smelting");
         validate(recipeId);
-        Advancement.Builder builder = exporter.getAdvancementBuilder()
+        Advancement.Builder builder = advancementBuilder
             .criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
             .rewards(AdvancementRewards.Builder.recipe(recipeId))
-            .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
+            .criteriaMerger(CriterionMerger.OR);
         criteria.forEach(builder::criterion);
-        exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.SMELTING_RECEPTICAL, new SmeltingFluidRecipe(
+        exporter.accept(RecipeJsonBuilderCompat.createProvider(PSRecipes.SMELTING_RECEPTICAL, new SmeltingFluidRecipe(
+                recipeId,
                 Objects.requireNonNullElse(group, ""),
                 cookingCategory,
                 input,
                 new FluidModifyingResult(modifications, output.getDefaultStack()),
                 experience,
                 cookingTime
-        ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
+        ), builder, recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
     }
 
     private void validate(Identifier recipeId) {
-        if (this.criteria.isEmpty()) {
+        if (criteria.isEmpty()) {
             throw new IllegalStateException("No way of obtaining recipe " + recipeId);
         }
     }

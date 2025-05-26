@@ -195,7 +195,7 @@ public class SettingsScreen extends GameGui {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
-        renderBackground(context, mouseX, mouseY, tickDelta);
+        renderBackground(context);
         super.render(context, mouseX, mouseY, tickDelta);
         content.render(context, mouseX, mouseY, tickDelta);
     }

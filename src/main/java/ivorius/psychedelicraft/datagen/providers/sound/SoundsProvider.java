@@ -8,6 +8,7 @@ import java.util.function.BiConsumer;
 
 import com.mojang.serialization.Codec;
 
+import ivorius.psychedelicraft.util.compat.DataProviderCompat;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
@@ -36,7 +37,7 @@ public abstract class SoundsProvider implements DataProvider {
 
             return CompletableFuture.allOf(data.entrySet().stream().map(file -> {
                 Path outputPath = output.resolvePath(DataOutput.OutputType.RESOURCE_PACK).resolve(file.getKey() + "/sounds.json");
-                return DataProvider.writeCodecToPath(writer, CODEC, file.getValue(), outputPath);
+                return DataProviderCompat.writeCodecToPath(writer, CODEC, file.getValue(), outputPath);
             }).toArray(CompletableFuture[]::new));
         });
     }

@@ -22,6 +22,7 @@ import ivorius.psychedelicraft.util.compat.ComponentType;
 import ivorius.psychedelicraft.util.compat.ItemSubPredicate;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.RangeCompat;
 import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.item.TooltipContext;
@@ -198,8 +199,8 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
     public record Predicate(Optional<List<SimpleFluid>> fluid, IntRange amount, Map<String, IntRange> attributes) implements ItemSubPredicate<ItemFluids> {
         public static final Codec<Predicate> CODEC = RecordCodecBuilder.create(i -> i.group(
                 SimpleFluid.CODEC.listOf().optionalFieldOf("fluid").forGetter(Predicate::fluid),
-                IntRange.CODEC.optionalFieldOf("amount", IntRange.ANY).forGetter(Predicate::amount),
-                Codec.unboundedMap(Codec.STRING, IntRange.CODEC).optionalFieldOf("attributes", Map.of()).forGetter(Predicate::attributes)
+                RangeCompat.INT_CODEC.optionalFieldOf("amount", IntRange.ANY).forGetter(Predicate::amount),
+                Codec.unboundedMap(Codec.STRING, RangeCompat.INT_CODEC).optionalFieldOf("attributes", Map.of()).forGetter(Predicate::attributes)
         ).apply(i, Predicate::new));
         public static final PacketCodec<PacketByteBuf, Predicate> PACKET_CODEC = PacketCodec.tuple(
                 PacketCodecs.optional(SimpleFluid.PACKET_CODEC.collect(PacketCodecs.toList())), Predicate::fluid,

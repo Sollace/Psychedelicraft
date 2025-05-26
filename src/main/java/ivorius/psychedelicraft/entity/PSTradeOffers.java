@@ -85,7 +85,7 @@ public interface PSTradeOffers {
             factories.add(sell(3, PSItems.BONG, 4, 3, 1, 0.5f));
             factories.add(sell(1, PSItems.PEYOTE_JOINT, 3, 2, 3, 0.5f));
             factories.add(sell(2, PSItems.LSD_PILL, 3, 2, 3, 0.5f));
-            factories.add(trade(3, Items.PAPER, 2, PSItems.LSA_SQUARE, 3, 2, 3, 0.5f));
+            factories.add(trade(3, Items.PAPER, 2, PSItems.LSA_SQUARE, 3, 2, 3));
 
             factories.add(sell(1, PSItems.JOINT, 2, 2, 3, 0.5f));
 
@@ -131,15 +131,15 @@ public interface PSTradeOffers {
     }
 
     private static TradeOffers.Factory buy(int price, Item item, int count, int maxUses, int experience) {
-        return new TradeOffers.BuyItemFactory(item, count, maxUses, experience, price);
+        return (entity, random) -> new TradeOffer(new ItemStack(item, count), new ItemStack(Items.EMERALD, price), maxUses, experience, 0.05F);
     }
 
     private static TradeOffers.Factory sell(int price, Item item, int count, int maxUses, int experience, float priceChange) {
-        return new TradeOffers.SellItemFactory(item, price, count, maxUses, experience, priceChange);
+        return new TradeOffers.SellItemFactory(item.getDefaultStack(), price, count, maxUses, experience, priceChange);
     }
 
-    private static TradeOffers.Factory trade(int price, Item item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return new TradeOffers.ProcessItemFactory(item, count, price, returnItem, returnCount, maxUses, experience, priceChange);
+    private static TradeOffers.Factory trade(int price, ItemConvertible item, int count, Item returnItem, int returnCount, int maxUses, int experience) {
+        return new TradeOffers.ProcessItemFactory(item, count, price, returnItem, returnCount, maxUses, experience);
     }
 
     private static RegistryKey<PointOfInterestType> poi(String id) {

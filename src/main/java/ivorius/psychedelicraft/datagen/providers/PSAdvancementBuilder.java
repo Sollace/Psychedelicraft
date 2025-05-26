@@ -5,11 +5,10 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriterionMerger;
+import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -98,22 +97,22 @@ public class PSAdvancementBuilder {
         return this;
     }
 
-    public PSAdvancementBuilder criterion(String name, AdvancementCriterion<?> criterion) {
+    public PSAdvancementBuilder criterion(String name, CriterionConditions criterion) {
         builder.criterion(name, criterion);
         return this;
     }
 
-    public PSAdvancementBuilder criteriaMerger(AdvancementRequirements.CriterionMerger merger) {
+    public PSAdvancementBuilder criteriaMerger(CriterionMerger merger) {
         builder.criteriaMerger(merger);
         return this;
     }
 
-    public Parent build(Consumer<AdvancementEntry> exporter) {
+    public Parent build(Consumer<Advancement> exporter) {
         Identifier id = group == null ? this.id : this.id.withPrefixedPath(group + "/");
         String key = Util.createTranslationKey("advancements", this.id);
         ItemStack icon = this.icon.asItem().getDefaultStack();
         iconCustomisation.accept(icon);
-        AdvancementEntry advancement = builder.display(
+        Advancement advancement = builder.display(
                 icon,
                 Text.translatable(key + ".title"),
                 Text.translatable(key + ".description"), background, frame, toast, announce, hidden)
@@ -122,7 +121,7 @@ public class PSAdvancementBuilder {
         return new Parent(advancement, group);
     }
 
-    public record Parent(AdvancementEntry entry, String group) {
+    public record Parent(Advancement entry, String group) {
         public Parent children(Consumer<Parent> children) {
             children.accept(this);
             return this;

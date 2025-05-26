@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.util.compat.ComponentType;
 import ivorius.psychedelicraft.util.compat.ItemSubPredicate;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
+import ivorius.psychedelicraft.util.compat.RangeCompat;
 import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -74,7 +75,7 @@ public record FluidCapacity(int capacity) {
     }
 
     public record Predicate(IntRange capacity) implements ItemSubPredicate<FluidCapacity> {
-        public static final Codec<Predicate> CODEC = IntRange.CODEC.xmap(Predicate::new, Predicate::capacity);
+        public static final Codec<Predicate> CODEC = RangeCompat.INT_CODEC.xmap(Predicate::new, Predicate::capacity);
 
         @Override
         public boolean test(ItemStack stack, FluidCapacity capacity) {

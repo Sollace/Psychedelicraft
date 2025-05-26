@@ -1,11 +1,10 @@
 package ivorius.psychedelicraft.datagen.providers.recipe;
 
+import java.util.function.Consumer;
+
 import com.google.gson.JsonObject;
 
 import ivorius.psychedelicraft.recipe.PSRecipes;
-import net.minecraft.advancement.Advancement.Builder;
-import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.ItemConvertible;
@@ -27,8 +26,8 @@ public class BottleRecipeJsonBuilder extends ShapedRecipeJsonBuilder {
     }
 
     @Override
-    public void offerTo(RecipeExporter exporter, Identifier recipeId) {
-        super.offerTo(new RecipeExporter() {
+    public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
+        super.offerTo(new Consumer<RecipeJsonProvider>() {
             @Override
             public void accept(RecipeJsonProvider provider) {
                 exporter.accept(new RecipeJsonProvider() {
@@ -38,27 +37,26 @@ public class BottleRecipeJsonBuilder extends ShapedRecipeJsonBuilder {
                     }
 
                     @Override
-                    public Identifier id() {
-                        return provider.id();
+                    public Identifier getRecipeId() {
+                        return provider.getRecipeId();
                     }
 
                     @Override
-                    public RecipeSerializer<?> serializer() {
+                    public RecipeSerializer<?> getSerializer() {
                         return PSRecipes.CRAFTING_SHAPED;
                     }
 
                     @Override
-                    public AdvancementEntry advancement() {
-                        return provider.advancement();
+                    public JsonObject toAdvancementJson() {
+                        return provider.toAdvancementJson();
+                    }
+
+                    @Override
+                    public Identifier getAdvancementId() {
+                        return provider.getAdvancementId();
                     }
                 });
             }
-
-            @Override
-            public Builder getAdvancementBuilder() {
-                return exporter.getAdvancementBuilder();
-            }
-
         }, recipeId);
     }
 }

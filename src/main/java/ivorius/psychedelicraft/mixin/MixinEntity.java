@@ -75,7 +75,7 @@ abstract class MixinEntity implements TouchingWaterAccessor {
                         }
                         Box fluidBox = tub.getFluidCollisionBox(self.getWorld(), state, pos);
                         if (fluidBox.intersects(box)) {
-                            return fluidBox.getLengthY();
+                            return fluidBox.getYLength();
                         }
                     }
                     return -1;

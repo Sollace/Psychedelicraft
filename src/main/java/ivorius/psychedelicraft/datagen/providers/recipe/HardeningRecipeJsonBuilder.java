@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -12,12 +13,12 @@ import ivorius.psychedelicraft.recipe.HardeningRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriterionMerger;
+import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -29,7 +30,9 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 public class HardeningRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final RecipeCategory category;
 
-	private final Map<String, AdvancementCriterion<?>> criteria = new LinkedHashMap<>();
+	private final Map<String, CriterionConditions> criteria = new LinkedHashMap<>();
+
+	private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
 
 	@Nullable
 	private String group;
@@ -58,7 +61,7 @@ public class HardeningRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	}
 
 	@Override
-    public HardeningRecipeJsonBuilder criterion(String name, AdvancementCriterion<?> criterion) {
+    public HardeningRecipeJsonBuilder criterion(String name, CriterionConditions criterion) {
 		this.criteria.put(name, criterion);
 		return this;
 	}
@@ -90,22 +93,23 @@ public class HardeningRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
     }
 
 	@Override
-	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
+	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
 	    recipeId = recipeId.withSuffixedPath("_from_tray");
 		validate(recipeId);
-		Advancement.Builder builder = exporter.getAdvancementBuilder()
+		Advancement.Builder builder = advancementBuilder
 			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
-			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
+			.criteriaMerger(CriterionMerger.OR);
 		criteria.forEach(builder::criterion);
-		exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.HARDENING, new HardeningRecipe(
+		exporter.accept(RecipeJsonBuilderCompat.createProvider(PSRecipes.HARDENING, new HardeningRecipe(
+		        recipeId,
 	            Objects.requireNonNullElse(group, ""),
 	            baseFluid,
 	            impurities,
 	            new ItemStack(output),
 	            amount,
 	            stewTime
-        ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
+        ), builder, recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
 	}
 
 	private void validate(Identifier recipeId) {

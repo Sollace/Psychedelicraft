@@ -110,7 +110,7 @@ public class FilledBucketItem extends Item {
             if (fluid.isEmpty()) {
                 ItemStack itemStack2;
                 BlockState state = world.getBlockState(blockPos);
-                if (state.getBlock() instanceof FluidDrainable drainable && !(itemStack2 = drainable.tryDrainFluid(user, world, blockPos, state)).isEmpty()) {
+                if (state.getBlock() instanceof FluidDrainable drainable && !(itemStack2 = drainable.tryDrainFluid(world, blockPos, state)).isEmpty()) {
                     user.incrementStat(Stats.USED.getOrCreateStat(this));
                     drainable.getBucketFillSound().ifPresent(sound -> user.playSound(sound, 1.0f, 1.0f));
                     world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
@@ -141,8 +141,8 @@ public class FilledBucketItem extends Item {
         DispenserBlock.registerBehavior(item, new ItemDispenserBehavior(){
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-                BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
-                ServerWorld world = pointer.world();
+                BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+                ServerWorld world = pointer.getWorld();
                 ItemFluids fluids = ItemFluids.of(stack);
                 if (placeFluid(stack, fluids, fluids.fluid().getFluidState(fluids), null, world, blockPos, null)) {
                     return Items.BUCKET.getDefaultStack();
@@ -162,7 +162,7 @@ public class FilledBucketItem extends Item {
         Block block = state.getBlock();
         boolean canPlace = state.canBucketPlace(fluidState.getFluid());
 
-        if (!(state.isAir() || canPlace || block instanceof FluidFillable f && f.canFillWithFluid(player, world, pos, state, fluidState.getFluid()))) {
+        if (!(state.isAir() || canPlace || block instanceof FluidFillable f && f.canFillWithFluid(world, pos, state, fluidState.getFluid()))) {
             return hit != null && placeFluid(stack, fluids, fluidState, player, world, hit.getBlockPos().offset(hit.getSide()), null);
         }
 

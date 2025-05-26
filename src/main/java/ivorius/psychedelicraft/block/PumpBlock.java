@@ -127,7 +127,7 @@ public class PumpBlock extends FacingBlock implements PipeInsertable {
                     ), 0));
                 }
                 if (inFluid.getBlock() instanceof FluidDrainable drainable) {
-                    drainable.tryDrainFluid(null, world, inPos, inFluid);
+                    drainable.tryDrainFluid(world, inPos, inFluid);
                 }
             }
         });

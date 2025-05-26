@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.datagen.providers.recipe;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import ivorius.psychedelicraft.PSConventionalTags;
 import ivorius.psychedelicraft.PSTags;
@@ -24,7 +25,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.data.server.recipe.ComplexRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.ShapelessRecipeJsonBuilder;
 import net.minecraft.fluid.Fluids;
@@ -55,7 +56,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
     }
 
     @Override
-    public void generate(RecipeExporter exporter) {
+    public void generate(Consumer<RecipeJsonProvider> exporter) {
         var items = registries.getNow(null).getWrapperOrThrow(RegistryKeys.ITEM);
 
         PSBlocks.ALL_BARRELS.stream().forEach(block -> {
@@ -73,7 +74,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         offerLiquirRecipes(exporter);
     }
 
-    private void offerSmokingImpliments(RecipeExporter exporter) {
+    private void offerSmokingImpliments(Consumer<RecipeJsonProvider> exporter) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, PSItems.SMOKING_PIPE)
             .input('W', ItemTags.PLANKS).criterion("has_planks", conditionsFromTag(ItemTags.PLANKS))
             .input('S', Items.STICK).criterion("has_stick", conditionsFromItem(Items.STICK))
@@ -102,7 +103,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         // TODO: blunt
     }
 
-    private void offerDrinkHolders(RecipeExporter exporter) {
+    private void offerDrinkHolders(Consumer<RecipeJsonProvider> exporter) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.WOODEN_MUG)
             .input('#', ItemTags.PLANKS).criterion("has_planks", conditionsFromTag(ItemTags.PLANKS))
             .pattern("# #")
@@ -171,7 +172,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
     }
 
-    private void offerJuniperWoodset(RecipeExporter exporter) {
+    private void offerJuniperWoodset(Consumer<RecipeJsonProvider> exporter) {
         generateFamily(exporter, PSBlockFamilies.JUNIPER);
         offerPlanksRecipe(exporter, PSBlocks.JUNIPER_PLANKS, PSTags.Items.JUNIPER_LOGS, 4);
         offerBarkBlockRecipe(exporter, PSBlocks.JUNIPER_WOOD, PSBlocks.JUNIPER_LOG);
@@ -181,7 +182,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         offerHangingSignRecipe(exporter, PSBlocks.JUNIPER_HANGING_SIGN, PSBlocks.JUNIPER_PLANKS);
     }
 
-    private void offerDrugRecipes(RecipeExporter exporter) {
+    private void offerDrugRecipes(Consumer<RecipeJsonProvider> exporter) {
 
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.SYRINGE)
             .input('I', Items.IRON_INGOT).criterion(hasItem(Items.IRON_INGOT), conditionsFromItem(Items.IRON_INGOT))
@@ -195,23 +196,23 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         FluidAwareShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.OBSIDIAN_BOTTLE)
             .input(FluidIngredient.builder().fluid(SimpleFluid.of(Fluids.WATER)).level(FluidVolumes.BUCKET).build(), PSItems.FILLED_BUCKET)
             .input(FluidIngredient.builder().fluid(SimpleFluid.of(Fluids.LAVA)).level(FluidVolumes.GLASS_BOTTLE).build(), PSItems.FILLED_GLASS_BOTTLE)
-            .criterion("has_lava_bottle", conditionsFromPredicates(ItemPredicate.Builder.create()
+            .criterion("has_lava_bottle", conditionsFromItemPredicates(ItemPredicate.Builder.create()
                     .items(PSItems.FILLED_GLASS_BOTTLE)
                     .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
                             .fluid(SimpleFluid.of(Fluids.LAVA))
                             .amount(IntRange.atLeast(FluidVolumes.GLASS_BOTTLE))
-                            .build()).build())))
+                            .build()).build()).build()))
             .discard(Items.GLASS_BOTTLE)
             .offerTo(exporter, Psychedelicraft.id(convertBetween(PSItems.OBSIDIAN_BOTTLE, PSItems.FILLED_GLASS_BOTTLE)));
         FluidAwareShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.OBSIDIAN_BOTTLE)
             .input(Items.WATER_BUCKET)
             .input(FluidIngredient.builder().fluid(SimpleFluid.of(Fluids.LAVA)).level(FluidVolumes.GLASS_BOTTLE).build(), PSItems.FILLED_GLASS_BOTTLE)
-            .criterion("has_lava_bottle", conditionsFromPredicates(ItemPredicate.Builder.create()
+            .criterion("has_lava_bottle", conditionsFromItemPredicates(ItemPredicate.Builder.create()
                     .items(PSItems.FILLED_GLASS_BOTTLE)
                     .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
                             .fluid(SimpleFluid.of(Fluids.LAVA))
                             .amount(IntRange.atLeast(FluidVolumes.GLASS_BOTTLE))
-                            .build()).build())))
+                            .build()).build()).build()))
             .discard(Items.GLASS_BOTTLE)
             .offerTo(exporter);
         offerSingleOutputShapelessRecipe(exporter, PSItems.OBSIDIAN_DUST, PSItems.OBSIDIAN_BOTTLE, "obsidian_bottle");
@@ -257,7 +258,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
     }
 
-    private void offerChemistryUpdateRecipes(RecipeExporter exporter) {
+    private void offerChemistryUpdateRecipes(Consumer<RecipeJsonProvider> exporter) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.BUNSEN_BURNER)
             .input('r', Items.REDSTONE).criterion(hasItem(Items.REDSTONE), conditionsFromItem(Items.REDSTONE))
             .input('n', Items.IRON_NUGGET).criterion(hasItem(Items.IRON_NUGGET), conditionsFromItem(Items.IRON_NUGGET))
@@ -315,7 +316,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         offerTrayRecipes(exporter);
     }
 
-    private void offerReactingRecipes(RecipeExporter exporter) {
+    private void offerReactingRecipes(Consumer<RecipeJsonProvider> exporter) {
         offerReacting(exporter, PSFluids.BELLADONA_EXTRACT, PSItems.BELLADONNA_SEEDS);
         offerReacting(exporter, PSFluids.JIMSONWEED_EXTRACT, PSItems.JIMSONWEED_SEEDS);
         offerReacting(exporter, PSFluids.MORNING_GLORY_EXTRACT, PSTags.Items.MORNING_GLORY_INGREDIENTS);
@@ -329,7 +330,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter, Psychedelicraft.id("petroleum_from_coal_block"));
     }
 
-    private void offerTrayRecipes(RecipeExporter exporter) {
+    private void offerTrayRecipes(Consumer<RecipeJsonProvider> exporter) {
         HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRACK_COCAINE)
             .base(FluidIngredient.builder().fluid(PSFluids.ETHANOL))
             .impurity(FluidIngredient.builder().fluid(PSFluids.COCAINE))
@@ -349,7 +350,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
     }
 
-    private void offerDryingRecipes(RecipeExporter exporter) {
+    private void offerDryingRecipes(Consumer<RecipeJsonProvider> exporter) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.DRYING_TABLE)
             .input('#', ItemTags.PLANKS).criterion("has_planks", conditionsFromTag(ItemTags.PLANKS))
             .input('R', Items.REDSTONE)
@@ -375,7 +376,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         offerDrying(exporter, PSItems.PEYOTE, PSItems.DRIED_PEYOTE, 3, 0.2F, 1.5F, "peyote");
     }
 
-    private void offerLiquirRecipes(RecipeExporter exporter) {
+    private void offerLiquirRecipes(Consumer<RecipeJsonProvider> exporter) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.LATTICE)
             .input('O', ItemTags.PLANKS)
             .input('I', Items.STICK).criterion("has_stick", conditionsFromItem(Items.STICK))
@@ -389,18 +390,18 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         SmeltingFluidRecipeJsonBuilder.create(OptionalFluidIngredient.of(FluidIngredient.builder()
                     .fluid(PSFluids.COFFEE).build()), RecipeCategory.FOOD, 0.2F, 200)
             .modification("warmth", FluidModifyingResult.Ops.ADD, 1)
-            .criterion("has_cold_coffee", conditionsFromPredicates(ItemPredicate.Builder.create()
+            .criterion("has_cold_coffee", conditionsFromItemPredicates(ItemPredicate.Builder.create()
                     .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.FLUIDS, ItemFluids.Predicate.builder()
                             .fluid(PSFluids.COFFEE)
                             .attribute("warmth", IntRange.atMost(1))
-                            .build()).build())))
+                            .build()).build()).build()))
             .offerTo(exporter, Psychedelicraft.id("hot_coffee"));
 
         offerMashingRecipes(exporter);
         offerMixingRecipes(exporter);
     }
 
-    private void offerMashingRecipes(RecipeExporter exporter) {
+    private void offerMashingRecipes(Consumer<RecipeJsonProvider> exporter) {
         offerMashing(exporter, PSFluids.AGAVE, PSItems.AGAVE_LEAF);
         offerMashing(exporter, PSFluids.APPLE, PSConventionalTags.Items.APPLES);
         offerMashing(exporter, PSFluids.BANANA, PSConventionalTags.Items.BANANAS);
@@ -425,7 +426,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
     }
 
-    private void offerMixingRecipes(RecipeExporter exporter) {
+    private void offerMixingRecipes(Consumer<RecipeJsonProvider> exporter) {
         offerMixing(exporter, PSFluids.AGAVE, PSItems.AGAVE_LEAF);
         offerMixing(exporter, PSFluids.CANNABIS_TEA, PSItems.CANNABIS_LEAF);
         offerMixing(exporter, PSFluids.COCA_TEA, PSItems.COCA_LEAVES);
@@ -445,45 +446,45 @@ public class PSRecipeProvider extends FabricRecipeProvider {
 
     }
 
-    private static void offerReacting(RecipeExporter exporter, SimpleFluid fluid, ItemConvertible input) {
+    private static void offerReacting(Consumer<RecipeJsonProvider> exporter, SimpleFluid fluid, ItemConvertible input) {
         ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, fluid.getDefaultStack(50))
             .input(input).criterion(hasItem(input), conditionsFromItem(input))
             .byProduct(Items.COAL)
             .offerTo(exporter);
     }
 
-    private static void offerReacting(RecipeExporter exporter, SimpleFluid fluid, TagKey<Item> input) {
+    private static void offerReacting(Consumer<RecipeJsonProvider> exporter, SimpleFluid fluid, TagKey<Item> input) {
         ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, fluid.getDefaultStack(50))
             .input(input).criterion("has_" + input.id().getPath(), conditionsFromTag(input))
             .byProduct(Items.COAL)
             .offerTo(exporter);
     }
 
-    private static void offerMixing(RecipeExporter exporter, SimpleFluid output, ItemConvertible input) {
+    private static void offerMixing(Consumer<RecipeJsonProvider> exporter, SimpleFluid output, ItemConvertible input) {
         offerMixing(exporter, output, input, PSTags.Items.DRINK_RECEPTICALS);
     }
 
-    private static void offerMixing(RecipeExporter exporter, SimpleFluid output, ItemConvertible input, TagKey<Item> receptical) {
+    private static void offerMixing(Consumer<RecipeJsonProvider> exporter, SimpleFluid output, ItemConvertible input, TagKey<Item> receptical) {
         MixingRecipeJsonBuilder.create(RecipeCategory.FOOD, output, 1)
             .input(input, 2).criterion(hasItem(input), conditionsFromItem(input))
             .receptical(receptical)
             .offerTo(exporter);
     }
 
-    private static void offerMashing(RecipeExporter exporter, SimpleFluid output, ItemConvertible input) {
+    private static void offerMashing(Consumer<RecipeJsonProvider> exporter, SimpleFluid output, ItemConvertible input) {
         MashingRecipeJsonBuilder.create(RecipeCategory.FOOD, output.getDefaultStack())
             .input(input, 8).criterion(hasItem(input), conditionsFromItem(input))
             .offerTo(exporter);
     }
 
-    private static void offerMashing(RecipeExporter exporter, SimpleFluid output, TagKey<Item> input) {
+    private static void offerMashing(Consumer<RecipeJsonProvider> exporter, SimpleFluid output, TagKey<Item> input) {
         MashingRecipeJsonBuilder.create(RecipeCategory.FOOD, output.getDefaultStack())
             .input(input, 8).criterion("has_" + input.id().getPath(), conditionsFromTag(input))
             .offerTo(exporter);
     }
 
     private static void offerDrying(
-            RecipeExporter exporter, ItemConvertible input,
+            Consumer<RecipeJsonProvider> exporter, ItemConvertible input,
             ItemConvertible output, int count, float experience, float cookingTime, String group) {
         DryingRecipeJsonBuilder.create(Ingredient.ofItems(input), RecipeCategory.FOOD, output, count, experience, cookingTime)
             .criterion(hasItem(input), conditionsFromItem(input))
@@ -491,7 +492,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
     }
 
-    private static void offerSmokeable(RecipeExporter exporter, ItemConvertible result, ItemConvertible filling) {
+    private static void offerSmokeable(Consumer<RecipeJsonProvider> exporter, ItemConvertible result, ItemConvertible filling) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, result)
             .input('#', filling).criterion(hasItem(filling), conditionsFromItem(filling))
             .input('-', Items.PAPER)
@@ -501,7 +502,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
     }
 
-    private static void offerBarrel(RecipeExporter exporter, ItemConvertible result, ItemConvertible planks) {
+    private static void offerBarrel(Consumer<RecipeJsonProvider> exporter, ItemConvertible result, ItemConvertible planks) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, result)
             .input('#', planks).criterion(hasItem(planks), conditionsFromItem(planks))
             .input('I', Items.IRON_INGOT)

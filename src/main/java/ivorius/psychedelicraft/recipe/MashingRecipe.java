@@ -10,6 +10,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -21,6 +22,7 @@ import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.CodecUtils;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
+import ivorius.psychedelicraft.util.compat.IngredientCompat;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import ivorius.psychedelicraft.util.compat.RecipeInput;
@@ -31,6 +33,7 @@ import ivorius.psychedelicraft.util.compat.RecipeInput;
  * Used by the mash table to produce a particular fluid from items dropped in.
  */
 public record MashingRecipe (
+        Identifier id,
         String mashingGroup,
         CraftingRecipeCategory category,
         ItemFluids.Predicate baseFluid,
@@ -38,6 +41,7 @@ public record MashingRecipe (
         Ingredients ingredients,
         int stewTime) implements Recipe<MashingRecipe.Input> {
     public static final MapCodec<MashingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Identifier.CODEC.fieldOf("id").forGetter(MashingRecipe::getId),
             Codec.STRING.optionalFieldOf("group", "").forGetter(MashingRecipe::mashingGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(MashingRecipe::category),
             ItemFluids.Predicate.CODEC.fieldOf("base_fluid").forGetter(MashingRecipe::baseFluid),
@@ -46,6 +50,7 @@ public record MashingRecipe (
             Codec.INT.optionalFieldOf("stew_time", 0).forGetter(MashingRecipe::stewTime)
     ).apply(instance, MashingRecipe::new));
     public static final PacketCodec<PacketByteBuf, MashingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.IDENTIFIER, MashingRecipe::id,
             PacketCodecs.STRING, MashingRecipe::mashingGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MashingRecipe::category,
             ItemFluids.Predicate.PACKET_CODEC, MashingRecipe::baseFluid,
@@ -54,6 +59,11 @@ public record MashingRecipe (
             PacketCodecs.INTEGER, MashingRecipe::stewTime,
             MashingRecipe::new
     );
+
+    @Override
+    public Identifier getId() {
+        return id;
+    }
 
     @Override
     public RecipeType<?> getType() {
@@ -104,7 +114,7 @@ public record MashingRecipe (
     }
 
     @Override
-    public ItemStack getResult(DynamicRegistryManager lookup) {
+    public ItemStack getOutput(DynamicRegistryManager lookup) {
         return ItemStack.EMPTY;
     }
 
@@ -167,7 +177,7 @@ public record MashingRecipe (
         public record Entry(Ingredient ingredient, int minimum) {
             public static final Entry EMPTY = new Entry(Ingredient.EMPTY, 0);
             public static final Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(
-                    Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(Entry::ingredient),
+                    IngredientCompat.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(Entry::ingredient),
                     Codec.INT.fieldOf("count").forGetter(Entry::minimum)
             ).apply(i, Entry::new));
             public static final PacketCodec<PacketByteBuf, Entry> PACKET_CODEC = PacketCodec.tuple(

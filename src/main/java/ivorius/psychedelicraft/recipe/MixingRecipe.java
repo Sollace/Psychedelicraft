@@ -12,6 +12,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -24,6 +25,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.compat.IngredientCompat;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
 
@@ -40,13 +42,15 @@ import ivorius.psychedelicraft.util.compat.PacketCodecs;
  */
 public class MixingRecipe extends ShapelessRecipe {
     public static final MapCodec<MixingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Identifier.CODEC.fieldOf("id").forGetter(MixingRecipe::getId),
             Codec.STRING.optionalFieldOf("group", "").forGetter(MixingRecipe::getGroup),
             CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(MixingRecipe::getCategory),
             ItemFluids.CODEC.fieldOf("result").forGetter(MixingRecipe::getOutputFluid),
-            Ingredient.ALLOW_EMPTY_CODEC.fieldOf("receptical").forGetter(i -> i.receptical),
+            IngredientCompat.ALLOW_EMPTY_CODEC.fieldOf("receptical").forGetter(i -> i.receptical),
             RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(i -> i.input)
     ).apply(instance, MixingRecipe::new));
     public static final PacketCodec<PacketByteBuf, MixingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.IDENTIFIER, MixingRecipe::getId,
             PacketCodecs.STRING, MixingRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, MixingRecipe::getCategory,
             ItemFluids.PACKET_CODEC, MixingRecipe::getOutputFluid,
@@ -59,12 +63,13 @@ public class MixingRecipe extends ShapelessRecipe {
     private final ItemFluids output;
 
     public MixingRecipe(
+            Identifier id,
             String group,
             CraftingRecipeCategory category,
             ItemFluids output,
             Ingredient receptical,
             DefaultedList<Ingredient> input) {
-        super(group, category, ItemStack.EMPTY, RecipeUtils.checkLength(RecipeUtils.union(input, receptical)));
+        super(id, group, category, ItemStack.EMPTY, RecipeUtils.checkLength(RecipeUtils.union(input, receptical)));
         this.receptical = receptical;
         this.input = input;
         this.output = output;
@@ -92,7 +97,7 @@ public class MixingRecipe extends ShapelessRecipe {
     }
 
     @Override
-    public final ItemStack getResult(DynamicRegistryManager registryManager) {
+    public final ItemStack getOutput(DynamicRegistryManager registryManager) {
         return receptical.getMatchingStacks()[0];
     }
 

@@ -17,13 +17,23 @@ import net.minecraft.util.math.intprovider.IntProvider;
 public interface PacketCodecUtils {
     PacketCodec<ByteBuf, Optional<Integer>> OPTIONAL_INT = PacketCodecs.optional(PacketCodecs.INTEGER);
     PacketCodec<ByteBuf, Optional<Long>> OPTIONAL_VAR_LONG = PacketCodecs.optional(PacketCodecs.VAR_LONG);
-    PacketCodec<ByteBuf, IntRange> INT_RANGE = PacketCodec.tuple(
-            OPTIONAL_INT, IntRange::min,
-            OPTIONAL_INT, IntRange::max,
-            OPTIONAL_VAR_LONG, IntRange::minSquared,
-            OPTIONAL_VAR_LONG, IntRange::maxSquared,
-            IntRange::new
-    );
+    PacketCodec<ByteBuf, IntRange> INT_RANGE = PacketCodec.ofStatic((buffer, range) -> {
+        OPTIONAL_INT.encode(buffer, Optional.ofNullable(range.getMin()));
+        OPTIONAL_INT.encode(buffer, Optional.ofNullable(range.getMax()));
+    }, buffer -> {
+        Optional<Integer> min = OPTIONAL_INT.decode(buffer);
+        Optional<Integer> max = OPTIONAL_INT.decode(buffer);
+        if (min.isPresent() && max.isPresent()) {
+            return IntRange.between(min.get(), max.get());
+        }
+        if (min.isPresent()) {
+            return IntRange.atLeast(min.get());
+        }
+        if (max.isPresent()) {
+            return IntRange.atMost(max.get());
+        }
+        return IntRange.ANY;
+    });
     PacketCodec<PacketByteBuf, IntProvider> INT_PROVIDER_VALUE_CODEC = PacketCodecs.optional(PacketCodecs.NBT_ELEMENT).xmap(
             nbt -> nbt.flatMap(i -> IntProvider.VALUE_CODEC.decode(NbtOps.INSTANCE, i).result().map(pair -> pair.getFirst())).orElseThrow(),
             input -> IntProvider.VALUE_CODEC.encodeStart(NbtOps.INSTANCE, input).result());

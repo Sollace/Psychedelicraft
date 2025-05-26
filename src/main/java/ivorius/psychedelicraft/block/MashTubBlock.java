@@ -7,8 +7,6 @@ package ivorius.psychedelicraft.block;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
-
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.fluid.*;
@@ -182,10 +180,7 @@ public class MashTubBlock extends FluidMachineBlock<MashTubBlockEntity> implemen
     }
 
     @Override
-    public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-        if (player == null) {
-            return false;
-        }
+    public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         return world.getBlockEntity(pos, getBlockEntityType()).filter(be -> {
             Resovoir tank = be.getPrimaryTank();
             return (tank.getContents().isEmpty()

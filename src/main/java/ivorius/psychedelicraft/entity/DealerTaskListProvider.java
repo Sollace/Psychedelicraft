@@ -38,7 +38,6 @@ import net.minecraft.entity.ai.brain.task.VillagerWorkTask;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -78,7 +77,6 @@ public class DealerTaskListProvider {
                         DryingRecipe.Input input = new DryingRecipe.Input(output, entity.getInventory().stacks);
 
                         world.getRecipeManager().getFirstMatch(PSRecipes.DRYING_TYPE, input, world)
-                                .map(RecipeEntry::value)
                                 .ifPresent(recipe -> {
                                     ItemStack result = recipe.craft(input, world.getRegistryManager());
                                     DefaultedList<ItemStack> remainder = recipe.getRemainder(input);

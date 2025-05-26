@@ -6,6 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -27,12 +28,14 @@ import ivorius.psychedelicraft.util.compat.PacketCodecs;
  */
 public class ChangeRecepticalRecipe extends ShapelessRecipe {
     public static final MapCodec<ChangeRecepticalRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Identifier.CODEC.fieldOf("id").forGetter(ChangeRecepticalRecipe::getId),
             Codec.STRING.optionalFieldOf("group", "").forGetter(ChangeRecepticalRecipe::getGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ChangeRecepticalRecipe::getCategory),
             ItemStack.CODEC.fieldOf("result").forGetter(recipe -> recipe.output),
             RecipeUtils.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ChangeRecepticalRecipe::getIngredients)
     ).apply(instance, ChangeRecepticalRecipe::new));
     public static final PacketCodec<PacketByteBuf, ChangeRecepticalRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.IDENTIFIER, ChangeRecepticalRecipe::getId,
             PacketCodecs.STRING, ChangeRecepticalRecipe::getGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ChangeRecepticalRecipe::getCategory,
             PacketCodecs.ITEM_STACK, recipe -> recipe.output,
@@ -42,8 +45,8 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
 
     private final ItemStack output;
 
-    public ChangeRecepticalRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
-        super(group, category, output, input);
+    public ChangeRecepticalRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
+        super(id, group, category, output, input);
         this.output = output;
     }
 
@@ -59,6 +62,6 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
 
     @Override
     public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
-        return RecipeUtils.copyInputFluidToResult(getResult(registries).copy(), RecipeUtils.stacks(inventory).toList());
+        return RecipeUtils.copyInputFluidToResult(getOutput(registries).copy(), RecipeUtils.stacks(inventory).toList());
     }
 }

@@ -7,8 +7,6 @@ package ivorius.psychedelicraft.block;
 
 import java.util.*;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.mojang.datafixers.util.Either;
 import ivorius.psychedelicraft.block.entity.*;
 import net.minecraft.block.*;
@@ -118,13 +116,10 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-        if (player == null) {
-            return false;
-        }
+    public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
         return getValidMasterPosition(world, pos).filter(center -> {
             BlockState masterState = world.getBlockState(center);
-            return masterState.getBlock() instanceof FluidFillable fillable && fillable.canFillWithFluid(player, world, center, masterState, fluid);
+            return masterState.getBlock() instanceof FluidFillable fillable && fillable.canFillWithFluid(world, center, masterState, fluid);
         }).isPresent();
     }
 

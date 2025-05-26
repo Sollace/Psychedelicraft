@@ -20,11 +20,9 @@ import ivorius.psychedelicraft.util.compat.ItemSubPredicate;
 import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
-import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.advancement.AdvancementRequirements;
-import net.minecraft.advancement.AdvancementRequirements.CriterionMerger;
+import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.item.Item;
@@ -41,10 +39,10 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
     }
 
     @Override
-    public void generateAdvancement(Consumer<AdvancementEntry> exporter) {
+    public void generateAdvancement(Consumer<Advancement> exporter) {
         PSAdvancementBuilder.create(Psychedelicraft.id("root"), PSItems.CANNABIS_LEAF)
             .doNotAnnounce()
-            .criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
+            .criteriaMerger(CriterionMerger.OR)
             .criterion("crafting_table", items(Items.CRAFTING_TABLE))
             .build(exporter)
             .children(root -> {
@@ -132,13 +130,13 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                                         .icon(icon -> StackCompat.set(icon, PSComponents.FLUIDS, AlcoholicFluid.DISTILLATION.set(AlcoholicFluid.FERMENTATION.set(PSFluids.RED_GRAPES.getDefaultStack(), 1), 7)))
                                         .criteriaMerger(CriterionMerger.OR)
                                         .criterion("drink_brandy", ConsumeItemCriterion.Conditions.predicate(ItemPredicate.Builder.create()
-                                                .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, DrinkType.Predicate.create(DrinkType.BRANDY)).build())))
+                                                .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, DrinkType.Predicate.create(DrinkType.BRANDY)).build()).build()))
                                         .build(exporter);
                                     washGrapes.child(Psychedelicraft.id("drink_brandy"), PSItems.WOODEN_MUG)
                                         .icon(icon -> StackCompat.set(icon, PSComponents.FLUIDS, AlcoholicFluid.DISTILLATION.set(AlcoholicFluid.FERMENTATION.set(PSFluids.RED_GRAPES.getDefaultStack(), 1), 7)))
                                         .criteriaMerger(CriterionMerger.OR)
                                         .criterion("drink_basi", ConsumeItemCriterion.Conditions.predicate(ItemPredicate.Builder.create()
-                                                .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, DrinkType.Predicate.create(DrinkType.WINE, PSFluids.RED_GRAPES)).build())))
+                                                .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, DrinkType.Predicate.create(DrinkType.WINE, PSFluids.RED_GRAPES)).build()).build()))
                                         .build(exporter);
                                     washGrapes.child(Psychedelicraft.id("splitting_headache"), PSItems.BOTTLE)
                                         .criteriaMerger(CriterionMerger.OR)
@@ -156,7 +154,7 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                                         .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, new DrinkType.Predicate(Optional.of(ItemFluids.Predicate.builder()
                                                 .fluid(PSFluids.WHEAT, PSFluids.WHEAT_HOP)
                                                 .attribute("maturation", IntRange.atMost(6))
-                                                .build()), DrinkType.BEER)).build())))
+                                                .build()), DrinkType.BEER)).build()).build()))
                                 .build(exporter)
                                 .child(Psychedelicraft.id("drink_mature_beer"), PSItems.WOODEN_MUG)
                                     .icon(icon -> StackCompat.set(icon, PSComponents.FLUIDS, AlcoholicFluid.FERMENTATION.set(PSFluids.WHEAT_HOP.getDefaultStack(), 2)))
@@ -165,7 +163,7 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                                             .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, new DrinkType.Predicate(Optional.of(ItemFluids.Predicate.builder()
                                                     .fluid(PSFluids.WHEAT, PSFluids.WHEAT_HOP)
                                                     .attribute("maturation", IntRange.atLeast(7))
-                                                    .build()), DrinkType.BEER)).build())))
+                                                    .build()), DrinkType.BEER)).build()).build()))
                                     .build(exporter);
                         makeMashTub.child(Psychedelicraft.id("wash_sugar_cane"), Items.SUGAR_CANE)
                             .criteriaMerger(CriterionMerger.OR)
@@ -175,13 +173,13 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                                     .icon(icon -> StackCompat.set(icon, PSComponents.FLUIDS, AlcoholicFluid.FERMENTATION.set(PSFluids.SUGAR_CANE.getDefaultStack(), 2)))
                                     .criteriaMerger(CriterionMerger.OR)
                                     .criterion("drink_basi", ConsumeItemCriterion.Conditions.predicate(ItemPredicate.Builder.create()
-                                            .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, DrinkType.Predicate.create(DrinkType.BASI, PSFluids.SUGAR_CANE)).build())))
+                                            .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, DrinkType.Predicate.create(DrinkType.BASI, PSFluids.SUGAR_CANE)).build()).build()))
                                     .build(exporter);
                                 washSugarCane.child(Psychedelicraft.id("drink_rum"), PSItems.WOODEN_MUG)
                                     .icon(icon -> StackCompat.set(icon, PSComponents.FLUIDS, AlcoholicFluid.FERMENTATION.set(PSFluids.WHEAT_HOP.getDefaultStack(), 2)))
                                     .criteriaMerger(CriterionMerger.OR)
                                     .criterion("drink_rum", ConsumeItemCriterion.Conditions.predicate(ItemPredicate.Builder.create()
-                                            .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, DrinkType.Predicate.create(DrinkType.RUM, PSFluids.SUGAR_CANE)).build())))
+                                            .nbt(new ItemSubPredicate.PredicateBuilder().add(PSSubPredicates.DRINK_TYPE, DrinkType.Predicate.create(DrinkType.RUM, PSFluids.SUGAR_CANE)).build()).build()))
                                     .build(exporter);
                             });
                         makeMashTub.child(Psychedelicraft.id("make_distillery"), PSItems.DISTILLERY)
@@ -200,7 +198,7 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
         });
     }
 
-    public static AdvancementCriterion<InventoryChangedCriterion.Conditions> tag(TagKey<Item> tag) {
-        return items(ItemPredicate.Builder.create().tag(tag));
+    public static InventoryChangedCriterion.Conditions tag(TagKey<Item> tag) {
+        return items(ItemPredicate.Builder.create().tag(tag).build());
     }
 }

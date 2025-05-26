@@ -19,11 +19,13 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.world.World;
 
-public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, List<FluidIngredient> impurities, ItemStack result, IntProvider amount, int hardeningTime) implements Recipe<HardeningRecipe.Input> {
+public record HardeningRecipe(Identifier id, String hardeningGroup, FluidIngredient coreFluid, List<FluidIngredient> impurities, ItemStack result, IntProvider amount, int hardeningTime) implements Recipe<HardeningRecipe.Input> {
     public static final MapCodec<HardeningRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+            Identifier.CODEC.fieldOf("id").forGetter(HardeningRecipe::getId),
             Codec.STRING.fieldOf("group").forGetter(HardeningRecipe::hardeningGroup),
             FluidIngredient.CODEC.fieldOf("core_fluid").forGetter(HardeningRecipe::coreFluid),
             FluidIngredient.CODEC.listOf().fieldOf("impurities").forGetter(HardeningRecipe::impurities),
@@ -32,6 +34,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
             Codec.INT.optionalFieldOf("hardening_time", 20).forGetter(HardeningRecipe::hardeningTime)
     ).apply(i, HardeningRecipe::new));
     public static final PacketCodec<PacketByteBuf, HardeningRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.IDENTIFIER, HardeningRecipe::getId,
             PacketCodecs.STRING, HardeningRecipe::hardeningGroup,
             FluidIngredient.PACKET_CODEC, HardeningRecipe::coreFluid,
             FluidIngredient.PACKET_CODEC.collect(PacketCodecs.toList()), HardeningRecipe::impurities,
@@ -40,6 +43,11 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
             PacketCodecs.INTEGER, HardeningRecipe::hardeningTime,
             HardeningRecipe::new
     );
+
+    @Override
+    public Identifier getId() {
+        return id;
+    }
 
     @Override
     public ItemStack createIcon() {
@@ -77,7 +85,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
 
     @Override
     public ItemStack craft(Input input, DynamicRegistryManager lookup) {
-        return getResult(lookup);
+        return getOutput(lookup);
     }
 
     @Override
@@ -86,7 +94,7 @@ public record HardeningRecipe(String hardeningGroup, FluidIngredient coreFluid, 
     }
 
     @Override
-    public ItemStack getResult(DynamicRegistryManager lookup) {
+    public ItemStack getOutput(DynamicRegistryManager lookup) {
         return result;
     }
 

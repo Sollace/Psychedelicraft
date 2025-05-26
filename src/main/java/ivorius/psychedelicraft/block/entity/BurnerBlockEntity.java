@@ -206,9 +206,9 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
                 consumer
         );
         world.getRecipeManager().getFirstMatch(PSRecipes.CHEMISTRY, input, world).ifPresentOrElse(recipe -> {
-            if (++processingTime >= recipe.value().stewTime()) {
+            if (++processingTime >= recipe.stewTime()) {
                 processingTime = 0;
-                ItemStack byProduct = recipe.value().craft(input, world.getRegistryManager());
+                ItemStack byProduct = recipe.craft(input, world.getRegistryManager());
                 if (!byProduct.isEmpty()) {
                     input.consumer().accept(byProduct);
                 }

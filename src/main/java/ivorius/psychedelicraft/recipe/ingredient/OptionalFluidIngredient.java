@@ -12,6 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.compat.IngredientCompat;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
@@ -28,7 +29,7 @@ public record OptionalFluidIngredient (
     public static final OptionalFluidIngredient EMPTY = new OptionalFluidIngredient(Optional.empty(), Optional.empty());
     public static final MapCodec<OptionalFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             FluidIngredient.CODEC.optionalFieldOf("fluid").forGetter(OptionalFluidIngredient::fluid),
-            Ingredient.DISALLOW_EMPTY_CODEC.optionalFieldOf("receptical").forGetter(OptionalFluidIngredient::receptical)
+            IngredientCompat.DISALLOW_EMPTY_CODEC.optionalFieldOf("receptical").forGetter(OptionalFluidIngredient::receptical)
     ).apply(i, OptionalFluidIngredient::new));
     public static final Codec<DefaultedList<OptionalFluidIngredient>> LIST_CODEC = CODEC.codec().listOf().xmap(
             values -> DefaultedList.copyOf(EMPTY, values.toArray(OptionalFluidIngredient[]::new)),

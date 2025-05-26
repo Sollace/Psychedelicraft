@@ -83,6 +83,6 @@ public class TrayBlock extends BlockWithEntity {
     public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
         return world.isClient
                 ? null
-                : validateTicker(type, PSBlockEntities.TRAY, (w, p, s, entity) -> entity.tick((ServerWorld)w));
+                : checkType(type, PSBlockEntities.TRAY, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
 }

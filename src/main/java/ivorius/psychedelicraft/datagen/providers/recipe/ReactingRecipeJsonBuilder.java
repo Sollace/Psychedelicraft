@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.datagen.providers.recipe;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -12,12 +13,12 @@ import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.ReactingRecipe;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriterionMerger;
+import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.RecipeJsonBuilder;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -30,7 +31,9 @@ import net.minecraft.util.collection.DefaultedList;
 
 public class ReactingRecipeJsonBuilder extends RecipeJsonBuilder implements FluidRecipeJsonBuilder {
     private final RecipeCategory category;
-    private final Map<String, AdvancementCriterion<?>> criterions = new LinkedHashMap<>();
+    private final Map<String, CriterionConditions> criterions = new LinkedHashMap<>();
+    private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
+
     @Nullable
     private String group;
 
@@ -84,7 +87,7 @@ public class ReactingRecipeJsonBuilder extends RecipeJsonBuilder implements Flui
     }
 
     @Override
-    public ReactingRecipeJsonBuilder criterion(String name, AdvancementCriterion<?> criterion) {
+    public ReactingRecipeJsonBuilder criterion(String name, CriterionConditions criterion) {
         criterions.put(name, criterion);
         return this;
     }
@@ -101,21 +104,22 @@ public class ReactingRecipeJsonBuilder extends RecipeJsonBuilder implements Flui
     }
 
     @Override
-    public void offerTo(RecipeExporter exporter, Identifier recipeId) {
+    public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         recipeId = recipeId.withSuffixedPath("_from_reacting");
         validate(recipeId);
-        Advancement.Builder builder = exporter.getAdvancementBuilder()
+        Advancement.Builder builder = advancementBuilder
             .criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
             .rewards(AdvancementRewards.Builder.recipe(recipeId))
-            .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
+            .criteriaMerger(CriterionMerger.OR);
         criterions.forEach(builder::criterion);
-        exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.REACTING, new ReactingRecipe(
+        exporter.accept(RecipeJsonBuilderCompat.createProvider(PSRecipes.REACTING, new ReactingRecipe(
+                recipeId,
                 Objects.requireNonNullElse(group, ""),
                 getCraftingCategory(category),
                 new ReactingRecipe.Result(output, new ItemStack(byProduct)),
                 new ReactingRecipe.Ingredients(inputFluids, inputItems),
                 stewTime
-            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
+            ), builder, recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
     }
 
     private void validate(Identifier recipeId) {

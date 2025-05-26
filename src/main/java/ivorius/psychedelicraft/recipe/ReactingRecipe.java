@@ -10,6 +10,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -20,6 +21,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import ivorius.psychedelicraft.util.compat.IngredientCompat;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import ivorius.psychedelicraft.util.CodecUtils;
@@ -31,12 +33,14 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
  * Used by the bunsen burner to produce the correct fluid type for ingredients dropped into it
  */
 public record ReactingRecipe (
+        Identifier id,
         String reducingGroup,
         CraftingRecipeCategory category,
         Result result,
         Ingredients ingredients,
         int stewTime) implements BunsenBurnerRecipe {
     public static final MapCodec<ReactingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Identifier.CODEC.fieldOf("id").forGetter(ReactingRecipe::getId),
             Codec.STRING.optionalFieldOf("group", "").forGetter(ReactingRecipe::reducingGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ReactingRecipe::category),
             Result.CODEC.fieldOf("result").forGetter(ReactingRecipe::result),
@@ -44,6 +48,7 @@ public record ReactingRecipe (
             Codec.INT.optionalFieldOf("stew_time", 0).forGetter(ReactingRecipe::stewTime)
     ).apply(instance, ReactingRecipe::new));
     public static final PacketCodec<PacketByteBuf, ReactingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.IDENTIFIER, ReactingRecipe::getId,
             PacketCodecs.STRING, ReactingRecipe::reducingGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ReactingRecipe::category,
             Result.PACKET_CODEC, ReactingRecipe::result,
@@ -51,6 +56,11 @@ public record ReactingRecipe (
             PacketCodecs.INTEGER, ReactingRecipe::stewTime,
             ReactingRecipe::new
     );
+
+    @Override
+    public Identifier getId() {
+        return id;
+    }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
@@ -94,7 +104,7 @@ public record ReactingRecipe (
     }
 
     @Override
-    public ItemStack getResult(DynamicRegistryManager lookup) {
+    public ItemStack getOutput(DynamicRegistryManager lookup) {
         return result.byProduct();
     }
 
@@ -125,7 +135,7 @@ public record ReactingRecipe (
     ) {
         public static final MapCodec<Ingredients> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 CodecUtils.toDefaultedList(FluidIngredient.CODEC, FluidIngredient.EMPTY).optionalFieldOf("fluids", DefaultedList.of()).forGetter(Ingredients::fluids),
-                CodecUtils.toDefaultedList(Ingredient.DISALLOW_EMPTY_CODEC, Ingredient.EMPTY).optionalFieldOf("solids", DefaultedList.of()).forGetter(Ingredients::solids)
+                CodecUtils.toDefaultedList(IngredientCompat.DISALLOW_EMPTY_CODEC, Ingredient.EMPTY).optionalFieldOf("solids", DefaultedList.of()).forGetter(Ingredients::solids)
         ).apply(instance, Ingredients::new));
         public static final PacketCodec<PacketByteBuf, Ingredients> PACKET_CODEC = PacketCodec.tuple(
                 FluidIngredient.PACKET_CODEC.collect(PacketCodecUtils.toDefaultedList()), Ingredients::fluids,

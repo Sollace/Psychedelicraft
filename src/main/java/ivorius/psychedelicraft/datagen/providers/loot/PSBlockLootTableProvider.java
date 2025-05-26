@@ -4,7 +4,6 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.BurdenedLatticeBlock;
@@ -19,6 +18,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
+import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
@@ -301,7 +301,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
 
     @SuppressWarnings("deprecation")
     static <T extends Comparable<T>> LootCondition.Builder rangedStateCondition(Block block, Property<T> property, @Nullable T min, @Nullable T max) {
-        return () -> BlockStatePropertyLootCondition.CODEC.decode(JsonOps.INSTANCE, Util.make(new JsonObject(), json -> {
+        return () -> LootDataType.PREDICATES.getGson().fromJson(Util.make(new JsonObject(), json -> {
             json.addProperty("block", block.getRegistryEntry().getKey().get().getValue().toString());
             json.addProperty("condition", Registries.LOOT_CONDITION_TYPE.getId(LootConditionTypes.BLOCK_STATE_PROPERTY).toString());
             json.add("properties", Util.make(new JsonObject(), o -> {
@@ -310,7 +310,7 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                     if (max != null) oo.addProperty("max", String.valueOf(max));
                 }));
             }));
-        })).getOrThrow(false, s -> {}).getFirst();
+        }), BlockStatePropertyLootCondition.class);
     }
 
     private LootTable.Builder dynamicContentDrops(Block block) {

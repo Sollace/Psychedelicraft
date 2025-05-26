@@ -159,7 +159,7 @@ public class BurnerBlock extends BlockWithEntity {
     @Nullable
     public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
         return world.isClient
-                ? validateTicker(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.clientTick(w))
-                : validateTicker(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.tick((ServerWorld)w));
+                ? checkType(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.clientTick(w))
+                : checkType(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
 }

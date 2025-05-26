@@ -15,7 +15,7 @@ accessible          method   net/minecraft/client/render/RenderPhase$TextureBase
 accessible          field    net/minecraft/client/render/RenderLayer$MultiPhaseParameters     texture        Lnet/minecraft/client/render/RenderPhase$TextureBase;
 accessible          field    net/minecraft/item/ItemGroups                                    displayContext Lnet/minecraft/item/ItemGroup$DisplayContext;
 
-mutable             field    net/minecraft/loot/LootTable                                     pools          Ljava/util/List;
-accessible          field    net/minecraft/loot/LootTable                                     pools          Ljava/util/List;
+mutable             field    net/minecraft/loot/LootTable                                     pools          [Lnet/minecraft/loot/LootPool;
+accessible          field    net/minecraft/loot/LootTable                                     pools          [Lnet/minecraft/loot/LootPool;
 
 extendable          method   net/minecraft/block/CropBlock                                    isMature    (Lnet/minecraft/block/BlockState;)Z

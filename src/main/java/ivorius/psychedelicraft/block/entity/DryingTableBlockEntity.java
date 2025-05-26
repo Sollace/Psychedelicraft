@@ -121,7 +121,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
                     DryingRecipe.Input input = new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList());
                     world.getRecipeManager()
                         .getFirstMatch(PSRecipes.DRYING_TYPE, input, world, currentRecipe.get())
-                        .ifPresent(recipe -> craft(recipe.getSecond().value(), input));
+                        .ifPresent(recipe -> craft(recipe.getSecond(), input));
                     currentRecipe = Optional.empty();
                     dryingProgress = 0;
                     cookingTime = 0;
@@ -190,7 +190,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
                     .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), getWorld())
                     .ifPresentOrElse(recipe -> {
                         currentRecipe = Optional.of(recipe.id());
-                        cookingTime = getCookingTime(recipe.value().cookTime(), getCachedState().isOf(PSBlocks.IRON_DRYING_TABLE));
+                        cookingTime = getCookingTime(recipe.cookTime(), getCachedState().isOf(PSBlocks.IRON_DRYING_TABLE));
                     }, () -> {
                         currentRecipe = Optional.empty();
                         cookingTime = 0;

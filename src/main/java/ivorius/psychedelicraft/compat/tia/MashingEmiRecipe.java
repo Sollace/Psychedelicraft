@@ -9,7 +9,6 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
-import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -18,7 +17,7 @@ class MashingEmiRecipe implements PSRecipe {
     private static final TextureConfig IN_VAT = TextureConfig.builder().size(60, 44).texture(TEXTURE).uv(57, 15).build();
     private static final TextureConfig OUT_VAT = TextureConfig.builder().size(30, 20).texture(TEXTURE).uv(28, 10).textureSize(128, 128).build();
 
-    private final RecipeEntry<MashingRecipe> recipe;
+    private final MashingRecipe recipe;
     private final List<TlaIngredient> input;
 
     private final ItemFluids outputFluid;
@@ -27,14 +26,14 @@ class MashingEmiRecipe implements PSRecipe {
     private final List<ItemFluids> baseFluids;
     private final TlaIngredient fluidIngredient;
 
-    public MashingEmiRecipe(RecipeEntry<MashingRecipe> recipe) {
+    public MashingEmiRecipe(MashingRecipe recipe) {
         this.recipe = recipe;
         this.input = RecipeUtil.grouped(
-                recipe.value().getIngredients().stream().map(TlaIngredient::ofIngredient)
+                recipe.getIngredients().stream().map(TlaIngredient::ofIngredient)
         ).toList();
-        this.outputFluid = recipe.value().result().ofAmount(FluidVolumes.VAT);
+        this.outputFluid = recipe.result().ofAmount(FluidVolumes.VAT);
         this.output = RecipeUtil.toTlaStack(outputFluid);
-        this.baseFluids = RecipeUtil.getMatchingFluids(recipe.value().baseFluid(), FluidVolumes.VAT);
+        this.baseFluids = RecipeUtil.getMatchingFluids(recipe.baseFluid(), FluidVolumes.VAT);
         this.fluidIngredient = TlaIngredient.join(baseFluids.stream().map(RecipeUtil::toIngredient).toList());
     }
 
@@ -45,7 +44,7 @@ class MashingEmiRecipe implements PSRecipe {
 
     @Override
     public Identifier getId() {
-        return recipe.id();
+        return recipe.getId();
     }
 
     @Override
@@ -68,7 +67,7 @@ class MashingEmiRecipe implements PSRecipe {
         int x = 7;
         int y = 0;
 
-        widgets.addArrow(60 + x, 21 + y, false).addTooltip(Text.translatable("gui.psychedelicraft.recipe.stewing_time", recipe.value().stewTime()));
+        widgets.addArrow(60 + x, 21 + y, false).addTooltip(Text.translatable("gui.psychedelicraft.recipe.stewing_time", recipe.stewTime()));
         widgets.addAnimatedArrow(60 + x, 21 + y, 5000);
         var inBox = FluidBoxWidget.create(baseFluids, FluidVolumes.VAT, x, 17 + y, 60, 31, widgets);
         widgets.addTexture(IN_VAT, x, 5 + y);

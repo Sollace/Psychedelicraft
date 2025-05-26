@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -14,12 +15,12 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.MashingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriterionMerger;
+import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.RecipeJsonBuilder;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -37,7 +38,9 @@ public class MashingRecipeJsonBuilder extends RecipeJsonBuilder implements Fluid
             .build();
 	private final RecipeCategory category;
 
-	private final Map<String, AdvancementCriterion<?>> criteria = new LinkedHashMap<>();
+	private final Map<String, CriterionConditions> criteria = new LinkedHashMap<>();
+
+	private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
 
 	@Nullable
 	private String group;
@@ -60,7 +63,7 @@ public class MashingRecipeJsonBuilder extends RecipeJsonBuilder implements Fluid
 	}
 
 	@Override
-    public MashingRecipeJsonBuilder criterion(String name, AdvancementCriterion<?> criterion) {
+    public MashingRecipeJsonBuilder criterion(String name, CriterionConditions criterion) {
 		this.criteria.put(name, criterion);
 		return this;
 	}
@@ -108,15 +111,16 @@ public class MashingRecipeJsonBuilder extends RecipeJsonBuilder implements Fluid
     }
 
 	@Override
-	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
+	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
 	    recipeId = recipeId.withSuffixedPath("_from_mashing");
 		validate(recipeId);
-		Advancement.Builder builder = exporter.getAdvancementBuilder()
+		Advancement.Builder builder = advancementBuilder
 			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
-			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
+			.criteriaMerger(CriterionMerger.OR);
 		criteria.forEach(builder::criterion);
-		exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.MASHING, new MashingRecipe(
+		exporter.accept(RecipeJsonBuilderCompat.createProvider(PSRecipes.MASHING, new MashingRecipe(
+		        recipeId,
 	            Objects.requireNonNullElse(group, ""),
 	            getCraftingCategory(category),
 	            baseFluid,
@@ -126,7 +130,7 @@ public class MashingRecipeJsonBuilder extends RecipeJsonBuilder implements Fluid
                         ingredients.toArray(MashingRecipe.Ingredients.Entry[]::new)
                 )),
 	            stewTime
-        ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
+        ), builder, recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
 	}
 
 	private void validate(Identifier recipeId) {

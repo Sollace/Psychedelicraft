@@ -3,18 +3,20 @@ package ivorius.psychedelicraft.datagen.providers.recipe;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.recipe.ChangeRecepticalRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriterionMerger;
+import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.RecipeJsonBuilder;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -29,7 +31,8 @@ public class RecepticalAlteringShapelessRecipeJsonBuilder extends RecipeJsonBuil
     private final Item output;
     private final int count;
     private final DefaultedList<Ingredient> inputs = DefaultedList.of();
-    private final Map<String, AdvancementCriterion<?>> advancementBuilder = new LinkedHashMap<>();
+    private final Map<String, CriterionConditions> criteria = new LinkedHashMap<>();
+    private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
     @Nullable
     private String group;
 
@@ -71,8 +74,8 @@ public class RecepticalAlteringShapelessRecipeJsonBuilder extends RecipeJsonBuil
     }
 
     @Override
-    public RecepticalAlteringShapelessRecipeJsonBuilder criterion(String name, AdvancementCriterion<?> criterion) {
-        advancementBuilder.put(name, criterion);
+    public RecepticalAlteringShapelessRecipeJsonBuilder criterion(String name, CriterionConditions criterion) {
+        criteria.put(name, criterion);
         return this;
     }
 
@@ -88,23 +91,24 @@ public class RecepticalAlteringShapelessRecipeJsonBuilder extends RecipeJsonBuil
     }
 
     @Override
-    public void offerTo(RecipeExporter exporter, Identifier recipeId) {
+    public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         validate(recipeId);
-        Advancement.Builder builder = exporter.getAdvancementBuilder()
+        Advancement.Builder builder = advancementBuilder
             .criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
             .rewards(AdvancementRewards.Builder.recipe(recipeId))
-            .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
-        advancementBuilder.forEach(builder::criterion);
-        exporter.accept(RecipeJsonBuilderCompat.createProvider(recipeId, PSRecipes.CHANGE_RECEPTICAL, new ChangeRecepticalRecipe(
+            .criteriaMerger(CriterionMerger.OR);
+        criteria.forEach(builder::criterion);
+        exporter.accept(RecipeJsonBuilderCompat.createProvider(PSRecipes.CHANGE_RECEPTICAL, new ChangeRecepticalRecipe(
+                recipeId,
                 Objects.requireNonNullElse(group, ""),
                 getCraftingCategory(category),
                 new ItemStack(output, count),
                 inputs
-            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/"))));
+            ), builder, recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
     }
 
     private void validate(Identifier recipeId) {
-        if (advancementBuilder.isEmpty()) {
+        if (criteria.isEmpty()) {
             throw new IllegalStateException("No way of obtaining recipe " + recipeId);
         }
     }

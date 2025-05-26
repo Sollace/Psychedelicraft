@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -21,8 +22,8 @@ import net.minecraft.world.World;
  * cup of water + empty bucket -> empty cup + bucket (partially filled) of water
  */
 public class PouringRecipe extends SpecialCraftingRecipe {
-    public PouringRecipe(CraftingRecipeCategory category) {
-        super(category);
+    public PouringRecipe(Identifier id, CraftingRecipeCategory category) {
+        super(id, category);
     }
 
     @Override

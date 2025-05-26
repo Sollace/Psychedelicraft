@@ -11,6 +11,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import java.lang.ref.WeakReference;
@@ -49,20 +50,22 @@ import ivorius.psychedelicraft.util.compat.PacketCodecs;
  */
 public class SmeltingFluidRecipe extends SmeltingRecipe {
     public static final MapCodec<SmeltingFluidRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Identifier.CODEC.fieldOf("id").forGetter(SmeltingFluidRecipe::getId),
             Codec.STRING.optionalFieldOf("group", "").forGetter(SmeltingFluidRecipe::getGroup),
             CookingRecipeCategory.CODEC.fieldOf("category").orElse(CookingRecipeCategory.MISC).forGetter(SmeltingFluidRecipe::getCategory),
             OptionalFluidIngredient.CODEC.fieldOf("input").forGetter(recipe -> recipe.input),
             FluidModifyingResult.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
             Codec.FLOAT.fieldOf("experience").forGetter(SmeltingFluidRecipe::getExperience),
-            Codec.INT.optionalFieldOf("cookingTIme", 200).forGetter(SmeltingFluidRecipe::getCookingTime)
+            Codec.INT.optionalFieldOf("cookingTIme", 200).forGetter(SmeltingFluidRecipe::getCookTime)
         ).apply(instance, SmeltingFluidRecipe::new));
     public static final PacketCodec<PacketByteBuf, SmeltingFluidRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.IDENTIFIER, SmeltingFluidRecipe::getId,
             PacketCodecs.STRING, SmeltingFluidRecipe::getGroup,
             RecipeUtils.COOKING_RECIPE_CATEGORY_PACKET_CODEC, SmeltingFluidRecipe::getCategory,
             OptionalFluidIngredient.PACKET_CODEC, recipe -> recipe.input,
             FluidModifyingResult.PACKET_CODEC, recipe -> recipe.result,
             PacketCodecs.FLOAT, SmeltingFluidRecipe::getExperience,
-            PacketCodecs.INTEGER, SmeltingFluidRecipe::getCookingTime,
+            PacketCodecs.INTEGER, SmeltingFluidRecipe::getCookTime,
             SmeltingFluidRecipe::new
     );
 
@@ -72,11 +75,12 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     private WeakReference<Inventory> lastQueriedInventory = new WeakReference<>(null);
 
     public SmeltingFluidRecipe(
+            Identifier id,
             String group, CookingRecipeCategory category,
             OptionalFluidIngredient input,
             FluidModifyingResult result,
             float experience, int cookingTime) {
-        super(group, category, input.toVanilla(), result.result(), experience, cookingTime);
+        super(id, group, category, input.toVanilla(), result.result(), experience, cookingTime);
         this.input = input;
         this.result = result;
     }
@@ -101,10 +105,10 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
     }
 
     @Override
-    public ItemStack getResult(DynamicRegistryManager registries) {
+    public ItemStack getOutput(DynamicRegistryManager registries) {
         Inventory inventory = lastQueriedInventory.get();
         if (inventory == null) {
-            return super.getResult(registries);
+            return super.getOutput(registries);
         }
         return craft(inventory, registries);
     }

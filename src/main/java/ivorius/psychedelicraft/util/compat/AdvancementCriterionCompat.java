@@ -3,15 +3,16 @@ package ivorius.psychedelicraft.util.compat;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 
-import net.minecraft.advancement.criterion.AbstractCriterion;
+import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 
 public interface AdvancementCriterionCompat {
 
-    Codec<AbstractCriterion.Conditions> getConditionsCodec();
+    Codec<CriterionConditions> getConditionsCodec();
 
-    public interface Conditions extends AbstractCriterion.Conditions {
+    public interface Conditions extends CriterionConditions {
         @Override
-        default JsonObject toJson() {
+        default JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             return new JsonObject();
         }
     }

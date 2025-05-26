@@ -1,6 +1,9 @@
 package ivorius.psychedelicraft.recipe;
 
+import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -17,25 +20,25 @@ import net.minecraft.util.Identifier;
  * @since 5 Jan 2023
  */
 public interface PSRecipes {
-    RecipeSerializer<MixingRecipe> FILL_RECEPTICAL = serializer("fill_receptical", new Serializer<>(MixingRecipe.CODEC, MixingRecipe.PACKET_CODEC));
-    RecipeSerializer<ChangeRecepticalRecipe> CHANGE_RECEPTICAL = serializer("change_receptical", new Serializer<>(ChangeRecepticalRecipe.CODEC, ChangeRecepticalRecipe.PACKET_CODEC));
+    Serializer<MixingRecipe> FILL_RECEPTICAL = serializer("fill_receptical", new Serializer<>(MixingRecipe.CODEC, MixingRecipe.PACKET_CODEC));
+    Serializer<ChangeRecepticalRecipe> CHANGE_RECEPTICAL = serializer("change_receptical", new Serializer<>(ChangeRecepticalRecipe.CODEC, ChangeRecepticalRecipe.PACKET_CODEC));
     RecipeSerializer<PouringRecipe> CRAFTING_POURING = serializer("crafting_pouring", new SpecialRecipeSerializer<>(PouringRecipe::new));
-    RecipeSerializer<SmeltingFluidRecipe> SMELTING_RECEPTICAL = serializer("smelting_receptical", new Serializer<>(SmeltingFluidRecipe.CODEC, SmeltingFluidRecipe.PACKET_CODEC));
+    Serializer<SmeltingFluidRecipe> SMELTING_RECEPTICAL = serializer("smelting_receptical", new Serializer<>(SmeltingFluidRecipe.CODEC, SmeltingFluidRecipe.PACKET_CODEC));
     @SuppressWarnings({ "unchecked", "rawtypes" })
     RecipeSerializer<BottleRecipe> CRAFTING_SHAPED = serializer("crafting_shaped", (RecipeSerializer)new BottleRecipe.Serializer());
-    RecipeSerializer<FluidAwareShapelessRecipe> CRAFTING_SHAPELESS_FLUID = serializer("crafting_shapeless_fluid", new Serializer<>(FluidAwareShapelessRecipe.CODEC, FluidAwareShapelessRecipe.PACKET_CODEC));
+    Serializer<FluidAwareShapelessRecipe> CRAFTING_SHAPELESS_FLUID = serializer("crafting_shapeless_fluid", new Serializer<>(FluidAwareShapelessRecipe.CODEC, FluidAwareShapelessRecipe.PACKET_CODEC));
 
     RecipeType<MashingRecipe> MASHING_TYPE = type("mashing");
-    RecipeSerializer<MashingRecipe> MASHING = serializer("mashing", new Serializer<>(MashingRecipe.CODEC, MashingRecipe.PACKET_CODEC));
+    Serializer<MashingRecipe> MASHING = serializer("mashing", new Serializer<>(MashingRecipe.CODEC, MashingRecipe.PACKET_CODEC));
 
     RecipeType<BunsenBurnerRecipe> CHEMISTRY = type("chemistry");
-    RecipeSerializer<ReactingRecipe> REACTING = serializer("reacting", new Serializer<>(ReactingRecipe.CODEC, ReactingRecipe.PACKET_CODEC));
+    Serializer<ReactingRecipe> REACTING = serializer("reacting", new Serializer<>(ReactingRecipe.CODEC, ReactingRecipe.PACKET_CODEC));
 
     RecipeType<DryingRecipe> DRYING_TYPE = type("drying");
-    RecipeSerializer<DryingRecipe> DRYING = serializer("drying", new Serializer<>(DryingRecipe.CODEC, DryingRecipe.PACKET_CODEC));
+    Serializer<DryingRecipe> DRYING = serializer("drying", new Serializer<>(DryingRecipe.CODEC, DryingRecipe.PACKET_CODEC));
 
     RecipeType<HardeningRecipe> TRAY = type("tray");
-    RecipeSerializer<HardeningRecipe> HARDENING = serializer("hardening", new Serializer<>(HardeningRecipe.CODEC, HardeningRecipe.PACKET_CODEC));
+    Serializer<HardeningRecipe> HARDENING = serializer("hardening", new Serializer<>(HardeningRecipe.CODEC, HardeningRecipe.PACKET_CODEC));
 
     static <T extends Recipe<?>> RecipeType<T> type(String name) {
         Identifier id = Psychedelicraft.id(name);
@@ -59,15 +62,19 @@ public interface PSRecipes {
             Codec<T> codec,
             PacketCodec<PacketByteBuf, T> packetCodec
         ) implements RecipeSerializer<T> {
-        Serializer(
-                MapCodec<T> codec,
-                PacketCodec<PacketByteBuf, T> packetCodec
-            ) {
+
+        public Serializer(MapCodec<T> codec, PacketCodec<PacketByteBuf, T> packetCodec) {
             this(codec.codec(), packetCodec);
         }
 
         @Override
-        public T read(PacketByteBuf buf) {
+        public T read(Identifier id, JsonObject json) {
+            json.addProperty("id", id.toString());
+            return codec.decode(JsonOps.INSTANCE, json).result().map(Pair::getFirst).orElseThrow();
+        }
+
+        @Override
+        public T read(Identifier id, PacketByteBuf buf) {
             return packetCodec.decode(buf);
         }
 
