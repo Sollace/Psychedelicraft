@@ -22,15 +22,15 @@ import net.minecraft.predicate.NbtPredicate;
 
 @Mixin(NbtPredicate.class)
 abstract class MixinNbtPredicate {
-    @Shadow @Mutable
+    @Shadow @Mutable @Nullable
     private @Final NbtCompound nbt;
 
     @Unique @Nullable
     private List<ItemSubPredicate<?>> itemSubPredicates;
 
     @Inject(method = "<init>(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("RETURN"))
-    private void onInit(NbtCompound nbt, CallbackInfo info) {
-        if (nbt.contains("psychedelicraft:sub_predicates", NbtElement.COMPOUND_TYPE)) {
+    private void onInit(@Nullable NbtCompound nbt, CallbackInfo info) {
+        if (nbt != null && nbt.contains("psychedelicraft:sub_predicates", NbtElement.COMPOUND_TYPE)) {
             itemSubPredicates = ItemSubPredicate.readNbt(nbt.getCompound("psychedelicraft:sub_predicates"));
             this.nbt.remove("psychedelicraft:sub_predicates");
         }
