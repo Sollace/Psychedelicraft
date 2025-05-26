@@ -157,6 +157,7 @@ public interface PSBlocks {
             .blockVision(Blocks::never)));
     Block PUMP = register("pump", new PumpBlock(Settings.create().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).requiresTool().strength(3.5F)));
     Block PUMP_HEAD = register("pump_head", new PumpHeadBlock(Settings.copy(PUMP).nonOpaque().dropsNothing().pistonBehavior(PistonBehavior.BLOCK)));
+    Block CAULDRON = register("cauldron", new FluidCauldronBlock(Settings.copy(Blocks.CAULDRON)));
 
     static <T extends Block> T register(String name, T block) {
         return Registry.register(Registries.BLOCK, Psychedelicraft.id(name), block);

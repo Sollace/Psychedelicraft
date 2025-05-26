@@ -49,6 +49,7 @@ public class PSModelProvider extends FabricModelProvider {
         );
 
         generator.registerSingleton(PSBlocks.FRUITING_JUNIPER_LEAVES, TexturedModel.LEAVES);
+        generator.registerParented(Blocks.CAULDRON, PSBlocks.CAULDRON);
         generator.registerParentedItemModel(PSBlocks.FRUITING_JUNIPER_LEAVES, ModelIds.getBlockModelId(PSBlocks.FRUITING_JUNIPER_LEAVES));
         generator.registerSimpleCubeAll(PSBlocks.GLITCH);
 

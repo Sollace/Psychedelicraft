@@ -413,7 +413,7 @@ public class GlassTubeBlock extends BlockWithEntity {
                                 world.spawnParticles(
                                         fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
                                             : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
-                                            : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid.fluid()),
+                                            : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid),
                                         pos.getX() + 0.5 + outVec.x * 0.5,
                                         pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
                                         pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);

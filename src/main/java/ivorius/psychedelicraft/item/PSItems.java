@@ -28,6 +28,7 @@ import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.FoodComponent;
@@ -308,6 +309,12 @@ public interface PSItems {
         FuelRegistry.INSTANCE.add(CIGARETTE, 50);
         FuelRegistry.INSTANCE.add(WOODEN_MUG, 50);
 
+        List.of(Items.BUCKET, Items.BOWL, Items.GLASS_BOTTLE, Items.MILK_BUCKET, Items.LAVA_BUCKET).forEach(item -> {
+            FluidCauldronBlock.BEHAVIOUR.map().put(item, FluidCauldronBehavior.OTHER_FLUID);
+        });
+        List.of(Items.GLASS_BOTTLE, Items.BOWL).forEach(item -> {
+            CauldronBehavior.LAVA_CAULDRON_BEHAVIOR.map().put(item, FluidCauldronBehavior.LAVA);
+        });
         List.of(
             WOODEN_MUG, STONE_CUP, GLASS_CHALICE, SHOT_GLASS, BOTTLE, FILLED_BUCKET, FILLED_BOWL, FILLED_GLASS_BOTTLE
         ).forEach(FluidCauldronBehavior::register);
