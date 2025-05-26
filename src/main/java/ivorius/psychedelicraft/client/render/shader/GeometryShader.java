@@ -205,14 +205,18 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
     private String combineSources(String vertexSources, String geometrySources) {
         writeSources(vertexSources, "before");
 
-        if (vertexSources.indexOf("out vec4 v_Color") != -1
-            || vertexSources.indexOf("in vec4 v_Color") != -1) {
-            geometrySources = geometrySources.replaceAll("vertexColor", "v_Color");
+        if (name.getNamespace().equalsIgnoreCase("sodium")) {
+            if (vertexSources.indexOf("out vec4 v_Color") != -1
+                || vertexSources.indexOf("in vec4 v_Color") != -1) {
+                geometrySources = geometrySources.replaceAll("vertexColor", "v_Color");
+            }
+
             geometrySources = geometrySources.replaceAll("/\\*replaceme\\*/Position", "_vert_position");
-        }
-        if (vertexSources.indexOf("out float v_FragDistance") != -1
-            || vertexSources.indexOf("in float v_FragDistance") != -1) {
-            geometrySources = geometrySources.replaceAll("vertexDistance", "v_FragDistance");
+
+            if (vertexSources.indexOf("out float v_FragDistance") != -1
+                || vertexSources.indexOf("in float v_FragDistance") != -1) {
+                geometrySources = geometrySources.replaceAll("vertexDistance", "v_FragDistance");
+            }
         }
         if (name.getPath().startsWith("iris/")) {
             geometrySources = geometrySources.replaceAll("/\\*replaceme\\*/Position", "cameraPosition");
