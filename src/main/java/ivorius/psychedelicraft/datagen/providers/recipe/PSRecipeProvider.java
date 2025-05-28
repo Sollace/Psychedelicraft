@@ -326,9 +326,19 @@ public class PSRecipeProvider extends FabricRecipeProvider {
 
         ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, PSFluids.PETROLIUM.getDefaultStack(5))
             .input(Items.COAL).criterion(hasItem(Items.COAL), conditionsFromItem(Items.COAL))
+            .impurity(Impurities.Impurity.PETROLIUM)
+            .offerTo(exporter);
+        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, PSFluids.PETROLIUM.getDefaultStack(5))
+            .input(Items.CHARCOAL).criterion(hasItem(Items.CHARCOAL), conditionsFromItem(Items.CHARCOAL))
+            .impurity(Impurities.Impurity.CARBON)
+            .offerTo(exporter);
+        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+            .input(PSItems.BROKEN_GLASS).criterion(hasItem(PSItems.BROKEN_GLASS), conditionsFromItem(PSItems.BROKEN_GLASS))
+            .impurity(Impurities.Impurity.SILICA)
             .offerTo(exporter);
         ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, PSFluids.PETROLIUM.getDefaultStack(45))
             .input(Items.COAL_BLOCK).criterion(hasItem(Items.COAL_BLOCK), conditionsFromItem(Items.COAL_BLOCK))
+            .impurity(Impurities.Impurity.PETROLIUM)
             .offerTo(exporter, Psychedelicraft.id("petroleum_from_coal_block"));
     }
 

@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.recipe;
 import java.util.List;
 import java.util.Set;
 
+import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.Processable.ByProductConsumer;
 import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
@@ -53,6 +54,12 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
         @Override
         public void accept(ItemFluids stack) {
             fluids.add(stack);
+            if (stack.isOf(PSFluids.GASOLINE)) {
+                accept(Impurities.Impurity.GASOLINE);
+            }
+            if (stack.isOf(PSFluids.ETHANOL)) {
+                accept(Impurities.Impurity.ETHANOL);
+            }
         }
 
         public void accept(Impurities.Impurity impurity) {
