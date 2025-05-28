@@ -416,6 +416,7 @@
   "death.attack.psychedelicraft.in_sleep": "%1$s died in their sleep",
   "death.attack.psychedelicraft.over_eating": "%1$s ate too much",
   "death.attack.psychedelicraft.teeth_grinding": "%1$s ground their teeth to dust",
+  "death.attack.psychedelicraft.glass_shard": "%1$s ate glass",
 
   "death.attack.psychedelicraft.molotov": "%1$s was toasted by %2$s",
   "death.attack.psychedelicraft.molotov.item": "%1$s was toasted by %2$s using %3$s",
@@ -550,6 +551,7 @@
   "subtitles.psychedelicraft.entity.player.breath": "Heavy Breathing",
   "subtitles.psychedelicraft.entity.player.pacify": "Pacifier Squeaks",
   "subtitles.psychedelicraft.item.syringe.inject": "Syring Injects",
+  "subtitles.psychedelicraft.item.broken_glass.eat": "Glass Shard Cracks",
   "subtitles.psychedelicraft.block.rift_jar.open": "Rift Jar Opens",
   "subtitles.psychedelicraft.block.rift_jar.close": "Rift Jar Closes",
   "subtitles.psychedelicraft.block.rift_jar.toggle": "Rift Jar Toggles",

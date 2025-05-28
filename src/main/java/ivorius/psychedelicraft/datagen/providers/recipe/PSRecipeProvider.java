@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.datagen.providers.recipe;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import ivorius.psychedelicraft.PSConventionalTags;
@@ -13,6 +14,7 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSSubPredicates;
 import ivorius.psychedelicraft.recipe.FluidModifyingResult;
@@ -331,20 +333,22 @@ public class PSRecipeProvider extends FabricRecipeProvider {
     }
 
     private void offerTrayRecipes(RecipeExporter exporter) {
-        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRACK_COCAINE)
+        var allImpurities = Set.of(Impurities.Impurity.values());
+
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRACK_COCAINE, Set.of(Impurities.Impurity.CARBON, Impurities.Impurity.GASOLINE, Impurities.Impurity.PETROLIUM, Impurities.Impurity.SILICA))
             .base(FluidIngredient.builder().fluid(PSFluids.ETHANOL))
             .impurity(FluidIngredient.builder().fluid(PSFluids.COCAINE))
             .criterion(hasItem(PSItems.COCAINE_POWDER), conditionsFromItem(PSItems.COCAINE_POWDER))
             .offerTo(exporter);
-        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRYSTAL_METH)
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRYSTAL_METH, allImpurities)
             .base(FluidIngredient.builder().fluid(PSFluids.MORNING_GLORY_EXTRACT))
             .criterion("has_morning_glory", conditionsFromTag(PSTags.Items.MORNING_GLORY_INGREDIENTS))
             .offerTo(exporter);
-        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.HEROINE_POWDER)
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.HEROINE_POWDER, allImpurities)
             .base(FluidIngredient.builder().fluid(PSFluids.MORPHINE))
             .criterion(hasItem(Items.POPPY), conditionsFromItem(Items.POPPY))
             .offerTo(exporter);
-        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.LSD_PILL)
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.LSD_PILL, allImpurities)
             .base(FluidIngredient.builder().fluid(PSFluids.ACID))
             .criterion("has_morning_glory", conditionsFromTag(PSTags.Items.MORNING_GLORY_INGREDIENTS))
             .offerTo(exporter);

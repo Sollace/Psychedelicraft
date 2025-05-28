@@ -143,6 +143,10 @@ public class DrugInfluence {
         return new DrugInfluence(drugType, delay, influenceDelta, baseIncrease, maxInfluence, color);
     }
 
+    public DrugInfluence copyWithDelay(int delay) {
+        return new DrugInfluence(drugType, delay, influenceDelta, baseIncrease, targetInfluence, color);
+    }
+
     @Override
     public final DrugInfluence clone() {
         return copyWithMaximum(targetInfluence);

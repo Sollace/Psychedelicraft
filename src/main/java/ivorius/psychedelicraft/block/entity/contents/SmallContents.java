@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
 import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
@@ -182,7 +183,7 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
         product.items().forEach(stack -> Block.dropStack(world, entity.getPos(), stack));
-        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
+        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(product.fluids(), new Impurities(product.impurities()), 15)).equals(STATUS_ACCEPT_ALL)) {
             onFluidWasted(world);
         }
     }

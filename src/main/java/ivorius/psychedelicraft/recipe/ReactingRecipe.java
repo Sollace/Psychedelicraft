@@ -15,11 +15,14 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
+import java.util.Optional;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import ivorius.psychedelicraft.util.CodecUtils;
@@ -88,6 +91,7 @@ public record ReactingRecipe (
             int level = ingredients.consumeMatchingFluids(input.fluids());
             if (!result.fluid().isEmpty()) {
                 input.consumer().accept(level == 0 ? result.fluid() : result.fluid().ofAmount(result.fluid().amount() * level));
+                result.impurity.ifPresent(input.consumer()::accept);
             }
         }
         return result.byProduct();
@@ -100,15 +104,18 @@ public record ReactingRecipe (
 
     public record Result (
             ItemFluids fluid,
-            ItemStack byProduct
+            ItemStack byProduct,
+            Optional<Impurities.Impurity> impurity
     ) {
         public static final MapCodec<Result> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 ItemFluids.CODEC.fieldOf("fluid").forGetter(Result::fluid),
-                ItemStack.OPTIONAL_CODEC.optionalFieldOf("by_product", ItemStack.EMPTY).forGetter(Result::byProduct)
+                ItemStack.OPTIONAL_CODEC.optionalFieldOf("by_product", ItemStack.EMPTY).forGetter(Result::byProduct),
+                Impurities.Impurity.CODEC.optionalFieldOf("impurity").forGetter(Result::impurity)
         ).apply(instance, Result::new));
         public static final PacketCodec<RegistryByteBuf, Result> PACKET_CODEC = PacketCodec.tuple(
                 ItemFluids.PACKET_CODEC, Result::fluid,
                 ItemStack.OPTIONAL_PACKET_CODEC, Result::byProduct,
+                PacketCodecs.optional(PacketCodecUtils.ofEnum(Impurities.Impurity.class)), Result::impurity,
                 Result::new
         );
     }

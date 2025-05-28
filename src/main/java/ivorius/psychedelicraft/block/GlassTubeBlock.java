@@ -134,7 +134,11 @@ public class GlassTubeBlock extends BlockWithEntity {
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (stack.isOf(Items.STICK)) {
-            world.setBlockState(pos, state.with(IN, state.get(OUT)).with(OUT, state.get(IN)), Block.FORCE_STATE);
+            world.setBlockState(pos, state
+                    .with(IN, state.get(OUT))
+                    .with(OUT, state.get(IN))
+                    .with(EXTENDED_IN, state.get(EXTENDED_OUT))
+                    .with(EXTENDED_OUT, state.get(EXTENDED_IN)), Block.FORCE_STATE);
             world.playSound(player, pos, state.getSoundGroup().getPlaceSound(), SoundCategory.PLAYERS);
             return ItemActionResult.SUCCESS;
         }

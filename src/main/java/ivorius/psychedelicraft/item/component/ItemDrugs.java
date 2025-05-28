@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.PSDamageTypes;
+import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import net.minecraft.item.Item.TooltipContext;
@@ -45,8 +47,13 @@ public record ItemDrugs(List<DrugInfluence> influences) implements TooltipAppend
         return stack.getOrDefault(PSComponents.DRUGS, EMPTY);
     }
 
-    public void applyTo(DrugProperties properties) {
-        properties.addAll(influences);
+    public void applyTo(ItemStack stack, DrugProperties properties) {
+        Impurities impurities = Impurities.get(stack);
+        properties.addAll(impurities.modifyEffects(influences));
+        if (impurities.impurities().contains(Impurities.Impurity.SILICA)) {
+            properties.asEntity().damage(properties.damageOf(PSDamageTypes.GLASS_SHARD), 1.5F);
+            properties.asEntity().playSound(PSSounds.ITEM_BROKEN_GLASS_EAT);
+        }
     }
 
     @Override
