@@ -41,6 +41,7 @@ public interface PSTradeOffers {
                     PSItems.COCA_SEEDS, PSItems.COFFEA_CHERRIES, PSItems.MORNING_GLORY_SEEDS,
                     PSItems.CANNABIS_BUDS, PSItems.CANNABIS_LEAF,
                     PSItems.TOBACCO_LEAVES, PSItems.COCA_LEAVES,
+                    PSItems.AGAVE_LEAF,
                     PSItems.PEYOTE, PSItems.COFFEA_CHERRIES,
                     Items.BONE_MEAL
             ),
@@ -93,6 +94,20 @@ public interface PSTradeOffers {
                 factories.add(new TradeOffers.SellDyedArmorFactory(PSItems.HARMONIUM, 3, 7, 2));
             }
         });
+        TradeOfferHelper.registerVillagerOffers(DRUG_DEALER_PROFESSION, 4, factories -> {
+            factories.add(sell(10, PSItems.CRACK_COCAINE, 7, 3, 3, 0.5f));
+            factories.add(sell(13, PSItems.CRYSTAL_METH, 10, 3, 3, 0.5f));
+
+            factories.add(sell(3, PSItems.EXTACY, 4, 3, 1, 0.5f));
+            factories.add(sell(9, PSItems.HEROINE_POWDER, 4, 3, 1, 0.5f));
+            factories.add(sell(2, PSItems.PEYOTE_JOINT, 3, 2, 3, 0.5f));
+            factories.add(sell(3, PSItems.LSD_PILL, 6, 2, 3, 0.5f));
+        });
+        TradeOfferHelper.registerVillagerOffers(DRUG_DEALER_PROFESSION, 5, factories -> {
+            factories.add(trade(8, PSItems.RIFT_JAR, 10, Items.DIAMOND_AXE, 1, 1, 3, 0.5f));
+            factories.add(trade(3, PSItems.OBSIDIAN_DUST, 3, PSItems.OBSIDIAN_BOTTLE, 1, 5, 3, 0.5f));
+        });
+
 
         TradeOfferHelper.registerVillagerOffers(DRUG_ADDICT_PROFESSION, 1, factories -> {
             factories.add(buy(5, PSItems.BROWN_MAGIC_MUSHROOMS, 8, 3, 3));
@@ -107,6 +122,21 @@ public interface PSTradeOffers {
             factories.add(buy(4, PSItems.DRIED_CANNABIS_LEAF, 2, 5, 3));
             factories.add(buy(5, PSItems.DRIED_PEYOTE, 10, 2, 2));
             factories.add(buy(5, PSItems.DRIED_COCA_LEAVES, 20, 3, 2));
+        });
+        TradeOfferHelper.registerVillagerOffers(DRUG_ADDICT_PROFESSION, 2, factories -> {
+            factories.add(buy(6, PSItems.CRACK_COCAINE, 7, 4, 3));
+        });
+        TradeOfferHelper.registerVillagerOffers(DRUG_ADDICT_PROFESSION, 3, factories -> {
+            factories.add(buy(5, PSItems.HEROINE_POWDER, 5, 5, 3));
+            factories.add(buy(3, PSItems.CRYSTAL_METH, 3, 5, 6));
+        });
+        TradeOfferHelper.registerVillagerOffers(DRUG_ADDICT_PROFESSION, 4, factories -> {
+            factories.add(buy(15, PSItems.HEROINE_POWDER, 10, 6, 3));
+            factories.add(buy(12, PSItems.CRYSTAL_METH, 11, 6, 3));
+        });
+        TradeOfferHelper.registerVillagerOffers(DRUG_ADDICT_PROFESSION, 5, factories -> {
+            factories.add(buy(5, PSItems.EXTACY, 8, 7, 3));
+            factories.add(trade(3, PSItems.CRYSTAL_METH, 3, PSItems.JOLLY_RANCHER, 1, 7, 5, 0.5f));
         });
 
         PointOfInterestTypes.register(Registries.POINT_OF_INTEREST_TYPE, DRUG_DEALER_POI, Stream.concat(
@@ -128,6 +158,14 @@ public interface PSTradeOffers {
                 factories.add(sell(1, PSItems.COFFEA_CHERRIES, 1, 4, 1, 0.6F));
             });
         }
+
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.LIBRARIAN, 3, factories -> {
+            factories.add(sell(6, PSItems.BOTTLE_RACK, 1, 12, 1, 0.5F));
+        });
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.LIBRARIAN, 4, factories -> {
+            var barrels = PSItems.ALL_BARRELS.stream().map(barrel -> sell(6, barrel, 1, 12, 1, 0.5F)).toList();
+            factories.add((e, r) -> barrels.get(r.nextInt(barrels.size()) % barrels.size()).create(e, r));
+        });
     }
 
     private static TradeOffers.Factory buy(int price, Item item, int count, int maxUses, int experience) {
