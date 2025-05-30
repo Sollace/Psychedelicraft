@@ -5,6 +5,8 @@
 
 package ivorius.psychedelicraft.entity;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,14 +17,22 @@ import com.google.common.collect.ImmutableSet;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
+import ivorius.psychedelicraft.fluid.AlcoholicFluid;
+import ivorius.psychedelicraft.fluid.PSFluids;
+import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.item.PSItems;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.item.component.PSComponents;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.block.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.*;
 import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.village.*;
 import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
@@ -166,6 +176,26 @@ public interface PSTradeOffers {
             var barrels = PSItems.ALL_BARRELS.stream().map(barrel -> sell(6, barrel, 1, 12, 1, 0.5F)).toList();
             factories.add((e, r) -> barrels.get(r.nextInt(barrels.size()) % barrels.size()).create(e, r));
         });
+
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.CLERIC, 4, factories -> {
+            factories.add(new PrepareFluidFactory(40, PSItems.BOTTLE, PSFluids.RED_GRAPES, 9, 1));
+        });
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.BUTCHER, 4, factories -> {
+            factories.add(new PrepareFluidFactory(25, PSItems.BOTTLE, PSFluids.MILK, 9, 1));
+        });
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.ARMORER, 4, factories -> {
+            factories.add(new PrepareFluidFactory(30, PSItems.BOTTLE, PSFluids.APPLE, 9, 1));
+        });
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 4, factories -> {
+            factories.add(new TradeFluidFactory(30, PSItems.BOTTLE, PSFluids.RED_GRAPES, PSFluids.HONEY, 9, 1));
+            factories.add(new TradeFluidFactory(25, PSItems.BOTTLE, PSFluids.MILK, PSFluids.CORN, 9, 1));
+            factories.add(new TradeFluidFactory(35, PSItems.BOTTLE, PSFluids.TOMATO, PSFluids.PINEAPPLE, 9, 1));
+        });
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 5, factories -> {
+            factories.add(new TradeFluidFactory(45, PSItems.BOTTLE, PSFluids.WHEAT, PSFluids.BANANA, 9, 1));
+            factories.add(new TradeFluidFactory(25, PSItems.BOTTLE, PSFluids.POTATO, PSFluids.PINEAPPLE, 9, 1));
+            factories.add(new TradeFluidFactory(45, PSItems.BOTTLE, PSFluids.HONEY, PSFluids.RICE, 9, 1));
+        });
     }
 
     private static TradeOffers.Factory buy(int price, Item item, int count, int maxUses, int experience) {
@@ -186,5 +216,57 @@ public interface PSTradeOffers {
 
     private static VillagerProfession register(String id, Predicate<RegistryEntry<PointOfInterestType>> heldWorkstation, Predicate<RegistryEntry<PointOfInterestType>> acquirableWorkstation, ImmutableSet<Item> gatherableItems, ImmutableSet<Block> secondaryJobSites, @Nullable SoundEvent workSound) {
         return Registry.register(Registries.VILLAGER_PROFESSION, Psychedelicraft.id(id), new VillagerProfession("psychedelicraft:" + id, heldWorkstation, acquirableWorkstation, gatherableItems, secondaryJobSites, workSound));
+    }
+
+    static class PrepareFluidFactory implements TradeOffers.Factory {
+        private final int price;
+        private final Item item;
+        private final AlcoholicFluid fluid;
+        private final List<DrinkTypes.Variant> variants;
+        private final int maxUses;
+        private final int experience;
+
+        public PrepareFluidFactory(int price, Item item, AlcoholicFluid fluid, int maxUses, int experience) {
+            this.price = price;
+            this.fluid = fluid;
+            this.variants = fluid.getVariants();
+            this.item = item;
+            this.maxUses = maxUses;
+            this.experience = experience;
+        }
+
+        @Override
+        public TradeOffer create(Entity entity, Random random) {
+            DrinkTypes.Variant variant = variants.get(random.nextInt(variants.size()) % variants.size());
+            TradedItem tradedItem = new TradedItem(item, 1).withComponents(builder -> builder.add(PSComponents.FLUIDS, fluid.getDefaultStack(FluidCapacity.get(item.getDefaultStack()))));
+            ItemStack soldItem = ItemFluids.set(item.getDefaultStack(), variant.predicate().state().apply(fluid.getDefaultStack(FluidCapacity.get(item.getDefaultStack()))));
+            return new TradeOffer(new TradedItem(Items.EMERALD, price), Optional.of(tradedItem), soldItem, maxUses, experience, 0.3F);
+        }
+    }
+
+    static class TradeFluidFactory implements TradeOffers.Factory {
+        private final int price;
+        private final Item item;
+        private final AlcoholicFluid buy;
+        private final AlcoholicFluid sell;
+
+        private final int maxUses;
+        private final int experience;
+
+        public TradeFluidFactory(int price, Item item, AlcoholicFluid buy, AlcoholicFluid sell, int maxUses, int experience) {
+            this.price = price;
+            this.buy = buy;
+            this.sell = sell;
+            this.item = item;
+            this.maxUses = maxUses;
+            this.experience = experience;
+        }
+
+        @Override
+        public TradeOffer create(Entity entity, Random random) {
+            TradedItem tradedItem = new TradedItem(item, 1).withComponents(builder -> builder.add(PSComponents.FLUIDS, buy.getDefaultStack(FluidCapacity.get(item.getDefaultStack()))));
+            ItemStack soldItem = ItemFluids.set(item.getDefaultStack(), sell.getDefaultStack(FluidCapacity.get(item.getDefaultStack())));
+            return new TradeOffer(new TradedItem(Items.EMERALD, price), Optional.of(tradedItem), soldItem, maxUses, experience, 0.3F);
+        }
     }
 }
