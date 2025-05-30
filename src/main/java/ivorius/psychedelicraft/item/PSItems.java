@@ -26,6 +26,7 @@ import ivorius.psychedelicraft.item.component.ItemDrugs;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.cauldron.CauldronBehavior;
@@ -299,6 +300,15 @@ public interface PSItems {
         return Registry.register(Registries.ITEM, Psychedelicraft.id(name), item);
     }
 
+    static void registerVegitationWasteItems(float compostChance, int fuelValue, ItemConvertible...items) {
+        for (ItemConvertible item : items) {
+            CompostingChanceRegistry.INSTANCE.add(item, compostChance);
+            if (fuelValue > 0) {
+                FuelRegistry.INSTANCE.add(item, fuelValue);
+            }
+        }
+    }
+
     static void bootstrap() {
         PSComponents.bootstrap();
         FuelRegistry.INSTANCE.add(LATTICE, 700);
@@ -308,6 +318,16 @@ public interface PSItems {
         FuelRegistry.INSTANCE.add(CIGAR, 80);
         FuelRegistry.INSTANCE.add(CIGARETTE, 50);
         FuelRegistry.INSTANCE.add(WOODEN_MUG, 50);
+
+        registerVegitationWasteItems(0.2F, 5, CANNABIS_BUDS, DRIED_CANNABIS_BUDS, HOP_CONES, JIMSONWEED_SEED_POD);
+        registerVegitationWasteItems(0.65F, -1,
+            WINE_GRAPES, TOMATO, BELLADONNA_BERRIES, AGAVE_LEAF, JUNIPER_BERRIES, COFFEA_CHERRIES, COFFEE_BEANS,
+            PEYOTE, DRIED_PEYOTE);
+        registerVegitationWasteItems(0.3F, -1,
+            CANNABIS_SEEDS, TOBACCO_SEEDS, COCA_SEEDS, HOP_SEEDS, MORNING_GLORY_SEEDS, JIMSONWEED_SEEDS, TOMATO_SEEDS, BELLADONNA_SEEDS,
+            JUNIPER_LEAVES, FRUITING_JUNIPER_LEAVES, JUNIPER_SAPLING);
+        registerVegitationWasteItems(0.6F, -1, CANNABIS_LEAF, TOBACCO_LEAVES, COCA_LEAVES, JIMSONWEED_LEAF, TOMATO_LEAF, BELLADONNA_LEAF, MORNING_GLORY);
+        registerVegitationWasteItems(0.4F, -1, DRIED_CANNABIS_LEAF, DRIED_TOBACCO, DRIED_COCA_LEAVES, DRIED_JIMSONWEED_LEAF, DRIED_BELLADONNA_LEAF);
 
         List.of(Items.BUCKET, Items.BOWL, Items.GLASS_BOTTLE, Items.MILK_BUCKET, Items.LAVA_BUCKET).forEach(item -> {
             FluidCauldronBlock.BEHAVIOUR.map().put(item, FluidCauldronBehavior.OTHER_FLUID);
