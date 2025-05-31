@@ -22,12 +22,12 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 
 public class DrugInfluence {
-    private static final Codec<Vector3f> COLOR_CODEC = RecordCodecBuilder.create(i -> i.group(
+    public static final Codec<Vector3f> COLOR_CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.FLOAT.fieldOf("r").forGetter(Vector3f::x),
             Codec.FLOAT.fieldOf("g").forGetter(Vector3f::y),
             Codec.FLOAT.fieldOf("b").forGetter(Vector3f::z)
     ).apply(i, Vector3f::new));
-    private static final PacketCodec<RegistryByteBuf, Optional<Vector3f>> COLOR_PACKET_CODEC = PacketCodecs.optional(PacketCodec.tuple(
+    public static final PacketCodec<RegistryByteBuf, Optional<Vector3f>> COLOR_PACKET_CODEC = PacketCodecs.optional(PacketCodec.tuple(
         PacketCodecs.FLOAT, Vector3f::x,
         PacketCodecs.FLOAT, Vector3f::y,
         PacketCodecs.FLOAT, Vector3f::z,

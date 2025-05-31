@@ -1,7 +1,10 @@
 package ivorius.psychedelicraft.item.component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+
+import org.joml.Vector3f;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -21,18 +24,26 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
-public record ItemDrugs(List<DrugInfluence> influences) implements TooltipAppender {
-    public static final ItemDrugs EMPTY = new ItemDrugs(List.of());
+public record ItemDrugs(List<DrugInfluence> influences, Optional<Vector3f> smokeColor) implements TooltipAppender {
+    public static final Vector3f DEFAULT_SMOKE_COLOR = new Vector3f(1, 1, 1);
+
+    public static final ItemDrugs EMPTY = new ItemDrugs(List.of(), Optional.empty());
     public static final Codec<ItemDrugs> CODEC = RecordCodecBuilder.create(i -> i.group(
-            DrugInfluence.CODEC.listOf().fieldOf("influences").forGetter(ItemDrugs::influences)
+            DrugInfluence.CODEC.listOf().fieldOf("influences").forGetter(ItemDrugs::influences),
+            DrugInfluence.COLOR_CODEC.optionalFieldOf("smoke_color").forGetter(ItemDrugs::smokeColor)
     ).apply(i, ItemDrugs::of));
     public static final PacketCodec<RegistryByteBuf, ItemDrugs> PACKET_CODEC = PacketCodec.tuple(
             DrugInfluence.PACKET_CODEC.collect(PacketCodecs.toList()), ItemDrugs::influences,
+            DrugInfluence.COLOR_PACKET_CODEC, ItemDrugs::smokeColor,
             ItemDrugs::of
     );
 
     public static ItemDrugs of(List<DrugInfluence> influences) {
-        return new ItemDrugs(influences);
+        return of(influences, Optional.empty());
+    }
+
+    public static ItemDrugs of(List<DrugInfluence> influences, Optional<Vector3f> smokeColor) {
+        return new ItemDrugs(influences, smokeColor);
     }
 
     public static ItemDrugs of(DrugInfluence...influences) {
@@ -41,6 +52,10 @@ public record ItemDrugs(List<DrugInfluence> influences) implements TooltipAppend
 
     public ItemDrugs {
         influences = List.copyOf(influences);
+    }
+
+    public ItemDrugs withSmoke(Vector3f smokeColor) {
+        return new ItemDrugs(influences, Optional.of(smokeColor));
     }
 
     public static ItemDrugs get(ItemStack stack) {
@@ -54,6 +69,9 @@ public record ItemDrugs(List<DrugInfluence> influences) implements TooltipAppend
             properties.asEntity().damage(properties.damageOf(PSDamageTypes.GLASS_SHARD), 1.5F);
             properties.asEntity().playSound(PSSounds.ITEM_BROKEN_GLASS_EAT);
         }
+        smokeColor.ifPresent(smokeColor -> {
+            properties.startBreathingSmoke(10 + properties.asEntity().getWorld().random.nextInt(10), smokeColor);
+        });
     }
 
     @Override

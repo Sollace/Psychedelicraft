@@ -118,17 +118,14 @@ public interface PSItems {
     Item TOBACCO_SEEDS = register("tobacco_seeds", new AliasedBlockItem(PSBlocks.TOBACCO, new Settings()));
     Item DRIED_TOBACCO = register("dried_tobacco");
 
-    SmokeableItem CIGARETTE = register("cigarette", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(1), 2, SmokeableItem.WHITE,
-            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
+    SmokeableItem CIGARETTE = register("cigarette", new SmokeableItem(2, new Settings().maxCount(1).maxDamage(1)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(ItemDrugs.DEFAULT_SMOKE_COLOR))
     ));
-    SmokeableItem CIGAR = register("cigar", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(3), 4, new Vector3f(0.6F, 0.6F, 0.5F),
-            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
+    SmokeableItem CIGAR = register("cigar", new SmokeableItem(4, new Settings().maxCount(1).maxDamage(3)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(new Vector3f(0.6F, 0.6F, 0.5F)))
     ));
-    SmokeableItem JOINT = register("joint", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.9F, 0.9F, 0.9F),
-            new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)
+    SmokeableItem JOINT = register("joint", new SmokeableItem(2, new Settings().maxCount(1).maxDamage(2)
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)).withSmoke(new Vector3f(0.9F, 0.9F, 0.9F)))
     ));
 
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));
@@ -179,10 +176,11 @@ public interface PSItems {
             .food(EdibleItem.NON_FILLING_EDIBLE)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)))
     ));
-    Item PEYOTE_JOINT = register("peyote_joint", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.5F, 0.9F, 0.4F),
-            new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INHALED, 0.003, 0.0015, 0.4f),
-            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.1f)
+    Item PEYOTE_JOINT = register("peyote_joint", new SmokeableItem(2, new Settings().maxCount(1).maxDamage(2)
+            .component(PSComponents.DRUGS, ItemDrugs.of(
+                    new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INHALED, 0.003, 0.0015, 0.4f),
+                    new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.1f)
+            ).withSmoke(new Vector3f(0.5F, 0.9F, 0.4F)))
     ));
 
     Item LATTICE = register("lattice", PSBlocks.LATTICE);
