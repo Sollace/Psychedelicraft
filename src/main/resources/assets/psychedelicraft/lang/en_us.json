@@ -269,7 +269,7 @@
   "entity.minecraft.villager.drug_addict": "Drug Addict",
 
   "psychedelicraft.sleep.fail.coccaine": "The drugs in your system keep you awake",
-  "psychedelicraft.sleep.fail.caffiene": "You do not feel tired",
+  "psychedelicraft.sleep.fail.insomnia": "You do not feel tired",
 
   "block.psychedelicraft.empty": "Empty",
 
