@@ -10,6 +10,7 @@ public interface PSCriteria {
     DrugEffectsChangedCriterion DRUG_EFFECTS_CHANGED = register("drug_effects_changed", new DrugEffectsChangedCriterion());
 
     CustomEventCriterion.Trigger FEED_VILLAGER = CUSTOM.createTrigger("feed_villager");
+    CustomEventCriterion.Trigger FEED_BABY_VILLAGER = CUSTOM.createTrigger("feed_baby_villager");
     CustomEventCriterion.Trigger HANGOVER = CUSTOM.createTrigger("get_hangover");
     CustomEventCriterion.Trigger TRAY_HARDEN = CUSTOM.createTrigger("tray_harden");
     CustomEventCriterion.Trigger SIDE_EFFECT = CUSTOM.createTrigger("side_effect");

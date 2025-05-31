@@ -32,24 +32,30 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
     )
     private void onInteractMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> info) {
         ItemStack stack = player.getStackInHand(hand);
-        if (stack.isOf(PSItems.HASH_MUFFIN) && !isBaby()) {
-            VillagerProfession profession = getVillagerData().getProfession();
-            if (profession == VillagerProfession.NITWIT || profession == VillagerProfession.NONE) {
-                if (!player.getAbilities().creativeMode) {
-                    stack.decrement(1);
-                }
+        if (stack.isOf(PSItems.HASH_MUFFIN)) {
+            if (isBaby()) {
                 if (!getWorld().isClient) {
-                    getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT, getSoundCategory(),
-                            1 + random.nextFloat(),
-                            random.nextFloat() * 0.7F + 0.3F
-                    );
-                    setVillagerData(getVillagerData().withProfession(PSTradeOffers.DRUG_ADDICT_PROFESSION));
-                    ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)getWorld());
-                    PSCriteria.FEED_VILLAGER.trigger(player);
+                    PSCriteria.FEED_BABY_VILLAGER.trigger(player);
                 }
-                info.setReturnValue(ActionResult.SUCCESS);
             } else {
-                info.setReturnValue(ActionResult.CONSUME);
+                VillagerProfession profession = getVillagerData().getProfession();
+                if (profession == VillagerProfession.NITWIT || profession == VillagerProfession.NONE) {
+                    if (!player.getAbilities().creativeMode) {
+                        stack.decrement(1);
+                    }
+                    if (!getWorld().isClient) {
+                        getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT, getSoundCategory(),
+                                1 + random.nextFloat(),
+                                random.nextFloat() * 0.7F + 0.3F
+                        );
+                        setVillagerData(getVillagerData().withProfession(PSTradeOffers.DRUG_ADDICT_PROFESSION));
+                        ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)getWorld());
+                        PSCriteria.FEED_VILLAGER.trigger(player);
+                    }
+                    info.setReturnValue(ActionResult.SUCCESS);
+                } else {
+                    info.setReturnValue(ActionResult.CONSUME);
+                }
             }
         }
     }
