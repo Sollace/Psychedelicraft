@@ -13,6 +13,12 @@ import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.util.RaytraceUtil;
+import net.minecraft.entity.EntityInteraction;
+import net.minecraft.entity.InteractionObserver;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipAppender;
@@ -22,6 +28,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 
 public record ItemDrugs(List<DrugInfluence> influences, Optional<Vector3f> smokeColor) implements TooltipAppender {
@@ -71,6 +78,29 @@ public record ItemDrugs(List<DrugInfluence> influences, Optional<Vector3f> smoke
         }
         smokeColor.ifPresent(smokeColor -> {
             properties.startBreathingSmoke(10 + properties.asEntity().getWorld().random.nextInt(10), smokeColor);
+
+            EntityHitResult hit = RaytraceUtil.raycastEntities(properties.asEntity(), 3);
+
+            if (hit != null) {
+                properties.asEntity().sendMessage(hit.getEntity().getDisplayName());
+                DrugProperties.of(hit.getEntity()).ifPresent(target -> {
+                    target.addAll(influences.stream().map(i -> i.copyWithMaximum(i.getTargetInfluence() * 0.1F)).toList());
+                });
+                if (hit.getEntity() instanceof LivingEntity l) {
+                    if (l instanceof MobEntity mob) {
+                        mob.playAmbientSound();
+                    }
+                    if (l instanceof MerchantEntity villager) {
+                        villager.setHeadRollingTimeLeft(100);
+                    } else {
+                        hit.getEntity().damage(properties.asEntity().getDamageSources().playerAttack(properties.asEntity()), 0.1F);
+                    }
+                    if (l instanceof InteractionObserver observer) {
+                        observer.onInteractionWith(EntityInteraction.VILLAGER_HURT, properties.asEntity());
+                    }
+                }
+
+            }
         });
     }
 
