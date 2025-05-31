@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.PSSounds;
+import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.util.RaytraceUtil;
@@ -82,7 +83,7 @@ public record ItemDrugs(List<DrugInfluence> influences, Optional<Vector3f> smoke
             EntityHitResult hit = RaytraceUtil.raycastEntities(properties.asEntity(), 3);
 
             if (hit != null) {
-                properties.asEntity().sendMessage(hit.getEntity().getDisplayName());
+                PSCriteria.BREATHE_SMOKE_ON_ENTITY.trigger(properties.asEntity(), hit.getEntity());
                 DrugProperties.of(hit.getEntity()).ifPresent(target -> {
                     target.addAll(influences.stream().map(i -> i.copyWithMaximum(i.getTargetInfluence() * 0.1F)).toList());
                 });
@@ -99,7 +100,6 @@ public record ItemDrugs(List<DrugInfluence> influences, Optional<Vector3f> smoke
                         observer.onInteractionWith(EntityInteraction.VILLAGER_HURT, properties.asEntity());
                     }
                 }
-
             }
         });
     }

@@ -35,7 +35,7 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
         if (stack.isOf(PSItems.HASH_MUFFIN)) {
             if (isBaby()) {
                 if (!getWorld().isClient) {
-                    PSCriteria.FEED_BABY_VILLAGER.trigger(player);
+                    PSCriteria.FEED_BABY_VILLAGER.trigger(player, this);
                 }
             } else {
                 VillagerProfession profession = getVillagerData().getProfession();
