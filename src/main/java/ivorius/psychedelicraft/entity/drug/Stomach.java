@@ -33,7 +33,10 @@ public class Stomach implements NbtSerialisable {
         this.entity = properties.asEntity();
     }
 
-    public void reset() {
+    public boolean reset() {
+        boolean changed = getStomach().getLockedState() != null
+                || getGlut().getOvereating() > 0
+                || vomitingTicks > 0;
         getStomach().unlockHunger();
         getGlut().setOvereating(0);
         vomitCount = 0;
@@ -41,6 +44,7 @@ public class Stomach implements NbtSerialisable {
         hungerCooldown = 0;
         vomitingTicks = 0;
         properties.markDirty();
+        return changed;
     }
 
     public void copyFrom(Stomach old, boolean alive) {

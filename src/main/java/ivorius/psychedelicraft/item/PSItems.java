@@ -108,7 +108,7 @@ public interface PSItems {
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.RED_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.25f)))
     ));
 
-    Item JOLLY_RANCHER = register("jolly_rancher", new EdibleItem(
+    Item JOLLY_RANCHER = register("jolly_rancher", new JollyRancherItem(
             new Settings()
             .food(EdibleItem.NON_FILLING_EDIBLE)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.SUGAR, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.05f)))

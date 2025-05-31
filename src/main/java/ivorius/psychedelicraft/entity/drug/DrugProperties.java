@@ -186,7 +186,14 @@ public class DrugProperties implements NbtSerialisable {
         entity.getWorld().playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 0.02F, 1.5F);
     }
 
-    public void cureAll() {
+    public boolean cureAll() {
+        boolean changed = cancerCountdown != -1
+                || teethGrindingRate > 0
+                || breathSmokeColor != null
+                || timeBreathingSmoke != 0
+                || pacifierSqueakDelay != -1
+                || influences.stream().anyMatch(i -> i.getDrugType() != DrugType.SUGAR && i.getDrugType() != DrugType.SLEEP_DEPRIVATION)
+                || drugs.values().stream().anyMatch(i -> i.getType() != DrugType.SUGAR && i.getType() != DrugType.SLEEP_DEPRIVATION && i.getActiveValue() > 0.1);
         cancerCountdown = -1;
         teethGrindingRate = 0;
         breathSmokeColor = null;
@@ -194,8 +201,9 @@ public class DrugProperties implements NbtSerialisable {
         pacifierSqueakDelay = -1;
         influences.clear();
         drugs.values().forEach(i -> i.setDesiredValue(0));
-        stomach.reset();
+        changed |= stomach.reset();
         markDirty();
+        return changed;
     }
 
     public boolean hasCancer() {
