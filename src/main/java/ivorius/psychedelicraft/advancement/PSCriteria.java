@@ -16,6 +16,8 @@ public interface PSCriteria {
     CustomEventCriterion.Trigger TRAY_HARDEN = CUSTOM.createTrigger("tray_harden");
     CustomEventCriterion.Trigger SIDE_EFFECT = CUSTOM.createTrigger("side_effect");
     CustomEventCriterion.Trigger SUCK_PACIFIER = CUSTOM.createTrigger("suck_pacifier");
+    CustomEventCriterion.Trigger CANCER = CUSTOM.createTrigger("cancer");
+    CustomEventCriterion.Trigger CURE_CANCER = CUSTOM.createTrigger("cure_cancer");
 
     private static <T extends Criterion<?>> T register(String id, T criterion) {
         return Criteria.register(Psychedelicraft.id(id).toString(), criterion);

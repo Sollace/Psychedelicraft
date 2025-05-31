@@ -14,7 +14,7 @@ public record MsgDrugProperties (
     ) implements HandledPacket<PlayerEntity> {
 
     public MsgDrugProperties(DrugProperties properties, WrapperLookup lookup) {
-        this(properties.asEntity().getId(), properties.toNbt(lookup));
+        this(properties.asEntity().getId(), properties.toTrackedNbt(new NbtCompound(), lookup));
     }
 
     public MsgDrugProperties(PacketByteBuf buffer) {
@@ -29,6 +29,6 @@ public record MsgDrugProperties (
 
     @Override
     public void handle(PlayerEntity sender) {
-        DrugProperties.of(sender.getWorld().getEntityById(entityId)).ifPresent(e -> e.fromNbt(compound, sender.getRegistryManager()));
+        DrugProperties.of(sender.getWorld().getEntityById(entityId)).ifPresent(e -> e.fromTrackedNbt(compound, sender.getRegistryManager()));
     }
 }

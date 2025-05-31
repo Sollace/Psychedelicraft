@@ -417,6 +417,7 @@
   "death.attack.psychedelicraft.over_eating": "%1$s ate too much",
   "death.attack.psychedelicraft.teeth_grinding": "%1$s ground their teeth to dust",
   "death.attack.psychedelicraft.glass_shard": "%1$s ate glass",
+  "death.attack.psychedelicraft.cancer": "%1$s died of cancer",
 
   "death.attack.psychedelicraft.molotov": "%1$s was toasted by %2$s",
   "death.attack.psychedelicraft.molotov.item": "%1$s was toasted by %2$s using %3$s",
@@ -530,6 +531,12 @@
   "advancements.psychedelicraft.thats_no_good.description": "Experience Side-effects",
   "advancements.psychedelicraft.goo_goo.title": "Goo Goo",
   "advancements.psychedelicraft.goo_goo.description": "Use a pacifier to prevent damaging to your teeth and yourself",
+  "advancements.psychedelicraft.cancer.title": "Cancer",
+  "advancements.psychedelicraft.cancer.description": "There's a 0.0000001% chance of earning this achievement every time you smoke.",
+  "advancements.psychedelicraft.super_cancer.title": "Second-Hand Cancer",
+  "advancements.psychedelicraft.super_cancer.description": "There's a 0.000000001% chance of earning this achievement every time you smoke.",
+  "advancements.psychedelicraft.the_cure.title": "The Cure",
+  "advancements.psychedelicraft.the_cure.description": "Somehow, you cured cancer",
   "advancements.psychedelicraft.all_drugs.title": "High As A Kite",
   "advancements.psychedelicraft.all_drugs.description": "Have every drug effect active at the same time",
 

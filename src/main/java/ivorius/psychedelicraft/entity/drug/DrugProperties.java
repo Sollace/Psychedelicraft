@@ -61,6 +61,7 @@ public class DrugProperties implements NbtSerialisable {
     private final Map<DrugType<?>, Drug> drugs = DrugType.REGISTRY.stream().collect(Collectors.toMap(Function.identity(), DrugType::create));
     private final List<DrugInfluence> influences = new ArrayList<>();
 
+    private boolean initial;
     private boolean dirty;
 
     private final HallucinationManager hallucinations = new HallucinationManager(this);
@@ -76,6 +77,9 @@ public class DrugProperties implements NbtSerialisable {
 
     private float teethGrindingRate;
     private int pacifierSqueakDelay = -1;
+
+    private int cancerCountdown = -1;
+    private boolean prevHadCancer = false;
 
     public DrugProperties(PlayerEntity entity) {
         this.entity = entity;
@@ -182,6 +186,46 @@ public class DrugProperties implements NbtSerialisable {
         entity.getWorld().playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 0.02F, 1.5F);
     }
 
+    public void cureAll() {
+        cancerCountdown = -1;
+        teethGrindingRate = 0;
+        breathSmokeColor = null;
+        timeBreathingSmoke = 0;
+        pacifierSqueakDelay = -1;
+        influences.clear();
+        drugs.values().forEach(i -> i.setDesiredValue(0));
+        stomach.reset();
+        markDirty();
+    }
+
+    public boolean hasCancer() {
+        return cancerCountdown > -1;
+    }
+
+    public float getCancerProgression() {
+        return !hasCancer() || cancerCountdown >= 10_000 ? 0 : (1 - (cancerCountdown / 10_000F));
+    }
+
+    public boolean rollCancerDance() {
+        if (entity.getWorld().isClient) {
+            return false;
+        }
+
+        if (cancerCountdown < 0) {
+            if (entity.getWorld().random.nextInt(1_000_000_000) == 0) {
+                cancerCountdown = 10_000 + entity.getWorld().random.nextInt(1000);
+                markDirty();
+                PSCriteria.CANCER.trigger(entity);
+                return true;
+            }
+        } else {
+            cancerCountdown = Math.max(10, -1 - entity.getWorld().random.nextInt(10));
+            markDirty();
+        }
+
+        return false;
+    }
+
     public void increaseTeethGrindingSideEffect() {
         if (entity.age % 10 == 0) {
             teethGrindingRate = MathHelper.clamp(teethGrindingRate + 0.001F, 0, 100);
@@ -200,6 +244,12 @@ public class DrugProperties implements NbtSerialisable {
         //4 times / sec is enough
         if (entity.age % 5 == 0 && influences.removeIf(influence -> influence.update(this))) {
             markDirty();
+        }
+
+        if (cancerCountdown >= 0 && cancerCountdown <= 10 && --cancerCountdown == 0) {
+            prevHadCancer = false;
+            cancerCountdown = -1;
+            entity.damage(damageOf(PSDamageTypes.CANCER), Float.MAX_VALUE);
         }
 
         drugs.values().forEach(drug -> drug.update(this));
@@ -269,6 +319,15 @@ public class DrugProperties implements NbtSerialisable {
             }
         }
 
+        if (entity.isAlive()) {
+            if (prevHadCancer && !hasCancer()) {
+                PSCriteria.CURE_CANCER.trigger(entity);
+            }
+            prevHadCancer = hasCancer();
+        } else {
+            prevHadCancer = false;
+        }
+
         if (isBreathingSmoke()) {
             timeBreathingSmoke--;
 
@@ -288,6 +347,13 @@ public class DrugProperties implements NbtSerialisable {
         changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_MOVEMENT_SPEED, speed);
         changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_ATTACK_SPEED, speed);
 
+        if (hasCancer() && entity.age % 10 == 0) {
+            float progression = getCancerProgression();
+            float saturation = entity.getHungerManager().getSaturationLevel();
+            entity.getHungerManager().setSaturationLevel(saturation * (1 - progression));
+            entity.addExhaustion(progression);
+        }
+
         if (dirty) {
             dirty = false;
             sendCapabilities();
@@ -296,29 +362,51 @@ public class DrugProperties implements NbtSerialisable {
 
     public void sendCapabilities() {
         if (!entity.getWorld().isClient) {
-            Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(new MsgDrugProperties(this, entity.getRegistryManager()), entity);
+            var message = new MsgDrugProperties(this, entity.getRegistryManager());
+            Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(message, entity);
             // We have to ensure it's sent to ourselves as well (Send to surrounding players ends to us but that doesn't seem to work when loading into a world??)
-            Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(new MsgDrugProperties(this, entity.getRegistryManager()), (ServerPlayerEntity)entity);
+            Channel.UPDATE_DRUG_PROPERTIES.sendToPlayer(message, (ServerPlayerEntity)entity);
+        }
+    }
+
+    public NbtCompound toTrackedNbt(NbtCompound compound, WrapperLookup lookup) {
+        dirty = false;
+        DRUGS_CODEC.encodeStart(NbtOps.INSTANCE, drugs).result().ifPresent(drugs -> compound.put("Drugs", drugs));
+        DrugInfluence.LIST_CODEC.encodeStart(NbtOps.INSTANCE, influences).result().ifPresent(influenceTagList -> compound.put("drugInfluences", influenceTagList));
+        compound.put("stomach", stomach.toNbt(lookup));
+        compound.putInt("cancerCountdown", cancerCountdown);
+        compound.putFloat("teethGrindingRate", teethGrindingRate);
+        if (initial) {
+            compound.put("soundManager", soundManager.toNbt(lookup));
+            initial = false;
+        }
+
+        return compound;
+    }
+
+    public void fromTrackedNbt(NbtCompound compound, WrapperLookup lookup) {
+        dirty = false;
+        drugs.clear();
+        DRUGS_CODEC.decode(NbtOps.INSTANCE, compound.getCompound("Drugs")).result().map(Pair::getFirst).ifPresent(drugs::putAll);
+        influences.clear();
+        DrugInfluence.LIST_CODEC.decode(NbtOps.INSTANCE, compound.getList("drugInfluences", NbtElement.COMPOUND_TYPE)).result().map(Pair::getFirst).ifPresent(influences::addAll);
+        stomach.fromNbt(compound.getCompound("stomach"), lookup);
+        cancerCountdown = compound.contains("cancerCountdown", NbtElement.INT_TYPE) ? compound.getInt("cancerCountdown") : -1;
+        teethGrindingRate = compound.getFloat("teethGrindingRate");
+        if (compound.contains("soundManager", NbtElement.COMPOUND_TYPE)) {
+            soundManager.fromNbt(compound.getCompound("soundManager"), lookup);
         }
     }
 
     @Override
-    public void fromNbt(NbtCompound tagCompound, WrapperLookup lookup) {
-        drugs.clear();
-        DRUGS_CODEC.decode(NbtOps.INSTANCE, tagCompound.getCompound("Drugs")).result().map(Pair::getFirst).ifPresent(drugs::putAll);
-        influences.clear();
-        DrugInfluence.LIST_CODEC.decode(NbtOps.INSTANCE, tagCompound.getList("drugInfluences", NbtElement.COMPOUND_TYPE)).result().map(Pair::getFirst).ifPresent(influences::addAll);
-        stomach.fromNbt(tagCompound.getCompound("stomach"), lookup);
-        teethGrindingRate = tagCompound.getFloat("teethGrindingRate");
-        dirty = false;
+    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+        fromTrackedNbt(compound, lookup);
+        initial = true;
     }
 
     @Override
     public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        DRUGS_CODEC.encodeStart(NbtOps.INSTANCE, drugs).result().ifPresent(drugs -> compound.put("Drugs", drugs));
-        DrugInfluence.LIST_CODEC.encodeStart(NbtOps.INSTANCE, influences).result().ifPresent(influenceTagList -> compound.put("drugInfluences", influenceTagList));
-        compound.put("stomach", stomach.toNbt(lookup));
-        compound.putFloat("teethGrindingRate", teethGrindingRate);
+        toTrackedNbt(compound, lookup);
     }
 
     public void copyFrom(DrugProperties old, boolean alive) {
@@ -329,13 +417,24 @@ public class DrugProperties implements NbtSerialisable {
             drugs.putAll(old.drugs);
             timeBreathingSmoke = old.timeBreathingSmoke;
             breathSmokeColor = old.breathSmokeColor;
-            markDirty();
+            teethGrindingRate = old.teethGrindingRate;
+            pacifierSqueakDelay = old.pacifierSqueakDelay;
+            cancerCountdown = old.cancerCountdown;
+            prevHadCancer = old.prevHadCancer;
+        } else {
+            cancerCountdown = -1;
+            prevHadCancer = false;
+            initial = true;
         }
+        soundManager.copyFrom(old.soundManager, alive);
+        stomach.copyFrom(old.getStomach(), alive);
+        markDirty();
     }
 
     public boolean onAwoken() {
         drugs.values().forEach(drug -> drug.onWakeUp(this));
         influences.clear();
+        stomach.reset();
         markDirty();
 
         // TODO: (Sollace) Implement longer sleeping/comas
@@ -361,11 +460,12 @@ public class DrugProperties implements NbtSerialisable {
         if (source.isOf(DamageTypes.OUT_OF_WORLD) || initial >= Integer.MAX_VALUE) {
             return initial;
         }
-        float painSuppression = getModifier(Drug.PAIN_SUPPRESSION);
-        initial *= painSuppression;
-        if (initial < 0.5F) {
-            return 0;
+
+        initial *= getModifier(Drug.PAIN_SUPPRESSION);
+        if (hasCancer()) {
+            initial *= (1 + getCancerProgression());
         }
+
         return initial;
     }
 

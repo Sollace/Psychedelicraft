@@ -29,6 +29,7 @@ public interface PSDamageTypes {
     RegistryKey<DamageType> OVERDOSE = register("overdose");
     RegistryKey<DamageType> TEETH_GRINDING = register("teeth_grinding");
     RegistryKey<DamageType> GLASS_SHARD = register("glass_shard");
+    RegistryKey<DamageType> CANCER = register("cancer");
 
     static RegistryKey<DamageType> molotov(Entity target, @Nullable Entity attacker) {
         return target == attacker ? SELF_MOLOTOV : MOLOTOV;

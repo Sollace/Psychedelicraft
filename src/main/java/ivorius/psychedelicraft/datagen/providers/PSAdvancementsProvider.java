@@ -61,6 +61,31 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                             DrugType.REGISTRY.stream().filter(i -> i != DrugType.SLEEP_DEPRIVATION).toList()
                     ))
                     .build(exporter);
+                root.child(Psychedelicraft.id("cancer"), PSItems.CIGARETTE)
+                    .frame(AdvancementFrame.CHALLENGE)
+                    .announce()
+                    .hidden()
+                    .criteriaMerger(CriterionMerger.OR)
+                    .criterion("has_side_effect", CustomEventCriterion.Conditions.create("cancer"))
+                    .build(exporter)
+                    .children(cancer -> {
+                        cancer.child(Psychedelicraft.id("super_cancer"), PSItems.CIGARETTE)
+                            .frame(AdvancementFrame.CHALLENGE)
+                            .announce()
+                            .hidden()
+                            .criteriaMerger(CriterionMerger.OR)
+                            .criterion("has_side_effect", CustomEventCriterion.Conditions.create("cancer", LootContextPredicate.create(
+                                    EntityPropertiesLootCondition.builder(EntityTarget.THIS, new EntityPredicate.Builder().type(EntityType.PLAYER)).build()
+                            )))
+                            .build(exporter);
+                        cancer.child(Psychedelicraft.id("the_cure"), PSItems.JOLLY_RANCHER)
+                            .frame(AdvancementFrame.CHALLENGE)
+                            .announce()
+                            .hidden()
+                            .criteriaMerger(CriterionMerger.OR)
+                            .criterion("is_cured", CustomEventCriterion.Conditions.create("cure_cancer"))
+                            .build(exporter);
+                    });
                 root.child(Psychedelicraft.id("make_drying_table"), PSItems.DRYING_TABLE)
                     .criteriaMerger(CriterionMerger.OR)
                     .criterion("has_the_thing", tag(PSTags.Items.DRYING_TABLES))

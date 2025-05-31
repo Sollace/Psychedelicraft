@@ -79,6 +79,7 @@ public record ItemDrugs(List<DrugInfluence> influences, Optional<Vector3f> smoke
         }
         smokeColor.ifPresent(smokeColor -> {
             properties.startBreathingSmoke(10 + properties.asEntity().getWorld().random.nextInt(10), smokeColor);
+            properties.rollCancerDance();
 
             EntityHitResult hit = RaytraceUtil.raycastEntities(properties.asEntity(), 3);
 
@@ -86,6 +87,11 @@ public record ItemDrugs(List<DrugInfluence> influences, Optional<Vector3f> smoke
                 PSCriteria.BREATHE_SMOKE_ON_ENTITY.trigger(properties.asEntity(), hit.getEntity());
                 DrugProperties.of(hit.getEntity()).ifPresent(target -> {
                     target.addAll(influences.stream().map(i -> i.copyWithMaximum(i.getTargetInfluence() * 0.1F)).toList());
+                    if (target.asEntity().getWorld().random.nextInt(10) == 0) {
+                        if (target.rollCancerDance()) {
+                            PSCriteria.CANCER.trigger(target.asEntity(), properties.asEntity());
+                        }
+                    }
                 });
                 if (hit.getEntity() instanceof LivingEntity l) {
                     if (l instanceof MobEntity mob) {
