@@ -342,6 +342,21 @@ public class DrugProperties implements NbtSerialisable {
         return true;
     }
 
+    public boolean canResetTimeBySleeping(boolean passedBaseCheck) {
+        if (getSleepTimeModifier() > 1) {
+            return passedBaseCheck && entity.getSleepTimer() >= 100;
+        }
+        return entity.isSleeping() && entity.getSleepTimer() >= 100;
+    }
+
+    public int getSleepTimer(int sleepTime) {
+        return Math.min(MathHelper.ceil(sleepTime / getSleepTimeModifier()), 100);
+    }
+
+    private float getSleepTimeModifier() {
+        return 1 + MathHelper.clamp((getDrugValue(DrugType.CAFFEINE) + getDrugValue(DrugType.COCAINE)) / 2F, 0, 1) - getDrugValue(DrugType.ALCOHOL) * 0.9F;
+    }
+
     public float onDamaged(DamageSource source, float initial) {
         if (source.isOf(DamageTypes.OUT_OF_WORLD) || initial >= Integer.MAX_VALUE) {
             return initial;
