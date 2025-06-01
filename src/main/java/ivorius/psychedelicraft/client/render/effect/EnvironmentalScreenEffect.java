@@ -25,7 +25,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.LightType;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.biome.Biome.Precipitation;
 
@@ -48,12 +50,12 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         if (!PsychedelicraftClient.getConfig().doHeatDistortion.get()) {
             return 0;
         }
-        return wasInWater ? 0 : MathHelper.clamp(((currentHeat - 1) * 0.08f), 0, 1F);
+        return wasInWater ? 0 : MathHelper.clamp(((currentHeat - 1) * 0.008f), 0, 1F);
     }
 
     public float getWaterDistortion() {
         float peyote = ShaderContext.drug(DrugType.PEYOTE);
-        float wetness = PsychedelicraftClient.getConfig().doWaterDistortion.get() && wasInWater ? 0.05125F : 0;
+        float wetness = PsychedelicraftClient.getConfig().doWaterDistortion.get() && wasInWater ? 0.005125F : 0;
         return Math.max(peyote * 0.173F, wetness);
     }
 
@@ -89,10 +91,17 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         float newHeat = wasInWater ? 0 : entity.getWorld().getBiome(pos).value().getTemperature();
         if (!entity.getWorld().getDimension().hasCeiling()) {
             newHeat *= MeteorlogicalUtil.getSunIntensity(entity.getWorld());
-            newHeat *= MeteorlogicalUtil.getSkyLightIntensity(entity.getWorld(), BlockPos.ofFloored(entity.getEyePos()));
+            float skyIntensity = MeteorlogicalUtil.getSkyLightIntensity(entity.getWorld(), BlockPos.ofFloored(entity.getEyePos()));
+            newHeat *= Math.min(skyIntensity * skyIntensity * skyIntensity, 1);
+        } else {
+            float multiplier = 0;
+            for (BlockPos p : BlockPos.iterateInSquare(pos, 2, Direction.EAST, Direction.SOUTH)) {
+                multiplier += Math.max(0, entity.getWorld().getLightLevel(LightType.BLOCK, p) - 11) / 4F;
+            }
+            newHeat *= MathHelper.clamp(multiplier, 0.5F, 1F);
         }
 
-        this.currentHeat = MathUtils.nearValue(currentHeat, newHeat, 0.01f, 0.01f);
+        this.currentHeat = MathUtils.nearValue(currentHeat, newHeat, 0.01F, newHeat > currentHeat ? 0.01F : 0.1F);
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import com.mojang.serialization.Codec;
 
 import ivorius.psychedelicraft.fluid.Processable;
+import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 
@@ -45,6 +46,15 @@ public class FluidMound implements Iterable<ItemFluids> {
     public FluidMound addAll(Iterable<ItemFluids> fluids) {
         fluids.forEach(this::add);
         return this;
+    }
+
+    public boolean contains(SimpleFluid fluid) {
+        for (int i = 0; i < size(); i++) {
+            if (get(i).isOf(fluid)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getAmount(ItemFluids fluids) {

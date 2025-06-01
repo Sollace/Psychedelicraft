@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.block.GlassTubeBlock.IODirection;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.recipe.FluidMound;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -124,7 +125,7 @@ public class PumpBlock extends FacingBlock implements PipeInsertable {
                 for (int i = 0; i < 10; i++) {
                     PipeInsertable.tryInsert(sw, outPos, facing.getOpposite(), PipeFluids.of(FluidMound.of(
                             SimpleFluid.of(inFluid.getFluidState().getFluid()).getDefaultStack(FluidVolumes.BUCKET / 10)
-                    ), 0));
+                    ), Impurities.EMPTY, 0));
                 }
                 if (inFluid.getBlock() instanceof FluidDrainable drainable) {
                     drainable.tryDrainFluid(null, world, inPos, inFluid);

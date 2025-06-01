@@ -26,8 +26,10 @@ import ivorius.psychedelicraft.item.component.ItemDrugs;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.registry.Registries;
@@ -95,7 +97,7 @@ public interface PSItems {
             .food(EdibleItem.NON_FILLING_EDIBLE)
     )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.RED_SHROOMS, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.25f)));
 
-    Item JOLLY_RANCHER = add(register("jolly_rancher", new EdibleItem(
+    Item JOLLY_RANCHER = add(register("jolly_rancher", new JollyRancherItem(
             new Settings()
             .food(EdibleItem.NON_FILLING_EDIBLE)
     )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.SUGAR, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.05f)));
@@ -104,18 +106,12 @@ public interface PSItems {
     Item TOBACCO_SEEDS = register("tobacco_seeds", new AliasedBlockItem(PSBlocks.TOBACCO, new Settings()));
     Item DRIED_TOBACCO = register("dried_tobacco");
 
-    SmokeableItem CIGARETTE = register("cigarette", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(1), 2, SmokeableItem.WHITE,
-            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
-    ));
-    SmokeableItem CIGAR = register("cigar", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(3), 4, new Vector3f(0.6F, 0.6F, 0.5F),
-            new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
-    ));
-    SmokeableItem JOINT = register("joint", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.9F, 0.9F, 0.9F),
-            new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)
-    ));
+    SmokeableItem CIGARETTE = add(register("cigarette", new SmokeableItem(2, new Settings().maxCount(1).maxDamage(1)
+    )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(ItemDrugs.DEFAULT_SMOKE_COLOR));
+    SmokeableItem CIGAR = add(register("cigar", new SmokeableItem(4, new Settings().maxCount(1).maxDamage(3)
+    )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(new Vector3f(0.6F, 0.6F, 0.5F)));
+    SmokeableItem JOINT = add(register("joint", new SmokeableItem(2, new Settings().maxCount(1).maxDamage(2)
+    )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)).withSmoke(new Vector3f(0.9F, 0.9F, 0.9F)));
 
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));
     Item COCA_LEAVES = register("coca_leaves");
@@ -160,11 +156,10 @@ public interface PSItems {
     Item DRIED_PEYOTE = add(register("dried_peyote", new EdibleItem(new Settings()
             .food(EdibleItem.NON_FILLING_EDIBLE)
     )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)));
-    Item PEYOTE_JOINT = register("peyote_joint", new SmokeableItem(
-            new Settings().maxCount(1).maxDamage(2), 2, new Vector3f(0.5F, 0.9F, 0.4F),
+    Item PEYOTE_JOINT = add(register("peyote_joint", new SmokeableItem(2, new Settings().maxCount(1).maxDamage(2))), PSComponents.DRUGS, ItemDrugs.of(
             new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INHALED, 0.003, 0.0015, 0.4f),
             new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.1f)
-    ));
+    ).withSmoke(new Vector3f(0.5F, 0.9F, 0.4F)));
 
     Item LATTICE = register("lattice", PSBlocks.LATTICE);
     Item WINE_GRAPE_LATTICE = register("wine_grape_lattice", PSBlocks.WINE_GRAPE_LATTICE);
@@ -273,6 +268,15 @@ public interface PSItems {
         return Registry.register(Registries.ITEM, Psychedelicraft.id(name), item);
     }
 
+    static void registerVegitationWasteItems(float compostChance, int fuelValue, ItemConvertible...items) {
+        for (ItemConvertible item : items) {
+            CompostingChanceRegistry.INSTANCE.add(item, compostChance);
+            if (fuelValue > 0) {
+                FuelRegistry.INSTANCE.add(item, fuelValue);
+            }
+        }
+    }
+
     static void bootstrap() {
         PSComponents.bootstrap();
         FuelRegistry.INSTANCE.add(LATTICE, 700);
@@ -283,6 +287,22 @@ public interface PSItems {
         FuelRegistry.INSTANCE.add(CIGARETTE, 50);
         FuelRegistry.INSTANCE.add(WOODEN_MUG, 50);
 
+        registerVegitationWasteItems(0.2F, 5, CANNABIS_BUDS, DRIED_CANNABIS_BUDS, HOP_CONES, JIMSONWEED_SEED_POD);
+        registerVegitationWasteItems(0.65F, -1,
+            WINE_GRAPES, TOMATO, BELLADONNA_BERRIES, AGAVE_LEAF, JUNIPER_BERRIES, COFFEA_CHERRIES, COFFEE_BEANS,
+            PEYOTE, DRIED_PEYOTE);
+        registerVegitationWasteItems(0.3F, -1,
+            CANNABIS_SEEDS, TOBACCO_SEEDS, COCA_SEEDS, HOP_SEEDS, MORNING_GLORY_SEEDS, JIMSONWEED_SEEDS, TOMATO_SEEDS, BELLADONNA_SEEDS,
+            JUNIPER_LEAVES, FRUITING_JUNIPER_LEAVES, JUNIPER_SAPLING);
+        registerVegitationWasteItems(0.6F, -1, CANNABIS_LEAF, TOBACCO_LEAVES, COCA_LEAVES, JIMSONWEED_LEAF, TOMATO_LEAF, BELLADONNA_LEAF, MORNING_GLORY);
+        registerVegitationWasteItems(0.4F, -1, DRIED_CANNABIS_LEAF, DRIED_TOBACCO, DRIED_COCA_LEAVES, DRIED_JIMSONWEED_LEAF, DRIED_BELLADONNA_LEAF);
+
+        List.of(Items.BUCKET, Items.BOWL, Items.GLASS_BOTTLE, Items.MILK_BUCKET, Items.LAVA_BUCKET).forEach(item -> {
+            FluidCauldronBlock.BEHAVIOUR.put(item, FluidCauldronBehavior.OTHER_FLUID);
+        });
+        List.of(Items.GLASS_BOTTLE, Items.BOWL).forEach(item -> {
+            CauldronBehavior.LAVA_CAULDRON_BEHAVIOR.put(item, FluidCauldronBehavior.LAVA);
+        });
         List.of(
             WOODEN_MUG, STONE_CUP, GLASS_CHALICE, SHOT_GLASS, BOTTLE, FILLED_BUCKET, FILLED_BOWL, FILLED_GLASS_BOTTLE
         ).forEach(FluidCauldronBehavior::register);
