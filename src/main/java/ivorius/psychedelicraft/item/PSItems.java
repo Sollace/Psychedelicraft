@@ -175,7 +175,7 @@ public interface PSItems {
     Item JUNIPER_BOAT = register("juniper_boat", s -> new BoatItem(PSEntities.JUNIPER_BOAT, s.maxCount(1)));
     Item JUNIPER_CHEST_BOAT = register("juniper_chest_boat", s -> new BoatItem(PSEntities.JUNIPER_CHEST_BOAT, s.maxCount(1)));
 
-    Item COFFEA_CHERRIES = register("coffea_cherries", s -> new BlockItem(PSBlocks.COFFEA, s.translationKey(PSBlocks.COFFEA.getTranslationKey())));
+    Item COFFEA_CHERRIES = register("coffea_cherries", s -> new BlockItem(PSBlocks.COFFEA, s));
     Item COFFEE_BEANS = register("coffee_beans");
 
     Item PEYOTE = register("peyote", PSBlocks.PEYOTE);
@@ -210,7 +210,7 @@ public interface PSItems {
     //Item KAVA_ROOT = register("kava_root", new Item(new Settings()));
 
     Item MORNING_GLORY = register("morning_glory");
-    Item MORNING_GLORY_SEEDS = register("morning_glory_seeds", s -> new BlockItem(PSBlocks.MORNING_GLORY, s.translationKey(PSBlocks.MORNING_GLORY.getTranslationKey())));
+    Item MORNING_GLORY_SEEDS = register("morning_glory_seeds", s -> new BlockItem(PSBlocks.MORNING_GLORY, s));
     Item LSA_SQUARE = register("lsd_square", s -> new EdibleItem(s
             .food(EdibleItem.NON_FILLING_EDIBLE)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.CONTACT, 0.05, 0.003, 0.1F)))
@@ -220,16 +220,16 @@ public interface PSItems {
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.LSD, DrugInfluence.DelayType.INGESTED, 0.05, 0.003, 0.6F)))
     ));
 
-    Item JIMSONWEED_SEEDS = register("jimsonweed_seeds", s -> new BlockItem(PSBlocks.JIMSONWEED, s.translationKey(PSBlocks.JIMSONWEED.getTranslationKey())));
+    Item JIMSONWEED_SEEDS = register("jimsonweed_seeds", s -> new BlockItem(PSBlocks.JIMSONWEED, s));
     Item JIMSONWEED_SEED_POD = register("jimsonweed_seed_pod");
     Item JIMSONWEED_LEAF = register("jimsonweed_leaf");
     Item DRIED_JIMSONWEED_LEAF = register("dried_jimsonweed_leaf");
 
-    Item TOMATO_SEEDS = register("tomato_seeds", s -> new BlockItem(PSBlocks.TOMATOES, s.translationKey(PSBlocks.TOMATOES.getTranslationKey())));
+    Item TOMATO_SEEDS = register("tomato_seeds", s -> new BlockItem(PSBlocks.TOMATOES, s));
     Item TOMATO = register("tomato", s -> new Item(s.food(EdibleItem.TOMATO)));
     Item TOMATO_LEAF = register("tomato_leaf");
 
-    Item BELLADONNA_SEEDS = register("belladonna_seeds", s -> new BlockItem(PSBlocks.BELLADONNA, s.translationKey(PSBlocks.BELLADONNA.getTranslationKey())));
+    Item BELLADONNA_SEEDS = register("belladonna_seeds", s -> new BlockItem(PSBlocks.BELLADONNA, s));
     Item BELLADONNA_LEAF = register("belladonna_leaf");
     Item DRIED_BELLADONNA_LEAF = register("dried_belladonna_leaf");
     Item BELLADONNA_BERRIES = register("belladonna_berries", s -> new EdibleItem(s
@@ -237,7 +237,7 @@ public interface PSItems {
                 .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)))
     ));
 
-    Item AGAVE_LEAF = register("agave_leaf", s -> new BlockItem(PSBlocks.AGAVE_PLANT, s.translationKey(PSBlocks.AGAVE_PLANT.getTranslationKey())));
+    Item AGAVE_LEAF = register("agave_leaf", s -> new BlockItem(PSBlocks.AGAVE_PLANT, s));
 
     BongItem SMOKING_PIPE = register("smoking_pipe", s -> new BongItem(s.maxDamage(50)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.25F)))
