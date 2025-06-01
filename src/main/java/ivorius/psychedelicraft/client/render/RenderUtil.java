@@ -10,8 +10,6 @@ import java.util.Random;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
@@ -74,7 +72,6 @@ public class RenderUtil {
             int width, int height,
             float u0, float v0,
             float u1, float v1, int offset) {
-        RenderSystem.setShaderColor(1, 1, 1, alpha);
         Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(texture));
         MatrixStack matrices = context.getMatrices();
