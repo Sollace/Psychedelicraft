@@ -18,7 +18,7 @@ public interface BiomeSelector {
     Predicate<BiomeSelectionContext> DRY = ctx -> !ctx.getBiome().hasPrecipitation();
 
     static Predicate<BiomeSelectionContext> compile(List<String> included, List<String> excluded, Predicate<BiomeSelectionContext> dynamicInclusion) {
-        var include = compile(included, NONE, Stream::allMatch).or(dynamicInclusion);
+        var include = compile(included, NONE, Stream::anyMatch).or(dynamicInclusion);
         var exclude = compile(excluded, ALL, Stream::noneMatch);
 
         return include.and(exclude);

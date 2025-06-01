@@ -134,7 +134,11 @@ public class GlassTubeBlock extends BlockWithEntity {
         ItemStack stack = player.getStackInHand(hand);
 
         if (stack.isOf(Items.STICK)) {
-            world.setBlockState(pos, state.with(IN, state.get(OUT)).with(OUT, state.get(IN)), Block.FORCE_STATE);
+            world.setBlockState(pos, state
+                    .with(IN, state.get(OUT))
+                    .with(OUT, state.get(IN))
+                    .with(EXTENDED_IN, state.get(EXTENDED_OUT))
+                    .with(EXTENDED_OUT, state.get(EXTENDED_IN)), Block.FORCE_STATE);
             world.playSound(player, pos, state.getSoundGroup().getPlaceSound(), SoundCategory.PLAYERS);
             return ActionResult.SUCCESS;
         }
@@ -414,7 +418,7 @@ public class GlassTubeBlock extends BlockWithEntity {
                                 world.spawnParticles(
                                         fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
                                             : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
-                                            : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid.fluid()),
+                                            : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid),
                                         pos.getX() + 0.5 + outVec.x * 0.5,
                                         pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
                                         pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);

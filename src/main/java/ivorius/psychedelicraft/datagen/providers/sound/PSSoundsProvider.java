@@ -44,6 +44,10 @@ public class PSSoundsProvider extends SoundsProvider {
                 .category(SoundCategory.PLAYERS)
                 .sound(Sound.builder(Psychedelicraft.id("pacifier/pacifier")), 9)
         );
+        exporter.accept(PSSounds.ITEM_BROKEN_GLASS_EAT, SoundTypeBuilder.of(PSSounds.ITEM_BROKEN_GLASS_EAT)
+                .category(SoundCategory.PLAYERS)
+                .sound(Sound.builder(Psychedelicraft.id("broken_glass/glass")), 4)
+        );
         exporter.accept(PSSounds.BLOCK_TRAY_HARDEN, SoundTypeBuilder.of(PSSounds.BLOCK_TRAY_HARDEN)
                 .category(SoundCategory.BLOCKS)
                 .sound(Sound.builder(new Identifier("mob/turtle/egg/egg_crack")), 5)

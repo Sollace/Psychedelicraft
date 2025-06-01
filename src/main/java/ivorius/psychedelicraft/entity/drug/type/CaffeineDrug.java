@@ -35,7 +35,7 @@ public class CaffeineDrug extends SimpleDrug {
                 .put(CONTEXTUAL_HALLUCINATION_STRENGTH, f -> MathUtils.project(f * 1.3F, 0.7F, 1) * 0.05F)
                 .put(HAND_TREMBLE_STRENGTH, f -> MathUtils.project(f, 0.6F, 1))
                 .put(VIEW_TREMBLE_STRENGTH, f -> MathUtils.project(f, 0.8F, 1))
-                .put(HUNGER_SUPPRESSION, 0.15F)
+                .put(HUNGER_SUPPRESSION, breathVolumeMultiplier * 0.15F)
                 .build();
     }
 

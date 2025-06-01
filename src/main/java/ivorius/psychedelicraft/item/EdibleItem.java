@@ -23,13 +23,14 @@ public class EdibleItem extends Item {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        ItemStack copy = stack.copy();
         ItemStack remainder = super.finishUsing(stack, world, user);
 
         if (stack.getFoodComponent() == null && (!(user instanceof PlayerEntity) || ((PlayerEntity)user).isCreative())) {
             remainder.decrement(1);
         }
 
-        DrugProperties.of(user).ifPresent(drugProperties -> ItemDrugs.get(stack).applyTo(drugProperties));
+        DrugProperties.of(user).ifPresent(drugProperties -> ItemDrugs.get(copy).applyTo(copy, drugProperties));
         return remainder;
     }
 }

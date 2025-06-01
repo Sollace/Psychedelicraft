@@ -73,7 +73,6 @@ public interface MeteorlogicalUtil {
         if (world.isClient) {
             world.calculateAmbientDarkness();
         }
-
         return world.getLightLevel(LightType.SKY, pos) / 15F;
     }
 }

@@ -92,10 +92,10 @@ abstract class MixinEntity implements TouchingWaterAccessor {
         SimpleFluid fluid = SimpleFluid.of(collidedFluid.getFluid());
         if (fluid.isCustomFluid()) {
             if (parameters == ParticleTypes.BUBBLE) {
-                return new FluidParticleEffect(PSParticles.FLUID_BUBBLE, fluid);
+                return new FluidParticleEffect(PSParticles.FLUID_BUBBLE, fluid.getStack(collidedFluid, 1));
             }
             if (parameters == ParticleTypes.SPLASH) {
-                return new FluidParticleEffect(PSParticles.FLUID_SPLASH, fluid);
+                return new FluidParticleEffect(PSParticles.FLUID_SPLASH, fluid.getStack(collidedFluid, 1));
             }
         }
         return parameters;

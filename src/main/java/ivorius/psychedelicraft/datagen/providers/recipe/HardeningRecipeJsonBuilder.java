@@ -5,9 +5,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.recipe.HardeningRecipe;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import net.minecraft.advancement.Advancement;
@@ -40,21 +42,32 @@ public class HardeningRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 
 	private final IntProvider amount;
 
+	private final Set<Impurities.Impurity> cuts;
+
 	private int stewTime = 20;
 
-	private HardeningRecipeJsonBuilder(RecipeCategory category, ItemConvertible output, IntProvider amount) {
+	private HardeningRecipeJsonBuilder(RecipeCategory category, ItemConvertible output, IntProvider amount, Set<Impurities.Impurity> cuts) {
 		this.category = category;
 		this.output = output.asItem();
 		this.amount = amount;
+		this.cuts = cuts;
 	}
 
     public static HardeningRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output) {
-        return new HardeningRecipeJsonBuilder(category, output, UniformIntProvider.create(3, 6));
+        return new HardeningRecipeJsonBuilder(category, output, UniformIntProvider.create(3, 6), Set.of());
     }
 
 	public static HardeningRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output, IntProvider amount) {
-		return new HardeningRecipeJsonBuilder(category, output, amount);
+		return new HardeningRecipeJsonBuilder(category, output, amount, Set.of());
 	}
+
+    public static HardeningRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output, Set<Impurities.Impurity> impurities) {
+        return new HardeningRecipeJsonBuilder(category, output, UniformIntProvider.create(3, 6), impurities);
+    }
+
+    public static HardeningRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output, IntProvider amount, Set<Impurities.Impurity> impurities) {
+        return new HardeningRecipeJsonBuilder(category, output, amount, impurities);
+    }
 
 	@Override
     public HardeningRecipeJsonBuilder criterion(String name, AdvancementCriterion<?> criterion) {
@@ -97,11 +110,13 @@ public class HardeningRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		criteria.forEach(builder::criterion);
+		ItemStack result = new ItemStack(output);
 		exporter.accept(recipeId, new HardeningRecipe(
 	            Objects.requireNonNullElse(group, ""),
 	            baseFluid,
 	            impurities,
-	            new ItemStack(output),
+	            new Impurities(cuts),
+	            result,
 	            amount,
 	            stewTime
         ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));

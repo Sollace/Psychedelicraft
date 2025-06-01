@@ -32,6 +32,7 @@ import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.fluid.*;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 
@@ -145,7 +146,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     public Optional<PipeFluids> tryExtract(ServerWorld world, BlockState state, BlockPos pos, Direction direction) {
         Resovoir tank = getTankOnSide(direction);
         ItemFluids fluids = tank.drain((int)tank.getCapacity() / 10);
-        return fluids.isEmpty() ? Optional.empty() : Optional.of(PipeFluids.of(fluids, 0));
+        return fluids.isEmpty() ? Optional.empty() : Optional.of(PipeFluids.of(fluids, Impurities.EMPTY, 0));
     }
 
     @Deprecated

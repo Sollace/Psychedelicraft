@@ -20,8 +20,8 @@
 		},
 		{
 			"name": "connector",
-			"from": [7, -1, 7],
-			"to": [9, 1, 9],
+			"from": [7, 0, 7],
+			"to": [9, 2, 9],
 			"rotation": {"angle": 0, "axis": "y", "origin": [7, -1, 7]},
 			"faces": {
 				"north": {"uv": [0, 11, 3.5, 14.5], "texture": "#glass_tubing"},

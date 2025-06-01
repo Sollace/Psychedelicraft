@@ -3,10 +3,12 @@ package ivorius.psychedelicraft.datagen.providers.recipe;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.ReactingRecipe;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
@@ -34,6 +36,8 @@ public class ReactingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
     private String group;
 
     private ItemFluids output;
+    @Nullable
+    private Impurities.Impurity impurity;
     private Item byProduct = Items.AIR;
 
     private int stewTime;
@@ -52,6 +56,11 @@ public class ReactingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
 
     public ReactingRecipeJsonBuilder byProduct(ItemConvertible item) {
         this.byProduct = item.asItem();
+        return this;
+    }
+
+    public ReactingRecipeJsonBuilder impurity(Impurities.Impurity impurity) {
+        this.impurity = impurity;
         return this;
     }
 
@@ -111,7 +120,7 @@ public class ReactingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
         exporter.accept(recipeId, new ReactingRecipe(
                 Objects.requireNonNullElse(group, ""),
                 CraftingRecipeJsonBuilder.toCraftingCategory(category),
-                new ReactingRecipe.Result(output, new ItemStack(byProduct)),
+                new ReactingRecipe.Result(output, new ItemStack(byProduct), Optional.ofNullable(impurity)),
                 new ReactingRecipe.Ingredients(inputFluids, inputItems),
                 stewTime
             ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));

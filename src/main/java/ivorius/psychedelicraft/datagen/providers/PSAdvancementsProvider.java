@@ -1,5 +1,6 @@
 package ivorius.psychedelicraft.datagen.providers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -27,9 +28,14 @@ import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRequirements.CriterionMerger;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.loot.condition.EntityPropertiesLootCondition;
+import net.minecraft.loot.context.LootContext.EntityTarget;
 import net.minecraft.predicate.NumberRange.IntRange;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.tag.TagKey;
 
@@ -55,10 +61,46 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                             DrugType.REGISTRY.stream().filter(i -> i != DrugType.SLEEP_DEPRIVATION).toList()
                     ))
                     .build(exporter);
+                root.child(Psychedelicraft.id("cancer"), PSItems.CIGARETTE)
+                    .frame(AdvancementFrame.CHALLENGE)
+                    .announce()
+                    .hidden()
+                    .criteriaMerger(CriterionMerger.OR)
+                    .criterion("has_side_effect", CustomEventCriterion.Conditions.create("cancer"))
+                    .build(exporter)
+                    .children(cancer -> {
+                        cancer.child(Psychedelicraft.id("super_cancer"), PSItems.CIGARETTE)
+                            .frame(AdvancementFrame.CHALLENGE)
+                            .announce()
+                            .hidden()
+                            .criteriaMerger(CriterionMerger.OR)
+                            .criterion("has_side_effect", CustomEventCriterion.Conditions.create("cancer", LootContextPredicate.create(
+                                    EntityPropertiesLootCondition.builder(EntityTarget.THIS, new EntityPredicate.Builder().type(EntityType.PLAYER)).build()
+                            )))
+                            .build(exporter);
+                        cancer.child(Psychedelicraft.id("the_cure"), PSItems.JOLLY_RANCHER)
+                            .frame(AdvancementFrame.CHALLENGE)
+                            .announce()
+                            .hidden()
+                            .criteriaMerger(CriterionMerger.OR)
+                            .criterion("is_cured", CustomEventCriterion.Conditions.create("cure_cancer"))
+                            .build(exporter);
+                    });
                 root.child(Psychedelicraft.id("make_drying_table"), PSItems.DRYING_TABLE)
                     .criteriaMerger(CriterionMerger.OR)
                     .criterion("has_the_thing", tag(PSTags.Items.DRYING_TABLES))
                     .build(exporter).children(makeDryingTable -> {
+                        var sharingIsCaring = makeDryingTable.child(Psychedelicraft.id("sharing_is_caring"), PSItems.CIGARETTE)
+                            .criteriaMerger(CriterionMerger.AND)
+                            .frame(AdvancementFrame.CHALLENGE);
+                        List.of(
+                            EntityType.PIG, EntityType.COW, EntityType.SHEEP, EntityType.VILLAGER, EntityType.PILLAGER, EntityType.VINDICATOR, EntityType.CAMEL, EntityType.CAT,
+                            EntityType.SPIDER, EntityType.ZOMBIE, EntityType.SKELETON, EntityType.ENDERMAN, EntityType.HUSK,
+                            EntityType.ZOGLIN, EntityType.PIGLIN, EntityType.PIGLIN_BRUTE, EntityType.ZOMBIFIED_PIGLIN
+                        ).forEach(type -> sharingIsCaring.criterion("breathed_smoke_on_" + type.getUntranslatedName(), CustomEventCriterion.Conditions.create("breathe_smoke_on_" + type.getUntranslatedName(), LootContextPredicate.create(
+                            EntityPropertiesLootCondition.builder(EntityTarget.THIS, new EntityPredicate.Builder().type(type)).build()
+                        ))));
+                        sharingIsCaring.build(exporter);
                         makeDryingTable.child(Psychedelicraft.id("dry_brown_mushrooms"), PSItems.BROWN_MAGIC_MUSHROOMS)
                             .criteriaMerger(CriterionMerger.OR)
                             .criterion("has_the_thing", items(PSItems.BROWN_MAGIC_MUSHROOMS))
@@ -193,6 +235,10 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                     .criteriaMerger(CriterionMerger.OR)
                     .criterion("has_the_thing", items(PSItems.HASH_MUFFIN))
                     .build(exporter)
+                    .child(Psychedelicraft.id("just_say_no"), PSItems.HASH_MUFFIN)
+                        .criteriaMerger(CriterionMerger.OR)
+                        .criterion("done_the_thing", CustomEventCriterion.Conditions.create("feed_baby_villager"))
+                        .build(exporter)
                     .child(Psychedelicraft.id("feed_a_villager"), PSItems.HASH_MUFFIN)
                         .criteriaMerger(CriterionMerger.OR)
                         .criterion("done_the_thing", CustomEventCriterion.Conditions.create("feed_villager"))

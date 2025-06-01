@@ -39,17 +39,17 @@ public interface PSParticleFactories {
     static Particle createDrippingFluid(FluidParticleEffect type, ClientWorld world,
             double x, double y, double z,
             double velocityX, double velocityY, double velocityZ) {
-        return setColor(new BlockLeakParticle.Dripping(world, x, y, z, type.fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.FALLING_FLUID, type.fluid())), type);
+        return setColor(new BlockLeakParticle.Dripping(world, x, y, z, type.fluid().fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.FALLING_FLUID, type.fluid())), type);
     }
 
     static Particle createFallingFluid(FluidParticleEffect type, ClientWorld world,
             double x, double y, double z,
             double velocityX, double velocityY, double velocityZ) {
-        return setColor(new BlockLeakParticle.ContinuousFalling(world, x, y, z, type.fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.FLUID_SPLASH, type.fluid())), type);
+        return setColor(new BlockLeakParticle.ContinuousFalling(world, x, y, z, type.fluid().fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.FLUID_SPLASH, type.fluid())), type);
     }
 
     static Particle setColor(Particle particle, FluidParticleEffect effect) {
-        Vector3f color = MathUtils.unpackRgb(effect.fluid().getColor(effect.fluid().getDefaultStack()));
+        Vector3f color = MathUtils.unpackRgb(effect.fluid().fluid().getColor(effect.fluid()));
         particle.setColor(color.x, color.y, color.z);
         return particle;
     }
