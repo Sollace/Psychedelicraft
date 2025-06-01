@@ -103,9 +103,14 @@ public abstract class PlacedFluid extends WaterFluid {
     }
 
     @Nullable
+    public ParticleEffect getParticle(FluidState state) {
+        return new FluidParticleEffect(PSParticles.DRIPPING_FLUID, getType().getStack(state, 1));
+    }
+
+    @Nullable
     @Override
     public ParticleEffect getParticle() {
-        return new FluidParticleEffect(PSParticles.DRIPPING_FLUID, getType());
+        return new FluidParticleEffect(PSParticles.DRIPPING_FLUID, getType().getDefaultStack());
     }
 
     static PlacedFluid still(PhysicalFluid physical) {

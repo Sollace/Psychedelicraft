@@ -314,6 +314,10 @@ public class AlcoholicFluid extends DrugFluid implements Processable, TickRate.T
         return settings.variants.variants().stream().map(variant -> variant.predicate().state().apply(getDefaultStack(capacity)));
     }
 
+    public List<DrinkTypes.Variant> getVariants() {
+        return settings.variants.variants();
+    }
+
     @Override
     public boolean isSuitableContainer(ItemStack container) {
         return (container.isIn(getPreferredContainerTag())

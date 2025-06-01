@@ -89,6 +89,11 @@ public interface BlockModels {
         generator.registerFlowerPotPlant(sapling, pottedSapling, CrossType.NOT_TINTED);
     }
 
+    static void registerParentedWithoutItem(BlockStateModelGenerator generator, Block modelSource, Block child) {
+        Identifier modelId = ModelIds.getBlockModelId(modelSource);
+        generator.blockStateCollector.accept(VariantsBlockStateSupplier.create(child, BlockStateVariant.create().put(VariantSettings.MODEL, modelId)));
+    }
+
     static void registerBarrel(BlockStateModelGenerator generator, Block block) {
         Identifier planksId = Registries.BLOCK.getId(block).withPath(p -> p.replace("_barrel", "_planks"));
         generator.registerBuiltinWithParticle(block, Registries.BLOCK.getOptionalValue(planksId).or(() -> {

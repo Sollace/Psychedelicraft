@@ -34,6 +34,7 @@ public interface ItemModels {
     Model HANDHELD = Models.HANDHELD;
     Model SMOKEABLE_TEMPLATE = item("smokeable_template", TextureKey.LAYER0);
     Model SMOKEABLE_USING_TEMPLATE = item("smokeable_using_template", TextureKey.LAYER0);
+    Model SNIFFABLE_USING_TEMPLATE = item("sniffable_using_template", TextureKey.LAYER0);
 
     TextureKey LATTICE = BlockModels.LATTICE;
     Model CROP_LATTICE_TEMPLATE = item("crop_lattice_template", LATTICE, TextureKey.CROP);
@@ -107,7 +108,7 @@ public interface ItemModels {
 
     static void registerSniffable(ItemModelGenerator itemModelGenerator, Item item) {
         itemModelGenerator.output.accept(item, condition(new UsingProperty(),
-                basic(SMOKEABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_using"), TextureMap.layer0(item), itemModelGenerator.modelCollector)),
+                basic(SNIFFABLE_USING_TEMPLATE.upload(ModelIds.getItemSubModelId(item, "_using"), TextureMap.layer0(item), itemModelGenerator.modelCollector)),
                 basic(itemModelGenerator.upload(item, SMOKEABLE_TEMPLATE))
         ));
     }

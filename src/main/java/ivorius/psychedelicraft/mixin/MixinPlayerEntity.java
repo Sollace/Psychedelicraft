@@ -34,6 +34,16 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
         return drugProperties.get();
     }
 
+    @Inject(method = "canResetTimeBySleeping", at = @At("RETURN"), cancellable = true)
+    private void onCanResetTimeBySleeping(CallbackInfoReturnable<Boolean> info) {
+        info.setReturnValue(getDrugProperties().canResetTimeBySleeping(info.getReturnValue()));
+    }
+
+    @Inject(method = "getSleepTimer", at = @At("RETURN"), cancellable = true)
+    private void onGetSleepTimer(CallbackInfoReturnable<Integer> info) {
+        info.setReturnValue(getDrugProperties().getSleepTimer(info.getReturnValue()));
+    }
+
     @Inject(method = "tick()V", at = @At("RETURN"))
     private void afterTick(CallbackInfo info) {
         getDrugProperties().onTick();

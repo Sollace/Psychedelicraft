@@ -21,8 +21,8 @@ abstract class MixinAbstractFurnaceBlockEntity {
     )
     private static void onTick(ServerWorld world, BlockPos pos, BlockState state, AbstractFurnaceBlockEntity blockEntity, CallbackInfo info) {
         ItemStack fuel = blockEntity.getStack(1);
-        if (fuel.getItem() instanceof SmokeableItem smokeable) {
-            smokeable.onIncinerated(fuel, world, pos, blockEntity);
+        if (fuel.getItem() instanceof SmokeableItem smokeable && world instanceof ServerWorld sw) {
+            smokeable.onIncinerated(fuel, sw, pos, blockEntity);
         }
     }
 }

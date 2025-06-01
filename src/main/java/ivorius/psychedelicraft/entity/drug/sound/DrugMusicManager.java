@@ -3,7 +3,10 @@ package ivorius.psychedelicraft.entity.drug.sound;
 import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
+import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 
@@ -11,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
  * Created by lukas on 22.11.14.
  * Updated by Sollace on 15 Jan 2023
  */
-public class DrugMusicManager {
+public class DrugMusicManager implements NbtSerialisable {
     public static final float PLAY_THRESHOLD = 0.01F;
 
     final DrugProperties properties;
@@ -26,6 +29,18 @@ public class DrugMusicManager {
 
     public DrugMusicManager(DrugProperties properties) {
         this.properties = properties;
+    }
+
+    public void copyFrom(DrugMusicManager old, boolean alive) {
+        if (alive) {
+            delayUntilHeartbeat = old.delayUntilHeartbeat;
+            delayUntilBreath = old.delayUntilBreath;
+            lastBreathWasIn = old.lastBreathWasIn;
+
+            prevHeartbeatPulseStrength = old.prevHeartbeatPulseStrength;
+            heartbeatPulseStrength = old.heartbeatPulseStrength;
+            targetHeartbeatPulseStrength = old.targetHeartbeatPulseStrength;
+        }
     }
 
     public void update() {
@@ -74,5 +89,23 @@ public class DrugMusicManager {
 
     public float getHeartbeatPulseStrength(float delta) {
         return MathHelper.lerp(delta, prevHeartbeatPulseStrength, heartbeatPulseStrength);
+    }
+
+    @Override
+    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+        compound.putInt("delayUntilHeartbeat", delayUntilHeartbeat);
+        compound.putInt("delayUntilBreath", delayUntilBreath);
+        compound.putBoolean("lastBreathWasIn", lastBreathWasIn);
+        compound.putFloat("heartbeatPulseStrength", heartbeatPulseStrength);
+        compound.putFloat("targetHeartbeatPulseStrength", targetHeartbeatPulseStrength);
+    }
+
+    @Override
+    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+        delayUntilHeartbeat = compound.getInt("delayUntilHeartbeat");
+        delayUntilBreath = compound.getInt("delayUntilBreath");
+        lastBreathWasIn = compound.getBoolean("lastBreathWasIn");
+        heartbeatPulseStrength = compound.getFloat("heartbeatPulseStrength");
+        targetHeartbeatPulseStrength = compound.getFloat("targetHeartbeatPulseStrength");
     }
 }

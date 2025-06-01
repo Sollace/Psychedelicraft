@@ -32,7 +32,7 @@ public class EdibleItem extends Item {
             remainder.decrement(1);
         }
 
-        DrugProperties.of(user).ifPresent(drugProperties -> ItemDrugs.get(copy).applyTo(drugProperties));
+        DrugProperties.of(user).ifPresent(drugProperties -> ItemDrugs.get(copy).applyTo(copy, drugProperties));
         return remainder;
     }
 }

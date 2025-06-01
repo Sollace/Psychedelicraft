@@ -1,8 +1,11 @@
 package ivorius.psychedelicraft.recipe;
 
 import java.util.List;
+import java.util.Set;
 
+import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.Processable.ByProductConsumer;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.IngredientPlacement;
@@ -41,7 +44,7 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
         return PSRecipes.CHEMISTRY;
     }
 
-    public record Input(FluidMound fluids, ItemMound input, ByProductConsumer consumer) implements RecipeInput {
+    public record Input(FluidMound fluids, ItemMound input, Product consumer) implements RecipeInput {
         @Override
         public ItemStack getStackInSlot(int slot) {
             return ItemStack.EMPTY;
@@ -58,7 +61,7 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
         }
     }
 
-    public record Product(FluidMound fluids, List<ItemStack> items) implements ByProductConsumer {
+    public record Product(FluidMound fluids, List<ItemStack> items, Set<Impurities.Impurity> impurities) implements ByProductConsumer {
         @Override
         public void accept(ItemStack stack) {
             items.add(stack);
@@ -67,6 +70,16 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
         @Override
         public void accept(ItemFluids stack) {
             fluids.add(stack);
+            if (stack.isOf(PSFluids.GASOLINE)) {
+                accept(Impurities.Impurity.GASOLINE);
+            }
+            if (stack.isOf(PSFluids.ETHANOL)) {
+                accept(Impurities.Impurity.ETHANOL);
+            }
+        }
+
+        public void accept(Impurities.Impurity impurity) {
+            impurities.add(impurity);
         }
     }
 }

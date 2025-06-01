@@ -56,7 +56,7 @@ public class FluidBubbleParticle extends SpriteBillboardParticle {
         velocityX *= 0.85F;
         velocityY *= 0.85F;
         velocityZ *= 0.85F;
-        if (!survivesInAir && !world.getFluidState(BlockPos.ofFloored(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
+        if (!survivesInAir && !world.getFluidState(BlockPos.ofFloored(this.x, this.y, this.z)).getFluid().isIn(FluidTags.WATER)) {
             markDead();
         }
     }

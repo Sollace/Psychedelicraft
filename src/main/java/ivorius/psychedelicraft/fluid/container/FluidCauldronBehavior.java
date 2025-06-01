@@ -1,9 +1,14 @@
 package ivorius.psychedelicraft.fluid.container;
 
+import java.util.function.BiFunction;
+
 import org.jetbrains.annotations.Nullable;
 
+import ivorius.psychedelicraft.block.FluidCauldronBlock;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
+import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -24,48 +29,47 @@ import net.minecraft.world.event.GameEvent;
 public interface FluidCauldronBehavior {
     CauldronBehavior AIR = (state, world, pos, player, hand, stack) -> {
         ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copy());
+        ItemFluids fluid = t.fluids();
         @Nullable
-        Block cauldron = t.fluids().fluid().getPhysical().getCauldron();
+        Block cauldron = fluid.fluid().getPhysical().getCauldron();
 
-        // TODO: Lava cauldrons do not have levels
-        if (cauldron != null) {
-            int amountRequired = cauldron.getDefaultState().contains(LeveledCauldronBlock.LEVEL) ? FluidVolumes.GLASS_BOTTLE : FluidVolumes.BUCKET;
-
-            if (t.fluids().amount() >= amountRequired) {
-                int levels = Math.min(t.fluids().amount() / amountRequired, LeveledCauldronBlock.MAX_LEVEL);
-                Item item = stack.getItem();
-                t.withdraw(levels * FluidVolumes.GLASS_BOTTLE);
-                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
-                player.incrementStat(Stats.USE_CAULDRON);
-                player.incrementStat(Stats.USED.getOrCreateStat(item));
-                world.setBlockState(pos, cauldron.getDefaultState().withIfExists(LeveledCauldronBlock.LEVEL, levels));
-                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1, 1);
-                world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
-                return ActionResult.SUCCESS;
-            }
+        if (cauldron != null && t.fluids().amount() >= FluidVolumes.GLASS_BOTTLE) {
+            int levels = Math.min(t.fluids().amount() / FluidVolumes.GLASS_BOTTLE, LeveledCauldronBlock.MAX_LEVEL);
+            Item item = stack.getItem();
+            t.withdraw(levels * FluidVolumes.GLASS_BOTTLE);
+            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+            player.incrementStat(Stats.USE_CAULDRON);
+            player.incrementStat(Stats.USED.getOrCreateStat(item));
+            setCauldronState(world, pos, fluid, levels);
+            world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1, 1);
+            world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
+            return ActionResult.SUCCESS;
         }
 
         return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     };
-    CauldronBehavior WATER = createCauldronInteraction(SimpleFluid.of(Fluids.WATER));
-    CauldronBehavior LAVA = createCauldronInteraction(SimpleFluid.of(Fluids.LAVA));
+    CauldronBehavior WATER = createCauldronInteraction((w, pos) -> SimpleFluid.of(Fluids.WATER).getDefaultStack());
+    CauldronBehavior LAVA = createCauldronInteraction((w, pos) -> SimpleFluid.of(Fluids.LAVA).getDefaultStack());
+    CauldronBehavior OTHER_FLUID = createCauldronInteraction((w, pos) -> w.getBlockEntity(pos, PSBlockEntities.CAULDRON).map(FluidCauldronBlock.Data::getFluid).orElse(ItemFluids.EMPTY));
 
     static void register(Item item) {
         CauldronBehavior.EMPTY_CAULDRON_BEHAVIOR.map().put(item, FluidCauldronBehavior.AIR);
         CauldronBehavior.LAVA_CAULDRON_BEHAVIOR.map().put(item, FluidCauldronBehavior.LAVA);
         CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(item, FluidCauldronBehavior.WATER);
+        FluidCauldronBlock.BEHAVIOUR.map().put(item, FluidCauldronBehavior.OTHER_FLUID);
     }
 
-    static CauldronBehavior createCauldronInteraction(SimpleFluid fluidType) {
+    static CauldronBehavior createCauldronInteraction(BiFunction<World, BlockPos, ItemFluids> fluidTypeSupplier) {
         return (state, world, pos, player, hand, stack) -> {
             Item item = stack.getItem();
+            ItemFluids fluidType = fluidTypeSupplier.apply(world, pos);
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copy());
 
-            // TODO: Lava cauldrons do not have levels
-            int minimumFluidMoved = state.contains(LeveledCauldronBlock.LEVEL) ? FluidVolumes.GLASS_BOTTLE : FluidVolumes.BUCKET;
+            int maxTransferred = FluidCapacity.get(stack);
 
-            if (t.fluids().isEmpty()) {
-                ItemFluids fluid = fluidType.getDefaultStack(minimumFluidMoved);
+            if (t.fluids().isEmpty() && maxTransferred >= FluidVolumes.GLASS_BOTTLE) {
+                int levelChange = maxTransferred / FluidVolumes.GLASS_BOTTLE;
+                ItemFluids fluid = fluidType.ofAmount(levelChange * FluidVolumes.GLASS_BOTTLE);
 
                 if (!t.canAccept(fluid)) {
                     return ActionResult.FAIL;
@@ -75,39 +79,59 @@ public interface FluidCauldronBehavior {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
                     player.incrementStat(Stats.USE_CAULDRON);
                     player.incrementStat(Stats.USED.getOrCreateStat(item));
-                    if (state.contains(LeveledCauldronBlock.LEVEL)) {
-                        LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
-                    } else {
-                        state = Blocks.CAULDRON.getDefaultState();
-                        world.setBlockState(pos, state);
-                        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
-                    }
+                    decrementFluidLevel(state, world, pos, fluidType);
+                    setCauldronState(world, pos, fluidType, getFluidLevel(state) - levelChange);
+                    world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
                     world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1, 1);
                     world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
                 }
                 return ActionResult.SUCCESS;
             }
 
-            if (t.fluids().fluid() != fluidType || t.fluids().amount() < minimumFluidMoved || !tryIncrementFluidLevel(state, world, pos)) {
+            if (!t.fluids().canCombine(fluidType) || t.fluids().amount() < FluidVolumes.GLASS_BOTTLE || !incrementFluidLevel(state, world, pos, fluidType)) {
                 return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
             }
 
             player.incrementStat(Stats.USE_CAULDRON);
             player.incrementStat(Stats.USED.getOrCreateStat(item));
-            t.withdraw(minimumFluidMoved);
+            t.withdraw(FluidVolumes.GLASS_BOTTLE);
             world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1, 1);
             player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
             return ActionResult.SUCCESS;
         };
     }
 
-    private static boolean tryIncrementFluidLevel(BlockState state, World world, BlockPos pos) {
-        if (state.contains(LeveledCauldronBlock.LEVEL) && state.get(LeveledCauldronBlock.LEVEL) < LeveledCauldronBlock.MAX_LEVEL) {
-            state = state.cycle(LeveledCauldronBlock.LEVEL);
-            world.setBlockState(pos, state);
+    private static int getFluidLevel(BlockState state) {
+        return state.getOrEmpty(LeveledCauldronBlock.LEVEL).orElse(state.isOf(Blocks.CAULDRON) ? 0 : LeveledCauldronBlock.MAX_LEVEL);
+    }
+
+    private static boolean incrementFluidLevel(BlockState state, World world, BlockPos pos, ItemFluids fluidType) {
+        int level = getFluidLevel(state);
+        if (level < LeveledCauldronBlock.MAX_LEVEL) {
+            setCauldronState(world, pos, fluidType, level + 1);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
             return true;
         }
         return false;
+    }
+
+    private static void decrementFluidLevel(BlockState state, World world, BlockPos pos, ItemFluids fluidType) {
+        setCauldronState(world, pos, fluidType, getFluidLevel(state) - 1);
+        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
+    }
+
+    private static void setCauldronState(World world, BlockPos pos, ItemFluids fluidType, int level) {
+        world.setBlockState(pos, getCauldronState(fluidType, level));
+        world.getBlockEntity(pos, PSBlockEntities.CAULDRON).ifPresent(data -> data.setFluid(fluidType));
+    }
+
+    private static BlockState getCauldronState(ItemFluids fluidType, int level) {
+        if (level <= 0) {
+            return Blocks.CAULDRON.getDefaultState();
+        }
+        if (level >= LeveledCauldronBlock.MAX_LEVEL && fluidType.isOf(Fluids.LAVA)) {
+            return Blocks.LAVA_CAULDRON.getDefaultState();
+        }
+        return fluidType.fluid().getPhysical().getCauldron().getDefaultState().withIfExists(LeveledCauldronBlock.LEVEL, level);
     }
 }
