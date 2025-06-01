@@ -2,7 +2,7 @@
 	"texture_size": [32, 32],
 	"textures": {
     "particle": "#valve",
-    "valve": "psychedelicraft:block/glass_tube_valve"
+    "valve": "psychedelicraft:block/glass_tube_valve_closed"
 	},
 	"elements": [
 		{

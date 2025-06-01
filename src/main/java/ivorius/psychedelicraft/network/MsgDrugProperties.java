@@ -13,7 +13,7 @@ public record MsgDrugProperties (
     ) implements HandledPacket<PlayerEntity> {
 
     public MsgDrugProperties(DrugProperties properties) {
-        this(properties.asEntity().getId(), properties.toNbt());
+        this(properties.asEntity().getId(), properties.toTrackedNbt(new NbtCompound()));
     }
 
     public MsgDrugProperties(PacketByteBuf buffer) {
@@ -28,6 +28,6 @@ public record MsgDrugProperties (
 
     @Override
     public void handle(PlayerEntity sender) {
-        DrugProperties.of(sender.getWorld().getEntityById(entityId)).ifPresent(e -> e.fromNbt(compound));
+        DrugProperties.of(sender.getWorld().getEntityById(entityId)).ifPresent(e -> e.fromTrackedNbt(compound));
     }
 }

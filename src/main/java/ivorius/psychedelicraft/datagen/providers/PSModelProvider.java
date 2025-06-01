@@ -49,6 +49,7 @@ public class PSModelProvider extends FabricModelProvider {
         );
 
         generator.registerSingleton(PSBlocks.FRUITING_JUNIPER_LEAVES, TexturedModel.LEAVES);
+        generator.registerParented(Blocks.CAULDRON, PSBlocks.CAULDRON);
         generator.registerParentedItemModel(PSBlocks.FRUITING_JUNIPER_LEAVES, ModelIds.getBlockModelId(PSBlocks.FRUITING_JUNIPER_LEAVES));
         generator.registerSimpleCubeAll(PSBlocks.GLITCH);
 
@@ -165,9 +166,7 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.WINE_GRAPES, PSItems.VOMIT,
                 PSItems.EXTACY, PSItems.PACIFIER,
                 PSItems.LSA_SQUARE, PSItems.LSD_PILL,
-                PSItems.CRYSTAL_METH,
-                PSItems.MORPHINE_TABLET, PSItems.HEROINE_POWDER, PSItems.HASH_MUFFIN,
-
+                PSItems.MORPHINE_TABLET, PSItems.HASH_MUFFIN,
                 PSItems.OBSIDIAN_BOTTLE,
                 PSItems.BAG_O_VOMIT, PSItems.JOLLY_RANCHER, PSItems.BROKEN_GLASS,
 
@@ -182,6 +181,8 @@ public class PSModelProvider extends FabricModelProvider {
         List.of(
                 PSItems.SMOKING_PIPE,
                 PSItems.CRACK_COCAINE,
+                PSItems.CRYSTAL_METH,
+                PSItems.HEROINE_POWDER,
                 PSItems.COCAINE_POWDER,
                 PSItems.OBSIDIAN_DUST
         ).forEach(item -> ItemModels.registerSniffable(generator, item));

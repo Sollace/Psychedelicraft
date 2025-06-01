@@ -8,17 +8,18 @@ import com.mojang.serialization.MapCodec;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import net.minecraft.network.PacketByteBuf;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.util.Identifier;
 
-public record FluidParticleEffect(ParticleType<FluidParticleEffect> type, SimpleFluid fluid) implements ParticleEffect {
+public record FluidParticleEffect(ParticleType<FluidParticleEffect> type, ItemFluids fluid) implements ParticleEffect {
     public static MapCodec<FluidParticleEffect> createCodec(ParticleType<FluidParticleEffect> type) {
-        return SimpleFluid.CODEC.xmap(fluid -> new FluidParticleEffect(type, fluid), effect -> effect.fluid()).fieldOf("fluid");
+        return ItemFluids.CODEC.xmap(fluid -> new FluidParticleEffect(type, fluid), effect -> effect.fluid()).fieldOf("fluid");
     }
 
     public static PacketCodec<? super PacketByteBuf, FluidParticleEffect> createPacketCodec(ParticleType<FluidParticleEffect> type) {
-        return SimpleFluid.PACKET_CODEC.xmap(fluid -> new FluidParticleEffect(type, fluid), effect -> effect.fluid());
+        return ItemFluids.PACKET_CODEC.xmap(fluid -> new FluidParticleEffect(type, fluid), effect -> effect.fluid());
     }
 
     @SuppressWarnings("deprecation")
@@ -29,14 +30,13 @@ public record FluidParticleEffect(ParticleType<FluidParticleEffect> type, Simple
                     throws CommandSyntaxException {
                 reader.expect(' ');
                 Identifier fluidId = new Identifier(reader.readQuotedString());
-                return new FluidParticleEffect(type, SimpleFluid.REGISTRY.getOrEmpty(fluidId).orElseThrow());
+                return new FluidParticleEffect(type, SimpleFluid.REGISTRY.getOrEmpty(fluidId).orElseThrow().getDefaultStack());
             }
 
             @Override
             public FluidParticleEffect read(ParticleType<FluidParticleEffect> type, PacketByteBuf buf) {
                 return codec.apply(type).decode(buf);
             }
-
         };
     }
 
@@ -52,6 +52,6 @@ public record FluidParticleEffect(ParticleType<FluidParticleEffect> type, Simple
 
     @Override
     public String asString() {
-        return String.format("%s", fluid.getId().toString());
+        return String.format("%s", fluid.fluid().getId().toString());
     }
 }

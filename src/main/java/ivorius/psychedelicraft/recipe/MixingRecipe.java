@@ -89,7 +89,6 @@ public class MixingRecipe extends ShapelessRecipe {
         List<ItemStack> recepticals = getOutputRecepticals(inventory).toList();
         RecipeMatcher recipeMatcher = new RecipeMatcher();
         RecipeUtils.stacks(inventory).forEach(s -> recipeMatcher.addInput(s, 1));
-
         return recepticals.size() == 1
                 && ItemFluids.of(recepticals.get(0)).isOf(Fluids.WATER)
                 && FluidCapacity.getPercentage(recepticals.get(0)) >= 1
@@ -109,7 +108,7 @@ public class MixingRecipe extends ShapelessRecipe {
 
     @Override
     public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
-        return RecipeUtils.recepticals(RecipeUtils.stacks(inventory))
+        return getOutputRecepticals(inventory)
                 .findFirst()
                 .map(receptical -> output.amount() <= 1 ? output.ofFilling(receptical.copy()) : ItemFluids.set(receptical.copy(), output.ofAmount(Math.min(output.amount(), FluidCapacity.get(receptical)))))
                 .orElse(ItemStack.EMPTY);

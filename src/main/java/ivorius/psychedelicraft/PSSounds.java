@@ -26,6 +26,7 @@ public interface PSSounds {
     SoundEvent BLOCK_VALVE_CLOSE = register("block.valve.close");
 
     SoundEvent ITEM_SYRINGE_INJECT = register("item.syringe.inject");
+    SoundEvent ITEM_BROKEN_GLASS_EAT = register("item.broken_glass.eat");
 
     SoundEvent BLOCK_BUNSEN_BURNER_WORK = register("block.bunsen_burner.work");
     SoundEvent BLOCK_BUNSEN_BURNER_OVERHEAT = register("block.bunsen_burner.overheat");

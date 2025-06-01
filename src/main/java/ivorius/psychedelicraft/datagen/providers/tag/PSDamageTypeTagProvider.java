@@ -27,7 +27,8 @@ public class PSDamageTypeTagProvider extends FabricTagProvider<DamageType> {
                 PSDamageTypes.HEART_ATTACK,
                 PSDamageTypes.KIDNEY_FAILURE,
                 PSDamageTypes.IN_SLEEP,
-                PSDamageTypes.OVER_EATING
+                PSDamageTypes.OVER_EATING,
+                PSDamageTypes.CANCER
         );
         getOrCreateTagBuilder(PSTags.DamageTypes.IS_INCENDIARY).add(
                 PSDamageTypes.MOLOTOV,

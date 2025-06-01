@@ -8,6 +8,7 @@ package ivorius.psychedelicraft.item;
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.item.component.ItemDrugs;
 import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.recipe.RecipeUtils;
@@ -132,11 +133,11 @@ public class BongItem extends Item {
             Vector3f smokeColor
     ) implements Predicate<ItemStack> {
         public Consumable(ItemStack consumedItem, DrugInfluence...drugInfluences) {
-            this(consumedItem, stack -> List.of(drugInfluences), SmokeableItem.WHITE);
+            this(consumedItem, stack -> List.of(drugInfluences), ItemDrugs.DEFAULT_SMOKE_COLOR);
         }
 
         public Consumable(ItemStack consumedItem, Function<ItemStack, DrugInfluence> drugInfluences) {
-            this(consumedItem, stack -> List.of(drugInfluences.apply(stack)), SmokeableItem.WHITE);
+            this(consumedItem, stack -> List.of(drugInfluences.apply(stack)), ItemDrugs.DEFAULT_SMOKE_COLOR);
         }
 
         @Override

@@ -3,7 +3,7 @@ package ivorius.psychedelicraft.util;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.mojang.datafixers.util.Function7;
+import com.mojang.datafixers.util.Function8;
 
 import io.netty.buffer.ByteBuf;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
@@ -46,7 +46,7 @@ public interface PacketCodecUtils {
         return PacketCodecs.toCollection(DefaultedList::ofSize);
     }
 
-    static <B extends ByteBuf, C, T1, T2, T3, T4, T5, T6, T7> PacketCodec<B, C> tuple(
+    static <B extends ByteBuf, C, T1, T2, T3, T4, T5, T6, T7, T8> PacketCodec<B, C> tuple(
             PacketCodec<? super B, T1> codec1, Function<C, T1> from1,
             PacketCodec<? super B, T2> codec2, Function<C, T2> from2,
             PacketCodec<? super B, T3> codec3, Function<C, T3> from3,
@@ -54,12 +54,13 @@ public interface PacketCodecUtils {
             PacketCodec<? super B, T5> codec5, Function<C, T5> from5,
             PacketCodec<? super B, T6> codec6, Function<C, T6> from6,
             PacketCodec<? super B, T7> codec7, Function<C, T7> from7,
-            Function7<T1, T2, T3, T4, T5, T6, T7, C> to
+            PacketCodec<? super B, T8> codec8, Function<C, T8> from8,
+            Function8<T1, T2, T3, T4, T5, T6, T7, T8, C> to
         ) {
             return new PacketCodec<>() {
                 @Override
                 public C decode(B b) {
-                    return to.apply(codec1.decode(b), codec2.decode(b), codec3.decode(b), codec4.decode(b), codec5.decode(b), codec6.decode(b), codec7.decode(b));
+                    return to.apply(codec1.decode(b), codec2.decode(b), codec3.decode(b), codec4.decode(b), codec5.decode(b), codec6.decode(b), codec7.decode(b), codec8.decode(b));
                 }
 
                 @Override
@@ -71,6 +72,7 @@ public interface PacketCodecUtils {
                     codec5.encode(b, from5.apply(c));
                     codec6.encode(b, from6.apply(c));
                     codec7.encode(b, from7.apply(c));
+                    codec8.encode(b, from8.apply(c));
                 }
             };
         }

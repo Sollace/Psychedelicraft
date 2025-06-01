@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.block.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
@@ -199,7 +200,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     }
 
     private void craft(ServerWorld world, CraftableContents contents) {
-        var consumer = new BunsenBurnerRecipe.Product(FluidMound.of(), new ArrayList<>());
+        var consumer = new BunsenBurnerRecipe.Product(FluidMound.of(), new ArrayList<>(), new HashSet<>());
         var input = new ReactingRecipe.Input(
                 FluidMound.of(this),
                 contents.getCraftingIngredients(),
