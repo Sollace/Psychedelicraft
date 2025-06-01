@@ -14,6 +14,7 @@ import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
 import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
@@ -205,7 +206,7 @@ public class LargeContents extends SmallContents {
             });
         }
 
-        return PipeInsertable.reject(PipeFluids.of(mound, fluids.temperature()));
+        return PipeInsertable.reject(PipeFluids.of(mound, fluids.impurities(), fluids.temperature()));
     }
 
     private boolean isValidIngredient(ServerWorld world, ItemStack stack) {
@@ -235,7 +236,7 @@ public class LargeContents extends SmallContents {
     @Override
     public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
         product.items().forEach(stack -> ingredients.addStack(stack));
-        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(product.fluids(), 15)).equals(STATUS_ACCEPT_ALL)) {
+        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(product.fluids(), new Impurities(product.impurities()), 15)).equals(STATUS_ACCEPT_ALL)) {
             onFluidWasted(world);
         }
     }

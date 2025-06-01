@@ -30,6 +30,7 @@ import net.minecraft.client.data.TexturedModel;
 import net.minecraft.client.data.VariantsBlockModelDefinitionCreator;
 import net.minecraft.client.render.model.json.ModelVariantOperator;
 import net.minecraft.client.render.model.json.MultipartModelConditionBuilder;
+import net.minecraft.client.render.model.json.WeightedVariant;
 import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.registry.Registries;
@@ -99,6 +100,11 @@ public interface BlockModels {
         generator.registerHangingSign(strippedLog, hangingSign, wallHangingSign);
         generator.registerSingleton(leaves, TexturedModel.LEAVES);
         generator.registerFlowerPotPlant(sapling, pottedSapling, CrossType.NOT_TINTED);
+    }
+
+    static void registerParentedWithoutItem(BlockStateModelGenerator generator, Block modelSource, Block child) {
+        WeightedVariant weightedVariant = createWeightedVariant(ModelIds.getBlockModelId(modelSource));
+        generator.blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(child, weightedVariant));
     }
 
     static void registerBarrel(BlockStateModelGenerator generator, Block block) {

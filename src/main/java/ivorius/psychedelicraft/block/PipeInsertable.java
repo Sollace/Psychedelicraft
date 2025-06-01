@@ -10,6 +10,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.FluidMound;
 import net.minecraft.block.BlockState;
@@ -73,10 +74,11 @@ public interface PipeInsertable {
         return pipe == null ? Optional.empty() : pipe.tryExtract(world, state, pos, direction);
     }
 
-    public record PipeFluids(FluidMound fluids, int temperature) {
-        public static final PipeFluids EMPTY = new PipeFluids(FluidMound.of(), 0);
+    public record PipeFluids(FluidMound fluids, Impurities impurities, int temperature) {
+        public static final PipeFluids EMPTY = new PipeFluids(FluidMound.of(), Impurities.EMPTY, 0);
         public static final Codec<PipeFluids> CODEC = RecordCodecBuilder.create(i -> i.group(
                 FluidMound.CODEC.fieldOf("fluids").forGetter(PipeFluids::fluids),
+                Impurities.CODEC.optionalFieldOf("impurities", Impurities.EMPTY).forGetter(PipeFluids::impurities),
                 Codec.INT.fieldOf("temperature").forGetter(PipeFluids::temperature)
         ).apply(i, PipeFluids::of));
         public static final Codec<List<PipeFluids>> LIST_CODEC = Codec.xor(CODEC.listOf(), CODEC).flatXmap(
@@ -87,12 +89,12 @@ public interface PipeInsertable {
             temperature = MathHelper.clamp(temperature, 0, 15);
         }
 
-        public static PipeFluids of(ItemFluids fluids, int temperature) {
-            return fluids.isEmpty() && temperature == 0 ? EMPTY : new PipeFluids(FluidMound.of(fluids), temperature);
+        public static PipeFluids of(ItemFluids fluids, Impurities impurities, int temperature) {
+            return fluids.isEmpty() && temperature == 0 ? EMPTY : new PipeFluids(FluidMound.of(fluids), impurities, temperature);
         }
 
-        public static PipeFluids of(FluidMound fluids, int temperature) {
-            return fluids.isEmpty() && temperature == 0 ? EMPTY : new PipeFluids(fluids, temperature);
+        public static PipeFluids of(FluidMound fluids, Impurities impurities, int temperature) {
+            return fluids.isEmpty() && temperature == 0 ? EMPTY : new PipeFluids(fluids, impurities, temperature);
         }
 
         public boolean isEmpty() {
@@ -100,15 +102,15 @@ public interface PipeInsertable {
         }
 
         public PipeFluids combine(PipeFluids fluids) {
-            return of(FluidMound.of(fluids()).addAll(fluids.fluids()), MathHelper.lerp(0.5F, temperature(), fluids.temperature()));
+            return of(FluidMound.of(fluids()).addAll(fluids.fluids()), Impurities.combine(impurities(), fluids.impurities()), MathHelper.lerp(0.5F, temperature(), fluids.temperature()));
         }
 
         public PipeFluids withTemperature(int temperature) {
-            return of(FluidMound.of(fluids()), temperature);
+            return of(FluidMound.of(fluids()), impurities(), temperature);
         }
 
         public PipeFluids withFluids(FluidMound fluids) {
-            return of(fluids, temperature());
+            return of(fluids, impurities(), temperature());
         }
 
         public FluidMound splitCondensate() {

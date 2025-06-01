@@ -21,12 +21,11 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 
 public class DrugInfluence {
-    private static final Codec<Integer> COLOR_CODEC = RecordCodecBuilder.<Vector3f>create(i -> i.group(
+    public static final Codec<Integer> COLOR_CODEC = RecordCodecBuilder.<Vector3f>create(i -> i.group(
             Codec.FLOAT.fieldOf("r").forGetter(Vector3f::x),
             Codec.FLOAT.fieldOf("g").forGetter(Vector3f::y),
             Codec.FLOAT.fieldOf("b").forGetter(Vector3f::z)
     ).apply(i, Vector3f::new)).xmap(MathUtils::getArgb, MathUtils::unpackRgb);
-
     public static final Codec<DrugInfluence> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             DrugType.REGISTRY.getCodec().fieldOf("drugType").forGetter(DrugInfluence::getDrugType),
             Codec.INT.fieldOf("delay").forGetter(DrugInfluence::getDelay),
@@ -135,6 +134,10 @@ public class DrugInfluence {
 
     public DrugInfluence copyWithMaximum(double maxInfluence) {
         return new DrugInfluence(drugType, delay, influenceDelta, baseIncrease, maxInfluence, color);
+    }
+
+    public DrugInfluence copyWithDelay(int delay) {
+        return new DrugInfluence(drugType, delay, influenceDelta, baseIncrease, targetInfluence, color);
     }
 
     @Override

@@ -34,26 +34,32 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
     )
     private void onInteractMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> info) {
         ItemStack stack = player.getStackInHand(hand);
-        if (stack.isOf(PSItems.HASH_MUFFIN) && !isBaby()) {
-            RegistryEntry<VillagerProfession> profession = getVillagerData().profession();
-            if (profession.matchesKey(VillagerProfession.NITWIT) || profession.matchesKey(VillagerProfession.NONE)) {
-                if (!player.getAbilities().creativeMode) {
-                    stack.decrement(1);
-                }
+        if (stack.isOf(PSItems.HASH_MUFFIN)) {
+            if (isBaby()) {
                 if (!getWorld().isClient) {
-                    getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT.value(), getSoundCategory(),
-                            1 + random.nextFloat(),
-                            random.nextFloat() * 0.7F + 0.3F
-                    );
-                    player.getWorld().getRegistryManager().getOrThrow(RegistryKeys.VILLAGER_PROFESSION).getEntry(PSTradeOffers.DRUG_ADDICT_PROFESSION.getValue()).ifPresent(e -> {
-                        setVillagerData(getVillagerData().withProfession(e));
-                        ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)getWorld());
-                        PSCriteria.FEED_VILLAGER.trigger(player);
-                    });
+                    PSCriteria.FEED_BABY_VILLAGER.trigger(player, this);
                 }
-                info.setReturnValue(ActionResult.SUCCESS);
             } else {
-                info.setReturnValue(ActionResult.CONSUME);
+                RegistryEntry<VillagerProfession> profession = getVillagerData().profession();
+                if (profession.matchesKey(VillagerProfession.NITWIT) || profession.matchesKey(VillagerProfession.NONE)) {
+                    if (!player.getAbilities().creativeMode) {
+                        stack.decrement(1);
+                    }
+                    if (!getWorld().isClient) {
+                        getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT.value(), getSoundCategory(),
+                                1 + random.nextFloat(),
+                                random.nextFloat() * 0.7F + 0.3F
+                        );
+                        player.getWorld().getRegistryManager().getOrThrow(RegistryKeys.VILLAGER_PROFESSION).getEntry(PSTradeOffers.DRUG_ADDICT_PROFESSION.getValue()).ifPresent(e -> {
+                            setVillagerData(getVillagerData().withProfession(e));
+                            ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)getWorld());
+                            PSCriteria.FEED_VILLAGER.trigger(player);
+                        });
+                    }
+                    info.setReturnValue(ActionResult.SUCCESS);
+                } else {
+                    info.setReturnValue(ActionResult.CONSUME);
+                }
             }
         }
     }

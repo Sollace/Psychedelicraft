@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.util;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -65,5 +66,12 @@ public interface CodecUtils {
         return elementCodec.listOf(1, 9).flatXmap(ingredients -> {
             return DataResult.success(new DefaultedList<>(ingredients, def) {});
         }, DataResult::success);
+    }
+
+    static MapCodec<OptionalInt> optionalIntFieldOf(Codec<Integer> fieldCodec, String name) {
+        return fieldCodec.optionalFieldOf(name).<OptionalInt>xmap(
+                o -> o.isPresent() ? OptionalInt.of(o.get()) : OptionalInt.empty(),
+                o -> o.isPresent() ? Optional.of(o.getAsInt()) : Optional.empty()
+        );
     }
 }

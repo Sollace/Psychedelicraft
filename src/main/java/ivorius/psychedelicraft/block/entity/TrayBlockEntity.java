@@ -9,6 +9,7 @@ import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.FluidMound;
 import ivorius.psychedelicraft.recipe.HardeningRecipe;
@@ -36,6 +37,7 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
 
     private final Resovoir fluid = new Resovoir(MAX_CAPACITY, (tank, level) -> {});
     private FluidMound impurities = FluidMound.of();
+    private Impurities cuts = Impurities.EMPTY;
 
     private boolean dirty;
 
@@ -67,7 +69,7 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
         if (getLevel() >= MAX_CAPACITY && !isHardened()) {
             if (matchingRecipe.isEmpty()) {
                 matchingRecipe = world.getRecipeManager()
-                        .getFirstMatch(PSRecipes.TRAY, new HardeningRecipe.Input(fluid.getContents(), impurities), world)
+                        .getFirstMatch(PSRecipes.TRAY, new HardeningRecipe.Input(world.random, fluid.getContents(), impurities, cuts), world)
                         .map(RecipeEntry::value);
             }
 
@@ -77,13 +79,12 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
                 }
                 if (--timeToHarden <= 0) {
                     world.playSound(null, getPos(), PSSounds.BLOCK_TRAY_HARDEN, SoundCategory.BLOCKS, 1, 1);
-                    craftingResult = Optional.of(recipe.craft(
-                            new HardeningRecipe.Input(fluid.getContents(), impurities),
-                            world.getRegistryManager()).copyWithCount(recipe.amount().get(world.random)));
+                    craftingResult = Optional.of(recipe.craft(new HardeningRecipe.Input(world.random, fluid.getContents(), impurities, cuts), world.getRegistryManager()));
                     impurities = FluidMound.of();
 
                     fluid.clear();
                     matchingRecipe = Optional.empty();
+                    cuts = Impurities.EMPTY;
 
                     for (ServerPlayerEntity player : world.getNonSpectatingEntities(ServerPlayerEntity.class, Box.of(getPos().toCenterPos(), 17, 17, 17))) {
                         PSCriteria.TRAY_HARDEN.trigger(player);
@@ -115,7 +116,7 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
         }
 
         FluidMound remainder = FluidMound.of(fluids.fluids());
-        PipeFluids copy = PipeFluids.of(fluids.fluids(), fluids.temperature());
+        PipeFluids copy = PipeFluids.of(fluids.fluids(), fluids.impurities(), fluids.temperature());
         copy.splitCondensate().getFluids().forEach(fluid -> {
             if (getLevel() < MAX_CAPACITY && canAccept(world, fluid) && this.fluid.getContents().canCombine(fluid)) {
                 int amountDeposited = this.fluid.deposit(fluid);
@@ -137,6 +138,7 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
             }
         });
 
+        cuts = Impurities.combine(copy.impurities(), cuts);
         matchingRecipe = Optional.empty();
 
         if (remainder.isEmpty()) {

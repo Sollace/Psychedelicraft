@@ -6,9 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
 
+import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -57,10 +59,10 @@ public final class PhysicalFluid {
         if (standing == Fluids.WATER) {
             return Blocks.WATER_CAULDRON;
         }
-        if (standing == Fluids.LAVA) {
+        if (standing == Fluids.LAVA && Blocks.LAVA_CAULDRON.getDefaultState().contains(LeveledCauldronBlock.LEVEL)) {
             return Blocks.LAVA_CAULDRON;
         }
-        return null;
+        return PSBlocks.CAULDRON;
     }
 
     @Nullable

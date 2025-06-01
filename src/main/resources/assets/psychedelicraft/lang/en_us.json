@@ -87,6 +87,7 @@
   "item.psychedelicraft.brown_magic_mushrooms": "Brown Magic Mushrooms",
   "item.psychedelicraft.red_magic_mushrooms": "Red Magic Mushrooms",
   "item.psychedelicraft.jolly_rancher": "Jolly Rancher",
+  "item.psychedelicraft.jolly_rancher.use": "You feel better all of a sudden",
   "item.psychedelicraft.jimsonweed_seeds": "Jimsonweed Seeds",
   "item.psychedelicraft.jimsonweed_seed_pod": "Jimsonweed Seed Pod",
   "item.psychedelicraft.jimsonweed_leaf": "Jimsonweed Leaf",
@@ -269,7 +270,7 @@
   "entity.minecraft.villager.drug_addict": "Drug Addict",
 
   "psychedelicraft.sleep.fail.coccaine": "The drugs in your system keep you awake",
-  "psychedelicraft.sleep.fail.caffiene": "You do not feel tired",
+  "psychedelicraft.sleep.fail.insomnia": "You do not feel tired",
 
   "block.psychedelicraft.empty": "Empty",
 
@@ -416,6 +417,8 @@
   "death.attack.psychedelicraft.in_sleep": "%1$s died in their sleep",
   "death.attack.psychedelicraft.over_eating": "%1$s ate too much",
   "death.attack.psychedelicraft.teeth_grinding": "%1$s ground their teeth to dust",
+  "death.attack.psychedelicraft.glass_shard": "%1$s ate glass",
+  "death.attack.psychedelicraft.cancer": "%1$s died of cancer",
 
   "death.attack.psychedelicraft.molotov": "%1$s was toasted by %2$s",
   "death.attack.psychedelicraft.molotov.item": "%1$s was toasted by %2$s using %3$s",
@@ -495,6 +498,10 @@
   "advancements.psychedelicraft.hash_a_muffin.description": "Bake a hash muffin",
   "advancements.psychedelicraft.feed_a_villager.title": "Eat This!",
   "advancements.psychedelicraft.feed_a_villager.description": "Feed a starving villager",
+  "advancements.psychedelicraft.just_say_no.title": "Just Say No",
+  "advancements.psychedelicraft.just_say_no.description": "Offer a hash muffin to a baby villager",
+  "advancements.psychedelicraft.sharing_is_caring.title": "Sharing is Caring",
+  "advancements.psychedelicraft.sharing_is_caring.description": "Spread the joys of second-hand smoking",
   "advancements.psychedelicraft.hop_cones.title": "Where It Begins",
   "advancements.psychedelicraft.hop_cones.description": "Acquire some hop cones",
   "advancements.psychedelicraft.make_distillery.title": "Time to... Distill",
@@ -525,6 +532,12 @@
   "advancements.psychedelicraft.thats_no_good.description": "Experience Side-effects",
   "advancements.psychedelicraft.goo_goo.title": "Goo Goo",
   "advancements.psychedelicraft.goo_goo.description": "Use a pacifier to prevent damaging to your teeth and yourself",
+  "advancements.psychedelicraft.cancer.title": "Cancer",
+  "advancements.psychedelicraft.cancer.description": "There's a 0.0000001% chance of earning this achievement every time you smoke.",
+  "advancements.psychedelicraft.super_cancer.title": "Second-Hand Cancer",
+  "advancements.psychedelicraft.super_cancer.description": "There's a 0.000000001% chance of earning this achievement every time you smoke.",
+  "advancements.psychedelicraft.the_cure.title": "The Cure",
+  "advancements.psychedelicraft.the_cure.description": "Somehow, you cured cancer",
   "advancements.psychedelicraft.all_drugs.title": "High As A Kite",
   "advancements.psychedelicraft.all_drugs.description": "Have every drug effect active at the same time",
 
@@ -550,6 +563,7 @@
   "subtitles.psychedelicraft.entity.player.breath": "Heavy Breathing",
   "subtitles.psychedelicraft.entity.player.pacify": "Pacifier Squeaks",
   "subtitles.psychedelicraft.item.syringe.inject": "Syring Injects",
+  "subtitles.psychedelicraft.item.broken_glass.eat": "Glass Shard Cracks",
   "subtitles.psychedelicraft.block.rift_jar.open": "Rift Jar Opens",
   "subtitles.psychedelicraft.block.rift_jar.close": "Rift Jar Closes",
   "subtitles.psychedelicraft.block.rift_jar.toggle": "Rift Jar Toggles",

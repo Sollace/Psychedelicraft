@@ -17,6 +17,7 @@ import ivorius.psychedelicraft.client.screen.SettingsScreen;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
+import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemDrugs;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
@@ -90,6 +91,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
             }
 
             ItemDrugs.get(stack).appendTooltip(context, tooltip::add, type, stack);
+            Impurities.get(stack).appendTooltip(context, tooltip::add, type, stack);
 
             if (!lines.isEmpty()) {
                 lines.addAll(1, tooltip);

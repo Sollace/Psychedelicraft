@@ -34,7 +34,7 @@ public class SyringeItem extends DrinkableItem {
     @Override
     public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         Hand hand = stack == attacker.getMainHandStack() ? Hand.MAIN_HAND : Hand.OFF_HAND;
-        var effect = new FluidParticleEffect(PSParticles.FLUID_SPLASH, PSFluids.TOMATO);
+        var effect = new FluidParticleEffect(PSParticles.FLUID_SPLASH, PSFluids.TOMATO.getDefaultStack());
         //for (int i = 0; i < 10; i++) {
             ((ServerWorld)target.getWorld()).spawnParticles(effect, target.getParticleX(1), target.getEyeY(), target.getParticleZ(1), 10, 0, 0, 0, 0.3F);
         //}
