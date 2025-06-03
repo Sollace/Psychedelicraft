@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.config.BiomeSelector;
 import ivorius.psychedelicraft.config.FeatureCustomConfig;
 import ivorius.psychedelicraft.config.Generation;
+import ivorius.psychedelicraft.world.gen.loot.PSLootFunctionTypes;
 import ivorius.psychedelicraft.world.gen.loot.PSLootTableEntryType;
 import ivorius.psychedelicraft.world.gen.structure.MutableStructurePool;
 import net.fabricmc.fabric.api.biome.v1.*;
@@ -54,6 +55,7 @@ public interface PSWorldGen {
 
         MutableStructurePool.bootstrap();
         PSLootTableEntryType.bootstrap();
+        PSLootFunctionTypes.bootstrap();
     }
 
     private static void plant(RegistryKey<PlacedFeature> key, TagKey<Biome> biomes, Function<Generation, FeatureCustomConfig> configKey) {
