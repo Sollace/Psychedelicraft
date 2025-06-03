@@ -367,6 +367,8 @@ public class SimpleFluid implements Combustable {
 
         public abstract Stream<Pair<T, T>> steps();
 
+        public abstract String name();
+
         public static Attribute<Integer> ofInt(String name, int min, int max) {
             return new Attribute<>() {
                 @Override
@@ -393,6 +395,11 @@ public class SimpleFluid implements Combustable {
                 public ItemFluids cycle(ItemFluids fluids) {
                     int value = get(fluids);
                     return value < max ? set(fluids, value + 1) : fluids;
+                }
+
+                @Override
+                public String name() {
+                    return name;
                 }
             };
         }
@@ -422,6 +429,11 @@ public class SimpleFluid implements Combustable {
                 @Override
                 public ItemFluids cycle(ItemFluids fluids) {
                     return !get(fluids) ? set(fluids, true) : fluids;
+                }
+
+                @Override
+                public String name() {
+                    return name;
                 }
             };
         }
