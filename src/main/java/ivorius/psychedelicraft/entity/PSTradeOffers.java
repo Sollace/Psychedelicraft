@@ -194,6 +194,18 @@ public interface PSTradeOffers {
             factories.add(new TradeFluidFactory(25, PSItems.BOTTLE, PSFluids.POTATO, PSFluids.PINEAPPLE, 9, 1));
             factories.add(new TradeFluidFactory(45, PSItems.BOTTLE, PSFluids.HONEY, PSFluids.RICE, 9, 1));
         });
+
+        TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
+            factories.add(sell(6, PSItems.BELLADONNA_SEEDS, 1, 1, 1, 0.8F));
+            factories.add(sell(5, PSItems.COCA_SEEDS, 1, 2, 1, 0.8F));
+            factories.add(sell(7, PSItems.HOP_SEEDS, 1, 2, 1, 0.8F));
+            factories.add(sell(9, PSItems.CANNABIS_SEEDS, 1, 1, 1, 0.8F));
+            factories.add(sell(5, PSItems.COFFEA_CHERRIES, 1, 2, 1, 0.8F));
+            factories.add(sell(7, PSItems.JUNIPER_SAPLING, 1, 1, 1, 0.8F));
+            factories.add(sell(9, PSItems.JIMSONWEED_SEEDS, 1, 1, 1, 0.8F));
+            factories.add(sell(5, PSItems.MORNING_GLORY_SEEDS, 1, 2, 1, 0.8F));
+            factories.add(sell(5, PSItems.TOBACCO_SEEDS, 1, 2, 1, 0.8F));
+        });
     }
 
     private static TradeOffers.Factory buy(int price, Item item, int count, int maxUses, int experience) {
