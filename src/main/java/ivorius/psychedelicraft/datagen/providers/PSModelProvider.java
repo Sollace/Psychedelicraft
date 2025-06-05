@@ -157,6 +157,7 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.CANNABIS_LEAF, PSItems.CANNABIS_BUDS, PSItems.DRIED_CANNABIS_LEAF, PSItems.DRIED_CANNABIS_BUDS,
                 PSItems.DRIED_COCA_LEAVES,
                 PSItems.DRIED_JIMSONWEED_LEAF,
+                PSItems.DRIED_POPPY,
                 PSItems.HOP_CONES,
                 PSItems.MORNING_GLORY,
                 PSItems.JIMSONWEED_SEED_POD, PSItems.JIMSONWEED_LEAF,

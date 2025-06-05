@@ -396,6 +396,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         offerDrying(exporter, PSItems.CANNABIS_LEAF, PSItems.DRIED_CANNABIS_LEAF, 3, 0.2F, 0.6F, "leaves");
         offerDrying(exporter, PSItems.JIMSONWEED_LEAF, PSItems.DRIED_JIMSONWEED_LEAF, 3, 0.2F, 1.1F, "leaves");
         offerDrying(exporter, PSItems.PEYOTE, PSItems.DRIED_PEYOTE, 3, 0.2F, 1.5F, "peyote");
+        offerDrying(exporter, Items.POPPY, PSItems.DRIED_POPPY, 3, 0.2F, 0.4F, "flowers");
     }
 
     private void offerLiquirRecipes(RecipeExporter exporter) {
