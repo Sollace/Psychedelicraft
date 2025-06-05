@@ -336,6 +336,10 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .input(PSItems.BROKEN_GLASS).criterion(hasItem(PSItems.BROKEN_GLASS), conditionsFromItem(PSItems.BROKEN_GLASS))
             .impurity(Impurities.Impurity.SILICA)
             .offerTo(exporter);
+        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+            .input(Items.SUGAR).criterion(hasItem(Items.SUGAR), conditionsFromItem(Items.SUGAR))
+            .impurity(Impurities.Impurity.SUGAR)
+            .offerTo(exporter, Psychedelicraft.id("sugar_water"));
         ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, PSFluids.PETROLIUM.getDefaultStack(45))
             .input(Items.COAL_BLOCK).criterion(hasItem(Items.COAL_BLOCK), conditionsFromItem(Items.COAL_BLOCK))
             .impurity(Impurities.Impurity.PETROLIUM)
@@ -361,6 +365,10 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.LSD_PILL, allImpurities)
             .base(FluidIngredient.builder().fluid(PSFluids.ACID))
             .criterion("has_morning_glory", conditionsFromTag(PSTags.Items.MORNING_GLORY_INGREDIENTS))
+            .offerTo(exporter);
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, Items.SUGAR, allImpurities)
+            .base(FluidIngredient.builder().fluid(Fluids.WATER))
+            .criterion("has_sugar", conditionsFromItem(Items.SUGAR))
             .offerTo(exporter);
     }
 

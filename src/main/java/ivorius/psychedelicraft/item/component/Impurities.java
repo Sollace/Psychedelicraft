@@ -81,7 +81,7 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
     public float getEffectStrengthModifier() {
         float strength = 1;
         if (impurities.contains(Impurity.CARBON)) {
-            strength /= 2F;
+            strength *= 0.5F;
         }
         if (impurities.contains(Impurity.PETROLIUM)) {
             strength *= 1.5F;
@@ -90,7 +90,10 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
             strength *= 1.5F;
         }
         if (impurities.contains(Impurity.SILICA)) {
-            strength /= 2.5F;
+            strength *= 0.4F;
+        }
+        if (impurities.contains(Impurity.SUGAR)) {
+            strength *= 0.9F;
         }
         return strength;
     }
@@ -98,12 +101,26 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
     public float getEffectDelayModifier() {
         float strength = 1;
         if (impurities.contains(Impurity.GASOLINE)) {
-            strength /= 2F;
+            strength *= 0.5F;
         }
         if (impurities.contains(Impurity.PETROLIUM)) {
-            strength /= 2F;
+            strength *= 0.5F;
+        }
+        if (impurities.contains(Impurity.SUGAR)) {
+            strength *= 1.2F;
         }
         return strength;
+    }
+
+    public Stream<DrugType<?>> getAdditionalDrugs() {
+        var builder = Stream.<DrugType<?>>builder();
+        if (impurities.contains(Impurity.ETHANOL)) {
+            builder.add(DrugType.ALCOHOL);
+        }
+        if (impurities.contains(Impurity.SUGAR)) {
+            builder.add(DrugType.SUGAR);
+        }
+        return builder.build();
     }
 
     public List<DrugInfluence> modifyEffects(List<DrugInfluence> influences) {
@@ -114,16 +131,11 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
         float strength = getEffectStrengthModifier();
         float delayModifier = getEffectDelayModifier();
 
-        Stream<DrugInfluence> stream = influences.stream();
-
-        if (impurities.contains(Impurity.ETHANOL)) {
-            stream = Stream.concat(Stream.of(
-                new DrugInfluence(DrugType.ALCOHOL, DrugInfluence.DelayType.METABOLISED, 0.1F, 1, 0.8F)
-            ), stream);
-        }
-        return stream.map(i -> {
-            return i.copyWithMaximum(i.getTargetInfluence() * strength).copyWithDelay(Math.max(1, (int)(i.getDelay() * delayModifier)));
-        }).toList();
+        return Stream.concat(
+                getAdditionalDrugs().map(type -> new DrugInfluence(DrugType.ALCOHOL, DrugInfluence.DelayType.METABOLISED, 0.1F, 1, 0.8F)),
+                influences.stream()
+        ).map(i -> i.copyWithMaximum(i.getTargetInfluence() * strength).copyWithDelay(Math.max(1, (int)(i.getDelay() * delayModifier))))
+            .toList();
     }
 
     @Override
@@ -139,7 +151,8 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
         ETHANOL,
         PETROLIUM,
         GASOLINE,
-        SILICA;
+        SILICA,
+        SUGAR;
 
         public static final Codec<Impurity> CODEC = StringIdentifiable.createCodec(Impurity::values);
 
