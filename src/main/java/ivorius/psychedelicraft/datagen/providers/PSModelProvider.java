@@ -183,6 +183,7 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.SMOKING_PIPE,
                 PSItems.CRACK_COCAINE,
                 PSItems.CRYSTAL_METH,
+                PSItems.BLUE_CRYSTAL_METH,
                 PSItems.HEROINE_POWDER,
                 PSItems.COCAINE_POWDER,
                 PSItems.OBSIDIAN_DUST

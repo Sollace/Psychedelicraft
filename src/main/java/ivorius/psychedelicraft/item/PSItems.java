@@ -263,22 +263,26 @@ public interface PSItems {
 
     Item CRYSTAL_METH = register("methamphetamine_powder", new SnortableItem(new Settings()
                 .food(EdibleItem.NON_FILLING_EDIBLE)
-                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15f)))
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15F)))
+    ));
+    Item BLUE_CRYSTAL_METH = register("blue_methamphetamine_powder", new SnortableItem(new Settings()
+                .food(EdibleItem.NON_FILLING_EDIBLE)
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.25F)))
     ));
     // TODO: Different variants of the pills (use dyes to control appearance)
     Item EXTACY = register("extacy", new EdibleItem(new Settings()
                 .food(EdibleItem.NON_FILLING_EDIBLE)
-                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.15f)))
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.15F)))
     ));
     Item PACIFIER = register("pacifier", new PacifierItem(new Item.Settings().maxDamage(50)));
 
     Item HEROINE_POWDER = register("heroine_powder", new SnortableItem(new Settings()
                 .food(EdibleItem.NON_FILLING_EDIBLE)
-                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15f)))
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15F)))
     ));
     Item MORPHINE_TABLET = register("morphine_tablet", new EdibleItem(new Settings()
                 .food(EdibleItem.NON_FILLING_EDIBLE)
-                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)))
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5F)))
     ));
     Item BROKEN_GLASS = register("broken_glass", new Item(new Item.Settings()));
 

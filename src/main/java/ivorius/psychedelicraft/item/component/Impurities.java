@@ -68,10 +68,10 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
         return new Impurities(combined);
     }
 
-    public static Impurities overlap(Impurities a, Impurities b) {
+    public static Impurities overlap(Impurities a, Set<Impurity> b) {
         Set<Impurity> combined = new HashSet<>();
         for (Impurity i : a.impurities()) {
-            if (b.impurities().contains(i)) {
+            if (b.contains(i)) {
                 combined.add(i);
             }
         }
@@ -152,7 +152,8 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
         PETROLIUM,
         GASOLINE,
         SILICA,
-        SUGAR;
+        SUGAR,
+        LAPIS_LAZULI;
 
         public static final Codec<Impurity> CODEC = StringIdentifiable.createCodec(Impurity::values);
 
