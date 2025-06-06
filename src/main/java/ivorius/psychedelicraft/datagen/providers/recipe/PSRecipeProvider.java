@@ -93,6 +93,13 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .pattern("TTT")
             .pattern("PPP")
             .offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, PSItems.BLUNT)
+            .input('T', PSItems.DRIED_TOBACCO).criterion(hasItem(PSItems.DRIED_TOBACCO), conditionsFromItem(PSItems.DRIED_TOBACCO))
+            .input('C', PSItems.DRIED_CANNABIS_LEAF).criterion(hasItem(PSItems.DRIED_CANNABIS_LEAF), conditionsFromItem(PSItems.DRIED_CANNABIS_LEAF))
+            .pattern("TTT")
+            .pattern("TTT")
+            .pattern("CCC")
+            .offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, PSItems.BONG)
             .input('G', Items.GLASS).criterion(hasItem(Items.GLASS), conditionsFromItem(Items.GLASS))
             .input('P', Items.GLASS_PANE)

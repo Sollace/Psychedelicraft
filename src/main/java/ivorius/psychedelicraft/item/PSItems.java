@@ -128,6 +128,12 @@ public interface PSItems {
     SmokeableItem JOINT = register("joint", new SmokeableItem(2, new Settings().maxCount(1).maxDamage(2)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)).withSmoke(new Vector3f(0.9F, 0.9F, 0.9F)))
     ));
+    SmokeableItem BLUNT = register("blunt", new SmokeableItem(4, new Settings().maxCount(1).maxDamage(3)
+            .component(PSComponents.DRUGS, ItemDrugs.of(
+                    new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F),
+                    new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
+            ).withSmoke(new Vector3f(0.6F, 0.6F, 0.5F)))
+    ));
 
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));
     Item COCA_LEAVES = register("coca_leaves");
