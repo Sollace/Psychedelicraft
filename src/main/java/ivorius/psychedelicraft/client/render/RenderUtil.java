@@ -23,6 +23,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 /**
  * Created by lukas on 25.10.14.
@@ -77,10 +78,13 @@ public class RenderUtil {
         RenderSystem.disableBlend();
     }
 
-    public static void drawOverlay(DrawContext context, Identifier texture,float alpha,
+    public static void drawOverlay(DrawContext context, Identifier texture, float alpha,
             int width, int height,
             float u0, float v0,
             float u1, float v1, int offset) {
+        if (alpha <= 0) {
+            return;
+        }
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.setShaderTexture(0, texture);
@@ -91,6 +95,36 @@ public class RenderUtil {
         fastVertex(buffer, entry, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1);
         fastVertex(buffer, entry, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0);
         fastVertex(buffer, entry, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0);
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.disableBlend();
+    }
+
+    public static void drawOverlay(DrawContext context, Identifier texture, int color,
+            int width, int height,
+            float u0, float v0,
+            float u1, float v1, int offset) {
+
+        int alpha = ColorHelper.Argb.getAlpha(color);
+
+        if (alpha <= 0) {
+            return;
+        }
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShaderColor(
+                ColorHelper.Argb.getRed(color) / 255F,
+                ColorHelper.Argb.getGreen(color) / 255F,
+                ColorHelper.Argb.getBlue(color) / 255F,
+                alpha / 255F
+        );
+        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.enableBlend();
+        BufferBuilder buffer = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        MatrixStack.Entry entry = context.getMatrices().peek();
+        fastVertex(buffer, entry, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1).color(color);
+        fastVertex(buffer, entry, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1).color(color);
+        fastVertex(buffer, entry, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0).color(color);
+        fastVertex(buffer, entry, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0).color(color);
         BufferRenderer.drawWithGlobalProgram(buffer.end());
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.disableBlend();

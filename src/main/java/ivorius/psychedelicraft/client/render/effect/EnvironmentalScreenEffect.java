@@ -7,8 +7,6 @@ package ivorius.psychedelicraft.client.render.effect;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.MeteorlogicalUtil;
@@ -23,8 +21,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.Window;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LightType;
@@ -114,23 +114,19 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         }
         DrugProperties properties = DrugProperties.of(entity);
 
-        float pulseStrength = properties.getMusicManager().getHeartbeatPulseStrength(tickDelta);
+        float cardiacArrest = properties.getCardiacArrestProgress(tickDelta);
+        float pulseStrength = properties.getMusicManager().getHeartbeatPulseStrength(tickDelta) + cardiacArrest;
 
         if (PsychedelicraftClient.getConfig().hurtOverlayEnabled.get() && (
                 (entity.hurtTime > 0 && properties.getModifier(Drug.PAIN_SUPPRESSION) <= 1F)
                 || experiencedHealth < 5 || pulseStrength > 0)) {
-            RenderSystem.enableBlend();
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-            RenderSystem.defaultBlendFunc();
-
             float p1 = Math.max((float)entity.hurtTime / entity.maxHurtTime, pulseStrength);
             float p2 = (5 - (experiencedHealth * (1 - pulseStrength))) / 6F;
 
             float p = MathHelper.clamp(p1 > 0 ? p1 : p2 > 0 ? p2 : 0, 0, 1);
-            RenderUtil.drawOverlay(context, HURT_OVERLAY, p, window.getScaledWidth(), window.getScaledHeight(), 0, 0, 1, 1, (int) ((1 - p) * 40));
 
-            RenderSystem.enableDepthTest();
+            int color = ColorHelper.Argb.lerp(cardiacArrest, Colors.RED, Colors.BLACK);
+            RenderUtil.drawOverlay(context, HURT_OVERLAY, ColorHelper.Argb.withAlpha(ColorHelper.channelFromFloat(p), color), window.getScaledWidth(), window.getScaledHeight(), 0, 0, 1, 1, (int) ((1 - p) * 40));
         }
     }
 

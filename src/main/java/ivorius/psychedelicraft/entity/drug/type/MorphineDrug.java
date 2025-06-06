@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
-import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
@@ -45,13 +44,12 @@ public class MorphineDrug extends SimpleDrug {
 
         if (getType() == DrugType.METHAMPHETAMINE) {
             if (entity.age % 20 == 0 && random.nextFloat() < chance) {
-                if (random.nextFloat() < 0.8F) {
-                    entity.damage(properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
+                if (random.nextFloat() < 0.8F && properties.rollStroke()) {
                     return true;
                 }
 
                 if (random.nextFloat() < 0.5F) {
-                    entity.damage(properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
+                    properties.increaseCardiacArrestSideEffect();
                     return true;
                 }
             }
@@ -66,13 +64,12 @@ public class MorphineDrug extends SimpleDrug {
         }
 
         if (properties.getModifier(HEART_BEAT_SPEED) < 0.3F && properties.getModifier(HEART_BEAT_VOLUME) > 0.8F) {
-            if (random.nextFloat() < 0.08F) {
-                entity.damage(properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
+            if (random.nextFloat() < 0.08F && properties.rollStroke()) {
                 return true;
             }
 
             if (random.nextFloat() < 0.05F) {
-                entity.damage(properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
+                properties.increaseCardiacArrestSideEffect();
                 return true;
             }
         }
