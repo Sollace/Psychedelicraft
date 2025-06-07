@@ -17,6 +17,7 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -38,7 +39,7 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
  * Outputs:
  * - Original Container filled with assigned fluid and level
  */
-public class MixingRecipe extends ShapelessRecipe {
+public class MixingRecipe extends ShapelessRecipe implements MultiResultRecipe<MixingRecipe> {
     public static final MapCodec<MixingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(MixingRecipe::getGroup),
             CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(MixingRecipe::getCategory),
@@ -90,7 +91,7 @@ public class MixingRecipe extends ShapelessRecipe {
 
     @Override
     public final ItemStack getResult(WrapperLookup registryManager) {
-        return receptical.getMatchingStacks()[0];
+        return getOutputFluid().ofFilling(receptical.getMatchingStacks()[0]);
     }
 
     private Stream<ItemStack> getOutputRecepticals(CraftingRecipeInput inventory) {
@@ -106,5 +107,12 @@ public class MixingRecipe extends ShapelessRecipe {
                 .findFirst()
                 .map(receptical -> output.amount() <= 1 ? output.ofFilling(receptical.copy()) : ItemFluids.set(receptical.copy(), output.ofAmount(Math.min(output.amount(), FluidCapacity.get(receptical)))))
                 .orElse(ItemStack.EMPTY);
+    }
+
+    @Override
+    public Stream<MixingRecipe> flatten() {
+        return Arrays.stream(receptical.getMatchingStacks()).map(result -> {
+            return new MixingRecipe(getGroup(), getCategory(), output, Ingredient.ofStacks(result), input);
+        });
     }
 }
