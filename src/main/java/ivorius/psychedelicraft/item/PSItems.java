@@ -122,6 +122,7 @@ public interface PSItems {
     Item TOBACCO_LEAVES = register("tobacco");
     Item TOBACCO_SEEDS = register("tobacco_seeds", s -> new BlockItem(PSBlocks.TOBACCO, s));
     Item DRIED_TOBACCO = register("dried_tobacco");
+    Item DRIED_POPPY = register("dried_poppy");
 
     SmokeableItem CIGARETTE = register("cigarette", s -> new SmokeableItem(2, s.maxCount(1).maxDamage(1)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(Colors.WHITE))
@@ -131,6 +132,12 @@ public interface PSItems {
     ));
     SmokeableItem JOINT = register("joint", s -> new SmokeableItem(2, s.maxCount(1).maxDamage(2)
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)).withSmoke(MathUtils.getArgb(new Vector3f(0.9F, 0.9F, 0.9F))))
+    ));
+    SmokeableItem BLUNT = register("blunt", s -> new SmokeableItem(4, s.maxCount(1).maxDamage(3)
+            .component(PSComponents.DRUGS, ItemDrugs.of(
+                    new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F),
+                    new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
+            ).withSmoke(MathUtils.getArgb(new Vector3f(0.6F, 0.6F, 0.5F))))
     ));
 
     Item COCA_SEEDS = register("coca_seeds", s -> new BlockItem(PSBlocks.COCA, s));
@@ -240,6 +247,7 @@ public interface PSItems {
     BongItem SMOKING_PIPE = register("smoking_pipe", s -> new BongItem(s.maxDamage(50)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.25F)))
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.INHALED, 0.1, 0.02, 0.8F)))
+            .consumes(new BongItem.Consumable(DRIED_POPPY.getDefaultStack(), new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INHALED, 0.1, 0.02, 0.8F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.4, 0.1, 0.9F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.5, 0.1, 0.2F)))
             .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.INHALED, 0.04, 0.01, 0.65F, DyedColorComponent.getColor(stack, Colors.WHITE))));
@@ -247,6 +255,7 @@ public interface PSItems {
     BongItem BONG = register("bong", s -> new BongItem(s.maxDamage(128)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.001, 0.2F)))
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)))
+            .consumes(new BongItem.Consumable(DRIED_POPPY.getDefaultStack(), new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.4, 0.1, 0.4F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.5, 0.1, 0.1F)))
             .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, DyedColorComponent.getColor(stack, Colors.WHITE))));
@@ -266,22 +275,26 @@ public interface PSItems {
 
     Item CRYSTAL_METH = register("methamphetamine_powder", s -> new SnortableItem(s
                 .food(EdibleItem.NON_FILLING_EDIBLE)
-                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15f)))
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15F)))
+    ));
+    Item BLUE_CRYSTAL_METH = register("blue_methamphetamine_powder", s -> new SnortableItem(s
+                .food(EdibleItem.NON_FILLING_EDIBLE)
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.25F)))
     ));
     // TODO: Different variants of the pills (use dyes to control appearance)
     Item EXTACY = register("extacy", s -> new EdibleItem(s
                 .food(EdibleItem.NON_FILLING_EDIBLE)
-                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.15f)))
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.15F)))
     ));
     Item PACIFIER = register("pacifier", s -> new PacifierItem(s.maxDamage(50).equippable(EquipmentSlot.OFFHAND)));
 
     Item HEROINE_POWDER = register("heroine_powder", s -> new SnortableItem(s
                 .food(EdibleItem.NON_FILLING_EDIBLE)
-                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15f)))
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15F)))
     ));
     Item MORPHINE_TABLET = register("morphine_tablet", s -> new EdibleItem(s
                 .food(EdibleItem.NON_FILLING_EDIBLE)
-                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5f)))
+                .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 0.5F)))
     ));
     Item BROKEN_GLASS = register("broken_glass");
 

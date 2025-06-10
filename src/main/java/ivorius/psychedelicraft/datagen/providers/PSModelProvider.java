@@ -165,6 +165,7 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.CANNABIS_LEAF, PSItems.CANNABIS_BUDS, PSItems.DRIED_CANNABIS_LEAF, PSItems.DRIED_CANNABIS_BUDS,
                 PSItems.DRIED_COCA_LEAVES,
                 PSItems.DRIED_JIMSONWEED_LEAF,
+                PSItems.DRIED_POPPY,
                 PSItems.HOP_CONES,
                 PSItems.MORNING_GLORY,
                 PSItems.JIMSONWEED_SEED_POD, PSItems.JIMSONWEED_LEAF,
@@ -190,6 +191,7 @@ public class PSModelProvider extends FabricModelProvider {
                 PSItems.SMOKING_PIPE,
                 PSItems.CRACK_COCAINE,
                 PSItems.CRYSTAL_METH,
+                PSItems.BLUE_CRYSTAL_METH,
                 PSItems.HEROINE_POWDER,
                 PSItems.COCAINE_POWDER,
                 PSItems.OBSIDIAN_DUST
@@ -220,6 +222,7 @@ public class PSModelProvider extends FabricModelProvider {
         });
         ItemModels.registerPaperBag(generator, PSItems.PAPER_BAG);
         ItemModels.registerCigar(generator, PSItems.CIGAR);
+        ItemModels.registerCigar(generator, PSItems.BLUNT);
         ItemModels.registerBong(generator, PSItems.BONG);
         ItemModels.registerMolotov(generator, PSItems.MOLOTOV_COCKTAIL);
         ItemModels.registerLayered(generator, PSItems.HARMONIUM, "_glowstone", new DyeTintSource(Colors.RED));

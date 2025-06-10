@@ -1,7 +1,10 @@
 package ivorius.psychedelicraft.util;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -60,6 +63,13 @@ public interface CodecUtils {
                 ), input));
             }
         });
+    }
+
+    static <K> Codec<Set<K>> setOf(Codec<K> codec) {
+        return codec.listOf().xmap(
+                l -> l.stream().distinct().collect(Collectors.toUnmodifiableSet()),
+                s -> new ArrayList<>(s)
+        );
     }
 
     static <T> Codec<DefaultedList<T>> toDefaultedList(Codec<T> elementCodec, T def) {
