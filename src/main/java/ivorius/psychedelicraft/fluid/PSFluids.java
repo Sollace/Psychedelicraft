@@ -15,6 +15,7 @@ import ivorius.psychedelicraft.fluid.alcohol.DrinkTypes;
 import ivorius.psychedelicraft.fluid.alcohol.DrinkType.Variation;
 import ivorius.psychedelicraft.fluid.alcohol.StatePredicate;
 import ivorius.psychedelicraft.fluid.alcohol.TickRate;
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.Colors;
 
@@ -301,5 +302,7 @@ public interface PSFluids {
 
     static void bootstrap() {
         VanillaFluid.bootstrap();
+
+        FlammableBlockRegistry.getDefaultInstance().add(PSFluids.ATROPINE.getPhysical().getBlock(), 60, 100);
     }
 }
