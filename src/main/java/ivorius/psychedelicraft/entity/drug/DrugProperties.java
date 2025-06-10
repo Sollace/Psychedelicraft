@@ -13,7 +13,6 @@ import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.entity.drug.sound.DrugMusicManager;
 import ivorius.psychedelicraft.entity.effect.PSEffects;
-import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.item.PacifierItem;
 import ivorius.psychedelicraft.network.Channel;
 import ivorius.psychedelicraft.network.MsgDrugProperties;
@@ -21,7 +20,6 @@ import ivorius.psychedelicraft.particle.DrugDustParticleEffect;
 import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FireBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
@@ -342,8 +340,6 @@ public class DrugProperties implements NbtSerialisable {
                     PSCriteria.SUCK_PACIFIER.trigger(entity);
                 }
             }
-
-            ((FireBlock)Blocks.FIRE).registerFlammableBlock(PSFluids.ATROPINE.getPhysical().getBlock(), 60, 100);
 
             if (pacifierSqueakDelay > 0 && --pacifierSqueakDelay == 0) {
                 entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,
