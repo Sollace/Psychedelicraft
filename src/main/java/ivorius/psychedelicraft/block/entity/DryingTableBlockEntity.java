@@ -11,7 +11,9 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.recipe.DryingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
+import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
@@ -92,7 +94,27 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     private float calculateSunStrength() {
         float l = world.getLightLevel(pos) / 15F;
         float h = !world.isAir(pos) ? world.getBiome(pos).value().getTemperature() * 0.75F + 0.25F : 0;
-        return MathHelper.clamp((l * l * h) * (l * l * h), 0, 1);
+        float sunStrength = MathHelper.clamp((l * l * h) * (l * l * h), 0, 1);
+
+        for (Direction dir : Direction.Type.HORIZONTAL) {
+            if (world.isAir(pos.offset(dir))) {
+                BlockState neighbor = world.getBlockState(pos.offset(dir, 2));
+                if (neighbor.getBlock() instanceof AbstractFurnaceBlock
+                        && neighbor.get(AbstractFurnaceBlock.LIT)
+                        && neighbor.get(AbstractFurnaceBlock.FACING) == dir.getOpposite()) {
+                    sunStrength += neighbor.isOf(Blocks.BLAST_FURNACE) ? 0.15F : neighbor.isOf(Blocks.SMOKER) ? 0.125F : 0.1F;
+                    if (world instanceof ServerWorld sw && world.getRandom().nextInt(10) == 0) {
+                        sw.spawnParticles(ParticleTypes.FLAME,
+                                pos.getX() + dir.getOffsetX() + world.getRandom().nextTriangular(0.5F, 0.25F),
+                                pos.getY() + world.getRandom().nextTriangular(0.5F, 0.5F),
+                                pos.getZ() + dir.getOffsetZ() + world.getRandom().nextTriangular(0.5F, 0.25F),
+                                1, 0, 0, 0, 0.01F);
+                    }
+                }
+            }
+        }
+
+        return sunStrength;
     }
 
     public void tick(ServerWorld world) {
