@@ -32,14 +32,17 @@ public class TirednessScreenEffect implements ScreenEffect {
 
     private int ticksBlinking;
 
+    private long lastPlayTime;
+
     @Override
     public void update(float tickDelta) {
 
         PlayerEntity entity = MinecraftClient.getInstance().player;
-        if (entity == null) {
+        if (entity == null || MinecraftClient.getInstance().isPaused()) {
             return;
         }
-        float baseDrowsyness = DrugProperties.of(entity).getModifier(Drug.DROWSYNESS);
+        float baseDrowsyness = MathHelper.clamp(DrugProperties.of(entity).getModifier(Drug.DROWSYNESS)
+                + DrugProperties.of(entity).getCardiacArrestProgress(tickDelta), 0, 1);
 
         prevOverlayOpacity = overlayOpacity;
 
@@ -47,9 +50,13 @@ public class TirednessScreenEffect implements ScreenEffect {
 
         overlayOpacity = MathUtils.approach(overlayOpacity, ticksBlinking > 0 ? drowsyness * 0.9F + MathHelper.sin(entity.age / 10F) : 0, 0.03F);
         if (drowsyness > 0.3F && overlayOpacity > 0.6F) {
-            entity.getWorld().playSoundClient(entity.getX(), entity.getY(), entity.getZ(),
-                PSSounds.ENTITY_PLAYER_HEARTBEAT,
-                SoundCategory.AMBIENT, drowsyness, 0.3F, false);
+            long now = System.currentTimeMillis();
+            if (now > (lastPlayTime + 1000)) {
+                lastPlayTime = now;
+                entity.getWorld().playSoundClient(entity.getX(), entity.getY(), entity.getZ(),
+                    PSSounds.ENTITY_PLAYER_HEARTBEAT,
+                    SoundCategory.AMBIENT, drowsyness, 0.3F, false);
+            }
         }
 
         if (drowsyness < 0.2F) {
@@ -59,18 +66,13 @@ public class TirednessScreenEffect implements ScreenEffect {
 
         if (--ticksBlinking <= 0 && (ticksBlinking < -300 || entity.getWorld().random.nextFloat() < baseDrowsyness)) {
             ticksBlinking = (int)entity.getWorld().random.nextTriangular(300, 200);
-            entity.sendMessage(Text.literal("...I should really sleep..."), true);
+            entity.sendMessage(Text.literal("I really should get to bed..."), true);
         }
     }
 
     @Override
     public void render(DrawContext context, Window window, float tickDelta) {
         float opacity = MathHelper.lerp(tickDelta, prevOverlayOpacity, overlayOpacity);
-
-        if (opacity <= 0) {
-            return;
-        }
-
         RenderUtil.drawOverlay(context, EYELID_OVERLAY, opacity * 0.8F, window.getScaledWidth(), window.getScaledHeight(), 0, 0, 1, 1, (int)(opacity * 5.8F));
     }
 

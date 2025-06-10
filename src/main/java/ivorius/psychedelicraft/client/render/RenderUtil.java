@@ -72,10 +72,21 @@ public class RenderUtil {
             int width, int height,
             float u0, float v0,
             float u1, float v1, int offset) {
+        int color = ColorHelper.withAlpha(ColorHelper.channelFromFloat(alpha), Colors.WHITE);
+        drawOverlay(context, texture, color, width, height, u0, v0, u1, v1, offset);
+    }
+
+
+    public static void drawOverlay(DrawContext context, Identifier texture, int color,
+            int width, int height,
+            float u0, float v0,
+            float u1, float v1, int offset) {
+        if (ColorHelper.getAlpha(color) <= 0) {
+            return;
+        }
         Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(texture));
         MatrixStack matrices = context.getMatrices();
-        int color = ColorHelper.withAlpha(ColorHelper.channelFromFloat(alpha), Colors.WHITE);
         vertex(buffer, matrices, -offset, height + offset, SCREEN_Z_OFFSET, color, u0, v1, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
         vertex(buffer, matrices, width + offset, height + offset, SCREEN_Z_OFFSET, color, u1, v1, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
         vertex(buffer, matrices, width + offset, -offset, SCREEN_Z_OFFSET, color, u1, v0, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);

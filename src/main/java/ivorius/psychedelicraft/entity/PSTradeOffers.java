@@ -200,15 +200,16 @@ public interface PSTradeOffers {
 
         TradeOfferHelper.registerWanderingTraderOffers(factories -> {
             factories.addOffersToPool(TradeOfferHelper.WanderingTraderOffersBuilder.SELL_COMMON_ITEMS_POOL,
-                    sell(6, PSItems.BELLADONNA_SEEDS, 1, 1, 1, 0.8F),
+                    sell(6, PSItems.BELLADONNA_SEEDS, 1, 1, 2, 0.8F),
                     sell(5, PSItems.COCA_SEEDS, 1, 2, 1, 0.8F),
                     sell(7, PSItems.HOP_SEEDS, 1, 2, 1, 0.8F),
-                    sell(9, PSItems.CANNABIS_SEEDS, 1, 1, 1, 0.8F),
+                    sell(9, PSItems.CANNABIS_SEEDS, 1, 1, 3, 0.8F),
                     sell(5, PSItems.COFFEA_CHERRIES, 1, 2, 1, 0.8F),
-                    sell(7, PSItems.JUNIPER_SAPLING, 1, 1, 1, 0.8F),
-                    sell(9, PSItems.JIMSONWEED_SEEDS, 1, 1, 1, 0.8F),
+                    sell(7, PSItems.JUNIPER_SAPLING, 1, 1, 2, 0.8F),
+                    sell(9, PSItems.JIMSONWEED_SEEDS, 1, 1, 3, 0.8F),
                     sell(5, PSItems.MORNING_GLORY_SEEDS, 1, 2, 1, 0.8F),
-                    sell(5, PSItems.TOBACCO_SEEDS, 1, 2, 1, 0.8F)
+                    sell(5, PSItems.TOBACCO_SEEDS, 1, 2, 1, 0.8F),
+                    sell(19, PSItems.BLUE_CRYSTAL_METH, 10, 2, 6, 0.5F)
             );
         });
     }

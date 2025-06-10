@@ -20,7 +20,7 @@ class TrayEmiRecipe implements PSRecipe {
     public TrayEmiRecipe(RecipeEntry<HardeningRecipe> recipe) {
         this.recipe = recipe;
         this.base = RecipeUtil.toIngredient(recipe.value().coreFluid(), 1);
-        this.impurities = recipe.value().impurities().stream().map(i -> {
+        this.impurities = recipe.value().solutions().stream().map(i -> {
             recipe.value().coreFluid();
             return RecipeUtil.toIngredient(i, 1);
         }).toList();

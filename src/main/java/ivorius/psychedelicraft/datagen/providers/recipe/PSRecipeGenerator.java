@@ -2,8 +2,6 @@ package ivorius.psychedelicraft.datagen.providers.recipe;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
 import ivorius.psychedelicraft.PSConventionalTags;
 import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -16,7 +14,9 @@ import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSSubPredicates;
+import ivorius.psychedelicraft.item.component.Impurities.Impurity;
 import ivorius.psychedelicraft.recipe.FluidModifyingResult;
+import ivorius.psychedelicraft.recipe.ImpuritiesPredicate;
 import ivorius.psychedelicraft.recipe.PouringRecipe;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
@@ -87,6 +87,13 @@ class PSRecipeGenerator extends RecipeGenerator {
             .pattern("TTT")
             .pattern("TTT")
             .pattern("PPP")
+            .offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(items, RecipeCategory.TOOLS, PSItems.BLUNT)
+            .input('T', PSItems.DRIED_TOBACCO).criterion(hasItem(PSItems.DRIED_TOBACCO), conditionsFromItem(PSItems.DRIED_TOBACCO))
+            .input('C', PSItems.DRIED_CANNABIS_LEAF).criterion(hasItem(PSItems.DRIED_CANNABIS_LEAF), conditionsFromItem(PSItems.DRIED_CANNABIS_LEAF))
+            .pattern("TTT")
+            .pattern("TTT")
+            .pattern("CCC")
             .offerTo(exporter);
         ShapedRecipeJsonBuilder.create(items, RecipeCategory.TOOLS, PSItems.BONG)
             .input('G', Items.GLASS).criterion(hasItem(Items.GLASS), conditionsFromItem(Items.GLASS))
@@ -332,6 +339,18 @@ class PSRecipeGenerator extends RecipeGenerator {
             .input(PSItems.BROKEN_GLASS).criterion(hasItem(PSItems.BROKEN_GLASS), conditionsFromItem(PSItems.BROKEN_GLASS))
             .impurity(Impurities.Impurity.SILICA)
             .offerTo(exporter);
+        ReactingRecipeJsonBuilder.create(items, RecipeCategory.BREWING, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+            .input(Items.SUGAR).criterion(hasItem(Items.SUGAR), conditionsFromItem(Items.SUGAR))
+            .impurity(Impurities.Impurity.SUGAR)
+            .offerTo(exporter, id("sugar_water"));
+        ReactingRecipeJsonBuilder.create(items, RecipeCategory.BREWING, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+            .input(Items.LAPIS_LAZULI).criterion(hasItem(Items.LAPIS_LAZULI), conditionsFromItem(Items.LAPIS_LAZULI))
+            .impurity(Impurities.Impurity.LAPIS_LAZULI)
+            .offerTo(exporter, id("lapis_water"));
+        ReactingRecipeJsonBuilder.create(items, RecipeCategory.BREWING, SimpleFluid.of(Fluids.WATER).getDefaultStack(45))
+            .input(Items.LAPIS_BLOCK).criterion(hasItem(Items.LAPIS_BLOCK), conditionsFromItem(Items.LAPIS_BLOCK))
+            .impurity(Impurities.Impurity.LAPIS_LAZULI)
+            .offerTo(exporter, id("lapis_water_from_block"));
         ReactingRecipeJsonBuilder.create(items, RecipeCategory.BREWING, PSFluids.PETROLIUM.getDefaultStack(45))
             .input(Items.COAL_BLOCK).criterion(hasItem(Items.COAL_BLOCK), conditionsFromItem(Items.COAL_BLOCK))
             .impurity(Impurities.Impurity.PETROLIUM)
@@ -339,24 +358,37 @@ class PSRecipeGenerator extends RecipeGenerator {
     }
 
     private void offerTrayRecipes() {
-        var allImpurities = Set.of(Impurities.Impurity.values());
-
-        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRACK_COCAINE, Set.of(Impurities.Impurity.CARBON, Impurities.Impurity.GASOLINE, Impurities.Impurity.PETROLIUM, Impurities.Impurity.SILICA))
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRACK_COCAINE)
             .base(FluidIngredient.builder().fluid(PSFluids.ETHANOL))
-            .impurity(FluidIngredient.builder().fluid(PSFluids.COCAINE))
+            .solution(FluidIngredient.builder().fluid(PSFluids.COCAINE))
+            .impurity(ImpuritiesPredicate.builder()
+                .allow(
+                        Impurities.Impurity.CARBON, Impurities.Impurity.GASOLINE,
+                        Impurities.Impurity.PETROLIUM, Impurities.Impurity.SILICA
+            ))
             .criterion(hasItem(PSItems.COCAINE_POWDER), conditionsFromItem(PSItems.COCAINE_POWDER))
             .offerTo(exporter);
-        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRYSTAL_METH, allImpurities)
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.CRYSTAL_METH)
             .base(FluidIngredient.builder().fluid(PSFluids.MORNING_GLORY_EXTRACT))
+            .impurity(ImpuritiesPredicate.builder().reject(Impurity.LAPIS_LAZULI))
             .criterion("has_morning_glory", conditionsFromTag(PSTags.Items.MORNING_GLORY_INGREDIENTS))
             .offerTo(exporter);
-        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.HEROINE_POWDER, allImpurities)
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.BLUE_CRYSTAL_METH)
+            .base(FluidIngredient.builder().fluid(PSFluids.MORNING_GLORY_EXTRACT))
+            .impurity(ImpuritiesPredicate.builder().require(Impurity.LAPIS_LAZULI))
+            .criterion("has_morning_glory", conditionsFromTag(PSTags.Items.MORNING_GLORY_INGREDIENTS))
+            .offerTo(exporter);
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.HEROINE_POWDER)
             .base(FluidIngredient.builder().fluid(PSFluids.MORPHINE))
             .criterion(hasItem(Items.POPPY), conditionsFromItem(Items.POPPY))
             .offerTo(exporter);
-        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.LSD_PILL, allImpurities)
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, PSItems.LSD_PILL)
             .base(FluidIngredient.builder().fluid(PSFluids.ACID))
             .criterion("has_morning_glory", conditionsFromTag(PSTags.Items.MORNING_GLORY_INGREDIENTS))
+            .offerTo(exporter);
+        HardeningRecipeJsonBuilder.create(RecipeCategory.BREWING, Items.SUGAR)
+            .base(FluidIngredient.builder().fluid(Fluids.WATER))
+            .criterion("has_sugar", conditionsFromItem(Items.SUGAR))
             .offerTo(exporter);
     }
 
@@ -384,6 +416,7 @@ class PSRecipeGenerator extends RecipeGenerator {
         offerDrying(PSItems.CANNABIS_LEAF, PSItems.DRIED_CANNABIS_LEAF, 3, 0.2F, 0.6F, "leaves");
         offerDrying(PSItems.JIMSONWEED_LEAF, PSItems.DRIED_JIMSONWEED_LEAF, 3, 0.2F, 1.1F, "leaves");
         offerDrying(PSItems.PEYOTE, PSItems.DRIED_PEYOTE, 3, 0.2F, 1.5F, "peyote");
+        offerDrying(Items.POPPY, PSItems.DRIED_POPPY, 3, 0.2F, 0.4F, "flowers");
     }
 
     private void offerLiquirRecipes() {

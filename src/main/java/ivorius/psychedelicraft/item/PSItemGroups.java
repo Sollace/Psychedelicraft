@@ -56,6 +56,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.CIGARETTE);
                 entries.add(PSItems.CIGAR);
                 entries.add(PSItems.JOINT);
+                entries.add(PSItems.BLUNT);
 
                 entries.add(PSItems.BONG);
                 entries.add(PSItems.SYRINGE);
@@ -169,6 +170,7 @@ public interface PSItemGroups {
                 entries.add(PSItems.LSD_PILL);
                 entries.add(PSItems.EXTACY);
                 entries.add(PSItems.CRYSTAL_METH);
+                entries.add(PSItems.BLUE_CRYSTAL_METH);
                 entries.add(PSItems.LSA_SQUARE);
                 entries.add(PSItems.PACIFIER);
                 entries.add(PSItems.BROKEN_GLASS);
