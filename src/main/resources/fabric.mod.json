@@ -45,6 +45,9 @@
   "suggests": {
     "modmenu": "*"
   },
+  "conflicts": {
+    "kubejs": "*"
+  },
   "custom": {
     "modmenu": {
       "links": {

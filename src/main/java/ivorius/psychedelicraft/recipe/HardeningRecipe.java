@@ -29,8 +29,8 @@ public record HardeningRecipe(
         Identifier id,
         String hardeningGroup,
         FluidIngredient coreFluid,
-        List<FluidIngredient> impurities,
-        Impurities cuts,
+        List<FluidIngredient> solutions,
+        ImpuritiesPredicate impurities,
         ItemStack result,
         IntProvider amount,
         int hardeningTime
@@ -39,8 +39,8 @@ public record HardeningRecipe(
             Identifier.CODEC.fieldOf("id").forGetter(HardeningRecipe::getId),
             Codec.STRING.fieldOf("group").forGetter(HardeningRecipe::hardeningGroup),
             FluidIngredient.CODEC.fieldOf("core_fluid").forGetter(HardeningRecipe::coreFluid),
-            FluidIngredient.CODEC.listOf().fieldOf("impurities").forGetter(HardeningRecipe::impurities),
-            Impurities.CODEC.optionalFieldOf("cuts", Impurities.EMPTY).forGetter(HardeningRecipe::cuts),
+            FluidIngredient.CODEC.listOf().fieldOf("solutions").forGetter(HardeningRecipe::solutions),
+            ImpuritiesPredicate.CODEC.optionalFieldOf("impurities", ImpuritiesPredicate.EMPTY).forGetter(HardeningRecipe::impurities),
             ItemStack.CODEC.fieldOf("result").forGetter(HardeningRecipe::result),
             IntProvider.POSITIVE_CODEC.fieldOf("amount").forGetter(HardeningRecipe::amount),
             Codec.INT.optionalFieldOf("hardening_time", 20).forGetter(HardeningRecipe::hardeningTime)
@@ -49,8 +49,8 @@ public record HardeningRecipe(
             PacketCodecs.IDENTIFIER, HardeningRecipe::getId,
             PacketCodecs.STRING, HardeningRecipe::hardeningGroup,
             FluidIngredient.PACKET_CODEC, HardeningRecipe::coreFluid,
-            FluidIngredient.PACKET_CODEC.collect(PacketCodecs.toList()), HardeningRecipe::impurities,
-            Impurities.PACKET_CODEC, HardeningRecipe::cuts,
+            FluidIngredient.PACKET_CODEC.collect(PacketCodecs.toList()), HardeningRecipe::solutions,
+            ImpuritiesPredicate.PACKET_CODEC, HardeningRecipe::impurities,
             PacketCodecs.ITEM_STACK, HardeningRecipe::result,
             PacketCodecUtils.INT_PROVIDER_VALUE_CODEC, HardeningRecipe::amount,
             PacketCodecs.INTEGER, HardeningRecipe::hardeningTime,
@@ -80,7 +80,9 @@ public record HardeningRecipe(
     @Override
     public boolean matches(Input input, World world) {
         FluidMound fluids = FluidMound.of(input.impurities());
-        return isCoreFluid(input.coreFluid()) && impurities.stream().allMatch(i -> fluids.removeMatch(i) > 0);
+        return isCoreFluid(input.coreFluid())
+            && solutions.stream().allMatch(i -> fluids.removeMatch(i) > 0)
+            && impurities.test(input.cuts());
     }
 
     public boolean isCoreFluid(ItemFluids fluids) {
@@ -88,7 +90,10 @@ public record HardeningRecipe(
     }
 
     public boolean isValidImpurity(ItemFluids fluids) {
-        return impurities.stream().anyMatch(i -> i.test(fluids)) || fluids.isOf(PSFluids.PETROLIUM) || fluids.isOf(PSFluids.ETHANOL) || fluids.isOf(PSFluids.GASOLINE);
+        return solutions.stream().anyMatch(i -> i.test(fluids))
+            || fluids.isOf(PSFluids.PETROLIUM)
+            || fluids.isOf(PSFluids.ETHANOL)
+            || fluids.isOf(PSFluids.GASOLINE);
     }
 
     @Override
@@ -100,9 +105,9 @@ public record HardeningRecipe(
     public ItemStack craft(Input input, DynamicRegistryManager lookup) {
         ItemStack result = getOutput(lookup);
         FluidMound fluids = FluidMound.of(input.impurities());
-        fluids.split(fluid -> impurities.stream().anyMatch(i -> i.test(fluid)));
+        fluids.split(fluid -> solutions.stream().anyMatch(i -> i.test(fluid)));
 
-        Impurities inputCuts = Impurities.overlap(input.cuts(), cuts);
+        Impurities inputCuts = impurities.permitted(input.cuts());
 
         int count = amount().get(input.random()) * (int)Math.pow(2, inputCuts.impurities().size());
         return Impurities.set(result.copyWithCount(count), inputCuts);
@@ -125,7 +130,7 @@ public record HardeningRecipe(
 
     @Override
     public boolean isEmpty() {
-        return coreFluid.isEmpty() && impurities.isEmpty();
+        return coreFluid.isEmpty() && solutions.isEmpty();
     }
 
     public record Input(Random random, ItemFluids coreFluid, FluidMound impurities, Impurities cuts) implements RecipeInput {

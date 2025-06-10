@@ -14,6 +14,7 @@ public interface PSCriteria {
     CustomEventCriterion.Trigger TRAY_HARDEN = CUSTOM.createTrigger("tray_harden");
     CustomEventCriterion.Trigger SIDE_EFFECT = CUSTOM.createTrigger("side_effect");
     CustomEventCriterion.Trigger SUCK_PACIFIER = CUSTOM.createTrigger("suck_pacifier");
+    CustomEventCriterion.Trigger HEART_ATTACK = CUSTOM.createTrigger("heart_attack");
     CustomEventCriterion.Trigger CANCER = CUSTOM.createTrigger("cancer");
     CustomEventCriterion.Trigger CURE_CANCER = CUSTOM.createTrigger("cure_cancer");
 

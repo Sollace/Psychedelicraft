@@ -25,8 +25,10 @@
     "client": [
       "client.MixinCamera",
       "client.MixinChatMessages",
-      "client.MixinEntityRenderDispatcher",
+      "client.MixinClientRecipeBook",
+      "client.MixinRecipeBookWidget",
       "client.MixinChatScreen",
+      "client.MixinEntityRenderDispatcher",
       "client.MixinMouse",
       "client.MixinGLImportProcessor",
       "client.MixinShaderProgram",

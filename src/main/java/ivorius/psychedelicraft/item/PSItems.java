@@ -105,6 +105,7 @@ public interface PSItems {
     Item TOBACCO_LEAVES = register("tobacco");
     Item TOBACCO_SEEDS = register("tobacco_seeds", new AliasedBlockItem(PSBlocks.TOBACCO, new Settings()));
     Item DRIED_TOBACCO = register("dried_tobacco");
+    Item DRIED_POPPY = register("dried_poppy");
 
     SmokeableItem CIGARETTE = add(register("cigarette", new SmokeableItem(2, new Settings().maxCount(1).maxDamage(1)
     )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(ItemDrugs.DEFAULT_SMOKE_COLOR));
@@ -112,6 +113,11 @@ public interface PSItems {
     )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(new Vector3f(0.6F, 0.6F, 0.5F)));
     SmokeableItem JOINT = add(register("joint", new SmokeableItem(2, new Settings().maxCount(1).maxDamage(2)
     )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.20F)).withSmoke(new Vector3f(0.9F, 0.9F, 0.9F)));
+    SmokeableItem BLUNT = add(register("blunt", new SmokeableItem(4, new Settings().maxCount(1).maxDamage(3)
+    )), PSComponents.DRUGS, ItemDrugs.of(
+                    new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F),
+                    new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
+            ).withSmoke(new Vector3f(0.6F, 0.6F, 0.5F)));
 
     Item COCA_SEEDS = register("coca_seeds", new AliasedBlockItem(PSBlocks.COCA, new Settings()));
     Item COCA_LEAVES = register("coca_leaves");
@@ -209,6 +215,7 @@ public interface PSItems {
     BongItem SMOKING_PIPE = register("smoking_pipe", new BongItem(new Settings().maxDamage(50)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.INHALED, 0.002, 0.001, 0.25F)))
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.INHALED, 0.1, 0.02, 0.8F)))
+            .consumes(new BongItem.Consumable(DRIED_POPPY.getDefaultStack(), new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.INHALED, 0.1, 0.02, 0.8F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.4, 0.1, 0.9F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.INHALED, 0.5, 0.1, 0.2F)))
             .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.INHALED, 0.04, 0.01, 0.65F, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
@@ -216,6 +223,7 @@ public interface PSItems {
     BongItem BONG = register("bong", new BongItem(new Settings().maxDamage(128)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.001, 0.2F)))
             .consumes(new BongItem.Consumable(DRIED_TOBACCO.getDefaultStack(), new DrugInfluence(DrugType.TOBACCO, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)))
+            .consumes(new BongItem.Consumable(DRIED_POPPY.getDefaultStack(), new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.4, 0.1, 0.4F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DrugInfluence.DelayType.IMMEDIATE, 0.5, 0.1, 0.1F)))
             .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DrugInfluence.DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
@@ -235,6 +243,9 @@ public interface PSItems {
     Item CRYSTAL_METH = add(register("methamphetamine_powder", new SnortableItem(new Settings()
                 .food(EdibleItem.NON_FILLING_EDIBLE)
     )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.15f)));
+    Item BLUE_CRYSTAL_METH = add(register("blue_methamphetamine_powder", new SnortableItem(new Settings()
+                .food(EdibleItem.NON_FILLING_EDIBLE)
+    )), PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.METHAMPHETAMINE, DrugInfluence.DelayType.IMMEDIATE, 0.002, 0.003, 0.25F)));
     // TODO: Different variants of the pills (use dyes to control appearance)
     Item EXTACY = add(register("extacy", new EdibleItem(new Settings()
                 .food(EdibleItem.NON_FILLING_EDIBLE)

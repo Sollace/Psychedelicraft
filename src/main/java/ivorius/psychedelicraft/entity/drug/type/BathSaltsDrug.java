@@ -39,8 +39,7 @@ public class BathSaltsDrug extends SimpleDrug {
         double chance = (getActiveValue() - 0.8F) * 0.051F;
 
         if (entity.age % 20 == 0 && random.nextFloat() < chance) {
-            if (random.nextFloat() < 0.4F) {
-                PSDamageTypes.damage(entity.getWorld(), entity, properties.damageOf(PSDamageTypes.STROKE), Integer.MAX_VALUE);
+            if (random.nextFloat() < 0.4F && properties.rollStroke()) {
                 return true;
             }
 

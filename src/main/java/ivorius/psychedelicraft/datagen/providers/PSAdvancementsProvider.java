@@ -59,6 +59,13 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                             DrugType.REGISTRY.stream().filter(i -> i != DrugType.SLEEP_DEPRIVATION).toList()
                     ))
                     .build(exporter);
+                root.child(Psychedelicraft.id("heart_attack"), Items.SKELETON_SKULL)
+                    .frame(AdvancementFrame.TASK)
+                    .announce()
+                    .hidden()
+                    .criteriaMerger(CriterionMerger.OR)
+                    .criterion("has_side_effect", CustomEventCriterion.Conditions.create("heart_attack"))
+                    .build(exporter);
                 root.child(Psychedelicraft.id("cancer"), PSItems.CIGARETTE)
                     .frame(AdvancementFrame.CHALLENGE)
                     .announce()
