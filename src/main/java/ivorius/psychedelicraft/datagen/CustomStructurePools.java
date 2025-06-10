@@ -38,6 +38,10 @@ final class CustomStructurePools {
                 Pair.of(StructurePoolElement.ofSingle("psychedelicraft:village/desert/houses/desert_hot_house_1"), 25),
                 Pair.of(StructurePoolElement.ofSingle("psychedelicraft:village/desert/houses/desert_hot_house_2"), 50)
         ), StructurePool.Projection.RIGID));
+
+        registerExtra(registerable, "village/taiga/houses", new StructurePool(empty, List.of(
+                Pair.of(StructurePoolElement.ofSingle("psychedelicraft:village/taiga/houses/taiga_drying_house_4"), 25)
+        ), StructurePool.Projection.RIGID));
     }
 
     static void register(Registerable<StructurePool> registerable, String name, StructurePool pool) {

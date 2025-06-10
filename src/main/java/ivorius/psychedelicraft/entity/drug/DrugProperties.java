@@ -52,6 +52,8 @@ import com.mojang.serialization.Codec;
 
 public class DrugProperties implements NbtSerialisable {
     public static final UUID DRUG_EFFECT = UUID.fromString("2da054e7-0fe0-4fb4-bf2c-a185a5f72aa1");//Psychedelicraft.id("drugs");
+    public static final int MAX_CARDIAC_ARREST_TIME = 2000;
+    public static final int MAX_CARDIAC_ARREST_REGEN_COOLDOWN = 20;
 
     private static final Codec<Map<DrugType<?>, Drug>> DRUGS_CODEC = Codec.unboundedMap(DrugType.REGISTRY.getCodec(), Drug.CODEC);
 
@@ -77,6 +79,10 @@ public class DrugProperties implements NbtSerialisable {
 
     private int cancerCountdown = -1;
     private boolean prevHadCancer = false;
+
+    private int prevCardiacArrestTicks;
+    private int cardiacArrestTicks;
+    private int cardiacArrestRegenCooldown;
 
     public DrugProperties(PlayerEntity entity) {
         this.entity = entity;
@@ -237,6 +243,24 @@ public class DrugProperties implements NbtSerialisable {
         }
     }
 
+    public void increaseCardiacArrestSideEffect() {
+        cardiacArrestTicks ++;
+        cardiacArrestRegenCooldown = MAX_CARDIAC_ARREST_REGEN_COOLDOWN;
+        markDirty();
+    }
+
+    public float getCardiacArrestProgress(float delta) {
+        return MathHelper.clamp(MathHelper.lerp(delta, prevCardiacArrestTicks, (float)this.cardiacArrestTicks) / MAX_CARDIAC_ARREST_TIME, 0, 1);
+    }
+
+    public boolean rollStroke() {
+        if (getCardiacArrestProgress(1) > 0.25F) {
+            return false;
+        }
+        PSDamageTypes.damage(entity.getWorld(), entity, damageOf(PSDamageTypes.STROKE), 8);
+        return entity.isDead();
+    }
+
     public boolean isBreathingSmoke() {
         return timeBreathingSmoke > 0;
     }
@@ -254,7 +278,23 @@ public class DrugProperties implements NbtSerialisable {
         if (cancerCountdown >= 0 && cancerCountdown <= 10 && --cancerCountdown == 0) {
             prevHadCancer = false;
             cancerCountdown = -1;
-            entity.damage(damageOf(PSDamageTypes.CANCER), Float.MAX_VALUE);
+            PSDamageTypes.damage(entity.getWorld(), entity, damageOf(PSDamageTypes.CANCER), Integer.MAX_VALUE);
+        }
+
+        prevCardiacArrestTicks = cardiacArrestTicks;
+        if (getModifier(Drug.HEART_BEAT_SPEED) <= 0.5F) {
+            int tries = 10 + entity.getWorld().random.nextInt(50);
+            for (int i = 0; i < tries; i++) {
+                if (entity.getWorld().random.nextInt(2) == 0) {
+                    increaseCardiacArrestSideEffect();
+                }
+            }
+        } else if (cardiacArrestTicks > 0 && getModifier(Drug.HEART_BEAT_SPEED) > 0.8F && getModifier(Drug.HEART_BEAT_SPEED) < 2.8F) {
+            cardiacArrestTicks *= 0.5F;
+        }
+
+        if (cardiacArrestTicks > 0 && (cardiacArrestRegenCooldown <= 0 || --cardiacArrestRegenCooldown <= 0)) {
+            cardiacArrestTicks--;
         }
 
         drugs.values().forEach(drug -> drug.update(this));
@@ -322,6 +362,14 @@ public class DrugProperties implements NbtSerialisable {
                     && random.nextInt(Psychedelicraft.getConfig().randomTicksUntilRiftSpawn.get()) == 0) {
                 RealityRiftEntity.spawn(entity);
             }
+
+            if (cardiacArrestTicks > MAX_CARDIAC_ARREST_TIME) {
+                PSCriteria.HEART_ATTACK.trigger(entity);
+                if (random.nextInt(200) == 0 || entity.isSleeping()) {
+                    cardiacArrestTicks = 0;
+                    PSDamageTypes.damage(entity.getWorld(), entity, damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
+                }
+            }
         }
 
         if (entity.isAlive()) {
@@ -347,7 +395,7 @@ public class DrugProperties implements NbtSerialisable {
             }
         }
 
-        float speed = getModifier(Drug.SPEED);
+        float speed = getModifier(Drug.SPEED) - getCardiacArrestProgress(1) * 0.25F;
 
         changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_MOVEMENT_SPEED, speed);
         changeDrugModifierMultiply(entity, EntityAttributes.GENERIC_ATTACK_SPEED, speed);

@@ -21,7 +21,9 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 /**
  * Created by lukas on 25.10.14.
@@ -77,21 +79,37 @@ public class RenderUtil {
         RenderSystem.disableBlend();
     }
 
-    public static void drawOverlay(DrawContext context, Identifier texture,float alpha,
+    public static void drawOverlay(DrawContext context, Identifier texture, float alpha,
             int width, int height,
             float u0, float v0,
             float u1, float v1, int offset) {
+        drawOverlay(context, texture, alpha, Colors.WHITE, width, height, u0, v0, u1, v1, offset);
+    }
+
+    public static void drawOverlay(DrawContext context, Identifier texture, float alpha, int color,
+            int width, int height,
+            float u0, float v0,
+            float u1, float v1, int offset) {
+
+        if (alpha <= 0) {
+            return;
+        }
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderColor(1, 1, 1, alpha);
+        RenderSystem.setShaderColor(
+                ColorHelper.Argb.getRed(color) / 255F,
+                ColorHelper.Argb.getGreen(color) / 255F,
+                ColorHelper.Argb.getBlue(color) / 255F,
+                alpha / 255F
+        );
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.enableBlend();
         BufferBuilder buffer = Tessellator.getInstance().getBuffer();
         buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         MatrixStack.Entry entry = context.getMatrices().peek();
-        fastVertex(buffer, entry, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1);
-        fastVertex(buffer, entry, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1);
-        fastVertex(buffer, entry, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0);
-        fastVertex(buffer, entry, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0);
+        fastVertex(buffer, entry, -offset, height + offset, SCREEN_Z_OFFSET).texture(u0, v1).color(color);
+        fastVertex(buffer, entry, width + offset, height + offset, SCREEN_Z_OFFSET).texture(u1, v1).color(color);
+        fastVertex(buffer, entry, width + offset, -offset, SCREEN_Z_OFFSET).texture(u1, v0).color(color);
+        fastVertex(buffer, entry, -offset, -offset, SCREEN_Z_OFFSET).texture(u0, v0).color(color);
         BufferRenderer.drawWithGlobalProgram(buffer.end());
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.disableBlend();

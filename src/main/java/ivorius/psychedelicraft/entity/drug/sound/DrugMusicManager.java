@@ -49,26 +49,28 @@ public class DrugMusicManager implements NbtSerialisable {
             delayUntilHeartbeat--;
         }
 
-        if (delayUntilBreath > 0) {
-            delayUntilBreath--;
-        }
-
         prevHeartbeatPulseStrength = heartbeatPulseStrength;
-        heartbeatPulseStrength = MathUtils.approach(heartbeatPulseStrength, targetHeartbeatPulseStrength, 0.2F);
+        heartbeatPulseStrength = Math.max(0, MathUtils.approach(heartbeatPulseStrength, targetHeartbeatPulseStrength, 0.2F));
         if (targetHeartbeatPulseStrength > 0) {
-            targetHeartbeatPulseStrength -= 0.02F;
+            targetHeartbeatPulseStrength = Math.max(0, targetHeartbeatPulseStrength - 0.02F);
         }
 
         if (delayUntilHeartbeat == 0) {
             float heartbeatVolume = properties.getModifier(Drug.HEART_BEAT_VOLUME);
+            float speed = properties.getModifier(Drug.HEART_BEAT_SPEED);
             if (heartbeatVolume > 0) {
-                float speed = properties.getModifier(Drug.HEART_BEAT_SPEED);
-                delayUntilHeartbeat = speed <= 1 ? -MathHelper.floor(35 * (speed - 1F)) : MathHelper.floor(35F / (speed - 1F));
-                targetHeartbeatPulseStrength = 2 - properties.getModifier(Drug.PAIN_SUPPRESSION);
+                delayUntilHeartbeat = speed <= 1
+                        ? -MathHelper.ceil(350F * (speed == 1 ? -1 : speed - 1F))
+                        : MathHelper.floor(35F / (speed - 1F));
+                targetHeartbeatPulseStrength = Math.max(0, 2 - properties.getModifier(Drug.PAIN_SUPPRESSION));
                 entity.getWorld().playSound(entity.getX(), entity.getY(), entity.getZ(),
                         PSSounds.ENTITY_PLAYER_HEARTBEAT,
                         SoundCategory.AMBIENT, heartbeatVolume, speed, false);
             }
+        }
+
+        if (delayUntilBreath > 0) {
+            delayUntilBreath--;
         }
 
         if (delayUntilBreath == 0) {

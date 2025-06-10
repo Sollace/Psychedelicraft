@@ -5,7 +5,6 @@
 
 package ivorius.psychedelicraft.entity.drug.type;
 
-import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugAttributeFunctions;
@@ -50,11 +49,8 @@ public class LsdDrug extends SimpleDrug {
             if (caffiene.getActiveValue() > 0) {
                 caffiene.addToDesiredValue(-0.5);
                 effect /= 2;
-            } else {
-                properties.asEntity().damage(properties.damageOf(PSDamageTypes.STROKE), 1);
-                if (properties.asEntity().isDead()) {
-                    return true;
-                }
+            } else if (properties.rollStroke()) {
+                return true;
             }
         }
         return super.tickSideEffects(properties, random);

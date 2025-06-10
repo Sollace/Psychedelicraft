@@ -11,7 +11,6 @@ import com.mojang.datafixers.Products.P4;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.Entity;
@@ -152,7 +151,7 @@ public class SimpleDrug implements Drug {
 
     protected boolean tickSideEffects(DrugProperties properties, Random random) {
         if (Drug.HEART_BEAT_SPEED.get(properties) > 3) {
-            properties.asEntity().damage(properties.damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
+            properties.increaseCardiacArrestSideEffect();
             return true;
         }
         return false;

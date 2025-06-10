@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.mojang.datafixers.util.Function7;
-
 import io.netty.buffer.ByteBuf;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
