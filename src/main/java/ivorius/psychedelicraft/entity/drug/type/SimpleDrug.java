@@ -12,6 +12,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ivorius.psychedelicraft.entity.drug.*;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluenceInstance;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
@@ -104,6 +105,11 @@ public class SimpleDrug implements Drug {
         if (!locked) {
             effect += value;
         }
+    }
+
+    @Override
+    public void addToDesiredValue(double value, DrugInfluenceInstance influence) {
+        addToDesiredValue(value);
     }
 
     @Override

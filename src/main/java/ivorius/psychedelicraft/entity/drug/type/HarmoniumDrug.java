@@ -9,12 +9,13 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluenceInstance;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class HarmoniumDrug extends SimpleDrug {
-    public final Vector3f currentColor = new Vector3f(1, 1, 1);
+    private final Vector3f currentColor = new Vector3f(1, 1, 1);
 
     public HarmoniumDrug(double decSpeed, double decSpeedPlus) {
         super(DrugType.HARMONIUM, decSpeed, decSpeedPlus);
@@ -28,6 +29,17 @@ public class HarmoniumDrug extends SimpleDrug {
     @Override
     public void applyColorBloom(Vector4f rgba) {
         MathUtils.mixColorsDynamic(currentColor, rgba, (float) getActiveValue() * 3);
+    }
+
+    @Override
+    public void addToDesiredValue(double value, DrugInfluenceInstance influence) {
+        super.addToDesiredValue(value, influence);
+        if (!isLocked()) {
+            influence.color.ifPresent(color -> {
+                MathUtils.lerp((float)(value + (1 - value) * (1 - getActiveValue())), currentColor, color);
+            });
+        }
+
     }
 
     @Override
