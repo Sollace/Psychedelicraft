@@ -80,7 +80,7 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
     }
 
     public void setup(Type type, String domain, String name) {
-        this.name = Identifier.of(name);
+        this.name = Identifier.of(domain, name);
         this.type = type;
     }
 
@@ -203,7 +203,11 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
                 geometrySources = geometrySources.replaceAll("vertexColor", "v_Color");
             }
 
-            geometrySources = geometrySources.replaceAll("/\\*replaceme\\*/Position", "_vert_position");
+            if (vertexSources.indexOf("_vert_position") != -1
+                    && vertexSources.indexOf("in vec3 Position") == -1
+                    && vertexSources.indexOf("in vec4 Position") == -1) {
+                geometrySources = geometrySources.replaceAll("/\\*replaceme\\*/Position", "_vert_position");
+            }
 
             if (vertexSources.indexOf("out float v_FragDistance") != -1
                 || vertexSources.indexOf("in float v_FragDistance") != -1) {
@@ -211,7 +215,10 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
             }
         }
         if (name.getPath().startsWith("iris/")) {
-            geometrySources = geometrySources.replaceAll("/\\*replaceme\\*/Position", "cameraPosition");
+            if (vertexSources.indexOf("in vec3 Position") == -1
+                    && vertexSources.indexOf("in vec4 Position") == -1) {
+                geometrySources = geometrySources.replaceAll("/\\*replaceme\\*/Position", "cameraPosition");
+            }
             if (vertexSources.indexOf("uniform vec3 cameraPosition") == -1) {
                 geometrySources = "uniform vec3 cameraPosition;" + geometrySources;
             }
