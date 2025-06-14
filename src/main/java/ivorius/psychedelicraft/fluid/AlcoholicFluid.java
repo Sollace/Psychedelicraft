@@ -86,9 +86,7 @@ public class AlcoholicFluid extends DrugFluid implements Processable, TickRate.T
         if (alcohol > 0) {
             consumer.accept(new DrugInfluence(settings.drugType, 20, 0.003, 0.002, alcohol));
         }
-        settings.variants.find(stack).extraDrug().ifPresent(drug -> {
-            consumer.accept(drug.clone());
-        });
+        settings.variants.find(stack).extraDrug().ifPresent(consumer);
     }
 
     double getAlcoholContent(ItemFluids stack) {

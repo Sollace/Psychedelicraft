@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluenceInstance;
 import ivorius.psychedelicraft.entity.drug.sound.DrugMusicManager;
 import ivorius.psychedelicraft.entity.effect.PSEffects;
 import ivorius.psychedelicraft.item.PacifierItem;
@@ -52,12 +53,12 @@ import com.mojang.serialization.Codec;
 public class DrugProperties implements NbtSerialisable {
     public static final Identifier DRUG_EFFECT = Psychedelicraft.id("drugs");
     public static final int MAX_CARDIAC_ARREST_TIME = 2000;
-    public static final int MAX_CARDIAC_ARREST_REGEN_COOLDOWN = 20;
+    public static final int RECOVERY_COOLDOWN = 20;
 
     private static final Codec<Map<DrugType<?>, Drug>> DRUGS_CODEC = Codec.unboundedMap(DrugType.REGISTRY.getCodec(), Drug.CODEC);
 
     private final Map<DrugType<?>, Drug> drugs = DrugType.REGISTRY.stream().collect(Collectors.toMap(Function.identity(), DrugType::create));
-    private final List<DrugInfluence> influences = new ArrayList<>();
+    private final List<DrugInfluenceInstance> influences = new ArrayList<>();
 
     private boolean initial;
     private boolean dirty;
@@ -81,6 +82,9 @@ public class DrugProperties implements NbtSerialisable {
     private int prevCardiacArrestTicks;
     private int cardiacArrestTicks;
     private int cardiacArrestRegenCooldown;
+
+    private int strokeIntensity;
+    private int strokeRecoveryCooldown;
 
     public DrugProperties(PlayerEntity entity) {
         this.entity = entity;
@@ -159,6 +163,12 @@ public class DrugProperties implements NbtSerialisable {
         markDirty();
     }
 
+    public void addToDrug(DrugType<?> type, double effect, DrugInfluenceInstance influence) {
+        getDrug(type).addToDesiredValue(effect, influence);
+        PSCriteria.DRUG_EFFECTS_CHANGED.trigger(this);
+        markDirty();
+    }
+
     public void setDrugValue(DrugType<?> type, double effect) {
         getDrug(type).setDesiredValue(effect);
         PSCriteria.DRUG_EFFECTS_CHANGED.trigger(this);
@@ -166,12 +176,12 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public void addToDrug(DrugInfluence influence) {
-        influences.add(influence.clone());
+        influences.add(new DrugInfluenceInstance(influence));
         markDirty();
     }
 
     public void addAll(Iterable<DrugInfluence> influences) {
-        influences.forEach(influence -> this.influences.add(influence.clone()));
+        influences.forEach(influence -> this.influences.add(new DrugInfluenceInstance(influence)));
         markDirty();
     }
 
@@ -197,13 +207,20 @@ public class DrugProperties implements NbtSerialisable {
                 || breathSmokeColor != -1
                 || timeBreathingSmoke != 0
                 || pacifierSqueakDelay != -1
-                || influences.stream().anyMatch(i -> i.getDrugType() != DrugType.SUGAR && i.getDrugType() != DrugType.SLEEP_DEPRIVATION)
+                || cardiacArrestTicks != 0
+                || strokeIntensity != 0
+                || influences.stream().anyMatch(i -> !i.isOf(DrugType.SUGAR) && i.isOf(DrugType.SLEEP_DEPRIVATION))
                 || drugs.values().stream().anyMatch(i -> i.getType() != DrugType.SUGAR && i.getType() != DrugType.SLEEP_DEPRIVATION && i.getActiveValue() > 0.1);
         cancerCountdown = -1;
         teethGrindingRate = 0;
         breathSmokeColor = -1;
         timeBreathingSmoke = 0;
         pacifierSqueakDelay = -1;
+        prevCardiacArrestTicks = 0;
+        cardiacArrestTicks = 0;
+        cardiacArrestRegenCooldown = 0;
+        strokeIntensity = 0;
+        strokeRecoveryCooldown = 0;
         influences.clear();
         drugs.values().forEach(i -> i.setDesiredValue(0));
         changed |= stomach.reset();
@@ -247,7 +264,7 @@ public class DrugProperties implements NbtSerialisable {
 
     public void increaseCardiacArrestSideEffect() {
         cardiacArrestTicks ++;
-        cardiacArrestRegenCooldown = MAX_CARDIAC_ARREST_REGEN_COOLDOWN;
+        cardiacArrestRegenCooldown = RECOVERY_COOLDOWN;
         markDirty();
     }
 
@@ -259,9 +276,15 @@ public class DrugProperties implements NbtSerialisable {
         if (getCardiacArrestProgress(1) > 0.25F) {
             return false;
         }
+
+        int baseDamage = 1;
+        strokeIntensity++;
+        strokeRecoveryCooldown = RECOVERY_COOLDOWN;
+
         if (!entity.getWorld().isClient) {
-            PSDamageTypes.damage((ServerWorld)entity.getWorld(), entity, damageOf(PSDamageTypes.STROKE), 8);
+            PSDamageTypes.damage((ServerWorld)entity.getWorld(), entity, damageOf(PSDamageTypes.STROKE), Math.min(baseDamage + strokeIntensity, 10));
         }
+
         return entity.isDead();
     }
 
@@ -277,6 +300,10 @@ public class DrugProperties implements NbtSerialisable {
         //4 times / sec is enough
         if (entity.age % 5 == 0 && influences.removeIf(influence -> influence.update(this))) {
             markDirty();
+        }
+
+        if (strokeRecoveryCooldown > 0 && --strokeRecoveryCooldown <= 0) {
+            strokeIntensity = 0;
         }
 
         if (cancerCountdown >= 0 && cancerCountdown <= 10 && --cancerCountdown == 0) {
@@ -429,7 +456,7 @@ public class DrugProperties implements NbtSerialisable {
     public NbtCompound toTrackedNbt(NbtCompound compound, WrapperLookup lookup) {
         dirty = false;
         DRUGS_CODEC.encodeStart(NbtOps.INSTANCE, drugs).result().ifPresent(drugs -> compound.put("Drugs", drugs));
-        DrugInfluence.LIST_CODEC.encodeStart(NbtOps.INSTANCE, influences).result().ifPresent(influenceTagList -> compound.put("drugInfluences", influenceTagList));
+        DrugInfluenceInstance.LIST_CODEC.encodeStart(NbtOps.INSTANCE, influences).result().ifPresent(influenceTagList -> compound.put("drugInfluences", influenceTagList));
         compound.put("stomach", stomach.toNbt(lookup));
         compound.putInt("cancerCountdown", cancerCountdown);
         compound.putFloat("teethGrindingRate", teethGrindingRate);
@@ -446,7 +473,7 @@ public class DrugProperties implements NbtSerialisable {
         drugs.clear();
         compound.get("Drugs", DRUGS_CODEC).ifPresent(drugs::putAll);
         influences.clear();
-        compound.get("drugInfluences", DrugInfluence.LIST_CODEC).ifPresent(influences::addAll);
+        compound.get("drugInfluences", DrugInfluenceInstance.LIST_CODEC).ifPresent(influences::addAll);
         stomach.fromNbt(compound.getCompoundOrEmpty("stomach"), lookup);
         cancerCountdown = compound.getInt("cancerCountdown", -1);
         teethGrindingRate = compound.getFloat("teethGrindingRate", 0);

@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.fluid;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.entity.drug.influence.DelayType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.SimpleFluid.Settings;
 import ivorius.psychedelicraft.fluid.alcohol.FluidAppearance;
@@ -236,25 +237,25 @@ public interface PSFluids {
     DrugFluid COCA_TEA = new CocaTeaFluid(Psychedelicraft.id("coca_tea"), new DrugFluid.Settings()
             .drinkable()
             .appearance(FluidAppearance.TEA)
-            .influence(new DrugInfluence(DrugType.COCAINE, DrugInfluence.DelayType.METABOLISED, 0.005, 0.002, 0.2))
+            .influence(new DrugInfluence(DrugType.COCAINE, DelayType.METABOLISED, 0.005, 0.002, 0.2))
             .color(0x44787a36)
     );
     DrugFluid CANNABIS_TEA = new DrugFluid(Psychedelicraft.id("cannabis_tea"), new DrugFluid.Settings()
             .drinkable()
             .appearance(FluidAppearance.TEA)
-            .influence(new DrugInfluence(DrugType.CANNABIS, DrugInfluence.DelayType.METABOLISED, 0.005, 0.002, 0.25))
+            .influence(new DrugInfluence(DrugType.CANNABIS, DelayType.METABOLISED, 0.005, 0.002, 0.25))
             .color(0x446d6f3c)
     );
     DrugFluid PEYOTE_JUICE = new DrugFluid(Psychedelicraft.id("peyote_juice"), new DrugFluid.Settings()
             .drinkable()
-            .influence(new DrugInfluence(DrugType.PEYOTE, DrugInfluence.DelayType.INGESTED, 0.005, 0.003, 2))
+            .influence(new DrugInfluence(DrugType.PEYOTE, DelayType.INGESTED, 0.005, 0.003, 2))
             .appearance(FluidAppearance.TEA)
             .color(0x779bab62)
             .viscocity(2)
     );
     DrugFluid KAVA = new DrugFluid(Psychedelicraft.id("kava"), new DrugFluid.Settings()
             .drinkable()
-            .influence(new DrugInfluence(DrugType.KAVA, DrugInfluence.DelayType.INHALED, 0.005, 0.003, 2))
+            .influence(new DrugInfluence(DrugType.KAVA, DelayType.INHALED, 0.005, 0.003, 2))
             .color(0x779bab62)
     );
 
@@ -270,19 +271,19 @@ public interface PSFluids {
     DrugFluid CAFFEINE = new DrugFluid(Psychedelicraft.id("caffeine"), new DrugFluid.Settings()
             .injectable()
             .appearance(FluidAppearance.CLEAR)
-            .influence(new DrugInfluence(DrugType.CAFFEINE, DrugInfluence.DelayType.IMMEDIATE, 0.005, 0.01, 85))
+            .influence(new DrugInfluence(DrugType.CAFFEINE, DelayType.IMMEDIATE, 0.005, 0.01, 85))
             .color(0x66eee2d3)
     );
     DrugFluid BATH_SALTS = new DrugFluid(Psychedelicraft.id("bath_salts"), new DrugFluid.Settings()
             .injectable()
             .appearance(FluidAppearance.CLEAR)
-            .influence(new DrugInfluence(DrugType.BATH_SALTS, DrugInfluence.DelayType.IMMEDIATE, 0.005, 0.01, 50))
+            .influence(new DrugInfluence(DrugType.BATH_SALTS, DelayType.IMMEDIATE, 0.005, 0.01, 50))
             .color(0x2233f4f8)
     );
     DrugFluid MORPHINE = new DrugFluid(Psychedelicraft.id("morphine"), new DrugFluid.Settings()
             .injectable()
             .appearance(FluidAppearance.CLEAR)
-            .influence(new DrugInfluence(DrugType.MORPHINE, DrugInfluence.DelayType.IMMEDIATE, 0.005, 0.01, 50))
+            .influence(new DrugInfluence(DrugType.MORPHINE, DelayType.IMMEDIATE, 0.005, 0.01, 50))
             .color(0x2233f4f8)
     );
 
@@ -296,7 +297,7 @@ public interface PSFluids {
         return new DrugFluid.Settings()
                 .injectable()
                 .appearance(FluidAppearance.CLEAR)
-                .influence(new DrugInfluence(type, DrugInfluence.DelayType.IMMEDIATE, 0.05, 0.01, 50))
+                .influence(new DrugInfluence(type, DelayType.IMMEDIATE, 0.05, 0.01, 50))
                 .color(0x44e8f4f8);
     }
 
