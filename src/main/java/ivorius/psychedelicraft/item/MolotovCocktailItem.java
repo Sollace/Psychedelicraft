@@ -11,7 +11,6 @@ import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundCategory;
@@ -22,7 +21,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class MolotovCocktailItem extends DrinkableItem implements DyeableItem {
+public class MolotovCocktailItem extends TintedGlassBottleItem {
     public MolotovCocktailItem(Settings settings) {
         super(settings, FluidVolumes.BOTTLE, DEFAULT_MAX_USE_TIME, ConsumableFluid.ConsumptionType.DRINK);
     }

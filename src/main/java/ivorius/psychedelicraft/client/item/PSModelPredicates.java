@@ -48,10 +48,10 @@ public interface PSModelPredicates {
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled_with_lava"), (stack, world, entity, seed) -> ItemFluids.of(stack).isIn(FluidTags.LAVA) ? 1 : 0);
         ModelPredicateProviderRegistry.register(Psychedelicraft.id("filled_with_water"), (stack, world, entity, seed) -> ItemFluids.of(stack).isOf(Fluids.WATER) ? 1 : 0);
 
-        ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : stack.getItem() instanceof DyeableItem dyeable ? dyeable.getColor(stack) : Colors.RED, PSItems.HARMONIUM);
+        ColorProviderRegistry.ITEM.register((stack, layer) -> layer > 0 ? -1 : stack.getItem() instanceof DyeableItem dyeable && dyeable.hasColor(stack) ? dyeable.getColor(stack) : Colors.RED, PSItems.HARMONIUM);
         ColorProviderRegistry.ITEM.register((stack, layer) -> {
             if (layer == 0) {
-                return stack.getItem() instanceof DyeableItem dyeable ? dyeable.getColor(stack) : Colors.WHITE;
+                return stack.getItem() instanceof DyeableItem dyeable && dyeable.hasColor(stack) ? dyeable.getColor(stack) : Colors.WHITE;
             }
             if (layer == 1) {
                 ItemFluids fluids = ItemFluids.of(stack);
