@@ -49,7 +49,7 @@ public class LsdDrug extends SimpleDrug {
             if (caffiene.getActiveValue() > 0) {
                 caffiene.addToDesiredValue(-0.5);
                 effect /= 2;
-            } else if (properties.rollStroke()) {
+            } else if (random.nextInt(1000) == 0 && properties.rollStroke()) {
                 return true;
             }
         }

@@ -51,7 +51,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid {
 
     public void getDrugInfluences(ItemFluids fluidStack, List<DrugInfluence> list) {
         getDrugInfluencesPerLiter(fluidStack, influence -> {
-            list.add(influence.copyWithMaximum((influence.getTargetInfluence() / FluidVolumes.BUCKET) * fluidStack.amount()));
+            list.add(influence.copyWithTarget((influence.target() / FluidVolumes.BUCKET) * fluidStack.amount()));
         });
     }
 
@@ -123,7 +123,7 @@ public class DrugFluid extends SimpleFluid implements ConsumableFluid {
 
         for (DrugInfluence drugInfluence : drugInfluences) {
             if (drugInfluence.isOf(DrugType.ALCOHOL)) {
-                alcohol += drugInfluence.getTargetInfluence();
+                alcohol += drugInfluence.target();
             }
         }
         return MathHelper.clamp(alcohol, 0, 1);

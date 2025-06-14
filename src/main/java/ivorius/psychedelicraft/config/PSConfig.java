@@ -62,8 +62,16 @@ public class PSConfig extends Config {
                 .registerTypeAdapter(FeatureCustomConfig.InclusionFilter.class, new CodecTypeAdapter<>(FeatureCustomConfig.InclusionFilter.CODEC))
                 .registerTypeAdapter(TickRates.class, new CodecTypeAdapter<>(TickRates.CODEC))
         ), path);
-        enableHarmonium.onChanged(v -> ItemGroups.displayContext = null);
-        enableRiftJars.onChanged(v -> ItemGroups.displayContext = null);
-        disableMolotovs.onChanged(v -> ItemGroups.displayContext = null);
+        enableHarmonium.onChanged(PSConfig::forceInventoryGroupsRefresh);
+        enableRiftJars.onChanged(PSConfig::forceInventoryGroupsRefresh);
+        disableMolotovs.onChanged(PSConfig::forceInventoryGroupsRefresh);
+    }
+
+    private static void forceInventoryGroupsRefresh(boolean v) {
+        var context = ItemGroups.displayContext;
+        if (context != null) {
+            ItemGroups.displayContext = null;
+            ItemGroups.updateDisplayContext(context.enabledFeatures(), context.hasPermissions(), context.lookup());
+        }
     }
 }
