@@ -13,6 +13,7 @@ import org.joml.Vector4f;
 import com.mojang.serialization.Codec;
 
 import ivorius.psychedelicraft.entity.drug.Attribute.Combiner;
+import ivorius.psychedelicraft.entity.drug.influence.DrugInfluenceInstance;
 import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -81,6 +82,8 @@ public interface Drug extends NbtSerialisable {
     int getTicksActive();
 
     void addToDesiredValue(double effect);
+
+    void addToDesiredValue(double effect, DrugInfluenceInstance influence);
 
     void setDesiredValue(double effect);
 
