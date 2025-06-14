@@ -35,6 +35,7 @@ import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.Direction;
 
 import static ivorius.psychedelicraft.util.compat.ComponentType.add;
@@ -219,7 +220,7 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(DRIED_POPPY.getDefaultStack(), new DrugInfluence(DrugType.MORPHINE, DelayType.INHALED, 0.1, 0.02, 0.8F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DelayType.INHALED, 0.4, 0.1, 0.9F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DelayType.INHALED, 0.5, 0.1, 0.2F)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DelayType.INHALED, 0.04, 0.01, 0.65F, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DelayType.INHALED, 0.04, 0.01, 0.65F, MathUtils.unpackRgb(getColorOrDefault(stack)))));
     // TODO: Play around with the bongs benefits
     BongItem BONG = register("bong", new BongItem(new Settings().maxDamage(128)))
             .consumes(new BongItem.Consumable(DRIED_CANNABIS_BUDS.getDefaultStack(), new DrugInfluence(DrugType.CANNABIS, DelayType.IMMEDIATE, 0.002, 0.001, 0.2F)))
@@ -227,7 +228,7 @@ public interface PSItems {
             .consumes(new BongItem.Consumable(DRIED_POPPY.getDefaultStack(), new DrugInfluence(DrugType.MORPHINE, DelayType.IMMEDIATE, 0.1, 0.02, 0.6F)))
             .consumes(new BongItem.Consumable(DRIED_BELLADONNA_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DelayType.IMMEDIATE, 0.4, 0.1, 0.4F)))
             .consumes(new BongItem.Consumable(DRIED_JIMSONWEED_LEAF.getDefaultStack(), new DrugInfluence(DrugType.ATROPINE, DelayType.IMMEDIATE, 0.5, 0.1, 0.1F)))
-            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(HARMONIUM.getColor(stack)))));
+            .consumes(new BongItem.Consumable(HARMONIUM.getDefaultStack(), stack -> new DrugInfluence(DrugType.HARMONIUM, DelayType.IMMEDIATE, 0.04, 0.01, 0.9F, MathUtils.unpackRgb(getColorOrDefault(stack)))));
 
     Item VOMIT = register("vomit", new VomitItem(new Settings()));
     Item PAPER_BAG = add(register("paper_bag", new PaperBagItem(new Settings())), PSComponents.BAG_CONTENTS, BagContentsComponent.EMPTY);
@@ -274,6 +275,10 @@ public interface PSItems {
                 .maxCount(16)),
                 PSComponents.PROCESS_TYPE, Processable.ProcessType.MATURE),
                 PSComponents.FLUID_CAPACITY, FluidCapacity.create(FluidVolumes.BARREL));
+    }
+
+    static int getColorOrDefault(ItemStack stack) {
+        return PSItems.HARMONIUM.hasColor(stack) ? PSItems.HARMONIUM.getColor(stack) : Colors.RED;
     }
 
     static <T extends Item> T register(String name, T item) {

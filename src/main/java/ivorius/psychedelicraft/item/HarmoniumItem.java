@@ -8,5 +8,4 @@ public class HarmoniumItem extends Item implements DyeableItem {
     public HarmoniumItem(Settings settings) {
         super(settings);
     }
-
 }
