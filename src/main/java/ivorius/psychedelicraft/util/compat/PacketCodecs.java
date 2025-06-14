@@ -27,7 +27,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
 public interface PacketCodecs {
-    PacketCodec<ByteBuf, String> STRING = PacketCodec.ofStatic((buff, s) -> new PacketByteBuf(buff).readString(), buff -> new PacketByteBuf(buff).readString());
+    PacketCodec<ByteBuf, String> STRING = PacketCodec.ofStatic((buff, s) -> new PacketByteBuf(buff).writeString(s), buff -> new PacketByteBuf(buff).readString());
     PacketCodec<ByteBuf, Integer> INTEGER = PacketCodec.ofStatic(ByteBuf::writeInt, ByteBuf::readInt);
     PacketCodec<ByteBuf, Float> FLOAT = PacketCodec.ofStatic(ByteBuf::writeFloat, ByteBuf::readFloat);
     PacketCodec<ByteBuf, Double> DOUBLE = PacketCodec.ofStatic(ByteBuf::writeDouble, ByteBuf::readDouble);

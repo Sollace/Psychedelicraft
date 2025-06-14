@@ -7,10 +7,10 @@ import com.mojang.datafixers.util.Function8;
 import io.netty.buffer.ByteBuf;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 
 public interface PacketCodecUtils {
@@ -33,9 +33,10 @@ public interface PacketCodecUtils {
         }
         return IntRange.ANY;
     });
-    PacketCodec<PacketByteBuf, IntProvider> INT_PROVIDER_VALUE_CODEC = PacketCodecs.optional(PacketCodecs.NBT_ELEMENT).xmap(
+    PacketCodec<PacketByteBuf, IntProvider> INT_PROVIDER_VALUE_CODEC = /*PacketCodecs.optional(PacketCodecs.NBT_ELEMENT).xmap(
             nbt -> nbt.flatMap(i -> IntProvider.VALUE_CODEC.decode(NbtOps.INSTANCE, i).result().map(pair -> pair.getFirst())).orElseThrow(),
-            input -> IntProvider.VALUE_CODEC.encodeStart(NbtOps.INSTANCE, input).result());
+            input -> IntProvider.VALUE_CODEC.encodeStart(NbtOps.INSTANCE, input).result());*/
+            PacketCodec.ofStatic((buff, t) -> {}, buff -> ConstantIntProvider.ZERO);
 
     static <T extends Enum<T>> PacketCodec<PacketByteBuf, T> ofEnum(Class<T> type) {
         return PacketCodec.ofStatic(PacketByteBuf::writeEnumConstant, b -> b.readEnumConstant(type));
