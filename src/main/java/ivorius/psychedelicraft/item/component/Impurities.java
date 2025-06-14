@@ -13,6 +13,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.entity.drug.influence.DelayType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 import ivorius.psychedelicraft.util.compat.PacketCodec;
@@ -131,9 +132,9 @@ public record Impurities(Set<Impurity> impurities) implements TooltipAppender {
         float delayModifier = getEffectDelayModifier();
 
         return Stream.concat(
-                getAdditionalDrugs().map(type -> new DrugInfluence(DrugType.ALCOHOL, DrugInfluence.DelayType.METABOLISED, 0.1F, 1, 0.8F)),
+                getAdditionalDrugs().map(type -> new DrugInfluence(DrugType.ALCOHOL, DelayType.METABOLISED, 0.1F, 1, 0.8F)),
                 influences.stream()
-        ).map(i -> i.copyWithMaximum(i.getTargetInfluence() * strength).copyWithDelay(Math.max(1, (int)(i.getDelay() * delayModifier))))
+        ).map(i -> i.copyWithTarget(i.target() * strength).copyWithDelay(Math.max(1, (int)(i.delay() * delayModifier))))
             .toList();
     }
 

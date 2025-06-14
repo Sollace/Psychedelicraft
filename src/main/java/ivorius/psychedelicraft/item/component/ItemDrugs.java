@@ -85,7 +85,7 @@ public record ItemDrugs(List<DrugInfluence> influences, Optional<Vector3f> smoke
             if (hit != null) {
                 PSCriteria.BREATHE_SMOKE_ON_ENTITY.trigger(properties.asEntity(), hit.getEntity());
                 DrugProperties.of(hit.getEntity()).ifPresent(target -> {
-                    target.addAll(influences.stream().map(i -> i.copyWithMaximum(i.getTargetInfluence() * 0.1F)).toList());
+                    target.addAll(influences.stream().map(i -> i.copyWithTarget(i.target() * 0.1F)).toList());
                     if (target.asEntity().getWorld().random.nextInt(10) == 0) {
                         if (target.rollCancerDance()) {
                             PSCriteria.CANCER.trigger(target.asEntity(), properties.asEntity());
@@ -116,9 +116,9 @@ public record ItemDrugs(List<DrugInfluence> influences, Optional<Vector3f> smoke
 
             influences.forEach(influence -> {
                 tooltip.accept(Text.translatable("psychedelicraft.item.contained_drug_effects.entry",
-                        influence.getDrugType().id(),
-                        Text.literal(String.format(Math.abs(influence.getTargetInfluence()) > MathHelper.EPSILON ? "%.2f" : "%.0f", influence.getTargetInfluence())),
-                        Text.literal(String.format(Math.abs(influence.getBaseIncrease()) > MathHelper.EPSILON ? "%.3f" : "%.0f", influence.getBaseIncrease()))
+                        influence.drugType().id(),
+                        Text.literal(String.format(Math.abs(influence.target()) > MathHelper.EPSILON ? "%.2f" : "%.0f", influence.target())),
+                        Text.literal(String.format(Math.abs(influence.base()) > MathHelper.EPSILON ? "%.3f" : "%.0f", influence.base()))
                 ).formatted(Formatting.DARK_PURPLE));
             });
         }

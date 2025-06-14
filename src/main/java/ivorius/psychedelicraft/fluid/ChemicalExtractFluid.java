@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import ivorius.psychedelicraft.entity.drug.DrugType;
+import ivorius.psychedelicraft.entity.drug.influence.DelayType;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
 import ivorius.psychedelicraft.fluid.alcohol.TickRate;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
@@ -33,7 +34,7 @@ public class ChemicalExtractFluid extends DrugFluid implements Processable, Tick
     protected void getDrugInfluencesPerLiter(ItemFluids stack, Consumer<DrugInfluence> consumer) {
         super.getDrugInfluencesPerLiter(stack, consumer);
 
-        consumer.accept(new DrugInfluence(drug, DrugInfluence.DelayType.IMMEDIATE, 0.03, 0, Math.pow(96F, DISTILLATION.get(stack))));
+        consumer.accept(new DrugInfluence(drug, DelayType.IMMEDIATE, 0.03, 0, Math.pow(96F, DISTILLATION.get(stack))));
     }
 
     @Override
