@@ -141,10 +141,13 @@ public class CannabisPlantBlock extends CropBlock {
                     pos.move(Direction.UP);
                     up.move(Direction.UP);
                     state = above;
-                } else if (canGrowUpwards(world, pos, state)) {
+                    continue;
+                }
+
+                number--;
+                if (canGrowUpwards(world, pos, state)) {
                     pos.move(Direction.UP);
                     up.move(Direction.UP);
-                    number--;
                     state = getStateForHeight(y + 1).with(GROWING, world.isAir(up) && getPlantSize(world, pos) < getMaxHeight());
                     world.setBlockState(pos, state, Block.NOTIFY_ALL);
                 }
