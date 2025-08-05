@@ -17,6 +17,7 @@ import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.Impurities.Impurity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSSubPredicates;
+import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
 import ivorius.psychedelicraft.recipe.FluidModifyingResult;
 import ivorius.psychedelicraft.recipe.ImpuritiesPredicate;
 import ivorius.psychedelicraft.recipe.PouringRecipe;
@@ -332,34 +333,42 @@ public class PSRecipeProvider extends FabricRecipeProvider {
         offerReacting(exporter, PSFluids.MORNING_GLORY_EXTRACT, PSTags.Items.MORNING_GLORY_INGREDIENTS);
         offerReacting(exporter, PSFluids.MORPHINE, Items.POPPY);
 
-        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, PSFluids.PETROLIUM.getDefaultStack(5))
+        ReactingRecipeJsonBuilder.create(BunsenBurnerRecipe.ReactionType.INGREDIENTS, PSFluids.PETROLIUM.getDefaultStack(5))
+            .input(SimpleFluid.of(Fluids.WATER))
             .input(Items.COAL).criterion(hasItem(Items.COAL), conditionsFromItem(Items.COAL))
             .impurity(Impurities.Impurity.PETROLIUM)
             .offerTo(exporter);
-        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, PSFluids.PETROLIUM.getDefaultStack(5))
+        ReactingRecipeJsonBuilder.create(BunsenBurnerRecipe.ReactionType.INGREDIENTS, PSFluids.PETROLIUM.getDefaultStack(5))
+            .input(SimpleFluid.of(Fluids.WATER))
             .input(Items.CHARCOAL).criterion(hasItem(Items.CHARCOAL), conditionsFromItem(Items.CHARCOAL))
             .impurity(Impurities.Impurity.CARBON)
-            .offerTo(exporter, Psychedelicraft.id("petrolium_from_charcoal"));
-        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+            .offerTo(exporter, "petrolium_from_charcoal");
+        ReactingRecipeJsonBuilder.create(BunsenBurnerRecipe.ReactionType.INGREDIENTS, PSFluids.PETROLIUM.getDefaultStack(45))
+            .input(SimpleFluid.of(Fluids.WATER))
+            .input(Items.COAL_BLOCK).criterion(hasItem(Items.COAL_BLOCK), conditionsFromItem(Items.COAL_BLOCK))
+            .impurity(Impurities.Impurity.PETROLIUM)
+            .offerTo(exporter, "petroleum_from_coal_block");
+
+        ReactingRecipeJsonBuilder.create(BunsenBurnerRecipe.ReactionType.ADDITIONS, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+            .group("impurities")
             .input(PSItems.BROKEN_GLASS).criterion(hasItem(PSItems.BROKEN_GLASS), conditionsFromItem(PSItems.BROKEN_GLASS))
             .impurity(Impurities.Impurity.SILICA)
             .offerTo(exporter);
-        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+        ReactingRecipeJsonBuilder.create(BunsenBurnerRecipe.ReactionType.ADDITIONS, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+            .group("impurities")
             .input(Items.SUGAR).criterion(hasItem(Items.SUGAR), conditionsFromItem(Items.SUGAR))
             .impurity(Impurities.Impurity.SUGAR)
-            .offerTo(exporter, Psychedelicraft.id("sugar_water"));
-        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+            .offerTo(exporter, "sugar_water");
+        ReactingRecipeJsonBuilder.create(BunsenBurnerRecipe.ReactionType.ADDITIONS, SimpleFluid.of(Fluids.WATER).getDefaultStack(5))
+            .group("impurities")
             .input(Items.LAPIS_LAZULI).criterion(hasItem(Items.LAPIS_LAZULI), conditionsFromItem(Items.LAPIS_LAZULI))
             .impurity(Impurities.Impurity.LAPIS_LAZULI)
-            .offerTo(exporter, Psychedelicraft.id("lapis_water"));
-        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, SimpleFluid.of(Fluids.WATER).getDefaultStack(45))
+            .offerTo(exporter, "lapis_water");
+        ReactingRecipeJsonBuilder.create(BunsenBurnerRecipe.ReactionType.ADDITIONS, SimpleFluid.of(Fluids.WATER).getDefaultStack(45))
+            .group("impurities")
             .input(Items.LAPIS_BLOCK).criterion(hasItem(Items.LAPIS_BLOCK), conditionsFromItem(Items.LAPIS_BLOCK))
             .impurity(Impurities.Impurity.LAPIS_LAZULI)
-            .offerTo(exporter, Psychedelicraft.id("lapis_water_from_block"));
-        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, PSFluids.PETROLIUM.getDefaultStack(45))
-            .input(Items.COAL_BLOCK).criterion(hasItem(Items.COAL_BLOCK), conditionsFromItem(Items.COAL_BLOCK))
-            .impurity(Impurities.Impurity.PETROLIUM)
-            .offerTo(exporter, Psychedelicraft.id("petroleum_from_coal_block"));
+            .offerTo(exporter, "lapis_water_from_block");
     }
 
     private void offerTrayRecipes(RecipeExporter exporter) {
@@ -494,14 +503,16 @@ public class PSRecipeProvider extends FabricRecipeProvider {
     }
 
     private static void offerReacting(RecipeExporter exporter, SimpleFluid fluid, ItemConvertible input) {
-        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, fluid.getDefaultStack(50))
+        ReactingRecipeJsonBuilder.create(BunsenBurnerRecipe.ReactionType.INGREDIENTS, fluid.getDefaultStack(50))
+            .input(SimpleFluid.of(Fluids.WATER))
             .input(input).criterion(hasItem(input), conditionsFromItem(input))
             .byProduct(Items.COAL)
             .offerTo(exporter);
     }
 
     private static void offerReacting(RecipeExporter exporter, SimpleFluid fluid, TagKey<Item> input) {
-        ReactingRecipeJsonBuilder.create(RecipeCategory.BREWING, fluid.getDefaultStack(50))
+        ReactingRecipeJsonBuilder.create(BunsenBurnerRecipe.ReactionType.INGREDIENTS, fluid.getDefaultStack(50))
+            .input(SimpleFluid.of(Fluids.WATER))
             .input(input).criterion("has_" + input.id().getPath(), conditionsFromTag(input))
             .byProduct(Items.COAL)
             .offerTo(exporter);

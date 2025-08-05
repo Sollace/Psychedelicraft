@@ -1,16 +1,25 @@
 package ivorius.psychedelicraft.recipe;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+
+import org.jetbrains.annotations.Nullable;
+
+import com.mojang.serialization.Codec;
 
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.Processable.ByProductConsumer;
 import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.input.RecipeInput;
+import net.minecraft.util.StringIdentifiable;
 
 public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
     /**
@@ -28,7 +37,25 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
         return (width * height) > 0;
     }
 
-    public record Input(FluidMound fluids, ItemMound input, Product consumer) implements RecipeInput {
+    public enum ReactionType implements StringIdentifiable {
+        INGREDIENTS,
+        ADDITIONS;
+
+        private final String name = name().toLowerCase(Locale.ROOT);
+        public static final Codec<ReactionType> CODEC = StringIdentifiable.createCodec(ReactionType::values);
+        public static final PacketCodec<RegistryByteBuf, ReactionType> PACKET_CODEC = PacketCodecUtils.ofEnum(ReactionType.class);
+
+        @Override
+        public String asString() {
+            return name;
+        }
+    }
+
+    public record Input(ReactionType type, FluidMound fluids, ItemMound input, Product consumer, @Nullable Input nextPhase) implements RecipeInput {
+        public Input(FluidMound fluids, ItemMound input, Product consumer) {
+            this(ReactionType.INGREDIENTS, fluids, input, consumer, new Input(ReactionType.ADDITIONS, fluids, input, consumer, null));
+        }
+
         @Override
         public ItemStack getStackInSlot(int slot) {
             return ItemStack.EMPTY;

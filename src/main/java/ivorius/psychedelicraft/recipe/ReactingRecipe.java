@@ -34,12 +34,14 @@ import ivorius.psychedelicraft.util.PacketCodecUtils;
  * Used by the bunsen burner to produce the correct fluid type for ingredients dropped into it
  */
 public record ReactingRecipe (
+        ReactionType reactionType,
         String reducingGroup,
         CraftingRecipeCategory category,
         Result result,
         Ingredients ingredients,
         int stewTime) implements BunsenBurnerRecipe {
     public static final MapCodec<ReactingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            ReactionType.CODEC.optionalFieldOf("reaction_type", ReactionType.INGREDIENTS).forGetter(ReactingRecipe::reactionType),
             Codec.STRING.optionalFieldOf("group", "").forGetter(ReactingRecipe::reducingGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ReactingRecipe::category),
             Result.CODEC.fieldOf("result").forGetter(ReactingRecipe::result),
@@ -47,6 +49,7 @@ public record ReactingRecipe (
             Codec.INT.optionalFieldOf("stew_time", 0).forGetter(ReactingRecipe::stewTime)
     ).apply(instance, ReactingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, ReactingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            ReactionType.PACKET_CODEC, ReactingRecipe::reactionType,
             PacketCodecs.STRING, ReactingRecipe::reducingGroup,
             RecipeUtils.CRAFTING_RECIPE_CATEGORY_PACKET_CODEC, ReactingRecipe::category,
             Result.PACKET_CODEC, ReactingRecipe::result,
@@ -77,7 +80,7 @@ public record ReactingRecipe (
 
     @Override
     public boolean matches(Input input, World world) {
-        return ingredients.matchSolids(new ItemMound(input.input())) && ingredients.matchFluids(input.fluids());
+        return reactionType == input.type() && ingredients.matchSolids(new ItemMound(input.input())) && ingredients.matchFluids(input.fluids());
     }
 
     @Override
@@ -89,9 +92,13 @@ public record ReactingRecipe (
     public ItemStack craft(Input input, WrapperLookup lookup) {
         if (ingredients.matchSolids(input.input())) {
             int level = ingredients.consumeMatchingFluids(input.fluids());
-            if (!result.fluid().isEmpty()) {
-                input.consumer().accept(level == 0 ? result.fluid() : result.fluid().ofAmount(result.fluid().amount() * level));
+            if (reactionType == ReactionType.ADDITIONS) {
                 result.impurity.ifPresent(input.consumer()::accept);
+            } else {
+                if (!result.fluid().isEmpty()) {
+                    input.consumer().accept(level == 0 ? result.fluid() : result.fluid().ofAmount(result.fluid().amount() * level));
+                    result.impurity.ifPresent(input.consumer()::accept);
+                }
             }
         }
         return result.byProduct();
