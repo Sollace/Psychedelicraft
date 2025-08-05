@@ -9,15 +9,21 @@ import java.util.stream.Stream;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 
-public abstract class BlockEntityWithInventory extends SyncedBlockEntity implements SidedInventory {
+public abstract class BlockEntityWithInventory extends LockableContainerBlockEntity implements SidedInventory {
     protected static final int[] NO_SLOTS = new int[0];
 
     private final DefaultedList<ItemStack> inventory;
@@ -32,16 +38,16 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
-        Inventories.writeNbt(compound, inventory, lookup);
+    protected DefaultedList<ItemStack> getHeldStacks() {
+        return inventory;
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
-        inventory.clear();
-        Inventories.readNbt(compound, inventory, lookup);
+    protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+        for (int i = 0; i < size(); i++) {
+            this.inventory.set(i, i >= inventory.size() ? ItemStack.EMPTY : inventory.get(i));
+        }
+        markDirty();
     }
 
     @Override
@@ -50,62 +56,44 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
     }
 
     @Override
-    public ItemStack getStack(int slot) {
-        return inventory.get(slot);
-    }
-
-    @Override
     public void clear() {
-        inventory.clear();
-        onInventoryChanged();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return inventory.stream().allMatch(ItemStack::isEmpty);
+        super.clear();
+        markDirty();
     }
 
     @Override
     public ItemStack removeStack(int slot) {
         ItemStack removed = Inventories.removeStack(inventory, slot);
         if (!removed.isEmpty()) {
-            onInventoryChanged();
+            markDirty();
         }
         return removed;
     }
 
     @Override
-    public ItemStack removeStack(int slot, int amount) {
-        ItemStack removed = Inventories.splitStack(inventory, slot, amount);
-        if (!removed.isEmpty()) {
-            onInventoryChanged();
+    public void markDirty() {
+        super.markDirty();
+        if (world instanceof ServerWorld sw) {
+            sw.getChunkManager().markForUpdate(getPos());
         }
-        return removed;
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
-        inventory.set(slot, stack);
-        onInventoryChanged();
-    }
-
-    @Override
-    public int getMaxCountPerStack() {
-        return 1;
-    }
-
-    public void onInventoryChanged() {
-        markDirty();
         if (world != null) {
+            if (getCachedState().hasComparatorOutput()) {
+                world.updateComparators(pos, getCachedState().getBlock());
+            }
             world.updateNeighbors(pos, getCachedState().getBlock());
         }
     }
 
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
-        return (getCachedState().equals(player.getWorld().getBlockState(pos)))
-                && player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) <= 64;
+        return Inventory.canPlayerUse(this, player);
     }
+
+    @Override
+    protected Text getContainerName() {
+        return getCachedState().getBlock().getName();
+    }
+
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, Direction direction) {
@@ -115,5 +103,30 @@ public abstract class BlockEntityWithInventory extends SyncedBlockEntity impleme
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction direction) {
         return true;
+    }
+
+    @Override
+    public final Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public final NbtCompound toInitialChunkDataNbt(WrapperLookup lookup) {
+        NbtCompound compound = super.toInitialChunkDataNbt(lookup);
+        writeNbt(compound, lookup);
+        return compound;
+    }
+
+    @Override
+    protected void readNbt(NbtCompound nbt, WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
+        inventory.clear();
+        Inventories.readNbt(nbt, inventory, lookup);
+    }
+
+    @Override
+    protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
+        super.writeNbt(nbt, lookup);
+        Inventories.writeNbt(nbt, inventory, lookup);
     }
 }

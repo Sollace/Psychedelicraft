@@ -1,7 +1,10 @@
 package ivorius.psychedelicraft.block.entity;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.Generic3x3ContainerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -24,8 +27,18 @@ public class BottleRackBlockEntity extends BlockEntityWithInventory {
     }
 
     @Override
+    public int getMaxCountPerStack() {
+        return 1;
+    }
+
+    @Override
     public boolean isValid(int slot, ItemStack stack) {
         return stack.isIn(PSTags.Items.BOTTLE_RACK_INSERTABLE);
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, Direction direction) {
+        return super.canInsert(slot, stack, direction) && getStack(slot).isEmpty() && stack.getCount() == getMaxCountPerStack();
     }
 
     @Override
@@ -95,5 +108,10 @@ public class BottleRackBlockEntity extends BlockEntityWithInventory {
             case EAST  -> Optional.of(new Vec2f(1 - z, 1 - y));
             case DOWN, UP -> Optional.empty();
         };
+    }
+
+    @Override
+    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return new Generic3x3ContainerScreenHandler(syncId, playerInventory, this);
     }
 }
