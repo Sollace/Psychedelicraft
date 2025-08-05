@@ -11,9 +11,11 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.recipe.DryingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
+import ivorius.psychedelicraft.screen.DryingTableScreenHandler;
 import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
@@ -22,6 +24,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -166,11 +169,21 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
 
     @Override
     public void markDirty() {
-        super.markDirty();
         if (getWorld() instanceof ServerWorld sw) {
-            sw.updateComparators(pos, getCachedState().getBlock());
-            sw.updateNeighbors(pos, getCachedState().getBlock());
+            sw
+                    .getRecipeManager()
+                    .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), getWorld())
+                    .ifPresentOrElse(recipe -> {
+                        currentRecipe = Optional.of(recipe.id());
+                        cookingTime = getCookingTime(recipe.value().cookTime(), getCachedState().isOf(PSBlocks.IRON_DRYING_TABLE));
+                    }, () -> {
+                        currentRecipe = Optional.empty();
+                        cookingTime = 0;
+                    });
+            dryingProgress = 0;
+            heat = calculateSunStrength();
         }
+        super.markDirty();
     }
 
     private void craft(DryingRecipe recipe, DryingRecipe.Input input) {
@@ -186,6 +199,26 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         }
 
         setStack(OUTPUT_SLOT_INDEX, result);
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, Direction direction) {
+        return super.canInsert(slot, stack, direction) && slot != OUTPUT_SLOT_INDEX && getStack(slot).isEmpty();
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction direction) {
+        return slot == OUTPUT_SLOT_INDEX;
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction direction) {
+        return direction == Direction.DOWN ? OUTPUT_SLOTS : INPUT_SLOTS;
+    }
+
+    @Override
+    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return new DryingTableScreenHandler(syncId, playerInventory, propertyDelegate, this);
     }
 
     @Override
@@ -206,40 +239,5 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         heat = compound.getFloat("heatRatio", 0);
         cookingTime = compound.getLong("cookingTime", 0);
         dryingProgress = compound.getFloat("dryingProgress", 0);
-    }
-
-    @Override
-    public void onInventoryChanged() {
-        if (getWorld() instanceof ServerWorld sw) {
-            sw
-                    .getRecipeManager()
-                    .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), getWorld())
-                    .ifPresentOrElse(recipe -> {
-                        currentRecipe = Optional.of(recipe.id());
-                        cookingTime = getCookingTime(recipe.value().cookTime(), getCachedState().isOf(PSBlocks.IRON_DRYING_TABLE));
-                    }, () -> {
-                        currentRecipe = Optional.empty();
-                        cookingTime = 0;
-                    });
-            dryingProgress = 0;
-            heat = calculateSunStrength();
-        }
-
-        super.onInventoryChanged();
-    }
-
-    @Override
-    public boolean canInsert(int slot, ItemStack stack, Direction direction) {
-        return slot != OUTPUT_SLOT_INDEX && getStack(slot).isEmpty();
-    }
-
-    @Override
-    public boolean canExtract(int slot, ItemStack stack, Direction direction) {
-        return slot == OUTPUT_SLOT_INDEX;
-    }
-
-    @Override
-    public int[] getAvailableSlots(Direction direction) {
-        return direction == Direction.DOWN ? OUTPUT_SLOTS : INPUT_SLOTS;
     }
 }

@@ -25,6 +25,7 @@ import ivorius.psychedelicraft.client.SodiumCompat;
 import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.util.MathUtils;
+import ivorius.psychedelicraft.util.UntrustedIdentifier;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
@@ -79,7 +80,7 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
     }
 
     public void setup(ShaderType type, String domain, String name) {
-        setup(type, name.indexOf(':') == -1 ? Identifier.of(domain, name) : Identifier.of(name));
+        setup(type, UntrustedIdentifier.of(domain, name));
     }
 
     public void setup(ShaderType type, Identifier name) {
