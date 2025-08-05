@@ -18,6 +18,7 @@ import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.RecipeUtils;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
+import net.fabricmc.fabric.impl.recipe.ingredient.CustomIngredientImpl;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,6 +26,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> level, Map<String, Integer> attributes) implements CustomIngredient, Predicate<ItemStack> {
@@ -73,13 +75,30 @@ public record FluidIngredient (Optional<SimpleFluid> fluid, Optional<Integer> le
     @Deprecated
     @Override
     public Stream<RegistryEntry<Item>> getMatchingItems() {
-        return allRecepticals();
+        return allRecepticals(fluid);
     }
 
     @Deprecated
-    static Stream<RegistryEntry<Item>> allRecepticals() {
-        return Stream.of(Items.BUCKET, Items.GLASS_BOTTLE, PSItems.BOTTLE, PSItems.WOODEN_MUG, PSItems.GLASS_CHALICE, PSItems.STONE_CUP, PSItems.SYRINGE)
-                .map(Item::getRegistryEntry);
+    static Stream<RegistryEntry<Item>> allRecepticals(Optional<SimpleFluid> fluid) {
+        return Stream.of(
+            Items.WATER_BUCKET, Items.MILK_BUCKET, Items.AXOLOTL_BUCKET, Items.COD_BUCKET, Items.POWDER_SNOW_BUCKET, Items.PUFFERFISH_BUCKET, Items.SALMON_BUCKET,
+            Items.TADPOLE_BUCKET, Items.TROPICAL_FISH_BUCKET,
+            Items.LAVA_BUCKET, Items.BUCKET, Items.GLASS_BOTTLE,
+            Items.POTION, Items.GLASS_BOTTLE,
+            PSItems.BOTTLE, PSItems.WOODEN_MUG, PSItems.GLASS_CHALICE,
+            PSItems.STONE_CUP, PSItems.SYRINGE,
+            PSItems.FILLED_BUCKET, PSItems.FILLED_BOWL, PSItems.FILLED_GLASS_BOTTLE
+        ).map(Item::getRegistryEntry);
+    }
+
+    @Override
+    public Ingredient toVanilla() {
+        return new CustomIngredientImpl(this) {
+            @Override
+            public boolean acceptsItem(RegistryEntry<Item> registryEntry) {
+                return registryEntry.hasKeyAndValue() && registryEntry.value() != Items.AIR;
+            }
+        };
     }
 
     @Override

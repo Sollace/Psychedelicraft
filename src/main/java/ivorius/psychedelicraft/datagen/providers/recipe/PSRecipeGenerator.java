@@ -474,6 +474,7 @@ class PSRecipeGenerator extends RecipeGenerator {
         offerMixing(PSFluids.COCA_TEA, PSItems.COCA_LEAVES);
         offerMixing(PSFluids.PEYOTE_JUICE, PSItems.PEYOTE);
         offerMixing(PSFluids.COFFEE, PSItems.COFFEE_BEANS, PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);
+        offerMixing(PSFluids.COCAINE, PSItems.COCAINE_POWDER, PSTags.Items.DRUG_RECEPTICALS);
 
         MixingRecipeJsonBuilder.create(items, RecipeCategory.FOOD, PSFluids.BATH_SALTS, 1)
             .input(FluidIngredient.builder().fluid(Fluids.LAVA).level(FluidVolumes.GLASS_BOTTLE).build().toVanilla())
@@ -484,8 +485,6 @@ class PSRecipeGenerator extends RecipeGenerator {
             .input(PSItems.COFFEE_BEANS, 2).criterion(hasItem(PSItems.COFFEE_BEANS), conditionsFromItem(PSItems.COFFEE_BEANS))
             .receptical(PSTags.Items.DRUG_RECEPTICALS)
             .offerTo(exporter);
-        offerMixing(PSFluids.COCAINE, PSItems.COCAINE_POWDER, PSTags.Items.DRUG_RECEPTICALS);
-
     }
 
     private void offerReacting(SimpleFluid fluid, ItemConvertible input) {
