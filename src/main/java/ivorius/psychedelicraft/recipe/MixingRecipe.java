@@ -18,7 +18,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
 import com.mojang.serialization.Codec;
@@ -82,23 +81,17 @@ public class MixingRecipe extends ShapelessRecipe implements MultiResultRecipe<M
 
     @Override
     public boolean matches(CraftingRecipeInput inventory, World world) {
-        List<ItemStack> recepticals = getOutputRecepticals(inventory).toList();
-        return recepticals.size() == 1
-                && ItemFluids.of(recepticals.get(0)).isOf(Fluids.WATER)
-                && FluidCapacity.getPercentage(recepticals.get(0)) >= 1
+        return getOutputRecepticals(inventory).count() == 1
                 && inventory.getRecipeMatcher().match(this, null);
-    }
-
-    @Override
-    public final ItemStack getResult(WrapperLookup registryManager) {
-        return getOutputFluid().ofFilling(receptical.getMatchingStacks()[0]);
     }
 
     private Stream<ItemStack> getOutputRecepticals(CraftingRecipeInput inventory) {
         return RecipeUtils.recepticals(inventory.getStacks()
                 .stream())
                 .filter(receptical)
-                .filter(receptical -> input.stream().noneMatch(i -> i.test(receptical)) && ItemFluids.of(receptical).isOf(Fluids.WATER));
+                .filter(receptical -> input.stream().noneMatch(i -> i.test(receptical))
+                        && ItemFluids.of(receptical).isOf(Fluids.WATER)
+                        && FluidCapacity.getPercentage(receptical) >= 1);
     }
 
     @Override
