@@ -58,7 +58,12 @@ public record OptionalFluidIngredient (
     public Stream<RegistryEntry<Item>> getMatchingItems() {
         return receptical
                 .map(Ingredient::getMatchingItems)
-                .orElseGet(FluidIngredient::allRecepticals);
+                .orElseGet(() -> FluidIngredient.allRecepticals(fluid.flatMap(FluidIngredient::fluid)));
+    }
+
+    @Override
+    public Ingredient toVanilla() {
+        return receptical.isEmpty() && fluid.isPresent() ? fluid.get().toVanilla() : CustomIngredient.super.toVanilla();
     }
 
     @Override

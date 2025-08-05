@@ -85,10 +85,7 @@ public class MixingRecipe extends ShapelessRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput inventory, World world) {
-        List<ItemStack> recepticals = getOutputRecepticals(inventory).toList();
-        return recepticals.size() == 1
-                && ItemFluids.of(recepticals.get(0)).isOf(Fluids.WATER)
-                && FluidCapacity.getPercentage(recepticals.get(0)) >= 1
+        return getOutputRecepticals(inventory).count() == 1
                 && inventory.getRecipeMatcher().isCraftable(this, null);
     }
 
@@ -96,7 +93,9 @@ public class MixingRecipe extends ShapelessRecipe {
         return RecipeUtils.recepticals(inventory.getStacks()
                 .stream())
                 .filter(receptical)
-                .filter(receptical -> input.stream().noneMatch(i -> i.test(receptical)) && ItemFluids.of(receptical).isOf(Fluids.WATER));
+                .filter(receptical -> input.stream().noneMatch(i -> i.test(receptical))
+                        && ItemFluids.of(receptical).isOf(Fluids.WATER)
+                        && FluidCapacity.getPercentage(receptical) >= 1);
     }
 
     @Override
