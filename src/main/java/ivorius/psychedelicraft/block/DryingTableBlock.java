@@ -49,7 +49,7 @@ public class DryingTableBlock extends BlockWithEntity {
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
-            player.openHandledScreen(be).isPresent();
+            player.openHandledScreen(be);
             return ActionResult.success(world.isClient);
         }).orElse(ActionResult.FAIL);
     }
