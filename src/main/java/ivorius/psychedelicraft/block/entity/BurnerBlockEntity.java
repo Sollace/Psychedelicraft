@@ -50,6 +50,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -211,10 +212,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         world.getRecipeManager().getFirstMatch(PSRecipes.CHEMISTRY, input, world).ifPresentOrElse(recipe -> {
             if (++processingTime >= recipe.value().stewTime()) {
                 processingTime = 0;
-                ItemStack byProduct = recipe.value().craft(input, world.getRegistryManager());
-                if (!byProduct.isEmpty()) {
-                    input.consumer().accept(byProduct);
-                }
+                craftAndCollectResult(world, input, recipe);
                 contents.onCraft(input);
             }
         }, () -> {
@@ -232,6 +230,17 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         });
 
         contents.produceProducts(world, getPos().up(), consumer);
+    }
+
+    private void craftAndCollectResult(ServerWorld world, ReactingRecipe.Input input, RecipeEntry<BunsenBurnerRecipe> recipe) {
+        ItemStack byProduct = recipe.value().craft(input, world.getRegistryManager());
+        if (!byProduct.isEmpty()) {
+            input.consumer().accept(byProduct);
+        }
+        if (input.nextPhase() != null) {
+            world.getRecipeManager().getAllMatches(PSRecipes.CHEMISTRY, input.nextPhase(), world)
+                .forEach(addition -> craftAndCollectResult(world, input.nextPhase(), addition));
+        }
     }
 
     @Override
