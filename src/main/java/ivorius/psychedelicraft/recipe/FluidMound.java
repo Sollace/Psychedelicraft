@@ -111,13 +111,13 @@ public class FluidMound implements Iterable<ItemFluids> {
         return fluids.isEmpty();
     }
 
-    public int removeMatch(FluidIngredient ingredient) {
+    public int removeMatch(FluidIngredient ingredient, int defaultLevel) {
         try {
             int amountRemoved = 0;
             for (int i = 0; i < fluids.size(); i++) {
                 ItemFluids fluid = fluids.get(i);
                 if (ingredient.test(fluid)) {
-                    int amountToConsume = ingredient.level().orElse(fluid.amount());
+                    int amountToConsume = ingredient.level().orElse(defaultLevel <= 0 ? fluid.amount() : defaultLevel);
                     int amountConsumed = Math.min(fluid.amount(), amountToConsume);
                     fluids.set(i, fluid.ofAmount(fluid.amount() - amountConsumed));
                     amountRemoved += amountConsumed;
@@ -131,6 +131,13 @@ public class FluidMound implements Iterable<ItemFluids> {
         } finally {
             fluids.removeIf(ItemFluids::isEmpty);
         }
+    }
+
+    public int getMatchingAmount(FluidIngredient ingredient, int defaultLevel) {
+        return fluids.stream()
+                .filter(ingredient::test)
+                .mapToInt(fluid -> ingredient.level().orElse(defaultLevel <= 0 ? fluid.amount() : defaultLevel))
+                .sum();
     }
 
     public FluidMound split(Predicate<ItemFluids> predicate) {

@@ -80,7 +80,9 @@ public record ReactingRecipe (
 
     @Override
     public boolean matches(Input input, World world) {
-        return reactionType == input.type() && ingredients.matchSolids(new ItemMound(input.input())) && ingredients.matchFluids(input.fluids());
+        return reactionType == input.type()
+                && ingredients.matchSolids(new ItemMound(input.input()))
+                && ingredients.matchFluids(FluidMound.of(input.fluids()));
     }
 
     @Override
@@ -156,11 +158,11 @@ public record ReactingRecipe (
         }
 
         public boolean matchFluids(FluidMound fluids) {
-            return fluids().isEmpty() || fluids().stream().allMatch(ingredient -> fluids.removeMatch(ingredient) > 0);
+            return fluids().isEmpty() || fluids().stream().allMatch(ingredient -> fluids.removeMatch(ingredient, -1) > 0);
         }
 
         public int consumeMatchingFluids(FluidMound fluids) {
-            return fluids().isEmpty() ? 0 : Math.max(0, fluids().stream().mapToInt(ingredient -> fluids.removeMatch(ingredient)).min().orElse(0));
+            return fluids().isEmpty() ? 0 : Math.max(0, fluids().stream().mapToInt(ingredient -> fluids.removeMatch(ingredient, -1)).min().orElse(0));
         }
     }
 }
