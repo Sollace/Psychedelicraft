@@ -152,6 +152,20 @@ public class FluidMound implements Iterable<ItemFluids> {
         return removed;
     }
 
+    public ItemFluids split(int levels) {
+        if (isEmpty()) {
+            return ItemFluids.EMPTY;
+        }
+        ItemFluids fluid = this.fluids.get(0);
+        int amount = Math.min(fluid.amount(), levels);
+        if (amount >= fluid.amount()) {
+            this.fluids.remove(0);
+        } else {
+            this.fluids.set(0, fluid.ofAmount(fluid.amount() - amount));
+        }
+        return fluid.ofAmount(amount);
+    }
+
     @Override
     public Iterator<ItemFluids> iterator() {
         return this.fluids.iterator();

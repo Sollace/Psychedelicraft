@@ -48,7 +48,11 @@ public class ItemMound implements NbtSerialisable {
         return ItemStack.EMPTY;
     }
 
-    public void add(Item item, int amount) {
+    @Deprecated
+    private void add(Item item, int amount) {
+        if (amount == 0) {
+            return;
+        }
         items.compute(item, (i, count) -> (count == null ? 0 : count) + amount);
         if (!indexes.contains(item)) {
             indexes.add(item);

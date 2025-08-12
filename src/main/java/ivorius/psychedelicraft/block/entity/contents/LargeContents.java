@@ -224,6 +224,7 @@ public class LargeContents extends SmallContents {
 
     @Override
     public void onCraft(BunsenBurnerRecipe.Input input) {
+        if (input.consumer() != null) return;
         ingredients = input.input();
         auxiliaryTanks = new ArrayList<>();
         input.fluids().getFluids().forEach(fluid -> {
@@ -236,8 +237,12 @@ public class LargeContents extends SmallContents {
 
     @Override
     public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
-        product.items().forEach(stack -> ingredients.addStack(stack));
-        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(product.fluids(), new Impurities(product.impurities()), 15)).equals(STATUS_ACCEPT_ALL)) {
+        if (!product.items().isEmpty()) {
+            ingredients.addStack(product.items().removeFirst());
+        }
+        ItemFluids fluid = product.fluids().split(400);
+        getPrimaryTank().drain(fluid.amount());
+        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(fluid, new Impurities(product.impurities()), 15)).equals(STATUS_ACCEPT_ALL)) {
             onFluidWasted(world);
         }
     }

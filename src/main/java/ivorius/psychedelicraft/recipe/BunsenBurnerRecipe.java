@@ -1,17 +1,22 @@
 package ivorius.psychedelicraft.recipe;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.fluid.PSFluids;
 import ivorius.psychedelicraft.fluid.Processable.ByProductConsumer;
 import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.CodecUtils;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
@@ -73,6 +78,14 @@ public interface BunsenBurnerRecipe extends Recipe<BunsenBurnerRecipe.Input> {
     }
 
     public record Product(FluidMound fluids, List<ItemStack> items, Set<Impurities.Impurity> impurities) implements ByProductConsumer {
+        public static final MapCodec<Product> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                FluidMound.CODEC.fieldOf("fluids").forGetter(Product::fluids),
+                ItemStack.CODEC.listOf().xmap(l -> (List<ItemStack>)new ArrayList<>(l), Function.identity()).fieldOf("items").forGetter(Product::items),
+                CodecUtils.setOf(Impurities.Impurity.CODEC).fieldOf("impurities").forGetter(Product::impurities)
+        ).apply(i, Product::new));
+        public static final Codec<Product> CODEC = MAP_CODEC.codec();
+
+
         @Override
         public void accept(ItemStack stack) {
             items.add(stack);
