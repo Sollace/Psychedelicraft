@@ -215,9 +215,9 @@ public class BurnerBlockEntityRenderer extends LabelledBlockEntityRenderer<Burne
 
         float y = 0;
 
-        for (var i : contents.getIngredients().getCounts().object2IntEntrySet()) {
-            ItemStack stack = i.getKey().getDefaultStack();
-            for (int j = 0; j < i.getIntValue(); j++) {
+        for (var i = 0; i < contents.getIngredients().size(); i++) {
+            ItemStack stack = contents.getIngredients().getStack(i);
+            for (int j = 0; j < stack.getCount(); j++) {
                 matrices.push();
 
                 matrices.translate((rng.nextFloat() - 0.5F) * 0.5F, (rng.nextFloat() - 0.5F) * 0.8F, -0.05 + y);

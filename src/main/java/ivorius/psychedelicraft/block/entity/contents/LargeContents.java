@@ -77,7 +77,7 @@ public class LargeContents extends SmallContents {
         }
 
         if (ingredients.size() < MAX_INGREDIENTS
-                && ingredients.getCounts().getInt(stack.getItem()) < 5) {
+                && ingredients.getCount(stack.getItem()) < 5) {
             if (player.getWorld() instanceof ServerWorld sw && isValidIngredient(sw, stack)) {
                 ingredients.addStack(stack.splitUnlessCreative(1, player));
                 player.setStackInHand(hand, stack);
@@ -294,7 +294,7 @@ public class LargeContents extends SmallContents {
         if (slot >= ingredients.size()) {
             return ItemStack.EMPTY;
         }
-        return ingredients.getCounts().keySet().stream().toList().get(slot).getDefaultStack();
+        return ingredients.getStack(slot);
     }
 
     @Override
