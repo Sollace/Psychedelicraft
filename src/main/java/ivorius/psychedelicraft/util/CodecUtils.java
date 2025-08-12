@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.util;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
@@ -68,7 +68,7 @@ public interface CodecUtils {
     static <K> Codec<Set<K>> setOf(Codec<K> codec) {
         return codec.listOf().xmap(
                 l -> l.stream().distinct().collect(Collectors.toUnmodifiableSet()),
-                s -> new ArrayList<>(s)
+                List::copyOf
         );
     }
 

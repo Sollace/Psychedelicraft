@@ -50,7 +50,8 @@ public class ItemMound implements NbtSerialisable {
         return ItemStack.EMPTY;
     }
 
-    public void add(Item item, int amount) {
+    @Deprecated
+    private void add(Item item, int amount) {
         if (amount == 0) {
             return;
         }
