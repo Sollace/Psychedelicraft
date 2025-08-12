@@ -14,8 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
-
 import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.BlockWithFluid.DirectionalFluidResovoir;
@@ -47,7 +45,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.RecipeEntry;
@@ -305,8 +302,8 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         super.writeNbt(compound, lookup);
         compound.putInt("temperature", temperature);
         compound.putInt("processingTime", processingTime);
-        ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, container).result().ifPresent(i -> compound.put("container", i));
-        BunsenBurnerRecipe.Product.CODEC.encodeStart(NbtOps.INSTANCE, product).result().ifPresent(i -> compound.put("product", i));
+        NbtSerialisable.put(compound, "container", ItemStack.OPTIONAL_CODEC, container);
+        NbtSerialisable.putNullable(compound, "product", BunsenBurnerRecipe.Product.CODEC, product);
         compound.putString("contentsType", contents.getId().toString());
         compound.put("contents", contents.toNbt(lookup));
     }
@@ -316,16 +313,8 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         super.readNbt(compound, lookup);
         temperature = compound.getInt("temperature");
         processingTime = compound.getInt("processingTime");
-        product = BunsenBurnerRecipe.Product.CODEC
-                .decode(NbtOps.INSTANCE, compound.get("product"))
-                .result()
-                .map(Pair::getFirst)
-                .orElse(null);
-        container = ItemStack.OPTIONAL_CODEC
-                .decode(NbtOps.INSTANCE, compound.get("container"))
-                .result()
-                .map(Pair::getFirst)
-                .orElse(ItemStack.EMPTY);
+        product = NbtSerialisable.get(compound, "product", BunsenBurnerRecipe.Product.CODEC).orElse(null);
+        container = NbtSerialisable.get(compound, "container", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         Identifier contentType = Identifier.of(compound.getString("contentsType"));
         if (contentType.equals(contents.getId())) {
             contents.fromNbt(compound.getCompound("contents"), lookup);
