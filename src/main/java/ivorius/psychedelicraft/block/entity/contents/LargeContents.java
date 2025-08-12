@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.block.entity.contents;
 
-import java.util.ArrayList;
 import java.util.List;
 import com.mojang.datafixers.util.Either;
 
@@ -224,15 +223,7 @@ public class LargeContents extends SmallContents {
 
     @Override
     public void onCraft(BunsenBurnerRecipe.Input input) {
-        if (input.consumer() != null) return;
         ingredients = input.input();
-        auxiliaryTanks = new ArrayList<>();
-        input.fluids().getFluids().forEach(fluid -> {
-            fluid = deposit(fluid);
-            if (!fluid.isEmpty()) {
-                input.consumer().accept(fluid);
-            }
-        });
     }
 
     @Override
