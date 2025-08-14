@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.util.compat.PacketCodec;
 import ivorius.psychedelicraft.util.compat.PacketCodecs;
 import ivorius.psychedelicraft.util.compat.StackCompat;
 import net.minecraft.client.item.TooltipContext;
+import ivorius.psychedelicraft.recipe.FluidMound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -54,7 +55,7 @@ public record ItemFluidsMixture(List<ItemFluids> fluids) implements TooltipAppen
     }
 
     private static List<ItemFluids> removeEmpty(List<ItemFluids> fluids) {
-        return fluids.stream().filter(f -> !f.isEmpty()).toList();
+        return FluidMound.of(fluids).getFluids();
     }
 
     public boolean isEmpty() {

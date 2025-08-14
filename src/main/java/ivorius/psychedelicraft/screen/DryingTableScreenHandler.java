@@ -1,13 +1,13 @@
 package ivorius.psychedelicraft.screen;
 
-import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
 
 /**
 * Created by lukas on 08.11.14.
@@ -17,20 +17,27 @@ public class DryingTableScreenHandler extends ScreenHandler {
 
     private final PropertyDelegate properties;
 
-    public DryingTableScreenHandler(int syncId, PlayerInventory inventory, BlockPos pos) {
-        this(syncId, inventory, (DryingTableBlockEntity)inventory.player.getWorld().getBlockEntity(pos));
+    public DryingTableScreenHandler(int syncId, PlayerInventory inventory) {
+        this(syncId, inventory, new ArrayPropertyDelegate(3), new SimpleInventory(10));
     }
 
-    public DryingTableScreenHandler(int syncId, PlayerInventory inventory, DryingTableBlockEntity container) {
+    public DryingTableScreenHandler(int syncId, PlayerInventory inventory, PropertyDelegate properties, Inventory container) {
         super(PSScreenHandlers.DRYING_TABLE, syncId);
         this.inventory = inventory;
-        this.properties = container.propertyDelegate;
+        this.properties = properties;
+        checkDataCount(properties, 3);
+        container.onOpen(inventory.player);
 
         addSlot(new SlotDryingTableResult(inventory.player, container, 0, 124, 35));
 
         for (int x = 0; x < 3; ++x) {
             for (int y = 0; y < 3; ++y) {
-                addSlot(new Slot(container, 1 + x * 3 + y, 30 + x * 18, 17 + y * 18));
+                addSlot(new Slot(container, 1 + x * 3 + y, 30 + x * 18, 17 + y * 18) {
+                    @Override
+                    public int getMaxItemCount() {
+                        return 1;
+                    }
+                });
             }
         }
 
@@ -112,5 +119,11 @@ public class DryingTableScreenHandler extends ScreenHandler {
         }
 
         return originalStack;
+    }
+
+    @Override
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
+        inventory.onClose(player);
     }
 }

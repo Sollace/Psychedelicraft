@@ -72,7 +72,7 @@ public record HardeningRecipe(
     public boolean matches(Input input, World world) {
         FluidMound fluids = FluidMound.of(input.impurities());
         return isCoreFluid(input.coreFluid())
-            && solutions.stream().allMatch(i -> fluids.removeMatch(i) > 0)
+            && solutions.stream().allMatch(i -> fluids.removeMatch(i, -1) > 0)
             && impurities.test(input.cuts());
     }
 

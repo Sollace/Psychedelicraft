@@ -7,6 +7,7 @@ import ivorius.psychedelicraft.block.entity.*;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 
@@ -15,9 +16,7 @@ import net.minecraft.screen.ScreenHandlerType;
  * @since 12 Jan 2023
  */
 public interface PSScreenHandlers {
-    ScreenHandlerType<DryingTableScreenHandler> DRYING_TABLE = register("drying_table", new ExtendedScreenHandlerType<>((syncId, inventory, pos) -> {
-        return new DryingTableScreenHandler(syncId, inventory, pos.readBlockPos());
-    }));
+    ScreenHandlerType<DryingTableScreenHandler> DRYING_TABLE = register("drying_table", new ScreenHandlerType<>(DryingTableScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
 
     ScreenHandlerType<FluidContraptionScreenHandler<BarrelBlockEntity>> BARREL = register("barrel", contraptionScreenHander());
     ScreenHandlerType<FluidContraptionScreenHandler<DistilleryBlockEntity>> DISTILLERY = register("distillery", contraptionScreenHander());

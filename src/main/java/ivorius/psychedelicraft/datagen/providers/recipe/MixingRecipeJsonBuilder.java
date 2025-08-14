@@ -3,6 +3,8 @@ package ivorius.psychedelicraft.datagen.providers.recipe;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.PSTags;
@@ -10,6 +12,8 @@ import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.MixingRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
+import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
+import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
@@ -17,6 +21,8 @@ import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.RecipeJsonBuilder;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
@@ -72,12 +78,20 @@ public class MixingRecipeJsonBuilder extends RecipeJsonBuilder implements FluidR
     }
 
     public MixingRecipeJsonBuilder receptical(TagKey<Item> tag) {
-        this.receptical = Ingredient.fromTag(tag);
-        return this;
+        return receptical(tag, Fluids.WATER);
     }
 
     public MixingRecipeJsonBuilder receptical(ItemConvertible receptical) {
-        this.receptical = Ingredient.ofItems(receptical);
+        return receptical(receptical, Fluids.WATER);
+    }
+
+    public MixingRecipeJsonBuilder receptical(TagKey<Item> tag, Fluid fluid) {
+        this.receptical = new OptionalFluidIngredient(Optional.of(FluidIngredient.builder().fluid(fluid).build()), Optional.of(Ingredient.fromTag(tag))).toVanilla();
+        return this;
+    }
+
+    public MixingRecipeJsonBuilder receptical(ItemConvertible receptical, Fluid fluid) {
+        this.receptical = new OptionalFluidIngredient(Optional.of(FluidIngredient.builder().fluid(fluid).build()), Optional.of(Ingredient.ofItems(receptical))).toVanilla();
         return this;
     }
 
