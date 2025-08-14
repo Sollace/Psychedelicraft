@@ -9,17 +9,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.entity.DryingTableBlockEntity;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
-import ivorius.psychedelicraft.screen.DryingTableScreenHandler;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -49,22 +42,8 @@ public class DryingTableBlock extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
-            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
-                @Override
-                public Text getDisplayName() {
-                    return DryingTableBlock.this.getName();
-                }
-                @Override
-                public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new DryingTableScreenHandler(syncId, inv, be);
-                }
-
-                @Override
-                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                    buf.writeBlockPos(pos);
-                }
-            });
-            return ActionResult.SUCCESS;
+            player.openHandledScreen(be);
+            return ActionResult.success(world.isClient);
         }).orElse(ActionResult.FAIL);
     }
 

@@ -57,11 +57,12 @@ public record OptionalFluidIngredient (
         return fluid.isEmpty() && receptical.isEmpty();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public List<ItemStack> getMatchingStacks() {
         return receptical
                 .map(ingredient -> Arrays.stream(ingredient.getMatchingStacks()))
-                .orElseGet(FluidIngredient::allRecepticals)
+                .orElseGet(() -> FluidIngredient.allRecepticals(fluid.flatMap(FluidIngredient::fluid)))
                 .map(fluid
                         .map(fluid -> (Function<ItemStack, ItemStack>)(receptical -> ItemFluids.set(receptical, fluid.getAsItemFluid(FluidCapacity.get(receptical)))))
                         .orElse(Function.identity()))

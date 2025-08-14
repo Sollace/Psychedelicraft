@@ -17,7 +17,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
 import com.mojang.serialization.Codec;
@@ -87,12 +86,9 @@ public class MixingRecipe extends ShapelessRecipe implements MultiResultRecipe<M
 
     @Override
     public boolean matches(RecipeInputInventory inventory, World world) {
-        List<ItemStack> recepticals = getOutputRecepticals(inventory).toList();
         RecipeMatcher recipeMatcher = new RecipeMatcher();
         RecipeUtils.stacks(inventory).forEach(s -> recipeMatcher.addInput(s, 1));
-        return recepticals.size() == 1
-                && ItemFluids.of(recepticals.get(0)).isOf(Fluids.WATER)
-                && FluidCapacity.getPercentage(recepticals.get(0)) >= 1
+        return getOutputRecepticals(inventory).count() == 1
                 && recipeMatcher.match(this, null);
     }
 
@@ -104,7 +100,9 @@ public class MixingRecipe extends ShapelessRecipe implements MultiResultRecipe<M
     private Stream<ItemStack> getOutputRecepticals(RecipeInputInventory inventory) {
         return RecipeUtils.recepticals(RecipeUtils.stacks(inventory))
                 .filter(receptical)
-                .filter(receptical -> input.stream().noneMatch(i -> i.test(receptical)) && ItemFluids.of(receptical).isOf(Fluids.WATER));
+                .filter(receptical -> input.stream().noneMatch(i -> i.test(receptical))
+                        && ItemFluids.of(receptical).isOf(Fluids.WATER)
+                        && FluidCapacity.getPercentage(receptical) >= 1);
     }
 
     @Override

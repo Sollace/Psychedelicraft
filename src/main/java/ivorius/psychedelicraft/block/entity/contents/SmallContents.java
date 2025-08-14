@@ -56,6 +56,11 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     }
 
     @Override
+    public int getTotalFluidVolume() {
+        return BurnerBlockEntity.CraftableContents.super.getTotalFluidVolume();
+    }
+
+    @Override
     public VoxelShape getOutlineShape() {
         return SHAPE;
     }
@@ -165,24 +170,17 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
 
     @Override
     public void onCraft(BunsenBurnerRecipe.Input input) {
-        if (input.fluids().isEmpty()) {
-            getPrimaryTank().setContents(ItemFluids.EMPTY);
-        } else {
-            ItemFluids first = input.fluids().get(0);
-            getPrimaryTank().setContents(first.ofAmount(Math.min(capacity, first.amount())));
-            if (first.amount() > capacity) {
-                input.consumer().accept(first.ofAmount(first.amount() - capacity));
-            }
-            for (int i = 1; i < input.fluids().size(); i++) {
-                input.consumer().accept(input.fluids().get(i));
-            }
-        }
+
     }
 
     @Override
     public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
-        product.items().forEach(stack -> Block.dropStack(world, entity.getPos(), stack));
-        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(product.fluids(), new Impurities(product.impurities()), 15)).equals(STATUS_ACCEPT_ALL)) {
+        if (!product.items().isEmpty()) {
+            Block.dropStack(world, entity.getPos(), product.items().remove(0));
+        }
+        ItemFluids fluid = product.fluids().split(100);
+        getPrimaryTank().drain(fluid.amount());
+        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(fluid, new Impurities(product.impurities()), 15)).equals(STATUS_ACCEPT_ALL)) {
             onFluidWasted(world);
         }
     }

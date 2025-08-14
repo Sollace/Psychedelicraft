@@ -14,8 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
-
 import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.BlockWithFluid.DirectionalFluidResovoir;
@@ -48,7 +46,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -78,6 +75,9 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     private ItemStack container = ItemStack.EMPTY;
 
     private Contents contents = new EmptyContents(this);
+
+    @Nullable
+    private BunsenBurnerRecipe.Product product;
 
     private int processingTime;
 
@@ -159,8 +159,22 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         contents.tick(world);
 
         if (contents instanceof CraftableContents c) {
-            int temperature = getTemperature();
-            if (getTemperature() <= 50 || world.getTime() % 5 != world.random.nextInt(3)) {
+            if (product != null && !product.fluids().isEmpty()) {
+                if (world.getTime() % 5 == 0) {
+                    world.playSound(null, getPos(), PSSounds.BLOCK_BUNSEN_BURNER_WORK, SoundCategory.BLOCKS, 1.25F, 0.02F);
+                    world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, pos);
+                    c.produceProducts(world, getPos().up(), product);
+                    if (c.getPrimaryTank().getContents().isEmpty()) {
+                        product = null;
+                    }
+                    if (temperature > 90) {
+                        setTemperature(temperature - 1);
+                    }
+                }
+                return;
+            }
+
+            if (temperature <= 50 || world.getTime() % 5 != world.random.nextInt(3)) {
                 return;
             }
 
@@ -192,14 +206,15 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
                 }
                 world.playSound(null, getPos(), PSSounds.BLOCK_BUNSEN_BURNER_WORK, SoundCategory.BLOCKS, 1.25F, 0.02F);
                 world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, pos);
-                craft(world, c);
+                product = craft(world, c);
             }
         } else {
             processingTime = 0;
+            product = null;
         }
     }
 
-    private void craft(ServerWorld world, CraftableContents contents) {
+    private BunsenBurnerRecipe.Product craft(ServerWorld world, CraftableContents contents) {
         var consumer = new BunsenBurnerRecipe.Product(FluidMound.of(), new ArrayList<>(), new HashSet<>());
         var input = new ReactingRecipe.Input(
                 FluidMound.of(this),
@@ -209,10 +224,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         world.getRecipeManager().getFirstMatch(PSRecipes.CHEMISTRY, input, world).ifPresentOrElse(recipe -> {
             if (++processingTime >= recipe.stewTime()) {
                 processingTime = 0;
-                ItemStack byProduct = recipe.craft(input, world.getRegistryManager());
-                if (!byProduct.isEmpty()) {
-                    input.consumer().accept(byProduct);
-                }
+                craftAndCollectResult(world, input, recipe);
                 contents.onCraft(input);
             }
         }, () -> {
@@ -229,7 +241,18 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
             });
         });
 
-        contents.produceProducts(world, getPos().up(), consumer);
+        return consumer;
+    }
+
+    private void craftAndCollectResult(ServerWorld world, ReactingRecipe.Input input, BunsenBurnerRecipe recipe) {
+        ItemStack byProduct = recipe.craft(input, world.getRegistryManager());
+        if (!byProduct.isEmpty()) {
+            input.consumer().accept(byProduct);
+        }
+        if (input.nextPhase() != null) {
+            world.getRecipeManager().getAllMatches(PSRecipes.CHEMISTRY, input.nextPhase(), world)
+                .forEach(addition -> craftAndCollectResult(world, input.nextPhase(), addition));
+        }
     }
 
     @Override
@@ -278,7 +301,8 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         super.writeNbt(compound);
         compound.putInt("temperature", temperature);
         compound.putInt("processingTime", processingTime);
-        ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, container).result().ifPresent(container -> compound.put("container", container));
+        NbtSerialisable.put(compound, "container", ItemStack.CODEC, container);
+        NbtSerialisable.putNullable(compound, "product", BunsenBurnerRecipe.Product.CODEC, product);
         compound.putString("contentsType", contents.getId().toString());
         compound.put("contents", contents.toNbt());
     }
@@ -288,11 +312,8 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         super.readNbt(compound);
         temperature = compound.getInt("temperature");
         processingTime = compound.getInt("processingTime");
-        container = ItemStack.CODEC
-                .decode(NbtOps.INSTANCE, compound.get("container"))
-                .result()
-                .map(Pair::getFirst)
-                .orElse(ItemStack.EMPTY);
+        product = NbtSerialisable.get(compound, "product", BunsenBurnerRecipe.Product.CODEC).orElse(null);
+        container = NbtSerialisable.get(compound, "container", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         Identifier contentType = new Identifier(compound.getString("contentsType"));
         if (contentType.equals(contents.getId())) {
             contents.fromNbt(compound.getCompound("contents"));
