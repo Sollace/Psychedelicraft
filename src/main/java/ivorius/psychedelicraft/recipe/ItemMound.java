@@ -175,11 +175,7 @@ public class ItemMound implements NbtSerialisable {
         public NbtCompound toNbt() {
             NbtCompound nbt = new NbtCompound();
             nbt.putInt("count", count);
-            try {
-                nbt.put("components", COMPONENTS_CODEC, components);
-            } catch (Throwable t) {
-                nbt.put("components", COMPONENTS_CODEC, components);
-            }
+            nbt.put("components", COMPONENTS_CODEC, components);
             return nbt;
         }
 
