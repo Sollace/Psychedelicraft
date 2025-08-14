@@ -1,6 +1,5 @@
 package ivorius.psychedelicraft.block.entity.contents;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,7 +76,7 @@ public class LargeContents extends SmallContents {
         }
 
         if (ingredients.size() < MAX_INGREDIENTS
-                && ingredients.getCounts().getInt(stack.getItem()) < 5) {
+                && ingredients.getCount(stack.getItem()) < 5) {
             if (player.getWorld() instanceof ServerWorld sw && isValidIngredient(sw, stack)) {
                 ingredients.addStack(stack.splitUnlessCreative(1, player));
                 player.setStackInHand(hand, stack);
@@ -224,19 +223,16 @@ public class LargeContents extends SmallContents {
     @Override
     public void onCraft(BunsenBurnerRecipe.Input input) {
         ingredients = input.input();
-        auxiliaryTanks = new ArrayList<>();
-        input.fluids().getFluids().forEach(fluid -> {
-            fluid = deposit(fluid);
-            if (!fluid.isEmpty()) {
-                input.consumer().accept(fluid);
-            }
-        });
     }
 
     @Override
     public void produceProducts(ServerWorld world, BlockPos pipePos, BunsenBurnerRecipe.Product product) {
-        product.items().forEach(stack -> ingredients.addStack(stack));
-        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(product.fluids(), new Impurities(product.impurities()), 15)).equals(STATUS_ACCEPT_ALL)) {
+        if (!product.items().isEmpty()) {
+            ingredients.addStack(product.items().removeFirst());
+        }
+        ItemFluids fluid = product.fluids().split(400);
+        getPrimaryTank().drain(fluid.amount());
+        if (!PipeInsertable.tryInsert(world, pipePos, Direction.UP, PipeFluids.of(fluid, new Impurities(product.impurities()), 15)).equals(STATUS_ACCEPT_ALL)) {
             onFluidWasted(world);
         }
     }
@@ -289,7 +285,7 @@ public class LargeContents extends SmallContents {
         if (slot >= ingredients.size()) {
             return ItemStack.EMPTY;
         }
-        return ingredients.getCounts().keySet().stream().toList().get(slot).getDefaultStack();
+        return ingredients.getStack(slot);
     }
 
     @Override

@@ -7,7 +7,6 @@ package ivorius.psychedelicraft.client.render.blocks;
 
 import org.jetbrains.annotations.Nullable;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.FluidFilled;
 import ivorius.psychedelicraft.block.entity.MashTubBlockEntity;
@@ -127,14 +126,13 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
         matrices.push();
         matrices.translate(0, 0.75f, 0);
 
-        Object2IntMap<Item> ingredients = entity.getSuppliedIngredients().getCounts();
-
         long seed = entity.getPos().asLong() + 1;
         Random random = Random.create();
         random.setSeed(seed);
 
-        for (Item item : ingredients.keySet()) {
-            for (int c = 0; c < ingredients.getInt(item); c++) {
+        for (int i = 0; i < entity.getSuppliedIngredients().size(); i++) {
+            ItemStack s = entity.getSuppliedIngredients().getStack(i);
+            for (int c = 0; c < s.getCount(); c++) {
                 float positionX = 0.5F + (random.nextFloat() - 0.5F) * 1.5F;
                 float positionZ = 0.5F + (random.nextFloat() - 0.5F) * 1.5F;
                 float rotation = random.nextFloat() * 360.0f;
@@ -152,7 +150,7 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
                 matrices.translate(0, bob, -0.2F);
                 matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-50 * spin));
                 matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees((ShaderContext.ticks() + c) % 360));
-                MinecraftClient.getInstance().getItemRenderer().renderItem(item.getDefaultStack(), ModelTransformationMode.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
+                MinecraftClient.getInstance().getItemRenderer().renderItem(s, ModelTransformationMode.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
 
                 matrices.pop();
             }

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.recipe.FluidMound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipAppender;
@@ -55,7 +56,7 @@ public record ItemFluidsMixture(List<ItemFluids> fluids) implements TooltipAppen
     }
 
     private static List<ItemFluids> removeEmpty(List<ItemFluids> fluids) {
-        return fluids.stream().filter(f -> !f.isEmpty()).toList();
+        return FluidMound.of(fluids).getFluids();
     }
 
     public boolean isEmpty() {

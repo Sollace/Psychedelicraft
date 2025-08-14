@@ -87,10 +87,10 @@ public record ReactingRecipe (
     @Override
     public ItemStack craft(Input input, WrapperLookup lookup) {
         if (ingredients.matchSolids(input.input())) {
-            int level = ingredients.consumeMatchingFluids(input.fluids());
             if (reactionType == ReactionType.ADDITIONS) {
                 result.impurity.ifPresent(input.consumer()::accept);
             } else {
+                int level = ingredients.consumeMatchingFluids(input.fluids());
                 if (!result.fluid().isEmpty()) {
                     input.consumer().accept(level == 0 ? result.fluid() : result.fluid().ofAmount(result.fluid().amount() * level));
                     result.impurity.ifPresent(input.consumer()::accept);
@@ -151,7 +151,7 @@ public record ReactingRecipe (
         }
 
         public int consumeMatchingFluids(FluidMound fluids) {
-            return fluids().isEmpty() ? 0 : Math.max(0, fluids().stream().mapToInt(ingredient -> fluids.removeMatch(ingredient, -1)).min().orElse(0));
+            return fluids().isEmpty() ? 0 : fluids().stream().mapToInt(ingredient -> fluids.removeMatch(ingredient, -1)).sum();
         }
     }
 

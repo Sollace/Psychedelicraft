@@ -215,8 +215,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         }
 
         if (world instanceof ServerWorld sw && isAcceptingIngredients() && acceptsItem(stack)) {
-            ItemStack consumed = stack.splitUnlessCreative(1, player);
-            suppliedIngredients.add(consumed.getItem(), 1);
+            suppliedIngredients.addStack(stack.splitUnlessCreative(1, player));
             beginStewing(sw);
             markForUpdate();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
