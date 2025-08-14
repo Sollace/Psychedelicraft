@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
 import ivorius.psychedelicraft.recipe.ReactingRecipe;
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import net.minecraft.advancement.Advancement;
@@ -17,20 +18,20 @@ import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 public class ReactingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
-    private final RecipeCategory category;
+    private final BunsenBurnerRecipe.ReactionType category;
     private final Map<String, AdvancementCriterion<?>> criterions = new LinkedHashMap<>();
     @Nullable
     private String group;
@@ -45,12 +46,12 @@ public class ReactingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
     private final DefaultedList<FluidIngredient> inputFluids = DefaultedList.of();
     private final DefaultedList<Ingredient> inputItems = DefaultedList.of();
 
-    private ReactingRecipeJsonBuilder(RecipeCategory category, ItemFluids output) {
+    private ReactingRecipeJsonBuilder(BunsenBurnerRecipe.ReactionType category, ItemFluids output) {
         this.category = category;
         this.output = output;
     }
 
-    public static ReactingRecipeJsonBuilder create(RecipeCategory category, ItemFluids output) {
+    public static ReactingRecipeJsonBuilder create(BunsenBurnerRecipe.ReactionType category, ItemFluids output) {
         return new ReactingRecipeJsonBuilder(category, output);
     }
 
@@ -118,12 +119,13 @@ public class ReactingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         criterions.forEach(builder::criterion);
         exporter.accept(recipeId, new ReactingRecipe(
+                category,
                 Objects.requireNonNullElse(group, ""),
-                CraftingRecipeJsonBuilder.toCraftingCategory(category),
+                CraftingRecipeCategory.MISC,
                 new ReactingRecipe.Result(output, new ItemStack(byProduct), Optional.ofNullable(impurity)),
                 new ReactingRecipe.Ingredients(inputFluids, inputItems),
                 stewTime
-            ), builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+            ), builder.build(recipeId.withPrefixedPath("recipes/" + RecipeCategory.BREWING.getName() + "/")));
     }
 
     private void validate(Identifier recipeId) {

@@ -59,7 +59,7 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         );
         this.output = output;
         this.ingredients = input;
-        this.consumedFluids = ingredients.stream().filter(i -> i.fluid().filter(f -> f.level().isPresent()).isPresent()).toList();
+        this.consumedFluids = ingredients.stream().filter(i -> i.fluid().isPresent()).toList();
         this.destructedIngredient = destructedIngredient;
     }
 
@@ -96,26 +96,15 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
             ItemStack stack = inventory.getStack(i);
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
 
-            if (consumedFluids.stream()
+            if (!t.fluids().isEmpty() && consumedFluids.stream()
                 .filter(ingredient -> ingredient.test(stack))
                 .map(OptionalFluidIngredient::fluid)
                 .flatMap(Optional::stream)
                 .anyMatch(fluid -> {
-                    t.withdraw(fluid.level().orElse(0));
+                    t.withdraw(fluid.level().orElse(t.fluids().amount()));
                     return true;
                 })) {
-                if (t.fluids().isEmpty()) {
-                    ItemStack remainder = t.toItemStack().getRecipeRemainder();
-                    if (!remainder.isEmpty()) {
-                        if (!destroyed && destructedIngredient.test(remainder)) {
-                            destroyed = true;
-                        } else {
-                            defaultedList.set(i, remainder);
-                        }
-                    }
-                } else {
-                    defaultedList.set(i, t.toItemStack());
-                }
+                defaultedList.set(i, t.toItemStack());
             } else {
                 ItemStack remainder = stack.getRecipeRemainder();
                 if (!remainder.isEmpty()) {

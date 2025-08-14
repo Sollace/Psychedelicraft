@@ -39,6 +39,11 @@ public class DrinkableItem extends Item {
     }
 
     @Override
+    public ItemStack getRecipeRemainder(ItemStack stack) {
+        return ItemFluids.set(stack.copy(), ItemFluids.EMPTY);
+    }
+
+    @Override
     public UseAction getUseAction(ItemStack stack) {
         return ItemFluids.of(stack).isEmpty() ? UseAction.NONE : consumptionType.getUseAction();
     }
