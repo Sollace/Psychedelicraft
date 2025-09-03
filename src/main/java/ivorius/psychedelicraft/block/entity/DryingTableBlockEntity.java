@@ -170,11 +170,15 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
                     .getRecipeManager()
                     .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), getWorld())
                     .ifPresentOrElse(recipe -> {
-                        currentRecipe = Optional.of(recipe.id());
+                        var recipeId = Optional.of(recipe.id());
+                        if (!recipeId.equals(currentRecipe)) {
+                            dryingProgress = 0;
+                        }
                         cookingTime = getCookingTime(recipe.cookTime(), getCachedState().isOf(PSBlocks.IRON_DRYING_TABLE));
                     }, () -> {
                         currentRecipe = Optional.empty();
                         cookingTime = 0;
+                        dryingProgress = 0;
                     });
             heat = calculateSunStrength();
         }
