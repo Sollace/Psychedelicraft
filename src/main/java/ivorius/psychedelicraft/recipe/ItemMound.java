@@ -139,7 +139,7 @@ public class ItemMound implements NbtSerialisable {
                     if (compound.contains(key, NbtElement.COMPOUND_TYPE)) {
                         items.computeIfAbsent(item, Entry::new).fromNbt(compound.getCompound(key));
                     } else if (compound.contains(key, NbtElement.INT_TYPE)) {
-                        entry.push(new NbtCompound(), compound.getInt(key));
+                        entry.push(null, compound.getInt(key));
                     }
                 });
         });
@@ -249,9 +249,9 @@ public class ItemMound implements NbtSerialisable {
             return this.count <= 0 ? null : this;
         }
 
-        public void push(NbtCompound changes, int count) {
+        public void push(@Nullable NbtCompound changes, int count) {
             this.count += count;
-            if (!changes.isEmpty()) {
+            if (changes != null && !changes.isEmpty()) {
                 components.compute(changes, (i, c) -> {
                     if (c == null) {
                         return new ComponentStack(i, count);
