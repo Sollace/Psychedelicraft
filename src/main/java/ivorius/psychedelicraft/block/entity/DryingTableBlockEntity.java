@@ -174,6 +174,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
                         if (!recipeId.equals(currentRecipe)) {
                             dryingProgress = 0;
                         }
+                        currentRecipe = recipeId;
                         cookingTime = getCookingTime(recipe.cookTime(), getCachedState().isOf(PSBlocks.IRON_DRYING_TABLE));
                     }, () -> {
                         currentRecipe = Optional.empty();
