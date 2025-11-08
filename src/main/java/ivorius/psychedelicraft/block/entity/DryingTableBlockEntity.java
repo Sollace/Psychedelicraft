@@ -147,7 +147,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
                     DryingRecipe.Input input = new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList());
                     world.getRecipeManager()
                         .getFirstMatch(PSRecipes.DRYING_TYPE, input, world, currentRecipe.get())
-                        .ifPresent(recipe -> craft(recipe.value(), input));
+                        .ifPresent(recipe -> craft(world, recipe.value(), input));
                     currentRecipe = Optional.empty();
                     dryingProgress = 0;
                     cookingTime = 0;
@@ -166,10 +166,10 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
 
     @Override
     public void markDirty() {
-        if (!getWorld().isClient) {
-            getWorld()
+        if (world instanceof ServerWorld sw) {
+            sw
                     .getRecipeManager()
-                    .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), getWorld())
+                    .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), sw)
                     .ifPresentOrElse(recipe -> {
                         var recipeId = Optional.of(recipe.id());
                         if (!recipeId.equals(currentRecipe)) {
@@ -187,8 +187,8 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
         super.markDirty();
     }
 
-    private void craft(DryingRecipe recipe, DryingRecipe.Input input) {
-        ItemStack result = recipe.craft(input, getWorld().getRegistryManager());
+    private void craft(ServerWorld world, DryingRecipe recipe, DryingRecipe.Input input) {
+        ItemStack result = recipe.craft(input, world.getRegistryManager());
         clear();
         DefaultedList<ItemStack> remainder = recipe.getRemainder(input);
         for (int i = 0; i < remainder.size(); i++) {
