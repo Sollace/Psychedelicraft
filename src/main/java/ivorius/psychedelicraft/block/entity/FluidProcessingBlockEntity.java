@@ -166,7 +166,9 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
 
     @Override
     public void accept(ItemStack stack) {
-        Block.dropStack(world, getPos(), stack);
+        if (world != null) {
+            Block.dropStack(world, getPos(), stack);
+        }
     }
 
     @Override
