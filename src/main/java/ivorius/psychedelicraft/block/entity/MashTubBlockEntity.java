@@ -74,6 +74,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     public void accept(ItemStack stack) {
+        if (world == null) {
+            return;
+        }
         if (!solidContents.isEmpty()) {
             if (ItemStack.canCombine(solidContents, stack)) {
                 int maxToMove = Math.min(stack.getCount(), solidContents.getMaxCount() - solidContents.getCount());
@@ -125,9 +128,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             Box box = Box.of(center, 1.5, 0.5, 1.5);
             for (ItemEntity item : world.getEntitiesByClass(ItemEntity.class, box, EntityPredicates.VALID_ENTITY)) {
                 ItemStack stack = item.getStack();
-                if (isValidIngredient(stack)) {
+                if (isValidIngredient(world, stack)) {
                     suppliedIngredients.addStack(stack);
-                    beginStewing();
+                    beginStewing(world);
                     markForUpdate();
                     spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
                     getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
@@ -213,7 +216,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         if (isAcceptingIngredients() && acceptsItem(stack)) {
             suppliedIngredients.addStack(StackCompat.splitUnlessCreative(stack, 1, player));
-            beginStewing();
+            if (getWorld() instanceof ServerWorld sw) {
+                beginStewing(sw);
+            }
             markForUpdate();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
             getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);
@@ -231,7 +236,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
         return currentStew.isEmpty() && !getPrimaryTank().getContents().isEmpty();
     }
 
-    public boolean isValidIngredient(ItemStack stack) {
+    public boolean isValidIngredient(ServerWorld world, ItemStack stack) {
         return acceptsItem(stack)
             && (world.getRecipeManager()
                 .listAllOfType(PSRecipes.MASHING_TYPE).stream()
@@ -240,7 +245,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
                 .anyMatch(i -> i.test(stack)));
     }
 
-    public void beginStewing() {
+    public void beginStewing(ServerWorld world) {
         if (suppliedIngredients.isEmpty() || getWorld().isClient()) {
             return;
         }
@@ -251,7 +256,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
                 world
         ).map(Stew::new);
 
-        if (currentStew.isEmpty() && suppliedIngredients.countMatches(stack -> !isValidIngredient(stack)) >= 8) {
+        if (currentStew.isEmpty() && suppliedIngredients.countMatches(stack -> !isValidIngredient(world, stack)) >= 8) {
             suppliedIngredients.clear();
             getPrimaryTank().setContents(PSFluids.SLURRY.getDefaultStack(getPrimaryTank().getContents().amount()));
             markDirty();
