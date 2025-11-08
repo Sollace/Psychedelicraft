@@ -77,6 +77,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     public void accept(ItemStack stack) {
+        if (world == null) {
+            return;
+        }
         if (!solidContents.isEmpty()) {
             if (ItemStack.areItemsAndComponentsEqual(solidContents, stack)) {
                 int maxToMove = Math.min(stack.getCount(), solidContents.getMaxCount() - solidContents.getCount());
