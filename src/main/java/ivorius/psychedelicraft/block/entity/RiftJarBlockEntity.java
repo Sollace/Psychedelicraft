@@ -114,7 +114,7 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
     }
 
     public boolean toggleRiftJarOpen() {
-        if (!world.isClient) {
+        if (world instanceof ServerWorld) {
             isOpening = !isOpening;
 
             markDirty();
@@ -123,7 +123,7 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
     }
 
     public void toggleSuckingRifts() {
-        if (!world.isClient) {
+        if (world instanceof ServerWorld) {
             suckingRifts = !suckingRifts;
 
             markDirty();
