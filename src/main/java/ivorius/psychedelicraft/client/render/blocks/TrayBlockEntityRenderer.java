@@ -44,12 +44,13 @@ public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlo
     @Override
     protected void renderLabels(TrayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         if (entity.getLevel() > 0) {
-            int percentage = (int)(100 * entity.getLevel() / 50F);
+            int percentage = (int)(100 * entity.getFluidRatio());
+            int fluidML = entity.getLevel() / FluidVolumes.ML_RATIO;
 
             Text fillText = switch (percentage) {
                 case 100 -> Text.literal("Full");
                 case 0 -> Text.literal("Empty");
-                default -> Text.literal(percentage + "%");
+                default -> Text.literal(fluidML + "ml" + " (" + percentage + "%)");
             };
 
             textRenderer.draw(fillText, -(textRenderer.getWidth(fillText) - 5) / 2F, -textRenderer.fontHeight - 2, Colors.WHITE, true, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, 0, light);

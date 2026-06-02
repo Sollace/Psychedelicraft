@@ -93,4 +93,24 @@ public class TrayBlock extends BlockWithEntity {
                 ? null
                 : validateTicker(type, PSBlockEntities.TRAY, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if (world.isClient()) {
+            return ActionResult.PASS;
+        }
+
+        TrayBlockEntity be = world.getBlockEntity(pos, PSBlockEntities.TRAY).orElse(null);
+        if (be == null || !be.isHardened() || be.getCraftingResult().isEmpty()) {
+            return ActionResult.PASS;
+        }
+            
+        ItemStack result = be.getCraftingResult().get();
+        if (!player.giveItemStack(result)) {
+            Block.dropStack(world, pos, result);
+        }
+
+        be.clear();
+        return ActionResult.SUCCESS;
+    }
 }

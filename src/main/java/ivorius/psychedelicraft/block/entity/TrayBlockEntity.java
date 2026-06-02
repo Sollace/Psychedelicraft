@@ -33,7 +33,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldAccess;
 
 public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable {
-    static final int MAX_CAPACITY = 50;
+    //ml to fluid units required
+    static final int MAX_CAPACITY = 50 * FluidVolumes.ML_RATIO;
 
     private final Resovoir fluid = new Resovoir(MAX_CAPACITY, (tank, level) -> {});
     private FluidMound impurities = FluidMound.of();
@@ -56,12 +57,26 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
         return MathHelper.clamp(fluid.getContents().amount(), 0, MAX_CAPACITY);
     }
 
+    public float getFluidRatio() {
+        return MathHelper.clamp((float)fluid.getContents().amount() / (float)MAX_CAPACITY, 0.f, 1.f);
+    }
+
     public boolean isHardened() {
         return getCraftingResult().isPresent();
     }
 
     public Optional<ItemStack> getCraftingResult() {
         return craftingResult;
+    }
+
+    public void clear() {
+        craftingResult = Optional.empty();
+        timeToHarden = -1;
+        fluid.clear();
+
+        //might not be necessary, only runs on server
+        dirty = true;
+        //markDirty();
     }
 
     public void tick(ServerWorld world) {
