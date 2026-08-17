@@ -26,7 +26,7 @@ public class TrayContentsModel extends Model {
     }
 
     public void setAngles(TrayBlockEntity entity, float tickDelta) {
-        tree.yScale = 0.1F + entity.getLevel() / 60F;
+        tree.yScale = 0.1F + entity.getFluidRatio();
         if (entity.getCachedState().get(Properties.HORIZONTAL_AXIS) == Direction.Axis.X) {
             tree.yaw = MathHelper.HALF_PI;
         } else {

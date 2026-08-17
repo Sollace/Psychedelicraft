@@ -320,7 +320,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
 
         FluidAwareShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.LSA_SQUARE)
             .input(Items.PAPER).criterion(hasItem(Items.PAPER), conditionsFromItem(Items.PAPER))
-            .input(FluidIngredient.builder().fluid(PSFluids.MORNING_GLORY_EXTRACT).attribute("distillation", 2).build())
+            .input(FluidIngredient.builder().fluid(PSFluids.MORNING_GLORY_EXTRACT).level(FluidVolumes.SYRINGE).attribute("distillation", 2).build())
             .offerTo(exporter);
 
         offerReactingRecipes(exporter);

@@ -31,6 +31,8 @@ public interface FluidVolumes {
 
     int GULP = BUCKET / 4;
 
+    int ML_RATIO = BUCKET / 1000;
+
     static String format(long amount) {
         if (amount == 0) {
             return "0L";
@@ -38,7 +40,7 @@ public interface FluidVolumes {
         if (amount > BUCKET) {
             return AttributeModifiersComponent.DECIMAL_FORMAT.format((double)amount / (double)BUCKET) + "L";
         }
-        amount = (long)((amount / (float)FluidVolumes.BUCKET) * 1000F);
+        amount = (long)((amount / (float)ML_RATIO));
         return amount + "ML";
     }
 }
