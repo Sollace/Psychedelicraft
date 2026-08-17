@@ -76,6 +76,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
     @Override
     public void accept(ItemStack stack) {
+        if (world == null) {
+            return;
+        }
         if (!solidContents.isEmpty()) {
             if (ItemStack.areItemsAndComponentsEqual(solidContents, stack)) {
                 int maxToMove = Math.min(stack.getCount(), solidContents.getMaxCount() - solidContents.getCount());
@@ -215,7 +218,9 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
 
         if (world instanceof ServerWorld sw && isAcceptingIngredients() && acceptsItem(stack)) {
             suppliedIngredients.addStack(stack.splitUnlessCreative(1, player));
-            beginStewing(sw);
+            if (getWorld() instanceof ServerWorld sw) {
+                beginStewing(sw);
+            }
             markForUpdate();
             spawnBubbles(20, 0, SoundEvents.BLOCK_BUBBLE_COLUMN_BUBBLE_POP);
             getWorld().playSound(null, getPos(), SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 1, 1);

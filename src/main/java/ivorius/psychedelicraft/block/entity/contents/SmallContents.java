@@ -106,7 +106,7 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
                 player.setStackInHand(hand, ItemFluidsMixture.set(entity.getContainer(), getAuxiliaryTanks().stream().map(Resovoir::getContents).toList()));
                 entity.setContainer(ItemStack.EMPTY);
                 for (ItemStack ingredient : getCraftingIngredients().convertToItemStacks()) {
-                    if (!player.giveItemStack(stack)) {
+                    if (!player.giveItemStack(ingredient)) {
                         Block.dropStack(player.getWorld(), entity.getPos(), ingredient);
                     }
                 }
