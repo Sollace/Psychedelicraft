@@ -9,6 +9,11 @@ Psychedelicraft
 
 The One And Only, accept no substitutes!
 
+> [!IMPORTANT]
+> Content Disclaimer: This mod uses various rendering techniques, shaders, and gameplay elements to create a 'somewhat' believable representation for the effects of certain substances, their effects, side-effects, and dangers.
+> This is intended for educational and demonstrative purposes only. This mod and its authors **DO NOT** condone the use of these substances in real life.
+> If you are experiencing addiction or have ingested any of the compounds represented by this mod seek medical advice immediately.
+
  [Wiki](https://github.com/Sollace/Psychedelicraft/wiki) | [Forum](http://www.minecraftforum.net/topic/563257-172-ivorius-mods-drugs-statues-flags-boxes-of-doom-hamsters/) 
 
 ----------
