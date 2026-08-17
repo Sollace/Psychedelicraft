@@ -14,6 +14,9 @@ The One And Only, accept no substitutes!
 > This is intended for educational and demonstrative purposes only. This mod and its authors **DO NOT** condone the use of these substances in real life.
 > If you are experiencing addiction or have ingested any of the compounds represented by this mod seek medical advice immediately.
 
+> [!NOTE]
+> Methods for creating controlled substances are intentionally simplified and **NOT** accurate.
+
  [Wiki](https://github.com/Sollace/Psychedelicraft/wiki) | [Forum](http://www.minecraftforum.net/topic/563257-172-ivorius-mods-drugs-statues-flags-boxes-of-doom-hamsters/) 
 
 ----------
