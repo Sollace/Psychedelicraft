@@ -169,7 +169,7 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
 
     @Override
     public void markDirty() {
-        if (getWorld() instanceof ServerWorld sw) {
+        if (world instanceof ServerWorld sw) {
             sw
                     .getRecipeManager()
                     .getFirstMatch(PSRecipes.DRYING_TYPE, new DryingRecipe.Input(getStack(OUTPUT_SLOT_INDEX), getStacks().skip(1).toList()), sw)
