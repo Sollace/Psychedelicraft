@@ -11,10 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ivorius.psychedelicraft.client.render.shader.BuiltGemoetryShader;
 
 @Pseudo
-@Mixin(targets = {
-        "net.caffeinemc.mods.sodium.client.gl.shader.GlProgram",
-        "me.jellysquid.mods.sodium.client.gl.shader.GlProgram"
-}, remap = false)
+@Mixin(targets = "net.caffeinemc.mods.sodium.client.gl.shader.GlProgram", remap = false)
 abstract class MixinGlProgram implements BuiltGemoetryShader.Holder {
     @Unique
     private @Nullable BuiltGemoetryShader psychedelicraft_uniformData;

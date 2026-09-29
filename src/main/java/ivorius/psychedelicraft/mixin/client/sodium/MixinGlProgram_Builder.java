@@ -13,10 +13,7 @@ import ivorius.psychedelicraft.client.render.shader.BuiltGemoetryShader;
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 
 @Pseudo
-@Mixin(targets = {
-        "net.caffeinemc.mods.sodium.client.gl.shader.GlProgram$Builder",
-        "me.jellysquid.mods.sodium.client.gl.shader.GlProgram$Builder"
-}, remap = false)
+@Mixin(targets = "net.caffeinemc.mods.sodium.client.gl.shader.GlProgram$Builder", remap = false)
 abstract class MixinGlProgram_Builder {
     @Unique
     private int psychedelicraft_maxAttributes = -1;

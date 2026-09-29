@@ -15,10 +15,7 @@ import ivorius.psychedelicraft.client.render.shader.GeometryShader;
 import net.minecraft.util.Identifier;
 
 @Pseudo
-@Mixin(targets = {
-        "net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader",
-        "me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader"
-})
+@Mixin(targets = "net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader")
 abstract class MixinShaderLoader {
 
     @Inject(method = "loadShader(Lnet/caffeinemc/mods/sodium/client/gl/shader/ShaderType;Lnet/minecraft/util/Identifier;Lnet/caffeinemc/mods/sodium/client/gl/shader/ShaderConstants;)Lnet/caffeinemc/mods/sodium/client/gl/shader/GlShader;", at = @At("HEAD"))
