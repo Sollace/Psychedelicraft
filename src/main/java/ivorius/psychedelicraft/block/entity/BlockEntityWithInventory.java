@@ -7,6 +7,8 @@ package ivorius.psychedelicraft.block.entity;
 
 import java.util.stream.Stream;
 
+import ivorius.psychedelicraft.util.NbtViews;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
@@ -19,6 +21,8 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
@@ -112,21 +116,27 @@ public abstract class BlockEntityWithInventory extends LockableContainerBlockEnt
 
     @Override
     public final NbtCompound toInitialChunkDataNbt(WrapperLookup lookup) {
-        NbtCompound compound = super.toInitialChunkDataNbt(lookup);
-        writeNbt(compound, lookup);
-        return compound;
+        return createNbt(lookup);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-        super.readNbt(nbt, lookup);
+    protected void readData(ReadView view) {
+        super.readData(view);
         inventory.clear();
-        Inventories.readNbt(nbt, inventory, lookup);
+        Inventories.readData(view, inventory);
+        readNbt(NbtViews.read(view), view.getRegistries());
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
-        super.writeNbt(nbt, lookup);
-        Inventories.writeNbt(nbt, inventory, lookup);
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        Inventories.writeData(view, inventory);
+        NbtCompound compound = new NbtCompound();
+        writeNbt(compound, NbtViews.lookup(world));
+        NbtViews.write(view, compound);
     }
+
+    protected void readNbt(NbtCompound nbt, WrapperLookup lookup) { }
+
+    protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) { }
 }

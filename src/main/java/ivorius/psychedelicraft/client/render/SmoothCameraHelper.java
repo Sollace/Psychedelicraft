@@ -80,7 +80,7 @@ public class SmoothCameraHelper {
     }
 
     private float getYSignum() {
-        return MinecraftClient.getInstance().options.getInvertYMouse().getValue() ? -1 : 1;
+        return MinecraftClient.getInstance().options.getInvertMouseY().getValue() ? -1 : 1;
     }
 
     private float getSpeed() {

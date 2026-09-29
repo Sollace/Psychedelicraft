@@ -17,7 +17,7 @@ public class MindColor {
 
     public void update() {
         prevValue.set(value);
-        MathUtils.apply(value, component -> MathUtils.nearValue(component, MathUtils.randomColor(manager.getProperties().asEntity().getWorld().random, manager.getProperties().getAge(), 0.5f, 0.5f, 0.0012371f, 0.0017412f), 0.002f, 0.002f));
+        MathUtils.apply(value, component -> MathUtils.nearValue(component, MathUtils.randomColor(manager.getProperties().asEntity().getEntityWorld().random, manager.getProperties().getAge(), 0.5f, 0.5f, 0.0012371f, 0.0017412f), 0.002f, 0.002f));
     }
 
     public Vector3f getColor(float tickDelta) {

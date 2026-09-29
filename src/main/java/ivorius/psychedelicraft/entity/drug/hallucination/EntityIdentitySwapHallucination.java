@@ -34,7 +34,7 @@ public class EntityIdentitySwapHallucination extends Hallucination {
         }
 
         if (selection == null) {
-            selection = new Selection(entity, transformedType.get(entity.getWorld().getRandom()));
+            selection = new Selection(entity, transformedType.get(entity.getEntityWorld().getRandom()));
         }
 
         return selection.attachment();
@@ -67,7 +67,7 @@ public class EntityIdentitySwapHallucination extends Hallucination {
 
     record Selection(Entity selection, Entity attachment) {
         Selection(Entity selection, EntityType<?> attachmentType) {
-            this(selection, attachmentType.create(selection.getWorld(), SpawnReason.EVENT));
+            this(selection, attachmentType.create(selection.getEntityWorld(), SpawnReason.EVENT));
             attachment.setSilent(true);
             attachment.copyFrom(selection);
         }
@@ -75,7 +75,7 @@ public class EntityIdentitySwapHallucination extends Hallucination {
         public void update() {
             attachment.age++;
             attachment.updatePositionAndAngles(
-                    selection.getPos().x, selection.getPos().y, selection.getPos().z,
+                    selection.getEntityPos().x, selection.getEntityPos().y, selection.getEntityPos().z,
                     selection.getYaw(), selection.getPitch()
             );
             attachment.setBodyYaw(selection.getBodyYaw());

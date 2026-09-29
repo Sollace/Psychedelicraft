@@ -14,7 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.Vec3d;
 
-public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
+public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> implements SimpleBlockEntityRenderer<T> {
 
     protected final TextRenderer textRenderer;
 
@@ -22,7 +22,7 @@ public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> impleme
         MinecraftClient client = MinecraftClient.getInstance();
         return entity.getPos() != null
                 && entity.getWorld() != null
-                && client.getEntityRenderDispatcher().camera.getBlockPos().getSquaredDistance(entity.getPos()) < 4096
+                && client.gameRenderer.getCamera().getBlockPos().getSquaredDistance(entity.getPos()) < 4096
                 && client.crosshairTarget instanceof BlockHitResult hit
                 && (hit.getBlockPos().equals(entity.getPos()) || (
                         entity instanceof MashTubBlockEntity
@@ -33,7 +33,7 @@ public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> impleme
     }
 
     public LabelledBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        this(context.getTextRenderer());
+        this(context.textRenderer());
     }
 
     public LabelledBlockEntityRenderer(TextRenderer textRenderer) {
@@ -58,7 +58,7 @@ public abstract class LabelledBlockEntityRenderer<T extends BlockEntity> impleme
         if (shouldRenderLabel(entity)) {
             matrices.push();
             matrices.translate(0.5, 0, 0.5);
-            matrices.multiply(MinecraftClient.getInstance().getEntityRenderDispatcher().getRotation());
+            matrices.multiply(MinecraftClient.getInstance().gameRenderer.getCamera().getRotation());
             matrices.translate(0, 0, getLabelDistanceFromCenter(entity));
             float scale = getLabelScale(entity, tickDelta);
             matrices.scale(scale, -scale, scale);

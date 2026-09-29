@@ -14,7 +14,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
  */
 class VomitCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
-        dispatcher.register(CommandManager.literal("vomit").requires(source -> source.hasPermissionLevel(2)).executes(ctx -> {
+        dispatcher.register(CommandManager.literal("vomit").requires(CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK)).executes(ctx -> {
             DrugProperties.of(ctx.getSource().getPlayerOrThrow()).getStomach().vomit();
             return 0;
         })

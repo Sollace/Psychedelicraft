@@ -228,7 +228,7 @@ public interface BlockModels {
         Identifier modelId = TRAY_TEMPLATE.upload(tray, TextureMap.all(tray), generator.modelCollector);
         generator.registerParentedItemModel(tray, modelId);
         generator.blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(tray, createWeightedVariant(modelId))
-                .coordinate(BlockStateVariantMap.operations(Properties.HORIZONTAL_AXIS)
+                .apply(BlockStateVariantMap.operations(Properties.HORIZONTAL_AXIS)
                         .register(Direction.Axis.X, ROTATE_Y_90)
                         .register(Direction.Axis.Z, NO_OP))
         );
@@ -295,7 +295,7 @@ public interface BlockModels {
         generator.blockStateCollector.accept(
             VariantsBlockModelDefinitionCreator.of(block)
                 .with(createBooleanModelMap(Properties.POWERED, createWeightedVariant(powered), createWeightedVariant(normal)))
-                .coordinate(NORTH_DEFAULT_ROTATION_OPERATIONS)
+                .apply(NORTH_DEFAULT_ROTATION_OPERATIONS)
         );
         generator.registerParentedItemModel(block, normal);
     }
@@ -304,7 +304,7 @@ public interface BlockModels {
         Identifier normal = ModelIds.getBlockModelId(block);
         generator.blockStateCollector.accept(
             VariantsBlockModelDefinitionCreator.of(block, BlockStateModelGenerator.createWeightedVariant(normal))
-                .coordinate(NORTH_DEFAULT_ROTATION_OPERATIONS)
+                .apply(NORTH_DEFAULT_ROTATION_OPERATIONS)
         );
     }
 

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "psychedelicraft-test",
+  "version": "1",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-client-gametest": ["ivorius.psychedelicraft.test.PsychedelicraftClientTest"]
+  }
+}

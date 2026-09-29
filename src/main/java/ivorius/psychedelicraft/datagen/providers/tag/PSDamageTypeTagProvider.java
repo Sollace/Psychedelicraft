@@ -19,7 +19,7 @@ public class PSDamageTypeTagProvider extends FabricTagProvider<DamageType> {
     @Override
     protected void configure(WrapperLookup wrapperLookup) {
 
-        getOrCreateTagBuilder(PSTags.DamageTypes.IS_BIOLOGICAL).add(
+        builder(PSTags.DamageTypes.IS_BIOLOGICAL).add(
                 PSDamageTypes.ALCOHOL_POSIONING,
                 PSDamageTypes.RESPIRATORY_FAILURE,
                 PSDamageTypes.STROKE,
@@ -30,21 +30,21 @@ public class PSDamageTypeTagProvider extends FabricTagProvider<DamageType> {
                 PSDamageTypes.OVER_EATING,
                 PSDamageTypes.CANCER
         );
-        getOrCreateTagBuilder(PSTags.DamageTypes.IS_INCENDIARY).add(
+        builder(PSTags.DamageTypes.IS_INCENDIARY).add(
                 PSDamageTypes.MOLOTOV,
                 PSDamageTypes.SELF_MOLOTOV
         );
 
-        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ARMOR).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
-        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_SHIELD).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
-        getOrCreateTagBuilder(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
-        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_INVULNERABILITY).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
-        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_COOLDOWN).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
-        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_EFFECTS).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
-        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_RESISTANCE).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
-        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ENCHANTMENTS).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
-        getOrCreateTagBuilder(DamageTypeTags.IS_FIRE).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
-        getOrCreateTagBuilder(DamageTypeTags.IS_EXPLOSION).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
-        getOrCreateTagBuilder(DamageTypeTags.IS_PROJECTILE).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
+        builder(DamageTypeTags.BYPASSES_ARMOR).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
+        builder(DamageTypeTags.BYPASSES_SHIELD).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
+        builder(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
+        builder(DamageTypeTags.BYPASSES_INVULNERABILITY).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
+        builder(DamageTypeTags.BYPASSES_COOLDOWN).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
+        builder(DamageTypeTags.BYPASSES_EFFECTS).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
+        builder(DamageTypeTags.BYPASSES_RESISTANCE).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
+        builder(DamageTypeTags.BYPASSES_ENCHANTMENTS).forceAddTag(PSTags.DamageTypes.IS_BIOLOGICAL);
+        builder(DamageTypeTags.IS_FIRE).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
+        builder(DamageTypeTags.IS_EXPLOSION).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
+        builder(DamageTypeTags.IS_PROJECTILE).forceAddTag(PSTags.DamageTypes.IS_INCENDIARY);
     }
 }

@@ -19,26 +19,26 @@ public class PSBiomeTagProvider extends FabricTagProvider<Biome> {
 
     @Override
     protected void configure(WrapperLookup wrapperLookup) {
-        getOrCreateTagBuilder(PSTags.Biomes.HAS_SPARCE_JUNIPER_TREES)
+        builder(PSTags.Biomes.HAS_SPARCE_JUNIPER_TREES)
             .forceAddTag(BiomeTags.IS_HILL);
-        getOrCreateTagBuilder(PSTags.Biomes.HAS_DENSE_JUNIPER_TREES)
+        builder(PSTags.Biomes.HAS_DENSE_JUNIPER_TREES)
             .forceAddTag(BiomeTags.IS_FOREST)
             .add(BiomeKeys.WINDSWEPT_FOREST);
-        getOrCreateTagBuilder(PSTags.Biomes.HAS_MORNING_GLORY)
+        builder(PSTags.Biomes.HAS_MORNING_GLORY)
             .add(BiomeKeys.FLOWER_FOREST)
             .add(BiomeKeys.SUNFLOWER_PLAINS)
             .add(BiomeKeys.MEADOW)
             .add(BiomeKeys.LUSH_CAVES);
-        getOrCreateTagBuilder(PSTags.Biomes.HAS_BELLADONNA)
+        builder(PSTags.Biomes.HAS_BELLADONNA)
             .add(BiomeKeys.DARK_FOREST)
             .add(BiomeKeys.FLOWER_FOREST);
-        getOrCreateTagBuilder(PSTags.Biomes.HAS_JIMSONWEED)
+        builder(PSTags.Biomes.HAS_JIMSONWEED)
             .add(BiomeKeys.JUNGLE)
             .add(BiomeKeys.BAMBOO_JUNGLE)
             .add(BiomeKeys.SPARSE_JUNGLE);
-        getOrCreateTagBuilder(PSTags.Biomes.HAS_TOMATOES)
+        builder(PSTags.Biomes.HAS_TOMATOES)
             .forceAddTag(BiomeTags.IS_FOREST);
-        getOrCreateTagBuilder(PSTags.Biomes.HAS_PEYOTE)
+        builder(PSTags.Biomes.HAS_PEYOTE)
             .forceAddTag(BiomeTags.IS_SAVANNA)
             .forceAddTag(BiomeTags.IS_BADLANDS)
             .forceAddTag(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE);

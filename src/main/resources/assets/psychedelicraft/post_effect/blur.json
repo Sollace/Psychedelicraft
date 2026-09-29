@@ -4,7 +4,7 @@
   },
   "passes": [
     {
-      "vertex_shader": "minecraft:post/blit",
+      "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "psychedelicraft:post/blur",
       "inputs": [
         {
@@ -13,17 +13,10 @@
           "bilinear": true
         }
       ],
-      "output": "swap",
-      "uniforms": [
-        { "name": "pixelSize", "type": "vec2" },
-        { "name": "hBlur", "type": "float" },
-        { "name": "vBlur", "type": "float" },
-        { "name": "repeats", "type": "float" },
-        { "name": "OutSize", "type": "vec2", "values": [ 1, 1 ] }
-      ]
+      "output": "swap"
     },
     {
-      "vertex_shader": "minecraft:post/blit",
+      "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "minecraft:post/blit",
       "inputs": [
         {
@@ -31,10 +24,21 @@
           "target": "swap"
         }
       ],
-      "uniforms": [
-        { "name": "ColorModulate", "type": "vec4", "values": [ 1, 1, 1, 1 ] }
-      ],
-      "output": "minecraft:main"
+      "output": "minecraft:main",
+      "uniforms": {
+        "BlitConfig": [
+          {
+            "name": "ColorModulate",
+            "type": "vec4",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
     }
   ]
 }

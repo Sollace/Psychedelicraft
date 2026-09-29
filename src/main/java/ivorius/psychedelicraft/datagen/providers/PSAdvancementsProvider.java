@@ -31,7 +31,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
-import net.minecraft.loot.context.LootContext.EntityTarget;
+import net.minecraft.loot.context.LootContext.EntityReference;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.predicate.component.ComponentsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -88,7 +88,7 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                             .hidden()
                             .criteriaMerger(CriterionMerger.OR)
                             .criterion("has_side_effect", CustomEventCriterion.Conditions.create("cancer", LootContextPredicate.create(
-                                    EntityPropertiesLootCondition.builder(EntityTarget.THIS, new EntityPredicate.Builder().type(entities, EntityType.PLAYER)).build()
+                                    EntityPropertiesLootCondition.builder(EntityReference.THIS, new EntityPredicate.Builder().type(entities, EntityType.PLAYER)).build()
                             )))
                             .build(exporter);
                         cancer.child(Psychedelicraft.id("the_cure"), PSItems.JOLLY_RANCHER)
@@ -111,7 +111,7 @@ public class PSAdvancementsProvider extends FabricAdvancementProvider {
                             EntityType.SPIDER, EntityType.ZOMBIE, EntityType.SKELETON, EntityType.ENDERMAN, EntityType.BOGGED, EntityType.HUSK,
                             EntityType.ZOGLIN, EntityType.PIGLIN, EntityType.PIGLIN_BRUTE, EntityType.ZOMBIFIED_PIGLIN
                         ).forEach(type -> sharingIsCaring.criterion("breathed_smoke_on_" + type.getUntranslatedName(), CustomEventCriterion.Conditions.create("breathe_smoke_on_" + type.getUntranslatedName(), LootContextPredicate.create(
-                            EntityPropertiesLootCondition.builder(EntityTarget.THIS, new EntityPredicate.Builder().type(entities, type)).build()
+                            EntityPropertiesLootCondition.builder(EntityReference.THIS, new EntityPredicate.Builder().type(entities, type)).build()
                         ))));
                         sharingIsCaring.build(exporter);
                         makeDryingTable.child(Psychedelicraft.id("dry_brown_mushrooms"), PSItems.BROWN_MAGIC_MUSHROOMS)

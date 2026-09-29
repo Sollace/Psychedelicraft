@@ -39,8 +39,8 @@ public class SettingsScreen extends GameGui {
     public SettingsScreen(@Nullable Screen parent) {
         super(Text.translatable("gui.psychedelicraft.options.title"), parent);
 
-        client = MinecraftClient.getInstance();
         config = PsychedelicraftClient.getConfig();
+        MinecraftClient client = MinecraftClient.getInstance();
         serverConfig = client.world == null || client.isIntegratedServerRunning() ? Psychedelicraft.getConfig() : null;
 
         content.margin.top = 30;
@@ -197,7 +197,6 @@ public class SettingsScreen extends GameGui {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
-        renderBackground(context, mouseX, mouseY, tickDelta);
         super.render(context, mouseX, mouseY, tickDelta);
         content.render(context, mouseX, mouseY, tickDelta);
     }

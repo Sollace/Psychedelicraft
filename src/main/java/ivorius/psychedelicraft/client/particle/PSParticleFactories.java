@@ -7,14 +7,14 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.PendingParticleFactory;
 import net.minecraft.client.particle.BlockLeakParticle;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.SpriteBillboardParticle;
+import net.minecraft.client.particle.BillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.particle.WaterSplashParticle;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.random.Random;
 
 /**
  * @author Sollace
@@ -31,42 +31,34 @@ public interface PSParticleFactories {
     }
 
     static ParticleSupplier<FluidParticleEffect> createSplash() {
-        return (effect, provider, clientWorld, d, e, f, g, h, i) -> setColor(new WaterSplashParticle.SplashFactory(provider).createParticle(ParticleTypes.SPLASH, clientWorld, d, e, f, g, h, i), effect);
+        return (effect, provider, world, x, y, z, dx, dy, dz, random) -> setColor(new WaterSplashParticle.SplashFactory(provider).createParticle(ParticleTypes.SPLASH, world, x, y, z, dx, dy, dz, random), effect);
     }
 
-    static Particle createDrippingFluid(FluidParticleEffect type, ClientWorld world,
+    static Particle createDrippingFluid(FluidParticleEffect type, SpriteProvider provider, ClientWorld world,
             double x, double y, double z,
-            double velocityX, double velocityY, double velocityZ) {
-        return setColor(new BlockLeakParticle.Dripping(world, x, y, z, type.fluid().fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.FALLING_FLUID, type.fluid())), type);
+            double velocityX, double velocityY, double velocityZ, Random random) {
+        return setColor(new BlockLeakParticle.Dripping(world, x, y, z, type.fluid().fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.FALLING_FLUID, type.fluid()), provider.getSprite(random)), type);
     }
 
-    static Particle createFallingFluid(FluidParticleEffect type, ClientWorld world,
+    static Particle createFallingFluid(FluidParticleEffect type, SpriteProvider provider, ClientWorld world,
             double x, double y, double z,
-            double velocityX, double velocityY, double velocityZ) {
-        return setColor(new BlockLeakParticle.ContinuousFalling(world, x, y, z, type.fluid().fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.FLUID_SPLASH, type.fluid())), type);
+            double velocityX, double velocityY, double velocityZ, Random random) {
+        return setColor(new BlockLeakParticle.ContinuousFalling(world, x, y, z, type.fluid().fluid().getPhysical().getStandingFluid(), new FluidParticleEffect(PSParticles.FLUID_SPLASH, type.fluid()), provider.getSprite(random)), type);
     }
 
     static Particle setColor(Particle particle, FluidParticleEffect effect) {
-        int color = effect.fluid().fluid().getColor(effect.fluid());
-        particle.setColor(ColorHelper.getRedFloat(color), ColorHelper.getGreenFloat(color), ColorHelper.getBlueFloat(color));
+        if (particle instanceof BillboardParticle billboard) {
+            int color = effect.fluid().fluid().getColor(effect.fluid());
+            billboard.setColor(ColorHelper.getRedFloat(color), ColorHelper.getGreenFloat(color), ColorHelper.getBlueFloat(color));
+        }
         return particle;
     }
 
     private static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {
-        return provider -> (effect, world, x, y, z, dx, dy, dz) -> supplier.get(effect, provider, world, x, y, z, dx, dy, dz);
-    }
-
-    private static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleFactory<T> supplier) {
-        return provider -> (effect, world, x, y, z, dx, dy, dz) -> {
-            var particle = supplier.createParticle(effect, world, x, y, z, dx, dy, dz);
-            if (particle instanceof SpriteBillboardParticle b) {
-                b.setSprite(provider);
-            }
-            return particle;
-        };
+        return provider -> (effect, world, x, y, z, dx, dy, dz, random) -> supplier.get(effect, provider, world, x, y, z, dx, dy, dz, random);
     }
 
     interface ParticleSupplier<T extends ParticleEffect> {
-        Particle get(T effect, SpriteProvider provider, ClientWorld world, double x, double y, double z, double dx, double dy, double dz);
+        Particle get(T effect, SpriteProvider provider, ClientWorld world, double x, double y, double z, double dx, double dy, double dz, Random random);
     }
 }

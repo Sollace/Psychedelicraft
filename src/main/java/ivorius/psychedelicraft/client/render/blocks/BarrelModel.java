@@ -13,6 +13,7 @@ package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.block.BarrelBlock;
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
+import net.minecraft.util.Unit;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.*;
 import net.minecraft.util.math.Direction.Axis;
@@ -21,14 +22,14 @@ import net.minecraft.util.math.MathHelper;
 /**
  * Updated by Sollace on 6 Jan 2023
  */
-public class BarrelModel extends Model {
+public class BarrelModel extends Model<Unit> {
     private final ModelPart barrel;
     private final ModelPart legs;
     private final ModelPart tap;
     private final ModelPart tapHandle;
 
     public BarrelModel(ModelPart tree) {
-        super(tree, RenderLayer::getEntityCutout);
+        super(tree, RenderLayers::entityCutout);
         this.barrel = root.getChild("barrel");
         this.legs = root.getChild("rack");
         this.tap = barrel.getChild("tap");

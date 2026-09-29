@@ -3,16 +3,13 @@ package ivorius.psychedelicraft.client.render.effect;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.client.render.GuiQuads;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.PowerDrug;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.Window;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Colors;
@@ -55,8 +52,6 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
         if (powerLightnings > 0) {
             int lightningW = height;
 
-            Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-
             for (int i = 0; i < powerLightnings; i++) {
                 float lX = powerLR.nextInt(width + lightningW) - lightningW;
                 lX += (powerLR.nextFloat() - 0.5f) * lightningW * tickDelta * 2;
@@ -65,13 +60,12 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
                 float lightningTime = ((entity.age % 2) + tickDelta) * 0.5F;
 
                 int color = ColorHelper.withAlpha(ColorHelper.channelFromFloat((0.05f + power * 0.1F) * (1 - lightningTime)), Colors.WHITE);
-                var layer = RenderLayer.getGuiTexturedOverlay(LIGHTNING_TEXTURES[lIndex]);
-                VertexConsumer buffer = vertices.getBuffer(layer);
-                buffer.vertex(lX, height,              -90F).texture(0, upsideDown ? 0 : 1).color(color)
-                      .vertex(lX + lightningW, height, -90F).texture(1, upsideDown ? 0 : 1).color(color)
-                      .vertex(lX + lightningW, 0,      -90F).texture(1, upsideDown ? 1 : 0).color(color)
-                      .vertex(lX, 0,                   -90F).texture(0, upsideDown ? 1 : 0).color(color);
-                vertices.draw(layer);
+                GuiQuads.builder()
+                      .vertex(lX, height,              0, upsideDown ? 0 : 1, color)
+                      .vertex(lX + lightningW, height, 1, upsideDown ? 0 : 1, color)
+                      .vertex(lX + lightningW, 0,      1, upsideDown ? 1 : 0, color)
+                      .vertex(lX, 0,                   0, upsideDown ? 1 : 0, color)
+                      .draw(context, LIGHTNING_TEXTURES[lIndex]);
             }
         }
     }
@@ -81,8 +75,7 @@ public class PowerOverlayScreenEffect extends DrugOverlayScreenEffect<PowerDrug>
             int x = rand.nextInt(screenWidth + width) - width;
             int y = rand.nextInt(screenHeight + height) - height;
 
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderUtil.drawQuad(context, POWER_PARTICLE_TEXTURE, x, y, x + width, y + height);
+            RenderUtil.drawQuad(context, POWER_PARTICLE_TEXTURE, x, y, x + width, y + height, Colors.WHITE);
         }
     }
 }

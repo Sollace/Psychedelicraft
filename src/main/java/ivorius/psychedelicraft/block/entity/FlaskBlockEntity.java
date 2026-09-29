@@ -10,6 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
@@ -162,10 +164,21 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     }
 
     @Override
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        Inventories.writeData(view, ioInventory.heldStacks);
+    }
+
+    @Override
+    protected void readData(ReadView view) {
+        super.readData(view);
+        Inventories.readData(view, ioInventory.heldStacks);
+    }
+
+    @Override
     public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
         super.writeNbt(compound, lookup);
         compound.put("tank", tank.toNbt(lookup));
-        Inventories.writeNbt(compound, ioInventory.heldStacks, lookup);
         compound.put("inputSlot", inputSlot.toNbt(lookup));
         compound.put("outputSlot", outputSlot.toNbt(lookup));
     }
@@ -174,7 +187,6 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         super.readNbt(compound, lookup);
         tank.fromNbt(compound.getCompoundOrEmpty("tank"), lookup);
-        Inventories.readNbt(compound, ioInventory.heldStacks, lookup);
         inputSlot.fromNbt(compound.getCompoundOrEmpty("inputSlot"), lookup);
         outputSlot.fromNbt(compound.getCompoundOrEmpty("outputSlot"), lookup);
     }

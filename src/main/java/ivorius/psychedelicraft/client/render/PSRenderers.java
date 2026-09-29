@@ -13,7 +13,7 @@ import ivorius.psychedelicraft.client.render.shader.PSShaders;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.minecraft.client.render.BlockRenderLayer;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
@@ -21,7 +21,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.minecraft.client.render.RenderLayer;
+
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.texture.Sprite;
@@ -60,8 +60,8 @@ public interface PSRenderers {
 
         PreparableModelLoadingPlugin.register(PlacedDrinksModelProvider.INSTANCE, PlacedDrinksModelProvider.INSTANCE);
 
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), PSBlocks.DISTILLERY, PSBlocks.FLASK, PSBlocks.GLASS_TUBE, PSBlocks.GLASS_VALVE);
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),
+        BlockRenderLayerMap.putBlocks(BlockRenderLayer.TRANSLUCENT, PSBlocks.DISTILLERY, PSBlocks.FLASK, PSBlocks.GLASS_TUBE, PSBlocks.GLASS_VALVE);
+        BlockRenderLayerMap.putBlocks(BlockRenderLayer.CUTOUT,
                 PSBlocks.JUNIPER_SAPLING, PSBlocks.JUNIPER_LEAVES, PSBlocks.FRUITING_JUNIPER_LEAVES, PSBlocks.LATTICE, PSBlocks.WINE_GRAPE_LATTICE, PSBlocks.MORNING_GLORY_LATTICE,
                 PSBlocks.CANNABIS, PSBlocks.HOP, PSBlocks.TOBACCO, PSBlocks.COCA, PSBlocks.COFFEA, PSBlocks.MORNING_GLORY,
                 PSBlocks.AGAVE_PLANT,
@@ -74,7 +74,7 @@ public interface PSRenderers {
             if (fluid.isEmpty() || !fluid.isCustomFluid()) {
                 return;
             }
-            BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(),
+            BlockRenderLayerMap.putFluids(BlockRenderLayer.TRANSLUCENT,
                     fluid.getPhysical().getStandingFluid(),
                     fluid.getPhysical().getFlowingFluid()
             );

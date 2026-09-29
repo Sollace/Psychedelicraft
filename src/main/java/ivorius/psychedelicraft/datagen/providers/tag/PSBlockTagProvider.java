@@ -26,26 +26,26 @@ public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     protected void configure(WrapperLookup wrapperLookup) {
         addJuniperWoodset();
 
-        getOrCreateTagBuilder(PSTags.Blocks.BARRELS).add(PSBlocks.ALL_BARRELS.toArray(Block[]::new));
-        getOrCreateTagBuilder(PSTags.Blocks.DRYING_TABLES).add(
+        valueLookupBuilder(PSTags.Blocks.BARRELS).add(PSBlocks.ALL_BARRELS.toArray(Block[]::new));
+        valueLookupBuilder(PSTags.Blocks.DRYING_TABLES).add(
                 PSBlocks.DRYING_TABLE, PSBlocks.IRON_DRYING_TABLE
         );
-        getOrCreateTagBuilder(PSTags.Blocks.LATTICES).add(
+        valueLookupBuilder(PSTags.Blocks.LATTICES).add(
                 PSBlocks.LATTICE,
                 PSBlocks.WINE_GRAPE_LATTICE,
                 PSBlocks.MORNING_GLORY_LATTICE
         );
 
-        getOrCreateTagBuilder(BlockTags.FLOWER_POTS).add(
+        valueLookupBuilder(BlockTags.FLOWER_POTS).add(
                 PSBlocks.POTTED_CANNABIS, PSBlocks.POTTED_COCA, PSBlocks.POTTED_COFFEA, PSBlocks.POTTED_HOP,
                 PSBlocks.POTTED_MORNING_GLORY, PSBlocks.POTTED_TOBACCO
         );
 
-        getOrCreateTagBuilder(PSTags.Blocks.NIGHTSHADE).add(
+        valueLookupBuilder(PSTags.Blocks.NIGHTSHADE).add(
                 PSBlocks.BELLADONNA, PSBlocks.JIMSONWEED, PSBlocks.TOMATOES
         );
 
-        getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).add(
+        valueLookupBuilder(BlockTags.AXE_MINEABLE).add(
                 PSBlocks.DRYING_TABLE,
                 PSBlocks.MASH_TUB,
                 PSBlocks.MASH_TUB_EDGE,
@@ -53,7 +53,7 @@ public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 PSBlocks.FLASK
         ).addTag(PSTags.Blocks.BARRELS).addTag(PSTags.Blocks.LATTICES);
 
-        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(
+        valueLookupBuilder(BlockTags.PICKAXE_MINEABLE).add(
                 PSBlocks.IRON_DRYING_TABLE,
                 PSBlocks.BUNSEN_BURNER,
                 PSBlocks.TRAY,
@@ -63,38 +63,38 @@ public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     }
 
     private void addJuniperWoodset() {
-        getOrCreateTagBuilder(BlockTags.LEAVES).add(PSBlocks.JUNIPER_LEAVES);
-        getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(PSBlocks.JUNIPER_LEAVES);
-        getOrCreateTagBuilder(PSTags.Blocks.JUNIPER_LOGS).add(PSBlocks.JUNIPER_LOG, PSBlocks.JUNIPER_WOOD, PSBlocks.STRIPPED_JUNIPER_LOG, PSBlocks.STRIPPED_JUNIPER_WOOD);
-        getOrCreateTagBuilder(BlockTags.LOGS).addTag(PSTags.Blocks.JUNIPER_LOGS);
-        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).addTag(PSTags.Blocks.JUNIPER_LOGS);
-        getOrCreateTagBuilder(BlockTags.PLANKS).add(PSBlocks.JUNIPER_PLANKS);
+        valueLookupBuilder(BlockTags.LEAVES).add(PSBlocks.JUNIPER_LEAVES);
+        valueLookupBuilder(BlockTags.HOE_MINEABLE).add(PSBlocks.JUNIPER_LEAVES);
+        valueLookupBuilder(PSTags.Blocks.JUNIPER_LOGS).add(PSBlocks.JUNIPER_LOG, PSBlocks.JUNIPER_WOOD, PSBlocks.STRIPPED_JUNIPER_LOG, PSBlocks.STRIPPED_JUNIPER_WOOD);
+        valueLookupBuilder(BlockTags.LOGS).addTag(PSTags.Blocks.JUNIPER_LOGS);
+        valueLookupBuilder(BlockTags.LOGS_THAT_BURN).addTag(PSTags.Blocks.JUNIPER_LOGS);
+        valueLookupBuilder(BlockTags.PLANKS).add(PSBlocks.JUNIPER_PLANKS);
         addSign(PSBlocks.JUNIPER_SIGN, PSBlocks.JUNIPER_WALL_SIGN, PSBlocks.JUNIPER_HANGING_SIGN, PSBlocks.JUNIPER_WALL_HANGING_SIGN);
         addSapling(PSBlocks.JUNIPER_SAPLING, PSBlocks.POTTED_JUNIPER_SAPLING);
-        getOrCreateTagBuilder(BlockTags.WOODEN_BUTTONS).add(PSBlocks.JUNIPER_BUTTON);
-        getOrCreateTagBuilder(BlockTags.WOODEN_DOORS).add(PSBlocks.JUNIPER_DOOR);
-        getOrCreateTagBuilder(BlockTags.FENCE_GATES).add(PSBlocks.JUNIPER_FENCE_GATE);
-        getOrCreateTagBuilder(BlockTags.WOODEN_FENCES).add(PSBlocks.JUNIPER_FENCE);
-        getOrCreateTagBuilder(BlockTags.PRESSURE_PLATES).add(PSBlocks.JUNIPER_PRESSURE_PLATE);
-        getOrCreateTagBuilder(BlockTags.WOODEN_PRESSURE_PLATES).add(PSBlocks.JUNIPER_PRESSURE_PLATE);
-        getOrCreateTagBuilder(BlockTags.SLABS).add(PSBlocks.JUNIPER_SLAB);
-        getOrCreateTagBuilder(BlockTags.WOODEN_SLABS).add(PSBlocks.JUNIPER_SLAB);
-        getOrCreateTagBuilder(BlockTags.STAIRS).add(PSBlocks.JUNIPER_STAIRS);
-        getOrCreateTagBuilder(BlockTags.WOODEN_STAIRS).add(PSBlocks.JUNIPER_STAIRS);
-        getOrCreateTagBuilder(BlockTags.TRAPDOORS).add(PSBlocks.JUNIPER_TRAPDOOR);
-        getOrCreateTagBuilder(BlockTags.WOODEN_TRAPDOORS).add(PSBlocks.JUNIPER_TRAPDOOR);
+        valueLookupBuilder(BlockTags.WOODEN_BUTTONS).add(PSBlocks.JUNIPER_BUTTON);
+        valueLookupBuilder(BlockTags.WOODEN_DOORS).add(PSBlocks.JUNIPER_DOOR);
+        valueLookupBuilder(BlockTags.FENCE_GATES).add(PSBlocks.JUNIPER_FENCE_GATE);
+        valueLookupBuilder(BlockTags.WOODEN_FENCES).add(PSBlocks.JUNIPER_FENCE);
+        valueLookupBuilder(BlockTags.PRESSURE_PLATES).add(PSBlocks.JUNIPER_PRESSURE_PLATE);
+        valueLookupBuilder(BlockTags.WOODEN_PRESSURE_PLATES).add(PSBlocks.JUNIPER_PRESSURE_PLATE);
+        valueLookupBuilder(BlockTags.SLABS).add(PSBlocks.JUNIPER_SLAB);
+        valueLookupBuilder(BlockTags.WOODEN_SLABS).add(PSBlocks.JUNIPER_SLAB);
+        valueLookupBuilder(BlockTags.STAIRS).add(PSBlocks.JUNIPER_STAIRS);
+        valueLookupBuilder(BlockTags.WOODEN_STAIRS).add(PSBlocks.JUNIPER_STAIRS);
+        valueLookupBuilder(BlockTags.TRAPDOORS).add(PSBlocks.JUNIPER_TRAPDOOR);
+        valueLookupBuilder(BlockTags.WOODEN_TRAPDOORS).add(PSBlocks.JUNIPER_TRAPDOOR);
     }
 
     private void addSign(Block standing, Block wall, Block hanging, Block wallHanging) {
-        getOrCreateTagBuilder(BlockTags.STANDING_SIGNS).add(standing);
-        getOrCreateTagBuilder(BlockTags.WALL_SIGNS).add(wall);
+        valueLookupBuilder(BlockTags.STANDING_SIGNS).add(standing);
+        valueLookupBuilder(BlockTags.WALL_SIGNS).add(wall);
 
-        getOrCreateTagBuilder(BlockTags.CEILING_HANGING_SIGNS).add(hanging);
-        getOrCreateTagBuilder(BlockTags.WALL_HANGING_SIGNS).add(wallHanging);
+        valueLookupBuilder(BlockTags.CEILING_HANGING_SIGNS).add(hanging);
+        valueLookupBuilder(BlockTags.WALL_HANGING_SIGNS).add(wallHanging);
     }
 
     private void addSapling(Block sapling, Block potted) {
-        getOrCreateTagBuilder(BlockTags.SAPLINGS).add(sapling);
-        getOrCreateTagBuilder(BlockTags.FLOWER_POTS).add(potted);
+        valueLookupBuilder(BlockTags.SAPLINGS).add(sapling);
+        valueLookupBuilder(BlockTags.FLOWER_POTS).add(potted);
     }
 }

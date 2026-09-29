@@ -7,6 +7,7 @@ package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.entity.TrayBlockEntity;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -34,7 +35,7 @@ public class TrayBlockEntityRenderer extends LabelledBlockEntityRenderer<TrayBlo
             contentsModel = new TrayContentsModel(TrayContentsModel.getTexturedModelData().createModel());
             contentsModel.setAngles(entity, tickDelta);
             contentsModel.render(matrices, vertices.getBuffer(
-                    entity.isHardened() ? RenderLayer.getEntitySolid(FLUID_TEXTURE) : RenderLayer.getEntityTranslucent(FLUID_TEXTURE)
+                    entity.isHardened() ? RenderLayers.entitySolid(FLUID_TEXTURE) : RenderLayers.entityTranslucent(FLUID_TEXTURE)
             ), light, overlay);
 
             matrices.pop();

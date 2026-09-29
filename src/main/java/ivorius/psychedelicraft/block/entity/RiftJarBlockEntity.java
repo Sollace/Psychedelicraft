@@ -53,7 +53,7 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
     public void tick(ServerWorld world) {
         tickAnimation();
 
-//        if (!world.isClient)
+//        if (!world.isClient())
 //        {
 //            boolean before = suckingRifts;
 //            suckingRifts = !world.isDaytime() && world.canBlockSeeTheSky(xCoord, yCoord, zCoord);
@@ -90,7 +90,7 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
                         pos.getX() + 6, pos.getY() + 6, pos.getZ() + 6
                     ), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR
                 ).stream().flatMap(DrugProperties::stream).forEach(drugProperties -> {
-                    double effect = (5 - drugProperties.asEntity().getPos().distanceTo(center)) * 0.2F * minus;
+                    double effect = (5 - drugProperties.asEntity().getEntityPos().distanceTo(center)) * 0.2F * minus;
                     drugProperties.addToDrug(DrugType.ZERO, effect * 5);
                     drugProperties.addToDrug(DrugType.POWER, effect * 35);
                 });
@@ -142,7 +142,7 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
 
             if (rifts.size() > 0) {
                 rifts.get(0).addToRift(currentRiftFraction);
-            } else if (!world.isClient) {
+            } else if (!world.isClient()) {
                 RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(world, SpawnReason.EVENT);
                 rift.setPosition(getPos().toCenterPos().add(5, 3, 0.5));
                 rift.setRiftSize(currentRiftFraction);

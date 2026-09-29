@@ -5,10 +5,9 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.block.PlacedDrinksBlock;
 import ivorius.psychedelicraft.client.render.PlacedDrinksModelProvider;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -25,7 +24,7 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
-public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrinksBlock.Data> {
+public class DrinksBlockEntityRenderer implements SimpleBlockEntityRenderer<PlacedDrinksBlock.Data> {
     private static final VoxelShape FILLED_SLOT_RAY_TRACE_SHAPE = Block.createCuboidShape(-2, 0, -2, 2, 4, 2);
     private static final VoxelShape EMPTY_SLOT_RAY_TRACE_SHAPE = Block.createCuboidShape(-2, 0, -2, 2, 0.01, 2);
 
@@ -52,10 +51,7 @@ public class DrinksBlockEntityRenderer implements BlockEntityRenderer<PlacedDrin
             BlockHitResult hit = (BlockHitResult)client.crosshairTarget;
             if (hit.getBlockPos().equals(entity.getPos())) {
                 PlacedDrinksBlock.Data.getHitPos(hit).ifPresent(pos -> {
-                    VertexRendering.drawOutline(matrices, vertices.getBuffer(RenderLayer.getLines()), entity.hasDrink(pos) ? FILLED_SLOT_RAY_TRACE_SHAPE : EMPTY_SLOT_RAY_TRACE_SHAPE, pos.getX() / 16F, 0, pos.getZ() / 16F, ColorHelper.fromFloats(0.4F, 0, 0, 0));
-                    RenderSystem.setShaderColor(0, 0, 0, 0.4F);
-                    MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw(RenderLayer.getLines());
-                    RenderSystem.setShaderColor(1, 1, 1, 1);
+                    VertexRendering.drawOutline(matrices, vertices.getBuffer(RenderLayers.lines()), entity.hasDrink(pos) ? FILLED_SLOT_RAY_TRACE_SHAPE : EMPTY_SLOT_RAY_TRACE_SHAPE, pos.getX() / 16F, 0, pos.getZ() / 16F, ColorHelper.fromFloats(0.4F, 0, 0, 0), client.getWindow().getMinimumLineWidth());
                 });
             }
         }

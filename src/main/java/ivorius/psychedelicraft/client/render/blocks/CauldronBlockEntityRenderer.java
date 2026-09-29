@@ -17,7 +17,7 @@ import net.minecraft.util.math.*;
 /**
  * Renders fluid in the cauldron
  */
-public class CauldronBlockEntityRenderer implements BlockEntityRenderer<FluidCauldronBlock.Data> {
+public class CauldronBlockEntityRenderer implements SimpleBlockEntityRenderer<FluidCauldronBlock.Data> {
     public CauldronBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
     }
 

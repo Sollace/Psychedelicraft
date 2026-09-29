@@ -79,7 +79,7 @@ public class ReactingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
     }
 
     public ReactingRecipeJsonBuilder input(TagKey<Item> item) {
-        return input(Ingredient.fromTag(lookup.getOrThrow(item)));
+        return input(Ingredient.ofTag(lookup.getOrThrow(item)));
     }
 
     public ReactingRecipeJsonBuilder input(ItemConvertible item) {

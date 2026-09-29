@@ -44,7 +44,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameRules;
+import net.minecraft.world.rule.GameRules;
 import net.minecraft.world.event.GameEvent;
 
 public class DealerTaskListProvider {
@@ -118,7 +118,7 @@ public class DealerTaskListProvider {
 
         @Override
         protected boolean shouldRun(ServerWorld world, VillagerEntity entity) {
-            if (!world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+            if (!world.getGameRules().getValue(GameRules.DO_MOB_GRIEFING)) {
                 return false;
             }
 
@@ -178,7 +178,7 @@ public class DealerTaskListProvider {
 
         @Override
         protected void keepRunning(ServerWorld world, VillagerEntity entity, long l) {
-            if (currentTarget != null && !currentTarget.isWithinDistance(entity.getPos(), 1)) {
+            if (currentTarget != null && !currentTarget.isWithinDistance(entity.getEntityPos(), 1)) {
                 return;
             }
 

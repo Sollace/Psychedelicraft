@@ -1,6 +1,7 @@
 package ivorius.psychedelicraft.client.render;
 
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.util.math.ColorHelper;
 
 /**
  * @author Sollace
@@ -43,6 +44,11 @@ public class PassThroughVertexConsumer implements VertexConsumer {
     }
 
     @Override
+    public VertexConsumer color(int argb) {
+        return color(ColorHelper.getRed(argb), ColorHelper.getGreen(argb), ColorHelper.getBlue(argb), ColorHelper.getAlpha(argb));
+    }
+
+    @Override
     public VertexConsumer texture(float u, float v) {
         textureFix.apply(parent, u, v);
         return this;
@@ -63,6 +69,12 @@ public class PassThroughVertexConsumer implements VertexConsumer {
     @Override
     public VertexConsumer normal(float x, float y, float z) {
         parent.normal(x, y, z);
+        return this;
+    }
+
+    @Override
+    public VertexConsumer lineWidth(float width) {
+        parent.lineWidth(width);
         return this;
     }
 

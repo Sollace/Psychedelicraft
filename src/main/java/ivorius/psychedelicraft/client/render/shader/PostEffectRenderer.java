@@ -3,12 +3,12 @@ package ivorius.psychedelicraft.client.render.shader;
 import java.util.*;
 
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
-import net.minecraft.client.util.Pool;
+import net.minecraft.client.util.memory.ObjectAllocator;
 
 public class PostEffectRenderer {
     private List<LoadedShader> shaders = new ArrayList<>();
 
-    public void render(Pool pool, float tickDelta) {
+    public void render(ObjectAllocator pool, float tickDelta) {
         if (PsychedelicraftClient.getConfig().shader2DEnabled.get()) {
             if (shaders.size() == 1) {
                 shaders.get(0).render(pool, tickDelta);

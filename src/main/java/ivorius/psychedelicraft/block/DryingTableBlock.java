@@ -57,7 +57,7 @@ public class DryingTableBlock extends BlockWithEntity {
     @Override
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : validateTicker(type, PSBlockEntities.DRYING_TABLE, (w, p, s, entity) -> entity.tick((ServerWorld)w));
+        return world.isClient() ? null : validateTicker(type, PSBlockEntities.DRYING_TABLE, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class DryingTableBlock extends BlockWithEntity {
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return world.getBlockEntity(pos, PSBlockEntities.DRYING_TABLE).map(be -> {
             return (int)(be.getHeatRatio() * 15);
         }).orElse(0);

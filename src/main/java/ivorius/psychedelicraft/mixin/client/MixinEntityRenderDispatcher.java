@@ -9,12 +9,12 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.hallucination.EntityIdentitySwapHallucination;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.entity.Entity;
 
-@Mixin(EntityRenderDispatcher.class)
+@Mixin(EntityRenderManager.class)
 abstract class MixinEntityRenderDispatcher {
-    @ModifyVariable(method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At("HEAD"), index = 1)
+    @ModifyVariable(method = "getAndUpdateRenderState", at = @At("HEAD"), argsOnly = true)
     private Entity swapEntity(Entity entity) {
         return DrugProperties.of((Entity)MinecraftClient.getInstance().player)
             .stream()

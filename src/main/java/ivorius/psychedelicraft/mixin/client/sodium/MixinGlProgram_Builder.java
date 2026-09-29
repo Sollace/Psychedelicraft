@@ -42,7 +42,7 @@ abstract class MixinGlProgram_Builder {
     @Inject(method = "link", at = @At("HEAD"))
     private void onLink(Function<?, ?> factory, CallbackInfoReturnable<?> info) {
         if (PsychedelicraftClient.getConfig().sodiumSupport.get()) {
-            psychedelicraft_shader = GeometryShader.INSTANCE.createShaderBuilder(program, psychedelicraft_maxAttributes, psychedelicraft_maxFragments);
+            psychedelicraft_shader = GeometryShader.INSTANCE.createShaderBuilder(program);
         }
     }
 

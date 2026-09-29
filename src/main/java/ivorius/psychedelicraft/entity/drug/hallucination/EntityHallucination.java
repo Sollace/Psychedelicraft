@@ -23,13 +23,13 @@ public class EntityHallucination extends AbstractEntityHallucination {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public EntityHallucination(PlayerEntity player, TagKey<EntityType<?>> entityTypes) {
-        super(player, player.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ENTITY_TYPE)
+        super(player, player.getEntityWorld().getRegistryManager().getOrThrow(RegistryKeys.ENTITY_TYPE)
                 .getOptional(entityTypes)
                 .orElseThrow()
-                .getRandom(player.getWorld().random)
+                .getRandom(player.getEntityWorld().random)
                 .map(RegistryEntry::value)
                 .orElse((EntityType)EntityType.PIG)
-                .create(player.getWorld(), SpawnReason.EVENT));
+                .create(player.getEntityWorld(), SpawnReason.EVENT));
 
         entity.setPosition(
                 player.getX() + random.nextDouble() * 50D - 25D,
@@ -60,7 +60,7 @@ public class EntityHallucination extends AbstractEntityHallucination {
 
     @Override
     protected void animateEntity() {
-        entity.setPosition(entity.getPos().add(entity.getVelocity()));
+        entity.setPosition(entity.getEntityPos().add(entity.getVelocity()));
         entity.setYaw(MathHelper.wrapDegrees(entity.getYaw() + rotationYawPlus));
         if (entity instanceof LivingEntity l && l.canBreatheInWater()) {
            ((TouchingWaterAccessor)entity).setTouchingWater(true);

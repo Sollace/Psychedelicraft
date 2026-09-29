@@ -50,7 +50,7 @@ public class RecepticalAlteringShapelessRecipeJsonBuilder implements CraftingRec
     }
 
     public RecepticalAlteringShapelessRecipeJsonBuilder input(TagKey<Item> tag) {
-        return input(Ingredient.fromTag(lookup.getOrThrow(tag)));
+        return input(Ingredient.ofTag(lookup.getOrThrow(tag)));
     }
 
     public RecepticalAlteringShapelessRecipeJsonBuilder input(ItemConvertible input) {

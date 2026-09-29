@@ -102,12 +102,12 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public Optional<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         if (stack.isEmpty()) {
-            if (!player.getWorld().isClient) {
+            if (!player.getEntityWorld().isClient()) {
                 player.setStackInHand(hand, ItemFluidsMixture.set(entity.getContainer(), getAuxiliaryTanks().stream().map(Resovoir::getContents).toList()));
                 entity.setContainer(ItemStack.EMPTY);
                 for (ItemStack ingredient : getCraftingIngredients().convertToItemStacks()) {
                     if (!player.giveItemStack(ingredient)) {
-                        Block.dropStack(player.getWorld(), entity.getPos(), ingredient);
+                        Block.dropStack(player.getEntityWorld(), entity.getPos(), ingredient);
                     }
                 }
                 clear();
@@ -128,7 +128,7 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
         ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
         if (!t.fluids().isEmpty() && getPrimaryTank().deposit(t, t.fluids().amount()) > 0) {
             entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
-            if (!player.getWorld().isClient) {
+            if (!player.getEntityWorld().isClient()) {
                 player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
             }
             return Optional.of(this);

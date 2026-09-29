@@ -66,7 +66,7 @@ public class BathSaltsDrug extends SimpleDrug {
     @Override
     public void onWakeUp(ServerWorld world, DrugProperties drugProperties) {
         if (getActiveValue() > 0) {
-            Random random = drugProperties.asEntity().getWorld().random;
+            Random random = drugProperties.asEntity().getEntityWorld().random;
 
             if (random.nextFloat() < 0.5) {
                 drugProperties.asEntity().damage(world,

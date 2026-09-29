@@ -44,7 +44,7 @@ public class AddictTaskListProvider {
         MutableLong mutableLong = new MutableLong(0L);
         return TaskTriggerer.task(context -> context.group(context.queryMemoryOptional(MemoryModuleType.WALK_TARGET), context.queryMemoryValue(posModule)).apply(context, (walkTarget, pos) -> (world, entity, time) -> {
             PlayerEntity target = context.getValue(pos).get(0);
-            if (target == null || !target.getPos().isInRange(entity.getPos(), maxDistance)) {
+            if (target == null || !target.getEntityPos().isInRange(entity.getEntityPos(), maxDistance)) {
                 return false;
             }
             if (time <= mutableLong.getValue()) {
@@ -82,7 +82,7 @@ public class AddictTaskListProvider {
 
         @Override
         protected void run(ServerWorld world, VillagerEntity entity, long l) {
-            if (entity.shouldRestock()) {
+            if (entity.shouldRestock((ServerWorld)entity.getEntityWorld())) {
                 entity.playWorkSound();
                 entity.restock();
                 entity.damage(world, PSDamageTypes.create(world, PSDamageTypes.OVERDOSE), 1 + (world.getRandom().nextFloat() * 5));

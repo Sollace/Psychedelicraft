@@ -69,10 +69,10 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         PlayerEntity entity = MinecraftClient.getInstance().player;
 
         experiencedHealth = MathUtils.nearValue(experiencedHealth, entity.getHealth(), 0.01f, 0.01f);
-        wasInWater = entity.getWorld().getFluidState(BlockPos.ofFloored(entity.getEyePos())).isIn(FluidTags.WATER);
-        wasInRain = entity.getWorld().getRainGradient(tickDelta) > 0
-                && entity.getWorld().getBiome(entity.getBlockPos()).value().getPrecipitation(entity.getBlockPos(), entity.getWorld().getSeaLevel()) == Precipitation.RAIN
-                && entity.getWorld().getTopPosition(Type.MOTION_BLOCKING, entity.getBlockPos()).getY() <= entity.getY();
+        wasInWater = entity.getEntityWorld().getFluidState(BlockPos.ofFloored(entity.getEyePos())).isIn(FluidTags.WATER);
+        wasInRain = entity.getEntityWorld().getRainGradient(tickDelta) > 0
+                && entity.getEntityWorld().getBiome(entity.getBlockPos()).value().getPrecipitation(entity.getBlockPos(), entity.getEntityWorld().getSeaLevel()) == Precipitation.RAIN
+                && entity.getEntityWorld().getTopPosition(Type.MOTION_BLOCKING, entity.getBlockPos()).getY() <= entity.getY();
 
         if (PsychedelicraftClient.getConfig().waterOverlayEnabled.get()) {
             timeScreenWet--;
@@ -88,15 +88,15 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
         }
 
         BlockPos pos = entity.getBlockPos();
-        float newHeat = wasInWater ? 0 : entity.getWorld().getBiome(pos).value().getTemperature();
-        if (!entity.getWorld().getDimension().hasCeiling()) {
-            newHeat *= MeteorlogicalUtil.getSunIntensity(entity.getWorld());
-            float skyIntensity = MeteorlogicalUtil.getSkyLightIntensity(entity.getWorld(), BlockPos.ofFloored(entity.getEyePos()));
+        float newHeat = wasInWater ? 0 : entity.getEntityWorld().getBiome(pos).value().getTemperature();
+        if (!entity.getEntityWorld().getDimension().hasCeiling()) {
+            newHeat *= MeteorlogicalUtil.getSunIntensity(entity.getEntityWorld());
+            float skyIntensity = MeteorlogicalUtil.getSkyLightIntensity(entity.getEntityWorld(), BlockPos.ofFloored(entity.getEyePos()));
             newHeat *= Math.min(skyIntensity * skyIntensity * skyIntensity, 1);
         } else {
             float multiplier = 0;
             for (BlockPos p : BlockPos.iterateInSquare(pos, 2, Direction.EAST, Direction.SOUTH)) {
-                multiplier += Math.max(0, entity.getWorld().getLightLevel(LightType.BLOCK, p) - 11) / 4F;
+                multiplier += Math.max(0, entity.getEntityWorld().getLightLevel(LightType.BLOCK, p) - 11) / 4F;
             }
             newHeat *= MathHelper.clamp(multiplier, 0.5F, 1F);
         }

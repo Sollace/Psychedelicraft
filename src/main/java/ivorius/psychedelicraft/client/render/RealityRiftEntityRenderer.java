@@ -12,7 +12,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.state.EntityRenderState;
+import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -56,7 +58,11 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
     }
 
     @Override
-    public void render(State state, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+    public void render(State state, MatrixStack matrices, OrderedRenderCommandQueue queue, CameraRenderState cameraState) {
+        QueuedVertexConsumers.submit(queue, vertices -> render(state, matrices, vertices));
+    }
+
+    private void render(State state, MatrixStack matrices, VertexConsumerProvider vertices) {
         matrices.push();
         matrices.translate(0, state.height * 0.5, 0);
 
@@ -64,7 +70,7 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
 
         renderRift(matrices, vertices, state.instability);
 
-        VertexConsumer consumer = vertices.getBuffer(RenderLayer.getEntityTranslucentEmissiveNoOutline(CENTER_TEXTURE));
+        VertexConsumer consumer = vertices.getBuffer(RenderLayers.entityTranslucentEmissiveNoOutline(CENTER_TEXTURE));
         Vector4f vector = new Vector4f(0, 0, 0, 1);
 
         matrices.push();
@@ -73,7 +79,7 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
 
         float size = 1;
 
-        light = 0;
+        int light = 0;
 
         Quaternionf cameraRotation = MinecraftClient.getInstance().gameRenderer.getCamera().getRotation();
         matrices.multiply(cameraRotation);

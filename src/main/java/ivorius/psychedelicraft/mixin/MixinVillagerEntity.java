@@ -36,7 +36,7 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
         ItemStack stack = player.getStackInHand(hand);
         if (stack.isOf(PSItems.HASH_MUFFIN)) {
             if (isBaby()) {
-                if (!getWorld().isClient) {
+                if (!getEntityWorld().isClient()) {
                     PSCriteria.FEED_BABY_VILLAGER.trigger(player, this);
                 }
             } else {
@@ -45,14 +45,14 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
                     if (!player.getAbilities().creativeMode) {
                         stack.decrement(1);
                     }
-                    if (!getWorld().isClient) {
-                        getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT.value(), getSoundCategory(),
+                    if (!getEntityWorld().isClient()) {
+                        getEntityWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_GENERIC_EAT.value(), getSoundCategory(),
                                 1 + random.nextFloat(),
                                 random.nextFloat() * 0.7F + 0.3F
                         );
-                        player.getWorld().getRegistryManager().getOrThrow(RegistryKeys.VILLAGER_PROFESSION).getEntry(PSTradeOffers.DRUG_ADDICT_PROFESSION.getValue()).ifPresent(e -> {
+                        player.getEntityWorld().getRegistryManager().getOrThrow(RegistryKeys.VILLAGER_PROFESSION).getEntry(PSTradeOffers.DRUG_ADDICT_PROFESSION.getValue()).ifPresent(e -> {
                             setVillagerData(getVillagerData().withProfession(e));
-                            ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)getWorld());
+                            ((VillagerEntity)(Object)this).reinitializeBrain((ServerWorld)getEntityWorld());
                             PSCriteria.FEED_VILLAGER.trigger(player);
                         });
                     }
@@ -66,7 +66,7 @@ abstract class MixinVillagerEntity extends MerchantEntity implements VillagerDat
 
     @Inject(method = "afterUsing", at = @At("RETURN"))
     private void onAfterUsing(TradeOffer offer, CallbackInfo info) {
-        if (getVillagerData().profession().matchesKey(PSTradeOffers.DRUG_ADDICT_PROFESSION) && getWorld() instanceof ServerWorld sw) {
+        if (getVillagerData().profession().matchesKey(PSTradeOffers.DRUG_ADDICT_PROFESSION) && getEntityWorld() instanceof ServerWorld sw) {
             damage(sw, PSDamageTypes.create(sw, PSDamageTypes.OVERDOSE), (offer.getUses() * offer.getSellItem().getCount()) + 1);
         }
     }

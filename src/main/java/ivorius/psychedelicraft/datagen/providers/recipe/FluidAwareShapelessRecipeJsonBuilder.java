@@ -55,7 +55,7 @@ public class FluidAwareShapelessRecipeJsonBuilder implements CraftingRecipeJsonB
     }
 
     public FluidAwareShapelessRecipeJsonBuilder input(TagKey<Item> tag) {
-        return input(Ingredient.fromTag(lookup.getOrThrow(tag)));
+        return input(Ingredient.ofTag(lookup.getOrThrow(tag)));
     }
 
     public FluidAwareShapelessRecipeJsonBuilder input(ItemConvertible input) {
@@ -71,7 +71,7 @@ public class FluidAwareShapelessRecipeJsonBuilder implements CraftingRecipeJsonB
     }
 
     public FluidAwareShapelessRecipeJsonBuilder input(FluidIngredient fluid, TagKey<Item> receptical, int count) {
-        return input(OptionalFluidIngredient.of(fluid, Ingredient.fromTag(lookup.getOrThrow(receptical))), count);
+        return input(OptionalFluidIngredient.of(fluid, Ingredient.ofTag(lookup.getOrThrow(receptical))), count);
     }
 
     public FluidAwareShapelessRecipeJsonBuilder input(FluidIngredient fluid, ItemConvertible receptical) {

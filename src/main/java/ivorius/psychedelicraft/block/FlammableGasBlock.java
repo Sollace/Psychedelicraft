@@ -7,7 +7,7 @@ import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TorchBlock;
-import net.minecraft.particle.EntityEffectParticleEffect;
+import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
@@ -35,7 +35,7 @@ public class FlammableGasBlock extends AirBlock {
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         Vec3d center = pos.toCenterPos();
-        var effect = EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, Colors.GREEN);
+        var effect = TintedParticleEffect.create(ParticleTypes.ENTITY_EFFECT, Colors.GREEN);
         for (int i = 0; i < 10; i++) {
             world.addParticleClient(effect,
                     random.nextTriangular(center.x, 0.5F),

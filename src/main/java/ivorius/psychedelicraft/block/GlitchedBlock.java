@@ -35,15 +35,15 @@ class GlitchedBlock extends Block {
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!world.isClient) {
+        if (!world.isClient()) {
             world.removeBlock(pos, true);
         }
         return ActionResult.PASS;
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
-        if (!world.isClient) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler, boolean bl) {
+        if (!world.isClient()) {
             world.removeBlock(pos, true);
         }
     }
@@ -51,7 +51,7 @@ class GlitchedBlock extends Block {
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
         super.onLandedUpon(world, state, pos, entity, fallDistance);
-        if (!world.isClient) {
+        if (!world.isClient()) {
             world.removeBlock(pos, true);
         }
     }

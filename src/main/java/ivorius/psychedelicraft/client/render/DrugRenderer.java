@@ -22,9 +22,8 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.client.util.Pool;
+import net.minecraft.client.util.memory.ObjectAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -175,14 +174,9 @@ public class DrugRenderer {
         head.yaw += DrugEffectInterpreter.getCameraShiftY(properties, tick);
         head.roll = DrugEffectInterpreter.getAlcohol(properties);
 
-        if (model instanceof PlayerEntityModel pem) {
-            pem.hat.copyTransform(head);
-            pem.leftSleeve.copyTransform(leftArm);
-            pem.rightSleeve.copyTransform(rightArm);
-        }
     }
 
-    public void onAfterRenderWorld(Pool pool, RenderTickCounter tickCounter) {
+    public void onAfterRenderWorld(ObjectAllocator pool, RenderTickCounter tickCounter) {
         RenderPhase.SCREEN.push();
         try {
             postEffects.render(pool, tickCounter.getTickProgress(false));

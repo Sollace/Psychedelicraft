@@ -14,7 +14,7 @@ public class JollyRancherItem extends EdibleItem {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        if (!world.isClient) {
+        if (!world.isClient()) {
             DrugProperties.of(user).ifPresent(properties -> {
                 if (properties.cureAll()) {
                     properties.asEntity().sendMessage(Text.translatable(getTranslationKey() + ".use"), true);

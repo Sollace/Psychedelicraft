@@ -15,6 +15,7 @@ import net.minecraft.util.math.random.Random;
 
 import com.minelittlepony.common.util.render.RenderLayerUtil;
 
+import ivorius.psychedelicraft.client.render.EntityVertexRedirect;
 import ivorius.psychedelicraft.client.render.PassThroughVertexConsumer;
 
 public abstract class AbstractEntityHallucination extends Hallucination {
@@ -89,7 +90,7 @@ public abstract class AbstractEntityHallucination extends Hallucination {
             return;
         }
 
-        Vec3d cameraPos = camera.getPos();
+        Vec3d cameraPos = camera.getCameraPos();
 
         double x = MathHelper.lerp(tickDelta, entity.lastX, entity.getX()) - cameraPos.x;
         double y = MathHelper.lerp(tickDelta, entity.lastY, entity.getY()) - cameraPos.y;
@@ -115,15 +116,12 @@ public abstract class AbstractEntityHallucination extends Hallucination {
     protected RenderLayer getRenderLayer(RenderLayer layer) {
         var renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity);
         if (renderer != null) {
-            return RenderLayerUtil.getTexture(layer).map(RenderLayer::getEntityTranslucent).orElseGet(RenderLayer::getTranslucent);
+            return RenderLayerUtil.getTexture(layer).map(RenderLayers::entityTranslucent).orElseGet(RenderLayers::translucentMovingBlock);
         }
         return layer;
     }
 
     protected void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, double x, double y, double z, float pitch, float yaw, float tickDelta) {
-        var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        dispatcher.setRenderShadows(false);
-        dispatcher.render(entity, x, y, z, tickDelta, matrices, vertices, dispatcher.getLight(entity, tickDelta));
-        dispatcher.setRenderShadows(true);
+        EntityVertexRedirect.render(entity, x, y, z, tickDelta, matrices, vertices);
     }
 }

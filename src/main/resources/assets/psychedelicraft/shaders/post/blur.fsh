@@ -1,9 +1,8 @@
-#version 150
+#version 330
 
 uniform sampler2D DiffuseSampler;
 
 in vec2 texCoord;
-in vec2 oneTexel;
 
 uniform vec2 pixelSize;
 uniform float hBlur;

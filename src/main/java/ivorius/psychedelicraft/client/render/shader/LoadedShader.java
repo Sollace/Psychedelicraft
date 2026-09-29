@@ -3,7 +3,6 @@ package ivorius.psychedelicraft.client.render.shader;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 import com.google.gson.JsonSyntaxException;
 import ivorius.psychedelicraft.Psychedelicraft;
@@ -11,7 +10,7 @@ import ivorius.psychedelicraft.client.render.shader.UniformBinding.UniformSetter
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.render.DefaultFramebufferSet;
-import net.minecraft.client.util.Pool;
+import net.minecraft.client.util.memory.ObjectAllocator;
 import net.minecraft.util.Identifier;
 
 class LoadedShader {
@@ -30,7 +29,7 @@ class LoadedShader {
     }
 
     @SuppressWarnings("deprecation")
-    public void render(Pool pool, float tickDelta) {
+    public void render(ObjectAllocator pool, float tickDelta) {
         try {
             PostEffectProcessor processor = client.getShaderLoader().loadPostEffect(id, DefaultFramebufferSet.MAIN_ONLY);
             if (processor == null) {
@@ -49,7 +48,7 @@ class LoadedShader {
                 for (Pass pass : passes) {
                     pass.replay(i);
                 }
-                processor.render(client.getFramebuffer(), pool, null);
+                processor.render(client.getFramebuffer(), pool);
             }
         } catch (Throwable t) {
             Psychedelicraft.LOGGER.error("Exception applying shader pass: {}", t);
@@ -90,23 +89,17 @@ class LoadedShader {
                     PassState state = new PassState(new HashMap<>(globalState.uniforms));
 
                     programBindings.bindUniforms(state, tickDelta, width, height, () -> {
-                        passCollector.accept(passId, () -> pass.setUniformUpdater(pipeline -> state.bind()));
+                        passCollector.accept(passId, () -> pass.setUniformUpdater(state::uniforms));
                     });
                 }
             }
         });
     }
 
-    record PassState(Map<String, PostEffectPipeline.Uniform> uniforms) implements UniformSetter {
+    record PassState(Map<String, float[]> uniforms) implements UniformSetter {
         @Override
-        public void set(String name, String type, Supplier<List<Float>> setter) {
-            uniforms.put(name, new PostEffectPipeline.Uniform(name, type, Optional.of(setter.get())));
-        }
-
-        List<PostEffectPipeline.Uniform> bind() {
-            List<PostEffectPipeline.Uniform> uniforms = new ArrayList<>();
-            uniforms.addAll(this.uniforms().values());
-            return uniforms;
+        public void set(String name, float... values) {
+            uniforms.put(name, values.clone());
         }
     }
 }

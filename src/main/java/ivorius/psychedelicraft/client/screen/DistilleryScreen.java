@@ -5,6 +5,7 @@ import java.util.List;
 import ivorius.psychedelicraft.block.DistilleryBlock;
 import ivorius.psychedelicraft.block.entity.DistilleryBlockEntity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
@@ -25,9 +26,9 @@ public class DistilleryScreen extends FluidProcessingContraptionScreen<Distiller
     protected void drawAdditionalInfo(DrawContext context, int baseX, int baseY, float tickDelta) {
         float progress = handler.getBlockEntity().getProgress(tickDelta);
 
-        context.drawTexture(RenderLayer::getGuiTextured, background, baseX + 110, baseY + 14, 233, 22, 23, 22, 256, 256);
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, background, baseX + 110, baseY + 14, 233, 22, 23, 22, 256, 256);
         int barHeight = (int)(22 * (1 - progress));
-        context.drawTexture(RenderLayer::getGuiTextured, background, baseX + 110, baseY + 14 + barHeight, 233, barHeight, 23, 23 - barHeight, 256, 256);
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, background, baseX + 110, baseY + 14 + barHeight, 233, barHeight, 23, 23 - barHeight, 256, 256);
     }
 
 

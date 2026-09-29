@@ -12,6 +12,7 @@ import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -116,7 +117,7 @@ public class FilledBucketItem extends BucketItem {
                     drainable.getBucketFillSound().ifPresent(sound -> user.playSound(sound, 1.0f, 1.0f));
                     world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
                     ItemStack itemStack3 = ItemUsage.exchangeStack(stack, user, itemStack2);
-                    if (!world.isClient) {
+                    if (!world.isClient()) {
                         Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, itemStack2);
                     }
                     return ActionResult.SUCCESS.withNewHandStack(itemStack3);
@@ -176,7 +177,7 @@ public class FilledBucketItem extends BucketItem {
             return hit != null && placeFluid(stack, fluids, fluidState, player, world, hit.getBlockPos().offset(hit.getSide()), null);
         }
 
-        if (world.getDimension().ultrawarm() && !fluidState.isIn(FluidTags.LAVA)) {
+        if (world.getEnvironmentAttributes().getAttributeValue(EnvironmentAttributes.WATER_EVAPORATES_GAMEPLAY, pos) && !fluidState.isIn(FluidTags.LAVA)) {
             int i = pos.getX();
             int j = pos.getY();
             int k = pos.getZ();
@@ -192,7 +193,7 @@ public class FilledBucketItem extends BucketItem {
             return true;
         }
 
-        if (!world.isClient && canPlace && !state.isLiquid()) {
+        if (!world.isClient() && canPlace && !state.isLiquid()) {
             world.breakBlock(pos, true);
         }
 

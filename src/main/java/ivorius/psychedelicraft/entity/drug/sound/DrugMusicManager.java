@@ -64,7 +64,7 @@ public class DrugMusicManager implements NbtSerialisable {
                         ? -MathHelper.ceil(350F * (speed == 1 ? -1 : speed - 1F))
                         : MathHelper.floor(35F / (speed - 1F));
                 targetHeartbeatPulseStrength = Math.max(0, 2 - properties.getModifier(Drug.PAIN_SUPPRESSION));
-                entity.getWorld().playSoundClient(entity.getX(), entity.getY(), entity.getZ(),
+                entity.getEntityWorld().playSoundClient(entity.getX(), entity.getY(), entity.getZ(),
                         PSSounds.ENTITY_PLAYER_HEARTBEAT,
                         SoundCategory.AMBIENT, heartbeatVolume, speed, false);
             }
@@ -81,7 +81,7 @@ public class DrugMusicManager implements NbtSerialisable {
             if (breathVolume > 0) {
                 float speed = properties.getModifier(Drug.BREATH_SPEED);
                 delayUntilBreath = MathHelper.floor(30F / speed);
-                entity.getWorld().playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS,
+                entity.getEntityWorld().playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS,
                         breathVolume,
                         speed * 0.05F + 0.9F + (lastBreathWasIn ? 0.15F : 0)
                 );

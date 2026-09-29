@@ -4,7 +4,7 @@
   },
   "passes": [
     {
-      "vertex_shader": "minecraft:post/blit",
+      "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "psychedelicraft:post/depth_of_field",
       "inputs": [
         {
@@ -18,19 +18,10 @@
           "use_depth_buffer": true
         }
       ],
-      "output": "swap",
-      "uniforms": [
-        { "name": "pixelSize", "type": "vec2" },
-        { "name": "focalPointNear", "type": "float" },
-        { "name": "focalPointFar", "type": "float" },
-        { "name": "focalBlurNear", "type": "float" },
-        { "name": "focalBlurFar", "type": "float" },
-        { "name": "vertical", "type": "float" },
-        { "name": "depthRange", "type": "vec2" }
-      ]
+      "output": "swap"
     },
     {
-      "vertex_shader": "minecraft:post/blit",
+      "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "minecraft:post/blit",
       "inputs": [
         {
@@ -38,10 +29,21 @@
           "target": "swap"
         }
       ],
-      "uniforms": [
-        { "name": "ColorModulate", "type": "vec4", "values": [ 1, 1, 1, 1 ] }
-      ],
-      "output": "minecraft:main"
+      "output": "minecraft:main",
+      "uniforms": {
+        "BlitConfig": [
+          {
+            "name": "ColorModulate",
+            "type": "vec4",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
     }
   ]
 }

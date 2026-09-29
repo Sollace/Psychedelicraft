@@ -1,11 +1,10 @@
 package ivorius.psychedelicraft.client.render.effect;
 
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.render.RenderUtil;
+import ivorius.psychedelicraft.client.render.GuiQuads;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.WarmthDrug;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -24,7 +23,7 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
     }
 
     private void renderWarmthOverlay(DrawContext context, float alpha, int width, int height, int ticks) {
-        var buffer = RenderUtil.getBuffer(RenderLayer.getEntityTranslucent(COFFEE_OVERLAY));
+        GuiQuads.Builder buffer = GuiQuads.builder();
         final int segWidth = width / 9;
         final int segHeight = height / 3;
 
@@ -53,10 +52,10 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
                             0.5F + prog * 0.3F,
                             0.35F + prog * 0.1F
                     );
-                    buffer.vertex(mXL,    mY,    -90, color, 0, (float)  y      / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
-                    buffer.vertex(mXR,    mY,    -90, color, 1, (float)  y      / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
-                    buffer.vertex(prevXR, prevY, -90, color, 1, (float) (y - 1) / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
-                    buffer.vertex(prevXL, prevY, -90, color, 0, (float) (y - 1) / (float) steps, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
+                    buffer.vertex(mXL,    mY,    0, (float)  y      / (float) steps, color);
+                    buffer.vertex(mXR,    mY,    1, (float)  y      / (float) steps, color);
+                    buffer.vertex(prevXR, prevY, 1, (float) (y - 1) / (float) steps, color);
+                    buffer.vertex(prevXL, prevY, 0, (float) (y - 1) / (float) steps, color);
                 } else {
                     init = true;
                 }
@@ -66,5 +65,6 @@ public class WarmthOverlayScreenEffect extends DrugOverlayScreenEffect<WarmthDru
                 prevXR = mXR;
             }
         }
+        buffer.draw(context, COFFEE_OVERLAY);
     }
 }

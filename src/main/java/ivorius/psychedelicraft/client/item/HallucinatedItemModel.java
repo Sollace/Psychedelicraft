@@ -9,7 +9,7 @@ import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.render.item.model.ItemModel;
 import net.minecraft.client.render.model.ResolvableModel;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.HeldItemContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,7 @@ import net.minecraft.item.ItemStack;
 public class HallucinatedItemModel implements ItemModel {
     public static final ItemModel INSTANCE = new HallucinatedItemModel();
 	@Override
-	public void update(ItemRenderState state, ItemStack stack, ItemModelManager resolver, ItemDisplayContext displayContext, @Nullable ClientWorld world, @Nullable LivingEntity user, int seed) {
+	public void update(ItemRenderState state, ItemStack stack, ItemModelManager resolver, ItemDisplayContext displayContext, @Nullable ClientWorld world, @Nullable HeldItemContext user, int seed) {
 		if (stack.getItem() instanceof SuspiciousItem sus) {
             sus.getHallucinatedItem().map(Item::getDefaultStack).ifPresent(replacement -> {
                 resolver.update(state, replacement, displayContext, world, user, seed);

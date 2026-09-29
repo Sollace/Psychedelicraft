@@ -1,9 +1,11 @@
 package ivorius.psychedelicraft.client.render;
 
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
+import net.minecraft.util.Unit;
 import net.minecraft.client.render.entity.AbstractBoatEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
@@ -16,14 +18,14 @@ import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.util.Identifier;
 
 public class CustomBoatEntityRenderer<T extends AbstractBoatEntity> extends AbstractBoatEntityRenderer {
-    private final Model waterMaskModel;
+    private final Model.SinglePartModel waterMaskModel;
     private final Identifier texture;
     private final EntityModel<BoatEntityRenderState> model;
 
     public CustomBoatEntityRenderer(EntityRendererFactory.Context ctx, EntityType<T> type, boolean chest) {
         super(ctx);
         texture = EntityType.getId(type).withPath(path -> "textures/entity/" + (chest ? "chest_boat" : "boat") + "/" + path.replace(chest ? "_chest_boat" : "_boat", "") + ".png");
-        waterMaskModel = new Model.SinglePartModel(ctx.getPart(EntityModelLayers.BOAT), id -> RenderLayer.getWaterMask());
+        waterMaskModel = new Model.SinglePartModel(ctx.getPart(EntityModelLayers.BOAT), id -> RenderLayers.waterMask());
         model = new BoatEntityModel((chest ? BoatEntityModel.getChestTexturedModelData() : BoatEntityModel.getTexturedModelData()).createModel());
     }
 
@@ -38,9 +40,9 @@ public class CustomBoatEntityRenderer<T extends AbstractBoatEntity> extends Abst
     }
 
     @Override
-    protected void renderWaterMask(BoatEntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    protected void renderWaterMask(BoatEntityRenderState state, MatrixStack matrices, OrderedRenderCommandQueue queue, int light) {
         if (!state.submergedInWater) {
-            waterMaskModel.render(matrices, vertexConsumers.getBuffer(waterMaskModel.getLayer(texture)), light, OverlayTexture.DEFAULT_UV);
+            queue.submitModel(waterMaskModel, Unit.INSTANCE, matrices, waterMaskModel.getLayer(texture), light, OverlayTexture.DEFAULT_UV, state.outlineColor, null);
         }
     }
 }

@@ -51,7 +51,7 @@ public class HallucinationManager {
         pulseColor.update();
 
         if (get(Drug.FRACTALS) > 0) {
-            Random random = properties.asEntity().getWorld().random;
+            Random random = properties.asEntity().getEntityWorld().random;
             if (random.nextInt(20) == 0) {
                 fractalType = random.nextInt(fractalTypes.size());
             }

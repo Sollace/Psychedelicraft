@@ -89,7 +89,7 @@ public class TrayBlock extends BlockWithEntity {
     @Override
     @Nullable
     public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
-        return world.isClient
+        return world.isClient()
                 ? null
                 : validateTicker(type, PSBlockEntities.TRAY, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }

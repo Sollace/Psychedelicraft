@@ -1,4 +1,4 @@
-#version 150
+#version 330
 #moj_import <psychedelicraft:get_rotated_color.glsl>
 #moj_import <psychedelicraft:get_intensified_color.glsl>
 #moj_import <psychedelicraft:get_desaturated_color.glsl>

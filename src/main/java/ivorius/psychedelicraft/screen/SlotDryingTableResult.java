@@ -69,7 +69,7 @@ public class SlotDryingTableResult extends Slot {
                 amount = xp;
             }
 
-            ExperienceOrbEntity.spawn(spe.getServerWorld(), player.getPos(), amount);
+            ExperienceOrbEntity.spawn(spe.getEntityWorld(), player.getEntityPos(), amount);
         }
 
         this.amount = 0;

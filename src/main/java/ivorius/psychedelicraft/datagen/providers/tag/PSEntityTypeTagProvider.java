@@ -9,14 +9,14 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
-public class PSEntityTypeTagProvider extends FabricTagProvider<EntityType<?>> {
+public class PSEntityTypeTagProvider extends FabricTagProvider.EntityTypeTagProvider {
     public PSEntityTypeTagProvider(FabricDataOutput output, CompletableFuture<WrapperLookup> completableFuture) {
-        super(output, RegistryKeys.ENTITY_TYPE, completableFuture);
+        super(output, completableFuture);
     }
 
     @Override
     protected void configure(WrapperLookup wrapperLookup) {
-        getOrCreateTagBuilder(PSTags.Entities.SINGLE_ENTITY_HALLUCINATIONS).add(
+        valueLookupBuilder(PSTags.Entities.SINGLE_ENTITY_HALLUCINATIONS).add(
                 EntityType.CREEPER,
                 EntityType.ZOMBIE, EntityType.HUSK, EntityType.DROWNED,
                 EntityType.BLAZE, EntityType.BREEZE,
@@ -38,7 +38,7 @@ public class PSEntityTypeTagProvider extends FabricTagProvider<EntityType<?>> {
                 EntityType.DOLPHIN,
                 EntityType.WITHER, EntityType.WARDEN, EntityType.RAVAGER
         );
-        getOrCreateTagBuilder(PSTags.Entities.MULTIPLE_ENTITY_HALLUCINATIONS).add(
+        valueLookupBuilder(PSTags.Entities.MULTIPLE_ENTITY_HALLUCINATIONS).add(
                 EntityType.SQUID, EntityType.GLOW_SQUID,
                 EntityType.DOLPHIN,
                 EntityType.COD,

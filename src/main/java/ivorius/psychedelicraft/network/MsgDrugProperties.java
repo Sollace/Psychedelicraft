@@ -25,6 +25,6 @@ public record MsgDrugProperties (
 
     @Override
     public void handle(PlayerEntity sender) {
-        DrugProperties.of(sender.getWorld().getEntityById(entityId)).ifPresent(e -> e.fromTrackedNbt(compound, sender.getRegistryManager()));
+        DrugProperties.of(sender.getEntityWorld().getEntityById(entityId)).ifPresent(e -> e.fromTrackedNbt(compound, sender.getRegistryManager()));
     }
 }

@@ -27,7 +27,7 @@ public record MsgHallucinate (
 
     @Override
     public void handle(PlayerEntity sender) {
-        DrugProperties.of(sender.getWorld().getEntityById(entityId)).ifPresent(properties -> {
+        DrugProperties.of(sender.getEntityWorld().getEntityById(entityId)).ifPresent(properties -> {
             if (properties.getHallucinations().getEntities().addHallucination(type, true) instanceof AbstractEntityHallucination e) {
                 position.map(BlockPos::toCenterPos).ifPresent(e.getEntity()::setPosition);
             }

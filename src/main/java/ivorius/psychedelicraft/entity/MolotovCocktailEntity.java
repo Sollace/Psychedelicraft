@@ -67,17 +67,17 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
     }
 
     private void spawnParticles(float spread) {
-        getWorld().addParticleClient(ParticleTypes.FLAME,
-                getWorld().getRandom().nextTriangular(getX(), 0.5 * spread),
-                getWorld().getRandom().nextTriangular(getY(), 0.5 * spread),
-                getWorld().getRandom().nextTriangular(getZ(), 0.5 * spread),
+        getEntityWorld().addParticleClient(ParticleTypes.FLAME,
+                getEntityWorld().getRandom().nextTriangular(getX(), 0.5 * spread),
+                getEntityWorld().getRandom().nextTriangular(getY(), 0.5 * spread),
+                getEntityWorld().getRandom().nextTriangular(getZ(), 0.5 * spread),
                 0, 0, 0
         );
 
-        getWorld().addParticleClient(ParticleTypes.LAVA,
-                getWorld().getRandom().nextTriangular(getX(), 0.5 * spread),
-                getWorld().getRandom().nextTriangular(getY() + getHeight(), 0.5 * spread),
-                getWorld().getRandom().nextTriangular(getZ(), 0.5 * spread),
+        getEntityWorld().addParticleClient(ParticleTypes.LAVA,
+                getEntityWorld().getRandom().nextTriangular(getX(), 0.5 * spread),
+                getEntityWorld().getRandom().nextTriangular(getY() + getHeight(), 0.5 * spread),
+                getEntityWorld().getRandom().nextTriangular(getZ(), 0.5 * spread),
                 0, 0, 0
         );
     }
@@ -90,7 +90,7 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
         ItemFluids stack = getFluids();
         float explosionStrength = Combustable.fromStack(stack).getExplosionStrength(stack);
         if (explosionStrength > 0) {
-            getWorld().getOtherEntities(this, getBoundingBox().expand(explosionStrength), i -> i.distanceTo(this) <= explosionStrength).forEach(e -> {
+            getEntityWorld().getOtherEntities(this, getBoundingBox().expand(explosionStrength), i -> i.distanceTo(this) <= explosionStrength).forEach(e -> {
                 damageEntity(hit.getEntity(), 1 - (e.distanceTo(this) / explosionStrength));
             });
         }
@@ -101,8 +101,8 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
         Combustable combustable = Combustable.fromStack(stack);
         float explosionStrength = combustable.getExplosionStrength(stack);
         float fireStrength = combustable.getFireStrength(stack);
-        if (getWorld() instanceof ServerWorld sw) {
-            entity.damage(sw, PSDamageTypes.create(getWorld(), getOwner(), this, PSDamageTypes.molotov(entity, getOwner())), percentageScale * Math.max(4, explosionStrength * 0.6F + fireStrength * 0.3F));
+        if (getEntityWorld() instanceof ServerWorld sw) {
+            entity.damage(sw, PSDamageTypes.create(getEntityWorld(), getOwner(), this, PSDamageTypes.molotov(entity, getOwner())), percentageScale * Math.max(4, explosionStrength * 0.6F + fireStrength * 0.3F));
         }
         if (fireStrength > 0) {
             entity.isOnFire();
@@ -126,25 +126,25 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
 
         if (fireStrength > 0) {
             for (int i = 0; i < fireStrength * 2; i++) {
-                getWorld().addParticleClient(ParticleTypes.FLAME,
-                        getWorld().getRandom().nextTriangular(getX(), 0.5 * fireStrength),
-                        getWorld().getRandom().nextTriangular(getY(), 0.5 * fireStrength),
-                        getWorld().getRandom().nextTriangular(getZ(), 0.5 * fireStrength),
+                getEntityWorld().addParticleClient(ParticleTypes.FLAME,
+                        getEntityWorld().getRandom().nextTriangular(getX(), 0.5 * fireStrength),
+                        getEntityWorld().getRandom().nextTriangular(getY(), 0.5 * fireStrength),
+                        getEntityWorld().getRandom().nextTriangular(getZ(), 0.5 * fireStrength),
                         0, 0, 0
                 );
 
-                getWorld().addParticleClient(ParticleTypes.LAVA,
-                        getWorld().getRandom().nextTriangular(getX(), 0.5 * fireStrength),
-                        getWorld().getRandom().nextTriangular(getY() + getHeight(), 0.5 * fireStrength),
-                        getWorld().getRandom().nextTriangular(getZ(), 0.5 * fireStrength),
+                getEntityWorld().addParticleClient(ParticleTypes.LAVA,
+                        getEntityWorld().getRandom().nextTriangular(getX(), 0.5 * fireStrength),
+                        getEntityWorld().getRandom().nextTriangular(getY() + getHeight(), 0.5 * fireStrength),
+                        getEntityWorld().getRandom().nextTriangular(getZ(), 0.5 * fireStrength),
                         0, 0, 0
                 );
             }
         }
 
         if (explosionStrength > 0) {
-            if (!getWorld().isClient) {
-                getWorld().createExplosion(
+            if (!getEntityWorld().isClient()) {
+                getEntityWorld().createExplosion(
                         this,
                         getDamageSources().thrown(this, getOwner()),
                         new ExplosionBehavior() {
@@ -153,7 +153,7 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
                                 return state.isReplaceable();
                             }
                         },
-                        getPos(),
+                        getEntityPos(),
                         explosionStrength,
                         fireStrength > 0, ExplosionSourceType.MOB
                 );
@@ -164,17 +164,17 @@ public class MolotovCocktailEntity extends ThrownItemEntity {
 
         if (stack.isIn(FluidTags.LAVA)) {
             BlockPos pos = BlockPos.ofFloored(hitResult.getPos());
-            BlockState replacedState = getWorld().getBlockState(pos);
-            if (replacedState.getHardness(getWorld(), pos) >= 0) {
+            BlockState replacedState = getEntityWorld().getBlockState(pos);
+            if (replacedState.getHardness(getEntityWorld(), pos) >= 0) {
                 if (replacedState.isIn(BlockTags.CAULDRONS)) {
-                    getWorld().setBlockState(pos, Blocks.LAVA_CAULDRON.getDefaultState());
+                    getEntityWorld().setBlockState(pos, Blocks.LAVA_CAULDRON.getDefaultState());
                 } else {
                     if (!replacedState.isAir()) {
-                        getWorld().breakBlock(pos, true);
+                        getEntityWorld().breakBlock(pos, true);
                     }
-                    getWorld().setBlockState(BlockPos.ofFloored(hitResult.getPos()), Blocks.LAVA.getDefaultState());
+                    getEntityWorld().setBlockState(BlockPos.ofFloored(hitResult.getPos()), Blocks.LAVA.getDefaultState());
                 }
-                getWorld().emitGameEvent(this, GameEvent.FLUID_PLACE, pos);
+                getEntityWorld().emitGameEvent(this, GameEvent.FLUID_PLACE, pos);
             }
         }
 

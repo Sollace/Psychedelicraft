@@ -24,7 +24,7 @@ import net.minecraft.util.math.Vec3d;
 
 import org.joml.Matrix4f;
 
-public class BarrelBlockEntityRenderer implements BlockEntityRenderer<BarrelBlockEntity> {
+public class BarrelBlockEntityRenderer implements SimpleBlockEntityRenderer<BarrelBlockEntity> {
     private final BarrelModel model;
 
     public BarrelBlockEntityRenderer(BlockEntityRendererFactory.Context context) {

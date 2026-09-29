@@ -3,8 +3,10 @@ package ivorius.psychedelicraft.client.render.effect;
 import ivorius.psychedelicraft.client.SodiumCompat;
 import ivorius.psychedelicraft.entity.drug.*;
 import ivorius.psychedelicraft.entity.drug.type.AlcoholDrug;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
@@ -30,7 +32,7 @@ public class AlcoholOverlayScreenEffect extends DrugOverlayScreenEffect<AlcoholD
                 .getModels()
                 .getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
 
-        context.drawSpriteStretched(RenderLayer::getBlockScreenEffect, sprite,
+        context.drawSpriteStretched(RenderPipelines.GUI_TEXTURED, sprite,
                 0, 0,
                 window.getScaledWidth(), window.getScaledHeight(),
                 ColorHelper.withAlpha(ColorHelper.channelFromFloat(overlayAlpha), Colors.WHITE));

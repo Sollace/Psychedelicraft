@@ -14,7 +14,7 @@ public interface PSSubPredicates {
     ComponentPredicate.Type<DrinkType.Predicate> DRINK_TYPE = register("drink_type", DrinkType.Predicate.CODEC);
 
     private static <T extends ComponentPredicate> ComponentPredicate.Type<T> register(String id, Codec<T> codec) {
-        return Registry.register(Registries.DATA_COMPONENT_PREDICATE_TYPE, Psychedelicraft.id(id), new ComponentPredicate.Type<>(codec));
+        return Registry.register(Registries.DATA_COMPONENT_PREDICATE_TYPE, Psychedelicraft.id(id), new ComponentPredicate.OfValue<>(codec));
     }
 
     static void bootstrap() {

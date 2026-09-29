@@ -25,6 +25,7 @@ import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.*;
@@ -175,7 +176,7 @@ public interface PSTradeOffers {
         });
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.LIBRARIAN, 4, factories -> {
             var barrels = PSItems.ALL_BARRELS.stream().map(barrel -> sell(6, barrel, 1, 12, 1, 0.5F)).toList();
-            factories.add((e, r) -> barrels.get(r.nextInt(barrels.size()) % barrels.size()).create(e, r));
+            factories.add((w, e, r) -> barrels.get(r.nextInt(barrels.size()) % barrels.size()).create(w, e, r));
         });
 
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.CLERIC, 4, factories -> {
@@ -264,7 +265,7 @@ public interface PSTradeOffers {
         }
 
         @Override
-        public TradeOffer create(Entity entity, Random random) {
+        public TradeOffer create(ServerWorld world, Entity entity, Random random) {
             DrinkTypes.Variant variant = variants.get(random.nextInt(variants.size()) % variants.size());
             TradedItem tradedItem = new TradedItem(item, 1).withComponents(builder -> builder.add(PSComponents.FLUIDS, fluid.getDefaultStack(FluidCapacity.get(item.getDefaultStack()))));
             ItemStack soldItem = ItemFluids.set(item.getDefaultStack(), variant.predicate().state().apply(fluid.getDefaultStack(FluidCapacity.get(item.getDefaultStack()))));
@@ -291,7 +292,7 @@ public interface PSTradeOffers {
         }
 
         @Override
-        public TradeOffer create(Entity entity, Random random) {
+        public TradeOffer create(ServerWorld world, Entity entity, Random random) {
             TradedItem tradedItem = new TradedItem(item, 1).withComponents(builder -> builder.add(PSComponents.FLUIDS, buy.getDefaultStack(FluidCapacity.get(item.getDefaultStack()))));
             ItemStack soldItem = ItemFluids.set(item.getDefaultStack(), sell.getDefaultStack(FluidCapacity.get(item.getDefaultStack())));
             return new TradeOffer(new TradedItem(Items.EMERALD, price), Optional.of(tradedItem), soldItem, maxUses, experience, 0.3F);

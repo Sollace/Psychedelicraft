@@ -4,7 +4,9 @@ uniform vec4 PS_Pulses;
 uniform float PS_lsdBlendRatio;
 
 ps_in float vertexDistance;
+#ifndef PER_FACE_LIGHTING
 ps_in vec4 vertexColor;
+#endif
 
 ps_in float psyColorMultiplier;
 
@@ -19,7 +21,9 @@ void main() {
   float lsdBlendRatio = PS_lsdBlendRatio;
 
   float fogFragCoord = vertexDistance;
+#ifndef PER_FACE_LIGHTING
   float unusedbecausemacisgarbage = vertexColor.r;
+#endif
   vec4 pulses = PS_Pulses;
 
   if (pulses.a > 0.0) {

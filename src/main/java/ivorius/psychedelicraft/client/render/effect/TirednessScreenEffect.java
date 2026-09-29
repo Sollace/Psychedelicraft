@@ -53,7 +53,7 @@ public class TirednessScreenEffect implements ScreenEffect {
             long now = System.currentTimeMillis();
             if (now > (lastPlayTime + 1000)) {
                 lastPlayTime = now;
-                entity.getWorld().playSoundClient(entity.getX(), entity.getY(), entity.getZ(),
+                entity.getEntityWorld().playSoundClient(entity.getX(), entity.getY(), entity.getZ(),
                     PSSounds.ENTITY_PLAYER_HEARTBEAT,
                     SoundCategory.AMBIENT, drowsyness, 0.3F, false);
             }
@@ -64,8 +64,8 @@ public class TirednessScreenEffect implements ScreenEffect {
             return;
         }
 
-        if (--ticksBlinking <= 0 && (ticksBlinking < -300 || entity.getWorld().random.nextFloat() < baseDrowsyness)) {
-            ticksBlinking = (int)entity.getWorld().random.nextTriangular(300, 200);
+        if (--ticksBlinking <= 0 && (ticksBlinking < -300 || entity.getEntityWorld().random.nextFloat() < baseDrowsyness)) {
+            ticksBlinking = (int)entity.getEntityWorld().random.nextTriangular(300, 200);
             entity.sendMessage(Text.literal("I really should get to bed..."), true);
         }
     }

@@ -215,9 +215,9 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return getValidMasterPosition(world, pos)
-                .map(p -> world.getBlockState(p).getComparatorOutput(world, p))
+                .map(p -> world.getBlockState(p).getComparatorOutput(world, p, direction))
                 .orElse(0);
     }
 

@@ -6,16 +6,13 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gl.UniformType;
 import net.minecraft.client.render.VertexFormats;
 
 public interface PSShaders {
-    RenderPipeline.Snippet RENDERTYPE_ZERO_MATTER_SNIPPET = RenderPipeline.builder(RenderPipelines.MATRICES_SNIPPET, RenderPipelines.FOG_SNIPPET)
+    RenderPipeline.Snippet RENDERTYPE_ZERO_MATTER_SNIPPET = RenderPipeline.builder(RenderPipelines.TRANSFORMS_AND_PROJECTION_SNIPPET, RenderPipelines.FOG_SNIPPET)
             .withVertexShader(Psychedelicraft.id("core/rendertype_zero_matter"))
             .withFragmentShader(Psychedelicraft.id("core/rendertype_zero_matter"))
             .withSampler("Sampler0")
-            .withSampler("Sampler1")
-            .withUniform("GameTime", UniformType.FLOAT)
             .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS)
             .buildSnippet();
 
@@ -25,7 +22,7 @@ public interface PSShaders {
             .withCull(false)
             .withBlend(BlendFunction.TRANSLUCENT)
             .withDepthWrite(false)
-            .withShaderDefine("ZERO_MATTER_LAYERS", 15).build()
+            .build()
     );
 
     static void bootstrap() {}

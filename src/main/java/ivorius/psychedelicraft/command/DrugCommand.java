@@ -24,7 +24,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.GameRules;
+import net.minecraft.world.rule.GameRules;
 
 /**
  * @author Sollace
@@ -37,7 +37,7 @@ class DrugCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
         dispatcher.register(CommandManager.literal("drug")
-                .requires(source -> source.hasPermissionLevel(2))
+                .requires(CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK))
             .then(CommandManager.argument("target", EntityArgumentType.players())
                 .then(CommandManager.literal("lock")
                     .then(CommandManager.literal("all")
@@ -178,7 +178,7 @@ class DrugCommand {
         if (source.getEntity() == player) {
             source.sendFeedback(() -> Text.translatable("commands.drug." + (succeeded ? "success" : "fail") + "." + key + ".self", arguments), true);
         } else {
-            if (succeeded && source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+            if (succeeded && source.getWorld().getGameRules().getValue(GameRules.SEND_COMMAND_FEEDBACK)) {
                 player.sendMessage(Text.translatable("commands.drug." + key + ".changed", arguments));
             }
 

@@ -62,7 +62,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (!world.isClient && FluidCapacity.get(stack) > 0) {
+        if (!world.isClient() && FluidCapacity.get(stack) > 0) {
             world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
                 be.getPrimaryTank().deposit(stack);
             });
@@ -140,7 +140,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     @Override
     @Nullable
     public final <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
-        return world.isClient
+        return world.isClient()
                 ? validateTicker(type, getBlockEntityType(), (w, p, s, entity) -> entity.clientTick(w))
                 : validateTicker(type, getBlockEntityType(), (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }
@@ -156,7 +156,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return toRedstoneSignal(world.getBlockEntity(pos, getBlockEntityType())
                 .map(FlaskBlockEntity::getPrimaryTank)
                 .map(tank -> MathHelper.clamp(tank.getAmount() / (float)tank.getCapacity(), 0, 1))

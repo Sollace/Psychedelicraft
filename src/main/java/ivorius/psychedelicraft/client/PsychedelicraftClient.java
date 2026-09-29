@@ -24,7 +24,7 @@ import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
@@ -48,7 +48,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
     private void reInitScreen() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.currentScreen instanceof SettingsScreen screen) {
-            screen.init(client, client.getWindow().getScaledWidth(), client.getWindow().getScaledWidth());
+            screen.init(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight());
         }
     }
 
@@ -71,7 +71,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
             DrugProperties.of((Entity)client.player).ifPresent(properties -> {
-                DrugRenderer.INSTANCE.renderAllHallucinations(context.matrixStack(), context.consumers(), context.camera(), context.tickCounter().getTickProgress(false), properties);
+                DrugRenderer.INSTANCE.renderAllHallucinations(context.matrices(), context.consumers(), client.gameRenderer.getCamera(), client.getRenderTickCounter().getTickProgress(false), properties);
             });
         });
 

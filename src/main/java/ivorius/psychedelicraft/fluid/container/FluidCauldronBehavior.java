@@ -74,7 +74,7 @@ public interface FluidCauldronBehavior {
                 if (!t.canAccept(fluid)) {
                     return ActionResult.FAIL;
                 }
-                if (!world.isClient) {
+                if (!world.isClient()) {
                     t.deposit(fluid);
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
                     player.incrementStat(Stats.USE_CAULDRON);

@@ -56,7 +56,7 @@ public class BottleRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
     }
 
     public BottleRecipeJsonBuilder input(Character c, TagKey<Item> tag) {
-        return input(c, Ingredient.fromTag(lookup.getOrThrow(tag)));
+        return input(c, Ingredient.ofTag(lookup.getOrThrow(tag)));
     }
 
     public BottleRecipeJsonBuilder input(Character c, ItemConvertible itemProvider) {

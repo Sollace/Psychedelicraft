@@ -193,7 +193,7 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
             return Either.right(ActionResult.FAIL);
         }
 
-        if (getWorld().isClient) {
+        if (getWorld().isClient()) {
             return Either.right(ActionResult.SUCCESS);
         }
 
