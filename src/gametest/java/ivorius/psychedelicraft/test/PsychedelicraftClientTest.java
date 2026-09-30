@@ -18,6 +18,7 @@ public class PsychedelicraftClientTest implements FabricClientGameTest {
             run(sp, "time set noon");
             run(sp, "weather clear");
             run(sp, "gamerule advance_time false");
+            run(sp, "effect give @a minecraft:regeneration infinite 10 true");
             context.waitTicks(20);
             context.takeScreenshot("ps_00_baseline");
 
