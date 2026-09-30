@@ -44,6 +44,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
@@ -323,21 +325,21 @@ public class MashTubBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
+    protected void writeData(WriteView view) {
+        super.writeData(view);
         if (!solidContents.isEmpty()) {
-            compound.put("solidContents", ItemStack.OPTIONAL_CODEC, solidContents);
+            view.put("solidContents", ItemStack.OPTIONAL_CODEC, solidContents);
         }
-        compound.put("suppliedIngredients", suppliedIngredients.toNbt(lookup));
-        compound.put("auxiliaryFluids", auxiliaryFluids.encode());
+        suppliedIngredients.writeData(view.get("suppliedIngredients"));
+        view.put("auxiliaryFluids", ItemFluids.CODEC, auxiliaryFluids);
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
-        solidContents = compound.get("solidContents", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
-        auxiliaryFluids = compound.get("auxiliaryFluids", ItemFluids.CODEC).orElse(ItemFluids.EMPTY);
-        suppliedIngredients.fromNbt(compound.getCompoundOrEmpty("suppliedIngredients"), lookup);
+    protected void readData(ReadView view) {
+        super.readData(view);
+        solidContents = view.read("solidContents", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        auxiliaryFluids = view.read("auxiliaryFluids", ItemFluids.CODEC).orElse(ItemFluids.EMPTY);
+        suppliedIngredients.readData(view.getReadView("suppliedIngredients"));
     }
 
     class Stew implements NbtSerialisable {

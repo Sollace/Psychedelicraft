@@ -7,8 +7,6 @@ package ivorius.psychedelicraft.block.entity;
 
 import java.util.stream.Stream;
 
-import ivorius.psychedelicraft.util.NbtViews;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
@@ -124,19 +122,11 @@ public abstract class BlockEntityWithInventory extends LockableContainerBlockEnt
         super.readData(view);
         inventory.clear();
         Inventories.readData(view, inventory);
-        readNbt(NbtViews.read(view), view.getRegistries());
     }
 
     @Override
     protected void writeData(WriteView view) {
         super.writeData(view);
         Inventories.writeData(view, inventory);
-        NbtCompound compound = new NbtCompound();
-        writeNbt(compound, NbtViews.lookup(world));
-        NbtViews.write(view, compound);
     }
-
-    protected void readNbt(NbtCompound nbt, WrapperLookup lookup) { }
-
-    protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) { }
 }

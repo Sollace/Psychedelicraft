@@ -15,17 +15,16 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
-public class ItemMound implements NbtSerialisable {
+public class ItemMound {
     private final List<Item> indexes = new ArrayList<>();
     private final Map<Item, Entry> items = new HashMap<>();
 
@@ -38,10 +37,6 @@ public class ItemMound implements NbtSerialisable {
             indexes.addAll(original.indexes);
             original.items.entrySet().forEach(entry -> items.put(entry.getKey(), new Entry(entry.getValue())));
         }
-    }
-
-    public ItemMound(NbtCompound compound, WrapperLookup lookup) {
-        fromNbt(compound, lookup);
     }
 
     public synchronized void addStack(ItemStack stack) {
@@ -118,18 +113,15 @@ public class ItemMound implements NbtSerialisable {
         items.clear();
         indexes.clear();
     }
-
-    @Override
-    public synchronized void toNbt(NbtCompound compound, WrapperLookup lookup) {
+    public synchronized void writeData(WriteView view) {
         items.forEach((item, count) -> {
-            compound.put(Registries.ITEM.getId(item).toString(), count.toNbt());
+            count.writeData(view.get(Registries.ITEM.getId(item).toString()));
         });
     }
 
-    @Override
-    public synchronized void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+    public synchronized void readData(ReadView view) {
         clear();
-        compound.getKeys().forEach(key -> {
+        view.keys().forEach(key -> {
             Optional.ofNullable(Identifier.tryParse(key)).map(Registries.ITEM::get)
                 .filter(Objects::nonNull)
                 .ifPresent(item -> {
@@ -137,10 +129,8 @@ public class ItemMound implements NbtSerialisable {
                     if (!indexes.contains(item)) {
                         indexes.add(item);
                     }
-                    compound.get(key).asCompound().ifPresentOrElse(comp -> {
-                        items.computeIfAbsent(item, Entry::new).fromNbt(comp);
-                    }, () -> {
-                        entry.push(ComponentChanges.EMPTY, compound.getInt(key, 0));
+                    view.getOptionalReadView(key).ifPresentOrElse(entry::readData, () -> {
+                        entry.push(ComponentChanges.EMPTY, view.getInt(key, 0));
                     });
                 });
         });
@@ -166,17 +156,15 @@ public class ItemMound implements NbtSerialisable {
             this.components.putAll(entry.components);
         }
 
-        public void fromNbt(NbtCompound nbt) {
-            count = nbt.getInt("count", 1);
+        public void readData(ReadView view) {
+            count = view.getInt("count", 1);
             components.clear();
-            nbt.get("components", COMPONENTS_CODEC).ifPresent(components::putAll);
+            view.read("components", COMPONENTS_CODEC).ifPresent(components::putAll);
         }
 
-        public NbtCompound toNbt() {
-            NbtCompound nbt = new NbtCompound();
-            nbt.putInt("count", count);
-            nbt.put("components", COMPONENTS_CODEC, components);
-            return nbt;
+        public void writeData(WriteView view) {
+            view.putInt("count", count);
+            view.put("components", COMPONENTS_CODEC, components);
         }
 
         public void toItemStacks(DefaultedList<ItemStack> stacks) {

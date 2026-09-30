@@ -17,15 +17,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
@@ -226,22 +226,22 @@ public class DryingTableBlockEntity extends BlockEntityWithInventory {
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
+    protected void writeData(WriteView view) {
+        super.writeData(view);
         currentRecipe.ifPresent(r -> {
-            compound.putString("currentRecipe", r.getValue().toString());
+            view.putString("currentRecipe", r.getValue().toString());
         });
-        compound.putFloat("heatRatio", heat);
-        compound.putLong("cookingTime", cookingTime);
-        compound.putFloat("dryingProgress", dryingProgress);
+        view.putFloat("heatRatio", heat);
+        view.putLong("cookingTime", cookingTime);
+        view.putFloat("dryingProgress", dryingProgress);
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
-        currentRecipe = Identifier.validate(compound.getString("currentRecipe", "")).result().map(id -> RegistryKey.of(RegistryKeys.RECIPE, id));
-        heat = compound.getFloat("heatRatio", 0);
-        cookingTime = compound.getLong("cookingTime", 0);
-        dryingProgress = compound.getFloat("dryingProgress", 0);
+    protected void readData(ReadView view) {
+        super.readData(view);
+        currentRecipe = Identifier.validate(view.getString("currentRecipe", "")).result().map(id -> RegistryKey.of(RegistryKeys.RECIPE, id));
+        heat = view.getFloat("heatRatio", 0);
+        cookingTime = view.getLong("cookingTime", 0);
+        dryingProgress = view.getFloat("dryingProgress", 0);
     }
 }

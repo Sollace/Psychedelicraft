@@ -17,11 +17,11 @@ import ivorius.psychedelicraft.item.component.FluidCapacity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -81,11 +81,11 @@ public class EmptyContents implements BurnerBlockEntity.Contents {
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void writeData(WriteView view) {
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+    public void readData(ReadView view) {
     }
 
     @Override

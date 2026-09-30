@@ -35,7 +35,6 @@ import ivorius.psychedelicraft.recipe.FluidMound;
 import ivorius.psychedelicraft.recipe.ItemMound;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import ivorius.psychedelicraft.recipe.ReactingRecipe;
-import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -44,15 +43,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -300,30 +299,30 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
-        compound.putInt("temperature", temperature);
-        compound.putInt("processingTime", processingTime);
-        compound.put("container", ItemStack.OPTIONAL_CODEC, container);
-        compound.putNullable("product", BunsenBurnerRecipe.Product.CODEC, product);
-        compound.putString("contentsType", contents.getId().toString());
-        compound.put("contents", contents.toNbt(lookup));
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        view.putInt("temperature", temperature);
+        view.putInt("processingTime", processingTime);
+        view.put("container", ItemStack.OPTIONAL_CODEC, container);
+        view.putNullable("product", BunsenBurnerRecipe.Product.CODEC, product);
+        view.putString("contentsType", contents.getId().toString());
+        contents.writeData(view.get("contents"));
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
-        temperature = compound.getInt("temperature", 0);
-        processingTime = compound.getInt("processingTime", 0);
-        product = compound.get("product", BunsenBurnerRecipe.Product.CODEC).orElse(null);
-        container = compound.get("container", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
-        Identifier contentType = compound.getString("contentsType").map(Identifier::of).orElse(EmptyContents.ID);
+    protected void readData(ReadView view) {
+        super.readData(view);
+        temperature = view.getInt("temperature", 0);
+        processingTime = view.getInt("processingTime", 0);
+        product = view.read("product", BunsenBurnerRecipe.Product.CODEC).orElse(null);
+        container = view.read("container", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        Identifier contentType = view.getOptionalString("contentsType").map(Identifier::of).orElse(EmptyContents.ID);
         if (contentType.equals(contents.getId())) {
-            contents.fromNbt(compound.getCompoundOrEmpty("contents"), lookup);
+            contents.readData(view.getReadView("contents"));
         } else {
             contents = Contents.TYPES
                     .getOrDefault(contentType, Contents.TYPES.get(EmptyContents.ID))
-                    .create(this, compound.getCompoundOrEmpty("contents"), lookup);
+                    .create(this, view.getReadView("contents"));
         }
     }
 
@@ -410,20 +409,24 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         return List.of();
     }
 
-    public interface Contents extends NbtSerialisable, PipeInsertable {
+    public interface Contents extends PipeInsertable {
         Map<Identifier, Factory> TYPES = Util.make(new HashMap<>(), map -> {
-            map.put(EmptyContents.ID, (entity, nbt, lookup) -> new EmptyContents(entity));
-            map.put(SmallContents.ID, (entity, nbt, lookup) -> {
+            map.put(EmptyContents.ID, (entity, view) -> new EmptyContents(entity));
+            map.put(SmallContents.ID, (entity, view) -> {
                 SmallContents contents = new SmallContents(entity, 0, ItemStack.EMPTY);
-                contents.fromNbt(nbt, lookup);
+                contents.readData(view);
                 return contents;
             });
-            map.put(LargeContents.ID, (entity, nbt, lookup) -> {
+            map.put(LargeContents.ID, (entity, view) -> {
                 SmallContents contents = new LargeContents(entity, 0, ItemStack.EMPTY);
-                contents.fromNbt(nbt, lookup);
+                contents.readData(view);
                 return contents;
             });
         });
+
+        void writeData(WriteView view);
+
+        void readData(ReadView view);
 
         Identifier getId();
 
@@ -438,7 +441,7 @@ public class BurnerBlockEntity extends SyncedBlockEntity implements BlockWithFlu
         VoxelShape getOutlineShape();
 
         interface Factory {
-            Contents create(BurnerBlockEntity entity, NbtCompound compound, WrapperLookup lookup);
+            Contents create(BurnerBlockEntity entity, ReadView view);
         }
     }
 

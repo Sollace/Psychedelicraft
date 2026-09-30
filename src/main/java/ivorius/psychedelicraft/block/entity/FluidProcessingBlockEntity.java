@@ -12,12 +12,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
@@ -149,19 +149,19 @@ public abstract class FluidProcessingBlockEntity extends FlaskBlockEntity implem
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
-        compound.putInt("timeProcessed", getTimeProcessed());
-        compound.putInt("timeNeeded", getTimeNeeded());
-        compound.putInt("repeatCount", repeatCount);
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        view.putInt("timeProcessed", getTimeProcessed());
+        view.putInt("timeNeeded", getTimeNeeded());
+        view.putInt("repeatCount", repeatCount);
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
-        setTimeProcessed(compound.getInt("timeProcessed", 0));
-        setTimeNeeded(compound.getInt("timeNeeded", 0));
-        repeatCount = compound.getInt("repeatCount", 0);
+    protected void readData(ReadView view) {
+        super.readData(view);
+        setTimeProcessed(view.getInt("timeProcessed", 0));
+        setTimeNeeded(view.getInt("timeNeeded", 0));
+        repeatCount = view.getInt("repeatCount", 0);
     }
 
     @Override

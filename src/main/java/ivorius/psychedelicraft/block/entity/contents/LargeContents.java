@@ -24,10 +24,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
@@ -244,15 +244,16 @@ public class LargeContents extends SmallContents {
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.toNbt(compound, lookup);
-        compound.put("ingredients", ingredients.toNbt(lookup));
+    public void writeData(WriteView view) {
+        super.writeData(view);
+        ingredients.writeData(view.get("ingredients"));
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.fromNbt(compound, lookup);
-        ingredients = new ItemMound(compound.getCompoundOrEmpty("ingredients"), lookup);
+    public void readData(ReadView view) {
+        super.readData(view);
+        ingredients = new ItemMound();
+        ingredients.readData(view.getReadView("ingredients"));
     }
 
     @Override

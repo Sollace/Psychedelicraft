@@ -1,22 +1,21 @@
 package ivorius.psychedelicraft.fluid.container;
 
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.MathHelper;
 
 /**
  * @author Sollace
  * @since 3 Jan 2023
  */
-public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir {
+public class Resovoir implements VariantMarshal.FabricResovoir {
     public static final Resovoir EMPTY = new Resovoir(0, (r, l) -> {}) {
         @Override
-        public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
+        public void readData(ReadView view) {
 
         }
     };
@@ -157,16 +156,13 @@ public class Resovoir implements NbtSerialisable, VariantMarshal.FabricResovoir 
             changeCallback.onLevelChange(this, -amount);
         }
     }
-
-    @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("fluid", fluids.encode());
+    public void writeData(WriteView view) {
+        view.put("fluid", ItemFluids.CODEC, fluids);
     }
 
-    @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        fluids = compound.get("fluid", ItemFluids.CODEC)
-                .or(() -> compound.get("stack", ItemStack.OPTIONAL_CODEC).map(ItemFluids::of))
+    public void readData(ReadView view) {
+        fluids = view.read("fluid", ItemFluids.CODEC)
+                .or(() -> view.read("stack", ItemStack.OPTIONAL_CODEC).map(ItemFluids::of))
                 .orElse(ItemFluids.EMPTY);
     }
 

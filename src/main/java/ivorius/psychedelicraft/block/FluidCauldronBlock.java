@@ -16,8 +16,8 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -87,13 +87,15 @@ public class FluidCauldronBlock extends LeveledCauldronBlock implements BlockEnt
         }
 
         @Override
-        protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-            fluid = ItemFluids.decode(nbt.get("fluid"));
+        protected void readData(ReadView view) {
+            super.readData(view);
+            fluid = view.read("fluid", ItemFluids.CODEC).orElse(ItemFluids.EMPTY);
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-            nbt.put("fluid", fluid.encode());
+        protected void writeData(WriteView view) {
+            super.writeData(view);
+            view.put("fluid", ItemFluids.CODEC, fluid);
         }
     }
 }
