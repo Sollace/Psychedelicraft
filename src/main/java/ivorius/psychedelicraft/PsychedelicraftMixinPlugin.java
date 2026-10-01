@@ -15,7 +15,6 @@ public class PsychedelicraftMixinPlugin implements IMixinConfigPlugin {
     private static final Logger LOGGER = LogManager.getLogger("Psychedelicraft");
     private static final String MIXIN_PACKAGE = "ivorius.psychedelicraft.mixin";
 
-    private String sodiumPackage = "";
     private boolean hasSodium;
     private boolean hasIris;
 
@@ -24,8 +23,7 @@ public class PsychedelicraftMixinPlugin implements IMixinConfigPlugin {
         hasSodium = FabricLoader.getInstance().isModLoaded("sodium");
         hasIris = FabricLoader.getInstance().isModLoaded("iris");
         if (hasSodium) {
-            sodiumPackage = isTargetAvailable("caffeinemc") ? "caffeinemc" : "jellysquid";
-            LOGGER.info("Detected sodium package: " + sodiumPackage);
+            LOGGER.info("Detected sodium");
         }
         if (hasIris) {
             LOGGER.info("Detected iris");
@@ -40,20 +38,12 @@ public class PsychedelicraftMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.startsWith(MIXIN_PACKAGE) && mixinClassName.indexOf("sodium") != -1) {
-            return hasSodium && targetClassName.indexOf(sodiumPackage) != -1;
+            return hasSodium;
         }
         if (mixinClassName.startsWith(MIXIN_PACKAGE) && mixinClassName.indexOf(".iris.") != -1) {
             return hasIris;
         }
         return true;
-    }
-
-    private boolean isTargetAvailable(String target) {
-        try {
-            return Class.forName("net." + target + ".mods.sodium.client.SodiumClientMod") != null;
-        } catch (ClassNotFoundException e) {
-        }
-        return false;
     }
 
     @Override
