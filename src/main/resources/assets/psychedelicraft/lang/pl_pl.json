@@ -269,8 +269,8 @@
   "itemGroup.psychedelicraft.weapons": "Psychedelicraft - Bronie",
   "itemGroup.psychedelicraft.pharmaceuticals": "Psychedelicraft - Farmaceutyka",
 
-  "entity.psychedelicraft.villager.drug_dealer": "Diler",
-  "entity.psychedelicraft.villager.drug_addict": "Ćpun",
+  "entity.minecraft.villager.drug_dealer": "Diler",
+  "entity.minecraft.villager.drug_addict": "Ćpun",
 
   "psychedelicraft.sleep.fail.coccaine": "Jesteś zbyt naćpany żeby zasnąć",
   "psychedelicraft.sleep.fail.insomnia": "Nie czujesz się zmęczony",
