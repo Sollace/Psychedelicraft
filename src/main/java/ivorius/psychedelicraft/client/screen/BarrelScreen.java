@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.client.screen;
 
 import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,9 +22,9 @@ public class BarrelScreen extends FluidProcessingContraptionScreen<BarrelBlockEn
     protected void drawAdditionalInfo(DrawContext context, int baseX, int baseY, float tickDelta) {
         float progress = handler.getBlockEntity().getProgress(tickDelta);
         if (progress > 0 && progress < 1) {
-            context.drawTexture(RenderLayer::getGuiTextured, background, baseX + 110, baseY + 20, 233, 22, 23, 22, 256, 256);
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, background, baseX + 110, baseY + 20, 233, 22, 23, 22, 256, 256);
             int barHeight = (int)(22 * (1 - progress));
-            context.drawTexture(RenderLayer::getGuiTextured, background, baseX + 110, baseY + 20 + barHeight, 233, barHeight, 23, 23 - barHeight, 256, 256);
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, background, baseX + 110, baseY + 20 + barHeight, 233, barHeight, 23, 23 - barHeight, 256, 256);
         }
     }
 }

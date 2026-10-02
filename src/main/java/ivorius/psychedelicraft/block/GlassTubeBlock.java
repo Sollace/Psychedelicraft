@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
@@ -38,10 +37,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
@@ -51,6 +47,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
@@ -283,7 +281,7 @@ public class GlassTubeBlock extends BlockWithEntity {
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return world.getBlockEntity(pos, PSBlockEntities.GLASS_TUBE).map(data -> (int)((data.contents.size() / 10F) * 15)).orElse(0);
     }
 
@@ -486,17 +484,16 @@ public class GlassTubeBlock extends BlockWithEntity {
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
-            super.writeNbt(nbt, lookup);
-            PipeFluids.LIST_CODEC.encodeStart(NbtOps.INSTANCE, contents).result()
-                .ifPresent(el -> nbt.put("contents", el));
+        protected void writeData(WriteView view) {
+            super.writeData(view);
+            view.put("contents", PipeFluids.LIST_CODEC, contents);
         }
 
         @Override
-        protected void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            super.readNbt(nbt, lookup);
+        protected void readData(ReadView view) {
+            super.readData(view);
             contents.clear();
-            PipeFluids.LIST_CODEC.decode(NbtOps.INSTANCE, nbt.get("contents")).result().map(Pair::getFirst).ifPresent(contents::addAll);
+            view.read("contents", PipeFluids.LIST_CODEC).ifPresent(contents::addAll);
         }
     }
 }

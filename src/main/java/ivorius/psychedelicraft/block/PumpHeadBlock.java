@@ -90,7 +90,7 @@ public class PumpHeadBlock extends FacingBlock {
 
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (!world.isClient && player.getAbilities().creativeMode) {
+        if (!world.isClient() && player.getAbilities().creativeMode) {
             checkSupport(state, world, pos);
         }
 

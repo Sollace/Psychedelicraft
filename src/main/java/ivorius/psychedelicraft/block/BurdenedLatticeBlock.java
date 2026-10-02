@@ -120,7 +120,7 @@ public class BurdenedLatticeBlock extends LatticeBlock implements Fertilizable {
 
             world.playSoundFromEntity(null, player, SoundEvents.ENTITY_SHEEP_SHEAR, player.getSoundCategory(), 1, 1);
 
-            if (!world.isClient) {
+            if (!world.isClient()) {
                 getFarmingLootTableKey()
                     .map(world.getServer().getReloadableRegistries()::getLootTable)
                     .ifPresent(table -> table.generateLoot(new LootWorldContext.Builder((ServerWorld)world)

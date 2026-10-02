@@ -1,4 +1,4 @@
-#version 150
+#version 330
 #moj_import <psychedelicraft:linear.glsl>
 
 uniform sampler2D DiffuseSampler;

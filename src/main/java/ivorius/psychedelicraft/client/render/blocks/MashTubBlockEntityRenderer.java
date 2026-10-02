@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
+import ivorius.psychedelicraft.client.render.QueuedVertexConsumers;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.PSBlocks;
@@ -24,6 +25,10 @@ import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.BlockRenderLayers;
+import net.minecraft.client.gui.hud.debug.DebugHudEntries;
+import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexRendering;
@@ -46,7 +51,7 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
     private static final MashTubBlockEntity ITEM_ENTITY = PSBlockEntities.MASH_TUB.instantiate(BlockPos.ORIGIN, PSBlocks.MASH_TUB.getDefaultState());
 
     public MashTubBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        super(context.getTextRenderer());
+        super(context.textRenderer());
     }
 
     public MashTubBlockEntityRenderer() {
@@ -57,8 +62,8 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
         ITEM_ENTITY.getPrimaryTank().setContents(fluids);
         BlockState state = ITEM_ENTITY.getCachedState();
         BlockStateModel model = MinecraftClient.getInstance().getBlockRenderManager().getModel(state);
-        BlockModelRenderer.render(matrices.peek(), vertices.getBuffer(RenderLayers.getBlockLayer(state)), model, 1, 1, 1, light, overlay);
-        BlockModelRenderer.render(matrices.peek(), vertices.getBuffer(RenderLayers.getEntityBlockLayer(state)), model, 1, 1, 1, light, overlay);
+        BlockModelRenderer.render(matrices.peek(), vertices.getBuffer(BlockRenderLayers.getMovingBlockLayer(state)), model, 1, 1, 1, light, overlay);
+        BlockModelRenderer.render(matrices.peek(), vertices.getBuffer(BlockRenderLayers.getEntityBlockLayer(state)), model, 1, 1, 1, light, overlay);
 
         if (!fluids.isEmpty()) {
             float fillPercentage = MathHelper.clamp((float)fluids.amount() / FluidVolumes.VAT, 0, 2);
@@ -148,7 +153,7 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
                 matrices.translate(0, bob, -0.2F);
                 matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-50 * spin));
                 matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees((ShaderContext.ticks() + c) % 360));
-                MinecraftClient.getInstance().getItemRenderer().renderItem(s, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
+                QueuedVertexConsumers.renderItem(s, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
 
                 matrices.pop();
             }
@@ -158,7 +163,7 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
 
         super.render(entity, tickDelta, matrices, vertices, light, overlay, cameraPos);
 
-        if (MinecraftClient.getInstance().getEntityRenderDispatcher().shouldRenderHitboxes() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
+        if (MinecraftClient.getInstance().debugHudEntryList.isEntryVisible(DebugHudEntries.ENTITY_HITBOXES) && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
             if (entity.getWorld() != null && entity.getPos() != null && entity.getCachedState().getBlock() instanceof FluidFilled tub) {
                 Box box = new Box(
                         0, 0, 0,
@@ -166,12 +171,12 @@ public class MashTubBlockEntityRenderer extends LabelledBlockEntityRenderer<Mash
                 ).expand(0.001);
 
                 matrices.push();
-                VertexRendering.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 0, 1, 0, 0.2F);
+                VertexRendering.drawOutline(matrices, vertices.getBuffer(RenderLayers.lines()), VoxelShapes.cuboid(box), 0, 0, 0, ColorHelper.fromFloats(0.2F, 0, 1, 0), MinecraftClient.getInstance().getWindow().getMinimumLineWidth());
 
                 box = tub.getFluidCollisionBox(entity.getWorld(), entity.getCachedState(), entity.getPos());
 
                 matrices.translate(-box.minX - ((box.getLengthX() - 1) / 2), -box.minY, -box.minZ - ((box.getLengthZ() - 1) / 2));
-                VertexRendering.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box, 1, 1, 1, 1);
+                VertexRendering.drawOutline(matrices, vertices.getBuffer(RenderLayers.lines()), VoxelShapes.cuboid(box), 0, 0, 0, Colors.WHITE, MinecraftClient.getInstance().getWindow().getMinimumLineWidth());
                 matrices.pop();
             }
         }

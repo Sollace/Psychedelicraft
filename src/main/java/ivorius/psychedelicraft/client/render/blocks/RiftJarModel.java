@@ -12,6 +12,8 @@
 package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
+import net.minecraft.util.Unit;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -21,7 +23,7 @@ import net.minecraft.util.math.MathHelper;
 /**
  * Updated by Sollace on 5 Jan 2023
  */
-public class RiftJarModel extends Model {
+public class RiftJarModel extends Model<Unit> {
 
     private final ModelPart cork;
     private final ModelPart knot;
@@ -29,7 +31,7 @@ public class RiftJarModel extends Model {
     private final ModelPart interior;
 
     public RiftJarModel(ModelPart tree) {
-        super(tree, RenderLayer::getEntityTranslucent);
+        super(tree, RenderLayers::entityTranslucent);
         this.cork = tree.getChild("cork");
         this.knot = tree.getChild("knot");
         this.interior = tree.getChild("interior");

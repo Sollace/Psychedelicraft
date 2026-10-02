@@ -20,7 +20,7 @@ import net.minecraft.util.math.*;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class PeyoteBlockEntityRenderer implements BlockEntityRenderer<PeyoteBlockEntity> {
+public class PeyoteBlockEntityRenderer implements SimpleBlockEntityRenderer<PeyoteBlockEntity> {
     private static final Identifier[] TEXTURES = IntStream.range(0, 4)
             .mapToObj(i -> Psychedelicraft.id("textures/entity/peyote/peyote_stage" + i + ".png"))
             .toArray(Identifier[]::new);
@@ -52,7 +52,7 @@ public class PeyoteBlockEntityRenderer implements BlockEntityRenderer<PeyoteBloc
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
         int age = entity.getCachedState().get(PeyoteBlock.AGE) % 4;
-        models[age].render(matrices, vertices.getBuffer(RenderLayer.getEntityCutout(TEXTURES[age])), light, overlay, Colors.WHITE);
+        models[age].render(matrices, vertices.getBuffer(RenderLayers.entityCutout(TEXTURES[age])), light, overlay, Colors.WHITE);
 
         matrices.pop();
     }

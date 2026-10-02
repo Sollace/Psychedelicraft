@@ -16,7 +16,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.Pool;
+import net.minecraft.client.util.memory.ObjectPool;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Mixin(GameRenderer.class)
@@ -25,7 +25,7 @@ abstract class MixinGameRenderer {
     private @Final Camera camera;
 
     @Shadow
-    private @Final Pool pool;
+    private @Final ObjectPool pool;
 
     @Inject(method = "tiltViewWhenHurt", at = @At("HEAD"))
     private void onRenderWorld(MatrixStack matrices, float tickDelta, CallbackInfo info) {

@@ -24,9 +24,7 @@ public abstract class SyncedBlockEntity extends BlockEntity {
 
     @Override
     public final NbtCompound toInitialChunkDataNbt(WrapperLookup lookup) {
-        NbtCompound compound = super.toInitialChunkDataNbt(lookup);
-        writeNbt(compound, lookup);
-        return compound;
+        return createNbt(lookup);
     }
 
     @Override

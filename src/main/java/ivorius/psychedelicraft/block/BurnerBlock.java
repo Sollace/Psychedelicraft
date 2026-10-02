@@ -104,7 +104,7 @@ public class BurnerBlock extends BlockWithEntity {
         if (stack.isIn(ItemTags.CREEPER_IGNITERS) && state.get(LIT)) {
             SoundEvent sound = stack.isOf(Items.FIRE_CHARGE) ? SoundEvents.ITEM_FIRECHARGE_USE : SoundEvents.ITEM_FLINTANDSTEEL_USE;
             world.playSound(player, pos, sound, SoundCategory.BLOCKS, 1, world.random.nextFloat() * 0.4F + 0.8F);
-            if (!world.isClient) {
+            if (!world.isClient()) {
                 if (!stack.isDamageable()) {
                     stack.decrementUnlessCreative(1, player);
                 } else {
@@ -143,7 +143,7 @@ public class BurnerBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler, boolean bl) {
         if (world instanceof ServerWorld sw && state.get(LIT) && !entity.isSneaking() && entity.age % 10 == 0 && entity.isSupportedBy(pos)) {
             entity.damage(sw, entity.getDamageSources().inFire(), 1);
         }
@@ -162,7 +162,7 @@ public class BurnerBlock extends BlockWithEntity {
     @Override
     @Nullable
     public <Q extends BlockEntity> BlockEntityTicker<Q> getTicker(World world, BlockState state, BlockEntityType<Q> type) {
-        return world.isClient
+        return world.isClient()
                 ? validateTicker(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.clientTick(w))
                 : validateTicker(type, PSBlockEntities.BUNSEN_BURNER, (w, p, s, entity) -> entity.tick((ServerWorld)w));
     }

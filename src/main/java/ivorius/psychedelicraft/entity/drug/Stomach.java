@@ -113,11 +113,11 @@ public class Stomach implements NbtSerialisable {
 
         if (vomitingTicks > 0) {
             vomitingTicks--;
-            if (entity.age % (int)(1 + entity.getWorld().random.nextFloat() * 3) == 0) {
-                int count = (int)(entity.getWorld().random.nextFloat() * (vomitingTicks / 2));
+            if (entity.age % (int)(1 + entity.getEntityWorld().random.nextFloat() * 3) == 0) {
+                int count = (int)(entity.getEntityWorld().random.nextFloat() * (vomitingTicks / 2));
                 for (int i = 0; i < count; i++) {
                     vomitingTicks--;
-                    if (!entity.getWorld().isClient) {
+                    if (!entity.getEntityWorld().isClient()) {
                         entity.dropItem(PSItems.VOMIT.getDefaultStack(), true, true).setPickupDelayInfinite();
                         playBarfNoise();
                     }
@@ -147,7 +147,7 @@ public class Stomach implements NbtSerialisable {
                 entity.getInventory().offerOrDrop(PSItems.BAG_O_VOMIT.getDefaultStack());
             }
         } else {
-            if (entity.getWorld() instanceof ServerWorld sw) {
+            if (entity.getEntityWorld() instanceof ServerWorld sw) {
                 vomitingTicks = sw.random.nextBetween(10, 100);
                 if (++vomitCount > 16) {
                     entity.damage(sw, properties.damageOf(PSDamageTypes.OVER_EATING), Integer.MAX_VALUE);
@@ -160,7 +160,7 @@ public class Stomach implements NbtSerialisable {
     }
 
     private void playBarfNoise() {
-        entity.getWorld().playSoundFromEntity(null, entity, SoundEvents.ENTITY_VILLAGER_DEATH, entity.getSoundCategory(), 1, (float)entity.getWorld().random.nextTriangular(0.5, 0.25));
+        entity.getEntityWorld().playSoundFromEntity(null, entity, SoundEvents.ENTITY_VILLAGER_DEATH, entity.getSoundCategory(), 1, (float)entity.getEntityWorld().random.nextTriangular(0.5, 0.25));
     }
 
     @Override

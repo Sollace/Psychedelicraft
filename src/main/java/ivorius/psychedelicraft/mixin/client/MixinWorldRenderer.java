@@ -17,8 +17,8 @@ import net.minecraft.entity.player.BlockBreakingInfo;
 
 @Mixin(WorldRenderer.class)
 abstract class MixinWorldRenderer implements BlockBreakingProgressAccessor {
-    private static final String SKY = "renderSky(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/Fog;)V";
-    private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/option/CloudRenderMode;Lnet/minecraft/util/math/Vec3d;FIF)V";
+    private static final String SKY = "renderSky(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V";
+    private static final String CLOUDS = "renderClouds(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/option/CloudRenderMode;Lnet/minecraft/util/math/Vec3d;JFIF)V";
 
     @Override
     @Accessor

@@ -48,26 +48,26 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
         copyBlockTags();
         exportConventionalTags();
 
-        getOrCreateTagBuilder(ItemTags.SIGNS).add(PSItems.JUNIPER_SIGN);
-        getOrCreateTagBuilder(PSTags.Items.MORNING_GLORY_INGREDIENTS).add(PSItems.MORNING_GLORY, PSItems.MORNING_GLORY_SEEDS);
-        getOrCreateTagBuilder(PSTags.Items.BOTTLE_RACK_INSERTABLE).add(PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL);
-        getOrCreateTagBuilder(PSTags.Items.BUNSEN_BURNER_INSERTABLE).add(Items.GLASS_BOTTLE, PSItems.FILLED_GLASS_BOTTLE, Items.POTION, PSItems.BOTTLE);
-        getOrCreateTagBuilder(PSTags.Items.PLACEABLE_RECEPTICALS).add(PSItems.WOODEN_MUG, PSItems.STONE_CUP, PSItems.GLASS_CHALICE, PSItems.BOTTLE, PSItems.SHOT_GLASS);
+        valueLookupBuilder(ItemTags.SIGNS).add(PSItems.JUNIPER_SIGN);
+        valueLookupBuilder(PSTags.Items.MORNING_GLORY_INGREDIENTS).add(PSItems.MORNING_GLORY, PSItems.MORNING_GLORY_SEEDS);
+        valueLookupBuilder(PSTags.Items.BOTTLE_RACK_INSERTABLE).add(PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL);
+        valueLookupBuilder(PSTags.Items.BUNSEN_BURNER_INSERTABLE).add(Items.GLASS_BOTTLE, PSItems.FILLED_GLASS_BOTTLE, Items.POTION, PSItems.BOTTLE);
+        valueLookupBuilder(PSTags.Items.PLACEABLE_RECEPTICALS).add(PSItems.WOODEN_MUG, PSItems.STONE_CUP, PSItems.GLASS_CHALICE, PSItems.BOTTLE, PSItems.SHOT_GLASS);
 
-        getOrCreateTagBuilder(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS).add(
+        valueLookupBuilder(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS).add(
                 PSItems.SHOT_GLASS, PSItems.GLASS_CHALICE, PSItems.WOODEN_MUG,
                 PSItems.FILLED_BOWL, Items.BOWL
         ).addTag(PSTags.Items.BOTTLE_RACK_INSERTABLE);
-        getOrCreateTagBuilder(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS).add(PSItems.STONE_CUP);
-        getOrCreateTagBuilder(PSTags.Items.DRUG_RECEPTICALS).add(PSItems.SYRINGE, PSItems.FILLED_GLASS_BOTTLE, Items.GLASS_BOTTLE);
-        getOrCreateTagBuilder(PSTags.Items.DRINK_RECEPTICALS)
+        valueLookupBuilder(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS).add(PSItems.STONE_CUP);
+        valueLookupBuilder(PSTags.Items.DRUG_RECEPTICALS).add(PSItems.SYRINGE, PSItems.FILLED_GLASS_BOTTLE, Items.GLASS_BOTTLE);
+        valueLookupBuilder(PSTags.Items.DRINK_RECEPTICALS)
             .addTag(PSTags.Items.SUITABLE_ALCOHOLIC_DRINK_RECEPTICALS)
             .addTag(PSTags.Items.SUITABLE_HOT_DRINK_RECEPTICALS);
-        getOrCreateTagBuilder(PSTags.Items.ALL_RECEPTICALS)
+        valueLookupBuilder(PSTags.Items.ALL_RECEPTICALS)
             .addTag(PSTags.Items.DRINK_RECEPTICALS)
             .addTag(PSTags.Items.DRUG_RECEPTICALS);
-        getOrCreateTagBuilder(PSTags.Items.DRUG_CROP_SEEDS).add(PSItems.CANNABIS_SEEDS, PSItems.HOP_SEEDS, PSItems.TOBACCO_SEEDS, PSItems.COCA_SEEDS, PSItems.COFFEA_CHERRIES, PSItems.MORNING_GLORY_SEEDS);
-        getOrCreateTagBuilder(PSTags.Items.CAN_GO_INTO_PAPER_BAG).add(
+        valueLookupBuilder(PSTags.Items.DRUG_CROP_SEEDS).add(PSItems.CANNABIS_SEEDS, PSItems.HOP_SEEDS, PSItems.TOBACCO_SEEDS, PSItems.COCA_SEEDS, PSItems.COFFEA_CHERRIES, PSItems.MORNING_GLORY_SEEDS);
+        valueLookupBuilder(PSTags.Items.CAN_GO_INTO_PAPER_BAG).add(
                 Items.NETHER_WART, Items.SWEET_BERRIES, Items.BROWN_MUSHROOM, Items.RED_MUSHROOM,
                 Items.PUFFERFISH, Items.TROPICAL_FISH, Items.DRIED_KELP,
                 Items.CARROT, Items.GOLDEN_CARROT,
@@ -121,17 +121,17 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
     }
 
     private void exportConventionalTags() {
-        getOrCreateTagBuilder(PSConventionalTags.Items.APPLES).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
-        getOrCreateTagBuilder(PSConventionalTags.Items.POTATO).add(Items.POTATO, Items.POISONOUS_POTATO);
-        getOrCreateTagBuilder(PSConventionalTags.Items.BANANAS);
-        getOrCreateTagBuilder(PSConventionalTags.Items.PINEAPPLES);
-        getOrCreateTagBuilder(PSConventionalTags.Items.CORN);
-        getOrCreateTagBuilder(PSConventionalTags.Items.RICE);
-        getOrCreateTagBuilder(PSConventionalTags.Items.GRAPES).add(PSItems.WINE_GRAPES);
-        getOrCreateTagBuilder(PSConventionalTags.Items.HONEY).add(Items.HONEYCOMB, Items.HONEY_BOTTLE);
-        getOrCreateTagBuilder(PSConventionalTags.Items.TOMATOES).add(PSItems.TOMATO);
-        getOrCreateTagBuilder(ConventionalItemTags.BERRY_FOODS).add(PSItems.BELLADONNA_BERRIES, PSItems.JUNIPER_BERRIES);
-        getOrCreateTagBuilder(ConventionalItemTags.DUSTS).add(
+        valueLookupBuilder(PSConventionalTags.Items.APPLES).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
+        valueLookupBuilder(PSConventionalTags.Items.POTATO).add(Items.POTATO, Items.POISONOUS_POTATO);
+        valueLookupBuilder(PSConventionalTags.Items.BANANAS);
+        valueLookupBuilder(PSConventionalTags.Items.PINEAPPLES);
+        valueLookupBuilder(PSConventionalTags.Items.CORN);
+        valueLookupBuilder(PSConventionalTags.Items.RICE);
+        valueLookupBuilder(PSConventionalTags.Items.GRAPES).add(PSItems.WINE_GRAPES);
+        valueLookupBuilder(PSConventionalTags.Items.HONEY).add(Items.HONEYCOMB, Items.HONEY_BOTTLE);
+        valueLookupBuilder(PSConventionalTags.Items.TOMATOES).add(PSItems.TOMATO);
+        valueLookupBuilder(ConventionalItemTags.BERRY_FOODS).add(PSItems.BELLADONNA_BERRIES, PSItems.JUNIPER_BERRIES);
+        valueLookupBuilder(ConventionalItemTags.DUSTS).add(
                 PSItems.OBSIDIAN_DUST,
                 PSItems.COCAINE_POWDER, PSItems.HEROINE_POWDER
         );
@@ -142,17 +142,17 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     private void exportCroptopiaTags() {
         String namespace = "croptopia";
-        getOrCreateTagBuilder(PSConventionalTags.Items.APPLES).addOptional(Identifier.of(namespace, "apple"));
-        getOrCreateTagBuilder(PSConventionalTags.Items.POTATO).addOptional(Identifier.of(namespace, "sweetpotato"));
-        getOrCreateTagBuilder(PSConventionalTags.Items.BANANAS).addOptional(Identifier.of(namespace, "banana"));
-        getOrCreateTagBuilder(PSConventionalTags.Items.PINEAPPLES).addOptional(Identifier.of(namespace, "pineapple"));
-        getOrCreateTagBuilder(PSConventionalTags.Items.CORN).addOptional(Identifier.of(namespace, "corn"));
-        getOrCreateTagBuilder(PSConventionalTags.Items.RICE).addOptional(Identifier.of(namespace, "rice"));
-        getOrCreateTagBuilder(PSConventionalTags.Items.TOMATOES).addOptional(Identifier.of(namespace, "tomato"));
+        getTagBuilder(PSConventionalTags.Items.APPLES).addOptional(Identifier.of(namespace, "apple"));
+        getTagBuilder(PSConventionalTags.Items.POTATO).addOptional(Identifier.of(namespace, "sweetpotato"));
+        getTagBuilder(PSConventionalTags.Items.BANANAS).addOptional(Identifier.of(namespace, "banana"));
+        getTagBuilder(PSConventionalTags.Items.PINEAPPLES).addOptional(Identifier.of(namespace, "pineapple"));
+        getTagBuilder(PSConventionalTags.Items.CORN).addOptional(Identifier.of(namespace, "corn"));
+        getTagBuilder(PSConventionalTags.Items.RICE).addOptional(Identifier.of(namespace, "rice"));
+        getTagBuilder(PSConventionalTags.Items.TOMATOES).addOptional(Identifier.of(namespace, "tomato"));
     }
 
     private void exportFarmersDelightTags() {
         String namespace = "farmersdelight";
-        getOrCreateTagBuilder(PSConventionalTags.Items.TOMATOES).addOptional(Identifier.of(namespace, "tomato"));
+        getTagBuilder(PSConventionalTags.Items.TOMATOES).addOptional(Identifier.of(namespace, "tomato"));
     }
 }

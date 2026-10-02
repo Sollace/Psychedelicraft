@@ -67,19 +67,19 @@ interface RecipeUtil {
 
     static List<ItemFluids> getMatchingFluids(ItemFluids.Predicate predicate, int amount) {
         List<SimpleFluid> fluids = predicate.fluid().filter(l -> !l.isEmpty()).orElseGet(() -> Registries.FLUID.stream().map(SimpleFluid::of).toList());
-        if (predicate.amount().max().isPresent()) {
-            amount = Math.min(amount, predicate.amount().max().get());
+        if (predicate.amount().getMax().isPresent()) {
+            amount = Math.min(amount, predicate.amount().getMax().get());
         }
-        if (predicate.amount().min().isPresent()) {
-            amount = Math.max(amount, predicate.amount().min().get());
+        if (predicate.amount().getMin().isPresent()) {
+            amount = Math.max(amount, predicate.amount().getMin().get());
         }
         final int a = amount;
         return fluids.stream().map(fluid -> fluid.getDefaultStack(a)).toList();
     }
 
     static IntStream stream(IntRange range) {
-        int from = range.min().orElse(0);
-        int to = range.max().orElse(16);
+        int from = range.getMin().orElse(0);
+        int to = range.getMax().orElse(16);
         return IntStream.range(from, to + 1);
     }
 

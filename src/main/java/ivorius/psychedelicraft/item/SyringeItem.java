@@ -36,12 +36,12 @@ public class SyringeItem extends DrinkableItem {
         Hand hand = stack == attacker.getMainHandStack() ? Hand.MAIN_HAND : Hand.OFF_HAND;
         var effect = new FluidParticleEffect(PSParticles.FLUID_SPLASH, PSFluids.TOMATO.getDefaultStack());
         //for (int i = 0; i < 10; i++) {
-            ((ServerWorld)target.getWorld()).spawnParticles(effect, target.getParticleX(1), target.getEyeY(), target.getParticleZ(1), 10, 0, 0, 0, 0.3F);
+            ((ServerWorld)target.getEntityWorld()).spawnParticles(effect, target.getParticleX(1), target.getEyeY(), target.getParticleZ(1), 10, 0, 0, 0, 0.3F);
         //}
-        if (!(target instanceof PlayerEntity) || !canUse(stack, target.getWorld(), target)) {
+        if (!(target instanceof PlayerEntity) || !canUse(stack, target.getEntityWorld(), target)) {
             return;
         }
-        attacker.setStackInHand(hand, use(stack, target.getWorld(), target, attacker));
+        attacker.setStackInHand(hand, use(stack, target.getEntityWorld(), target, attacker));
     }
 
     @Override

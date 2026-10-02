@@ -11,6 +11,7 @@
 
 package ivorius.psychedelicraft.client.render;
 
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.*;
@@ -18,7 +19,7 @@ import net.minecraft.client.render.entity.state.PigEntityRenderState;
 
 public class RastaHeadModel extends EntityModel<PigEntityRenderState> {
     public RastaHeadModel() {
-        super(TexturedModelData.of(getModelData(Dilation.NONE), 128, 64).createModel(), RenderLayer::getEntityTranslucent);
+        super(TexturedModelData.of(getModelData(Dilation.NONE), 128, 64).createModel(), RenderLayers::entityTranslucent);
     }
 
     public static ModelData getModelData(Dilation dilation) {

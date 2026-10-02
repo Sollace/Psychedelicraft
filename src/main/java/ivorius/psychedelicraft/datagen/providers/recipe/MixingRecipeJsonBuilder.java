@@ -59,7 +59,7 @@ public class MixingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
     }
 
     public MixingRecipeJsonBuilder input(TagKey<Item> tag) {
-        return input(Ingredient.fromTag(lookup.getOrThrow(tag)));
+        return input(Ingredient.ofTag(lookup.getOrThrow(tag)));
     }
 
     public MixingRecipeJsonBuilder input(ItemConvertible input) {
@@ -90,7 +90,7 @@ public class MixingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
     }
 
     public MixingRecipeJsonBuilder receptical(TagKey<Item> tag, Fluid fluid) {
-        this.receptical = new OptionalFluidIngredient(Optional.of(FluidIngredient.builder().fluid(fluid).build()), Optional.of(Ingredient.fromTag(lookup.getOrThrow(tag)))).toVanilla();
+        this.receptical = new OptionalFluidIngredient(Optional.of(FluidIngredient.builder().fluid(fluid).build()), Optional.of(Ingredient.ofTag(lookup.getOrThrow(tag)))).toVanilla();
         return this;
     }
 

@@ -17,13 +17,10 @@ public abstract class ZeroScreen {
     private static final float X_PIXELS = 140 / 2F;
     private static final float Y_PIXELS = 224 / 2F;
 
-    private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> RenderLayer.of("ps_zero_screen", 1536, false, false, PSShaders.ZERO_MATTER, RenderLayer.MultiPhaseParameters.builder()
-            .texture(RenderLayer.Textures.create()
-                    .add(texture, false, false)
-                    .add(texture, false, false)
-                    .build())
-            .lightmap(RenderLayer.DISABLE_LIGHTMAP)
-            .build(false)
+    private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> RenderLayer.of("ps_zero_screen", RenderSetup.builder(PSShaders.ZERO_MATTER)
+            .texture("Sampler0", texture)
+            .translucent()
+            .build()
     ));
 
     public static void render(float ticks, Renderable action) {

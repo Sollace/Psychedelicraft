@@ -13,7 +13,7 @@ public interface ParticleHelper {
     static void spawnParticleAtFace(Entity entity, ParticleEffect effect, float speed) {
         Vec3d velocity = entity.getVelocity().add(entity.getRotationVec(1).normalize().multiply(speed));
         Vec3d pos = entity.getEyePos();
-        entity.getWorld().addParticleClient(effect, pos.x, pos.y - 0.1F, pos.z, velocity.x, velocity.y + 0.03F, velocity.z);
+        entity.getEntityWorld().addParticleClient(effect, pos.x, pos.y - 0.1F, pos.z, velocity.x, velocity.y + 0.03F, velocity.z);
     }
 
 

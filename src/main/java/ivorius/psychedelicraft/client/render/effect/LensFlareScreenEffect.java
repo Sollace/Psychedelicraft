@@ -9,8 +9,6 @@ import java.util.stream.IntStream;
 
 import org.joml.*;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.PsychedelicraftClient;
 import ivorius.psychedelicraft.client.render.MeteorlogicalUtil;
@@ -22,7 +20,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.*;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 
 import java.lang.Math;
 
@@ -81,7 +81,7 @@ public class LensFlareScreenEffect implements ScreenEffect {
         int screenHeight = window.getScaledHeight();
 
         float genSize = screenWidth > screenHeight ? screenWidth : screenHeight;
-        float sunRadians = world.getSkyAngleRadians(tickDelta);
+        float sunRadians = MeteorlogicalUtil.getSkyAngleRadians(world);
 
         Vector3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(
                 PsycheMatrixHelper.fromPolar(sunRadians, 120)
@@ -96,7 +96,7 @@ public class LensFlareScreenEffect implements ScreenEffect {
         float xDist = normSunPos.x * screenWidth;
         float yDist = normSunPos.y * screenHeight;
 
-        int colorValue = world.getBiome(client.gameRenderer.getCamera().getBlockPos()).value().getFogColor();
+        int colorValue = world.getEnvironmentAttributes().getAttributeValue(EnvironmentAttributes.FOG_COLOR_VISUAL, client.gameRenderer.getCamera().getCameraPos());
         int fogRed = ColorHelper.getRed(colorValue);
         int fogGreen = ColorHelper.getGreen(colorValue);
         int fogBlue = ColorHelper.getBlue(colorValue);
@@ -111,12 +111,12 @@ public class LensFlareScreenEffect implements ScreenEffect {
             float flareCenterX = screenCenterX + xDist * FLARE_INFLUENCES[i];
             float flareCenterY = screenCenterY + yDist * FLARE_INFLUENCES[i];
 
-            RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, (alpha * i == 8 ? 1F : 0.5F) * actualSunAlpha * getIntensity());
             RenderUtil.drawQuad(context, FLARES[i],
                     flareCenterX - flareSizeHalf,
                     flareCenterY - flareSizeHalf,
                     flareCenterX + flareSizeHalf,
-                    flareCenterY + flareSizeHalf
+                    flareCenterY + flareSizeHalf,
+                    tint(fogRed, fogGreen, fogBlue, (alpha * i == 8 ? 1F : 0.5F) * actualSunAlpha * getIntensity())
             );
         }
 
@@ -130,15 +130,24 @@ public class LensFlareScreenEffect implements ScreenEffect {
             float blendCenterY = screenCenterY + yDist;
             float blendAlpha = Math.min(1, blendingSize / genSize / 150F);
 
-            RenderSystem.setShaderColor(fogRed - 0.1F, fogGreen - 0.1F, fogBlue - 0.1F, blendAlpha * actualSunAlpha);
             RenderUtil.drawQuad(context, BLINDNESS_OVERLAY,
                     blendCenterX - blendingSizeHalf,
                     blendCenterY - blendingSizeHalf,
                     blendCenterX + blendingSizeHalf,
-                    blendCenterY + blendingSizeHalf
+                    blendCenterY + blendingSizeHalf,
+                    tint(fogRed, fogGreen, fogBlue, blendAlpha * actualSunAlpha)
             );
         }
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+    }
+
+    // matches the old shader colour, which was given the raw 0-255 channel values and so saturated
+    private static int tint(int red, int green, int blue, float alpha) {
+        return ColorHelper.fromFloats(
+                MathHelper.clamp(alpha, 0, 1),
+                MathHelper.clamp(red - 0.1F, 0, 1),
+                MathHelper.clamp(green - 0.1F, 0, 1),
+                MathHelper.clamp(blue - 0.1F, 0, 1)
+        );
     }
 
     @Override

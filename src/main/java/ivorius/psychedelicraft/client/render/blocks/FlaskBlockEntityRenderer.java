@@ -24,7 +24,7 @@ import net.minecraft.util.math.Vec3d;
  *
  * Renders fluid inside the flask
  */
-public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements BlockEntityRenderer<T> {
+public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements SimpleBlockEntityRenderer<T> {
 
     public FlaskBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 

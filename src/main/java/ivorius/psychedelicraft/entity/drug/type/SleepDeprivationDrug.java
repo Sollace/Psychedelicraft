@@ -68,7 +68,7 @@ public class SleepDeprivationDrug extends SimpleDrug {
         if (caffiene > 0.1F) {
             setDesiredValue(0);
         } else {
-            if (world.getGameRules().getBoolean(PSGameRules.DO_SLEEP_DEPRIVATION)) {
+            if (world.getGameRules().getValue(PSGameRules.DO_SLEEP_DEPRIVATION)) {
                 setDesiredValue(getDesiredValue() + (INCREASE_PER_TICKS / 3));
             }
         }

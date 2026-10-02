@@ -18,6 +18,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 
@@ -59,7 +61,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
             at = @At("HEAD"),
             cancellable = true)
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
-        if (!getWorld().isClient) {
+        if (!getEntityWorld().isClient()) {
             getDrugProperties().trySleep(pos).ifPresent(reason -> {
                 ((PlayerEntity)(Object)this).sendMessage(reason, true);
 
@@ -73,13 +75,13 @@ abstract class MixinPlayerEntity extends LivingEntity implements DrugPropertiesC
         return speed * getDrugProperties().getModifier(Drug.DIG_SPEED);
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
-    private void onWriteCustomDataToTag(NbtCompound tag, CallbackInfo info) {
-        tag.put("psychedelicraft_drug_properties", getDrugProperties().toNbt(getRegistryManager()));
+    @Inject(method = "writeCustomData", at = @At("HEAD"))
+    private void onWriteCustomData(WriteView view, CallbackInfo info) {
+        view.put("psychedelicraft_drug_properties", NbtCompound.CODEC, getDrugProperties().toNbt(getRegistryManager()));
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
-    private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
-        tag.getCompound("psychedelicraft_drug_properties").ifPresent(nbt -> getDrugProperties().fromNbt(nbt, getRegistryManager()));
+    @Inject(method = "readCustomData", at = @At("HEAD"))
+    private void onReadCustomData(ReadView view, CallbackInfo info) {
+        view.read("psychedelicraft_drug_properties", NbtCompound.CODEC).ifPresent(nbt -> getDrugProperties().fromNbt(nbt, getRegistryManager()));
     }
 }

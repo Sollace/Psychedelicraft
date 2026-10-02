@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 
 public interface MeteorlogicalUtil {
 
@@ -28,7 +29,7 @@ public interface MeteorlogicalUtil {
             return 0;
         }
 
-        float sunRadians = world.getSkyAngleRadians(tickDelta);
+        float sunRadians = getSkyAngleRadians(world);
 
         Vector3f sunPositionOnScreen = PsycheMatrixHelper.projectPointCurrentView(
                 PsycheMatrixHelper.fromPolar(sunRadians, 120)
@@ -66,11 +67,15 @@ public interface MeteorlogicalUtil {
 
     // we translate sun angle to a scale of 0-1 (0=sunrise, 1=sunset, >1 nighttime)
     static float getSkyAngle(World world) {
-        return ((world.getSkyAngle(1) + 0.25F) % 1F) * 2;
+        return ((getSkyAngleRadians(world) / MathHelper.TAU + 0.25F) % 1F) * 2;
+    }
+
+    public static float getSkyAngleRadians(World world) {
+        return world.getEnvironmentAttributes().getAttributeValue(EnvironmentAttributes.SUN_ANGLE_VISUAL) * MathHelper.RADIANS_PER_DEGREE;
     }
 
     static float getSkyLightIntensity(World world, BlockPos pos) {
-        if (world.isClient) {
+        if (world.isClient()) {
             world.calculateAmbientDarkness();
         }
         return world.getLightLevel(LightType.SKY, pos) / 15F;

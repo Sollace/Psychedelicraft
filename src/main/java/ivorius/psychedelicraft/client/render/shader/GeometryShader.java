@@ -41,7 +41,7 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
     @SuppressWarnings("deprecation")
     private static final Identifier BLOCK_ATLAS_TEXTURE = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     private static final String GEO_DIRECTORY = "shaders/geometry/";
-    private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(?:^|\\n)ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
+    private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(?m)^ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
     private static final Identifier BASIC = Psychedelicraft.id("basic");
     private static final Identifier ID = Psychedelicraft.id("geometry_shaders");
 
@@ -73,9 +73,9 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
     }
 
     @Override
-    public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
+    public CompletableFuture<Void> reload(ResourceReloader.Store store, Executor prepareExecutor, ResourceReloader.Synchronizer synchronizer, Executor applyExecutor) {
         loadedPrograms.clear();
-        this.manager = manager;
+        this.manager = store.getResourceManager();
         return CompletableFuture.completedFuture(null);
     }
 
@@ -96,8 +96,8 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
         return (RenderPhase.current() == RenderPhase.WORLD || RenderPhase.current() == RenderPhase.CLOUDS) && client.world != null && client.player != null;
     }
 
-    public BuiltGemoetryShader.Builder createShaderBuilder(int program, int lastUniformId, int lastSamplerId) {
-        var builder = new BuiltGemoetryShader.Builder(program, lastUniformId, lastSamplerId);
+    public BuiltGemoetryShader.Builder createShaderBuilder(int program) {
+        var builder = new BuiltGemoetryShader.Builder(program);
         samplers.forEach(builder::addSampler);
         addUniforms(builder::addUniform);
         return builder;
@@ -107,17 +107,23 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
         addUniforms(new UniformCollection() {
             @Override
             public void vec1(String name, FloatSupplier value) {
-                register.accept(new BoundUniform(name, UniformType.FLOAT, uniform -> uniform.set(value.getAsFloat())));
+                register.accept(new BoundUniform(name, location -> ProgramUniforms.upload(location, value.getAsFloat())));
             }
 
             @Override
             public void vec3(String name, Supplier<Vector3f> value) {
-                register.accept(new BoundUniform(name, UniformType.VEC3, uniform -> uniform.set(value.get())));
+                register.accept(new BoundUniform(name, location -> {
+                    Vector3f v = value.get();
+                    ProgramUniforms.upload(location, v.x, v.y, v.z);
+                }));
             }
 
             @Override
             public void vec4(String name, Supplier<Vector4f> value) {
-                register.accept(new BoundUniform(name, UniformType.VEC4, uniform -> uniform.set(value.get())));
+                register.accept(new BoundUniform(name, location -> {
+                    Vector4f v = value.get();
+                    ProgramUniforms.upload(location, v.x, v.y, v.z, v.w);
+                }));
             }
         });
     }
@@ -178,7 +184,7 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
             return source;
         }
 
-        if (source.indexOf("void main()") == -1) {
+        if (source.indexOf("void main()") == -1 || isScreenSpace(name)) {
             return source;
         }
 
@@ -202,6 +208,16 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
         return source;
     }
 
+    // Vanilla fullscreen shaders. Add others here if their fragment shaders break.
+    private static final Set<String> SCREEN_SPACE_SHADERS = Set.of(
+            "core/screenquad", "core/animate_sprite", "core/blit_screen", "core/lightmap", "core/animate_sprite_blit", "core/animate_sprite_interpolate"
+    );
+
+    private static boolean isScreenSpace(Identifier name) {
+        String path = name.getPath().replaceFirst("^shaders/", "").replaceFirst("\\.[a-z]+$", "");
+        return path.startsWith("post/") || (name.getNamespace().equals(Identifier.DEFAULT_NAMESPACE) && SCREEN_SPACE_SHADERS.contains(path));
+    }
+
     private String combineSources(String vertexSources, String geometrySources) {
         writeSources(vertexSources, "before");
 
@@ -221,6 +237,14 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
                 || vertexSources.indexOf("in float v_FragDistance") != -1) {
                 geometrySources = geometrySources.replaceAll("vertexDistance", "v_FragDistance");
             }
+        }
+        if (type == ShaderType.VERTEX
+                && !name.getNamespace().equalsIgnoreCase("sodium")
+                && !name.getPath().startsWith("iris/")
+                && vertexSources.indexOf("in vec3 Position") == -1
+                && vertexSources.indexOf("in vec4 Position") == -1) {
+            // shaders like the clouds generate their positions, so position based effects just see the origin
+            geometrySources = geometrySources.replaceAll("/\\*replaceme\\*/Position", "vec3(0.0)");
         }
         if (name.getPath().startsWith("iris/")) {
             if (vertexSources.indexOf("in vec3 Position") == -1
@@ -290,23 +314,5 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
         }
     }
 
-    public static class BoundUniform extends GlUniform {
-        private final Consumer<GlUniform> valueGetter;
-
-        public BoundUniform(String name, UniformType type, Consumer<GlUniform> valueGetter) {
-            super(name, type);
-            this.valueGetter = valueGetter;
-        }
-
-        @Override
-        public void set(Vector4f vec) {
-            this.set(new float[] {vec.x, vec.y, vec.z, vec.w});
-        }
-
-        @Override
-        public void upload() {
-            valueGetter.accept(this);
-            super.upload();
-        }
-    }
+    public record BoundUniform(String name, IntConsumer upload) { }
 }

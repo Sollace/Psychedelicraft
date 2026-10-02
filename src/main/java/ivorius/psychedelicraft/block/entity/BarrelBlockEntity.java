@@ -8,11 +8,11 @@ package ivorius.psychedelicraft.block.entity;
 import ivorius.psychedelicraft.block.BarrelBlock;
 import ivorius.psychedelicraft.fluid.*;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.world.World;
@@ -88,14 +88,14 @@ public class BarrelBlockEntity extends FluidProcessingBlockEntity {
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
-        compound.putInt("timeLeftTapOpen", getTapOpenTicks());
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        view.putInt("timeLeftTapOpen", getTapOpenTicks());
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
-        setTapOpenTicks(compound.getInt("timeLeftTapOpen", 0));
+    protected void readData(ReadView view) {
+        super.readData(view);
+        setTapOpenTicks(view.getInt("timeLeftTapOpen", 0));
     }
 }

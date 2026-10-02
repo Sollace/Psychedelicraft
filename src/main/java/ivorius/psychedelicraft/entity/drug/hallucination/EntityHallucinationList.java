@@ -83,7 +83,7 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
     }
 
     public void spawnHallucination() {
-        if (getProperties().asEntity().getWorld().isClient) {
+        if (getProperties().asEntity().getEntityWorld().isClient()) {
             EntityHallucinationType.getCandidates(this).findFirst().ifPresent(type -> addHallucination(type, false));
         }
     }

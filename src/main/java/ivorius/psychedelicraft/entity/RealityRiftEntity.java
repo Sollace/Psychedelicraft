@@ -15,12 +15,12 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.data.DataTracker.Builder;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.*;
@@ -49,18 +49,18 @@ public class RealityRiftEntity extends Entity {
     private float visualRiftSize;
 
     public static void spawn(Entity entity) {
-        RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(entity.getWorld(), SpawnReason.NATURAL);
+        RealityRiftEntity rift = PSEntities.REALITY_RIFT.create(entity.getEntityWorld(), SpawnReason.NATURAL);
         rift.setPosition(
-                entity.getX() + (entity.getWorld().getRandom().nextDouble() - 0.5) * 100,
-                entity.getY() + (entity.getWorld().getRandom().nextDouble() - 0.5) * 100,
-                entity.getZ() + (entity.getWorld().getRandom().nextDouble() - 0.5) * 100
+                entity.getX() + (entity.getEntityWorld().getRandom().nextDouble() - 0.5) * 100,
+                entity.getY() + (entity.getEntityWorld().getRandom().nextDouble() - 0.5) * 100,
+                entity.getZ() + (entity.getEntityWorld().getRandom().nextDouble() - 0.5) * 100
         );
-        entity.getWorld().spawnEntity(rift);
+        entity.getEntityWorld().spawnEntity(rift);
     }
 
     RealityRiftEntity(EntityType<RealityRiftEntity> type, World par1World) {
         super(type, par1World);
-        setRiftSize(getWorld().getRandom().nextTriangular(0.5F, 0.5F));
+        setRiftSize(getEntityWorld().getRandom().nextTriangular(0.5F, 0.5F));
     }
 
     @Override
@@ -138,7 +138,7 @@ public class RealityRiftEntity extends Entity {
         super.tick();
         setVelocity(Vec3d.ZERO);
 
-        if (getWorld() instanceof ServerWorld sw) {
+        if (getEntityWorld() instanceof ServerWorld sw) {
             if (Psychedelicraft.getConfig().randomTicksUntilRiftSpawn.get() == 0) {
                 kill(sw);
                 return;
@@ -164,14 +164,14 @@ public class RealityRiftEntity extends Entity {
                 remove(Entity.RemovalReason.KILLED);
             }
         } else {
-            Vec3d pos = getPos();
+            Vec3d pos = getEntityPos();
             Supplier<Vec3d> particlePositionSupplier = () -> {
                 float distance = random.nextFloat() * random.nextFloat();
                 return ParticleHelper.apply(pos, x -> x + (random.nextFloat() * 8 - 4) * distance).add(0, getHeight() / 2F, 0);
             };
-            ParticleHelper.spawnParticles(getWorld(), ParticleTypes.LARGE_SMOKE, particlePositionSupplier, Suppliers.ofInstance(Vec3d.ZERO), random.nextInt(3));
-            ParticleHelper.spawnParticles(getWorld(), new DustParticleEffect(ColorHelper.fromFloats(1, 1, 0.5F, 0.5F), 1), particlePositionSupplier, Suppliers.ofInstance(new Vec3d(-10, -10, -10)), random.nextInt(2));
-            ParticleHelper.spawnParticles(getWorld(), ParticleTypes.ENCHANT, Suppliers.ofInstance(pos.add(0, 1 + (getHeight() / 2F), 0)), () -> {
+            ParticleHelper.spawnParticles(getEntityWorld(), ParticleTypes.LARGE_SMOKE, particlePositionSupplier, Suppliers.ofInstance(Vec3d.ZERO), random.nextInt(3));
+            ParticleHelper.spawnParticles(getEntityWorld(), new DustParticleEffect(ColorHelper.fromFloats(1, 1, 0.5F, 0.5F), 1), particlePositionSupplier, Suppliers.ofInstance(new Vec3d(-10, -10, -10)), random.nextInt(2));
+            ParticleHelper.spawnParticles(getEntityWorld(), ParticleTypes.ENCHANT, Suppliers.ofInstance(pos.add(0, 1 + (getHeight() / 2F), 0)), () -> {
                 float distance = random.nextFloat() * random.nextFloat();
                 return ParticleHelper.apply(Vec3d.ZERO, x -> x + (random.nextFloat() * 8 - 4) * distance).add(0, getHeight() / 2F, 0);
             }, 1);
@@ -184,7 +184,7 @@ public class RealityRiftEntity extends Entity {
     private void emitEffects(ServerWorld world) {
         float searchDistance = 5 + getInstability() * 50;
         boolean critical = isCritical();
-        for (LivingEntity entity : getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(searchDistance), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
+        for (LivingEntity entity : getEntityWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(searchDistance), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
             double dist = entity.distanceTo(this);
             double effect = (searchDistance - dist) * AFFECT_PER_BLOCK * getRiftSize();
 
@@ -213,8 +213,8 @@ public class RealityRiftEntity extends Entity {
             int desRange = MathHelper.ceil(newDesRange);
             BlockPos center = getBlockPos();
             BlockPos.iterateOutwards(center, desRange, desRange, desRange).forEach(p -> {
-                if (p.isWithinDistance(center, newDesRange) && !p.isWithinDistance(center, prevDesRange) && !getWorld().isAir(p)) {
-                    getWorld().setBlockState(p, PSBlocks.GLITCH.getDefaultState());
+                if (p.isWithinDistance(center, newDesRange) && !p.isWithinDistance(center, prevDesRange) && !getEntityWorld().isAir(p)) {
+                    getEntityWorld().setBlockState(p, PSBlocks.GLITCH.getDefaultState());
                 }
             });
         }
@@ -227,16 +227,16 @@ public class RealityRiftEntity extends Entity {
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound compound) {
-        setRiftSize(compound.getFloat("riftSize", getRiftSize()));
-        setRiftClosing(compound.getBoolean("isRiftClosing", isRiftClosing()));
-        setInstability(compound.getFloat("instability", getInstability()));
+    protected void readCustomData(ReadView view) {
+        setRiftSize(view.getFloat("riftSize", getRiftSize()));
+        setRiftClosing(view.getBoolean("isRiftClosing", isRiftClosing()));
+        setInstability(view.getFloat("instability", getInstability()));
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound compound) {
-        compound.putFloat("riftSize", getRiftSize());
-        compound.putBoolean("isRiftClosing", isRiftClosing());
-        compound.putFloat("instability", getInstability());
+    protected void writeCustomData(WriteView view) {
+        view.putFloat("riftSize", getRiftSize());
+        view.putBoolean("isRiftClosing", isRiftClosing());
+        view.putFloat("instability", getInstability());
     }
 }

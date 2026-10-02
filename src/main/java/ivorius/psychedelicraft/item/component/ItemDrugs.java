@@ -73,13 +73,13 @@ public record ItemDrugs(List<DrugInfluence> influences, OptionalInt smokeColor) 
         Impurities impurities = Impurities.get(stack);
         properties.addAll(impurities.modifyEffects(influences));
         if (impurities.impurities().contains(Impurities.Impurity.SILICA)) {
-            if (properties.asEntity().getWorld() instanceof ServerWorld sw) {
+            if (properties.asEntity().getEntityWorld() instanceof ServerWorld sw) {
                 properties.asEntity().damage(sw, properties.damageOf(PSDamageTypes.GLASS_SHARD), 1.5F);
             }
             properties.asEntity().playSound(PSSounds.ITEM_BROKEN_GLASS_EAT);
         }
         smokeColor.ifPresent(smokeColor -> {
-            properties.startBreathingSmoke(10 + properties.asEntity().getWorld().random.nextInt(10), smokeColor);
+            properties.startBreathingSmoke(10 + properties.asEntity().getEntityWorld().random.nextInt(10), smokeColor);
             properties.rollCancerDance();
 
             EntityHitResult hit = RaytraceUtil.raycastEntities(properties.asEntity(), 3);
@@ -88,7 +88,7 @@ public record ItemDrugs(List<DrugInfluence> influences, OptionalInt smokeColor) 
                 PSCriteria.BREATHE_SMOKE_ON_ENTITY.trigger(properties.asEntity(), hit.getEntity());
                 DrugProperties.of(hit.getEntity()).ifPresent(target -> {
                     target.addAll(influences.stream().map(i -> i.copyWithTarget(i.target() * 0.1F)).toList());
-                    if (target.asEntity().getWorld().random.nextInt(10) == 0) {
+                    if (target.asEntity().getEntityWorld().random.nextInt(10) == 0) {
                         if (target.rollCancerDance()) {
                             PSCriteria.CANCER.trigger(target.asEntity(), properties.asEntity());
                         }
@@ -101,7 +101,7 @@ public record ItemDrugs(List<DrugInfluence> influences, OptionalInt smokeColor) 
                     if (l instanceof MerchantEntity villager) {
                         villager.setHeadRollingTimeLeft(100);
                     } else {
-                        if (properties.asEntity().getWorld() instanceof ServerWorld sw) {
+                        if (properties.asEntity().getEntityWorld() instanceof ServerWorld sw) {
                             hit.getEntity().damage(sw, properties.asEntity().getDamageSources().playerAttack(properties.asEntity()), 0.1F);
                         }
                     }

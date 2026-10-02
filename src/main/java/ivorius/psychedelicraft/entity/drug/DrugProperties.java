@@ -118,7 +118,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public DamageSource damageOf(RegistryKey<DamageType> type) {
-        return PSDamageTypes.create(entity.getWorld(), type);
+        return PSDamageTypes.create(entity.getEntityWorld(), type);
     }
 
     public Stomach getStomach() {
@@ -198,7 +198,7 @@ public class DrugProperties implements NbtSerialisable {
         this.timeBreathingSmoke = time + 10; //10 is the time spent breathing in
         markDirty();
 
-        entity.getWorld().playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 0.02F, 1.5F);
+        entity.getEntityWorld().playSoundFromEntity(entity, entity, PSSounds.ENTITY_PLAYER_BREATH, SoundCategory.PLAYERS, 0.02F, 1.5F);
     }
 
     public boolean cureAll() {
@@ -237,19 +237,19 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public boolean rollCancerDance() {
-        if (entity.getWorld().isClient) {
+        if (entity.getEntityWorld().isClient()) {
             return false;
         }
 
         if (cancerCountdown < 0) {
-            if (entity.getWorld().random.nextInt(1_000_000_000) == 0) {
-                cancerCountdown = 10_000 + entity.getWorld().random.nextInt(1000);
+            if (entity.getEntityWorld().random.nextInt(1_000_000_000) == 0) {
+                cancerCountdown = 10_000 + entity.getEntityWorld().random.nextInt(1000);
                 markDirty();
                 PSCriteria.CANCER.trigger(entity);
                 return true;
             }
         } else {
-            cancerCountdown = Math.max(10, -1 - entity.getWorld().random.nextInt(10));
+            cancerCountdown = Math.max(10, -1 - entity.getEntityWorld().random.nextInt(10));
             markDirty();
         }
 
@@ -281,8 +281,8 @@ public class DrugProperties implements NbtSerialisable {
         strokeIntensity++;
         strokeRecoveryCooldown = RECOVERY_COOLDOWN;
 
-        if (!entity.getWorld().isClient) {
-            PSDamageTypes.damage((ServerWorld)entity.getWorld(), entity, damageOf(PSDamageTypes.STROKE), Math.min(baseDamage + strokeIntensity, 10));
+        if (!entity.getEntityWorld().isClient()) {
+            PSDamageTypes.damage((ServerWorld)entity.getEntityWorld(), entity, damageOf(PSDamageTypes.STROKE), Math.min(baseDamage + strokeIntensity, 10));
         }
 
         return entity.isDead();
@@ -309,16 +309,16 @@ public class DrugProperties implements NbtSerialisable {
         if (cancerCountdown >= 0 && cancerCountdown <= 10 && --cancerCountdown == 0) {
             prevHadCancer = false;
             cancerCountdown = -1;
-            if (!entity.getWorld().isClient) {
-                PSDamageTypes.damage((ServerWorld)entity.getWorld(), entity, damageOf(PSDamageTypes.CANCER), Float.MAX_VALUE);
+            if (!entity.getEntityWorld().isClient()) {
+                PSDamageTypes.damage((ServerWorld)entity.getEntityWorld(), entity, damageOf(PSDamageTypes.CANCER), Float.MAX_VALUE);
             }
         }
 
         prevCardiacArrestTicks = cardiacArrestTicks;
         if (getModifier(Drug.HEART_BEAT_SPEED) <= 0.5F) {
-            int tries = 10 + entity.getWorld().random.nextInt(50);
+            int tries = 10 + entity.getEntityWorld().random.nextInt(50);
             for (int i = 0; i < tries; i++) {
-                if (entity.getWorld().random.nextInt(2) == 0) {
+                if (entity.getEntityWorld().random.nextInt(2) == 0) {
                     increaseCardiacArrestSideEffect();
                 }
             }
@@ -337,7 +337,7 @@ public class DrugProperties implements NbtSerialisable {
 
         Random random = entity.getRandom();
 
-        if (entity.getWorld().isClient) {
+        if (entity.getEntityWorld().isClient()) {
             hallucinations.update();
 
             if (entity.isOnGround() && random.nextFloat() < getModifier(Drug.JUMP_CHANCE)) {
@@ -360,32 +360,32 @@ public class DrugProperties implements NbtSerialisable {
                 entity.addStatusEffect(new StatusEffectInstance(PSEffects.TEETH_GRINDING, 1000));
                 if (!PacifierItem.consumePacifier(entity)) {
                     teethGrindingRate = Math.max(0, teethGrindingRate - 0.00001F);
-                    entity.damage((ServerWorld)entity.getWorld(), damageOf(PSDamageTypes.TEETH_GRINDING), 1);
+                    entity.damage((ServerWorld)entity.getEntityWorld(), damageOf(PSDamageTypes.TEETH_GRINDING), 1);
                 } else {
                     pacifierSqueakDelay = 5 + entity.getRandom().nextInt(15);
-                    entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,
+                    entity.getEntityWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,
                             entity.getSoundCategory(),
                             entity.getRandom().nextTriangular(1, 0.2F),
                             entity.getRandom().nextTriangular(1, 0.2F)
                     );
-                    entity.getWorld().emitGameEvent(entity, GameEvent.BLOCK_PLACE, entity.getBlockPos());
+                    entity.getEntityWorld().emitGameEvent(entity, GameEvent.BLOCK_PLACE, entity.getBlockPos());
                     PSCriteria.SUCK_PACIFIER.trigger(entity);
                 }
             }
 
             if (pacifierSqueakDelay > 0 && --pacifierSqueakDelay == 0) {
-                entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,
+                entity.getEntityWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), PSSounds.ENTITY_PLAYER_PACIFIER_SQUEAK,
                         entity.getSoundCategory(),
                         entity.getRandom().nextTriangular(1, 0.2F),
                         entity.getRandom().nextTriangular(1, 0.2F)
                 );
-                entity.getWorld().emitGameEvent(entity, GameEvent.BLOCK_PLACE, entity.getBlockPos());
+                entity.getEntityWorld().emitGameEvent(entity, GameEvent.BLOCK_PLACE, entity.getBlockPos());
             }
 
             if (entity.isOnFire()) {
                 BlockPos headPos = BlockPos.ofFloored(entity.getEyePos());
-                if (entity.getWorld().getBlockState(headPos).isOf(PSBlocks.FLAMMABLE_GAS)) {
-                    entity.getWorld().setBlockState(headPos, Blocks.FIRE.getDefaultState());
+                if (entity.getEntityWorld().getBlockState(headPos).isOf(PSBlocks.FLAMMABLE_GAS)) {
+                    entity.getEntityWorld().setBlockState(headPos, Blocks.FIRE.getDefaultState());
                 }
             }
 
@@ -398,7 +398,7 @@ public class DrugProperties implements NbtSerialisable {
                 PSCriteria.HEART_ATTACK.trigger(entity);
                 if (random.nextInt(200) == 0 || entity.isSleeping()) {
                     cardiacArrestTicks = 0;
-                    PSDamageTypes.damage((ServerWorld)entity.getWorld(), entity, damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
+                    PSDamageTypes.damage((ServerWorld)entity.getEntityWorld(), entity, damageOf(PSDamageTypes.HEART_ATTACK), Integer.MAX_VALUE);
                 }
             }
         }
@@ -415,7 +415,7 @@ public class DrugProperties implements NbtSerialisable {
         if (isBreathingSmoke()) {
             timeBreathingSmoke--;
 
-            if (timeBreathingSmoke > 10 && entity.getWorld().isClient) {
+            if (timeBreathingSmoke > 10 && entity.getEntityWorld().isClient()) {
                 if (random.nextInt(2) == 0) {
                     ParticleHelper.spawnParticleAtFace(entity, new DrugDustParticleEffect(PSParticles.EXHALED_SMOKE, breathSmokeColor, 1), random.nextFloat() * 0.05F + 0.1F);
                 }
@@ -445,7 +445,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public void sendCapabilities() {
-        if (!entity.getWorld().isClient) {
+        if (!entity.getEntityWorld().isClient()) {
             var message = new MsgDrugProperties(this, entity.getRegistryManager());
             Channel.UPDATE_DRUG_PROPERTIES.sendToSurroundingPlayers(message, entity);
             // We have to ensure it's sent to ourselves as well (Send to surrounding players ends to us but that doesn't seem to work when loading into a world??)
@@ -514,7 +514,7 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public boolean onAwoken() {
-        if (asEntity().getWorld() instanceof ServerWorld sw) {
+        if (asEntity().getEntityWorld() instanceof ServerWorld sw) {
             drugs.values().forEach(drug -> drug.onWakeUp(sw, this));
         }
         influences.clear();

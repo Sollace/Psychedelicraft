@@ -1,42 +1,33 @@
-
 {
   "targets": {
     "swap": {}
   },
   "passes": [
     {
-      "vertex_shader": "minecraft:post/blit",
+      "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "psychedelicraft:post/digital_depth",
       "inputs": [
-          {
-            "sampler_name": "Diffuse",
-            "target": "minecraft:main",
-            "bilinear": true
-          },
-          {
-            "sampler_name": "Depth",
-            "target": "minecraft:main",
-            "use_depth_buffer": true
-          },
-          {
-            "sampler_name": "Ascii",
-            "location": "psychedelicraft/bits",
-            "width": 128,
-            "height": 128
-          }
+        {
+          "sampler_name": "Diffuse",
+          "target": "minecraft:main",
+          "bilinear": true
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth_buffer": true
+        },
+        {
+          "sampler_name": "Ascii",
+          "location": "psychedelicraft/bits",
+          "width": 128,
+          "height": 128
+        }
       ],
-      "output": "swap",
-      "uniforms": [
-        { "name": "newResolution", "type": "vec2" },
-        { "name": "textProgress", "type": "float" },
-        { "name": "maxColors", "type": "float" },
-        { "name": "saturation", "type": "float" },
-        { "name": "totalAlpha", "type": "float" },
-        { "name": "depthRange", "type": "vec2" }
-      ]
+      "output": "swap"
     },
     {
-      "vertex_shader": "minecraft:post/blit",
+      "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "minecraft:post/blit",
       "inputs": [
         {
@@ -44,10 +35,21 @@
           "target": "swap"
         }
       ],
-      "uniforms": [
-        { "name": "ColorModulate", "type": "vec4", "values": [ 1, 1, 1, 1 ] }
-      ],
-      "output": "minecraft:main"
+      "output": "minecraft:main",
+      "uniforms": {
+        "BlitConfig": [
+          {
+            "name": "ColorModulate",
+            "type": "vec4",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
     }
   ]
 }

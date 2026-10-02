@@ -30,11 +30,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootWorldContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -136,8 +135,8 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
-        if (!world.isClient && (entity.getY() > pos.getY() || entity.getY() >= pos.getY() && !entity.isSneaking()) && entity instanceof LivingEntity && Math.max(
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler, boolean bl) {
+        if (!world.isClient() && (entity.getY() > pos.getY() || entity.getY() >= pos.getY() && !entity.isSneaking()) && entity instanceof LivingEntity && Math.max(
                 Math.abs(entity.getX() - entity.lastRenderX),
                 Math.abs(entity.getZ() - entity.lastRenderZ)
             ) >= 0.003F) {
@@ -260,32 +259,25 @@ public class PlacedDrinksBlock extends BlockWithEntity {
         }
 
         @Override
-        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            readEntriesFromNbt(nbt.getCompoundOrEmpty("entries"));
+        protected void readData(ReadView view) {
+            super.readData(view);
+            ReadView entriesView = view.getReadView("entries");
+            entries.clear();
+            entriesView.keys().forEach(key -> {
+                int index = Integer.parseInt(key);
+                entriesView.read(key, Entry.STACK_CODEC).ifPresent(s -> entries.put(index, s));
+            });
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
-            nbt.put("entries", writeEntriesToNbt(new NbtCompound()));
-        }
-
-        private void readEntriesFromNbt(NbtCompound nbt) {
-            entries.clear();
-            nbt.getKeys().forEach(key -> {
-                int index = Integer.parseInt(key);
-                nbt.get(key, Entry.STACK_CODEC).ifPresent(s -> entries.put(index, s));
-            });
-        }
-
-        private NbtCompound writeEntriesToNbt(NbtCompound nbt) {
+        protected void writeData(WriteView view) {
+            super.writeData(view);
+            WriteView entriesView = view.get("entries");
             entries.entries().forEach(entry -> {
                 if (!entry.value().isEmpty()) {
-                    Entry.STACK_CODEC.encodeStart(NbtOps.INSTANCE, entry.value()).result().ifPresent(stack -> {
-                        nbt.put(entry.key() + "", stack);
-                    });
+                    entriesView.put(entry.key() + "", Entry.STACK_CODEC, entry.value());
                 }
             });
-            return nbt;
         }
 
         public static Optional<BlockPos> getHitPos(BlockHitResult hit) {

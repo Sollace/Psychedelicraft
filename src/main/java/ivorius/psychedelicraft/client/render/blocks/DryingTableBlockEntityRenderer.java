@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
+import ivorius.psychedelicraft.client.render.QueuedVertexConsumers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -23,7 +24,7 @@ import java.util.Random;
  *
  * Updated by Sollace on 5 Jan 2023
  */
-public class DryingTableBlockEntityRenderer implements BlockEntityRenderer<DryingTableBlockEntity> {
+public class DryingTableBlockEntityRenderer implements SimpleBlockEntityRenderer<DryingTableBlockEntity> {
     public DryingTableBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 
     }
@@ -59,7 +60,7 @@ public class DryingTableBlockEntityRenderer implements BlockEntityRenderer<Dryin
             matrices.translate(0, 0, -0.2F);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
             matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(-50));
-            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
+            QueuedVertexConsumers.renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, entity.getWorld(), (int)seed);
 
             matrices.pop();
         }

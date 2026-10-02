@@ -62,19 +62,19 @@ abstract class MixinEntity implements TouchingWaterAccessor {
             Entity self = (Entity)(Object)this;
             Box box = self.getBoundingBox().expand(0.001);
             BlockPos.stream(self.getBoundingBox().contract(0.001)).flatMapToDouble(pos -> {
-                BlockState state = self.getWorld().getBlockState(pos);
+                BlockState state = self.getEntityWorld().getBlockState(pos);
                 if (!(state.getBlock() instanceof FluidFilled tub)) {
                     return DoubleStream.empty();
                 }
 
-                return tub.getContainedFluid(self.getWorld(), state, pos).stream()
+                return tub.getContainedFluid(self.getEntityWorld(), state, pos).stream()
                         .filter(fluidState -> fluidState.isIn(tag))
                         .mapToDouble(fluidState -> {
                     if (fluidState.isIn(tag)) {
                         if (tag == FluidTags.WATER) {
                             collidedFluid = fluidState;
                         }
-                        Box fluidBox = tub.getFluidCollisionBox(self.getWorld(), state, pos);
+                        Box fluidBox = tub.getFluidCollisionBox(self.getEntityWorld(), state, pos);
                         if (fluidBox.intersects(box)) {
                             return fluidBox.getLengthY();
                         }
@@ -88,7 +88,7 @@ abstract class MixinEntity implements TouchingWaterAccessor {
         }
     }
 
-    @ModifyArg(method = "onSwimmingStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"))
+    @ModifyArg(method = "onSwimmingStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;addParticleClient(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"))
     private ParticleEffect replaceSplashParticle(ParticleEffect parameters) {
         SimpleFluid fluid = SimpleFluid.of(collidedFluid.getFluid());
         if (fluid.isCustomFluid()) {

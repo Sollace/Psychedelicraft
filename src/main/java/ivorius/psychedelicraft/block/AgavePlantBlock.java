@@ -78,12 +78,12 @@ public class AgavePlantBlock extends SucculentPlantBlock {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler, boolean bl) {
         if (!(entity instanceof LivingEntity) || entity.getType() == EntityType.FOX || entity.getType() == EntityType.BEE) {
             return;
         }
         entity.slowMovement(state, new Vec3d(0.8F, 0.75F, 0.8F));
-        if (!(world.isClient
+        if (!(world.isClient()
                 || state.get(getAgeProperty()) <= 0
                 || entity.lastRenderX == entity.getX() && entity.lastRenderZ == entity.getZ()
                 || entity.isSneaking())) {

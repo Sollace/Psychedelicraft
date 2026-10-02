@@ -100,9 +100,9 @@ public record StatePredicate (
 
         public StatePredicate build() {
             AlcoholicFluidState.Builder stateBuilder = AlcoholicFluidState.builder();
-            fermentationRange.min().ifPresent(stateBuilder::fermentation);
-            maturationRange.min().ifPresent(stateBuilder::maturation);
-            distillationRange.min().ifPresent(stateBuilder::distillation);
+            fermentationRange.getMin().ifPresent(stateBuilder::fermentation);
+            maturationRange.getMin().ifPresent(stateBuilder::maturation);
+            distillationRange.getMin().ifPresent(stateBuilder::distillation);
             if (vinegar == TriState.TRUE) {
                 stateBuilder.vinegar();
             }

@@ -48,7 +48,7 @@ public class MolotovCocktailItem extends DrinkableItem {
         float strength = user.getItemUseTimeLeft() / (float)getMaxUseTime(stack, user);
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
 
-        if (!world.isClient) {
+        if (!world.isClient()) {
             MolotovCocktailEntity projectile = new MolotovCocktailEntity(world, user);
             projectile.setItem(stack);
             projectile.setVelocity(user, user.getPitch(), user.getYaw(), 0, 0.5F * strength, 1F);

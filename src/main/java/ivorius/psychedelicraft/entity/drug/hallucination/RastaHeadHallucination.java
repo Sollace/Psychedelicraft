@@ -37,7 +37,7 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
     private final float planeRotationZ;
 
     public RastaHeadHallucination(PlayerEntity playerEntity) {
-        super(playerEntity, EntityType.PIG.create(playerEntity.getWorld(), SpawnReason.EVENT));
+        super(playerEntity, EntityType.PIG.create(playerEntity.getEntityWorld(), SpawnReason.EVENT));
 
         maxAge = (random.nextInt(59) + 120) * 20;
         scale = 1 + random.nextFloat() / 2F;
@@ -46,7 +46,7 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
         planeRotationX = random.nextFloat() * MathHelper.HALF_PI;
         planeRotationZ = random.nextFloat() * MathHelper.HALF_PI;
 
-        entity.setPosition(playerEntity.getPos());
+        entity.setPosition(playerEntity.getEntityPos());
         lookControl = ((MobEntity)entity).getLookControl();
 
         chatBot = Optional.of(new ChatBot(new RastaheadPersonality(), playerEntity));
@@ -67,14 +67,14 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
 
         Vec3d wanted = player.getEyePos().add(offset);
 
-        double totalDist = wanted.distanceTo(entity.getPos());
+        double totalDist = wanted.distanceTo(entity.getEntityPos());
 
         Vec3d vel = entity.getVelocity().multiply(0.9D);
 
-        vel = wanted.subtract(entity.getPos()).normalize().multiply(Math.log((float)totalDist));
+        vel = wanted.subtract(entity.getEntityPos()).normalize().multiply(Math.log((float)totalDist));
 
         entity.setVelocity(vel);
-        entity.setPosition(entity.getPos().add(vel));
+        entity.setPosition(entity.getEntityPos().add(vel));
     }
 
     @Override

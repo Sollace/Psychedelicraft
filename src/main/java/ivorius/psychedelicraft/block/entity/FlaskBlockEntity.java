@@ -9,8 +9,8 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.world.ServerWorld;
@@ -35,7 +35,6 @@ import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.Impurities;
 import ivorius.psychedelicraft.item.component.ItemFluids;
-import ivorius.psychedelicraft.util.NbtSerialisable;
 
 /**
  * Created by lukas on 25.10.14.
@@ -162,21 +161,21 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
-        compound.put("tank", tank.toNbt(lookup));
-        Inventories.writeNbt(compound, ioInventory.heldStacks, lookup);
-        compound.put("inputSlot", inputSlot.toNbt(lookup));
-        compound.put("outputSlot", outputSlot.toNbt(lookup));
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        Inventories.writeData(view, ioInventory.heldStacks);
+        tank.writeData(view.get("tank"));
+        inputSlot.writeData(view.get("inputSlot"));
+        outputSlot.writeData(view.get("outputSlot"));
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
-        tank.fromNbt(compound.getCompoundOrEmpty("tank"), lookup);
-        Inventories.readNbt(compound, ioInventory.heldStacks, lookup);
-        inputSlot.fromNbt(compound.getCompoundOrEmpty("inputSlot"), lookup);
-        outputSlot.fromNbt(compound.getCompoundOrEmpty("outputSlot"), lookup);
+    protected void readData(ReadView view) {
+        super.readData(view);
+        Inventories.readData(view, ioInventory.heldStacks);
+        tank.readData(view.getReadView("tank"));
+        inputSlot.readData(view.getReadView("inputSlot"));
+        outputSlot.readData(view.getReadView("outputSlot"));
     }
 
     @Override
@@ -274,7 +273,7 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
         }
     }
 
-    public class IoSlot implements NbtSerialisable {
+    public class IoSlot {
         public final int index;
 
         private final int levelsTransferredIndex;
@@ -317,16 +316,14 @@ public class FlaskBlockEntity extends SyncedBlockEntity implements BlockWithFlui
             return FluidCapacity.getPercentage(getStack());
         }
 
-        @Override
-        public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-            compound.putInt("inputtedLevels", propertyDelegate.get(inputtedLevelsIndex));
-            compound.putInt("levelsTransferred", propertyDelegate.get(levelsTransferredIndex));
+        public void writeData(WriteView view) {
+            view.putInt("inputtedLevels", propertyDelegate.get(inputtedLevelsIndex));
+            view.putInt("levelsTransferred", propertyDelegate.get(levelsTransferredIndex));
         }
 
-        @Override
-        public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-            propertyDelegate.set(inputtedLevelsIndex, compound.getInt("inputtedLevels", 0));
-            propertyDelegate.set(levelsTransferredIndex, compound.getInt("levelsTransferred", 0));
+        public void readData(ReadView view) {
+            propertyDelegate.set(inputtedLevelsIndex, view.getInt("inputtedLevels", 0));
+            propertyDelegate.set(levelsTransferredIndex, view.getInt("levelsTransferred", 0));
         }
     }
 }

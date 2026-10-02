@@ -42,6 +42,6 @@ public interface ShaderContext {
     }
 
     static Vec3d position() {
-        return MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
+        return MinecraftClient.getInstance().gameRenderer.getCamera().getCameraPos();
     }
 }

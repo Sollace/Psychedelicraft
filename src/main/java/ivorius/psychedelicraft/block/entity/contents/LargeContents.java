@@ -24,10 +24,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
@@ -77,7 +77,7 @@ public class LargeContents extends SmallContents {
 
         if (ingredients.size() < MAX_INGREDIENTS
                 && ingredients.getCount(stack.getItem()) < 5) {
-            if (player.getWorld() instanceof ServerWorld sw && isValidIngredient(sw, stack)) {
+            if (player.getEntityWorld() instanceof ServerWorld sw && isValidIngredient(sw, stack)) {
                 ingredients.addStack(stack.splitUnlessCreative(1, player));
                 player.setStackInHand(hand, stack);
                 entity.playSound(null, PSSounds.BLOCK_BUNSEN_BURNER_FILL);
@@ -94,7 +94,7 @@ public class LargeContents extends SmallContents {
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
             if (deposit(t)) {
                 entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
-                if (!player.getWorld().isClient) {
+                if (!player.getEntityWorld().isClient()) {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
                 }
                 return Optional.of(this);
@@ -104,7 +104,7 @@ public class LargeContents extends SmallContents {
 
         ItemFluidsMixture mixture = ItemFluidsMixture.of(stack);
         if (!mixture.isEmpty()) {
-            if (!player.getWorld().isClient) {
+            if (!player.getEntityWorld().isClient()) {
                 player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, ItemFluidsMixture.set(stack.copyWithCount(1), mixture.fluids().stream().map(this::deposit).toList())));
             }
             entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
@@ -115,7 +115,7 @@ public class LargeContents extends SmallContents {
         if (!tank.getContents().isEmpty()) {
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copyWithCount(1));
             if (tank.withdraw(t, FluidCapacity.get(stack)) > 0) {
-                if (!player.getWorld().isClient) {
+                if (!player.getEntityWorld().isClient()) {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
                 }
                 entity.playSound(player, SoundEvents.ITEM_BOTTLE_FILL);
@@ -244,15 +244,16 @@ public class LargeContents extends SmallContents {
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.toNbt(compound, lookup);
-        compound.put("ingredients", ingredients.toNbt(lookup));
+    public void writeData(WriteView view) {
+        super.writeData(view);
+        ingredients.writeData(view.get("ingredients"));
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.fromNbt(compound, lookup);
-        ingredients = new ItemMound(compound.getCompoundOrEmpty("ingredients"), lookup);
+    public void readData(ReadView view) {
+        super.readData(view);
+        ingredients = new ItemMound();
+        ingredients.readData(view.getReadView("ingredients"));
     }
 
     @Override

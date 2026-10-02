@@ -87,14 +87,14 @@ public class FluidBoxRenderer {
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemFluids fluids) {
         if (fluids.isEmpty()) {
             sprite = null;
-            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(BLOCK_ATLAS_TEXTURE));
+            buffer = vertices.getBuffer(RenderLayers.entityTranslucent(BLOCK_ATLAS_TEXTURE));
             color = Colors.WHITE;
         } else {
             FluidAppearance appearance = FluidAppearance.of(fluids);
 
             sprite = appearance.sprite();
             color = appearance.color();
-            buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(appearance.texture()));
+            buffer = vertices.getBuffer(RenderLayers.entityTranslucent(appearance.texture()));
         }
 
         return this;
@@ -103,7 +103,7 @@ public class FluidBoxRenderer {
     public FluidBoxRenderer texture(VertexConsumerProvider vertices, ItemStack stack) {
         MinecraftClient.getInstance().getItemModelManager().update(itemRenderState, stack, ItemDisplayContext.FIRST_PERSON_LEFT_HAND, null, null, 0);
         sprite = itemRenderState.getParticleSprite(random);
-        buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(BLOCK_ATLAS_TEXTURE));
+        buffer = vertices.getBuffer(RenderLayers.entityTranslucent(BLOCK_ATLAS_TEXTURE));
         color = Colors.WHITE;
         return this;
     }

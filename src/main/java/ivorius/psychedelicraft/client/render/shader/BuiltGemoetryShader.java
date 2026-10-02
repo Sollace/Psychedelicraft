@@ -2,56 +2,49 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL20C;
+import org.lwjgl.opengl.GL33C;
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.textures.GpuTexture;
 
-import net.minecraft.client.gl.GlUniform;
+import net.minecraft.client.gl.GlSampler;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.texture.GlTexture;
 
 public class BuiltGemoetryShader {
-    private final int program;
+    // GlStateManager only tracks units 0-11 and vanilla programs only use the first few
+    private static final int FIRST_SAMPLER_UNIT = 11;
 
-    private final List<GlUniform> uniforms;
+    private final List<Uniform> uniforms;
     private final List<Sampler> samplers;
 
-    public BuiltGemoetryShader(int program, List<GlUniform> uniforms, List<Sampler> samplers) {
-        this.program = program;
+    private BuiltGemoetryShader(List<Uniform> uniforms, List<Sampler> samplers) {
         this.uniforms = uniforms;
         this.samplers = samplers;
     }
 
     public void bind() {
         for (var sampler : samplers) {
-            sampler.bind(program);
+            sampler.bind();
         }
         for (var uniform : uniforms) {
-            uniform.upload();
+            uniform.upload.accept(uniform.location);
         }
     }
 
-    private static class Sampler {
-        private final int id;
-        public int location;
-        private final String name;
-        private final Supplier<GpuTexture> valueGetter;
+    private record Uniform(int location, IntConsumer upload) {}
 
-        public Sampler(int id, String name, Supplier<GpuTexture> valueGetter) {
-            this.id = id;
-            this.name = name;
-            this.valueGetter = valueGetter;
-        }
-
-        void bind(int program) {
-            GlTexture texId = (GlTexture)valueGetter.get();
-            GlUniform.setUniform(location, id);
-            GlStateManager._activeTexture(GlConst.GL_TEXTURE0 + id);
-            GlStateManager._bindTexture(texId.getGlId());
-            texId.checkDirty();
+    private record Sampler(int location, int unit, Supplier<GpuTexture> texture) {
+        void bind() {
+            GL20C.glUniform1i(location, unit);
+            GlStateManager._activeTexture(GlConst.GL_TEXTURE0 + unit);
+            GlStateManager._bindTexture(((GlTexture)texture.get()).getGlId());
+            GL33C.glBindSampler(unit, ((GlSampler)RenderLayers.BLOCK_SAMPLER.get()).getSamplerId());
         }
     }
 
@@ -60,44 +53,46 @@ public class BuiltGemoetryShader {
     }
 
     public static class Builder {
-        private final List<GlUniform> uniforms = new ArrayList<>();
-        private final List<Sampler> samplers = new ArrayList<>();
+        private final List<GeometryShader.BoundUniform> uniforms = new ArrayList<>();
+        private final List<String> samplerNames = new ArrayList<>();
+        private final List<Supplier<GpuTexture>> samplerTextures = new ArrayList<>();
 
         private final int program;
-        private int lastFragmentId;
 
-        public Builder(int program, int lastAttributeId, int lastFragmentId) {
+        public Builder(int program) {
             this.program = program;
-            this.lastFragmentId = lastFragmentId;
         }
 
         void addSampler(String sampler, Supplier<GpuTexture> supplier) {
-            samplers.add(new Sampler(++lastFragmentId, sampler, supplier));
+            samplerNames.add(sampler);
+            samplerTextures.add(supplier);
         }
 
-        void addUniform(GlUniform uniform) {
+        void addUniform(GeometryShader.BoundUniform uniform) {
             uniforms.add(uniform);
         }
 
+        /**
+         * @return the bound shader, or null if the program uses none of the geometry uniforms
+         */
+        @Nullable
         public BuiltGemoetryShader build() {
             List<Sampler> samplers = new ArrayList<>();
-            this.samplers.forEach(sampler -> {
-                int location = GL20C.glGetUniformLocation(program, sampler.name);
+            for (int i = 0; i < samplerNames.size(); i++) {
+                int location = GL20C.glGetUniformLocation(program, samplerNames.get(i));
                 if (location != -1) {
-                    sampler.location = location;
-                    samplers.add(sampler);
+                    samplers.add(new Sampler(location, FIRST_SAMPLER_UNIT - samplers.size(), samplerTextures.get(i)));
                 }
-            });
-            List<GlUniform> uniforms = new ArrayList<>();
-            this.uniforms.forEach(uniform -> {
-                int location = GL20C.glGetUniformLocation(program, uniform.getName());
+            }
+            List<Uniform> uniforms = new ArrayList<>();
+            for (var uniform : this.uniforms) {
+                int location = GL20C.glGetUniformLocation(program, uniform.name());
                 if (location != -1) {
-                    uniforms.add(uniform);
-                    uniform.setLocation(location);
+                    uniforms.add(new Uniform(location, uniform.upload()));
                 }
-            });
+            }
 
-            return new BuiltGemoetryShader(program, uniforms, samplers);
+            return samplers.isEmpty() && uniforms.isEmpty() ? null : new BuiltGemoetryShader(uniforms, samplers);
         }
     }
 }

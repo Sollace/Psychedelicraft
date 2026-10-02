@@ -98,7 +98,7 @@ public class NightshadeBlock extends PlantBlock implements Fertilizable {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler, boolean bl) {
         if (!(entity instanceof LivingEntity) || state.get(AGE) < 3 || entity.getType() == EntityType.FOX || entity.getType() == EntityType.BEE) {
             return;
         }
@@ -125,7 +125,7 @@ public class NightshadeBlock extends PlantBlock implements Fertilizable {
                     1,
                     0.8F + world.random.nextFloat() * 0.4F
             );
-            return world.isClient ? ActionResult.SUCCESS : ActionResult.SUCCESS_SERVER;
+            return world.isClient() ? ActionResult.SUCCESS : ActionResult.SUCCESS_SERVER;
         }
 
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);

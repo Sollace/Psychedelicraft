@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
+import ivorius.psychedelicraft.client.render.QueuedVertexConsumers;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.contents.LargeContents;
 import ivorius.psychedelicraft.block.entity.contents.SmallContents;
@@ -18,7 +19,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
@@ -33,11 +33,9 @@ import net.minecraft.util.math.random.Random;
 
 public class BurnerBlockEntityRenderer extends LabelledBlockEntityRenderer<BurnerBlockEntity> {
 
-    private final ItemRenderer itemRenderer;
 
     public BurnerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
         super(context);
-        itemRenderer = context.getItemRenderer();
     }
 
     @Override
@@ -225,7 +223,7 @@ public class BurnerBlockEntityRenderer extends LabelledBlockEntityRenderer<Burne
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((rng.nextFloat() * 360) - 180));
                 y -= 0.1F;
 
-                itemRenderer.renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, entity.getWorld(), 0);
+                QueuedVertexConsumers.renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, entity.getWorld(), 0);
                 matrices.pop();
             }
         }

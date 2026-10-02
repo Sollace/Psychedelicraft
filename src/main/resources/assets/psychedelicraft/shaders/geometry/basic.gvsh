@@ -10,7 +10,9 @@ uniform float PS_FractalFractureStrength;
 
 uniform vec3 PS_PlayerPosition;
 
+#ifndef PER_FACE_LIGHTING
 ps_out vec4 vertexColor;
+#endif
 
 ps_out float vertexDistance;
 
@@ -25,7 +27,9 @@ float gold_noise(vec2 xy, float seed) {
 
 void main() {
   // we have to write to it so mac is happy
+#ifndef PER_FACE_LIGHTING
   vertexColor = vec4(0, 0, 0, 0);
+#endif
   vertexDistance = 0;
 
   float worldTicks = PS_WorldTicks;
@@ -43,14 +47,19 @@ void main() {
 
   float fogFragCoord = length(gl_Position);
   vec3 vertexPosition = /*replaceme*/Position.xyz;
+  if (vertexDistance == 0.0) {
+    vertexDistance = length(vertexPosition);
+  }
 
   if (surfaceFractalStrength > 0.0) {
     float fractalScale = 4.0;
 
+#ifndef PER_FACE_LIGHTING
     vertexColor = vec4(mix(vertexColor.rgb, texture(PS_SurfaceFractalSampler, vec2(
         mix(surfaceFractalCoords[0], surfaceFractalCoords[2], (mod(vertexPosition.x + vertexPosition.y, fractalScale)) / fractalScale),
         mix(surfaceFractalCoords[1], surfaceFractalCoords[3], (mod(vertexPosition.z + vertexPosition.y, fractalScale)) / fractalScale)
     )).rgb, surfaceFractalStrength), vertexColor.a);
+#endif
   }
 
   if (smallWaves > 0.0) {

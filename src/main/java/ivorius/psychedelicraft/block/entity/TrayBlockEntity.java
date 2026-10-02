@@ -3,7 +3,6 @@ package ivorius.psychedelicraft.block.entity;
 import java.util.Optional;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 
 import ivorius.psychedelicraft.PSSounds;
 import ivorius.psychedelicraft.advancement.PSCriteria;
@@ -16,15 +15,14 @@ import ivorius.psychedelicraft.recipe.HardeningRecipe;
 import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -159,23 +157,21 @@ public class TrayBlockEntity extends SyncedBlockEntity implements PipeInsertable
     }
 
     @Override
-    public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.writeNbt(compound, lookup);
-        FluidMound.CODEC.encodeStart(NbtOps.INSTANCE, impurities).result().ifPresent(nbt -> compound.put("impurities", nbt));
-        compound.putInt("timeToHarden", timeToHarden);
-        compound.put("fluid", fluid.toNbt(lookup));
-        craftingResult.flatMap(s -> ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, s).result()).ifPresent(nbt -> compound.put("craftingResult", nbt));
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        view.put("impurities", FluidMound.CODEC, impurities);
+        view.putInt("timeToHarden", timeToHarden);
+        fluid.writeData(view.get("fluid"));
+        craftingResult.filter(s -> !s.isEmpty()).ifPresent(s -> view.put("craftingResult", ItemStack.CODEC, s));
     }
 
     @Override
-    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        super.readNbt(compound, lookup);
-        impurities = FluidMound.CODEC.decode(NbtOps.INSTANCE, compound.get("impurities")).result()
-                .map(Pair::getFirst)
-                .orElseGet(FluidMound::of);
-        timeToHarden = compound.getInt("timeToHarden", 0);
-        fluid.fromNbt(compound.getCompoundOrEmpty("fluid"), lookup);
-        craftingResult = compound.get("craftingResult", ItemStack.OPTIONAL_CODEC);
+    protected void readData(ReadView view) {
+        super.readData(view);
+        impurities = view.read("impurities", FluidMound.CODEC).orElseGet(FluidMound::of);
+        timeToHarden = view.getInt("timeToHarden", 0);
+        fluid.readData(view.getReadView("fluid"));
+        craftingResult = view.read("craftingResult", ItemStack.OPTIONAL_CODEC);
         matchingRecipe = Optional.empty();
     }
 }

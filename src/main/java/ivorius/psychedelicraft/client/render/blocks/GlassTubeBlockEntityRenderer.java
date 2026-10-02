@@ -20,7 +20,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
-public class GlassTubeBlockEntityRenderer implements BlockEntityRenderer<GlassTubeBlock.Data> {
+public class GlassTubeBlockEntityRenderer implements SimpleBlockEntityRenderer<GlassTubeBlock.Data> {
     private static final Function<Integer, Function<Direction, VoxelShape>> SHAPE_PART_CACHE = Util.memoize(step -> {
         return GlassTubeBlock.createShapePartCache(GlassTubeBlock.RADIUS * 0.5, step / 10D, 0.1);
     });

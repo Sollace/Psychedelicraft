@@ -44,7 +44,7 @@ abstract class MixinMessageHandler {
         if (success) {
             DrugProperties.of((Entity)MinecraftClient.getInstance().player).ifPresent(properties -> {
                 properties.getHallucinations().getEntities().getChatBots().forEach(chatbot -> {
-                    chatbot.onMessageReceived(sender.getName(), decorated);
+                    chatbot.onMessageReceived(sender.name(), decorated);
                 });
             });
         }

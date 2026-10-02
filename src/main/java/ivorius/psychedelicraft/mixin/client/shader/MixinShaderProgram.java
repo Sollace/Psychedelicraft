@@ -1,72 +1,45 @@
 package ivorius.psychedelicraft.mixin.client.shader;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.joml.Matrix4f;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL20C;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.vertex.VertexFormat;
 
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import ivorius.psychedelicraft.client.render.shader.BuiltGemoetryShader;
 import ivorius.psychedelicraft.client.render.shader.GeometryShader;
+import ivorius.psychedelicraft.client.render.shader.ProgramUniforms;
 import net.minecraft.client.gl.*;
 
 @Mixin(ShaderProgram.class)
-abstract class MixinShaderProgram implements AutoCloseable {
+abstract class MixinShaderProgram implements AutoCloseable, ProgramUniforms.Holder {
     @Shadow
-    private @Final List<GlUniform> uniforms;
-    @Shadow
-    private @Final Map<String, GlUniform> uniformsByName;
+    private @Final int glRef;
 
-    @Shadow
-    private @Final List<String> samplers;
-    @Shadow
-    private @Final Object2ObjectMap<String, GpuTexture> samplerTextures;
-    @Shadow
-    private @Final IntList samplerLocations;
+    @Unique
+    private final Object2IntMap<String> psychedelicraft_uniformLocations = new Object2IntOpenHashMap<>();
+    @Unique
+    @Nullable
+    private BuiltGemoetryShader psychedelicraft_geometryShader;
 
-    @ModifyVariable(method = "set", at = @At("HEAD"), argsOnly = true, ordinal = 1)
-    private List<String> modifySamplers(List<String> samplers) {
-        ShaderProgram self = (ShaderProgram)(Object)this;
-        List<String> names = new ArrayList<>(samplers);
-        Set<String> distincts = new HashSet<>(samplers);
-        GeometryShader.INSTANCE.getSamplers().forEach((samplerName, sampler) -> {
-            if (distincts.add(samplerName) && GlUniform.getUniformLocation(self.getGlRef(), samplerName) != -1) {
-                names.add(samplerName);
-            }
-        });
-        return names;
+    @Inject(method = "set", at = @At("RETURN"))
+    private void onSet(List<RenderPipeline.UniformDescription> uniforms, List<String> samplers, CallbackInfo info) {
+        psychedelicraft_geometryShader = GeometryShader.INSTANCE.createShaderBuilder(glRef).build();
     }
 
-    @Inject(method = "set", at = @At("HEAD"))
-    private void onLoadReferences(List<RenderPipeline.UniformDescription> uniforms, List<String> samplers, CallbackInfo info) {
-        ShaderProgram self = (ShaderProgram)(Object)this;
-        GeometryShader.INSTANCE.addUniforms(uniform -> {
-            int location = GlUniform.getUniformLocation(self.getGlRef(), uniform.getName());
-            if (location != -1) {
-                this.uniforms.add(uniform);
-                uniformsByName.put(uniform.getName(), uniform);
-                uniform.setLocation(location);
-            }
-        });
+    @Override
+    public int psychedelicraft_getUniformLocation(String name) {
+        return psychedelicraft_uniformLocations.computeIfAbsent(name, (String n) -> GL20C.glGetUniformLocation(glRef, n));
     }
 
-    @Inject(method = "initializeUniforms", at = @At("RETURN"))
-    private void onInitializeUniforms(VertexFormat.DrawMode drawMode, Matrix4f viewMatrix, Matrix4f projectionMatrix, float screenWidth, float screenHeight, CallbackInfo info) {
-        ShaderProgram self = (ShaderProgram)(Object)this;
-        GeometryShader.INSTANCE.getSamplers().forEach((samplerName, sampler) -> {
-            int location = GlUniform.getUniformLocation(self.getGlRef(), samplerName);
-            if (location != -1) {
-                samplerTextures.put(samplerName, sampler.get());
-            }
-        });
+    @Override
+    @Nullable
+    public BuiltGemoetryShader psychedelicraft_getGeometryShader() {
+        return psychedelicraft_geometryShader;
     }
 }

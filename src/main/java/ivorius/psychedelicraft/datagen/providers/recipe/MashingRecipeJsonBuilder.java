@@ -76,7 +76,7 @@ public class MashingRecipeJsonBuilder implements FluidRecipeJsonBuilder {
 	}
 
 	public MashingRecipeJsonBuilder input(TagKey<Item> tag, int count) {
-        return input(Ingredient.fromTag(lookup.getOrThrow(tag)), count);
+        return input(Ingredient.ofTag(lookup.getOrThrow(tag)), count);
     }
 
 	public MashingRecipeJsonBuilder input(ItemConvertible input, int count) {

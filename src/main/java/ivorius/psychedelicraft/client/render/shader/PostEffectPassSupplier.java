@@ -1,10 +1,8 @@
 package ivorius.psychedelicraft.client.render.shader;
 
 import java.util.List;
-
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-
-import net.minecraft.client.gl.PostEffectPipeline;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public interface PostEffectPassSupplier {
     List<Pass> getPasses();
@@ -12,14 +10,8 @@ public interface PostEffectPassSupplier {
     interface Pass {
         String getId();
 
-        RenderPipeline getPipeline();
-
         void setDisabled();
 
-        void setUniformUpdater(PostEffectPassSupplier.UniformUpdater updater);
-    }
-
-    interface UniformUpdater {
-        List<PostEffectPipeline.Uniform> accept(RenderPipeline pipeline);
+        void setUniformUpdater(Supplier<Map<String, float[]>> updater);
     }
 }

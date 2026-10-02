@@ -136,13 +136,13 @@ public class SimpleDrug implements Drug {
                 properties.markDirty();
             }
 
-            if (!properties.asEntity().getWorld().isClient) {
-                if (tickSideEffects((ServerWorld)properties.asEntity().getWorld(), properties, properties.asEntity().getWorld().random)) {
+            if (!properties.asEntity().getEntityWorld().isClient()) {
+                if (tickSideEffects((ServerWorld)properties.asEntity().getEntityWorld(), properties, properties.asEntity().getEntityWorld().random)) {
                     reset(properties);
                     properties.markDirty();
                 }
             } else {
-                tickClientEffects(properties, properties.asEntity().getWorld().random);
+                tickClientEffects(properties, properties.asEntity().getEntityWorld().random);
             }
         } else {
             ticksActive = 0;

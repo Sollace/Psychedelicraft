@@ -1,4 +1,4 @@
-#version 150
+#version 330
 #moj_import <psychedelicraft:random_from_vec.glsl>
 #moj_import <psychedelicraft:get_desaturated_color.glsl>
 #moj_import <psychedelicraft:reduce_pallete.glsl>

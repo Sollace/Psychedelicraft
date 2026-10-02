@@ -29,9 +29,9 @@ public abstract class DrugOverlayScreenEffect<D extends Drug> implements ScreenE
     public void render(DrawContext context, Window window, float tickDelta) {
         if (MinecraftClient.getInstance().player != null) {
             DrugProperties properties = DrugProperties.of(MinecraftClient.getInstance().player);
-            context.getMatrices().push();
+            context.getMatrices().pushMatrix();
             render(context, window, tickDelta, properties, (D)properties.getDrug(type));
-            context.getMatrices().pop();
+            context.getMatrices().popMatrix();
         }
     }
 

@@ -20,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
  * Created by lukas on 16.11.14.
  * Updated by Sollace on 6 Jan 2023
  */
-public class BottleRackBlockEntityRenderer implements BlockEntityRenderer<BottleRackBlockEntity> {
+public class BottleRackBlockEntityRenderer implements SimpleBlockEntityRenderer<BottleRackBlockEntity> {
     public BottleRackBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 
     }

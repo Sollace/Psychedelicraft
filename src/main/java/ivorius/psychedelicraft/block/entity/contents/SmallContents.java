@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.block.entity.contents;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.mojang.datafixers.util.Either;
 
@@ -21,18 +22,17 @@ import ivorius.psychedelicraft.item.component.ItemFluidsMixture;
 import ivorius.psychedelicraft.recipe.BunsenBurnerRecipe;
 import ivorius.psychedelicraft.recipe.FluidMound;
 import ivorius.psychedelicraft.recipe.ItemMound;
-import ivorius.psychedelicraft.util.NbtSerialisable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
@@ -102,12 +102,12 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     @Override
     public Optional<Contents> interact(ItemStack stack, PlayerEntity player, Hand hand, Direction side) {
         if (stack.isEmpty()) {
-            if (!player.getWorld().isClient) {
+            if (!player.getEntityWorld().isClient()) {
                 player.setStackInHand(hand, ItemFluidsMixture.set(entity.getContainer(), getAuxiliaryTanks().stream().map(Resovoir::getContents).toList()));
                 entity.setContainer(ItemStack.EMPTY);
                 for (ItemStack ingredient : getCraftingIngredients().convertToItemStacks()) {
                     if (!player.giveItemStack(ingredient)) {
-                        Block.dropStack(player.getWorld(), entity.getPos(), ingredient);
+                        Block.dropStack(player.getEntityWorld(), entity.getPos(), ingredient);
                     }
                 }
                 clear();
@@ -128,7 +128,7 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
         ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack);
         if (!t.fluids().isEmpty() && getPrimaryTank().deposit(t, t.fluids().amount()) > 0) {
             entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
-            if (!player.getWorld().isClient) {
+            if (!player.getEntityWorld().isClient()) {
                 player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
             }
             return Optional.of(this);
@@ -237,15 +237,20 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
     }
 
     @Override
-    public void toNbt(NbtCompound compound, WrapperLookup lookup) {
-        compound.putInt("capacity", capacity);
-        compound.put("fluids", NbtSerialisable.fromList(getAuxiliaryTanks(), lookup));
+    public void writeData(WriteView view) {
+        view.putInt("capacity", capacity);
+        WriteView.ListView fluids = view.getList("fluids");
+        getAuxiliaryTanks().forEach(tank -> tank.writeData(fluids.add()));
     }
 
     @Override
-    public void fromNbt(NbtCompound compound, WrapperLookup lookup) {
-        capacity = compound.getInt("capacity", FluidVolumes.GLASS_BOTTLE);
-        auxiliaryTanks = compound.getList("fluids").map(list -> NbtSerialisable.toList(new ArrayList<>(), list, lookup, this::createTank)).orElseGet(ArrayList::new);
+    public void readData(ReadView view) {
+        capacity = view.getInt("capacity", FluidVolumes.GLASS_BOTTLE);
+        auxiliaryTanks = view.getListReadView("fluids").stream().map(tankView -> {
+            Resovoir tank = createTank();
+            tank.readData(tankView);
+            return tank;
+        }).collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override

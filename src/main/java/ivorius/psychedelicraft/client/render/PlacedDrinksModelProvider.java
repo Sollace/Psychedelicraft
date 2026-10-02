@@ -26,7 +26,7 @@ import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
@@ -43,9 +43,9 @@ public class PlacedDrinksModelProvider
     private Map<String, Map<Identifier, Entry>> entries = Map.of();
 
     @Override
-    public CompletableFuture<Map<String, Map<Identifier, Entry>>> load(ResourceManager resourceManager, Executor executor) {
+    public CompletableFuture<Map<String, Map<Identifier, Entry>>> load(ResourceReloader.Store store, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
-            return resourceManager.getResource(CONFIG_LOCATION).map(resource -> {
+            return store.getResourceManager().getResource(CONFIG_LOCATION).map(resource -> {
                 try (BufferedReader reader = resource.getReader()) {
                     return CODEC.decode(JsonOps.INSTANCE, JsonHelper.deserialize(GSON, reader, JsonElement.class)).getOrThrow().getFirst();
                 } catch (IOException e) {
@@ -87,7 +87,7 @@ public class PlacedDrinksModelProvider
             matrices.push();
             matrices.translate(0.5, 0.5, 0.5);
             PlacementProperty.setCurrent(type);
-            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, null, 0);
+            QueuedVertexConsumers.renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, null, 0);
             matrices.pop();
         } finally {
             PlacementProperty.setCurrent(null);

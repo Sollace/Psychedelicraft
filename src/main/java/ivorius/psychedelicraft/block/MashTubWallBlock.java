@@ -19,10 +19,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Unit;
@@ -215,9 +215,9 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return getValidMasterPosition(world, pos)
-                .map(p -> world.getBlockState(p).getComparatorOutput(world, p))
+                .map(p -> world.getBlockState(p).getComparatorOutput(world, p, direction))
                 .orElse(0);
     }
 
@@ -251,15 +251,15 @@ public class MashTubWallBlock extends BlockWithEntity implements FluidFilled, Pi
         }
 
         @Override
-        public void writeNbt(NbtCompound compound, WrapperLookup lookup) {
-            super.writeNbt(compound, lookup);
-            compound.put("masterPos", BlockPos.CODEC, masterPos);
+        protected void writeData(WriteView view) {
+            super.writeData(view);
+            view.put("masterPos", BlockPos.CODEC, masterPos);
         }
 
         @Override
-        public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-            super.readNbt(compound, lookup);
-            masterPos = compound.get("masterPos", BlockPos.CODEC).orElse(BlockPos.ORIGIN);
+        protected void readData(ReadView view) {
+            super.readData(view);
+            masterPos = view.read("masterPos", BlockPos.CODEC).orElse(BlockPos.ORIGIN);
         }
     }
 }
