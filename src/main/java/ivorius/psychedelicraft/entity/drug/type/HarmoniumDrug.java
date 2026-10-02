@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.entity.drug.influence.DrugInfluenceInstance;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.util.math.ColorHelper;
 
 public class HarmoniumDrug extends SimpleDrug {
     private final Vector3f currentColor = new Vector3f(1, 1, 1);
@@ -36,7 +37,7 @@ public class HarmoniumDrug extends SimpleDrug {
         super.addToDesiredValue(value, influence);
         if (!isLocked()) {
             influence.color.ifPresent(color -> {
-                MathUtils.lerp((float)(value + (1 - value) * (1 - getActiveValue())), currentColor, MathUtils.unpackRgb(color));
+                MathUtils.lerp((float)(value + (1 - value) * (1 - getActiveValue())), currentColor, ColorHelper.toRgbVector(color));
             });
         }
 

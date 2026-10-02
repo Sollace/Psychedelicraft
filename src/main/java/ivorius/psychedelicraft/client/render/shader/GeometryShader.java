@@ -26,7 +26,6 @@ import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.util.MathUtils;
 import ivorius.psychedelicraft.util.UntrustedIdentifier;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.Sprite;
@@ -36,13 +35,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
-public class GeometryShader implements IdentifiableResourceReloadListener {
+public class GeometryShader implements ResourceReloader {
     @SuppressWarnings("deprecation")
     private static final Identifier BLOCK_ATLAS_TEXTURE = SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     private static final String GEO_DIRECTORY = "shaders/geometry/";
     private static final Pattern PS_VARIABLE_PATTERN = Pattern.compile("(?m)^ps_([a-z]+ +[a-zA-Z0-9]+) +([^;]+);");
     private static final Identifier BASIC = Psychedelicraft.id("basic");
-    private static final Identifier ID = Psychedelicraft.id("geometry_shaders");
+    public static final Identifier ID = Psychedelicraft.id("geometry_shaders");
 
     public static final GeometryShader INSTANCE = new GeometryShader();
 
@@ -65,11 +64,6 @@ public class GeometryShader implements IdentifiableResourceReloadListener {
             return client.getTextureManager().getTexture(id).getGlTexture();
         });
     });
-
-    @Override
-    public Identifier getFabricId() {
-        return ID;
-    }
 
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Store store, Executor prepareExecutor, ResourceReloader.Synchronizer synchronizer, Executor applyExecutor) {

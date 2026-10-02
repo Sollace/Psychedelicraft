@@ -17,14 +17,13 @@ import ivorius.psychedelicraft.client.render.RenderPhase;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-public class ShaderLoader implements SynchronousResourceReloader, IdentifiableResourceReloadListener {
+public class ShaderLoader implements SynchronousResourceReloader {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ShaderLoader POST_EFFECTS = new ShaderLoader(DrugRenderer.INSTANCE.getPostEffects())
@@ -224,7 +223,7 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    private static final Identifier ID = Psychedelicraft.id("post_effect_shaders");
+    public static final Identifier ID = Psychedelicraft.id("post_effect_shaders");
 
     private final Map<Identifier, UniformBinding.Set> activeShaderIds = new HashMap<>();
 
@@ -241,11 +240,6 @@ public class ShaderLoader implements SynchronousResourceReloader, IdentifiableRe
 
     public ShaderLoader addShader(String name, UniformBinding.Set bindings) {
         return addShader(Psychedelicraft.id(name), bindings);
-    }
-
-    @Override
-    public Identifier getFabricId() {
-        return ID;
     }
 
     @Override

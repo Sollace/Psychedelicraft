@@ -23,6 +23,7 @@ import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.client.render.entity.EntityRendererFactories;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -39,10 +40,10 @@ import net.minecraft.world.BlockRenderView;
  */
 public interface PSRenderers {
     static void bootstrap() {
-        EntityRendererRegistry.register(PSEntities.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
-        EntityRendererRegistry.register(PSEntities.REALITY_RIFT, RealityRiftEntityRenderer::new);
-        EntityRendererRegistry.register(PSEntities.JUNIPER_BOAT, context -> new CustomBoatEntityRenderer<>(context, PSEntities.JUNIPER_BOAT, false));
-        EntityRendererRegistry.register(PSEntities.JUNIPER_CHEST_BOAT, context -> new CustomBoatEntityRenderer<>(context, PSEntities.JUNIPER_CHEST_BOAT, true));
+        EntityRendererFactories.register(PSEntities.MOLOTOV_COCKTAIL, context -> new FlyingItemEntityRenderer<>(context, 1, true));
+        EntityRendererFactories.register(PSEntities.REALITY_RIFT, RealityRiftEntityRenderer::new);
+        EntityRendererFactories.register(PSEntities.JUNIPER_BOAT, context -> new CustomBoatEntityRenderer<>(context, PSEntities.JUNIPER_BOAT, false));
+        EntityRendererFactories.register(PSEntities.JUNIPER_CHEST_BOAT, context -> new CustomBoatEntityRenderer<>(context, PSEntities.JUNIPER_CHEST_BOAT, true));
 
         BlockEntityRendererFactories.register(PSBlockEntities.DISTILLERY, FlaskBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(PSBlockEntities.FLASK, FlaskBlockEntityRenderer::new);

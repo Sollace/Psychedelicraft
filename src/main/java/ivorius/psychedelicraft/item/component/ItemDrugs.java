@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.PSDamageTypes;
 import ivorius.psychedelicraft.PSSounds;
+import ivorius.psychedelicraft.SmokeColors;
 import ivorius.psychedelicraft.advancement.PSCriteria;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.influence.DrugInfluence;
@@ -36,7 +37,7 @@ public record ItemDrugs(List<DrugInfluence> influences, OptionalInt smokeColor) 
     public static final ItemDrugs EMPTY = new ItemDrugs(List.of(), OptionalInt.empty());
     public static final Codec<ItemDrugs> CODEC = RecordCodecBuilder.create(i -> i.group(
             DrugInfluence.CODEC.listOf().fieldOf("influences").forGetter(ItemDrugs::influences),
-            CodecUtils.optionalIntFieldOf(DrugInfluence.COLOR_CODEC, "smoke_color").forGetter(ItemDrugs::smokeColor)
+            CodecUtils.optionalIntFieldOf(SmokeColors.CODEC, "smoke_color").forGetter(ItemDrugs::smokeColor)
     ).apply(i, ItemDrugs::of));
     public static final PacketCodec<RegistryByteBuf, ItemDrugs> PACKET_CODEC = PacketCodec.tuple(
             DrugInfluence.PACKET_CODEC.collect(PacketCodecs.toList()), ItemDrugs::influences,

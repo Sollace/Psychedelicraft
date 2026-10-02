@@ -8,9 +8,8 @@ package ivorius.psychedelicraft.item;
 import java.util.List;
 import java.util.function.Function;
 
-import org.joml.Vector3f;
-
 import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.SmokeColors;
 import ivorius.psychedelicraft.block.*;
 import ivorius.psychedelicraft.entity.PSEntities;
 import ivorius.psychedelicraft.entity.drug.*;
@@ -25,7 +24,6 @@ import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemDrugs;
 import ivorius.psychedelicraft.item.component.PSComponents;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
-import ivorius.psychedelicraft.util.MathUtils;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistryEvents;
 import net.minecraft.block.Block;
@@ -130,16 +128,16 @@ public interface PSItems {
             .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(Colors.WHITE))
     ));
     SmokeableItem CIGAR = register("cigar", s -> new SmokeableItem(4, s.maxCount(1).maxDamage(3)
-            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(MathUtils.getArgb(new Vector3f(0.6F, 0.6F, 0.5F))))
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.TOBACCO, DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)).withSmoke(SmokeColors.WHITE))
     ));
     SmokeableItem JOINT = register("joint", s -> new SmokeableItem(2, s.maxCount(1).maxDamage(2)
-            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.CANNABIS, DelayType.INHALED, 0.002, 0.001, 0.20F)).withSmoke(MathUtils.getArgb(new Vector3f(0.9F, 0.9F, 0.9F))))
+            .component(PSComponents.DRUGS, ItemDrugs.of(new DrugInfluence(DrugType.CANNABIS, DelayType.INHALED, 0.002, 0.001, 0.20F)).withSmoke(SmokeColors.GREY))
     ));
     SmokeableItem BLUNT = register("blunt", s -> new SmokeableItem(4, s.maxCount(1).maxDamage(3)
             .component(PSComponents.DRUGS, ItemDrugs.of(
                     new DrugInfluence(DrugType.TOBACCO, DelayType.IMMEDIATE, 0.1, 0.02, 0.7F),
                     new DrugInfluence(DrugType.CANNABIS, DelayType.IMMEDIATE, 0.1, 0.02, 0.7F)
-            ).withSmoke(MathUtils.getArgb(new Vector3f(0.6F, 0.6F, 0.5F))))
+            ).withSmoke(SmokeColors.WHITE))
     ));
 
     Item COCA_SEEDS = register("coca_seeds", s -> new BlockItem(PSBlocks.COCA, s));
@@ -195,7 +193,7 @@ public interface PSItems {
             .component(PSComponents.DRUGS, ItemDrugs.of(
                     new DrugInfluence(DrugType.PEYOTE, DelayType.INHALED, 0.003, 0.0015, 0.4f),
                     new DrugInfluence(DrugType.TOBACCO, DelayType.IMMEDIATE, 0.1, 0.02, 0.1f)
-            ).withSmoke(MathUtils.getArgb(new Vector3f(0.5F, 0.9F, 0.4F))))
+            ).withSmoke(SmokeColors.GREEN))
     ));
 
     Item LATTICE = register("lattice", PSBlocks.LATTICE);

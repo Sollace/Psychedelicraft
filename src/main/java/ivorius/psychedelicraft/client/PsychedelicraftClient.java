@@ -25,7 +25,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -75,7 +75,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
             });
         });
 
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ShaderLoader.POST_EFFECTS);
+        ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(ShaderLoader.ID, ShaderLoader.POST_EFFECTS);
 
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
 

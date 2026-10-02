@@ -11,6 +11,7 @@ import java.util.OptionalInt;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.SmokeColors;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.CodecUtils;
@@ -25,7 +26,7 @@ public class DrugInfluenceInstance {
             Codec.DOUBLE.fieldOf("influenceSpeed").forGetter(i -> i.factor),
             Codec.DOUBLE.fieldOf("influenceSpeedPlus").forGetter(i -> i.base),
             Codec.DOUBLE.fieldOf("maxInfluence").forGetter(i -> i.targetRemaining),
-            CodecUtils.optionalIntFieldOf(DrugInfluence.COLOR_CODEC, "color").forGetter(i -> i.color)
+            CodecUtils.optionalIntFieldOf(SmokeColors.CODEC, "color").forGetter(i -> i.color)
     ).apply(instance, DrugInfluenceInstance::new));
     public static final Codec<List<DrugInfluenceInstance>> LIST_CODEC = CODEC.listOf();
     public static final PacketCodec<RegistryByteBuf, DrugInfluenceInstance> PACKET_CODEC = PacketCodec.tuple(
