@@ -6,9 +6,7 @@
 package ivorius.psychedelicraft.client.render.blocks;
 
 import ivorius.psychedelicraft.client.render.QueuedVertexConsumers;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemDisplayContext;

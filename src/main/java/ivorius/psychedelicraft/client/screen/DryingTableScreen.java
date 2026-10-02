@@ -10,12 +10,9 @@ import ivorius.psychedelicraft.screen.DryingTableScreenHandler;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 
 /**
  * Updated by Sollace on 3 Jan 2023

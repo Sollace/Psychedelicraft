@@ -11,12 +11,9 @@ import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.List;
 

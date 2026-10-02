@@ -29,7 +29,7 @@ public class RastaHeadHallucination extends AbstractEntityHallucination {
 
     private final LookControl lookControl;
 
-    private final Model modelRastaHead = new RastaHeadModel();
+    private final Model<?> modelRastaHead = new RastaHeadModel();
 
     private final float distance;
 

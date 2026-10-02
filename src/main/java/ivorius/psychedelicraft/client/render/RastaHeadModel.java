@@ -13,7 +13,6 @@ package ivorius.psychedelicraft.client.render;
 
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.render.entity.state.PigEntityRenderState;
 

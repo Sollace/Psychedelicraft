@@ -4,7 +4,6 @@ import ivorius.psychedelicraft.block.entity.TrayBlockEntity;
 import net.minecraft.util.Unit;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;

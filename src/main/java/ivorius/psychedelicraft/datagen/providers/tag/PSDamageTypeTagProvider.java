@@ -16,6 +16,7 @@ public class PSDamageTypeTagProvider extends FabricTagProvider<DamageType> {
         super(output, RegistryKeys.DAMAGE_TYPE, completableFuture);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void configure(WrapperLookup wrapperLookup) {
 

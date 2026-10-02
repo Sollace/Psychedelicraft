@@ -47,7 +47,7 @@ public class AddictTaskListProvider {
             if (target == null || !target.getEntityPos().isInRange(entity.getEntityPos(), maxDistance)) {
                 return false;
             }
-            if (time <= mutableLong.getValue()) {
+            if (time <= mutableLong.floatValue()) {
                 return true;
             }
             Optional<Vec3d> optional = Optional.ofNullable(FuzzyTargeting.find(entity, 8, 6));
