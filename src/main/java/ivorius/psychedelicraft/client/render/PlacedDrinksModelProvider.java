@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
@@ -18,7 +21,9 @@ import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.Context;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
+import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDisplayContext;
@@ -28,6 +33,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.world.World;
 
 public class PlacedDrinksModelProvider
         implements PreparableModelLoadingPlugin<Map<String, Map<Identifier, PlacedDrinksModelProvider.Entry>>>,
@@ -64,33 +70,39 @@ public class PlacedDrinksModelProvider
         return Optional.ofNullable(entries.get(type).get(Registries.ITEM.getId(item)));
     }
 
-    public void renderDrink(String type, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        renderDrinkModel(type, stack, matrices, vertices, light, overlay);
-
-        float fillPercentage = FluidCapacity.getPercentage(stack);
-        Entry entry = get(type, stack.getItem()).orElse(Entry.DEFAULT);
-        if (fillPercentage > 0.01 && entry.showFluid()) {
-            float origin = entry.fluidOrigin() / 16F;
-            matrices.translate(0, origin, 0);
-            matrices.scale(1, fillPercentage, 1);
-            matrices.translate(0, -origin, 0);
-            renderDrinkModel(type + "_fluid", stack, matrices, vertices, light, overlay);
+    public void submitDrinkModel(ItemRenderState state, MatrixStack matrices, OrderedRenderCommandQueue queue, int light, int overlay) {
+        if (state.isEmpty()) {
+            return;
         }
+        matrices.push();
+        matrices.translate(0.5, 0.5, 0.5);
+        state.render(matrices, queue, light, overlay, 0);
+        matrices.pop();
     }
 
-    public void renderDrinkModel(String type, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public PlacedDrinkRenderState updateRenderState(String type, ItemStack stack, @Nullable World world, PlacedDrinkRenderState state) {
         try {
+            state.clear();
+            state.fillPercentage = FluidCapacity.getPercentage(stack);
+
             if (stack.isOf(Items.GLASS_BOTTLE)) {
                 stack = stack.withItem(PSItems.FILLED_GLASS_BOTTLE);
             }
-            matrices.push();
-            matrices.translate(0.5, 0.5, 0.5);
             PlacementProperty.setCurrent(type);
-            QueuedVertexConsumers.renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, null, 0);
-            matrices.pop();
+            MinecraftClient.getInstance().getItemModelManager().clearAndUpdate(state.item, stack, ItemDisplayContext.FIXED, world, null, 0);
+
+            Entry entry = get(type, stack.getItem()).orElse(Entry.DEFAULT);
+            state.fluidOrigin = entry.fluidOrigin() / 16F;
+            if (state.fillPercentage > 0.01 && entry.showFluid()) {
+                PlacementProperty.setCurrent(type + "_fluid");
+                MinecraftClient.getInstance().getItemModelManager().clearAndUpdate(state.fluid, stack, ItemDisplayContext.FIXED, world, null, 0);
+            } else {
+                state.fluid.clear();
+            }
         } finally {
             PlacementProperty.setCurrent(null);
         }
+        return state;
     }
 
     public record Entry(float height, float fluidOrigin, boolean showFluid) {
@@ -101,5 +113,32 @@ public class PlacedDrinksModelProvider
         ).apply(instance, Entry::new));
         public static final Codec<Map<Identifier, Entry>> MAP_CODEC = Codec.unboundedMap(Identifier.CODEC, CODEC);
         public static final Entry DEFAULT = new Entry(0.5F, 0F, false);
+    }
+
+    public static class PlacedDrinkRenderState {
+        private final ItemRenderState item = new ItemRenderState();
+        private final ItemRenderState fluid = new ItemRenderState();
+        private float fluidOrigin;
+        private float fillPercentage;
+
+        public boolean isEmpty() {
+            return item.isEmpty() && fluid.isEmpty();
+        }
+
+        public void clear() {
+            item.clear();
+            fluid.clear();
+        }
+
+        public void render(MatrixStack matrices, OrderedRenderCommandQueue queue, int light, int overlay) {
+            INSTANCE.submitDrinkModel(item, matrices, queue, light, overlay);
+
+            if (!fluid.isEmpty()) {
+                matrices.translate(0, fluidOrigin, 0);
+                matrices.scale(1, fillPercentage, 1);
+                matrices.translate(0, -fluidOrigin, 0);
+                INSTANCE.submitDrinkModel(fluid, matrices, queue, light, overlay);
+            }
+        }
     }
 }

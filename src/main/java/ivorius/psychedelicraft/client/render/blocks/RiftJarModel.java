@@ -11,67 +11,55 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
-import ivorius.psychedelicraft.block.entity.RiftJarBlockEntity;
-import net.minecraft.util.Unit;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
  * Updated by Sollace on 5 Jan 2023
  */
-public class RiftJarModel extends Model<Unit> {
+public class RiftJarModel extends Model<RiftJarBlockEntityRenderer.State> {
+    private static final float INTERIOR_DILATION = 0.001F;
 
     private final ModelPart cork;
     private final ModelPart knot;
-
-    private final ModelPart interior;
 
     public RiftJarModel(ModelPart tree) {
         super(tree, RenderLayers::entityTranslucent);
         this.cork = tree.getChild("cork");
         this.knot = tree.getChild("knot");
-        this.interior = tree.getChild("interior");
-        interior.hidden = true;
     }
 
-    public static TexturedModelData getTexturedModelData() {
+    public static TexturedModelData exterior() {
         ModelData data = new ModelData();
         ModelPartData root = data.getRoot();
-        root.addChild("glass_1", ModelPartBuilder.create().uv(0, 0).mirrored().cuboid(-4F, 0F, -4F, 8, 5, 8), ModelTransform.origin(0F, 19F, 0F));
-        root.addChild("glass_2", ModelPartBuilder.create().uv(0, 14).mirrored().cuboid(-4F, 0F, -4F, 8, 5, 8), ModelTransform.origin(0F, 12F, 0F));
-        root.addChild("glass_3", ModelPartBuilder.create().uv(33, 24).mirrored().cuboid(-3F, 0F, -3F, 6, 2, 6), ModelTransform.origin(0F, 17F, 0F));
+        root.addChild("glass_1", ModelPartBuilder.create().uv(0, 0).mirrored().cuboid(-4, 0, -4, 8, 5, 8), ModelTransform.origin(0, 19, 0));
+        root.addChild("glass_2", ModelPartBuilder.create().uv(0, 14).mirrored().cuboid(-4, 0, -4, 8, 5, 8), ModelTransform.origin(0, 12, 0));
+        root.addChild("glass_3", ModelPartBuilder.create().uv(33, 24).mirrored().cuboid(-3, 0, -3, 6, 2, 6), ModelTransform.origin(0, 17, 0));
 
-        root.addChild("rope", ModelPartBuilder.create().uv(33, 0).mirrored().cuboid(-3.5F, 0F, -3.5F, 7, 2, 7), ModelTransform.origin(0F, 17F, 0F));
-        root.addChild("knot", ModelPartBuilder.create().uv(33, 2).mirrored().cuboid(0F, 0F, -4F, 0.001F, 5, 8), ModelTransform.of(-3.5F, 17F, 0F, 0F, 0F, -0.2602503F));
-        root.addChild("cork", ModelPartBuilder.create().uv(33, 16).mirrored().cuboid(-3F, -0.001F, -3F, 6, 2, 6), ModelTransform.origin(0F, 10F, 0F));
+        root.addChild("rope", ModelPartBuilder.create().uv(33, 0).mirrored().cuboid(-3.5F, 0, -3.5F, 7, 2, 7), ModelTransform.origin(0, 17, 0));
+        root.addChild("knot", ModelPartBuilder.create().uv(33, 2).mirrored().cuboid(0, 0, -4, 0.001F, 5, 8), ModelTransform.of(-3.5F, 17, 0, 0, 0, -0.2602503F));
+        root.addChild("cork", ModelPartBuilder.create().uv(33, 16).mirrored().cuboid(-3, -0.001F, -3, 6, 2, 6), ModelTransform.origin(0, 10, 0));
 
-        Dilation dilation = new Dilation(0.001f);
+        return TexturedModelData.of(data, 64, 32);
+    }
+
+    public static TexturedModelData interior() {
+        ModelData data = new ModelData();
+        ModelPartData root = data.getRoot();
+        Dilation dilation = new Dilation(INTERIOR_DILATION);
         root.addChild("interior", ModelPartBuilder.create()
             .cuboid(-4, 0, -4, 8, 5, 8, dilation)
-            .cuboid(-3, 5, -3, 6, 2, 6, new Dilation(0.001f, -0.001f, 0.001f))
+            .cuboid(-3, 5, -3, 6, 2, 6, new Dilation(INTERIOR_DILATION, -INTERIOR_DILATION, INTERIOR_DILATION))
             .cuboid(-4, 7, -4, 8, 2, 8, dilation), ModelTransform.NONE);
 
         return TexturedModelData.of(data, 64, 32);
     }
 
-    public void setAngles(RiftJarBlockEntity entity, float tickDelta) {
-        cork.originX = entity.fractionOpen * 2;
-        cork.yaw = entity.fractionOpen * 0.1F;
-        knot.roll = 0.2602503F + (entity.fractionHandleUp * (1 + MathHelper.sin(entity.ticksAliveVisual * 0.1f) * 0.1f)) * 0.5f;
-    }
-
-    public void setAngles(float fractionOpen, float fractionHandleUp, int age, float tickDelta) {
-        cork.originX = fractionOpen * 2;
-        cork.yaw = fractionOpen * 0.1F;
-        knot.roll = 0.2602503F + (fractionHandleUp * (1 + MathHelper.sin(age * 0.1f) * 0.1f)) * 0.5f;
-    }
-
-    public void renderInterior(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-        interior.hidden = false;
-        interior.render(matrices, vertices, light, overlay, color);
-        interior.hidden = true;
+    @Override
+    public void setAngles(RiftJarBlockEntityRenderer.State state) {
+        cork.originX = state.openAmount * 2;
+        cork.yaw = state.openAmount * 0.1F;
+        knot.roll = 0.2602503F + (state.knotPosition * (1 + MathHelper.sin(state.age * 0.1f) * 0.1f)) * 0.5f;
     }
 }

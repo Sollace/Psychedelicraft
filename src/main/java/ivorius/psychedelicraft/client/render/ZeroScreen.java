@@ -14,8 +14,6 @@ public abstract class ZeroScreen {
     private static final Identifier[] TEXTURES = IntStream.range(0, 8)
             .mapToObj(i -> Psychedelicraft.id("textures/entity/reality_rift/zero_screen_" + i + ".png"))
             .toArray(Identifier[]::new);
-    private static final float X_PIXELS = 140 / 2F;
-    private static final float Y_PIXELS = 224 / 2F;
 
     private static final Function<Identifier, RenderLayer> PS_ZERO_SCREEN = Util.memoize(texture -> RenderLayer.of("ps_zero_screen", RenderSetup.builder(PSShaders.ZERO_MATTER)
             .texture("Sampler0", texture)
@@ -23,14 +21,9 @@ public abstract class ZeroScreen {
             .build()
     ));
 
-    public static void render(float ticks, Renderable action) {
+    public static RenderLayer layer(float ticks) {
         int seed = MathHelper.floor(ticks * 0.5F);
-        var rng = RenderUtil.random(seed);
-        action.render(
-                PS_ZERO_SCREEN.apply(TEXTURES[seed % TEXTURES.length]),
-                rng.nextInt(10) * 0.1F * ZeroScreen.X_PIXELS,
-                rng.nextInt(8) * 0.125f * ZeroScreen.Y_PIXELS
-        );
+        return PS_ZERO_SCREEN.apply(TEXTURES[seed % TEXTURES.length]);
     }
 
     @FunctionalInterface

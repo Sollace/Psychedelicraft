@@ -11,9 +11,6 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
-import ivorius.psychedelicraft.block.BarrelBlock;
-import ivorius.psychedelicraft.block.entity.BarrelBlockEntity;
-import net.minecraft.util.Unit;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.*;
 import net.minecraft.util.math.Direction.Axis;
@@ -22,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 /**
  * Updated by Sollace on 6 Jan 2023
  */
-public class BarrelModel extends Model<Unit> {
+public class BarrelModel extends Model<BarrelBlockEntityRenderer.State> {
     private final ModelPart barrel;
     private final ModelPart legs;
     private final ModelPart tap;
@@ -65,12 +62,13 @@ public class BarrelModel extends Model<Unit> {
         return TexturedModelData.of(modelData, 128, 64);
     }
 
-    public void setRotationAngles(BarrelBlockEntity entity, float tickDelta) {
-        tapHandle.yaw = entity.getTapRotation(tickDelta);
-        barrel.pitch = entity.getCachedState().get(BarrelBlock.FACING).getAxis() == Axis.Y ? MathHelper.HALF_PI : 0;
+    @Override
+    public void setAngles(BarrelBlockEntityRenderer.State state) {
+        super.setAngles(state);
+        tapHandle.yaw = state.tapRotation;
+        barrel.pitch = state.axis == Axis.Y ? MathHelper.HALF_PI : 0;
         barrel.originY = 9 - 2 * barrel.pitch;
-        tap.roll = 0;//MinecraftClient.getInstance().player.age;
-        tap.visible = barrel.pitch == 0 && entity.getCachedState().get(BarrelBlock.TAPPED);
+        tap.visible = barrel.pitch == 0 && state.hasTap;
         legs.visible = barrel.pitch == 0;
         root.originY = legs.visible ? 0 : 2;
     }

@@ -12,19 +12,29 @@ import ivorius.psychedelicraft.client.render.bezier.*;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.*;
+import net.minecraft.client.render.block.entity.state.BlockEntityRenderState;
+import net.minecraft.client.render.command.ModelCommandRenderer.CrumblingOverlayCommand;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
+import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
+import org.joml.Vector3fc;
 
-public class RiftJarBlockEntityRenderer implements SimpleBlockEntityRenderer<RiftJarBlockEntity> {
+public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBlockEntity, RiftJarBlockEntityRenderer.State> {
     public static final Identifier TEXTURE = Psychedelicraft.id("textures/entity/rift_jar/rift_jar.png");
     public static final Identifier CRACKED_TEXTURE = Psychedelicraft.id("textures/entity/rift_jar/rift_jar_cracked.png");
     private static final StyleSpriteSource FONT = new StyleSpriteSource.Font(Identifier.ofVanilla("alt"));
@@ -35,7 +45,8 @@ public class RiftJarBlockEntityRenderer implements SimpleBlockEntityRenderer<Rif
     private static final BezierLabelRenderer.Style LABEL_STYLE = new BezierLabelRenderer.Style().spread(true);
     private static final Text SMALL_SPIRAL_TEXT = Text.literal("This is a small spiral.").styled(s -> s.withFont(FONT));
 
-    private final RiftJarModel model = new RiftJarModel(RiftJarModel.getTexturedModelData().createModel());
+    private final RiftJarModel model = new RiftJarModel(RiftJarModel.exterior().createModel());
+    private final ModelPart interior = RiftJarModel.interior().createModel();
 
     public RiftJarBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 
@@ -45,65 +56,70 @@ public class RiftJarBlockEntityRenderer implements SimpleBlockEntityRenderer<Rif
 
     }
 
-    public void renderAsItem(float fillAmount, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        int age = (int)((System.currentTimeMillis() % 500) / 100);
-        model.setAngles(0, 0, age, tickDelta);
-        renderJarBody(age, fillAmount, 0, Direction.NORTH, tickDelta, matrices, vertices, light, overlay);
+
+    @Override
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    public void render(RiftJarBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
-        model.setAngles(entity, tickDelta);
-        float crackedVisibility = entity.jarBroken ? 1 : Math.min((entity.currentRiftFraction - 0.5F) * 2, 1);
-
-        renderJarBody(entity.ticksAliveVisual, entity.currentRiftFraction, crackedVisibility, entity.getCachedState().get(HorizontalFacingBlock.FACING), tickDelta, matrices, vertices, light, overlay);
-        renderConnections(entity, tickDelta, matrices, vertices, light, overlay);
+    public void updateRenderState(RiftJarBlockEntity entity, State state, float tickDelta, Vec3d cameraPos, @Nullable CrumblingOverlayCommand crumbling) {
+        BlockEntityRenderer.super.updateRenderState(entity, state, tickDelta, cameraPos, crumbling);
+        state.crackedVisibility = entity.jarBroken ? 1 : Math.min((entity.currentRiftFraction - 0.5F) * 2, 1);
+        state.age = entity.ticksAliveVisual + tickDelta;
+        state.fillPercentage = entity.currentRiftFraction;
+        state.facing = state.blockState.get(HorizontalFacingBlock.FACING);
+        state.openAmount = entity.fractionOpen;
+        state.knotPosition = entity.fractionHandleUp;
+        state.outflowStrength = entity.fractionHandleUp * entity.fractionOpen;
+        state.connection = entity.getConnections();
     }
 
-    public void renderJarBody(
-            int age, float currentRiftFraction, float crackedVisibility, Direction facing,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        float ticks = age + tickDelta;
+    public void collectVertices(Consumer<Vector3fc> collector) {
+        MatrixStack matrices = new MatrixStack();
+        matrices.translate(0.5F, 0.0F, 0.5F);
+        matrices.scale(0.6666667F, -0.6666667F, -0.6666667F);
+        model.getRootPart().collectVertices(matrices, collector);
+    }
 
+    @Override
+    public void render(State state, MatrixStack matrices, OrderedRenderCommandQueue queue, CameraRenderState cameraState) {
+        renderJarBody(state, matrices, queue);
+        renderConnections(state, matrices, queue);
+    }
+
+    public void renderJarBody(State state, MatrixStack matrices, OrderedRenderCommandQueue queue) {
         matrices.push();
-        matrices.translate(0.5F, 0.5f, 0.5F);
-
-        matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - facing.getHorizontalQuarterTurns()));
-
+        matrices.translate(0.5F, 0.5F, 0.5F);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - state.facing.getHorizontalQuarterTurns()));
         matrices.translate(0, 1.001F, 0);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
-        model.render(matrices, vertices.getBuffer(RenderLayers.entityTranslucent(TEXTURE)), light, overlay, Colors.WHITE);
+        queue.submitModel(model, state, matrices, RenderLayers.entityTranslucent(TEXTURE), state.lightmapCoordinates, OverlayTexture.DEFAULT_UV, 0, state.crumblingOverlay);
 
-        if (crackedVisibility > 0) {
-            model.render(matrices, vertices.getBuffer(model.getLayer(CRACKED_TEXTURE)), light, overlay, MathUtils.withAlpha(Colors.WHITE, crackedVisibility));
+        if (state.crackedVisibility > 0) {
+            queue.submitModel(model, state, matrices, RenderLayers.entityTranslucent(CRACKED_TEXTURE), state.lightmapCoordinates, OverlayTexture.DEFAULT_UV, MathUtils.withAlpha(Colors.WHITE, state.crackedVisibility), null, 0, state.crumblingOverlay);
         }
 
-        if (currentRiftFraction > 0) {
+        if (state.fillPercentage > 0) {
             matrices.push();
             matrices.translate(0, 1.5F, 0);
             matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(180));
             matrices.scale(0.9F, 1, 0.9F);
-            ZeroScreen.render(ticks, (layer, u, v) -> {
-                model.renderInterior(matrices, vertices.getBuffer(layer), 0, 0, MathUtils.withAlpha(Colors.WHITE, Math.min(currentRiftFraction * 2, 1)));
-            });
+            queue.submitModelPart(interior, matrices, ZeroScreen.layer(state.age), 0, 0, null, MathUtils.withAlpha(Colors.WHITE, Math.min(state.fillPercentage * 2, 1)), null);
             matrices.pop();
         }
 
         matrices.pop();
-        matrices.pop();
     }
 
-    public void renderConnections(RiftJarBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        float ticks = entity.ticksAliveVisual + tickDelta;
-
+    public void renderConnections(State state, MatrixStack matrices, OrderedRenderCommandQueue queue) {
         matrices.push();
         matrices.translate(0.5F, 0.5f, 0.5F);
 
-        Vec3d jarPosition = entity.getPos().toCenterPos();
+        Vec3d jarPosition = state.pos.toCenterPos();
 
-        for (RiftJarBlockEntity.JarRiftConnection connection : entity.getConnections()) {
+        for (RiftJarBlockEntity.JarRiftConnection connection : state.connection) {
             Vector3d connectionPoint = new Vector3d(
                     connection.position.x - jarPosition.x,
                     connection.position.y - (jarPosition.y + 0.1F),
@@ -113,7 +129,7 @@ public class RiftJarBlockEntityRenderer implements SimpleBlockEntityRenderer<Rif
                 connection.bezier = Bezier.spiral(0.1, 0.5, 8, connectionPoint, 0.2, 0);
             }
 
-            BezierLabelRenderer.INSTANCE.render(matrices, vertices, light, connection.bezier, LABEL_STYLE.shift(ticks * -0.002F).topCap(connection.fractionUp), SMALL_SPIRAL_TEXT);
+            BezierLabelRenderer.INSTANCE.render(matrices, queue, state.lightmapCoordinates, connection.bezier, LABEL_STYLE.shift(state.age * -0.002F).topCap(connection.fractionUp), SMALL_SPIRAL_TEXT);
 
             if (connection.fractionUp > 0) {
                 matrices.push();
@@ -122,18 +138,17 @@ public class RiftJarBlockEntityRenderer implements SimpleBlockEntityRenderer<Rif
                         connectionPoint.y,
                         connectionPoint.z
                 );
-                BezierLabelRenderer.INSTANCE.render(matrices, vertices, light,
+                BezierLabelRenderer.INSTANCE.render(matrices, queue, state.lightmapCoordinates,
                         SPHERE_BEZIER_PATH,
-                        LABEL_STYLE.shift(ticks * -0.002F).topCap(1),
+                        LABEL_STYLE.shift(state.age * -0.002F).topCap(1),
                         Text.literal(cheeseString("This is a small circle.", 1 - connection.fractionUp, new Random(42))).styled(s -> s.withFont(FONT)));
 
                 matrices.pop();
             }
         }
 
-        float outgoingStrength = entity.fractionHandleUp * entity.fractionOpen;
-        if (outgoingStrength > 0) {
-            BezierLabelRenderer.INSTANCE.render(matrices, vertices, light, OUTGOING_PATH, LABEL_STYLE.shift(ticks * -0.002F).topCap(outgoingStrength), SMALL_SPIRAL_TEXT);
+        if (state.outflowStrength > 0) {
+            BezierLabelRenderer.INSTANCE.render(matrices, queue, state.lightmapCoordinates, OUTGOING_PATH, LABEL_STYLE.shift(state.age * -0.002F).topCap(state.outflowStrength), SMALL_SPIRAL_TEXT);
         }
 
         matrices.pop();
@@ -156,5 +171,21 @@ public class RiftJarBlockEntityRenderer implements SimpleBlockEntityRenderer<Rif
         }
 
         return builder.toString();
+    }
+
+    public static class State extends BlockEntityRenderState {
+        public float age;
+        public float fillPercentage;
+        public float crackedVisibility;
+        public float openAmount;
+        public float knotPosition;
+
+        public float outflowStrength;
+
+        @Nullable
+        public Direction facing;
+
+        @Deprecated
+        public Collection<RiftJarBlockEntity.JarRiftConnection> connection = List.of();
     }
 }

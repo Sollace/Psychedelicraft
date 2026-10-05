@@ -1,6 +1,6 @@
 package ivorius.psychedelicraft.client.screen;
 
-import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
+import ivorius.psychedelicraft.client.render.FluidBoxRenderState.FluidAppearance;
 import ivorius.psychedelicraft.client.render.RenderUtil;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
@@ -50,7 +50,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         float fluidHeight = MathHelper.clamp((float) tank.getContents().amount() / (float) tank.getCapacity(), 0, 1);
         int fluidHeightPixels = MathHelper.ceil(fluidHeight * height);
 
-        FluidBoxRenderer.FluidAppearance appearance = FluidBoxRenderer.FluidAppearance.of(tank.getContents());
+        FluidAppearance appearance = FluidAppearance.of(tank.getContents());
 
         RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y - fluidHeightPixels, width, fluidHeightPixels, appearance.color());
     }
@@ -63,7 +63,7 @@ public abstract class AbstractFluidContraptionScreen<T extends FluidContraptionS
         float fluidHeight = MathHelper.clamp((float) fluids.amount() / (float) capacity, 0, 1);
         int fluidHeightPixels = MathHelper.ceil(fluidHeight * height);
 
-        FluidBoxRenderer.FluidAppearance appearance = FluidBoxRenderer.FluidAppearance.of(fluids);
+        FluidAppearance appearance = FluidAppearance.of(fluids);
 
         RenderUtil.drawRepeatingSprite(context, appearance.sprite(), x, y + height - fluidHeightPixels, width, fluidHeightPixels, appearance.color());
     }

@@ -1,12 +1,14 @@
 package ivorius.psychedelicraft.client.render;
 
+import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.ColorHelper;
 
 /**
  * @author Sollace
  */
-public class PassThroughVertexConsumer implements VertexConsumer {
+public class PassThroughVertexConsumer extends OverlayVertexConsumer {
     private static final ColorFix COLOR = VertexConsumer::color;
     private static final FUvFix TEXTURE = VertexConsumer::texture;
     private static final IUvFix OVERLAY = VertexConsumer::overlay;
@@ -24,17 +26,12 @@ public class PassThroughVertexConsumer implements VertexConsumer {
     }
 
     PassThroughVertexConsumer(VertexConsumer parent, Parameters parameters) {
+        super(parent, new MatrixStack.Entry(), 1);
         this.parent = parent;
         colorFix = parameters.colorFix;
         textureFix = parameters.textureFix;
         overlayFix = parameters.overlayFix;
         lightFix = parameters.lightFix;
-    }
-
-    @Override
-    public VertexConsumer vertex(float x, float y, float z) {
-        parent.vertex(x, y, z);
-        return this;
     }
 
     @Override
@@ -72,10 +69,11 @@ public class PassThroughVertexConsumer implements VertexConsumer {
         return this;
     }
 
-    @Override
-    public VertexConsumer lineWidth(float width) {
-        parent.lineWidth(width);
-        return this;
+    // Sodium
+    // https://github.com/CaffeineMC/sodium/blob/dev/common/src/main/java/net/caffeinemc/mods/sodium/mixin/core/render/immediate/consumer/SheetedDecalTextureGeneratorMixin.java
+    // @Override
+    public boolean canUseIntrinsics() {
+        return false;
     }
 
     public static class Parameters {

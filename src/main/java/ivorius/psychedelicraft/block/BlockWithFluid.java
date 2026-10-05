@@ -72,12 +72,12 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
 
     @Override
     protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
-        appendDroppedStacks(asItem().getDefaultStack(), state, builder);
+        appendDynamicDrops(asItem().getDefaultStack(), state, builder);
         return super.getDroppedStacks(state, builder);
     }
 
     @Deprecated
-    public static void appendDroppedStacks(ItemStack defaultStack, BlockState state, LootWorldContext.Builder builder) {
+    private static void appendDynamicDrops(ItemStack defaultStack, BlockState state, LootWorldContext.Builder builder) {
         BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
         if (blockEntity instanceof DirectionalFluidResovoir container) {
             builder = builder.addDynamicDrop(CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
@@ -177,6 +177,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
 
     public interface DirectionalFluidResovoir extends SidedStorageBlockEntity, SidedInventory, Processable.Context {
 
+        @Deprecated
         List<ItemStack> getDroppedStacks(ItemStack container);
 
         void tick(ServerWorld world);

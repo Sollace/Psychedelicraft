@@ -1,14 +1,11 @@
 package ivorius.psychedelicraft.client.render.blocks;
 
-import ivorius.psychedelicraft.block.entity.TrayBlockEntity;
-import net.minecraft.util.Unit;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.model.*;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
-public class TrayContentsModel extends Model<Unit> {
+public class TrayContentsModel extends Model<TrayBlockEntityRenderer.State> {
     public TrayContentsModel(ModelPart tree) {
         super(tree, RenderLayers::entityTranslucent);
     }
@@ -21,12 +18,9 @@ public class TrayContentsModel extends Model<Unit> {
         return TexturedModelData.of(data, 32, 32);
     }
 
-    public void setAngles(TrayBlockEntity entity, float tickDelta) {
-        root.yScale = 0.1F + entity.getLevel() / 60F;
-        if (entity.getCachedState().get(Properties.HORIZONTAL_AXIS) == Direction.Axis.X) {
-            root.yaw = MathHelper.HALF_PI;
-        } else {
-            root.yaw = 0;
-        }
+    @Override
+    public void setAngles(TrayBlockEntityRenderer.State state) {
+        root.yScale = 0.1F + state.level / 60F;
+        root.yaw = state.axis == Direction.Axis.X ? MathHelper.HALF_PI : 0;
     }
 }

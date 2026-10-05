@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import ivorius.psychedelicraft.client.render.FluidBoxRenderer;
+import ivorius.psychedelicraft.client.render.FluidBoxRenderState.FluidAppearance;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.client.render.item.tint.TintSource;
 import net.minecraft.client.world.ClientWorld;
@@ -21,7 +21,7 @@ public record FluidTintSource(int defaultColor) implements TintSource {
     @Override
     public int getTint(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity user) {
         ItemFluids fluids = ItemFluids.of(stack);
-        return fluids.isEmpty() ? defaultColor : FluidBoxRenderer.FluidAppearance.getItemColor(fluids);
+        return fluids.isEmpty() ? defaultColor : FluidAppearance.getItemColor(fluids);
     }
 
     @Override

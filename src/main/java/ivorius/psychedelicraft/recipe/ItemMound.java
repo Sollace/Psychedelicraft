@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -96,6 +98,10 @@ public class ItemMound {
         entry.popSingle(stack, false);
         stack[0].setCount(entry.count);
         return stack[0];
+    }
+
+    public synchronized Stream<ItemStack> stream() {
+        return IntStream.range(0, size()).mapToObj(this::getStack);
     }
 
     public synchronized int getCount(Item item) {

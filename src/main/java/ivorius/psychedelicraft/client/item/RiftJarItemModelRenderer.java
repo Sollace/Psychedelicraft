@@ -6,15 +6,14 @@ import org.joml.Vector3fc;
 
 import com.mojang.serialization.MapCodec;
 
-import ivorius.psychedelicraft.client.render.QueuedVertexConsumers;
 import ivorius.psychedelicraft.client.render.blocks.RiftJarBlockEntityRenderer;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Direction;
 
 public class RiftJarItemModelRenderer implements SpecialModelRenderer<Float> {
     private final RiftJarBlockEntityRenderer renderer;
@@ -30,14 +29,15 @@ public class RiftJarItemModelRenderer implements SpecialModelRenderer<Float> {
 
     @Override
     public void render(Float data, ItemDisplayContext displayContext, MatrixStack matrices, OrderedRenderCommandQueue queue, int light, int overlay, boolean glint, int outlineColor) {
-        QueuedVertexConsumers.submit(queue, vertices -> {
-            renderer.renderAsItem(data, MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false), matrices, vertices, light, overlay);
-        });
+        RiftJarBlockEntityRenderer.State state = renderer.createRenderState();
+        state.fillPercentage = data;
+        state.facing = Direction.SOUTH;
+        renderer.renderJarBody(state, matrices, queue);
     }
 
     @Override
     public void collectVertices(Consumer<Vector3fc> consumer) {
-        VatItemModelRenderer.collectUnitCube(consumer);
+        renderer.collectVertices(consumer);
     }
 
     public static record Unbaked() implements SpecialModelRenderer.Unbaked {

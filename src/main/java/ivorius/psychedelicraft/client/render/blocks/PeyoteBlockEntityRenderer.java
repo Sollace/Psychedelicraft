@@ -12,15 +12,20 @@ import ivorius.psychedelicraft.client.render.RenderUtil;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.*;
+import net.minecraft.client.render.block.entity.state.BlockEntityRenderState;
+import net.minecraft.client.render.command.ModelCommandRenderer.CrumblingOverlayCommand;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
+import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 
-import java.util.Random;
 import java.util.stream.IntStream;
 
-public class PeyoteBlockEntityRenderer implements SimpleBlockEntityRenderer<PeyoteBlockEntity> {
+import org.jetbrains.annotations.Nullable;
+
+public class PeyoteBlockEntityRenderer implements BlockEntityRenderer<PeyoteBlockEntity, PeyoteBlockEntityRenderer.State> {
     private static final Identifier[] TEXTURES = IntStream.range(0, 4)
             .mapToObj(i -> Psychedelicraft.id("textures/entity/peyote/peyote_stage" + i + ".png"))
             .toArray(Identifier[]::new);
@@ -37,23 +42,32 @@ public class PeyoteBlockEntityRenderer implements SimpleBlockEntityRenderer<Peyo
     }
 
     @Override
-    public void render(PeyoteBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
-        matrices.push();
-        matrices.translate(0.5F, 0.5f, 0.5F);
-        matrices.translate(0, 1, 0);
+    public State createRenderState() {
+        return new State();
+    }
 
-
+    @Override
+    public void updateRenderState(PeyoteBlockEntity entity, State state, float tickDelta, Vec3d cameraPos, @Nullable CrumblingOverlayCommand crumbling) {
+        BlockEntityRenderer.super.updateRenderState(entity, state, tickDelta, cameraPos, crumbling);
         Random rng = RenderUtil.random(entity.getCachedState().getRenderingSeed(entity.getPos()));
+        state.offset = entity.getCachedState().getModelOffset(entity.getPos()).add(0.5, 1.5, 0.5);
+        state.age = entity.getCachedState().get(PeyoteBlock.AGE) % 4;
+        state.rotation = rng.nextInt(4) * 180;
+    }
 
-        Vec3d offset = entity.getCachedState().getModelOffset(entity.getPos());
-        matrices.translate(offset.x, offset.y, offset.z);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rng.nextInt(4) * 180));
-
+    @Override
+    public void render(State state, MatrixStack matrices, OrderedRenderCommandQueue queue, CameraRenderState cameraState) {
+        matrices.push();
+        matrices.translate(state.offset);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(state.rotation));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
-
-        int age = entity.getCachedState().get(PeyoteBlock.AGE) % 4;
-        models[age].render(matrices, vertices.getBuffer(RenderLayers.entityCutout(TEXTURES[age])), light, overlay, Colors.WHITE);
-
+        queue.submitModelPart(models[state.age], matrices, RenderLayers.entityCutout(TEXTURES[state.age]), state.lightmapCoordinates, OverlayTexture.DEFAULT_UV, null);
         matrices.pop();
+    }
+
+    public static class State extends BlockEntityRenderState {
+        public int age;
+        public float rotation;
+        public Vec3d offset = Vec3d.ZERO;
     }
 }

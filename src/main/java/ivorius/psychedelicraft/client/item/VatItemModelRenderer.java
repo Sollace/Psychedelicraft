@@ -2,12 +2,10 @@ package ivorius.psychedelicraft.client.item;
 
 import java.util.function.Consumer;
 
-import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import com.mojang.serialization.MapCodec;
 
-import ivorius.psychedelicraft.client.render.QueuedVertexConsumers;
 import ivorius.psychedelicraft.client.render.blocks.MashTubBlockEntityRenderer;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
@@ -29,19 +27,14 @@ public class VatItemModelRenderer implements SpecialModelRenderer<ItemFluids> {
     }
 
     @Override
-    public void render(ItemFluids data, ItemDisplayContext displayContext, MatrixStack matrices, OrderedRenderCommandQueue queue, int light, int overlay, boolean glint, int outlineColor) {
-        QueuedVertexConsumers.submit(queue, vertices -> renderer.renderAsItem(data, matrices, vertices, light, overlay));
+    public void render(ItemFluids data, ItemDisplayContext displayContext, MatrixStack matrices, OrderedRenderCommandQueue queue, int light, int overlay, boolean glint, int outline) {
+        renderer.renderAsItem(matrices, queue, light, overlay, outline);
+        renderer.renderItemFill(data, matrices, queue, light, overlay);
     }
 
     @Override
     public void collectVertices(Consumer<Vector3fc> consumer) {
-        collectUnitCube(consumer);
-    }
-
-    static void collectUnitCube(Consumer<Vector3fc> consumer) {
-        for (int i = 0; i < 8; i++) {
-            consumer.accept(new Vector3f(i & 1, (i >> 1) & 1, (i >> 2) & 1));
-        }
+        renderer.collectVertices(consumer);
     }
 
     public static record Unbaked() implements SpecialModelRenderer.Unbaked {

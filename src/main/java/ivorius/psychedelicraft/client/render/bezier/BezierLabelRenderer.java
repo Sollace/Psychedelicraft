@@ -1,13 +1,10 @@
 package ivorius.psychedelicraft.client.render.bezier;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 import org.joml.Vector3d;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.resource.language.ReorderingUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.*;
@@ -15,8 +12,6 @@ import net.minecraft.util.math.RotationAxis;
 
 public class BezierLabelRenderer {
     public static final BezierLabelRenderer INSTANCE = new BezierLabelRenderer();
-
-    private final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
     private float length;
     private int i;
@@ -30,7 +25,7 @@ public class BezierLabelRenderer {
         return visitor.accept(activeIndex, activeStyle, activeCodePoint);
     };
 
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, Bezier bezier, Style style, Text text) {
+    public void render(MatrixStack matrices, OrderedRenderCommandQueue queue, int light, Bezier bezier, Style style, Text text) {
         length = text.getString().length();
         i = 0;
         Path path = bezier.getPath();
@@ -57,8 +52,7 @@ public class BezierLabelRenderer {
                     activeCodePoint = character;
 
                     @Nullable TextColor color = charStyle.getColor();
-                    Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
-                    textRenderer.draw(singleCharOrderedText, 0, 0, color == null ? 0xFFFFFFFF : color.getRgb(), false, positionMatrix, vertices, TextLayerType.SEE_THROUGH, 0, light);
+                    queue.submitText(matrices, 0, 0, singleCharOrderedText, false, TextLayerType.SEE_THROUGH, light, color == null ? 0xFFFFFFFF : color.getRgb(), 0, 0);
                     matrices.pop();
                 }
             }
@@ -68,11 +62,11 @@ public class BezierLabelRenderer {
     }
 
     public static class Style {
-        float capTop;
-        float bottomCap;
-        boolean inwards;
-        boolean spread;
-        float shift;
+        private float capTop;
+        private float bottomCap;
+        private boolean inwards;
+        private boolean spread;
+        private float shift;
 
         public Style spread(boolean spread) {
             this.spread = spread;
