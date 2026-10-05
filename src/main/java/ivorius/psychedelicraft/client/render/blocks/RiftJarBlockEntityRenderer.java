@@ -91,7 +91,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
     public void renderJarBody(State state, MatrixStack matrices, OrderedRenderCommandQueue queue) {
         matrices.push();
         matrices.translate(0.5F, 0.5F, 0.5F);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - state.facing.getHorizontalQuarterTurns()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - state.facing.getPositiveHorizontalDegrees()));
         matrices.translate(0, 1.001F, 0);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
