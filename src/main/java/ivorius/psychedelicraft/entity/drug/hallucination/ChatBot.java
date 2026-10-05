@@ -2,12 +2,12 @@ package ivorius.psychedelicraft.entity.drug.hallucination;
 
 import java.util.*;
 
+import org.jetbrains.annotations.Nullable;
+
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 
 public class ChatBot {
     private final Personality personality;
@@ -17,9 +17,13 @@ public class ChatBot {
 
     private final Queue<Runnable> incomingMessageQueue = new LinkedList<>();
 
-    public ChatBot(Personality personality, PlayerEntity player) {
+    @Nullable
+    private final MessageEmitter emitter;
+
+    public ChatBot(Personality personality, PlayerEntity player, @Nullable MessageEmitter emitter) {
         this.personality = personality;
         this.player = player;
+        this.emitter = emitter;
     }
 
     public void tick() {
@@ -39,23 +43,27 @@ public class ChatBot {
         characters.removeIf(Character::tick);
     }
 
-    private void emitMessage(String sender, Text message) {
+    public interface MessageEmitter {
+        void onEmitMessage(String sender, Text message);
+    }
+
+    private boolean emitMessage(String sender, Text message) {
         HallucinationManager hallucinations = DrugProperties.of(player).getHallucinations();
 
-        if (hallucinations.getEntities().getForcedAlpha(1) > 0 || hallucinations.getEntityHallucinationStrength() > 0) {
+        if (hallucinations.getEntityHallucinationAlphaTransparency(1) > 0) {
             player.sendMessage(message, false);
             incomingMessageQueue.add(() -> {
                 getResponsiveCharacters(sender, message).forEach(character -> character.wakeUp(sender, message, false));
             });
 
-            if (player.getEntityWorld().getRandom().nextFloat() < 0.3F || message.getString().contains("!")) {
-                float x = player.getEntityWorld().getRandom().nextFloat();
-                float z = player.getEntityWorld().getRandom().nextFloat();
-                player.animateDamage((float)(MathHelper.atan2(z, x) * 57.2957763671875 - player.getYaw()));
-                player.playSound(SoundEvents.ENTITY_PLAYER_HURT, 1, 1);
-                player.takeKnockback(0.2F, x, z);
+            if (emitter != null) {
+                emitter.onEmitMessage(sender, message);
             }
+
+            return true;
         }
+
+        return false;
     }
 
     public void onMessageReceived(String sender, Text message) {
@@ -134,8 +142,7 @@ public class ChatBot {
 
             public boolean tick() {
                 if (--delay <= 0) {
-                    emitMessage(name.getString(), parameters.applyChatDecoration(message));
-                    return true;
+                    return emitMessage(name.getString(), parameters.applyChatDecoration(message));
                 }
                 return false;
             }

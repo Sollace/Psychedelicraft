@@ -68,11 +68,15 @@ public class PsychedelicraftClient implements ClientModInitializer {
             });
         });
 
-        WorldRenderEvents.AFTER_ENTITIES.register(context -> {
+        WorldRenderEvents.END_EXTRACTION.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
             DrugProperties.of((Entity)client.player).ifPresent(properties -> {
-                DrugRenderer.INSTANCE.renderAllHallucinations(context.matrices(), context.consumers(), client.gameRenderer.getCamera(), client.getRenderTickCounter().getTickProgress(false), properties);
+                DrugRenderer.INSTANCE.extractRenderState(context.worldState(), context.tickCounter().getTickProgress(false), properties);
             });
+        });
+
+        WorldRenderEvents.AFTER_ENTITIES.register(context -> {
+            DrugRenderer.INSTANCE.renderAllHallucinations(context.matrices(), context.commandQueue());
         });
 
         ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(ShaderLoader.ID, ShaderLoader.POST_EFFECTS);

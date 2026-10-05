@@ -3,25 +3,25 @@ package ivorius.psychedelicraft.entity.drug.hallucination;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.util.Pool;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 
 public class EntityIdentitySwapHallucination extends Hallucination {
-
     private final EntityType<?> targetType;
     private final Pool<EntityType<?>> transformedType;
 
     @Nullable
     private Selection selection;
 
-    public EntityIdentitySwapHallucination(PlayerEntity player, EntityType<?> targetType, Pool<EntityType<?>> transformedType) {
+    private final Identifier type;
+
+    public EntityIdentitySwapHallucination(Identifier type, PlayerEntity player, EntityType<?> targetType, Pool<EntityType<?>> transformedType) {
         super(player);
+        this.type = type;
         this.targetType = targetType;
         this.transformedType = transformedType;
     }
@@ -41,15 +41,11 @@ public class EntityIdentitySwapHallucination extends Hallucination {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void update(float alpha) {
+        super.update(alpha);
         if (selection != null) {
             selection.update();
         }
-    }
-
-    @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, float alpha) {
     }
 
     @Override
@@ -63,6 +59,11 @@ public class EntityIdentitySwapHallucination extends Hallucination {
     @Override
     public int getMaxHallucinations() {
         return 100;
+    }
+
+    @Override
+    public Identifier getType() {
+        return type;
     }
 
     record Selection(Entity selection, Entity attachment) {

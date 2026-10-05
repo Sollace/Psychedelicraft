@@ -7,31 +7,32 @@ package ivorius.psychedelicraft.client.render;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.render.effect.*;
+import ivorius.psychedelicraft.client.render.hallucinations.HallucinationRenderState;
+import ivorius.psychedelicraft.client.render.hallucinations.HallucinationRenderSystem;
 import ivorius.psychedelicraft.client.render.shader.PostEffectRenderer;
 import ivorius.psychedelicraft.client.render.shader.ShaderContext;
 import ivorius.psychedelicraft.client.sound.ClientDrugMusicManager;
 import ivorius.psychedelicraft.entity.drug.Drug;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.hallucination.DriftingCamera;
-import ivorius.psychedelicraft.entity.drug.hallucination.Hallucination;
-import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.minecraft.client.render.state.WorldRenderState;
 import net.minecraft.client.util.memory.ObjectAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
 import java.lang.Math;
+import java.util.List;
 
 import org.joml.Quaternionf;
 
@@ -56,6 +57,8 @@ public class DrugRenderer {
 
     private final ClientDrugMusicManager musicManager = new ClientDrugMusicManager();
 
+    private List<HallucinationRenderState> hallucinationStates = List.of();
+
     public ScreenEffect getScreenEffects() {
         return screenEffects;
     }
@@ -73,7 +76,9 @@ public class DrugRenderer {
     }
 
     public void update(DrugProperties drugProperties, LivingEntity entity) {
-        getScreenEffects().update(ShaderContext.tickDelta());
+        if (!entity.getEntityWorld().getTickManager().isFrozen()) {
+            getScreenEffects().update(ShaderContext.tickDelta());
+        }
         musicManager.update(drugProperties);
     }
 
@@ -88,10 +93,10 @@ public class DrugRenderer {
 
         float tick = properties.asEntity().age + tickDelta;
 
+        Quaternionf rotation = new Quaternionf();
         DriftingCamera driftingCam = properties.getHallucinations().getCamera();
 
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0f));
+        matrices.multiply(camera.getRotation());
 
         Vec3d cameraOffset = driftingCam.getPosition();
         Vec3d prevCameraOffset = driftingCam.getPrevPosition();
@@ -102,14 +107,13 @@ public class DrugRenderer {
         );
         Vec3d cameraRoll = driftingCam.getRotation();
         Vec3d prevCameraRoll = driftingCam.getPrevRotation();
-        matrices.multiply(new Quaternionf().rotateXYZ(
+
+        matrices.multiply(rotation.rotationXYZ(
                 (float)MathHelper.lerp(tickDelta, prevCameraRoll.x, cameraRoll.x),
                 (float)MathHelper.lerp(tickDelta, prevCameraRoll.y, cameraRoll.y),
                 (float)MathHelper.lerp(tickDelta, prevCameraRoll.z, cameraRoll.z)
         ));
-
-        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(camera.getYaw() + 180.0f));
-        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
+        matrices.multiply(camera.getRotation().invert(rotation));
 
         if (wobblyness > 0) {
             float f4 = MathHelper.square(5F / (wobblyness * wobblyness + 5F) - wobblyness * 0.04F);
@@ -119,8 +123,7 @@ public class DrugRenderer {
             float sin3 = MathHelper.sin(tick / 190 * MathHelper.PI);
 
             float yz = tick * 3F * MathHelper.RADIANS_PER_DEGREE;
-            Quaternionf rotation = new Quaternionf().rotateXYZ(0, yz, yz);
-            matrices.multiply(rotation);
+            matrices.multiply(rotation.rotationXYZ(0, yz, yz));
             matrices.scale(
                     1F / (f4 + (wobblyness * sin1) / 2),
                     1F / (f4 + (wobblyness * sin2) / 2),
@@ -195,21 +198,18 @@ public class DrugRenderer {
         }
     }
 
-    public void renderAllHallucinations(MatrixStack matrices, VertexConsumerProvider vertices, Camera camera, float tickDelta, DrugProperties drugProperties) {
-        HallucinationManager hallucinations = drugProperties.getHallucinations();
-        float alpha = MathHelper.clamp(hallucinations.getEntityHallucinationStrength() * 15, 0, 1);
-        float forcedAlpha = hallucinations.getEntities().getForcedAlpha(tickDelta);
-        if (forcedAlpha > 0) {
-            alpha += forcedAlpha;
-            alpha /= 2F;
-        }
+    public void extractRenderState(WorldRenderState worldState, float tickDelta, DrugProperties drugProperties) {
+        hallucinationStates = HallucinationRenderSystem.INSTANCE.extractStates(drugProperties.getHallucinations(), worldState, tickDelta);
+    }
 
-        for (Hallucination h : hallucinations.getEntities()) {
+    public void renderAllHallucinations(MatrixStack matrices, OrderedRenderCommandQueue queue) {
+        for (HallucinationRenderState state : hallucinationStates) {
             try {
-                h.render(matrices, vertices, camera, tickDelta, alpha);
+                matrices.push();
+                HallucinationRenderSystem.INSTANCE.getRenderer(state).render(state, matrices, queue);
+                matrices.pop();
             } catch (Throwable t) {
                 Psychedelicraft.LOGGER.fatal("Exception occured whilst rendering hallucination ", t);
-                h.setDead();
                 // clean up the matrix stack after an error
                 while (!matrices.isEmpty()) {
                     matrices.pop();

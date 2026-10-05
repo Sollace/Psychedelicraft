@@ -32,6 +32,7 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
 
     public void update() {
         float hallucinationChance = manager.getEntityHallucinationStrength() * 0.05f;
+        float alpha = manager.getEntityHallucinationAlphaTransparency(1);
 
         if (forcedTicks > 0) {
             prevForcedTicks = forcedTicks;
@@ -43,10 +44,9 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
         }
 
         swap();
-        pending.clear();
         synchronized (entities) {
             entities.removeIf(hallucination -> {
-                hallucination.update();
+                hallucination.update(alpha * hallucination.getAlpha(1));
                 return hallucination.isDead();
             });
         }
@@ -68,7 +68,7 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
 
     public float getForcedAlpha(float tickDelta) {
         float ticks = manager.getProperties().getAge() + tickDelta;
-        float percent = MathHelper.lerp(tickDelta, prevForcedTicks, forcedTicks) / 400F;
+        float percent = MathHelper.lerp(tickDelta, (float)prevForcedTicks, (float)forcedTicks) / 400F;
         if (percent <= 0.01F) {
             return 0;
         }
@@ -131,7 +131,7 @@ public class EntityHallucinationList implements Iterable<Hallucination> {
 
     public List<ChatBot> getChatBots() {
         synchronized (entities) {
-            return entities.stream().flatMap(i -> i.getChatBot().stream()).toList();
+            return entities.stream().map(Hallucination::getChatBot).filter(Objects::nonNull).toList();
         }
     }
 }

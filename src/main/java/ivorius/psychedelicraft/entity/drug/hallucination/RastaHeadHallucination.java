@@ -7,91 +7,163 @@ package ivorius.psychedelicraft.entity.drug.hallucination;
 
 import java.util.Optional;
 
-import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.render.RastaHeadModel;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.Model;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.control.LookControl;
-import net.minecraft.entity.mob.MobEntity;
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.entity.ai.control.Control;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Colors;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
-public class RastaHeadHallucination extends AbstractEntityHallucination {
-    private static final Identifier TEXTURE = Psychedelicraft.id("textures/drug/cannabis/rasta_head_hallucination.png");
-
-    private final LookControl lookControl;
-
-    private final Model<?> modelRastaHead = new RastaHeadModel();
-
+public class RastaHeadHallucination extends Hallucination implements Control, ChatBot.MessageEmitter {
     private final float distance;
 
-    private final float planeRotationX;
-    private final float planeRotationZ;
+    private float planeRotationX;
+    private float planeRotationZ;
+
+    private int id;
+    private int maxAge;
+    public float scale;
+
+    private float lastPitch;
+    private float pitch;
+
+    private float lastYaw;
+    private float yaw;
+
+    private Vec3d velocity = Vec3d.ZERO;
+    private Vec3d position;
+    private Vec3d lastPosition;
+
+    private final ChatBot chatBot;
+
+    private int lastTalkingTicks;
+    private int talkingTicks;
 
     public RastaHeadHallucination(PlayerEntity playerEntity) {
-        super(playerEntity, EntityType.PIG.create(playerEntity.getEntityWorld(), SpawnReason.EVENT));
+        super(playerEntity);
 
+        id = random.nextInt();
         maxAge = (random.nextInt(59) + 120) * 20;
         scale = 1 + random.nextFloat() / 2F;
         distance = 2 + random.nextFloat() * 5;
 
-        planeRotationX = random.nextFloat() * MathHelper.HALF_PI;
-        planeRotationZ = random.nextFloat() * MathHelper.HALF_PI;
+        planeRotationX = random.nextFloat() * 180;
+        planeRotationZ = random.nextFloat() * 180;
 
-        entity.setPosition(playerEntity.getEntityPos());
-        lookControl = ((MobEntity)entity).getLookControl();
+        position = getTargetPosition();
+        lastPosition = position;
 
-        chatBot = Optional.of(new ChatBot(new RastaheadPersonality(), playerEntity));
+        chatBot = new ChatBot(new RastaheadPersonality(), playerEntity, this);
     }
 
     @Override
-    protected void animateEntity() {
-        this.lookControl.lookAt(player);
-        this.lookControl.tick();
+    public ChatBot getChatBot() {
+        return chatBot;
+    }
 
-        int seed = player.age + (entity.getId() * 3);
+    public Vec3d getPosition(float tickDelta) {
+        return lastPosition.add(position.subtract(lastPosition).multiply(tickDelta));
+    }
 
+    public float getPitch(float tickDelta) {
+        return MathHelper.lerp(tickDelta, lastPitch, pitch) + MathHelper.sin((age + tickDelta) / 2F) * 90 * getTalkingTime(tickDelta);
+    }
+
+    public float getYaw(float tickDelta) {
+        return MathHelper.lerp(tickDelta, lastYaw, yaw);
+    }
+
+    public float getTalkingTime(float tickDelta) {
+        return MathHelper.lerp(tickDelta, lastTalkingTicks, talkingTicks) / 20F;
+    }
+
+    public int getLight() {
+        return player.getEntityWorld().getLightLevel(BlockPos.ofFloored(position));
+    }
+
+    @Override
+    public void update(float alpha) {
+        super.update(alpha);
+
+        lastPitch = pitch;
+        lastYaw = yaw;
+        lastPosition = position;
+
+        position = position.add(velocity);
+
+        planeRotationX = MathHelper.wrapDegrees(planeRotationX + 3);
+        planeRotationZ = MathHelper.wrapDegrees(planeRotationZ + 3);
+
+        lastTalkingTicks = talkingTicks;
+        if (talkingTicks > 0) {
+            talkingTicks--;
+        }
+
+        Vec3d wanted = getTargetPosition();
+        velocity = wanted.subtract(position).normalize().multiply(Math.log((float)wanted.distanceTo(position)));
+
+        Vec3d positionDifference = player.getEyePos().subtract(position);
+
+        getTargetPitch(positionDifference).ifPresent(angle -> pitch = angle);
+        getTargetYaw(positionDifference).ifPresent(angle -> yaw = angle);
+
+        chatBot.tick();
+    }
+
+    protected Vec3d getTargetPosition() {
+        int seed = player.age + (id * 3);
         Vec3d offset = new Vec3d(
                 MathHelper.sin(seed / 50F) * distance,
-                MathHelper.sin(seed / 10F) + (entity.getId() % 5) - 1,
+                MathHelper.sin(seed / 10F) + (id % 5) - 1,
                 MathHelper.cos(seed / 50F) * distance
-        ).rotateY(planeRotationX).rotateZ(planeRotationZ);
+        ).rotateY(planeRotationX * MathHelper.RADIANS_PER_DEGREE).rotateZ(planeRotationZ * MathHelper.RADIANS_PER_DEGREE);
+        return player.getEyePos().add(offset);
+    }
 
-        Vec3d wanted = player.getEyePos().add(offset);
+    protected Optional<Float> getTargetPitch(Vec3d positionDifference) {
+        double horDistance = positionDifference.multiply(1, 0, 1).length();
+        if (!(Math.abs(positionDifference.getY()) > MathHelper.EPSILON) && !(Math.abs(horDistance) > MathHelper.EPSILON)) {
+            return Optional.empty();
+        }
+        return Optional.of((float)-MathHelper.atan2(positionDifference.getY(), horDistance));
+    }
 
-        double totalDist = wanted.distanceTo(entity.getEntityPos());
-
-        Vec3d vel = entity.getVelocity().multiply(0.9D);
-
-        vel = wanted.subtract(entity.getEntityPos()).normalize().multiply(Math.log((float)totalDist));
-
-        entity.setVelocity(vel);
-        entity.setPosition(entity.getEntityPos().add(vel));
+    protected Optional<Float> getTargetYaw(Vec3d positionDifference) {
+        if (!(Math.abs(positionDifference.getZ()) > MathHelper.EPSILON) && !(Math.abs(positionDifference.getX()) > MathHelper.EPSILON)) {
+            return Optional.empty();
+        }
+        return Optional.of((float)MathHelper.atan2(
+            positionDifference.getZ(),
+            positionDifference.getX()
+        ) * MathHelper.DEGREES_PER_RADIAN - 90);
     }
 
     @Override
-    protected RenderLayer getRenderLayer(RenderLayer layer) {
-        return layer;
+    public int getMaxHallucinations() {
+        return UNLIMITED;
     }
 
     @Override
-    protected void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, double x, double y, double z, float pitch, float yaw, float tickDelta) {
-        yaw = 180 - MathHelper.lerp(tickDelta, ((LivingEntity)entity).lastHeadYaw, ((LivingEntity)entity).headYaw);
+    public boolean isDead() {
+        return age >= maxAge;
+    }
 
-        matrices.translate(x, y, z);
-        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(180));
-        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(pitch));
-        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
+    @Override
+    public @Nullable Identifier getType() {
+        return HallucinationTypeKeys.RASTA_HEAD;
+    }
 
-        var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        modelRastaHead.render(matrices, vertices.getBuffer(modelRastaHead.getLayer(TEXTURE)), dispatcher.getLight(entity, tickDelta), 0, Colors.WHITE);
+    @Override
+    public void onEmitMessage(String sender, Text message) {
+        if (player.getEntityWorld().getRandom().nextFloat() < 0.3F || message.getString().contains("!")) {
+            float x = player.getEntityWorld().getRandom().nextFloat();
+            float z = player.getEntityWorld().getRandom().nextFloat();
+            player.animateDamage((float)(MathHelper.atan2(z, x) * 57.2957763671875 - player.getYaw()));
+            player.playSound(SoundEvents.ENTITY_PLAYER_HURT, 1, 1);
+            player.takeKnockback(0.2F, x, z);
+        }
+        talkingTicks = 20;
     }
 }

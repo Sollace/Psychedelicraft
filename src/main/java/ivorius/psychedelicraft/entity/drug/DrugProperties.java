@@ -297,6 +297,10 @@ public class DrugProperties implements NbtSerialisable {
     }
 
     public void onTick() {
+        if (entity.getEntityWorld().getTickManager().isFrozen()) {
+            return;
+        }
+
         //4 times / sec is enough
         if (entity.age % 5 == 0 && influences.removeIf(influence -> influence.update(this))) {
             markDirty();

@@ -12,11 +12,12 @@
 package ivorius.psychedelicraft.client.render;
 
 import net.minecraft.client.render.RenderLayers;
+import ivorius.psychedelicraft.client.render.hallucinations.RastaHeadHallucinationRenderer;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.*;
-import net.minecraft.client.render.entity.state.PigEntityRenderState;
+import net.minecraft.util.math.MathHelper;
 
-public class RastaHeadModel extends EntityModel<PigEntityRenderState> {
+public class RastaHeadModel extends Model<RastaHeadHallucinationRenderer.State> {
     public RastaHeadModel() {
         super(TexturedModelData.of(getModelData(Dilation.NONE), 128, 64).createModel(), RenderLayers::entityTranslucent);
     }
@@ -38,4 +39,11 @@ public class RastaHeadModel extends EntityModel<PigEntityRenderState> {
                 .uv(0, 0).cuboid(-0.5F, -3.5F, -5F, 1, 1, 2, dilation).mirrored(), ModelTransform.rotation(0.4089647F, -0.2602503F, 0));
         return data;
     }
+
+    @Override
+    public void setAngles(RastaHeadHallucinationRenderer.State state) {
+        super.setAngles(state);
+        getRootPart().setAngles(state.pitch * MathHelper.RADIANS_PER_DEGREE, state.yaw * MathHelper.RADIANS_PER_DEGREE, 0);
+    }
+
 }

@@ -84,6 +84,13 @@ public class HallucinationManager {
         return visualisations.getMultiplier(HallucinationTypes.ENTITIES) * 0.4F;
     }
 
+    public float getEntityHallucinationAlphaTransparency(float tickDelta) {
+        return Math.max(
+                MathHelper.clamp(getEntityHallucinationStrength() * 15, 0, 1),
+                getEntities().getForcedAlpha(tickDelta)
+        );
+    }
+
     public BlockState getFractalAppearance() {
         return fractalTypes.get(fractalType).getDefaultState();
     }

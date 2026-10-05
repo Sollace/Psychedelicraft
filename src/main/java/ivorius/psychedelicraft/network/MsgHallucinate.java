@@ -5,7 +5,7 @@ import java.util.Optional;
 import com.sollace.fabwork.api.packets.Handled;
 
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
-import ivorius.psychedelicraft.entity.drug.hallucination.AbstractEntityHallucination;
+import ivorius.psychedelicraft.entity.drug.hallucination.EntityHallucination;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -28,7 +28,7 @@ public record MsgHallucinate (
     @Override
     public void handle(PlayerEntity sender) {
         DrugProperties.of(sender.getEntityWorld().getEntityById(entityId)).ifPresent(properties -> {
-            if (properties.getHallucinations().getEntities().addHallucination(type, true) instanceof AbstractEntityHallucination e) {
+            if (properties.getHallucinations().getEntities().addHallucination(type, true) instanceof EntityHallucination e) {
                 position.map(BlockPos::toCenterPos).ifPresent(e.getEntity()::setPosition);
             }
         });

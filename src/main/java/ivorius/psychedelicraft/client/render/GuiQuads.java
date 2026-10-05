@@ -22,7 +22,7 @@ import net.minecraft.util.Identifier;
 /**
  * Arbitrary textured quads for the (deferred) gui renderer. Vertices are added in quad order.
  */
-public record GuiQuads(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, List<Vertex> vertices, @Nullable ScreenRect bounds) implements SimpleGuiElementRenderState {
+public record GuiQuads(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, List<Vertex> vertices, @Nullable ScreenRect bounds, @Nullable ScreenRect scissorArea) implements SimpleGuiElementRenderState {
     public static Builder builder() {
         return new Builder();
     }
@@ -32,12 +32,6 @@ public record GuiQuads(RenderPipeline pipeline, TextureSetup textureSetup, Matri
         for (Vertex v : vertices) {
             consumer.vertex(pose, v.x, v.y).texture(v.u, v.v).color(v.color);
         }
-    }
-
-    @Override
-    @Nullable
-    public ScreenRect scissorArea() {
-        return null;
     }
 
     public record Vertex(float x, float y, float u, float v, int color) {}
@@ -77,7 +71,7 @@ public record GuiQuads(RenderPipeline pipeline, TextureSetup textureSetup, Matri
                 maxY = Math.max(maxY, p.y);
             }
             ScreenRect bounds = new ScreenRect((int)Math.floor(minX), (int)Math.floor(minY), (int)Math.ceil(maxX - minX), (int)Math.ceil(maxY - minY));
-            context.state.addSimpleElement(new GuiQuads(pipeline, textureSetup, pose, List.copyOf(vertices), bounds));
+            context.state.addSimpleElement(new GuiQuads(pipeline, textureSetup, pose, List.copyOf(vertices), bounds, context.scissorStack.peekLast()));
         }
     }
 }
