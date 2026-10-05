@@ -8,6 +8,7 @@ import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.client.render.blocks.RiftJarBlockEntityRenderer;
 import ivorius.psychedelicraft.item.component.RiftFractionComponent;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -32,6 +33,7 @@ public class RiftJarItemModelRenderer implements SpecialModelRenderer<Float> {
         RiftJarBlockEntityRenderer.State state = renderer.createRenderState();
         state.fillPercentage = data;
         state.facing = Direction.SOUTH;
+        state.lightmapCoordinates = LightmapTextureManager.MAX_LIGHT_COORDINATE;
         renderer.renderJarBody(state, matrices, queue);
     }
 
