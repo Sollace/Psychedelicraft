@@ -100,6 +100,8 @@
   "item.psychedelicraft.dried_belladonna_leaf": "Dried Belladonna Leaf",
   "item.psychedelicraft.belladonna_berries": "Belladonna Berries",
   "item.psychedelicraft.juniper_berries": "Juniper Berries",
+  "item.psychedelicraft.juniper_sign": "Juniper Sign",
+  "item.psychedelicraft.juniper_hanging_sign": "Juniper Hanging Sign",
   "item.psychedelicraft.juniper_boat": "Juniper Boat",
   "item.psychedelicraft.juniper_chest_boat": "Juniper Chest Boat",
   "item.psychedelicraft.coffea_cherries": "Coffea Cherries",
@@ -215,9 +217,7 @@
 
   "block.psychedelicraft.juniper_planks": "Juniper Planks",
   "block.psychedelicraft.juniper_stairs": "Juniper Stairs",
-  "block.psychedelicraft.juniper_sign": "Juniper Sign",
   "block.psychedelicraft.juniper_door": "Juniper Door",
-  "block.psychedelicraft.juniper_hanging_sign": "Juniper Hanging Sign",
   "block.psychedelicraft.juniper_pressure_plate": "Juniper Pressure Plate",
   "block.psychedelicraft.juniper_fence": "Juniper Fence",
   "block.psychedelicraft.juniper_trapdoor": "Juniper Trapdoor",

@@ -100,6 +100,8 @@
   "item.psychedelicraft.dried_belladonna_leaf": "Suszony liść belladony",
   "item.psychedelicraft.belladonna_berries": "Jagody belladony",
   "item.psychedelicraft.juniper_berries": "Jagody jałowca",
+  "item.psychedelicraft.juniper_sign": "Tabliczka z jałowca",
+  "item.psychedelicraft.juniper_hanging_sign": "Podwieszana tabliczka z jałowca",
   "item.psychedelicraft.juniper_boat": "Łódka z jałowca",
   "item.psychedelicraft.juniper_chest_boat": "Łódka ze skrzynią z jałowca",
   "item.psychedelicraft.coffea_cherries": "Wiśnie kawy",
@@ -215,9 +217,7 @@
 
   "block.psychedelicraft.juniper_planks": "Deski z jałowca",
   "block.psychedelicraft.juniper_stairs": "Schody z jałowca",
-  "block.psychedelicraft.juniper_sign": "Tabliczka z jałowca",
   "block.psychedelicraft.juniper_door": "Drzwi z jałowca",
-  "block.psychedelicraft.juniper_hanging_sign": "Podwieszana tabliczka z jałowca",
   "block.psychedelicraft.juniper_pressure_plate": "Płytka naciskowa z jałowca",
   "block.psychedelicraft.juniper_fence": "Płot z jałowca",
   "block.psychedelicraft.juniper_trapdoor": "Klapa z jałowca",
