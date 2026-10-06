@@ -101,7 +101,7 @@ public class EnvironmentalScreenEffect implements ScreenEffect {
             newHeat *= MathHelper.clamp(multiplier, 0.5F, 1F);
         }
 
-        this.currentHeat = MathUtils.nearValue(currentHeat, newHeat, 0.01F, newHeat > currentHeat ? 0.01F : 0.1F);
+        this.currentHeat = MathHelper.clamp(MathUtils.nearValue(currentHeat, newHeat, 0.01F, newHeat > currentHeat ? 0.01F : 0.1F), 0, 1.3F);
     }
 
     @Override
