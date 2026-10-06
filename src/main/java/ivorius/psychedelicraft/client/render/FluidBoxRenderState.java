@@ -204,7 +204,7 @@ public record FluidBoxRenderState(int light, int overlay, List<Vertex> vertices,
             return new FluidAppearance(
                     sprite.getAtlasId(),
                     sprite,
-                    handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state)
+                    ColorHelper.fullAlpha(handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state))
             );
         }
 
@@ -212,7 +212,7 @@ public record FluidBoxRenderState(int light, int overlay, List<Vertex> vertices,
             if (!stack.fluid().isCustomFluid()) {
                 FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(stack.fluid().getPhysical().getStandingFluid());
                 if (handler != null) {
-                    FluidState state = stack.fluid().getPhysical().getStandingFluid().getDefaultState();
+                    FluidState state = stack.fluid().getFluidState(stack);
                     return ColorHelper.fullAlpha(handler.getFluidColor(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos(), state));
                 }
             }
