@@ -107,7 +107,7 @@ public interface UniformBindings {
         float focalBlurNear = config.dofFocalBlurNear.get();
 
         float near = Math.min(focalPointNear, focalPointFar);
-        float far = Math.max(focalPointNear, focalPointFar) * 0.9F;// TODO: These might be swapped. Far is sometimes nearer than near
+        float far = Math.max(focalPointNear, focalPointFar);
 
         int maxDof = MathHelper.ceil(Math.max(focalBlurFar, focalBlurNear));
 
