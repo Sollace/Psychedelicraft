@@ -17,8 +17,8 @@ out vec4 fragColor;
 void main() {
   vec4 texel = texture(DiffuseSampler, texCoord.st);
   vec4 depthPixel = texture(DepthSampler, texCoord.st);
-  vec4 noisePixel1 = texture(NoiseSampler, texCoord.st * 4.0 + vec2(ticks * 0.324823048, ticks * 0.48913801));
-  vec4 noisePixel2 = texture(NoiseSampler, texCoord.ts * 4.0 + vec2(ticks * 0.52890348, ticks * 0.6318212));
+  vec4 noisePixel1 = texture(NoiseSampler, mod(texCoord.st * 4.0 + vec2(ticks * 0.324823048, ticks * 0.48913801), 1.0));
+  vec4 noisePixel2 = texture(NoiseSampler, mod(texCoord.ts * 4.0 + vec2(ticks * 0.52890348, ticks * 0.6318212), 1.0));
 
   vec4 joinedNoise = noisePixel1 + noisePixel2 - 1.0;
 

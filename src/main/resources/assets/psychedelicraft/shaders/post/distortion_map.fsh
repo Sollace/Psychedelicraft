@@ -16,8 +16,8 @@ layout(std140) uniform DistortionMapConfig {
 out vec4 fragColor;
 
 void main() {
-  vec4 noisePixel0 = texture(Overlay1Sampler, texCoord + texTranslation.xy);
-  vec4 noisePixel1 = texture(Overlay2Sampler, texCoord + texTranslation.zw);
+  vec4 noisePixel0 = texture(Overlay1Sampler, mod(texCoord + texTranslation.xy, 1.0));
+  vec4 noisePixel1 = texture(Overlay2Sampler, mod(texCoord + texTranslation.zw, 1.0));
   vec2 joinedTranslation = clamp(noisePixel0.rg + noisePixel1.rg - 1.0, 0.0, 1.0);
 
   vec2 water1 = abs(noisePixel0.rg - 0.5) * 2.0;
