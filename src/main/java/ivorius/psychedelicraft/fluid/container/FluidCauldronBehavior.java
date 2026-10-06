@@ -132,6 +132,7 @@ public interface FluidCauldronBehavior {
         if (level >= LeveledCauldronBlock.MAX_LEVEL && fluidType.isOf(Fluids.LAVA)) {
             return Blocks.LAVA_CAULDRON.getDefaultState();
         }
+
         return fluidType.fluid().getPhysical().getCauldron().getDefaultState().withIfExists(LeveledCauldronBlock.LEVEL, level);
     }
 }
