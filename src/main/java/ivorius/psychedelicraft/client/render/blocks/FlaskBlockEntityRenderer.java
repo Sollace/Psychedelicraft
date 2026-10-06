@@ -56,16 +56,13 @@ public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements Blo
 
     @Override
     public void render(State state, MatrixStack matrices, OrderedRenderCommandQueue queue, CameraRenderState cameraState) {
-        matrices.push();
-        matrices.translate(0.5F, 0, 0.5F);
-        matrices.scale(state.scale, state.scale, state.scale);
-
         if (state.firstLevelHeight > 0 && state.fluids != null) {
             // lower
             var fluidBox = FluidBoxRenderState.builder()
                     .texture(state.fluids)
                     .light(state.lightmapCoordinates)
                     .crumbling(state.crumblingOverlay)
+                    .face(-1, 0, -1, 2, state.firstLevelHeight, 2, Direction.UP)
                     .face(-1, 0, -2, 2, state.firstLevelHeight, 1, Direction.NORTH, Direction.UP)
                     .face(-1, 0,  1, 2, state.firstLevelHeight, 1, Direction.SOUTH, Direction.UP)
                     .face( 1, 0, -1, 1, state.firstLevelHeight, 2, Direction.EAST, Direction.UP)
@@ -73,17 +70,19 @@ public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements Blo
             if (state.secondLevelHeight > 0) {
                 // upper
                 fluidBox
-                    .face(-1, state.yOffset + 4.5F, -1.5F, 2, state.yOffset + state.secondLevelHeight, 0.5F, Direction.NORTH, Direction.UP)
-                    .face(-1, state.yOffset + 4.5F,  1, 2, state.yOffset + state.secondLevelHeight, 0.5F, Direction.SOUTH, Direction.UP)
-
-                    .face( 1, state.yOffset + 4.5F, -1, 0.5F, state.yOffset + state.secondLevelHeight, 2, Direction.EAST, Direction.UP)
-                    .face(-1.5F, state.yOffset + 4.5F, -1, 0.5F, state.yOffset + state.secondLevelHeight, 2, Direction.WEST, Direction.UP);
+                    .face(-1, state.yOffset + 4.5F, -1, 2, state.secondLevelHeight, 2, Direction.UP)
+                    .face(-1, state.yOffset + 4.5F, -1.5F, 2, state.secondLevelHeight, 0.5F, Direction.NORTH, Direction.UP)
+                    .face(-1, state.yOffset + 4.5F,  1, 2, state.secondLevelHeight, 0.5F, Direction.SOUTH, Direction.UP)
+                    .face( 1, state.yOffset + 4.5F, -1, 0.5F, state.secondLevelHeight, 2, Direction.EAST, Direction.UP)
+                    .face(-1.5F, state.yOffset + 4.5F, -1, 0.5F, state.secondLevelHeight, 2, Direction.WEST, Direction.UP);
             }
 
-            queue.submitCustom(matrices, RenderLayers.entityTranslucent(state.fluids.texture()), fluidBox.build());
+            matrices.push();
+            matrices.translate(0.5F, 0, 0.5F);
+            matrices.scale(state.scale, state.scale, state.scale);
+            queue.submitCustom(matrices, RenderLayers.entitySolid(state.fluids.texture()), fluidBox.build());
+            matrices.pop();
         }
-
-        matrices.pop();
     }
 
     public static class State extends BlockEntityRenderState {
