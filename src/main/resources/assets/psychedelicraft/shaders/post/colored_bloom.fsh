@@ -16,7 +16,7 @@ float influenceFromColor(vec3 color1, vec3 color2) {
   vec3 rdistCol = (color1 - color2);
   vec3 distCol = sqrt(rdistCol * rdistCol);
   
-  float influence = 1.0 - (distCol.r + distCol.g + distCol.b) * 2.0;
+  float influence = 1.0 - (distCol.r + distCol.g + distCol.b) * 0.75;
   
   return clamp(influence, 0.0, 1.0);
 }
@@ -44,7 +44,7 @@ void main() {
     bloomInfluence += influenceFromColor(color4, bloomColor.rgb) * 0.012 * 2.0;
   }
 
-  newColor = mix(newColor, bloomColor, clamp(bloomInfluence, 0.0, 1.0));
+  newColor = mix(newColor, bloomColor.rgb, clamp(bloomInfluence, 0.0, 1.0));
 
   fragColor = vec4(mix(texel.rgb, newColor, bloomColor.a), texel.a);
 }

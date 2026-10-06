@@ -38,7 +38,7 @@ void apply_digitize() {
     if ((randomFromVec(newUV) * 0.999) < textProg || bgMaxAlpha < 1.0) {
       float binaryProg = textProgress - textProg;
 
-      float pixelDensity = getPixelDensity(newUV, newColor);
+      float pixelDensity = getPixelDensity(newUV, newColor, depthRange);
 
       float pixelDensityParts = 95.0;
       float pixelDensityPart = float(ceil(pixelDensity * (pixelDensityParts - 1.0) - (0.5 / pixelDensityParts))) / pixelDensityParts;

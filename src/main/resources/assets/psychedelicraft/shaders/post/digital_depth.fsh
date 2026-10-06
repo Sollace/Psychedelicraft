@@ -7,7 +7,7 @@
 
 uniform sampler2D DepthSampler;
 
-float getPixelDensity(vec2 newUV, vec4 newColor) {
+float getPixelDensity(vec2 newUV, vec4 newColor, vec2 depthRange) {
   float textureDepth = texture(DepthSampler, newUV).r;
   return linearize(textureDepth, depthRange.x, depthRange.y);
 }

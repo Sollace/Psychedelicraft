@@ -15,7 +15,7 @@
       ],
       "output": "swap",
       "uniforms": {
-        "BloomConfig": [
+        "BlurConfig": [
           { "name": "pixelSize", "type": "vec2", "value": [ 0, 0 ] },
           { "name": "totalAlpha", "type": "float", "value": 0 },
           { "name": "strength", "type": "float", "value": 0 },

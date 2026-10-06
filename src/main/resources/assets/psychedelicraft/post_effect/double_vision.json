@@ -15,7 +15,7 @@
       ],
       "output": "swap",
       "uniforms": {
-        "BloomConfig": [
+        "DoubleVisionConfig": [
           { "name": "totalAlpha", "type": "float", "value": 0 },
           { "name": "distance", "type": "float", "value": 0 },
           { "name": "stretch", "type": "float", "value": 0 }

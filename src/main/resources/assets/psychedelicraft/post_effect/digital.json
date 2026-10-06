@@ -26,7 +26,7 @@
       ],
       "output": "swap",
       "uniforms": {
-        "DistortionMapConfig": [
+        "PixelationConfig": [
           { "name": "newResolution", "type": "vec2", "value": [ 0, 0 ] },
           { "name": "textProgress", "type": "float", "value": 0 },
           { "name": "maxColors", "type": "float", "value": 0 },

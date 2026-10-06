@@ -5,7 +5,7 @@
 #moj_import <psychedelicraft:pixelate.glsl>
 #moj_import <psychedelicraft:linear.glsl>
 
-float getPixelDensity(vec2 newUV, vec4 newColor) {
+float getPixelDensity(vec2 newUV, vec4 newColor, vec2 depthRange) {
     return 1.0 - getBrightness(newColor.rgb);
 }
 
