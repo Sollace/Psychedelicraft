@@ -134,10 +134,12 @@ public class PlacedDrinksModelProvider
             INSTANCE.submitDrinkModel(item, matrices, queue, light, overlay);
 
             if (!fluid.isEmpty()) {
+                matrices.push();
                 matrices.translate(0, fluidOrigin, 0);
                 matrices.scale(1, fillPercentage, 1);
                 matrices.translate(0, -fluidOrigin, 0);
                 INSTANCE.submitDrinkModel(fluid, matrices, queue, light, overlay);
+                matrices.pop();
             }
         }
     }
