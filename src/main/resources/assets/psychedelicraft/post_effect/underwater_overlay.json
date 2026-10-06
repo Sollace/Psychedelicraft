@@ -15,18 +15,25 @@
           "sampler_name": "Overlay1",
           "location": "minecraft:psychedelicraft/water_distortion",
           "width": 800,
-          "height": 800,
-          "bilinear": false
+          "height": 600,
+          "bilinear": true
         },
         {
           "sampler_name": "Overlay2",
           "location": "minecraft:psychedelicraft/water_distortion",
           "width": 800,
-          "height": 800,
-          "bilinear": false
+          "height": 600,
+          "bilinear": true
         }
       ],
-      "output": "swap"
+      "output": "swap",
+      "uniforms": {
+        "DistortionMapConfig": [
+          { "name": "totalAlpha", "type": "float", "value": 0 },
+          { "name": "strength", "type": "float", "value": 0 },
+          { "name": "texTranslation", "type": "vec4", "value": [ 0, 0, 0, 0 ] }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -43,12 +50,7 @@
           {
             "name": "ColorModulate",
             "type": "vec4",
-            "value": [
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ]
+            "value": [ 1.0, 1.0, 1.0, 1.0 ]
           }
         ]
       }

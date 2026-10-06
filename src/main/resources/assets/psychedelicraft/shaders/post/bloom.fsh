@@ -4,9 +4,11 @@ uniform sampler2D DiffuseSampler;
 
 in vec2 texCoord;
 
-uniform vec2 pixelSize;
-uniform float vertical;
-uniform float totalAlpha;
+layout(std140) uniform BloomConfig {
+  vec2 pixelSize;
+  float totalAlpha;
+  int vertical;
+};
 
 out vec4 fragColor;
 

@@ -4,10 +4,11 @@ uniform sampler2D DiffuseSampler;
 
 in vec2 texCoord;
 
-uniform vec2 pixelSize;
-uniform float vertical;
-uniform float totalAlpha;
-uniform vec3 bloomColor;
+layout(std140) uniform ColoredBloomConfig {
+  vec2 pixelSize;
+  vec4 bloomColor;
+  int vertical;
+};
 
 out vec4 fragColor;
 
@@ -37,13 +38,13 @@ void main() {
     vec3 color3 = texture(DiffuseSampler, clamp(texCoord + 3.0 * activeDirVec, 0.0, 1.0)).rgb;
     vec3 color4 = texture(DiffuseSampler, clamp(texCoord + 4.0 * activeDirVec, 0.0, 1.0)).rgb;
 
-    bloomInfluence += influenceFromColor(color1, bloomColor) * 0.028 * 2.0;
-    bloomInfluence += influenceFromColor(color2, bloomColor) * 0.020 * 2.0;
-    bloomInfluence += influenceFromColor(color3, bloomColor) * 0.016 * 2.0;
-    bloomInfluence += influenceFromColor(color4, bloomColor) * 0.012 * 2.0;
+    bloomInfluence += influenceFromColor(color1, bloomColor.rgb) * 0.028 * 2.0;
+    bloomInfluence += influenceFromColor(color2, bloomColor.rgb) * 0.020 * 2.0;
+    bloomInfluence += influenceFromColor(color3, bloomColor.rgb) * 0.016 * 2.0;
+    bloomInfluence += influenceFromColor(color4, bloomColor.rgb) * 0.012 * 2.0;
   }
 
   newColor = mix(newColor, bloomColor, clamp(bloomInfluence, 0.0, 1.0));
 
-  fragColor = vec4(mix(texel.rgb, newColor, totalAlpha), texel.a);
+  fragColor = vec4(mix(texel.rgb, newColor, bloomColor.a), texel.a);
 }

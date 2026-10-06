@@ -4,9 +4,11 @@ uniform sampler2D DiffuseSampler;
 
 in vec2 texCoord;
 
-uniform float distance;
-uniform float stretch;
-uniform float totalAlpha;
+layout(std140) uniform DoubleVisionConfig {
+  float totalAlpha;
+  float distance;
+  float stretch;
+};
 
 out vec4 fragColor;
 

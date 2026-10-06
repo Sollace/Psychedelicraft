@@ -8,13 +8,14 @@ uniform sampler2D DiffuseSampler;
 
 in vec2 texCoord;
 
-uniform float ticks;
-
-uniform float slowColorRotation;
-uniform float quickColorRotation;
-uniform float colorIntensification;
-uniform float desaturation;
-uniform float inversion;
+layout(std140) uniform ColorRotationConfig {
+  float ticks;
+  float slowColorRotation;
+  float quickColorRotation;
+  float colorIntensification;
+  float desaturation;
+  float inversion;
+};
 
 out vec4 fragColor;
 
@@ -30,15 +31,15 @@ void main() {
      outcolor = mix(outcolor, getRotatedColor(outcolor, mod(ticks/* + fogFragCoord[0]*/, 50.0) / 50.0), clamp(quickColorRotation * 1.5, 0.0, 1.0));
   }
 
-  if (colorIntensification != 0.0) {
+  if (colorIntensification > 0.0) {
     outcolor = mix(outcolor, getIntensifiedColor(outcolor), colorIntensification);
   }
 
-  if (desaturation != 0.0) {
+  if (desaturation > 0.0) {
     outcolor = mix(outcolor, getDesaturatedColor(outcolor), desaturation);
   }
 
-  if (inversion > 0) {
+  if (inversion > 0.0) {
     outcolor = mix(outcolor, getInvertedColor(outcolor), inversion);
   }
 

@@ -6,10 +6,12 @@ uniform sampler2D DiffuseSampler;
 
 in vec2 texCoord;
 
-uniform vec2 pixelSize;
-uniform float totalAlpha;
-uniform float seed;
-uniform float strength;
+layout(std140) uniform BlurConfig {
+  vec2 pixelSize;
+  float totalAlpha;
+  float strength;
+  float seed;
+};
 
 out vec4 fragColor;
 

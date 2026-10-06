@@ -5,10 +5,12 @@ uniform sampler2D DepthSampler;
 
 in vec2 texCoord;
 
-uniform float ticks;
-//uniform vec4 pulses;
-uniform float colorSafeMode;
-uniform vec4 worldColorization;
+layout(std140) uniform WorldColorizationConfig {
+  float ticks;
+  //vec4 pulses;
+  int colorSafeMode;
+  vec4 worldColorization;
+};
 
 out vec4 fragColor;
 
@@ -52,7 +54,7 @@ void main() {
 			harmonizedColor = mix(vec3(0.5), vec3(1.0) - worldColorization.rgb, (harmonizeStrength - 1.0) * 0.5); // Max of 2.0
 		}
 
-    if (colorSafeMode != 0) { // Make sure we don't add brightness
+    if (colorSafeMode > 0) { // Make sure we don't add brightness
       harmonizedColor *= fragColor.rgb;
     }
 

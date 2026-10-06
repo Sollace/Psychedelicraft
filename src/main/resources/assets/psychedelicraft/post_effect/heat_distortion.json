@@ -26,7 +26,14 @@
           "bilinear": true
         }
       ],
-      "output": "swap"
+      "output": "swap",
+      "uniforms": {
+        "DistortionConfig": [
+          { "name": "ticks", "type": "float", "value": 0 },
+          { "name": "strength", "type": "float", "value": 0 },
+          { "name": "totalAlpha", "type": "float", "value": 0 }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",

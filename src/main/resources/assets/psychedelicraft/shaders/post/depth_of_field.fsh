@@ -6,14 +6,13 @@ uniform sampler2D DepthSampler;
 
 in vec2 texCoord;
 
-uniform vec2 pixelSize;
-uniform float vertical;
-uniform float focalPointNear;
-uniform float focalBlurNear;
-uniform float focalPointFar;
-uniform float focalBlurFar;
-
-uniform vec2 depthRange;
+layout(std140) uniform DofConfig {
+  vec2 pixelSize;
+  vec2 depthRange;
+  vec2 focalPoint;
+  vec2 focalBlur;
+  int vertical;
+};
 
 out vec4 fragColor;
 
@@ -28,10 +27,10 @@ void main() {
 
   float depth = getLinearDepth(texCoord);
   float focalDepth = 0.0;
-  if (depth < focalPointNear) {
-    focalDepth = (focalPointNear - depth) / focalPointNear * focalBlurNear;
-  } else if (depth > focalPointFar) {
-    focalDepth = (depth - focalPointFar) / focalPointFar * focalBlurFar;
+  if (depth < focalPoint.x) {
+    focalDepth = (focalPoint.x - depth) / focalPoint.x * focalBlur.x;
+  } else if (depth > focalPoint.y) {
+    focalDepth = (depth - focalPoint.y) / focalPoint.y * focalBlur.y;
   }
 
   focalDepth = min(focalDepth, 1.0);

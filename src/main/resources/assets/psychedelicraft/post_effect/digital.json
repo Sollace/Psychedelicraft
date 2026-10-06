@@ -24,7 +24,17 @@
           "height": 128
         }
       ],
-      "output": "swap"
+      "output": "swap",
+      "uniforms": {
+        "DistortionMapConfig": [
+          { "name": "newResolution", "type": "vec2", "value": [ 0, 0 ] },
+          { "name": "textProgress", "type": "float", "value": 0 },
+          { "name": "maxColors", "type": "float", "value": 0 },
+          { "name": "saturation", "type": "float", "value": 0 },
+          { "name": "totalAlpha", "type": "float", "value": 0 },
+          { "name": "depthRange", "type": "vec2", "value": [ 0, 0 ] }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -41,12 +51,7 @@
           {
             "name": "ColorModulate",
             "type": "vec4",
-            "value": [
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ]
+            "value": [ 1.0, 1.0, 1.0, 1.0 ]
           }
         ]
       }

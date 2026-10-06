@@ -3,7 +3,6 @@ package ivorius.psychedelicraft.mixin.client.shader;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.opengl.GL20C;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -30,11 +29,6 @@ abstract class MixinShaderProgram implements AutoCloseable, ProgramUniforms.Hold
     @Inject(method = "set", at = @At("RETURN"))
     private void onSet(List<RenderPipeline.UniformDescription> uniforms, List<String> samplers, CallbackInfo info) {
         psychedelicraft_geometryShader = GeometryShader.INSTANCE.createShaderBuilder(glRef).build();
-    }
-
-    @Override
-    public int psychedelicraft_getUniformLocation(String name) {
-        return psychedelicraft_uniformLocations.computeIfAbsent(name, (String n) -> GL20C.glGetUniformLocation(glRef, n));
     }
 
     @Override

@@ -6,9 +6,11 @@ uniform sampler2D NoiseSampler;
 
 in vec2 texCoord;
 
-uniform float totalAlpha;
-uniform float ticks;
-uniform float strength;
+layout(std140) uniform DistortionConfig {
+  float ticks;
+  float strength;
+  float totalAlpha;
+};
 
 out vec4 fragColor;
 

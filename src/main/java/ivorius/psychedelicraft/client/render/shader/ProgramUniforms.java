@@ -1,8 +1,5 @@
 package ivorius.psychedelicraft.client.render.shader;
 
-import java.util.Map;
-import java.util.WeakHashMap;
-
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL20C;
 
@@ -12,38 +9,29 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
  * Since 1.21.6 vanilla only feeds uniform blocks and samplers to its programs.
  * The mod's shaders still use plain uniforms, so we upload those ourselves right after vanilla binds a program.
  */
+@Deprecated
 public interface ProgramUniforms {
-    Map<RenderPipeline, Map<String, float[]>> PENDING_POST_UNIFORMS = new WeakHashMap<>();
-
     /**
      * Implemented on vanilla's ShaderProgram via mixin.
      */
+    @Deprecated
     interface Holder {
-        int psychedelicraft_getUniformLocation(String name);
-
         @Nullable
         BuiltGemoetryShader psychedelicraft_getGeometryShader();
-    }
-
-    static void setPostUniforms(RenderPipeline pipeline, Map<String, float[]> uniforms) {
-        PENDING_POST_UNIFORMS.put(pipeline, uniforms);
     }
 
     /**
      * Called by the command encoder after a program has been bound for a draw.
      */
+    @Deprecated
     static void onProgramBound(Holder program, RenderPipeline pipeline) {
         BuiltGemoetryShader geometry = program.psychedelicraft_getGeometryShader();
         if (geometry != null) {
             geometry.bind();
         }
-
-        Map<String, float[]> uniforms = PENDING_POST_UNIFORMS.get(pipeline);
-        if (uniforms != null) {
-            uniforms.forEach((name, values) -> upload(program.psychedelicraft_getUniformLocation(name), values));
-        }
     }
 
+    @Deprecated
     static void upload(int location, float... values) {
         if (location == -1) {
             return;

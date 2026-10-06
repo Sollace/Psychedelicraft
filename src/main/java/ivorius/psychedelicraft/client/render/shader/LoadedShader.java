@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+import org.lwjgl.system.MemoryStack;
+
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.Std140Builder;
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import ivorius.psychedelicraft.Psychedelicraft;
-import ivorius.psychedelicraft.client.render.shader.UniformBinding.UniformSetter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.render.DefaultFramebufferSet;
@@ -17,15 +22,13 @@ class LoadedShader {
     private final Identifier id;
     private final MinecraftClient client;
 
-    private final UniformBinding.Set bindings;
-
     private final List<Pass> passes = new ArrayList<>();
+    private final Map<PostEffectPassSupplier.Pass, Pass> passById = new HashMap<>();
     private int passCount = 0;
 
-    public LoadedShader(MinecraftClient client, Identifier id, UniformBinding.Set bindings) throws IOException, JsonSyntaxException {
+    public LoadedShader(MinecraftClient client, Identifier id) throws IOException, JsonSyntaxException {
         this.client = client;
         this.id = id;
-        this.bindings = bindings;
     }
 
     @SuppressWarnings("deprecation")
@@ -38,8 +41,7 @@ class LoadedShader {
 
             passCount = 0;
             passes.clear();
-
-            Map<String, Pass> passById = new HashMap<>();
+            passById.clear();
             update(client, processor, tickDelta, (id, callback) -> {
                 passCount = Math.max(passCount, passById.computeIfAbsent(id, this::addPass).add(callback));
             });
@@ -55,7 +57,7 @@ class LoadedShader {
         }
     }
 
-    private Pass addPass(String id) {
+    private Pass addPass(PostEffectPassSupplier.Pass id) {
         Pass pass = new Pass(new ArrayList<>());
         passes.add(pass);
         return pass;
@@ -74,32 +76,43 @@ class LoadedShader {
         }
     }
 
-    public void update(MinecraftClient client, PostEffectProcessor processor, float tickDelta, BiConsumer<String, Runnable> passCollector) {
+    public void update(MinecraftClient client, PostEffectProcessor processor, float tickDelta, BiConsumer<PostEffectPassSupplier.Pass, Runnable> passCollector) {
         final int width = client.getWindow().getFramebufferWidth();
         final int height = client.getWindow().getFramebufferHeight();
 
-        PassState globalState = new PassState(new HashMap<>());
+        for (var pass : ((PostEffectPassSupplier)processor).getPasses()) {
+            Identifier fragmentShaderId = pass.getPipeline().getFragmentShader();
 
-        bindings.global.bindUniforms(globalState, tickDelta, width, height, () -> {
-            for (var pass : ((PostEffectPassSupplier)processor).getPasses()) {
-                String passId = pass.getId();
-                var programBindings = bindings.programBindings.getOrDefault(Identifier.of(passId).withPrefixedPath("post/"), UniformBinding.EMPTY);
-                if (programBindings != UniformBinding.EMPTY) {
-                    pass.setDisabled();
-                    PassState state = new PassState(new HashMap<>(globalState.uniforms));
+            var programBindings = UniformBindings.VALUES.get(fragmentShaderId);
+            if (programBindings != null) {
+                pass.setDisabled(true);
+                programBindings.bindUniforms(tickDelta, width, height, values -> {
+                    passCollector.accept(pass, () -> {
+                        pass.setDisabled(false);
+                        values.accept((name, structure) -> {
+                            var buffer = pass.getUniforms().get(name);
 
-                    programBindings.bindUniforms(state, tickDelta, width, height, () -> {
-                        passCollector.accept(passId, () -> pass.setUniformUpdater(state::uniforms));
+                            if (buffer != null) {
+                                long bufferSize = buffer.size();
+                                if ((buffer.usage() & GpuBuffer.USAGE_COPY_DST) == 0) {
+                                    buffer.close();
+
+                                    // recreate buffer to allow writing to it
+                                    buffer = RenderSystem.getDevice().createBuffer(() -> pass.getId() + " / " + name, GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST, bufferSize);
+                                    pass.getUniforms().put(name, buffer);
+                                }
+
+                                // write to the butter
+                                try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+                                    Std140Builder builder = Std140Builder.onStack(memoryStack, (int)bufferSize);
+                                    structure.accept(builder);
+                                    RenderSystem.getDevice().createCommandEncoder().writeToBuffer(buffer.slice(), builder.get());
+                                }
+                            }
+                        });
                     });
-                }
+                });
             }
-        });
-    }
-
-    record PassState(Map<String, float[]> uniforms) implements UniformSetter {
-        @Override
-        public void set(String name, float... values) {
-            uniforms.put(name, values.clone());
         }
     }
 }

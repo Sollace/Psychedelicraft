@@ -14,7 +14,17 @@
           "bilinear": true
         }
       ],
-      "output": "temp"
+      "output": "temp",
+      "uniforms": {
+        "ColorRotationConfig": [
+          { "name": "ticks", "type": "float", "value": 0 },
+          { "name": "slowColorRotation", "type": "float", "value": 0 },
+          { "name": "quickColorRotation", "type": "float", "value": 0 },
+          { "name": "colorIntensification", "type": "float", "value": 0 },
+          { "name": "desaturation", "type": "float", "value": 0 },
+          { "name": "inversion", "type": "float", "value": 0 }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -30,7 +40,14 @@
           "use_depth_buffer": true
         }
       ],
-      "output": "swap"
+      "output": "swap",
+      "uniforms": {
+        "WorldColorizationConfig": [
+          { "name": "ticks", "type": "float", "value": 0 },
+          { "name": "colorSafeMode", "type": "int", "value": 0 },
+          { "name": "worldColorization", "type": "vec4", "value": [ 0, 0, 0, 0 ] }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -47,12 +64,7 @@
           {
             "name": "ColorModulate",
             "type": "vec4",
-            "value": [
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ]
+            "value": [ 1.0, 1.0, 1.0, 1.0 ]
           }
         ]
       }

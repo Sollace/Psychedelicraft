@@ -13,7 +13,15 @@
           "bilinear": true
         }
       ],
-      "output": "swap"
+      "output": "swap",
+      "uniforms": {
+        "BloomConfig": [
+          { "name": "pixelSize", "type": "vec2", "value": [ 0, 0 ] },
+          { "name": "totalAlpha", "type": "float", "value": 0 },
+          { "name": "strength", "type": "float", "value": 0 },
+          { "name": "seed", "type": "float", "value": 0 }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -30,12 +38,7 @@
           {
             "name": "ColorModulate",
             "type": "vec4",
-            "value": [
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ]
+            "value": [ 1.0, 1.0, 1.0, 1.0 ]
           }
         ]
       }

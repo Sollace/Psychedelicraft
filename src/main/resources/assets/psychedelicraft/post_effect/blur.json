@@ -13,7 +13,14 @@
           "bilinear": true
         }
       ],
-      "output": "swap"
+      "output": "swap",
+      "uniforms": {
+        "BlurConfig": [
+          { "name": "pixelSize", "type": "vec2", "value": [ 0, 0 ] },
+          { "name": "blur", "type": "vec2", "value": [ 0, 0 ] },
+          { "name": "repeats", "type": "int", "value": 0 }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -30,12 +37,7 @@
           {
             "name": "ColorModulate",
             "type": "vec4",
-            "value": [
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ]
+            "value": [ 1.0, 1.0, 1.0, 1.0 ]
           }
         ]
       }

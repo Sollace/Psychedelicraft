@@ -5,11 +5,14 @@ uniform sampler2D AsciiSampler;
 
 in vec2 texCoord;
 
-uniform vec2 newResolution;
-uniform float textProgress;
-uniform float maxColors;
-uniform float saturation;
-uniform float totalAlpha;
+layout(std140) uniform PixelationConfig {
+  vec2 newResolution;
+  float textProgress;
+  float maxColors;
+  float saturation;
+  float totalAlpha;
+  vec2 depthRange;
+};
 
 out vec4 fragColor;
 

@@ -79,7 +79,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
             DrugRenderer.INSTANCE.renderAllHallucinations(context.matrices(), context.commandQueue());
         });
 
-        ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(ShaderLoader.ID, ShaderLoader.POST_EFFECTS);
+        ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(ShaderLoader.ID, ShaderLoader.INSTANCE);
 
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
 

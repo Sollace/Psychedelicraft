@@ -12,7 +12,14 @@
           "target": "minecraft:main"
         }
       ],
-      "output": "swap"
+      "output": "swap",
+      "uniforms": {
+        "ColoredBloomConfig": [
+          { "name": "pixelSize", "type": "vec2", "value": [ 0, 0 ] },
+          { "name": "bloomColor", "type": "vec4", "value": [ 0, 0, 0, 0 ] },
+          { "name": "vertical", "type": "int", "value": 0 }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -29,12 +36,7 @@
           {
             "name": "ColorModulate",
             "type": "vec4",
-            "value": [
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ]
+            "value": [ 1.0, 1.0, 1.0, 1.0 ]
           }
         ]
       }

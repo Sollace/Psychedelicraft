@@ -7,16 +7,17 @@ uniform sampler2D Overlay2Sampler;
 
 in vec2 texCoord;
 
-uniform float totalAlpha;
-uniform float strength;
-uniform vec2 texTranslation0;
-uniform vec2 texTranslation1;
+layout(std140) uniform DistortionMapConfig {
+  float totalAlpha;
+  float strength;
+  vec4 texTranslation;
+};
 
 out vec4 fragColor;
 
 void main() {
-  vec4 noisePixel0 = texture(Overlay1Sampler, texCoord + texTranslation0);
-  vec4 noisePixel1 = texture(Overlay2Sampler, texCoord + texTranslation1);
+  vec4 noisePixel0 = texture(Overlay1Sampler, texCoord + texTranslation.xy);
+  vec4 noisePixel1 = texture(Overlay2Sampler, texCoord + texTranslation.zw);
   vec2 joinedTranslation = clamp(noisePixel0.rg + noisePixel1.rg - 1.0, 0.0, 1.0);
 
   vec2 water1 = abs(noisePixel0.rg - 0.5) * 2.0;
