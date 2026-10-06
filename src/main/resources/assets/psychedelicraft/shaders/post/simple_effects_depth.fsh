@@ -55,7 +55,7 @@ void main() {
 		}
 
     if (colorSafeMode > 0) { // Make sure we don't add brightness
-      harmonizedColor *= fragColor.rgb;
+      harmonizedColor *= incolor.rgb;
     }
 
 		outcolor = mix(outcolor, harmonizedColor, worldColorization.a);
