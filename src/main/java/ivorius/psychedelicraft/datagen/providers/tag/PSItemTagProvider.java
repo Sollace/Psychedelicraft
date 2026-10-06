@@ -48,6 +48,7 @@ public class PSItemTagProvider extends FabricTagProvider.ItemTagProvider {
         copyBlockTags();
         exportConventionalTags();
 
+        getOrCreateTagBuilder(ItemTags.DYEABLE).add(PSItems.HARMONIUM);
         getOrCreateTagBuilder(ItemTags.SIGNS).add(PSItems.JUNIPER_SIGN);
         getOrCreateTagBuilder(PSTags.Items.MORNING_GLORY_INGREDIENTS).add(PSItems.MORNING_GLORY, PSItems.MORNING_GLORY_SEEDS);
         getOrCreateTagBuilder(PSTags.Items.BOTTLE_RACK_INSERTABLE).add(PSItems.BOTTLE, PSItems.MOLOTOV_COCKTAIL);
