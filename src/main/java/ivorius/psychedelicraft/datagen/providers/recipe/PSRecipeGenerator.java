@@ -128,7 +128,7 @@ class PSRecipeGenerator extends RecipeGenerator {
             .pattern(" # ")
             .pattern(" # ")
             .offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(items, RecipeCategory.MISC, PSItems.BOTTLE)
+        BottleRecipeJsonBuilder.create(items, RecipeCategory.MISC, PSItems.BOTTLE)
             .input('#', ConventionalItemTags.GLASS_BLOCKS).criterion("has_glass", conditionsFromTag(ConventionalItemTags.GLASS_BLOCKS))
             .pattern(" # ")
             .pattern("# #")
