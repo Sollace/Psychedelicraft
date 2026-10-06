@@ -19,6 +19,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -198,8 +199,8 @@ public class DrugRenderer {
         }
     }
 
-    public void extractRenderState(WorldRenderState worldState, float tickDelta, DrugProperties drugProperties) {
-        hallucinationStates = HallucinationRenderSystem.INSTANCE.extractStates(drugProperties.getHallucinations(), worldState, tickDelta);
+    public void extractRenderState(Frustum frustum, Camera camera, WorldRenderState worldState, float tickDelta, DrugProperties drugProperties) {
+        hallucinationStates = HallucinationRenderSystem.INSTANCE.extractStates(frustum, camera, drugProperties.getHallucinations(), worldState, tickDelta);
     }
 
     public void renderAllHallucinations(MatrixStack matrices, OrderedRenderCommandQueue queue) {

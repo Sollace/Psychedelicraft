@@ -9,6 +9,8 @@ import java.util.Objects;
 import ivorius.psychedelicraft.entity.drug.hallucination.Hallucination;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationManager;
 import ivorius.psychedelicraft.entity.drug.hallucination.HallucinationTypeKeys;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.state.WorldRenderState;
 import net.minecraft.util.Identifier;
 
@@ -42,14 +44,14 @@ public class HallucinationRenderSystem {
         return (HallucinationRenderer)renderers.get(Objects.requireNonNull(state.type, "State does not have a type"));
     }
 
-    public List<HallucinationRenderState> extractStates(HallucinationManager hallucinations, WorldRenderState worldState, float tickDelta) {
+    public List<HallucinationRenderState> extractStates(Frustum frustum, Camera camera, HallucinationManager hallucinations, WorldRenderState worldState, float tickDelta) {
         List<HallucinationRenderState> states = new ArrayList<>();
 
         float alpha = hallucinations.getEntityHallucinationAlphaTransparency(tickDelta);
 
         for (Hallucination h : hallucinations.getEntities()) {
             HallucinationRenderer<Hallucination, ?> renderer = getRenderer(h);
-            if (renderer != null && renderer.shouldRender(h, alpha, tickDelta)) {
+            if (renderer != null && renderer.shouldRender(h, frustum, camera.getCameraPos(), alpha, tickDelta)) {
                 states.add(renderer.createRenderState(h, tickDelta, alpha, worldState.cameraRenderState));
             }
         }

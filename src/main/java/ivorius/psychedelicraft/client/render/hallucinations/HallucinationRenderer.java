@@ -1,9 +1,11 @@
 package ivorius.psychedelicraft.client.render.hallucinations;
 
 import ivorius.psychedelicraft.entity.drug.hallucination.Hallucination;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Vec3d;
 
 public interface HallucinationRenderer<T extends Hallucination, S extends HallucinationRenderState> {
 
@@ -22,7 +24,7 @@ public interface HallucinationRenderer<T extends Hallucination, S extends Halluc
 
     void render(S state, MatrixStack matrices, OrderedRenderCommandQueue queue);
 
-    default boolean shouldRender(T hallucination, float alpha, float tickDelta) {
+    default boolean shouldRender(T hallucination, Frustum frustum, Vec3d cameraPos, float alpha, float tickDelta) {
         return alpha * hallucination.getAlpha(tickDelta) > 0;
     }
 }

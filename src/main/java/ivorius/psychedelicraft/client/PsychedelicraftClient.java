@@ -71,7 +71,7 @@ public class PsychedelicraftClient implements ClientModInitializer {
         WorldRenderEvents.END_EXTRACTION.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
             DrugProperties.of((Entity)client.player).ifPresent(properties -> {
-                DrugRenderer.INSTANCE.extractRenderState(context.worldState(), context.tickCounter().getTickProgress(false), properties);
+                DrugRenderer.INSTANCE.extractRenderState(context.frustum(), context.camera(), context.worldState(), context.tickCounter().getTickProgress(false), properties);
             });
         });
 

@@ -46,6 +46,16 @@ public abstract class AbstractEntityHallucinationRenderer<
     }
 
     @Override
+    public boolean shouldRender(T hallucination, Frustum frustum, Vec3d cameraPos, float alpha, float tickDelta) {
+        return HallucinationRenderer.super.shouldRender(hallucination, frustum, cameraPos, alpha, tickDelta)
+                && MinecraftClient.getInstance().getEntityRenderDispatcher().shouldRender(hallucination.getEntity(), frustum,
+                        cameraPos.getX(),
+                        cameraPos.getY(),
+                        cameraPos.getZ()
+        );
+    }
+
+    @Override
     public void render(S state, MatrixStack matrices, OrderedRenderCommandQueue queue) {
         if (state.visible && state.entity != null) {
             MinecraftClient.getInstance().getEntityRenderDispatcher().render(state.entity, state.cameraState,
