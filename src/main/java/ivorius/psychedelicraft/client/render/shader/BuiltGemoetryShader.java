@@ -2,10 +2,13 @@ package ivorius.psychedelicraft.client.render.shader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL33C;
 import com.mojang.blaze3d.opengl.GlConst;
@@ -50,33 +53,48 @@ public class BuiltGemoetryShader {
 
     public interface Holder {
         void attachUniformData(@Nullable BuiltGemoetryShader shader);
+
+        @Nullable BuiltGemoetryShader getUniformData();
     }
 
-    public static class Builder {
-        private final List<GeometryShader.BoundUniform> uniforms = new ArrayList<>();
+    public static class Builder implements UniformCollection {
+        private final List<Map.Entry<String, IntConsumer>> uniforms = new ArrayList<>();
         private final List<String> samplerNames = new ArrayList<>();
         private final List<Supplier<GpuTexture>> samplerTextures = new ArrayList<>();
 
-        private final int program;
-
-        public Builder(int program) {
-            this.program = program;
-        }
-
-        void addSampler(String sampler, Supplier<GpuTexture> supplier) {
+        public void addSampler(String sampler, Supplier<GpuTexture> supplier) {
             samplerNames.add(sampler);
             samplerTextures.add(supplier);
         }
 
-        void addUniform(GeometryShader.BoundUniform uniform) {
-            uniforms.add(uniform);
+        @Override
+        public void vec1(String name, FloatSupplier value) {
+            uniforms.add(Map.entry(name, location -> {
+                GL20C.glUniform1f(location, value.getAsFloat());
+            }));
+        }
+
+        @Override
+        public void vec3(String name, Supplier<Vector3f> value) {
+            uniforms.add(Map.entry(name, location -> {
+                Vector3f v = value.get();
+                GL20C.glUniform3f(location, v.x, v.y, v.z);
+            }));
+        }
+
+        @Override
+        public void vec4(String name, Supplier<Vector4f> value) {
+            uniforms.add(Map.entry(name, location -> {
+                Vector4f v = value.get();
+                GL20C.glUniform4f(location, v.x, v.y, v.z, v.w);
+            }));
         }
 
         /**
          * @return the bound shader, or null if the program uses none of the geometry uniforms
          */
         @Nullable
-        public BuiltGemoetryShader build() {
+        public BuiltGemoetryShader build(int program) {
             List<Sampler> samplers = new ArrayList<>();
             for (int i = 0; i < samplerNames.size(); i++) {
                 int location = GL20C.glGetUniformLocation(program, samplerNames.get(i));
@@ -86,9 +104,9 @@ public class BuiltGemoetryShader {
             }
             List<Uniform> uniforms = new ArrayList<>();
             for (var uniform : this.uniforms) {
-                int location = GL20C.glGetUniformLocation(program, uniform.name());
+                int location = GL20C.glGetUniformLocation(program, uniform.getKey());
                 if (location != -1) {
-                    uniforms.add(new Uniform(location, uniform.upload()));
+                    uniforms.add(new Uniform(location, uniform.getValue()));
                 }
             }
 

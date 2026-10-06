@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import com.mojang.blaze3d.shaders.ShaderType;
@@ -45,6 +44,11 @@ public class GeometryShader implements ResourceReloader {
 
     public static final GeometryShader INSTANCE = new GeometryShader();
 
+    // Vanilla fullscreen shaders. Add others here if their fragment shaders break.
+    private static final Set<String> SCREEN_SPACE_SHADERS = Set.of(
+            "core/screenquad", "core/animate_sprite", "core/blit_screen", "core/lightmap", "core/animate_sprite_blit", "core/animate_sprite_interpolate"
+    );
+
     private Identifier name;
     private ShaderType type;
 
@@ -64,6 +68,13 @@ public class GeometryShader implements ResourceReloader {
             return client.getTextureManager().getTexture(id).getGlTexture();
         });
     });
+
+    private final BuiltGemoetryShader.Builder shaderBuilder = new BuiltGemoetryShader.Builder();
+
+    private GeometryShader() {
+        samplers.forEach(shaderBuilder::addSampler);
+        addUniforms(shaderBuilder);
+    }
 
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Store store, Executor prepareExecutor, ResourceReloader.Synchronizer synchronizer, Executor applyExecutor) {
@@ -89,36 +100,8 @@ public class GeometryShader implements ResourceReloader {
         return (RenderPhase.current() == RenderPhase.WORLD || RenderPhase.current() == RenderPhase.CLOUDS) && client.world != null && client.player != null;
     }
 
-    public BuiltGemoetryShader.Builder createShaderBuilder(int program) {
-        var builder = new BuiltGemoetryShader.Builder(program);
-        samplers.forEach(builder::addSampler);
-        addUniforms(builder::addUniform);
-        return builder;
-    }
-
-    public void addUniforms(Consumer<BoundUniform> register) {
-        addUniforms(new UniformCollection() {
-            @Override
-            public void vec1(String name, FloatSupplier value) {
-                register.accept(new BoundUniform(name, location -> ProgramUniforms.upload(location, value.getAsFloat())));
-            }
-
-            @Override
-            public void vec3(String name, Supplier<Vector3f> value) {
-                register.accept(new BoundUniform(name, location -> {
-                    Vector3f v = value.get();
-                    ProgramUniforms.upload(location, v.x, v.y, v.z);
-                }));
-            }
-
-            @Override
-            public void vec4(String name, Supplier<Vector4f> value) {
-                register.accept(new BoundUniform(name, location -> {
-                    Vector4f v = value.get();
-                    ProgramUniforms.upload(location, v.x, v.y, v.z, v.w);
-                }));
-            }
-        });
+    public BuiltGemoetryShader.Builder getShaderBuilder() {
+        return shaderBuilder;
     }
 
     public void addUniforms(UniformCollection uniformHolder) {
@@ -152,10 +135,6 @@ public class GeometryShader implements ResourceReloader {
                 : RenderPhase.current() == RenderPhase.SKY
                     ? ShaderContext.modifier(Drug.RAINBOW_WAVES) * 1.1F
                     : 0F);
-    }
-
-    public Map<String, Supplier<GpuTexture>> getSamplers() {
-        return samplers;
     }
 
     public List<String> injectShaderSources(List<String> source) {
@@ -200,11 +179,6 @@ public class GeometryShader implements ResourceReloader {
         Psychedelicraft.LOGGER.info("Skipping unknown shader " + name);
         return source;
     }
-
-    // Vanilla fullscreen shaders. Add others here if their fragment shaders break.
-    private static final Set<String> SCREEN_SPACE_SHADERS = Set.of(
-            "core/screenquad", "core/animate_sprite", "core/blit_screen", "core/lightmap", "core/animate_sprite_blit", "core/animate_sprite_interpolate"
-    );
 
     private static boolean isScreenSpace(Identifier name) {
         String path = name.getPath().replaceFirst("^shaders/", "").replaceFirst("\\.[a-z]+$", "");
@@ -306,6 +280,4 @@ public class GeometryShader implements ResourceReloader {
             return source;
         }
     }
-
-    public record BoundUniform(String name, IntConsumer upload) { }
 }

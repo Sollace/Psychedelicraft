@@ -27,4 +27,10 @@ abstract class MixinGlProgram implements BuiltGemoetryShader.Holder {
     public void attachUniformData(@Nullable BuiltGemoetryShader uniformData) {
         psychedelicraft_uniformData = uniformData;
     }
+
+    @Nullable
+    @Override
+    public BuiltGemoetryShader getUniformData() {
+        return psychedelicraft_uniformData;
+    }
 }

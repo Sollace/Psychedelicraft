@@ -6,9 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-
-import ivorius.psychedelicraft.client.render.shader.ProgramUniforms;
+import ivorius.psychedelicraft.client.render.shader.BuiltGemoetryShader;
 import net.minecraft.client.gl.GlCommandEncoder;
 import net.minecraft.client.gl.ShaderProgram;
 
@@ -16,13 +14,11 @@ import net.minecraft.client.gl.ShaderProgram;
 abstract class MixinGlCommandEncoder {
     @Shadow
     private ShaderProgram currentProgram;
-    @Shadow
-    private RenderPipeline currentPipeline;
 
     @Inject(method = "setupRenderPass", at = @At("RETURN"))
     private void onSetupRenderPass(CallbackInfoReturnable<Boolean> info) {
-        if (info.getReturnValueZ() && currentProgram instanceof ProgramUniforms.Holder holder) {
-            ProgramUniforms.onProgramBound(holder, currentPipeline);
+        if (info.getReturnValueZ() && currentProgram instanceof BuiltGemoetryShader.Holder holder && holder.getUniformData() != null) {
+            holder.getUniformData().bind();
         }
     }
 }
