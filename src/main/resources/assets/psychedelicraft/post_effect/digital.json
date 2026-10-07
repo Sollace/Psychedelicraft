@@ -15,11 +15,12 @@
         {
           "sampler_name": "Depth",
           "target": "minecraft:main",
-          "use_depth_buffer": true
+          "use_depth_buffer": true,
+          "bilinear": true
         },
         {
           "sampler_name": "Ascii",
-          "location": "psychedelicraft/bits",
+          "location": "psychedelicraft:bits",
           "width": 128,
           "height": 128
         }

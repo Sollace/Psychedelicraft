@@ -12,15 +12,8 @@
           "target": "minecraft:main"
         },
         {
-          "sampler_name": "Overlay1",
-          "location": "minecraft:psychedelicraft/water_distortion",
-          "width": 800,
-          "height": 600,
-          "bilinear": true
-        },
-        {
-          "sampler_name": "Overlay2",
-          "location": "minecraft:psychedelicraft/water_distortion",
+          "sampler_name": "Overlay",
+          "location": "psychedelicraft:water_distortion",
           "width": 800,
           "height": 600,
           "bilinear": true
