@@ -1,37 +1,30 @@
 package ivorius.psychedelicraft.client.render.bezier;
 
+import java.util.ArrayList;
+
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
-import net.minecraft.client.font.TextRenderer.TextLayerType;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.resource.language.ReorderingUtil;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.*;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class BezierLabelRenderer {
     public static final BezierLabelRenderer INSTANCE = new BezierLabelRenderer();
 
-    private float length;
-    private int i;
-
     private final float scale = -1/12F;
 
-    private int activeIndex;
-    private int activeCodePoint;
-    private net.minecraft.text.Style activeStyle;
-    private final OrderedText singleCharOrderedText = visitor -> {
-        return visitor.accept(activeIndex, activeStyle, activeCodePoint);
-    };
-
-    public void render(MatrixStack matrices, OrderedRenderCommandQueue queue, int light, Bezier bezier, Style style, Text text) {
-        length = text.getString().length();
-        i = 0;
-        Path path = bezier.getPath();
+    public BezierLabelRenderState updateRenderState(BezierLabelRenderState state, Bezier bezier, Style style, Text text) {
+        final float totalLength = text.getString().length();
+        final Path path = bezier.getPath();
+        state.length = 0;
+        state.steps = new ArrayList<>();
         ReorderingUtil.reorder(text, !style.inwards).accept((charIndex, charStyle, character) -> {
+            int i = state.steps.size();
             if (character != ' ') {
-                double totalProgress = (style.spread ? (i / length) : (i * 0.5)) + style.shift;
+                double totalProgress = (style.spread ? (i / totalLength) : (i * 0.5)) + style.shift;
                 double finalProgress = ((totalProgress % 1) + 1) % 1;
 
                 if (finalProgress >= style.bottomCap && finalProgress <= style.capTop) {
@@ -41,24 +34,18 @@ public class BezierLabelRenderer {
 
                     float textSize = scale * step.fontSize();
 
-                    matrices.push();
-                    matrices.translate(position.x, position.y, position.z);
-                    matrices.scale(textSize, textSize, textSize);
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float)rotation.x + (style.inwards ? 0 : 180)));
-                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float)rotation.y));
-
-                    activeIndex = charIndex;
-                    activeStyle = charStyle;
-                    activeCodePoint = character;
-
                     @Nullable TextColor color = charStyle.getColor();
-                    queue.submitText(matrices, 0, 0, singleCharOrderedText, false, TextLayerType.SEE_THROUGH, light, color == null ? 0xFFFFFFFF : color.getRgb(), 0, 0);
-                    matrices.pop();
+
+                    state.steps.add(new BezierLabelRenderState.Step(new Vec3d(position.x, position.y, position.z), textSize, new Quaternionf()
+                            .rotateY(((float)rotation.x + (style.inwards ? 0 : 180)) * MathHelper.RADIANS_PER_DEGREE)
+                            .rotateX((float)rotation.y * MathHelper.RADIANS_PER_DEGREE), charIndex, charStyle, character,
+                            color == null ? 0xFFFFFFFF : color.getRgb()));
                 }
             }
-            i++;
+            state.length++;
             return true;
         });
+        return state;
     }
 
     public static class Style {

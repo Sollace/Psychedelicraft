@@ -14,7 +14,6 @@ import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Direction;
 
 public class RiftJarItemModelRenderer implements SpecialModelRenderer<Float> {
     private final RiftJarBlockEntityRenderer renderer;
@@ -32,7 +31,7 @@ public class RiftJarItemModelRenderer implements SpecialModelRenderer<Float> {
     public void render(Float data, ItemDisplayContext displayContext, MatrixStack matrices, OrderedRenderCommandQueue queue, int light, int overlay, boolean glint, int outlineColor) {
         RiftJarBlockEntityRenderer.State state = renderer.createRenderState();
         state.fillPercentage = data;
-        state.facing = Direction.SOUTH;
+        state.rotation = 90;
         state.lightmapCoordinates = LightmapTextureManager.MAX_LIGHT_COORDINATE;
         renderer.renderJarBody(state, matrices, queue);
     }

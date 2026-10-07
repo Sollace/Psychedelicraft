@@ -24,10 +24,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
+
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -68,11 +69,33 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         state.crackedVisibility = entity.jarBroken ? 1 : Math.min((entity.currentRiftFraction - 0.5F) * 2, 1);
         state.age = entity.ticksAliveVisual + tickDelta;
         state.fillPercentage = entity.currentRiftFraction;
-        state.facing = state.blockState.get(HorizontalFacingBlock.FACING);
+        state.rotation = 90 - state.blockState.get(HorizontalFacingBlock.FACING).getPositiveHorizontalDegrees();
         state.openAmount = entity.fractionOpen;
         state.knotPosition = entity.fractionHandleUp;
-        state.outflowStrength = entity.fractionHandleUp * entity.fractionOpen;
-        state.connection = entity.getConnections();
+
+        Vec3d jarPosition = state.pos.toCenterPos();
+        state.connections = entity.getConnections().stream().map(connection -> {
+            Vector3d connectionPoint = new Vector3d(
+                    connection.position.x - jarPosition.x,
+                    connection.position.y - (jarPosition.y + 0.1F),
+                    connection.position.z - jarPosition.z
+            );
+            if (connection.bezier == null) {
+                connection.bezier = Bezier.spiral(0.1, 0.5, 8, connectionPoint, 0.2, 0);
+            }
+            return new State.Connection(
+                    BezierLabelRenderer.INSTANCE.updateRenderState(new BezierLabelRenderState(), connection.bezier, LABEL_STYLE.shift(state.age * -0.002F).topCap(connection.fractionUp), SMALL_SPIRAL_TEXT),
+                    connection.fractionUp > 0 ? BezierLabelRenderer.INSTANCE.updateRenderState(new BezierLabelRenderState(),
+                            SPHERE_BEZIER_PATH,
+                            LABEL_STYLE.shift(state.age * -0.002F).topCap(1),
+                            Text.literal(cheeseString("This is a small circle.", 1 - connection.fractionUp, RenderUtil.random(42))).styled(s -> s.withFont(FONT))) : null,
+                    new Vec3d(connectionPoint.x, connectionPoint.y, connectionPoint.z),
+                    connection.fractionUp
+            );
+        }).toList();
+
+        float outflowStrength = entity.fractionHandleUp * entity.fractionOpen;
+        state.escapingSpiral = outflowStrength > 0 ? BezierLabelRenderer.INSTANCE.updateRenderState(new BezierLabelRenderState(), OUTGOING_PATH, LABEL_STYLE.shift(state.age * -0.002F).topCap(outflowStrength), SMALL_SPIRAL_TEXT) : null;
     }
 
     public void collectVertices(Consumer<Vector3fc> collector) {
@@ -85,20 +108,38 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
     @Override
     public void render(State state, MatrixStack matrices, OrderedRenderCommandQueue queue, CameraRenderState cameraState) {
         renderJarBody(state, matrices, queue);
-        renderConnections(state, matrices, queue);
+        matrices.push();
+        matrices.translate(0.5F, 0.5f, 0.5F);
+
+        for (var connection : state.connections) {
+            connection.origin.render(matrices, queue, state.lightmapCoordinates);
+
+            if (connection.termination != null) {
+                matrices.push();
+                matrices.translate(connection.connectionPoint);
+                connection.termination.render(matrices, queue, state.lightmapCoordinates);
+                matrices.pop();
+            }
+        }
+
+        if (state.escapingSpiral != null) {
+            state.escapingSpiral.render(matrices, queue, state.lightmapCoordinates);
+        }
+
+        matrices.pop();
     }
 
     public void renderJarBody(State state, MatrixStack matrices, OrderedRenderCommandQueue queue) {
         matrices.push();
-        matrices.translate(0.5F, 0.5F, 0.5F);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90 - state.facing.getPositiveHorizontalDegrees()));
-        matrices.translate(0, 1.001F, 0);
+        matrices.translate(0.5F, 1.501F, 0.5F);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(state.rotation));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
         queue.submitModel(model, state, matrices, RenderLayers.entityTranslucent(TEXTURE), state.lightmapCoordinates, OverlayTexture.DEFAULT_UV, 0, state.crumblingOverlay);
 
         if (state.crackedVisibility > 0) {
-            queue.submitModel(model, state, matrices, RenderLayers.entityTranslucent(CRACKED_TEXTURE), state.lightmapCoordinates, OverlayTexture.DEFAULT_UV, MathUtils.withAlpha(Colors.WHITE, state.crackedVisibility), null, 0, state.crumblingOverlay);
+            queue.submitModel(model, state, matrices, RenderLayers.entityTranslucent(CRACKED_TEXTURE), state.lightmapCoordinates, OverlayTexture.DEFAULT_UV,
+                    MathUtils.withAlpha(Colors.WHITE, state.crackedVisibility), null, 0, state.crumblingOverlay);
         }
 
         if (state.fillPercentage > 0) {
@@ -113,48 +154,6 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         matrices.pop();
     }
 
-    public void renderConnections(State state, MatrixStack matrices, OrderedRenderCommandQueue queue) {
-        matrices.push();
-        matrices.translate(0.5F, 0.5f, 0.5F);
-
-        Vec3d jarPosition = state.pos.toCenterPos();
-
-        for (RiftJarBlockEntity.JarRiftConnection connection : state.connection) {
-            Vector3d connectionPoint = new Vector3d(
-                    connection.position.x - jarPosition.x,
-                    connection.position.y - (jarPosition.y + 0.1F),
-                    connection.position.z - jarPosition.z
-            );
-            if (connection.bezier == null) {
-                connection.bezier = Bezier.spiral(0.1, 0.5, 8, connectionPoint, 0.2, 0);
-            }
-
-            BezierLabelRenderer.INSTANCE.render(matrices, queue, state.lightmapCoordinates, connection.bezier, LABEL_STYLE.shift(state.age * -0.002F).topCap(connection.fractionUp), SMALL_SPIRAL_TEXT);
-
-            if (connection.fractionUp > 0) {
-                matrices.push();
-                matrices.translate(
-                        connectionPoint.x,
-                        connectionPoint.y,
-                        connectionPoint.z
-                );
-                BezierLabelRenderer.INSTANCE.render(matrices, queue, state.lightmapCoordinates,
-                        SPHERE_BEZIER_PATH,
-                        LABEL_STYLE.shift(state.age * -0.002F).topCap(1),
-                        Text.literal(cheeseString("This is a small circle.", 1 - connection.fractionUp, new Random(42))).styled(s -> s.withFont(FONT)));
-
-                matrices.pop();
-            }
-        }
-
-        if (state.outflowStrength > 0) {
-            BezierLabelRenderer.INSTANCE.render(matrices, queue, state.lightmapCoordinates, OUTGOING_PATH, LABEL_STYLE.shift(state.age * -0.002F).topCap(state.outflowStrength), SMALL_SPIRAL_TEXT);
-        }
-
-        matrices.pop();
-    }
-
-
     public static String cheeseString(String string, float effect, Random rand) {
         if (effect <= 0) {
             return string;
@@ -163,11 +162,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         StringBuilder builder = new StringBuilder(string.length());
 
         for (int i = 0; i < string.length(); i++) {
-            if (rand.nextFloat() <= effect) {
-                builder.append(' ');
-            } else {
-                builder.append(string.charAt(i));
-            }
+            builder.append(rand.nextFloat() <= effect ? ' ' : string.charAt(i));
         }
 
         return builder.toString();
@@ -180,12 +175,13 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         public float openAmount;
         public float knotPosition;
 
-        public float outflowStrength;
-
         @Nullable
-        public Direction facing;
+        public BezierLabelRenderState escapingSpiral;
 
-        @Deprecated
-        public Collection<RiftJarBlockEntity.JarRiftConnection> connection = List.of();
+        public float rotation;
+
+        public Collection<Connection> connections = List.of();
+
+        public record Connection(BezierLabelRenderState origin, @Nullable BezierLabelRenderState termination, Vec3d connectionPoint, float fractionUp) {}
     }
 }
