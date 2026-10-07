@@ -22,7 +22,11 @@ public class BezierLabelRenderState {
             matrices.translate(step.offset());
             matrices.scale(step.scale(), step.scale(), step.scale());
             matrices.multiply(step.rotation());
-            queue.submitText(matrices, 0, 0, step, false, TextLayerType.SEE_THROUGH, light, step.color(), 0, 0);
+            queue.submitText(matrices, 0, 0, step, false, TextLayerType.POLYGON_OFFSET, light, step.color(), 0, 0);
+            matrices.push();
+            matrices.scale(1, -1, 1);
+            queue.submitText(matrices, 0, 0, step, false, TextLayerType.POLYGON_OFFSET, light, step.color(), 0, 0);
+            matrices.pop();
             matrices.pop();
         });
     }
