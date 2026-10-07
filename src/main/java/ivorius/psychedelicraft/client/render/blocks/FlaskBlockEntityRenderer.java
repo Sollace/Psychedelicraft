@@ -52,6 +52,8 @@ public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements Blo
 
             float firstLevelHeight = Math.min(fillPercentage * 2, 2);
 
+            fluidRenderer.draw(-1, 0, -1, 2, firstLevelHeight, 2, Direction.UP);
+
             // lower
             fluidRenderer.draw(-1, 0, -2, 2, firstLevelHeight, 1, Direction.NORTH, Direction.UP);
             fluidRenderer.draw(-1, 0,  1, 2, firstLevelHeight, 1, Direction.SOUTH, Direction.UP);
@@ -65,6 +67,8 @@ public class FlaskBlockEntityRenderer<T extends FlaskBlockEntity> implements Blo
                 if (!(entity instanceof DistilleryBlockEntity)) {
                     matrices.translate(0, -1, 0);
                 }
+
+                fluidRenderer.draw(-1, 4.5F, -1, 2, secondLevelHeight, 2, Direction.UP);
 
                 fluidRenderer.draw(-1, 4.5F, -1.5F, 2, secondLevelHeight, 0.5F, Direction.NORTH, Direction.UP);
                 fluidRenderer.draw(-1, 4.5F,  1, 2, secondLevelHeight, 0.5F, Direction.SOUTH, Direction.UP);
