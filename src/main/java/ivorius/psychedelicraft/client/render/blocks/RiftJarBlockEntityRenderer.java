@@ -76,7 +76,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         state.connections = entity.getConnections().stream().map(connection -> {
             Vector3d connectionPoint = new Vector3d(
                     connection.position.x - jarPosition.x,
-                    connection.position.y - (jarPosition.y + 0.1F),
+                    connection.position.y - (jarPosition.y + 0.3F),
                     connection.position.z - jarPosition.z
             );
             if (connection.bezier == null) {

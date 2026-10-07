@@ -22,7 +22,7 @@ public class BezierLabelRenderer {
         state.length = 0;
         state.steps = new ArrayList<>();
         ReorderingUtil.reorder(text, !style.inwards).accept((charIndex, charStyle, character) -> {
-            int i = state.steps.size();
+            int i = state.length;
             if (character != ' ') {
                 double totalProgress = (style.spread ? (i / totalLength) : (i * 0.5)) + style.shift;
                 double finalProgress = ((totalProgress % 1) + 1) % 1;
