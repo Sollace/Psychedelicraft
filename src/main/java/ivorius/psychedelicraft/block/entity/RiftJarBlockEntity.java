@@ -125,7 +125,6 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
 
         if (currentRiftFraction > 1
                 || (currentRiftFraction > 0 && !world.getEntitiesByClass(ProjectileEntity.class, Box.of(pos.toBottomCenterPos(), 1.1, 1.1, 1.1).withMinY(pos.getY()), EntityPredicates.VALID_ENTITY).isEmpty())) {
-            releaseRift(world);
             explode(world);
         }
     }
@@ -168,8 +167,9 @@ public class RiftJarBlockEntity extends SyncedBlockEntity {
         }
     }
 
-    private void explode(ServerWorld world) {
+    public void explode(ServerWorld world) {
         jarBroken = true;
+        releaseRift(world);
         world.breakBlock(pos, false);
         Vec3d explosionPosition = getPos().toCenterPos();
         world.createExplosion(null, explosionPosition.x, explosionPosition.y, explosionPosition.z, 1, false, ExplosionSourceType.BLOCK);

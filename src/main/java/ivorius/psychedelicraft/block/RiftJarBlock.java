@@ -35,6 +35,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 
 class RiftJarBlock extends BlockWithEntity {
     public static final MapCodec<RiftJarBlock> CODEC = createCodec(RiftJarBlock::new);
@@ -103,6 +104,11 @@ class RiftJarBlock extends BlockWithEntity {
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new RiftJarBlockEntity(pos, state);
+    }
+
+    @Override
+    public void onDestroyedByExplosion(ServerWorld world, BlockPos pos, Explosion explosion) {
+        world.getBlockEntity(pos, PSBlockEntities.RIFT_JAR).ifPresent(jar -> jar.explode(world));
     }
 
     @Override
