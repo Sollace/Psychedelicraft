@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.block.entity.FlaskBlockEntity;
 import ivorius.psychedelicraft.fluid.Processable;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.screen.FluidContraptionScreenHandler;
+import ivorius.psychedelicraft.util.Untyped;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
@@ -27,8 +28,10 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootWorldContext;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -102,7 +105,7 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
             if (result != ActionResult.PASS) {
                 return result;
             }
-            player.openHandledScreen(new ExtendedScreenHandlerFactory<InteractionData>() {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory<InteractionData<?>>() {
                 @Override
                 public Text getDisplayName() {
                     return BlockWithFluid.this.getName();
@@ -114,8 +117,8 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
                 }
 
                 @Override
-                public InteractionData getScreenOpeningData(ServerPlayerEntity player) {
-                    return new InteractionData(be.getPos(), hit.getSide());
+                public InteractionData<?> getScreenOpeningData(ServerPlayerEntity player) {
+                    return new InteractionData<>(be.getPos(), hit.getSide(), be.getType());
                 }
             });
             return ActionResult.SUCCESS;
@@ -167,12 +170,17 @@ public abstract class BlockWithFluid<T extends FlaskBlockEntity> extends BlockWi
         return percentage > 0 ? MathHelper.clamp((int)(percentage * maxSignal), 1, maxSignal) : 0;
     }
 
-    public record InteractionData(BlockPos pos, Direction side) {
-        public static final PacketCodec<PacketByteBuf, InteractionData> PACKET_CODEC = PacketCodec.tuple(
+    public record InteractionData<T extends BlockEntity>(BlockPos pos, Direction side, BlockEntityType<T> type) {
+        public static final PacketCodec<RegistryByteBuf, InteractionData<?>> PACKET_CODEC = PacketCodec.tuple(
                 BlockPos.PACKET_CODEC, InteractionData::pos,
                 Direction.PACKET_CODEC, InteractionData::side,
-                InteractionData::new
+                PacketCodecs.registryValue(RegistryKeys.BLOCK_ENTITY_TYPE), InteractionData::type,
+                (pos, side, type) -> new InteractionData<>(pos, side, type)
         );
+
+        public static <T extends BlockEntity> PacketCodec<RegistryByteBuf, InteractionData<T>> packetCodec() {
+            return Untyped.cast(PACKET_CODEC);
+        }
     }
 
     public interface DirectionalFluidResovoir extends SidedStorageBlockEntity, SidedInventory, Processable.Context {

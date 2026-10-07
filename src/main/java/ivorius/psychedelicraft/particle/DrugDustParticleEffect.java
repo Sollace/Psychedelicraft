@@ -3,6 +3,7 @@ package ivorius.psychedelicraft.particle;
 import java.util.concurrent.atomic.AtomicReference;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.util.Untyped;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -33,9 +34,8 @@ public class DrugDustParticleEffect extends DustParticleEffect {
         this.type = type;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public ParticleType<DustParticleEffect> getType() {
-        return (ParticleType)type;
+        return Untyped.cast(type);
     }
 }

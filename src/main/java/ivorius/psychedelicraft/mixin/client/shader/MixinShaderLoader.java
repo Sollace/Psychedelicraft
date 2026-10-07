@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 @Mixin(ShaderLoader.class)
 abstract class MixinShaderLoader {
     @Inject(method = "loadShaderSource(Lnet/minecraft/util/Identifier;Lnet/minecraft/resource/Resource;Lcom/mojang/blaze3d/shaders/ShaderType;Ljava/util/Map;Lcom/google/common/collect/ImmutableMap$Builder;)V", at = @At("HEAD"))
-    private static void onLoadShaderSource(Identifier id, Resource resource, ShaderType type, Map<Identifier, Resource> allResources, @SuppressWarnings("rawtypes") Builder builder, CallbackInfo info) {
+    private static void onLoadShaderSource(Identifier id, Resource resource, ShaderType type, Map<Identifier, Resource> allResources, Builder<?, ?> builder, CallbackInfo info) {
         GeometryShader.INSTANCE.setup(type, type.idConverter().toResourceId(id));
     }
 }

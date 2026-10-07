@@ -16,6 +16,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
 import ivorius.psychedelicraft.entity.TouchingWaterAccessor;
+import ivorius.psychedelicraft.util.Untyped;
 
 public class EntityHallucination<E extends LivingEntity> extends Hallucination {
 
@@ -33,15 +34,14 @@ public class EntityHallucination<E extends LivingEntity> extends Hallucination {
 
     private final Identifier type;
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     static <T> T createEntity(World world, TagKey<EntityType<?>> entityTypes) {
-        return (T)world.getRegistryManager().getOrThrow(RegistryKeys.ENTITY_TYPE)
+        return Untyped.cast(world.getRegistryManager().getOrThrow(RegistryKeys.ENTITY_TYPE)
                 .getOptional(entityTypes)
                 .orElseThrow()
                 .getRandom(world.random)
                 .map(RegistryEntry::value)
-                .orElse((EntityType)EntityType.PIG)
-                .create(world, SpawnReason.EVENT);
+                .orElse(Untyped.cast(EntityType.PIG))
+                .create(world, SpawnReason.EVENT));
     }
 
     public EntityHallucination(Identifier type, PlayerEntity player, E entity) {

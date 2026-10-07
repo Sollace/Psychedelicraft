@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.SyncedBlockEntity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.Untyped;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
@@ -33,10 +34,9 @@ public class FluidCauldronBlock extends LeveledCauldronBlock implements BlockEnt
         super(Precipitation.NONE, BEHAVIOUR, settings);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public MapCodec<LeveledCauldronBlock> getCodec() {
-        return (MapCodec)CODEC;
+        return Untyped.cast(CODEC);
     }
 
     @Override

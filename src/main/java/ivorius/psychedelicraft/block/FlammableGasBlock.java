@@ -2,6 +2,7 @@ package ivorius.psychedelicraft.block;
 
 import com.mojang.serialization.MapCodec;
 
+import ivorius.psychedelicraft.util.Untyped;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
@@ -26,10 +27,9 @@ public class FlammableGasBlock extends AirBlock {
         FlammableBlockRegistry.getDefaultInstance().add(this, new FlammableBlockRegistry.Entry(150, 2000));
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public MapCodec<AirBlock> getCodec() {
-        return (MapCodec)CODEC;
+        return Untyped.cast(CODEC);
     }
 
     @Override

@@ -24,6 +24,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
+import ivorius.psychedelicraft.util.Untyped;
 
 
 public class FluidAwareShapelessRecipe extends ShapelessRecipe {
@@ -65,10 +66,9 @@ public class FluidAwareShapelessRecipe extends ShapelessRecipe {
         return ingredients;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public RecipeSerializer getSerializer() {
-        return PSRecipes.CRAFTING_SHAPELESS_FLUID;
+    public RecipeSerializer<ShapelessRecipe> getSerializer() {
+        return Untyped.cast(PSRecipes.CRAFTING_SHAPELESS_FLUID);
     }
 
     @Override

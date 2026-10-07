@@ -16,6 +16,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.util.Untyped;
+
 /**
  * Created by lukas on 10.11.14.
  * Updated by Sollace on 5 Jan 2023
@@ -49,10 +51,9 @@ public class ChangeRecepticalRecipe extends ShapelessRecipe {
         this.output = output;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public RecipeSerializer getSerializer() {
-        return PSRecipes.CHANGE_RECEPTICAL;
+    public RecipeSerializer<ShapelessRecipe> getSerializer() {
+        return Untyped.cast(PSRecipes.CHANGE_RECEPTICAL);
     }
 
     @Override

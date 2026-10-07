@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import ivorius.psychedelicraft.util.Untyped;
 import net.minecraft.block.Stainable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
@@ -46,10 +47,9 @@ public class BottleRecipe extends ShapedRecipe {
         this.result = result;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public RecipeSerializer getSerializer() {
-        return PSRecipes.CRAFTING_SHAPED;
+    public RecipeSerializer<ShapedRecipe> getSerializer() {
+        return Untyped.cast(PSRecipes.CRAFTING_SHAPED);
     }
 
     @Override

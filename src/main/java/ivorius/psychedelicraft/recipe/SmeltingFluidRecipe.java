@@ -26,6 +26,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.recipe.ingredient.FluidIngredient;
 import ivorius.psychedelicraft.recipe.ingredient.OptionalFluidIngredient;
+import ivorius.psychedelicraft.util.Untyped;
 
 /**
  * Created by Sollace on 5 Jan 2023
@@ -91,10 +92,9 @@ public class SmeltingFluidRecipe extends SmeltingRecipe {
         return result;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public RecipeSerializer getSerializer() {
-        return PSRecipes.SMELTING_RECEPTICAL;
+    public RecipeSerializer<SmeltingRecipe> getSerializer() {
+        return Untyped.cast(PSRecipes.SMELTING_RECEPTICAL);
     }
 
     @Override

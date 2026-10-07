@@ -15,6 +15,7 @@ import com.google.common.base.Suppliers;
 
 import ivorius.psychedelicraft.client.render.shader.FloatSupplier;
 import ivorius.psychedelicraft.client.render.shader.UniformCollection;
+import ivorius.psychedelicraft.util.Untyped;
 
 public final class IrisCompat {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
@@ -33,7 +34,6 @@ public final class IrisCompat {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> @Nullable T wrapFloatSupplier(FloatSupplier value) {
         try {
             MethodHandle getter = LOOKUP.findVirtual(FloatSupplier.class, "getAsFloat", MethodType.methodType(float.class));
@@ -44,7 +44,7 @@ public final class IrisCompat {
                     getter, MethodType.methodType(float.class)
             );
             Object supplier = site.getTarget().invoke(value);
-            return (T)supplier;
+            return Untyped.cast(supplier);
         } catch (Throwable e) {
             e.printStackTrace();
             return null;

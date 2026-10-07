@@ -29,6 +29,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.ItemFluids;
+import ivorius.psychedelicraft.util.Untyped;
 
 /**
  * Created from "RecipeFillDrink" by Sollace on 5 Jan 2023
@@ -77,10 +78,9 @@ public class MixingRecipe extends ShapelessRecipe {
         return output;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public RecipeSerializer getSerializer() {
-        return PSRecipes.FILL_RECEPTICAL;
+    public RecipeSerializer<ShapelessRecipe> getSerializer() {
+        return Untyped.cast(PSRecipes.FILL_RECEPTICAL);
     }
 
     @Override

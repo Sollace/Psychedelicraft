@@ -8,9 +8,9 @@ import net.minecraft.entity.Entity;
 
 public abstract class DrugOverlayScreenEffect<D extends Drug> implements ScreenEffect {
 
-    private final DrugType<?> type;
+    private final DrugType<? extends D> type;
 
-    public DrugOverlayScreenEffect(DrugType<?> type) {
+    public DrugOverlayScreenEffect(DrugType<? extends D> type) {
         this.type = type;
     }
 
@@ -24,13 +24,12 @@ public abstract class DrugOverlayScreenEffect<D extends Drug> implements ScreenE
 
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void render(DrawContext context, Window window, float tickDelta) {
         if (MinecraftClient.getInstance().player != null) {
             DrugProperties properties = DrugProperties.of(MinecraftClient.getInstance().player);
             context.getMatrices().pushMatrix();
-            render(context, window, tickDelta, properties, (D)properties.getDrug(type));
+            render(context, window, tickDelta, properties, properties.getDrug(type));
             context.getMatrices().popMatrix();
         }
     }

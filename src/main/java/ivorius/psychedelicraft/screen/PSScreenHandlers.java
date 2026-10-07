@@ -1,9 +1,9 @@
 package ivorius.psychedelicraft.screen;
 
-import java.util.concurrent.atomic.AtomicReference;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.BlockWithFluid;
 import ivorius.psychedelicraft.block.entity.*;
+import ivorius.psychedelicraft.util.Untyped;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -28,12 +28,10 @@ public interface PSScreenHandlers {
     }
 
     static <T extends FlaskBlockEntity> ScreenHandlerType<FluidContraptionScreenHandler<T>> contraptionScreenHander() {
-        final AtomicReference<ScreenHandlerType<FluidContraptionScreenHandler<T>>> type = new AtomicReference<>(null);
-        type.set(new ExtendedScreenHandlerType<>(
+        return Untyped.recursive(type -> new ExtendedScreenHandlerType<>(
                 (sync, inventory, data) -> new FluidContraptionScreenHandler<>(type.get(), sync, inventory, data),
-                BlockWithFluid.InteractionData.PACKET_CODEC
+                BlockWithFluid.InteractionData.<T>packetCodec()
         ));
-        return type.get();
     }
 
     static void bootstrap() { }
