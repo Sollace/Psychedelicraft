@@ -11,6 +11,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ivorius.psychedelicraft.item.PSItems;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particle.EntityEffectParticleEffect;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.*;
 import net.minecraft.util.dynamic.Codecs;
@@ -19,28 +22,25 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-public class JuniperLeavesBlock extends TintedParticleLeavesBlock {
-    public static final MapCodec<JuniperLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(
-            instance -> instance.group(
-                    Codecs.rangedInclusiveFloat(0.0F, 1.0F)
-                        .fieldOf("leaf_particle_chance")
-                        .forGetter(tintedParticleLeavesBlock -> tintedParticleLeavesBlock.leafParticleChance),
-                    createSettingsCodec()
-                )
-                .apply(instance, JuniperLeavesBlock::new)
-        );
+public class JuniperLeavesBlock extends UntintedParticleLeavesBlock {
+    public static final MapCodec<JuniperLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+        Codecs.rangedInclusiveFloat(0, 1).fieldOf("leaf_particle_chance").forGetter(o -> o.leafParticleChance),
+        ParticleTypes.TYPE_CODEC.fieldOf("leaf_particle").forGetter(o -> o.leafParticleEffect),
+        createSettingsCodec()
+    ).apply(i, JuniperLeavesBlock::new));
 
     public JuniperLeavesBlock(Settings settings) {
-        this(0.1F, settings);
+        this(0.1F, EntityEffectParticleEffect.create(ParticleTypes.TINTED_LEAVES, 0xFF283D1F), settings);
     }
 
-    public JuniperLeavesBlock(float particleChance, Settings settings) {
-        super(particleChance, settings);
+    public JuniperLeavesBlock(float particleChance, ParticleEffect leafParticleEffect, Settings settings) {
+        super(particleChance, leafParticleEffect, settings);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public MapCodec<? extends JuniperLeavesBlock> getCodec() {
-        return CODEC;
+    public MapCodec<UntintedParticleLeavesBlock> getCodec() {
+        return (MapCodec)CODEC;
     }
 
     @Override
@@ -71,5 +71,4 @@ public class JuniperLeavesBlock extends TintedParticleLeavesBlock {
         }
         return ActionResult.PASS;
     }
-
 }
