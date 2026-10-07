@@ -350,6 +350,8 @@ public interface PSItems {
             builder.add(WOODEN_MUG, baseSmeltTime / 4);
         });
 
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(HARMONIUM, CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().get(Items.LEATHER_BOOTS));
+
         registerVegitationWasteItems(0.2F, 5, CANNABIS_BUDS, DRIED_CANNABIS_BUDS, HOP_CONES, JIMSONWEED_SEED_POD);
         registerVegitationWasteItems(0.65F, -1,
             WINE_GRAPES, TOMATO, BELLADONNA_BERRIES, AGAVE_LEAF, JUNIPER_BERRIES, COFFEA_CHERRIES, COFFEE_BEANS,
