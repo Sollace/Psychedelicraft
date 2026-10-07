@@ -8,7 +8,7 @@ import ivorius.psychedelicraft.Psychedelicraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.VertexFormats;
 
-public interface PSShaders {
+public interface PSRenderPipelines {
     RenderPipeline.Snippet RENDERTYPE_ZERO_MATTER_SNIPPET = RenderPipeline.builder(RenderPipelines.TRANSFORMS_AND_PROJECTION_SNIPPET, RenderPipelines.FOG_SNIPPET)
             .withVertexShader(Psychedelicraft.id("core/rendertype_zero_matter"))
             .withFragmentShader(Psychedelicraft.id("core/rendertype_zero_matter"))
@@ -22,6 +22,14 @@ public interface PSShaders {
             .withCull(false)
             .withBlend(BlendFunction.TRANSLUCENT)
             .withDepthWrite(false)
+            .build()
+    );
+    RenderPipeline ZERO_MATTER_DEPTH = RenderPipelines.register(
+        RenderPipeline.builder(RENDERTYPE_ZERO_MATTER_SNIPPET)
+            .withLocation(Psychedelicraft.id("pipeline/zero_matter_depth"))
+            .withCull(false)
+            .withBlend(BlendFunction.TRANSLUCENT)
+            .withDepthWrite(true)
             .build()
     );
 

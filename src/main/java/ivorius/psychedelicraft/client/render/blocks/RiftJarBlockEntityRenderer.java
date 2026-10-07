@@ -12,7 +12,6 @@ import ivorius.psychedelicraft.client.render.bezier.*;
 import ivorius.psychedelicraft.util.MathUtils;
 import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.*;
 import net.minecraft.client.render.block.entity.state.BlockEntityRenderState;
@@ -47,7 +46,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
     private static final Text SMALL_SPIRAL_TEXT = Text.literal("This is a small spiral.").styled(s -> s.withFont(FONT));
 
     private final RiftJarModel model = new RiftJarModel(RiftJarModel.exterior().createModel());
-    private final ModelPart interior = RiftJarModel.interior().createModel();
+    private final RiftJarContentModel interiorModel = new RiftJarContentModel(RiftJarContentModel.createTexturedModelData().createModel());
 
     public RiftJarBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 
@@ -133,6 +132,7 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
         matrices.push();
         matrices.translate(0.5F, 1.501F, 0.5F);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(state.rotation));
+        matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
 
         queue.submitModel(model, state, matrices, RenderLayers.entityTranslucent(TEXTURE), state.lightmapCoordinates, OverlayTexture.DEFAULT_UV, 0, state.crumblingOverlay);
@@ -141,13 +141,12 @@ public class RiftJarBlockEntityRenderer implements BlockEntityRenderer<RiftJarBl
             queue.submitModel(model, state, matrices, RenderLayers.entityTranslucent(CRACKED_TEXTURE), state.lightmapCoordinates, OverlayTexture.DEFAULT_UV,
                     MathUtils.withAlpha(Colors.WHITE, state.crackedVisibility), null, 0, state.crumblingOverlay);
         }
+        matrices.pop();
 
         if (state.fillPercentage > 0) {
             matrices.push();
-            matrices.translate(0, 1.5F, 0);
-            matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(180));
-            matrices.scale(0.9F, 1, 0.9F);
-            queue.submitModelPart(interior, matrices, ZeroScreen.layer(state.age), 0, 0, null, MathUtils.withAlpha(Colors.WHITE, Math.min(state.fillPercentage * 2, 1)), null);
+            matrices.translate(0, -1.5F, 0);
+            queue.submitModel(interiorModel, state, matrices, ZeroScreen.ZERO_SCREEN_SOLID, state.lightmapCoordinates, OverlayTexture.DEFAULT_UV, 0, null);
             matrices.pop();
         }
 

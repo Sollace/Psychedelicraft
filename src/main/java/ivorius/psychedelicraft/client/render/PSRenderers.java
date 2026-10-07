@@ -9,7 +9,7 @@ import ivorius.psychedelicraft.block.PSBlocks;
 import ivorius.psychedelicraft.block.entity.*;
 import ivorius.psychedelicraft.client.particle.PSParticleFactories;
 import ivorius.psychedelicraft.client.render.blocks.*;
-import ivorius.psychedelicraft.client.render.shader.PSShaders;
+import ivorius.psychedelicraft.client.render.shader.PSRenderPipelines;
 import ivorius.psychedelicraft.entity.*;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.item.component.ItemFluids;
@@ -124,6 +124,6 @@ public interface PSRenderers {
         });
 
         PSParticleFactories.bootstrap();
-        PSShaders.bootstrap();
+        PSRenderPipelines.bootstrap();
     }
 }

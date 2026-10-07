@@ -80,7 +80,7 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
 
     public static void renderRiftBeams(MatrixStack matrices, OrderedRenderCommandQueue queue, float ticks, float alpha, int color, int number) {
         matrices.push();
-        queue.submitCustom(matrices, ZeroScreen.layer(ticks), (transform, buffer) -> {
+        queue.submitCustom(matrices, ZeroScreen.ZERO_SCREEN, (transform, buffer) -> {
             Random random = Random.create(432L);
             float width = 2.5F;
             float rotation = ticks / 200F;
