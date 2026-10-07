@@ -133,7 +133,7 @@ public class PSRecipeProvider extends FabricRecipeProvider {
             .pattern(" # ")
             .pattern(" # ")
             .offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.BOTTLE)
+        BottleRecipeJsonBuilder.create(RecipeCategory.MISC, PSItems.BOTTLE)
             .input('#', ConventionalItemTags.GLASS_BLOCKS).criterion("has_glass", conditionsFromTag(ConventionalItemTags.GLASS_BLOCKS))
             .pattern(" # ")
             .pattern("# #")
