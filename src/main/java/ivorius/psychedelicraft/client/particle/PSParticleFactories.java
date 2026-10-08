@@ -28,6 +28,7 @@ public interface PSParticleFactories {
         ParticleFactoryRegistry.getInstance().register(PSParticles.FLUID_BUBBLE, PSParticleFactories.<FluidParticleEffect>createFactory(FluidBubbleParticle::new));
         ParticleFactoryRegistry.getInstance().register(PSParticles.DRIPPING_FLUID, createFactory(PSParticleFactories::createDrippingFluid));
         ParticleFactoryRegistry.getInstance().register(PSParticles.FALLING_FLUID, createFactory(PSParticleFactories::createFallingFluid));
+        ParticleFactoryRegistry.getInstance().register(PSParticles.BITS, createFactory(BitsParticle::new));
     }
 
     static ParticleSupplier<FluidParticleEffect> createSplash() {

@@ -5,16 +5,19 @@ import java.util.function.Function;
 import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.Psychedelicraft;
+import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
 public interface PSParticles {
     ParticleType<DrugDustParticleEffect> EXHALED_SMOKE = register("exhaled_smoke", DrugDustParticleEffect.createType());
     ParticleType<DrugDustParticleEffect> BUBBLE = register("bubble", DrugDustParticleEffect.createType());
+    SimpleParticleType BITS = register("bits", FabricParticleTypes.simple());
 
     ParticleType<FluidParticleEffect> DRIPPING_FLUID = register("dripping_fluid", false, FluidParticleEffect::createCodec, FluidParticleEffect::createPacketCodec);
     ParticleType<FluidParticleEffect> FALLING_FLUID = register("falling_fluid", false, FluidParticleEffect::createCodec, FluidParticleEffect::createPacketCodec);

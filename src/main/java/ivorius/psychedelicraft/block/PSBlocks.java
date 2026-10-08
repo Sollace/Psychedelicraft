@@ -138,7 +138,7 @@ public interface PSBlocks {
     Block RIFT_JAR = register("rift_jar", s -> new RiftJarBlock(s.hardness(0.5F).sounds(BlockSoundGroup.GLASS).nonOpaque().pistonBehavior(PistonBehavior.DESTROY)));
     Block GLITCH = register("glitch", s -> new GlitchedBlock(s.mapColor(MapColor.BLACK).breakInstantly().hardness(0)
             .emissiveLighting(BlockConstructionUtils::always)
-            .air().nonOpaque().noBlockBreakParticles().dropsNothing()
+            .nonOpaque().noBlockBreakParticles().dropsNothing()
     ));
 
     Block FLAMMABLE_GAS = register("flammable_gas", s -> new FlammableGasBlock(s.replaceable().noCollision().dropsNothing().air()));

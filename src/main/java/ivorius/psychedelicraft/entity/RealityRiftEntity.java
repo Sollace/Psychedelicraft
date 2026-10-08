@@ -8,9 +8,12 @@ package ivorius.psychedelicraft.entity;
 import ivorius.psychedelicraft.ParticleHelper;
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.block.PSBlocks;
+import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.entity.drug.DrugProperties;
 import ivorius.psychedelicraft.entity.drug.DrugType;
 import ivorius.psychedelicraft.util.MathUtils;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
@@ -28,6 +31,8 @@ import net.minecraft.world.*;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
 
@@ -211,10 +216,14 @@ public class RealityRiftEntity extends Entity {
 
         if (prevDesRange < newDesRange) {
             int desRange = MathHelper.ceil(newDesRange);
+            World world = getEntityWorld();
             BlockPos center = getBlockPos();
             BlockPos.iterateOutwards(center, desRange, desRange, desRange).forEach(p -> {
-                if (p.isWithinDistance(center, newDesRange) && !p.isWithinDistance(center, prevDesRange) && !getEntityWorld().isAir(p)) {
-                    getEntityWorld().setBlockState(p, PSBlocks.GLITCH.getDefaultState());
+                if (p.isWithinDistance(center, newDesRange) && !p.isWithinDistance(center, prevDesRange) && !world.isAir(p)) {
+                    @Nullable BlockState oldState = world.getBlockState(p);
+                    @Nullable BlockEntity oldEntity = world.getBlockEntity(p);
+                    world.setBlockState(p, PSBlocks.GLITCH.getDefaultState());
+                    world.getBlockEntity(p, PSBlockEntities.GLITCH).ifPresent(be -> be.set(oldState, oldEntity));
                 }
             });
         }
