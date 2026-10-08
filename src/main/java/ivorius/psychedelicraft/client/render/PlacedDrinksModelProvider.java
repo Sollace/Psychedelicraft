@@ -6,22 +6,28 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.minelittlepony.common.util.render.RenderLayerUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.client.item.PlacementProperty;
+import ivorius.psychedelicraft.client.render.command.EffectRenderCommandQueue;
+import ivorius.psychedelicraft.client.render.command.OrderedEffectRenderCommandQueue;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.Context;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.util.math.MatrixStack;
@@ -116,6 +122,8 @@ public class PlacedDrinksModelProvider
     }
 
     public static class PlacedDrinkRenderState {
+        private static final UnaryOperator<@Nullable RenderLayer> TRANSPARENCY_LAYER_TRANSFORM = originalLayer -> RenderLayerUtil.getTexture(originalLayer).map(RenderLayers::entityTranslucent).orElse(originalLayer);
+        private static final EffectRenderCommandQueue.Customisations QUEUE_CUSTOMISATIONS = new EffectRenderCommandQueue.Customisations(null, TRANSPARENCY_LAYER_TRANSFORM);
         private final ItemRenderState item = new ItemRenderState();
         private final ItemRenderState fluid = new ItemRenderState();
         private float fluidOrigin;
@@ -138,7 +146,7 @@ public class PlacedDrinksModelProvider
                 matrices.translate(0, fluidOrigin, 0);
                 matrices.scale(1, fillPercentage, 1);
                 matrices.translate(0, -fluidOrigin, 0);
-                INSTANCE.submitDrinkModel(fluid, matrices, queue, light, overlay);
+                INSTANCE.submitDrinkModel(fluid, matrices, OrderedEffectRenderCommandQueue.of(queue, QUEUE_CUSTOMISATIONS), light, overlay);
                 matrices.pop();
             }
         }

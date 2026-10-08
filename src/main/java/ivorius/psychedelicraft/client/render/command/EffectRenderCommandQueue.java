@@ -114,7 +114,11 @@ public class EffectRenderCommandQueue implements RenderCommandQueue {
     }
 
     @Override
-    public void submitItem(MatrixStack matrices, ItemDisplayContext displayContext, int light, int overlay, int outlineColors, int[] tintLayers, List<BakedQuad> quads, RenderLayer renderLayer, Glint glintType) {
+    public void submitItem(MatrixStack matrices, ItemDisplayContext displayContext, int light, int overlay, int outlineColor, int[] tintLayers, List<BakedQuad> quads, RenderLayer renderLayer, Glint glintType) {
+        renderLayer = customisations.getRenderLayer(renderLayer);
+        if (renderLayer != null) {
+            delegate.submitItem(matrices, displayContext, light, overlay, outlineColor, tintLayers, quads, renderLayer, glintType);
+        }
 
     }
 
