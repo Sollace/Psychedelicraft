@@ -12,26 +12,27 @@ public interface PSRenderPipelines {
     RenderPipeline.Snippet RENDERTYPE_ZERO_MATTER_SNIPPET = RenderPipeline.builder(RenderPipelines.TRANSFORMS_AND_PROJECTION_SNIPPET, RenderPipelines.FOG_SNIPPET)
             .withVertexShader(Psychedelicraft.id("core/rendertype_zero_matter"))
             .withFragmentShader(Psychedelicraft.id("core/rendertype_zero_matter"))
-            .withSampler("Sampler0")
-            .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS)
-            .buildSnippet();
-
-    RenderPipeline ZERO_MATTER = RenderPipelines.register(
-        RenderPipeline.builder(RENDERTYPE_ZERO_MATTER_SNIPPET)
-            .withLocation(Psychedelicraft.id("pipeline/zero_matter"))
+            .withSampler("BitsSampler")
             .withCull(false)
             .withBlend(BlendFunction.TRANSLUCENT)
             .withDepthWrite(false)
-            .build()
-    );
-    RenderPipeline ZERO_MATTER_DEPTH = RenderPipelines.register(
+            .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS)
+            .buildSnippet();
+
+    RenderPipeline ZERO_MATTER = RenderPipelines.register(RenderPipeline.builder(RENDERTYPE_ZERO_MATTER_SNIPPET)
+            .withLocation(Psychedelicraft.id("pipeline/zero_matter"))
+            .build());
+    RenderPipeline ZERO_MATTER_CUTOUT = RenderPipelines.register(
         RenderPipeline.builder(RENDERTYPE_ZERO_MATTER_SNIPPET)
+            .withLocation(Psychedelicraft.id("pipeline/zero_matter_cutout"))
+            .withSampler("CutoutSampler")
+            .withShaderDefine("HAS_CUTOUT")
+            .withVertexFormat(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS)
+            .build());
+    RenderPipeline ZERO_MATTER_DEPTH = RenderPipelines.register(RenderPipeline.builder(RENDERTYPE_ZERO_MATTER_SNIPPET)
             .withLocation(Psychedelicraft.id("pipeline/zero_matter_depth"))
-            .withCull(false)
-            .withBlend(BlendFunction.TRANSLUCENT)
             .withDepthWrite(true)
-            .build()
-    );
+            .build());
 
     static void bootstrap() {}
 }

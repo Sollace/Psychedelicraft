@@ -7,8 +7,14 @@
 
 in vec3 Position;
 in vec4 Color;
+#ifdef HAS_CUTOUT
+in vec2 UV0;
+#endif
 
 out vec4 texProj0;
+#ifdef HAS_CUTOUT
+out vec2 texCoord;
+#endif
 out float sphericalVertexDistance;
 out float cylindricalVertexDistance;
 out vec4 vertexColor;
@@ -24,14 +30,14 @@ void main() {
   vertexColor = Color;
   float frameIndex = floor(GameTime * 24000 / 2) * FRAME_WIDTH;
 
-  vec4 scaledScreenUv = gl_Position;
-
-  texProj0 = projection_from_position(scaledScreenUv * SCALE);
-  
+  texProj0 = projection_from_position(gl_Position * SCALE);
   float u = texProj0.x / texProj0.w;
-  
   texProj0.x = (u * FRAME_WIDTH + frameIndex) * texProj0.w;
-  
+
+#ifdef HAS_CUTOUT
+  texCoord = UV0;
+#endif
+
   sphericalVertexDistance = fog_spherical_distance(Position);
   cylindricalVertexDistance = fog_cylindrical_distance(Position);
 }
