@@ -99,7 +99,7 @@ public interface BlockModels {
         generator.registerCubeAllModelTexturePool(family.getBaseBlock()).family(family);
         generator.registerHangingSign(strippedLog, hangingSign, wallHangingSign);
         generator.registerSingleton(leaves, TexturedModel.LEAVES);
-        generator.registerFlowerPotPlant(sapling, pottedSapling, CrossType.NOT_TINTED);
+        generator.registerFlowerPotPlantAndItem(sapling, pottedSapling, CrossType.NOT_TINTED);
     }
 
     static void registerParentedWithoutItem(BlockStateModelGenerator generator, Block modelSource, Block child) {
