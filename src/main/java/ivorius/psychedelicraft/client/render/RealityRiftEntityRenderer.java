@@ -63,16 +63,17 @@ public class RealityRiftEntityRenderer extends EntityRenderer<RealityRiftEntity,
         renderRiftBeams(matrices, queue, state.instability, 1, Colors.WHITE, 20);
 
         matrices.push();
-        matrices.scale(5F, 5F, 5F);
+        float openingSize = 5;
+        matrices.scale(openingSize, openingSize, openingSize);
 
         matrices.multiply(cameraState.orientation);
         matrices.translate(-0.5F, -0.5F, 0);
 
         queue.submitCustom(matrices, RenderLayers.entityTranslucentEmissiveNoOutline(CENTER_TEXTURE), (transform, buffer) -> {
             RenderUtil.vertex(buffer, transform, 0, 0, 0, 0, 0, state.light, OverlayTexture.DEFAULT_UV);
-            RenderUtil.vertex(buffer, transform, 1, 0, 0, 0, 0, state.light, OverlayTexture.DEFAULT_UV);
-            RenderUtil.vertex(buffer, transform, 1, 1, 0, 0, 0, state.light, OverlayTexture.DEFAULT_UV);
-            RenderUtil.vertex(buffer, transform, 0, 1, 0, 0, 0, state.light, OverlayTexture.DEFAULT_UV);
+            RenderUtil.vertex(buffer, transform, 1, 0, 0, 1, 0, state.light, OverlayTexture.DEFAULT_UV);
+            RenderUtil.vertex(buffer, transform, 1, 1, 0, 1, 1, state.light, OverlayTexture.DEFAULT_UV);
+            RenderUtil.vertex(buffer, transform, 0, 1, 0, 0, 1, state.light, OverlayTexture.DEFAULT_UV);
         });
         matrices.pop();
         matrices.pop();
