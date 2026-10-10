@@ -60,6 +60,14 @@ public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 PSBlocks.GLASS_TUBE,
                 PSBlocks.GLASS_VALVE
         );
+
+        valueLookupBuilder(BlockTags.MAINTAINS_FARMLAND).add(
+                PSBlocks.TOMATOES, PSBlocks.MORNING_GLORY,
+                PSBlocks.JIMSONWEED, PSBlocks.BELLADONNA,
+                PSBlocks.TOBACCO, PSBlocks.COCA,
+                PSBlocks.HOP, PSBlocks.CANNABIS,
+                PSBlocks.COFFEA
+        );
     }
 
     private void addJuniperWoodset() {
