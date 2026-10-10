@@ -5,6 +5,7 @@
 
 package ivorius.psychedelicraft.client.render.blocks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
@@ -77,6 +78,7 @@ public class BurnerBlockEntityRenderer extends LabelledBlockEntityRenderer<Burne
 
         int maxCapacity = FluidCapacity.get(entity.getContainer());
         state.fillText = maxCapacity > 0 ? getFillPercentage(entity, maxCapacity) : null;
+        state.fluidBoxes = new ArrayList<>();
 
         if (entity.getContents() instanceof LargeContents contents) {
             extractFlaskMultiFluids(state, contents);
