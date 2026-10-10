@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import org.jetbrains.annotations.Nullable;
 
 import ivorius.psychedelicraft.block.FluidCauldronBlock;
+import ivorius.psychedelicraft.block.entity.FluidFilled;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.SimpleFluid;
@@ -17,7 +18,6 @@ import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemUsage;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -37,12 +37,13 @@ public interface FluidCauldronBehavior {
             int levels = Math.min(t.fluids().amount() / FluidVolumes.GLASS_BOTTLE, LeveledCauldronBlock.MAX_LEVEL);
             Item item = stack.getItem();
             t.withdraw(levels * FluidVolumes.GLASS_BOTTLE);
-            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+            player.setStackInHand(hand, FluidFilled.exchangeStack(stack, player, t.toItemStack()));
             player.incrementStat(Stats.USE_CAULDRON);
             player.incrementStat(Stats.USED.getOrCreateStat(item));
             setCauldronState(world, pos, fluid, levels);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
             world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1, 1);
-            world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
+            world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
             return ActionResult.SUCCESS;
         }
 
@@ -76,12 +77,11 @@ public interface FluidCauldronBehavior {
                 }
                 if (!world.isClient()) {
                     t.deposit(fluid);
-                    player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+                    player.setStackInHand(hand, FluidFilled.exchangeStack(stack, player, t.toItemStack()));
                     player.incrementStat(Stats.USE_CAULDRON);
                     player.incrementStat(Stats.USED.getOrCreateStat(item));
                     decrementFluidLevel(state, world, pos, fluidType);
                     setCauldronState(world, pos, fluidType, getFluidLevel(state) - levelChange);
-                    world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
                     world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1, 1);
                     world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
                 }
@@ -96,7 +96,8 @@ public interface FluidCauldronBehavior {
             player.incrementStat(Stats.USED.getOrCreateStat(item));
             t.withdraw(FluidVolumes.GLASS_BOTTLE);
             world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1, 1);
-            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+            player.setStackInHand(hand, FluidFilled.exchangeStack(stack, player, t.toItemStack()));
+            world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
             return ActionResult.SUCCESS;
         };
     }

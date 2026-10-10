@@ -11,6 +11,7 @@ import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.block.ShapeUtil;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
+import ivorius.psychedelicraft.block.entity.FluidFilled;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
 import ivorius.psychedelicraft.item.component.Impurities;
@@ -23,7 +24,6 @@ import ivorius.psychedelicraft.recipe.PSRecipes;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.storage.ReadView;
@@ -95,7 +95,7 @@ public class LargeContents extends SmallContents {
             if (deposit(t)) {
                 entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
                 if (!player.getEntityWorld().isClient()) {
-                    player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+                    player.setStackInHand(hand, FluidFilled.exchangeStack(stack, player, t.toItemStack()));
                 }
                 return Optional.of(this);
             }
@@ -105,7 +105,7 @@ public class LargeContents extends SmallContents {
         ItemFluidsMixture mixture = ItemFluidsMixture.of(stack);
         if (!mixture.isEmpty()) {
             if (!player.getEntityWorld().isClient()) {
-                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, ItemFluidsMixture.set(stack.copyWithCount(1), mixture.fluids().stream().map(this::deposit).toList())));
+                player.setStackInHand(hand, FluidFilled.exchangeStack(stack, player, ItemFluidsMixture.set(stack.copyWithCount(1), mixture.fluids().stream().map(this::deposit).toList())));
             }
             entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
             return Optional.of(this);
@@ -116,7 +116,7 @@ public class LargeContents extends SmallContents {
             ItemFluids.Transaction t = ItemFluids.Transaction.begin(stack.copyWithCount(1));
             if (tank.withdraw(t, FluidCapacity.get(stack)) > 0) {
                 if (!player.getEntityWorld().isClient()) {
-                    player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+                    player.setStackInHand(hand, FluidFilled.exchangeStack(stack, player, t.toItemStack()));
                 }
                 entity.playSound(player, SoundEvents.ITEM_BOTTLE_FILL);
                 return Optional.of(this);

@@ -13,6 +13,7 @@ import ivorius.psychedelicraft.block.PipeInsertable;
 import ivorius.psychedelicraft.block.ShapeUtil;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity;
 import ivorius.psychedelicraft.block.entity.BurnerBlockEntity.Contents;
+import ivorius.psychedelicraft.block.entity.FluidFilled;
 import ivorius.psychedelicraft.fluid.FluidVolumes;
 import ivorius.psychedelicraft.fluid.container.Resovoir;
 import ivorius.psychedelicraft.item.component.FluidCapacity;
@@ -26,7 +27,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -129,7 +129,7 @@ public class SmallContents implements BurnerBlockEntity.CraftableContents, Block
         if (!t.fluids().isEmpty() && getPrimaryTank().deposit(t, t.fluids().amount()) > 0) {
             entity.playSound(player, SoundEvents.ITEM_BOTTLE_EMPTY);
             if (!player.getEntityWorld().isClient()) {
-                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, t.toItemStack()));
+                player.setStackInHand(hand, FluidFilled.exchangeStack(stack, player, t.toItemStack()));
             }
             return Optional.of(this);
         }
