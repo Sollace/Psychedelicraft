@@ -16,6 +16,8 @@ import ivorius.psychedelicraft.fluid.SimpleFluid;
 import ivorius.psychedelicraft.fluid.container.FluidTransferUtils;
 import ivorius.psychedelicraft.fluid.container.RecepticalHandler;
 import ivorius.psychedelicraft.fluid.container.VariantMarshal;
+import ivorius.psychedelicraft.particle.FluidParticleEffect;
+import ivorius.psychedelicraft.particle.PSParticles;
 import ivorius.psychedelicraft.util.PacketCodecUtils;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.component.ComponentChanges;
@@ -32,6 +34,8 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.NumberRange.IntRange;
 import net.minecraft.predicate.component.ComponentSubPredicate;
 import net.minecraft.registry.tag.TagKey;
@@ -171,6 +175,12 @@ public record ItemFluids(SimpleFluid fluid, int amount, Map<String, Integer> att
 
     public Text getName() {
         return fluid().getName(this);
+    }
+
+    public ParticleEffect getDripParticle() {
+        return isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
+                : isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
+                : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, this);
     }
 
     @Override

@@ -24,6 +24,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundEvents;
 
 public interface PSBlocks {
     Block MASH_TUB = register("mash_tub", s -> new MashTubBlock(s
@@ -104,6 +105,14 @@ public interface PSBlocks {
             () -> PSItems.TOMATO,
             () -> PSItems.TOMATO_LEAF, s));
 
+    Block PLANTER = register("planter", s -> new PlanterBlock(s.nonOpaque().strength(1.5F, 1.3F).sounds(BlockSoundGroup.DECORATED_POT).mapColor(MapColor.BROWN)));
+    Block PLANTER_FARMLAND = register("planter_farmland", s -> new PlanterFarmBlock(s.nonOpaque().strength(1.5F, 1.3F).sounds(new BlockSoundGroup(1, 1,
+        SoundEvents.BLOCK_DECORATED_POT_BREAK,
+        SoundEvents.BLOCK_GRAVEL_STEP,
+        SoundEvents.BLOCK_DECORATED_POT_PLACE,
+        SoundEvents.BLOCK_DECORATED_POT_HIT,
+        SoundEvents.BLOCK_DECORATED_POT_FALL
+    )).mapColor(MapColor.BROWN)));
     Block LATTICE = register("lattice", s -> new LatticeBlock(s.mapColor(MapColor.OAK_TAN)
             .sounds(BlockSoundGroup.WOOD).hardness(0.3F).nonOpaque().burnable()));
     Block WINE_GRAPE_LATTICE = register("wine_grape_lattice", s -> new BurdenedLatticeBlock(true, null, 1, s.mapColor(MapColor.OAK_TAN)

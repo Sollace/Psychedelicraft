@@ -21,10 +21,11 @@ import org.joml.Vector3f;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 
+import ivorius.psychedelicraft.PSTags;
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.SyncedBlockEntity;
-import ivorius.psychedelicraft.particle.FluidParticleEffect;
-import ivorius.psychedelicraft.particle.PSParticles;
+import ivorius.psychedelicraft.fluid.container.FluidCauldronBehavior;
+import ivorius.psychedelicraft.item.component.ItemFluids;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -33,11 +34,9 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
@@ -64,6 +63,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.biome.Biome.Precipitation;
 import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.tick.ScheduledTickView;
 
@@ -413,15 +413,9 @@ public class GlassTubeBlock extends BlockWithEntity {
                     PipeFluids fluids = contents.removeLast();
                     if (!fluids.isEmpty()) {
                         PipeFluids pushedBack = fluids.isEmpty() ? PipeFluids.EMPTY : direction.getDirection().map(d -> PipeInsertable.tryInsert(world, pos.offset(d), d, fluids)).orElse(STATUS_VOIDED).ifRight(unit -> {
+                            Vector3f outPos = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
                             fluids.fluids().getFluids().forEach(fluid -> {
-                                Vector3f outVec = direction.getDirection().map(Direction::getUnitVector).orElseGet(Vector3f::new);
-                                world.spawnParticles(
-                                        fluid.fluid().getPhysical().isOf(Fluids.WATER) ? ParticleTypes.DRIPPING_WATER
-                                            : fluid.fluid().getPhysical().isOf(Fluids.LAVA) ? ParticleTypes.DRIPPING_LAVA
-                                            : new FluidParticleEffect(PSParticles.DRIPPING_FLUID, fluid),
-                                        pos.getX() + 0.5 + outVec.x * 0.5,
-                                        pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
-                                        pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
+                                onOverflow(world, pos, fluid, outPos);
                             });
                         }).left().orElse(PipeFluids.EMPTY);
                         if (!pushedBack.isEmpty()) {
@@ -443,6 +437,25 @@ public class GlassTubeBlock extends BlockWithEntity {
             }
 
             scheduleNextTick(world);
+        }
+
+        private void onOverflow(ServerWorld world, BlockPos pos, ItemFluids fluid, Vector3f outVec) {
+            world.spawnParticles(
+                    fluid.getDripParticle(),
+                    pos.getX() + 0.5 + outVec.x * 0.5,
+                    pos.getY() + 0.5 + outVec.y * 0.5 - 0.2,
+                    pos.getZ() + 0.5 + outVec.z * 0.5, 1, 0, 0, 0, 0);
+
+            BlockPos.Mutable mutablePos = pos.mutableCopy().move((int)outVec.x, (int)outVec.y, (int)outVec.z);
+            do {
+                mutablePos.move(Direction.DOWN);
+            } while (mutablePos.getY() > world.getBottomY() + 1 && (world.isAir(mutablePos)
+                    || world.getBlockState(mutablePos).isIn(PSTags.Blocks.WATER_PERMIATES_THROUGH)));
+            BlockState belowState = world.getBlockState(mutablePos);
+            if (!belowState.isAir()) {
+                belowState.getBlock().precipitationTick(belowState, world, mutablePos, Precipitation.RAIN);
+                FluidCauldronBehavior.fillFromDrips(world, belowState, pos, fluid);
+            }
         }
 
         private void scheduleNextTick(ServerWorld world) {

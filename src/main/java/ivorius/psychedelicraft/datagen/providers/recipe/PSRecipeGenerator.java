@@ -71,6 +71,12 @@ class PSRecipeGenerator extends RecipeGenerator {
         offerChemistryUpdateRecipes();
         offerDryingRecipes();
         offerLiquirRecipes();
+
+        ShapedRecipeJsonBuilder.create(items, RecipeCategory.TOOLS, PSItems.PLANTER)
+            .input('#', ConventionalItemTags.BRICKS).criterion("has_brick", conditionsFromTag(ConventionalItemTags.BRICKS))
+            .pattern("# #")
+            .pattern("###")
+            .offerTo(exporter);
     }
 
     private void offerSmokingImpliments() {

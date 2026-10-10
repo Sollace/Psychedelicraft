@@ -196,6 +196,7 @@ public interface PSItems {
             ).withSmoke(SmokeColors.GREEN))
     ));
 
+    Item PLANTER = register("planter", PSBlocks.PLANTER);
     Item LATTICE = register("lattice", PSBlocks.LATTICE);
     Item WINE_GRAPE_LATTICE = register("wine_grape_lattice", PSBlocks.WINE_GRAPE_LATTICE);
     Item MORNING_GLORY_LATTICE = register("morning_glory_lattice", PSBlocks.MORNING_GLORY_LATTICE);

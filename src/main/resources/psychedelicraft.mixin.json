@@ -7,6 +7,7 @@
     "mixins": [
       "MixinAbstractBlockSettings",
       "MixinAbstractFurnaceBlockEntity",
+      "MixinCropBlock",
       "MixinEntity",
       "MixinFluidState",
       "MixinItemEntity",

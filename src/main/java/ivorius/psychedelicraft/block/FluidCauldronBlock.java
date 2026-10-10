@@ -4,8 +4,10 @@ import com.mojang.serialization.MapCodec;
 
 import ivorius.psychedelicraft.block.entity.PSBlockEntities;
 import ivorius.psychedelicraft.block.entity.SyncedBlockEntity;
+import ivorius.psychedelicraft.fluid.container.FluidCauldronStorage;
 import ivorius.psychedelicraft.item.component.ItemFluids;
 import ivorius.psychedelicraft.util.Untyped;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
@@ -32,6 +34,7 @@ public class FluidCauldronBlock extends LeveledCauldronBlock implements BlockEnt
 
     public FluidCauldronBlock(Settings settings) {
         super(Precipitation.NONE, BEHAVIOUR, settings);
+        FluidStorage.SIDED.registerForBlocks((world, pos, state, be, context) -> FluidCauldronStorage.get(world, pos), this);
     }
 
     @Override

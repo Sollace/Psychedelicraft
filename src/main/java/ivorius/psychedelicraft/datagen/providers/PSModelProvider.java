@@ -63,6 +63,8 @@ public class PSModelProvider extends FabricModelProvider {
             generator.registerParentedItemModel(block, ModelIds.getBlockModelId(block));
         });
 
+        BlockModels.registerPlanter(generator, PSBlocks.PLANTER, PSBlocks.PLANTER, null);
+        BlockModels.registerPlanter(generator, PSBlocks.PLANTER_FARMLAND, PSBlocks.PLANTER, Blocks.FARMLAND);
         BlockModels.registerBunsenBurner(generator, PSBlocks.BUNSEN_BURNER);
         BlockModels.registerTray(generator, PSBlocks.TRAY);
         BlockModels.registerDistillery(generator, PSBlocks.DISTILLERY);

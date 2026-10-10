@@ -18,6 +18,7 @@ import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -106,7 +107,17 @@ public interface FluidCauldronBehavior {
         return state.getOrEmpty(LeveledCauldronBlock.LEVEL).orElse(state.isOf(Blocks.CAULDRON) ? 0 : LeveledCauldronBlock.MAX_LEVEL);
     }
 
-    private static boolean incrementFluidLevel(BlockState state, World world, BlockPos pos, ItemFluids fluidType) {
+    static void fillFromDrips(ServerWorld world, BlockState state, BlockPos pos, ItemFluids fluid) {
+        if (world.random.nextFloat() < 0.05F) {
+            if (state.isOf(Blocks.CAULDRON)) {
+                setCauldronState(world, pos, fluid, 1);
+            } else if (state.isOf(fluid.fluid().getPhysical().getCauldron())) {
+                incrementFluidLevel(state, world, pos, fluid);
+            }
+        }
+    }
+
+    static boolean incrementFluidLevel(BlockState state, World world, BlockPos pos, ItemFluids fluidType) {
         int level = getFluidLevel(state);
         if (level < LeveledCauldronBlock.MAX_LEVEL) {
             setCauldronState(world, pos, fluidType, level + 1);
@@ -121,7 +132,7 @@ public interface FluidCauldronBehavior {
         world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
     }
 
-    private static void setCauldronState(World world, BlockPos pos, ItemFluids fluidType, int level) {
+    static void setCauldronState(World world, BlockPos pos, ItemFluids fluidType, int level) {
         world.setBlockState(pos, getCauldronState(fluidType, level));
         world.getBlockEntity(pos, PSBlockEntities.CAULDRON).ifPresent(data -> data.setFluid(fluidType));
     }

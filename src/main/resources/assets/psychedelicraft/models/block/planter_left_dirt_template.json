@@ -1,0 +1,16 @@
+{
+	"parent": "block/block",
+  "textures": {
+    "particle": "#dirt"
+  },
+	"elements": [
+		{
+			"from": [1, 1, 1],
+			"to": [16, 15, 15],
+			"faces": {
+				"east": {"uv": [1, 1, 15, 15], "rotation": 90, "texture": "#dirt"},
+				"up": {"uv": [1, 1, 16, 15], "texture": "#dirt"}
+			}
+		}
+	]
+}

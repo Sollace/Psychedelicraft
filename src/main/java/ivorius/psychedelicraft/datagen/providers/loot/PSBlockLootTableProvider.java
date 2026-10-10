@@ -22,6 +22,8 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
@@ -99,6 +101,8 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                 .conditionally(SurvivesExplosionLootCondition.builder())
         ));
         addDrop(PSBlocks.WALL_BOTTLE_RACK, PSItems.BOTTLE_RACK);
+        addDrop(PSBlocks.PLANTER_FARMLAND, block -> planterDrops(block, Items.DIRT));
+        addDrop(PSBlocks.PLANTER, block -> planterDrops(block, null));
 
         addDrop(PSBlocks.JUNIPER_LEAVES, block -> fruitLeavesDrop(block, PSBlocks.JUNIPER_SAPLING, PSItems.JUNIPER_BERRIES, SAPLING_DROP_CHANCE));
         addDrop(PSBlocks.FRUITING_JUNIPER_LEAVES, block -> matureFruitLeavesDrop(block, PSBlocks.JUNIPER_SAPLING, PSItems.JUNIPER_BERRIES, SAPLING_DROP_CHANCE));
@@ -166,6 +170,16 @@ public class PSBlockLootTableProvider extends FabricBlockLootTableProvider {
                 });
             }
         });
+    }
+
+    private LootTable.Builder planterDrops(Block planter, @Nullable ItemConvertible dirt) {
+        var pool = LootPool.builder()
+                .rolls(ConstantLootNumberProvider.create(1))
+                .with(ItemEntry.builder(Items.BRICK).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(5))));
+        if (dirt != null) {
+            pool.with(ItemEntry.builder(dirt));
+        }
+        return LootTable.builder().pool(pool.conditionally(SurvivesExplosionLootCondition.builder()));
     }
 
     private LootTable.Builder singleItemDrugCropDrops(Block block, int middleAge, int maturityAge, Item product) {

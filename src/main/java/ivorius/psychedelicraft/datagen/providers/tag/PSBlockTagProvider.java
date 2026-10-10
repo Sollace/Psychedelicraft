@@ -58,8 +58,14 @@ public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 PSBlocks.BUNSEN_BURNER,
                 PSBlocks.TRAY,
                 PSBlocks.GLASS_TUBE,
-                PSBlocks.GLASS_VALVE
+                PSBlocks.GLASS_VALVE,
+                PSBlocks.PLANTER,
+                PSBlocks.PLANTER_FARMLAND
         );
+
+        valueLookupBuilder(PSTags.Blocks.WATER_PERMIATES_THROUGH)
+            .forceAddTag(BlockTags.MAINTAINS_FARMLAND).forceAddTag(BlockTags.FLOWERS)
+            .forceAddTag(BlockTags.SMALL_FLOWERS).forceAddTag(BlockTags.LEAVES);
 
         valueLookupBuilder(BlockTags.MAINTAINS_FARMLAND).add(
                 PSBlocks.TOMATOES, PSBlocks.MORNING_GLORY,
