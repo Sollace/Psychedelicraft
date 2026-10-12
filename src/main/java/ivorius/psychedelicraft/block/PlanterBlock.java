@@ -213,17 +213,20 @@ public class PlanterBlock extends Block {
         Segment segment = state.get(SEGMENT);
         boolean hasLeft = segment.hasLeft();
         boolean hasRight = segment.hasRight();
+
         if (neighborState.isOf(state.getBlock())) {
-            boolean matchAxis = getAxis(neighborState) == axis;
+            if (!state.isOf(PSBlocks.PLANTER)) {
+                boolean matchAxis = getAxis(neighborState) == axis;
 
-            if (axis.getNegativeDirection() == direction) {
-                hasLeft = matchAxis;
-            }
-            if (axis.getPositiveDirection() == direction) {
-                hasRight = matchAxis;
-            }
+                if (axis.getNegativeDirection() == direction) {
+                    hasLeft = matchAxis;
+                }
+                if (axis.getPositiveDirection() == direction) {
+                    hasRight = matchAxis;
+                }
 
-            segment = Segment.of(hasLeft, hasRight);
+                segment = Segment.of(hasLeft, hasRight);
+            }
         } else {
             boolean matchAxis = neighborState.contains(AXIS) && neighborState.contains(SEGMENT) && getAxis(neighborState) == axis;
 
