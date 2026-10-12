@@ -6,7 +6,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
@@ -60,6 +59,9 @@ public interface BlockModels {
 
     TextureKey LATTICE = TextureKey.of("lattice");
     TextureKey RIM = TextureKey.of("rim");
+    TextureKey SIDE_LEFT = TextureKey.of("side_left");
+    TextureKey SIDE_RIGHT = TextureKey.of("side_right");
+
     Model CROP_LATTICE_TEMPLATE = block("crop_lattice_template", LATTICE, TextureKey.CROP);
     Model LATTICE_TEMPLATE = block("lattice_template", LATTICE);
 
@@ -68,12 +70,22 @@ public interface BlockModels {
     Model COMPLEX_BLOCK = block("complex_block", TextureKey.TEXTURE, TextureKey.PARTICLE);
     Model VAT_TEMPLATE = block("vat_template", TextureKey.ALL);
     Model TRAY_TEMPLATE = block("tray_template", TextureKey.ALL);
-    Map<PlanterBlock.Segment, Pair<Model, Model>> PLANTER_TEMPLATES = PlanterBlock.SEGMENT.getValues().stream().collect(Collectors.toMap(Function.identity(), segment -> {
-        return new Pair<>(
-                block("planter_" + segment.asString() + "_template", TextureKey.BOTTOM, TextureKey.SIDE, RIM),
-                block("planter_" + segment.asString() + "_dirt_template", TextureKey.DIRT)
-        );
-    }));
+
+    Model PLANTER_SINGLE_TEMPLATE = block("planter_single_template", TextureKey.BOTTOM, TextureKey.SIDE, RIM);
+    Model PLANTER_SINGLE_DIRT_TEMPLATE = block("planter_single_dirt_template", TextureKey.DIRT);
+
+    Model PLANTER_MIDDLE_TEMPLATE = block("planter_middle_template", TextureKey.BOTTOM, TextureKey.SIDE, RIM);
+    Model PLANTER_MIDDLE_DIRT_TEMPLATE = block("planter_middle_dirt_template", TextureKey.DIRT);
+
+    Model PLANTER_END_TEMPLATE = block("planter_end_template", TextureKey.BOTTOM, RIM, TextureKey.END, SIDE_LEFT, SIDE_RIGHT);
+    Model PLANTER_END_DIRT_TEMPLATE = block("planter_end_dirt_template", TextureKey.DIRT);
+
+    Map<PlanterBlock.Segment, Pair<Pair<Model, Model>, Pair<Function<Block, TextureMap>, AxisRotation>>> PLANTER_MODEL_TEMPLATES = Map.of(
+            PlanterBlock.Segment.SINGLE, new Pair<>(new Pair<>(PLANTER_SINGLE_TEMPLATE, PLANTER_SINGLE_DIRT_TEMPLATE), new Pair<>(b -> planter(b, ""), AxisRotation.R0)),
+            PlanterBlock.Segment.MIDDLE, new Pair<>(new Pair<>(PLANTER_MIDDLE_TEMPLATE, PLANTER_MIDDLE_DIRT_TEMPLATE), new Pair<>(b -> planter(b, "_middle"), AxisRotation.R0)),
+            PlanterBlock.Segment.LEFT, new Pair<>(new Pair<>(PLANTER_END_TEMPLATE, PLANTER_END_DIRT_TEMPLATE), new Pair<>(b -> planterEnd(b), AxisRotation.R0)),
+            PlanterBlock.Segment.RIGHT, new Pair<>(new Pair<>(PLANTER_END_TEMPLATE, PLANTER_END_DIRT_TEMPLATE), new Pair<>(b -> planterEnd(b), AxisRotation.R180))
+    );
 
     Model DRYING_TABLE_TEMPLATE = block("drying_table_template", TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP);
     Model BUNSEN_BURNER = block("bunsen_burner", TextureKey.BOTTOM);
@@ -96,6 +108,27 @@ public interface BlockModels {
 
     static Model block(String parent, TextureKey ... requiredTextureKeys) {
         return new Model(Optional.of(Psychedelicraft.id("block/" + parent)), Optional.empty(), requiredTextureKeys);
+    }
+
+    static AxisRotation add(AxisRotation a, AxisRotation b) {
+        AxisRotation[] values = AxisRotation.values();
+        return values[(a.ordinal() + b.ordinal()) % values.length];
+    }
+
+    static TextureMap planter(Block planter, String suffix) {
+        return new TextureMap()
+                .put(TextureKey.BOTTOM, TextureMap.getSubId(planter, "_bottom" + suffix))
+                .put(TextureKey.SIDE, TextureMap.getSubId(planter, "_side" + suffix))
+                .put(RIM, TextureMap.getSubId(planter, "_rim" + suffix));
+    }
+
+    static TextureMap planterEnd(Block planter) {
+        return new TextureMap()
+                .put(TextureKey.BOTTOM, TextureMap.getSubId(planter, "_bottom_end"))
+                .put(TextureKey.END, TextureMap.getSubId(planter, "_side"))
+                .put(RIM, TextureMap.getSubId(planter, "_rim_end"))
+                .put(SIDE_LEFT, TextureMap.getSubId(planter, "_side_left"))
+                .put(SIDE_RIGHT, TextureMap.getSubId(planter, "_side_right"));
     }
 
     static void registerSpecialItemModel(BlockStateModelGenerator generator, Block block, Identifier parent, SpecialModelRenderer.Unbaked unbaked) {
@@ -133,32 +166,26 @@ public interface BlockModels {
     static void registerPlanter(BlockStateModelGenerator generator, Block block, Block texture, @Nullable Block dirt) {
         final @Nullable Function<Identifier, TextureMap> dryDirtTextures = dirt == null ? null : Untyped.constant(TextureMap.of(TextureKey.DIRT, TextureMap.getId(dirt)));
         final @Nullable Function<Identifier, TextureMap> wetDirtTextures = dirt == null ? null : Untyped.constant(TextureMap.of(TextureKey.DIRT, TextureMap.getSubId(dirt, "_moist")));
-        final Function<Identifier, TextureMap> texuresFunc = Untyped.constant(new TextureMap()
-                .put(TextureKey.BOTTOM, TextureMap.getSubId(texture, "_bottom"))
-                .put(TextureKey.SIDE, TextureMap.getSubId(texture, "_side"))
-                .put(RIM, TextureMap.getSubId(texture, "_rim"))
-                .put(TextureKey.TOP, TextureMap.getSubId(texture, "_top")));
 
         final var builder = MultipartBlockModelDefinitionCreator.create(block);
 
-        final Function<ModelVariant, WeightedVariant> xRotation = BlockStateModelGenerator::createWeightedVariant;
-        final Function<ModelVariant, WeightedVariant> zRotation = m -> createWeightedVariant(m.withRotationY(AxisRotation.R90));
-
-        PLANTER_TEMPLATES.forEach((segment, models) -> {
-            final var modelId = block == texture ? generator.createSubModel(block, "_" + segment.asString(), models.getFirst(), texuresFunc) : ModelIds.getBlockSubModelId(texture, "_" + segment.asString());
+        PLANTER_MODEL_TEMPLATES.forEach((segment, template) -> {
+            final var models = template.getFirst();
+            final var textures = template.getSecond().getFirst().apply(block);
+            final var baseOrientation = template.getSecond().getSecond();
+            final var modelId = block == texture ? generator.createSubModel(block, "_" + segment.asString(), models.getFirst(), Untyped.constant(textures)) : ModelIds.getBlockSubModelId(texture, "_" + segment.asString());
             final var variant = createModelVariant(modelId);
 
             final @Nullable var dryDirtVariant = dirt == null ? null : createModelVariant(generator.createSubModel(block, "_" + segment.asString() + "_dirt", models.getSecond(), dryDirtTextures));
             final @Nullable var wetDirtVariant = dirt == null ? null : createModelVariant(generator.createSubModel(block, "_" + segment.asString() + "_dirt_moist", models.getSecond(), wetDirtTextures));
 
+            final Supplier<MultipartModelConditionBuilder> condition = () -> createMultipartConditionBuilder().put(PlanterBlock.SEGMENT, segment);
+
             if (segment == PlanterBlock.Segment.SINGLE) {
-                applyPlanterStates(builder, () -> createMultipartConditionBuilder()
-                        .put(PlanterBlock.SEGMENT, segment), variant, dryDirtVariant, wetDirtVariant, xRotation);
+                applyPlanterStates(builder, condition, variant.withRotationY(baseOrientation), dryDirtVariant, wetDirtVariant);
             } else {
                 PlanterBlock.AXIS.getValues().forEach(axis -> {
-                    applyPlanterStates(builder, () -> createMultipartConditionBuilder()
-                            .put(PlanterBlock.SEGMENT, segment)
-                            .put(PlanterBlock.AXIS, axis), variant, dryDirtVariant, wetDirtVariant, axis == Direction.Axis.X ? xRotation : zRotation);
+                    applyPlanterStates(builder, () -> condition.get().put(PlanterBlock.AXIS, axis), variant.withRotationY(axis == Direction.Axis.X ? baseOrientation : add(baseOrientation, AxisRotation.R90)), dryDirtVariant, wetDirtVariant);
                 });
             }
         });
@@ -169,13 +196,13 @@ public interface BlockModels {
         }
     }
 
-    private static void applyPlanterStates(MultipartBlockModelDefinitionCreator builder, Supplier<MultipartModelConditionBuilder> condition, ModelVariant model, @Nullable ModelVariant dry, @Nullable ModelVariant wet, Function<ModelVariant, WeightedVariant> modelProps) {
-        builder.with(condition.get(), modelProps.apply(model));
+    private static void applyPlanterStates(MultipartBlockModelDefinitionCreator builder, Supplier<MultipartModelConditionBuilder> condition, ModelVariant model, @Nullable ModelVariant dry, @Nullable ModelVariant wet) {
+        builder.with(condition.get(), createWeightedVariant(model));
         if (dry != null) {
-            builder.with(condition.get().put(PlanterFarmBlock.MOISTURE, 0), modelProps.apply(dry));
+            builder.with(condition.get().put(PlanterFarmBlock.MOISTURE, 0), createWeightedVariant(dry.setState(model.modelState())));
         }
         if (wet != null) {
-            builder.with(condition.get().put(PlanterFarmBlock.MOISTURE, 1, 2, 3, 4, 5, 6, 7), modelProps.apply(wet));
+            builder.with(condition.get().put(PlanterFarmBlock.MOISTURE, 1, 2, 3, 4, 5, 6, 7), createWeightedVariant(wet.setState(model.modelState())));
         }
     }
 
