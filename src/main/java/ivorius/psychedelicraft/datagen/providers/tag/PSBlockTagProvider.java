@@ -67,6 +67,11 @@ public class PSBlockTagProvider extends FabricTagProvider.BlockTagProvider {
             .forceAddTag(BlockTags.MAINTAINS_FARMLAND).forceAddTag(BlockTags.FLOWERS)
             .forceAddTag(BlockTags.SMALL_FLOWERS).forceAddTag(BlockTags.LEAVES);
 
+        valueLookupBuilder(PSTags.Blocks.CANNOT_PLACE_DRINKS_ON).add(
+                PSBlocks.MASH_TUB,
+                PSBlocks.MASH_TUB_EDGE
+        );
+
         valueLookupBuilder(BlockTags.MAINTAINS_FARMLAND).add(
                 PSBlocks.TOMATOES, PSBlocks.MORNING_GLORY,
                 PSBlocks.JIMSONWEED, PSBlocks.BELLADONNA,

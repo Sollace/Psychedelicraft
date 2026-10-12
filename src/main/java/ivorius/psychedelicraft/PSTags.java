@@ -55,6 +55,7 @@ public interface PSTags {
         TagKey<Block> NIGHTSHADE = of("nightshade");
 
         TagKey<Block> WATER_PERMIATES_THROUGH = of("water_permiates_through");
+        TagKey<Block> CANNOT_PLACE_DRINKS_ON = of("cannot_place_drinks_on");
 
         static TagKey<Block> of(String name) {
             return TagKey.of(RegistryKeys.BLOCK, Psychedelicraft.id(name));

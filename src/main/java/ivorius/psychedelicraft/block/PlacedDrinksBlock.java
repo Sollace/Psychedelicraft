@@ -95,8 +95,8 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                 .orElseGet(() -> super.getPickStack(world, pos, state, includeData));
     }
 
-    public static boolean canPlace(ItemStack stack) {
-        return stack.isIn(PSTags.Items.PLACEABLE_RECEPTICALS);
+    public static boolean canPlace(ItemStack stack, BlockState state) {
+        return stack.isIn(PSTags.Items.PLACEABLE_RECEPTICALS) && !state.isIn(PSTags.Blocks.CANNOT_PLACE_DRINKS_ON);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class PlacedDrinksBlock extends BlockWithEntity {
                 }).orElse(ActionResult.FAIL);
             }
 
-            if (!canPlace(heldStack)) {
+            if (!canPlace(heldStack, state)) {
                 return ActionResult.FAIL;
             }
 
@@ -157,11 +157,12 @@ public class PlacedDrinksBlock extends BlockWithEntity {
     }
 
     public static ActionResult tryPlace(ItemUsageContext context) {
-        if (!canPlace(context.getStack())) {
+        BlockState state = context.getWorld().getBlockState(context.getBlockPos());
+
+        if (!canPlace(context.getStack(), state)) {
             return ActionResult.PASS;
         }
 
-        BlockState state = context.getWorld().getBlockState(context.getBlockPos());
         boolean replaceable = state.canReplace(new ItemPlacementContext(context));
 
         if (!replaceable && context.getSide() != Direction.UP) {
