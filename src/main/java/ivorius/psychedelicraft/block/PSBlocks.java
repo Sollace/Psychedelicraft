@@ -8,8 +8,6 @@ package ivorius.psychedelicraft.block;
 import java.util.function.Function;
 import java.util.List;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
-
 import ivorius.psychedelicraft.Psychedelicraft;
 import ivorius.psychedelicraft.item.PSItems;
 import ivorius.psychedelicraft.world.gen.PSSaplingGenerators;
@@ -39,8 +37,7 @@ public interface PSBlocks {
     ));
 
     Block OAK_BARREL = register("oak_barrel", BlockConstructionUtils.barrel(MapColor.OAK_TAN));
-    @Experimental
-    Block PALE_OAK_BARREL = register("pale_oak_barrel", BlockConstructionUtils.barrel(MapColor.GRAY));
+    Block PALE_OAK_BARREL = register("pale_oak_barrel", BlockConstructionUtils.barrel(MapColor.OFF_WHITE));
     Block SPRUCE_BARREL = register("spruce_barrel", BlockConstructionUtils.barrel(MapColor.SPRUCE_BROWN));
     Block BIRCH_BARREL = register("birch_barrel", BlockConstructionUtils.barrel(MapColor.PALE_YELLOW));
     Block JUNGLE_BARREL = register("jungle_barrel", BlockConstructionUtils.barrel(MapColor.DIRT_BROWN));
@@ -106,7 +103,7 @@ public interface PSBlocks {
             () -> PSItems.TOMATO_LEAF, s));
 
     Block PLANTER = register("planter", s -> new PlanterBlock(s.nonOpaque().strength(1.5F, 1.3F).sounds(BlockSoundGroup.DECORATED_POT).mapColor(MapColor.BROWN)));
-    Block PLANTER_FARMLAND = register("planter_farmland", s -> new PlanterFarmBlock(s.nonOpaque().strength(1.5F, 1.3F).sounds(new BlockSoundGroup(1, 1,
+    Block PLANTER_FARMLAND = register("planter_farmland", s -> new PlanterFarmBlock(s.nonOpaque().strength(1.5F, 1.3F).ticksRandomly().sounds(new BlockSoundGroup(1, 1,
         SoundEvents.BLOCK_DECORATED_POT_BREAK,
         SoundEvents.BLOCK_GRAVEL_STEP,
         SoundEvents.BLOCK_DECORATED_POT_PLACE,

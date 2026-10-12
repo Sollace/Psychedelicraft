@@ -18,6 +18,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -114,8 +115,20 @@ public class PlanterFarmBlock extends FarmlandBlock {
     @Override
     protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         int moisture = state.get(MOISTURE);
-        if (moisture > 0 && !world.hasRain(pos.up())) {
-            world.setBlockState(pos, state.with(MOISTURE, moisture - 1), Block.NOTIFY_LISTENERS);
+        if (moisture > 0) {
+            BlockPos above = pos.up();
+
+            if (!world.isRaining() || !world.hasRain(getSurface(world, above))) {
+                world.setBlockState(pos, state.with(MOISTURE, moisture - 1), Block.NOTIFY_LISTENERS);
+            }
+
+            BlockState crop = world.getBlockState(above);
+
+            if (crop.isIn(BlockTags.MAINTAINS_FARMLAND) && crop.hasRandomTicks()) {
+                for (int i = random.nextInt(3); i >= 0; i--) {
+                    crop.randomTick(world, above, random);
+                }
+            }
         }
     }
 
@@ -145,10 +158,14 @@ public class PlanterFarmBlock extends FarmlandBlock {
 
     @Nullable
     static BlockPos getDripPos(World world, BlockPos pos) {
+        return PointedDripstoneBlock.getDripPos(world, getSurface(world, pos));
+    }
+
+    static BlockPos getSurface(World world, BlockPos pos) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         do {
             mutable.move(Direction.UP);
         } while (world.getBlockState(mutable).isIn(PSTags.Blocks.WATER_PERMIATES_THROUGH));
-        return PointedDripstoneBlock.getDripPos(world, mutable);
+        return mutable;
     }
 }
